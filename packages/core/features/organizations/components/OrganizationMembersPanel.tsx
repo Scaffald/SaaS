@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Card, H4, Input, Paragraph, Separator, Spinner, Table, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Card, H4, Input, Paragraph, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Table } from '@app/ui'
 import { organizationInviteSchema, type OrganizationInvite } from '@app/schemas'
 import {
   useInviteOrganizationMember,
@@ -51,14 +52,14 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
   const pendingInvites = invites ?? []
   const activityByUser = useMemo(() => {
     if (!activity) return new Map<string, { actions: number; lastActionAt: string | null }>()
-    return new Map(activity.map((entry) => [entry.userId, entry]))
+    return new Map(activity.map((entry: { userId: string; actions: number; lastActionAt: string | null }) => [entry.userId, entry]))
   }, [activity])
 
   return (
     <YStack gap="$4">
       <Card bordered padding="$4" gap="$4">
         <H4>Invite a member</H4>
-        <YStack gap="$3" as="form" onSubmit={onSubmit}>
+        <YStack gap="$3">
           <Controller
             control={form.control}
             name="email"
@@ -98,14 +99,14 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
               </YStack>
             )}
           />
-          <Button onPress={onSubmit} disabled={isSubmitting}>
+          <Button onPress={() => void onSubmit()} disabled={isSubmitting}>
             {isSubmitting ? 'Sending invite…' : 'Send Invitation'}
           </Button>
         </YStack>
       </Card>
 
       <Card bordered padding="$4" gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+        <XStack justify="space-between" items="center">
           <H4>Members</H4>
           {membersLoading ? <Spinner /> : <Text color="$color10">{activeMembers.length} total</Text>}
         </XStack>
@@ -116,14 +117,14 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
           <Table>
             <Table.Head>
               <Table.Row>
-                <Table.Header>Name</Table.Header>
-                <Table.Header>Roles</Table.Header>
-                <Table.Header>Recent Activity</Table.Header>
+                <Table.HeaderCell>Name</Table.HeaderCell>
+                <Table.HeaderCell>Roles</Table.HeaderCell>
+                <Table.HeaderCell>Recent Activity</Table.HeaderCell>
               </Table.Row>
             </Table.Head>
             <Table.Body>
-              {activeMembers.map((member) => {
-                const activitySummary = member.userId ? activityByUser.get(member.userId) : null
+              {activeMembers.map((member: { userId: string; roles: string[]; profile?: { display_name?: string; headline?: string } | null }) => {
+                const activitySummary: { actions: number; lastActionAt: string | null } | undefined = member.userId ? (activityByUser.get(member.userId) as { actions: number; lastActionAt: string | null } | undefined) : null
                 return (
                   <Table.Row key={member.userId}>
                     <Table.Cell>
@@ -146,7 +147,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       </Card>
 
       <Card bordered padding="$4" gap="$3">
-        <XStack justifyContent="space-between" alignItems="center">
+        <XStack justify="space-between" items="center">
           <H4>Pending invitations</H4>
           {invitesLoading ? <Spinner /> : <Text color="$color10">{pendingInvites.length} pending</Text>}
         </XStack>
@@ -157,8 +158,8 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
           <Paragraph color="$color10">No pending invitations</Paragraph>
         ) : (
           <YStack gap="$2">
-            {pendingInvites.map((invite) => (
-              <XStack key={invite.id} justifyContent="space-between" alignItems="center">
+            {pendingInvites.map((invite: { id: string; invitee_email: string; role_name?: string | null; status: string }) => (
+              <XStack key={invite.id} justify="space-between" items="center">
                 <YStack>
                   <Text fontWeight="600">{invite.invitee_email}</Text>
                   <Paragraph color="$color10">{invite.role_name ?? 'member'}</Paragraph>

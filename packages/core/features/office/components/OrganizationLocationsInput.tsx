@@ -74,7 +74,7 @@ export function OrganizationLocationsInput({
 
       // Ensure array is long enough
       while (updated.length <= index) {
-        updated.push({ name: '', address: {} })
+        updated.push({ name: '', locationType: 'other' as const, isActive: true, address: {} })
       }
 
       if (field === 'name') {
@@ -108,7 +108,7 @@ export function OrganizationLocationsInput({
 
   // Add new location
   const handleAddLocation = useCallback(() => {
-    onChange([...value, { name: '', address: {} }])
+    onChange([...value, { name: '', locationType: 'other' as const, isActive: true, address: {} }])
   }, [value, onChange])
 
   // Remove location at index
@@ -170,7 +170,7 @@ export function OrganizationLocationsInput({
                 </Text>
                 <AddressAutocomplete
                   key={`address-${locationIds[index]}`}
-                  value={getAddressString(location.address)}
+                  value={getAddressString(location.address ?? {})}
                   onAddressSelect={(address: AddressResult) => handleAddressSelect(index, address)}
                   placeholder="Search for an address..."
                   provider={resolvedProvider}

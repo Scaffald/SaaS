@@ -43,7 +43,7 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
+      <XStack justify="space-between" items="center">
         <H4>Organization Settings</H4>
         {usage.data ? (
           <Text color="$color10">
@@ -55,7 +55,7 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
       {isLoading || !settings ? (
         <Spinner />
       ) : (
-        <YStack gap="$3" as="form" onSubmit={handleSave}>
+        <YStack gap="$3">
           <Controller
             control={form.control}
             name="timezone"
@@ -90,7 +90,7 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             control={form.control}
             name="enforceMfa"
             render={({ field }) => (
-              <XStack justifyContent="space-between" alignItems="center">
+              <XStack justify="space-between" items="center">
                 <Text fontWeight="600">Require MFA for members</Text>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
               </XStack>

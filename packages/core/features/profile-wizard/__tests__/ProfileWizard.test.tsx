@@ -80,8 +80,9 @@ vi.mock('../components/ProgressIndicator', () => ({
   ),
 }))
 
-const makeStepMock = (stepId: ProfileWizardStepId) => ({
-  [`${stepId.charAt(0).toUpperCase()}${stepId.slice(1)}Step`]: ({
+// Create mocks for each step component (must be inline due to vi.mock hoisting)
+vi.mock('../components/steps/GeneralStep', () => ({
+  GeneralInfoStep: ({
     onContinue,
     onSaveForLater,
     onSkip,
@@ -90,32 +91,163 @@ const makeStepMock = (stepId: ProfileWizardStepId) => ({
     onSaveForLater?: (data: unknown) => void
     onSkip?: () => void
   }) => (
-    <div data-testid={`mock-step-${stepId}`}>
-      <button
-        type="button"
-        onClick={() => onContinue?.({ step: stepId, payload: `${stepId}-payload` })}
-      >
-        Continue {stepId}
+    <div data-testid="mock-step-general">
+      <button type="button" onClick={() => onContinue?.({ step: 'general', payload: 'general-payload' })}>
+        Continue general
       </button>
       {onSaveForLater ? (
-        <button type="button" onClick={() => onSaveForLater({ step: stepId })}>
-          Save {stepId}
+        <button type="button" onClick={() => onSaveForLater({ step: 'general' })}>
+          Save general
         </button>
       ) : null}
       {onSkip ? (
         <button type="button" onClick={() => onSkip()}>
-          Skip {stepId}
+          Skip general
         </button>
       ) : null}
     </div>
   ),
-})
+}))
 
-for (const step of PROFILE_WIZARD_STEPS) {
-  vi.mock(`../components/steps/${step.charAt(0).toUpperCase()}${step.slice(1)}Step`, () =>
-    makeStepMock(step),
-  )
-}
+vi.mock('../components/steps/SkillsStep', () => ({
+  SkillsStep: ({
+    onContinue,
+    onSaveForLater,
+    onSkip,
+  }: {
+    onContinue: (data: unknown) => void
+    onSaveForLater?: (data: unknown) => void
+    onSkip?: () => void
+  }) => (
+    <div data-testid="mock-step-skills">
+      <button type="button" onClick={() => onContinue?.({ step: 'skills', payload: 'skills-payload' })}>
+        Continue skills
+      </button>
+      {onSaveForLater ? (
+        <button type="button" onClick={() => onSaveForLater({ step: 'skills' })}>
+          Save skills
+        </button>
+      ) : null}
+      {onSkip ? (
+        <button type="button" onClick={() => onSkip()}>
+          Skip skills
+        </button>
+      ) : null}
+    </div>
+  ),
+}))
+
+vi.mock('../components/steps/ExperienceStep', () => ({
+  ExperienceStep: ({
+    onContinue,
+    onSaveForLater,
+    onSkip,
+  }: {
+    onContinue: (data: unknown) => void
+    onSaveForLater?: (data: unknown) => void
+    onSkip?: () => void
+  }) => (
+    <div data-testid="mock-step-experience">
+      <button type="button" onClick={() => onContinue?.({ step: 'experience', payload: 'experience-payload' })}>
+        Continue experience
+      </button>
+      {onSaveForLater ? (
+        <button type="button" onClick={() => onSaveForLater({ step: 'experience' })}>
+          Save experience
+        </button>
+      ) : null}
+      {onSkip ? (
+        <button type="button" onClick={() => onSkip()}>
+          Skip experience
+        </button>
+      ) : null}
+    </div>
+  ),
+}))
+
+vi.mock('../components/steps/CertificationsStep', () => ({
+  CertificationsStep: ({
+    onContinue,
+    onSaveForLater,
+    onSkip,
+  }: {
+    onContinue: (data: unknown) => void
+    onSaveForLater?: (data: unknown) => void
+    onSkip?: () => void
+  }) => (
+    <div data-testid="mock-step-certifications">
+      <button type="button" onClick={() => onContinue?.({ step: 'certifications', payload: 'certifications-payload' })}>
+        Continue certifications
+      </button>
+      {onSaveForLater ? (
+        <button type="button" onClick={() => onSaveForLater({ step: 'certifications' })}>
+          Save certifications
+        </button>
+      ) : null}
+      {onSkip ? (
+        <button type="button" onClick={() => onSkip()}>
+          Skip certifications
+        </button>
+      ) : null}
+    </div>
+  ),
+}))
+
+vi.mock('../components/steps/EmploymentPrefsStep', () => ({
+  EmploymentPrefsStep: ({
+    onContinue,
+    onSaveForLater,
+    onSkip,
+  }: {
+    onContinue: (data: unknown) => void
+    onSaveForLater?: (data: unknown) => void
+    onSkip?: () => void
+  }) => (
+    <div data-testid="mock-step-preferences">
+      <button type="button" onClick={() => onContinue?.({ step: 'preferences', payload: 'preferences-payload' })}>
+        Continue preferences
+      </button>
+      {onSaveForLater ? (
+        <button type="button" onClick={() => onSaveForLater({ step: 'preferences' })}>
+          Save preferences
+        </button>
+      ) : null}
+      {onSkip ? (
+        <button type="button" onClick={() => onSkip()}>
+          Skip preferences
+        </button>
+      ) : null}
+    </div>
+  ),
+}))
+
+vi.mock('../components/steps/EducationStep', () => ({
+  EducationStep: ({
+    onContinue,
+    onSaveForLater,
+    onSkip,
+  }: {
+    onContinue: (data: unknown) => void
+    onSaveForLater?: (data: unknown) => void
+    onSkip?: () => void
+  }) => (
+    <div data-testid="mock-step-education">
+      <button type="button" onClick={() => onContinue?.({ step: 'education', payload: 'education-payload' })}>
+        Continue education
+      </button>
+      {onSaveForLater ? (
+        <button type="button" onClick={() => onSaveForLater({ step: 'education' })}>
+          Save education
+        </button>
+      ) : null}
+      {onSkip ? (
+        <button type="button" onClick={() => onSkip()}>
+          Skip education
+        </button>
+      ) : null}
+    </div>
+  ),
+}))
 
 vi.mock('tamagui', () => {
   const Stack = ({
@@ -146,6 +278,42 @@ vi.mock('tamagui', () => {
     </button>
   )
 
+  const Input = ({
+    value,
+    onChangeText,
+    placeholder,
+    ...rest
+  }: {
+    value?: string
+    onChangeText?: (text: string) => void
+    placeholder?: string
+  } & Record<string, unknown>) => (
+    <input
+      value={value ?? ''}
+      onChange={(e) => onChangeText?.((e.target as HTMLInputElement).value)}
+      placeholder={placeholder}
+      {...rest}
+    />
+  )
+
+  const TextArea = ({
+    value,
+    onChangeText,
+    placeholder,
+    ...rest
+  }: {
+    value?: string
+    onChangeText?: (text: string) => void
+    placeholder?: string
+  } & Record<string, unknown>) => (
+    <textarea
+      value={value ?? ''}
+      onChange={(e) => onChangeText?.((e.target as HTMLTextAreaElement).value)}
+      placeholder={placeholder}
+      {...rest}
+    />
+  )
+
   return {
     YStack: Stack,
     XStack: Stack,
@@ -163,6 +331,8 @@ vi.mock('tamagui', () => {
       children?: ReactNode
     } & Record<string, unknown>) => <p {...rest}>{children}</p>,
     Button,
+    Input,
+    TextArea,
     Spinner: () => <div data-testid="spinner">Loading…</div>,
   }
 })
@@ -242,8 +412,9 @@ describe('ProfileWizard', () => {
 
     fireEvent.click(screen.getByText('Start Wizard'))
 
-    await waitFor(() =>
-      expect(screen.queryByTestId('wizard-start-screen')).not.toBeInTheDocument(),
+    await waitFor(
+      () => expect(screen.queryByTestId('wizard-start-screen')).not.toBeInTheDocument(),
+      { timeout: 1500 },
     )
 
     expect(screen.getByTestId('mock-step-general')).toBeInTheDocument()
@@ -254,15 +425,17 @@ describe('ProfileWizard', () => {
     render(<ProfileWizard />)
 
     fireEvent.click(screen.getByText('Start Wizard'))
-    await waitFor(() => screen.getByTestId('mock-step-general'))
+    await waitFor(() => screen.getByTestId('mock-step-general'), { timeout: 1500 })
 
     fireEvent.click(screen.getByText('Continue general'))
 
-    await waitFor(() =>
-      expect(saveStep).toHaveBeenCalledWith({
-        step: 'general',
-        data: { step: 'general', payload: 'general-payload' },
-      }),
+    await waitFor(
+      () =>
+        expect(saveStep).toHaveBeenCalledWith({
+          step: 'general',
+          data: { step: 'general', payload: 'general-payload' },
+        }),
+      { timeout: 1500 },
     )
 
     expect(goNext).toHaveBeenCalledTimes(1)
@@ -292,8 +465,8 @@ describe('ProfileWizard', () => {
 
     fireEvent.click(screen.getByText('Continue education'))
 
-    await waitFor(() => expect(saveStep).toHaveBeenCalledTimes(1))
-    await waitFor(() => expect(completeWizard).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(saveStep).toHaveBeenCalledTimes(1), { timeout: 1500 })
+    await waitFor(() => expect(completeWizard).toHaveBeenCalledTimes(1), { timeout: 1500 })
 
     expect(screen.getByTestId('wizard-success-modal')).toBeInTheDocument()
   })

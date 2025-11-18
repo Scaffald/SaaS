@@ -42,7 +42,7 @@ export function OrganizationPaymentMethodsPanel({
       paymentMethodQuery.refetch();
       setShowAddForm(false);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast.show("Failed to remove payment method", {
         message: error.message,
         type: "error",
@@ -144,10 +144,11 @@ export function OrganizationPaymentMethodsPanel({
             <Button
               size="$2"
               variant="outlined"
-              theme="red"
               icon={Trash2}
               onPress={handleDelete}
               disabled={deleteMutation.isPending}
+              borderColor="$red8"
+              color="$red11"
             >
               Remove
             </Button>

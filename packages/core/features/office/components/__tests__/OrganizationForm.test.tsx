@@ -245,6 +245,8 @@ describe('OrganizationForm', () => {
           locations: [
             {
               name: 'HQ',
+              locationType: 'headquarters' as const,
+              isActive: true,
               address: {
                 city: 'Charlotte',
                 state: 'NC',

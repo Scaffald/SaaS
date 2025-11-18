@@ -120,7 +120,7 @@ export function OfficePaymentAnalytics() {
       .map(([type, stats]) => ({
         type,
         label: formatTransactionType(type),
-        ...stats,
+        ...(stats as { revenue: number; count: number; succeeded: number; failed: number }),
       }))
       .sort((a, b) => b.revenue - a.revenue);
   }, [breakdowns]);
@@ -201,8 +201,8 @@ export function OfficePaymentAnalytics() {
                           transactions
                         </Text>
                       </XStack>
-                      <XStack gap="$2" fontSize="$2" color="$color10">
-                        <Text>
+                      <XStack gap="$2">
+                        <Text fontSize="$2" color="$color10">
                           {entry.succeeded} succeeded, {entry.failed} failed
                         </Text>
                       </XStack>

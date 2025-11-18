@@ -333,6 +333,14 @@ const ROUTES_CONFIG = {
     menuOrder: 3,
     menuIcon: CreditCard,
   },
+  OFFICE_TRANSACTIONS: {
+    path: "/office/transactions",
+    title: "Transaction History",
+    isProtected: true,
+    menuCategory: "system",
+    menuOrder: 4,
+    menuIcon: FileText,
+  },
   OFFICE_SETTINGS: {
     path: "/office/settings",
     title: "Office Settings",
@@ -655,6 +663,7 @@ export const RouteBuilder = {
   officeIdVerifications: () => ROUTES.OFFICE_ATS_ID_VERIFICATIONS.path,
   officeStorage: () => ROUTES.OFFICE_STORAGE.path,
   officePayments: () => ROUTES.OFFICE_PAYMENTS.path,
+  officeTransactions: () => ROUTES.OFFICE_TRANSACTIONS.path,
   dashboardBackgroundCheck: () =>
     ROUTES.DASHBOARD_PROFILE_BACKGROUND_CHECK.path,
   dashboardBackgroundCheckInitiate: () =>
@@ -852,6 +861,7 @@ export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [
       { key: "OFFICE_NOTIFICATIONS" },
       { key: "OFFICE_STORAGE" },
       { key: "OFFICE_PAYMENTS" },
+      { key: "OFFICE_TRANSACTIONS" },
       {
         key: "OFFICE_SETTINGS",
         children: [
@@ -919,6 +929,7 @@ export const OFFICE_ROUTES = {
   NOTIFICATIONS: ROUTES.OFFICE_NOTIFICATIONS,
   STORAGE: ROUTES.OFFICE_STORAGE,
   PAYMENTS: ROUTES.OFFICE_PAYMENTS,
+  TRANSACTIONS: ROUTES.OFFICE_TRANSACTIONS,
   SETTINGS: ROUTES.OFFICE_SETTINGS,
   SETTINGS_GEOGRAPHIC: ROUTES.OFFICE_SETTINGS_GEOGRAPHIC,
   SETTINGS_STRIPE: ROUTES.OFFICE_SETTINGS_STRIPE,

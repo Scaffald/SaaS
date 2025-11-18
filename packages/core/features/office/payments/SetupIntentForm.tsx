@@ -7,7 +7,8 @@ import {
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import { Button, Card, Text, XStack, YStack, Spinner } from "@app/ui";
+import { Button, Text, XStack, YStack, Spinner } from "@app/ui";
+import { Card } from "tamagui";
 
 import { useStripeConfig } from "@app/core/features/payments/hooks/useStripeConfig";
 import { api } from "@app/core/utils/api";
@@ -125,6 +126,10 @@ export function SetupIntentForm({
         </XStack>
       </YStack>
     );
+  }
+
+  if (!options) {
+    return null;
   }
 
   return (

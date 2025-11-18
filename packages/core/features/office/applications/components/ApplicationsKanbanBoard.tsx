@@ -47,6 +47,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   const [showComparison, setShowComparison] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [comparisonInquiryIds, setComparisonInquiryIds] = useState<string[]>([])
+  const [_inquiryToApplicationMap, setInquiryToApplicationMap] = useState<Record<string, string>>({})
 
   // Fetch inquiry IDs for selected applications
   const selectedApplications = useMemo(
@@ -118,7 +119,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       }
       return next
     })
-    setInquiryToApplicationMap((prev) => {
+    setInquiryToApplicationMap((prev: Record<string, string>) => {
       const next = { ...prev }
       const applicationId = next[inquiryId]
       delete next[inquiryId]

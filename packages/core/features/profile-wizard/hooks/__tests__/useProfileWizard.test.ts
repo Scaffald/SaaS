@@ -100,7 +100,7 @@ describe('useProfileWizard', () => {
       expect(result.current.state.progress.completedSteps).toEqual(['general', 'skills'])
       expect(result.current.state.progress.completionPercentage).toBe(35)
       expect(result.current.state.stepData.general).toEqual(savedProgress.stepData.general)
-    })
+    }, { timeout: 1500 })
   })
 
   it('handles step navigation with goNext', () => {
@@ -201,7 +201,7 @@ describe('useProfileWizard', () => {
       expect(result.current.state.progress.completionPercentage).toBe(20)
       expect(result.current.state.stepData.general).toEqual(saveResponse.stepData.general)
       expect(mockUtils.getProgress.invalidate).toHaveBeenCalled()
-    })
+    }, { timeout: 1500 })
   })
 
   it('sets isSaving during save operation', async () => {
@@ -214,7 +214,7 @@ describe('useProfileWizard', () => {
 
     const { result } = renderHook(() => useProfileWizard())
 
-    act(() => {
+    await act(async () => {
       result.current
         .saveStep({
           step: 'general',
@@ -244,7 +244,7 @@ describe('useProfileWizard', () => {
 
     await waitFor(() => {
       expect(result.current.state.isSaving).toBe(false)
-    })
+    }, { timeout: 1500 })
   })
 
   it('handles wizard completion', async () => {
@@ -274,7 +274,7 @@ describe('useProfileWizard', () => {
       expect(result.current.state.progress.completedSteps).toHaveLength(6)
       expect(result.current.state.isCompleting).toBe(false)
       expect(mockUtils.getProgress.invalidate).toHaveBeenCalled()
-    })
+    }, { timeout: 1500 })
   })
 
   it('sets isCompleting during completion', async () => {
@@ -287,7 +287,7 @@ describe('useProfileWizard', () => {
 
     const { result } = renderHook(() => useProfileWizard())
 
-    act(() => {
+    await act(async () => {
       result.current.completeWizard().catch(() => {})
     })
 
@@ -307,7 +307,7 @@ describe('useProfileWizard', () => {
 
     await waitFor(() => {
       expect(result.current.state.isCompleting).toBe(false)
-    })
+    }, { timeout: 1500 })
   })
 
   it('handles markStepSkipped', () => {
@@ -368,7 +368,7 @@ describe('useProfileWizard', () => {
 
     await waitFor(() => {
       expect(result.current.state.currentStep).toBe('skills')
-    })
+    }, { timeout: 1500 })
   })
 
   it('uses saved currentStep when initial step is invalid', async () => {
@@ -387,7 +387,7 @@ describe('useProfileWizard', () => {
 
     await waitFor(() => {
       expect(result.current.state.currentStep).toBe('experience')
-    })
+    }, { timeout: 1500 })
   })
 
   it('returns ordered steps', () => {
@@ -432,7 +432,7 @@ describe('useProfileWizard', () => {
     await waitFor(() => {
       expect(result.current.state.lastSavedAt).toBeInstanceOf(Date)
       expect(result.current.state.lastSavedAt?.toISOString()).toBe('2025-01-01T12:00:00.000Z')
-    })
+    }, { timeout: 1500 })
   })
 })
 

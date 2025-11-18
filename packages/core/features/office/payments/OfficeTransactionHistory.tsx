@@ -1,0 +1,315 @@
+import { useMemo, useState } from "react";
+import { Button, Card, Select, Spinner, Text, XStack, YStack } from "tamagui";
+import { Download, FileText, RefreshCw } from "@tamagui/lucide-icons";
+import type { inferRouterOutputs } from "@trpc/server";
+
+import type { AppRouter } from "@app/supabase/client-types";
+import { api } from "@app/core/utils/api";
+import { DataTable } from "@app/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
+import { TransactionReceiptModal } from "./TransactionReceiptModal";
+
+type TransactionListOutput = inferRouterOutputs<AppRouter>["payments"]["adminListTransactions"];
+type Transaction = TransactionListOutput["items"][number];
+
+const columnHelper = createColumnHelper<Transaction>();
+
+const formatCurrency = (cents: number, currency: string): string => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(cents / 100);
+};
+
+const formatTransactionType = (type: string): string => {
+  return type
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+const formatStatus = (status: string): string => {
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "succeeded":
+      return "$green11" as const;
+    case "failed":
+      return "$red11" as const;
+    case "pending":
+      return "$orange11" as const;
+    case "refunded":
+      return "$blue11" as const;
+    case "cancelled":
+      return "$gray11" as const;
+    default:
+      return "$color11" as const;
+  }
+};
+
+export function OfficeTransactionHistory() {
+  const [selectedOrganizationId, _setSelectedOrganizationId] = useState<string | undefined>();
+  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const [transactionTypeFilter, setTransactionTypeFilter] = useState<string | undefined>();
+  const [_selectedTransactionId, setSelectedTransactionId] = useState<string | null>(null);
+
+  const transactionsQuery = api.payments.adminListTransactions.useQuery(
+    {
+      organizationId: selectedOrganizationId,
+      status: statusFilter as "pending" | "succeeded" | "failed" | "refunded" | "cancelled" | undefined,
+      transactionType: transactionTypeFilter as
+        | "success_fee_upfront"
+        | "success_fee_final"
+        | "background_check"
+        | "background_check_shared"
+        | "id_verification"
+        | "credit_deposit"
+        | "credit_refund"
+        | undefined,
+    },
+    {
+      staleTime: 30_000,
+    },
+  );
+
+  const exportCsvMutation = api.payments.exportTransactions.useQuery(
+    {
+      format: "csv",
+      organizationId: selectedOrganizationId,
+      status: statusFilter as "pending" | "succeeded" | "failed" | "refunded" | "cancelled" | undefined,
+      transactionType: transactionTypeFilter as
+        | "success_fee_upfront"
+        | "success_fee_final"
+        | "background_check"
+        | "background_check_shared"
+        | "id_verification"
+        | "credit_deposit"
+        | "credit_refund"
+        | undefined,
+    },
+    {
+      enabled: false,
+    },
+  );
+
+  const handleExportCsv = async () => {
+    const result = await exportCsvMutation.refetch();
+    if (result.data?.data) {
+      const blob = new Blob([result.data.data], { type: result.data.contentType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `transactions-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const transactionsColumns = useMemo(() => {
+    const defs = [
+      columnHelper.accessor("createdAt", {
+        header: "Date",
+        cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+      }),
+      columnHelper.accessor("organizationName", {
+        header: "Organization",
+        cell: (info) => info.getValue() ?? "N/A",
+      }),
+      columnHelper.accessor("transactionType", {
+        header: "Type",
+        cell: (info) => formatTransactionType(info.getValue()),
+      }),
+      columnHelper.accessor("amountCents", {
+        header: "Amount",
+        cell: (info) => {
+          const row = info.row.original;
+          return formatCurrency(info.getValue(), row.currency);
+        },
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: (info) => {
+          const status = info.getValue();
+          return (
+            <Text color={getStatusColor(status)} fontWeight="600">
+              {formatStatus(status)}
+            </Text>
+          );
+        },
+      }),
+      columnHelper.accessor("stripePaymentIntentId", {
+        header: "Stripe ID",
+        cell: (info) => (
+          <Text fontSize="$2" color="$color10" style={{ fontFamily: "monospace" }}>
+            {info.getValue().slice(0, 20)}...
+          </Text>
+        ),
+      }),
+      columnHelper.accessor("id", {
+        header: "Actions",
+        cell: (info) => (
+          <Button
+            size="$2"
+            variant="outlined"
+            icon={FileText}
+            onPress={() => setSelectedTransactionId(info.getValue())}
+          >
+            Receipt
+          </Button>
+        ),
+      }),
+    ];
+    return defs as ColumnDef<Transaction, unknown>[];
+  }, []);
+
+  return (
+    <YStack flex={1} p="$4" gap="$4">
+      <XStack justify="space-between" items="center">
+        <YStack>
+          <Text fontSize="$7" fontWeight="700">
+            Transaction History
+          </Text>
+          <Text color="$color10">
+            View and export payment transaction records.
+          </Text>
+        </YStack>
+        <XStack gap="$2">
+          <Button
+            size="$3"
+            variant="outlined"
+            icon={Download}
+            onPress={handleExportCsv}
+            disabled={exportCsvMutation.isFetching}
+          >
+            Export CSV
+          </Button>
+          <Button
+            size="$3"
+            variant="outlined"
+            icon={RefreshCw}
+            onPress={() => transactionsQuery.refetch()}
+            disabled={transactionsQuery.isRefetching}
+          >
+            Refresh
+          </Button>
+        </XStack>
+      </XStack>
+
+      {/* Filters */}
+      <Card borderWidth={1} borderColor="$color6" bg="$color2" padding="$3">
+        <XStack gap="$3" flexWrap="wrap">
+          <YStack gap="$1" width={200}>
+            <Text fontSize="$2" color="$color10">
+              Status
+            </Text>
+            <Select
+              value={statusFilter ?? ""}
+              onValueChange={(value) => setStatusFilter(value || undefined)}
+            >
+              <Select.Trigger width={200}>
+                <Select.Value placeholder="All Statuses" />
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Item index={0} value="">
+                  <Select.ItemText>All Statuses</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={1} value="succeeded">
+                  <Select.ItemText>Succeeded</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={2} value="failed">
+                  <Select.ItemText>Failed</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={3} value="pending">
+                  <Select.ItemText>Pending</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={4} value="refunded">
+                  <Select.ItemText>Refunded</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={5} value="cancelled">
+                  <Select.ItemText>Cancelled</Select.ItemText>
+                </Select.Item>
+              </Select.Content>
+            </Select>
+          </YStack>
+          <YStack gap="$1" width={200}>
+            <Text fontSize="$2" color="$color10">
+              Type
+            </Text>
+            <Select
+              value={transactionTypeFilter ?? ""}
+              onValueChange={(value) => setTransactionTypeFilter(value || undefined)}
+            >
+              <Select.Trigger width={200}>
+                <Select.Value placeholder="All Types" />
+              </Select.Trigger>
+              <Select.Content>
+                <Select.Item index={0} value="">
+                  <Select.ItemText>All Types</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={1} value="success_fee_upfront">
+                  <Select.ItemText>Success Fee (Upfront)</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={2} value="success_fee_final">
+                  <Select.ItemText>Success Fee (Final)</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={3} value="background_check">
+                  <Select.ItemText>Background Check</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={4} value="background_check_shared">
+                  <Select.ItemText>Background Check (Shared)</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={5} value="id_verification">
+                  <Select.ItemText>ID Verification</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={6} value="credit_deposit">
+                  <Select.ItemText>Credit Deposit</Select.ItemText>
+                </Select.Item>
+                <Select.Item index={7} value="credit_refund">
+                  <Select.ItemText>Credit Refund</Select.ItemText>
+                </Select.Item>
+              </Select.Content>
+            </Select>
+          </YStack>
+        </XStack>
+      </Card>
+
+      {transactionsQuery.isLoading ? (
+        <YStack flex={1} items="center" justify="center" gap="$3">
+          <Spinner size="large" />
+          <Text color="$color10">Loading transactions…</Text>
+        </YStack>
+      ) : (
+        <Card borderWidth={1} borderColor="$color6" bg="$color2" padding="$4">
+          <DataTable
+            columns={transactionsColumns}
+            data={transactionsQuery.data?.items ?? []}
+            isLoading={transactionsQuery.isRefetching}
+            pageSize={25}
+            emptyMessage="No transactions found."
+          />
+          {transactionsQuery.data && transactionsQuery.data.totalCount > 0 && (
+            <Text fontSize="$2" color="$color10" mt="$3">
+              Showing {transactionsQuery.data.items.length} of {transactionsQuery.data.totalCount} transactions
+            </Text>
+          )}
+        </Card>
+      )}
+
+      {_selectedTransactionId && (
+        <TransactionReceiptModal
+          transactionId={_selectedTransactionId}
+          open={Boolean(_selectedTransactionId)}
+          onOpenChange={(open) => {
+            if (!open) setSelectedTransactionId(null);
+          }}
+        />
+      )}
+    </YStack>
+  );
+}
+

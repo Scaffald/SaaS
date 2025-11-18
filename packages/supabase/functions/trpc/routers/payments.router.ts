@@ -1108,6 +1108,387 @@ export const paymentsRouter = t.router({
 
       return { ok: true };
     }),
+
+  // =========================================================
+  // Transaction History & Receipts
+  // =========================================================
+
+  /**
+   * Get a single transaction by ID (for receipt details)
+   */
+  getTransaction: officeProcedure
+    .input(z.object({ transactionId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      const { data: transaction, error } = await supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .select(
+          `
+          *,
+          organization:organizations(id, name, address),
+          user:users(id, display_name, email)
+        `,
+        )
+        .eq("id", input.transactionId)
+        .maybeSingle();
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load transaction: ${error.message}`,
+        });
+      }
+
+      if (!transaction) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Transaction not found",
+        });
+      }
+
+      // Verify access (office users can see all, org members can see their org's transactions)
+      const hasPlatformRole = await userHasPlatformRole(ctx);
+      if (!hasPlatformRole && transaction.organization_id) {
+        await ensureOrganizationAccess(ctx, transaction.organization_id);
+      }
+
+      return {
+        id: transaction.id,
+        organizationId: transaction.organization_id,
+        organizationName:
+          (transaction.organization as { name?: string } | null)?.name ?? null,
+        organizationAddress:
+          (transaction.organization as { address?: unknown } | null)?.address ??
+          null,
+        userId: transaction.user_id,
+        userName:
+          (transaction.user as { display_name?: string; email?: string } | null)
+            ?.display_name ??
+          (transaction.user as { display_name?: string; email?: string } | null)
+            ?.email ??
+          null,
+        userEmail:
+          (transaction.user as { email?: string } | null)?.email ?? null,
+        amountCents: transaction.amount_cents,
+        currency: transaction.currency,
+        transactionType: transaction.transaction_type,
+        status: transaction.status,
+        failureReason: transaction.failure_reason,
+        stripePaymentIntentId: transaction.stripe_payment_intent_id,
+        successFeeId: transaction.success_fee_id,
+        backgroundCheckId: transaction.background_check_id,
+        backgroundCheckAccessId: transaction.background_check_access_id,
+        idVerificationId: transaction.id_verification_id,
+        createdAt: transaction.created_at,
+        succeededAt: transaction.succeeded_at,
+        failedAt: transaction.failed_at,
+        refundedAt: transaction.refunded_at,
+        metadata: transaction.metadata ?? {},
+      };
+    }),
+
+  /**
+   * List transactions for an organization (organization-facing, not admin)
+   */
+  listTransactions: protectedProcedure
+    .input(
+      z
+        .object({
+          organizationId: z.string().uuid(),
+          limit: z.number().int().positive().max(500).default(50),
+          offset: z.number().int().nonnegative().default(0),
+          status: z
+            .enum(["pending", "succeeded", "failed", "refunded", "cancelled"])
+            .optional(),
+          transactionType: z
+            .enum([
+              "success_fee_upfront",
+              "success_fee_final",
+              "background_check",
+              "background_check_shared",
+              "id_verification",
+              "credit_deposit",
+              "credit_refund",
+            ])
+            .optional(),
+          startDate: z.string().datetime().optional(),
+          endDate: z.string().datetime().optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      if (!input?.organizationId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "organizationId is required",
+        });
+      }
+
+      await ensureOrganizationAccess(ctx, input.organizationId);
+
+      const { supabaseAdmin } = ctx;
+
+      let query = supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .select(
+          `
+          *,
+          organization:organizations(id, name),
+          user:users(id, display_name, email)
+        `,
+        )
+        .eq("organization_id", input.organizationId)
+        .order("created_at", { ascending: false })
+        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1);
+
+      if (input?.status) {
+        query = query.eq("status", input.status);
+      }
+
+      if (input?.transactionType) {
+        query = query.eq("transaction_type", input.transactionType);
+      }
+
+      if (input?.startDate) {
+        query = query.gte("created_at", input.startDate);
+      }
+
+      if (input?.endDate) {
+        query = query.lte("created_at", input.endDate);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to load transactions: ${error.message}`,
+        });
+      }
+
+      return {
+        items: (data ?? []).map((row) => ({
+          id: row.id,
+          organizationId: row.organization_id,
+          organizationName:
+            (row.organization as { name?: string } | null)?.name ?? null,
+          userId: row.user_id,
+          userName:
+            (row.user as { display_name?: string; email?: string } | null)
+              ?.display_name ??
+            (row.user as { display_name?: string; email?: string } | null)
+              ?.email ??
+            null,
+          amountCents: row.amount_cents,
+          currency: row.currency,
+          transactionType: row.transaction_type,
+          status: row.status,
+          failureReason: row.failure_reason,
+          stripePaymentIntentId: row.stripe_payment_intent_id,
+          createdAt: row.created_at,
+          succeededAt: row.succeeded_at,
+          failedAt: row.failed_at,
+          refundedAt: row.refunded_at,
+          metadata: row.metadata ?? {},
+        })),
+        totalCount: count ?? 0,
+      };
+    }),
+
+  /**
+   * Export transactions as CSV or JSON
+   */
+  exportTransactions: officeProcedure
+    .input(
+      z.object({
+        format: z.enum(["csv", "json"]).default("csv"),
+        organizationId: z.string().uuid().optional(),
+        startDate: z.string().datetime().optional(),
+        endDate: z.string().datetime().optional(),
+        status: z
+          .enum(["pending", "succeeded", "failed", "refunded", "cancelled"])
+          .optional(),
+        transactionType: z
+          .enum([
+            "success_fee_upfront",
+            "success_fee_final",
+            "background_check",
+            "background_check_shared",
+            "id_verification",
+            "credit_deposit",
+            "credit_refund",
+          ])
+          .optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { supabaseAdmin } = ctx;
+
+      let query = supabaseAdmin
+        .schema("core")
+        .from("payment_transactions")
+        .select(
+          `
+          *,
+          organization:organizations(id, name),
+          user:users(id, display_name, email)
+        `,
+        )
+        .order("created_at", { ascending: false });
+
+      if (input.organizationId) {
+        query = query.eq("organization_id", input.organizationId);
+      }
+
+      if (input.status) {
+        query = query.eq("status", input.status);
+      }
+
+      if (input.transactionType) {
+        query = query.eq("transaction_type", input.transactionType);
+      }
+
+      if (input.startDate) {
+        query = query.gte("created_at", input.startDate);
+      }
+
+      if (input.endDate) {
+        query = query.lte("created_at", input.endDate);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to export transactions: ${error.message}`,
+        });
+      }
+
+      const transactions = (data ?? []).map((row) => ({
+        id: row.id,
+        organizationName:
+          (row.organization as { name?: string } | null)?.name ?? "N/A",
+        userName:
+          (row.user as { display_name?: string; email?: string } | null)
+            ?.display_name ??
+          (row.user as { display_name?: string; email?: string } | null)
+            ?.email ??
+          "N/A",
+        amountCents: row.amount_cents,
+        currency: row.currency,
+        transactionType: row.transaction_type,
+        status: row.status,
+        failureReason: row.failure_reason ?? "",
+        stripePaymentIntentId: row.stripe_payment_intent_id,
+        createdAt: row.created_at,
+        succeededAt: row.succeeded_at ?? "",
+        failedAt: row.failed_at ?? "",
+        refundedAt: row.refunded_at ?? "",
+      }));
+
+      if (input.format === "json") {
+        return {
+          format: "json" as const,
+          data: JSON.stringify(transactions, null, 2),
+          contentType: "application/json",
+        };
+      }
+
+      // CSV format
+      if (transactions.length === 0) {
+        return {
+          format: "csv" as const,
+          data: "",
+          contentType: "text/csv",
+        };
+      }
+
+      const headers = [
+        "ID",
+        "Organization",
+        "User",
+        "Amount (cents)",
+        "Currency",
+        "Type",
+        "Status",
+        "Failure Reason",
+        "Stripe Payment Intent ID",
+        "Created At",
+        "Succeeded At",
+        "Failed At",
+        "Refunded At",
+      ];
+
+      const rows = transactions.map((t) => [
+        t.id,
+        t.organizationName,
+        t.userName,
+        String(t.amountCents),
+        t.currency,
+        t.transactionType,
+        t.status,
+        t.failureReason,
+        t.stripePaymentIntentId,
+        t.createdAt,
+        t.succeededAt,
+        t.failedAt,
+        t.refundedAt,
+      ]);
+
+      const csvRows = [headers, ...rows]
+        .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+      return {
+        format: "csv" as const,
+        data: csvRows,
+        contentType: "text/csv",
+      };
+    }),
+
+  /**
+   * Generate receipt data for a transaction (for PDF/email generation)
+   */
+  generateReceipt: officeProcedure
+    .input(z.object({ transactionId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const transaction = await ctx.caller.payments.getTransaction({
+        transactionId: input.transactionId,
+      });
+
+      const formatCurrency = (cents: number, currency: string): string => {
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: currency.toUpperCase(),
+        }).format(cents / 100);
+      };
+
+      const formatTransactionType = (type: string): string => {
+        return type
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
+      };
+
+      return {
+        transactionId: transaction.id,
+        receiptNumber: `RCP-${transaction.id.slice(0, 8).toUpperCase()}`,
+        date: transaction.succeededAt ?? transaction.createdAt,
+        organizationName: transaction.organizationName ?? "N/A",
+        organizationAddress: transaction.organizationAddress,
+        amount: formatCurrency(transaction.amountCents, transaction.currency),
+        amountCents: transaction.amountCents,
+        currency: transaction.currency,
+        transactionType: formatTransactionType(transaction.transactionType),
+        status: transaction.status,
+        stripePaymentIntentId: transaction.stripePaymentIntentId,
+        metadata: transaction.metadata,
+      };
+    }),
 });
 
 

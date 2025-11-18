@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { Button, Card, H4, Paragraph, Separator, Spinner, Table, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Table } from '@app/ui'
 import {
   useCommitDocumentVersion,
   useDocumentDownloadUrl,
@@ -19,7 +20,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
   const { data: folders } = useOrganizationFolders(organizationId)
   const downloadMutation = useDocumentDownloadUrl()
   const uploadSession = useDocumentUploadSession()
-  const folderLookup = useMemo(() => new Map((folders ?? []).map((folder) => [folder.id, folder.name])), [folders])
+  const folderLookup = useMemo(() => new Map((folders ?? []).map((folder: { id: string; name: string }) => [folder.id, folder.name])), [folders])
 
   const handleDownload = async (documentId: string) => {
     const result = await downloadMutation.mutateAsync({ organizationId, documentId })
@@ -30,7 +31,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justifyContent="space-between" alignItems="center">
+      <XStack justify="space-between" items="center">
         <H4>Documents</H4>
         <Button
           size="$3"
@@ -50,14 +51,14 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
         <Table>
           <Table.Head>
             <Table.Row>
-              <Table.Header>Name</Table.Header>
-              <Table.Header>Folder</Table.Header>
-              <Table.Header>Last Updated</Table.Header>
-              <Table.Header>Actions</Table.Header>
+              <Table.HeaderCell>Name</Table.HeaderCell>
+              <Table.HeaderCell>Folder</Table.HeaderCell>
+              <Table.HeaderCell>Last Updated</Table.HeaderCell>
+              <Table.HeaderCell>Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {documents.map((document) => (
+            {documents.map((document: { id: string; name: string; category: string; folder_id: string | null; updated_at: string }) => (
               <Table.Row key={document.id}>
                 <Table.Cell>
                   <Text fontWeight="600">{document.name}</Text>
