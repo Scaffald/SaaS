@@ -7,7 +7,7 @@ import {
   useElements,
   useStripe,
 } from "@stripe/react-stripe-js";
-import { Button, Text, XStack, YStack } from "@app/ui";
+import { Button, Text, XStack, YStack, Spinner } from "@app/ui";
 import { Card } from "tamagui";
 
 import { useStripeConfig } from "../../hooks/useStripeConfig";
@@ -159,9 +159,13 @@ function PaymentIntentFormInner({
       <PaymentElement />
 
       {errorMessage ? (
-        <Text color="$red10" fontSize="$3">
-          {errorMessage}
-        </Text>
+        <Card p="$3" bg="$red2" borderColor="$red6" borderWidth={1}>
+          <XStack gap="$2" items="center">
+            <Text color="$red11" fontSize="$3" flex={1}>
+              {errorMessage}
+            </Text>
+          </XStack>
+        </Card>
       ) : null}
 
       <Button
@@ -170,7 +174,14 @@ function PaymentIntentFormInner({
         disabled={disabled || isSubmitting || !stripe || !elements}
         onPress={handleSubmit}
       >
-        {isSubmitting ? "Processing…" : submitLabel}
+        {isSubmitting ? (
+          <XStack gap="$2" items="center">
+            <Spinner size="small" color="white" />
+            <Text>Processing…</Text>
+          </XStack>
+        ) : (
+          submitLabel
+        )}
       </Button>
     </Card>
   );
