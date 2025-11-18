@@ -30,7 +30,7 @@ export default function SharedIPIPResultsRoute() {
       staleTime: 1000 * 60 * 5,
       cacheTime: 1000 * 60 * 30,
       refetchOnWindowFocus: false,
-    },
+    }
   )
 
   // Process shared results data
