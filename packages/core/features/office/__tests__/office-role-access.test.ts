@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { createServiceRoleClient } from '../../../../../tests/infrastructure/vitest/helpers/database'
 
+interface RoleAssignmentQueryResponse {
+  data: {
+    role: {
+      name: string;
+      scope: string;
+    } | null;
+  } | null;
+  error: Error | null;
+}
+
 describe('Office Role Access', () => {
   describe('Database: @unicorn.love emails have office role', () => {
     it('should verify that all @unicorn.love emails have the office role assigned', async () => {
@@ -35,14 +45,14 @@ describe('Office Role Access', () => {
           .from('role_assignments')
           .select('role:roles(name, scope)')
           .eq('user_id', userId)
-          .eq('role_id', officeRole.id)
+          .eq('role_id', officeRole!.id)
 
         expect(assignmentError).toBeNull()
         expect(roleAssignments).toBeDefined()
         expect(roleAssignments?.length).toBeGreaterThan(0)
 
         const hasOfficeRole = roleAssignments?.some(
-          (assignment: typeof roleAssignments[0]) =>
+          (assignment: any) =>
             assignment.role?.name === 'office' &&
             assignment.role?.scope === 'platform',
         )
@@ -80,8 +90,8 @@ describe('Office Role Access', () => {
           .from('role_assignments')
           .select('role:roles(name, scope)')
           .eq('user_id', userId)
-          .eq('role_id', officeRole.id)
-          .single()
+          .eq('role_id', officeRole!.id)
+          .single() as unknown as RoleAssignmentQueryResponse
 
         expect(assignmentError).toBeNull()
         expect(roleAssignment).toBeDefined()
@@ -115,8 +125,8 @@ describe('Office Role Access', () => {
         .from('role_assignments')
         .select('role:roles(name, scope)')
         .eq('user_id', officeUserId)
-        .eq('role_id', officeRole.id)
-        .single()
+        .eq('role_id', officeRole!.id)
+        .single() as unknown as RoleAssignmentQueryResponse
 
       expect(roleAssignment).toBeDefined()
       expect(roleAssignment?.role?.name).toBe('office')
@@ -150,8 +160,8 @@ describe('Office Role Access', () => {
         .from('role_assignments')
         .select('role:roles(name, scope)')
         .eq('user_id', regularUserId)
-        .eq('role_id', officeRole.id)
-        .maybeSingle()
+        .eq('role_id', officeRole!.id)
+        .maybeSingle() as unknown as { data: RoleAssignmentQueryResponse['data'] | null; error: Error | null }
 
       // Regular user should NOT have office role
       expect(roleAssignment).toBeNull()
