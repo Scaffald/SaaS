@@ -9,11 +9,12 @@ import { CandidateDetailModal } from './CandidateDetailModal'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 
-const STATUSES: ApplicationStatus[] = ['new', 'screen', 'interview', 'offer', 'hired', 'rejected']
+const STATUSES: ApplicationStatus[] = ['new', 'screen', 'inquired', 'interview', 'offer', 'hired', 'rejected']
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   new: 'New Applications',
   screen: 'Screening',
+  inquired: 'Inquired',
   interview: 'Interview',
   offer: 'Offer',
   hired: 'Hired',
@@ -23,6 +24,7 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
 const STATUS_COLORS: Record<ApplicationStatus, GetThemeValueForKey<'backgroundColor'>> = {
   new: '$blue9',
   screen: '$yellow9',
+  inquired: '$purple9',
   interview: '$red9',
   offer: '$green9',
   hired: '$green11',

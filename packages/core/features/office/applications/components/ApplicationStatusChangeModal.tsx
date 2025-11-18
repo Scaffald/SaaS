@@ -16,6 +16,7 @@ interface ApplicationStatusChangeModalProps {
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   new: 'New',
   screen: 'Screening',
+  inquired: 'Inquired',
   interview: 'Interview',
   offer: 'Offer',
   hired: 'Hired',

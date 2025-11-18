@@ -10,6 +10,7 @@
 export type ApplicationStatus =
   | "new"
   | "screen"
+  | "inquired"
   | "interview"
   | "offer"
   | "hired"

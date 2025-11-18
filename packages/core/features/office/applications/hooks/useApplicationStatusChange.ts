@@ -6,6 +6,7 @@ import type { ApplicationStatus } from "../../mock-data/ats-mock-data";
 const STATUS_MAP: Record<ApplicationStatus, string> = {
   new: "pending",
   screen: "reviewing",
+  inquired: "inquired",
   interview: "interview",
   offer: "offer",
   hired: "hired",
@@ -64,7 +65,8 @@ export const useApplicationStatusChange =
         const validTransitions: Record<ApplicationStatus, ApplicationStatus[]> =
           {
             new: ["screen", "rejected"],
-            screen: ["interview", "rejected"],
+            screen: ["inquired", "interview", "rejected"],
+            inquired: ["interview", "offer", "rejected"],
             interview: ["offer", "rejected"],
             offer: ["hired", "rejected"],
             hired: [], // Terminal state
@@ -104,6 +106,7 @@ export const useApplicationStatusChange =
             status: STATUS_MAP[toStatus] as
               | "pending"
               | "reviewing"
+              | "inquired"
               | "interview"
               | "offer"
               | "hired"
