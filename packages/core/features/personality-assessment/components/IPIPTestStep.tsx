@@ -6,13 +6,23 @@ import {
   type IPIPQuestion,
   type IPIPAnswer,
   type IPIPChoice,
+  type IPIPDomain,
 } from '../lib/ipip'
+import {
+  getCurrentDomain,
+  getQuestionIndexInDomain,
+  isLastQuestionInDomain,
+  getDomainProgress,
+  DOMAIN_NAMES,
+  QUESTIONS_PER_DOMAIN,
+} from '@app/core/features/ipip-assessment/utils/domainGrouping'
 
 export interface IPIPTestStepProps {
   initialAnswers: IPIPAnswer[]
   currentIndex: number
   language: string
   onSave: (answers: IPIPAnswer[], index: number) => void
+  onDomainComplete?: (domain: IPIPDomain, answers: IPIPAnswer[]) => void
   isLoading?: boolean
 }
 
@@ -25,17 +35,46 @@ export function IPIPTestStep({
   currentIndex: initialCurrentIndex,
   language: _language,
   onSave,
+  onDomainComplete,
   isLoading = false,
 }: IPIPTestStepProps) {
-  const questions = getQuestions()
+  const allQuestions = getQuestions()
   const choices = getChoices()
   const [currentIndex, setCurrentIndex] = useState(initialCurrentIndex)
   const [answers, setAnswers] = useState<IPIPAnswer[]>(initialAnswers)
 
-  const currentQuestion = questions[currentIndex]
+  // Reorder questions by domain (A, E, N, C, O) for micro-block delivery
+  const questionsByDomain: Record<string, IPIPQuestion[]> = {}
+  for (const question of allQuestions) {
+    if (!questionsByDomain[question.domain]) {
+      questionsByDomain[question.domain] = []
+    }
+    questionsByDomain[question.domain].push(question)
+  }
+
+  // Create ordered array: A (0-23), E (24-47), N (48-71), C (72-95), O (96-119)
+  const orderedQuestions: IPIPQuestion[] = []
+  const DOMAIN_ORDER: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
+  for (const domain of DOMAIN_ORDER) {
+    const domainQuestions = questionsByDomain[domain] || []
+    orderedQuestions.push(...domainQuestions)
+  }
+
+  // Get current question from reordered array
+  const currentQuestion = orderedQuestions[currentIndex]
   const currentChoices = currentQuestion ? choices[currentQuestion.keyed] : []
   const isComplete = currentIndex >= 120
-  const progress = Math.round((currentIndex / 120) * 100)
+
+  // Get current domain and progress
+  const currentDomain = getCurrentDomain(currentIndex)
+  const questionIndexInDomain = getQuestionIndexInDomain(currentIndex)
+
+  // Calculate progress within current domain
+  const answersInDomain = currentDomain
+    ? answers.filter((a) => a.domain === currentDomain).length
+    : 0
+  const domainProgress = currentDomain ? getDomainProgress(answersInDomain) : 0
+  const overallProgress = Math.round((currentIndex / 120) * 100)
 
   useEffect(() => {
     // Sync with initial values
@@ -64,13 +103,29 @@ export function IPIPTestStep({
 
     setAnswers(newAnswers)
 
+    const nextIndex = currentIndex + 1
+    const isDomainComplete = isLastQuestionInDomain(currentIndex) && currentDomain
+
+    // Check if domain is complete (24 questions answered for this domain)
+    if (isDomainComplete && currentDomain) {
+      const domainAnswers = newAnswers.filter((a) => a.domain === currentDomain)
+      if (domainAnswers.length >= QUESTIONS_PER_DOMAIN) {
+        // Domain complete - trigger callback
+        if (onDomainComplete) {
+          onDomainComplete(currentDomain, newAnswers)
+        }
+        // Still save progress
+        setCurrentIndex(nextIndex)
+        onSave(newAnswers, nextIndex)
+        return
+      }
+    }
+
     // Auto-save every 10 answers or on completion
     if (newAnswers.length % 10 === 0 || currentIndex === 119) {
-      const nextIndex = currentIndex + 1
       setCurrentIndex(nextIndex)
       onSave(newAnswers, nextIndex)
     } else {
-      const nextIndex = currentIndex + 1
       setCurrentIndex(nextIndex)
       // Save immediately for progress tracking
       onSave(newAnswers, nextIndex)
@@ -116,6 +171,18 @@ export function IPIPTestStep({
 
   return (
     <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
+      {/* Domain Header */}
+      {currentDomain && (
+        <YStack gap="$2" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
+          <Text fontSize="$5" fontWeight="bold" color="$blue11">
+            {DOMAIN_NAMES[currentDomain]}
+          </Text>
+          <Text fontSize="$3" color="$blue10">
+            Question {questionIndexInDomain + 1} of {QUESTIONS_PER_DOMAIN} in this domain
+          </Text>
+        </YStack>
+      )}
+
       {/* Progress Bar */}
       <YStack gap="$2">
         <XStack justify="space-between" items="center">
@@ -123,12 +190,27 @@ export function IPIPTestStep({
             Question {currentIndex + 1} of 120
           </Text>
           <Text fontSize="$3" color="$color11">
-            {progress}%
+            {overallProgress}%
           </Text>
         </XStack>
-        <Progress value={progress} max={100}>
+        <Progress value={overallProgress} max={100}>
           <Progress.Indicator animation="bouncy" />
         </Progress>
+        {currentDomain && (
+          <YStack gap="$1">
+            <XStack justify="space-between" items="center">
+              <Text fontSize="$2" color="$color10">
+                {DOMAIN_NAMES[currentDomain]} Progress
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {domainProgress}%
+              </Text>
+            </XStack>
+            <Progress value={domainProgress} max={100} size="$1">
+              <Progress.Indicator animation="bouncy" />
+            </Progress>
+          </YStack>
+        )}
       </YStack>
 
       {/* Question */}
