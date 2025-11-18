@@ -513,9 +513,9 @@ describe('TeamForm', () => {
     // Clean up unhandled rejection handler
     process.removeAllListeners('unhandledRejection')
     // Restore original handlers if any
-    originalHandlers.forEach((handler) => {
+    for (const handler of originalHandlers) {
       process.on('unhandledRejection', handler as (reason: unknown) => void)
-    })
+    }
   })
 
   it('resets form when reset is called', () => {
