@@ -67,9 +67,7 @@ export function ScreeningStep({
   onAnswersChange,
   onContinue,
   isSubmitting = false,
-  // biome-ignore lint/correctness/noUnusedVariables: Used in conditional rendering below
   requiredSkills = [],
-  // biome-ignore lint/correctness/noUnusedVariables: Used in conditional rendering below
   optionalSkills = [],
 }: ScreeningStepProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof ScreeningAnswers, string>>>({})

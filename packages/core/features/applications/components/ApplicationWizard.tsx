@@ -188,6 +188,9 @@ export function ApplicationWizard({
                   nextStep('custom_questions')
                 }
               }}
+              isSubmitting={isSubmitting}
+              requiredSkills={[]}
+              optionalSkills={[]}
             />
           )}
 
