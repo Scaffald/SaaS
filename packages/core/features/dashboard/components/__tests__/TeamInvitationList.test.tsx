@@ -74,6 +74,48 @@ describe('TeamInvitationList', () => {
     await user.click(screen.getByRole('button', { name: /decline/i }))
     expect(onRespond).toHaveBeenCalledWith(invitation.id, 'decline')
   })
+
+  it('displays invitation status correctly', () => {
+    const acceptedInvitation = {
+      ...invitation,
+      id: 'inv-2',
+      status: 'accepted',
+      acceptedAt: new Date().toISOString(),
+    }
+
+    render(
+      <TeamInvitationList
+        invitations={[acceptedInvitation]}
+        onRespond={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByText(/accepted/i)).toBeInTheDocument()
+  })
+
+  it('handles expired invitations', () => {
+    const expiredInvitation = {
+      ...invitation,
+      id: 'inv-3',
+      status: 'expired',
+      expiresAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+    }
+
+    render(
+      <TeamInvitationList
+        invitations={[expiredInvitation]}
+        onRespond={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByText(/expired/i)).toBeInTheDocument()
+  })
+
+  it('displays empty state when no invitations', () => {
+    render(<TeamInvitationList invitations={[]} onRespond={vi.fn()} />)
+
+    expect(screen.getByText('No pending invitations')).toBeInTheDocument()
+  })
 })
 
 

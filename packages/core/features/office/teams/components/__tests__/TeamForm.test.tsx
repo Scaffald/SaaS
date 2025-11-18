@@ -363,5 +363,89 @@ describe('TeamForm', () => {
 
     expect(screen.getByText('Loading team options…')).toBeInTheDocument()
   })
+
+  it('displays validation errors', async () => {
+    createTeamMock.mutateAsync.mockRejectedValue({
+      message: 'Validation failed',
+      data: {
+        zodError: {
+          fieldErrors: {
+            name: ['Name is required'],
+          },
+        },
+      },
+    })
+
+    const user = userEvent.setup()
+    render(<TeamForm mode="create" organizationId="org-1" />)
+
+    await user.click(screen.getByTestId('team-form-submit'))
+
+    await waitFor(() => {
+      expect(toastMock.show).toHaveBeenCalled()
+    })
+  })
+
+  it('resets form when reset is called', () => {
+    const { rerender } = render(
+      <TeamForm
+        mode="create"
+        organizationId="org-1"
+        initialData={{
+          name: 'Initial Name',
+          defaultRole: { id: 'role-1', key: 'member' },
+        }}
+      />,
+    )
+
+    rerender(
+      <TeamForm
+        mode="create"
+        organizationId="org-1"
+        initialData={{
+          name: 'Reset Name',
+          defaultRole: { id: 'role-1', key: 'member' },
+        }}
+      />,
+    )
+
+    // Form should update with new initial data
+    expect(screen.getByDisplayValue('Reset Name')).toBeInTheDocument()
+  })
+
+  it('handles all field types correctly', async () => {
+    const user = userEvent.setup()
+    createTeamMock.mutateAsync.mockResolvedValue(undefined)
+
+    render(
+      <TeamForm
+        mode="create"
+        organizationId="org-1"
+        initialData={{
+          name: 'Test Team',
+          slug: 'test-team',
+          purpose: 'Test purpose',
+          visibility: 'private',
+          invitationPolicy: 'request_to_join',
+          description: 'Test description',
+          defaultRole: { id: 'role-1', key: 'member' },
+        }}
+      />,
+    )
+
+    await user.click(screen.getByTestId('team-form-submit'))
+
+    await waitFor(() => {
+      expect(createTeamMock.mutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Test Team',
+          slug: 'test-team',
+          purpose: 'Test purpose',
+          visibility: 'private',
+          invitationPolicy: 'request_to_join',
+        }),
+      )
+    })
+  })
 })
 
