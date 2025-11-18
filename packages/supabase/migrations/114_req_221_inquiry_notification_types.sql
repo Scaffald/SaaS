@@ -15,7 +15,8 @@ DECLARE
     'inquiry.comment_added',
     'inquiry.section_accepted',
     'inquiry.fully_accepted',
-    'inquiry.capability_answered'
+    'inquiry.capability_answered',
+    'inquiry.updated'
   ];
 BEGIN
   FOREACH value IN ARRAY values_to_add LOOP

@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,6 +13,10 @@ vi.mock('../StepNavigation', () => ({
     onBack,
     onSaveForLater,
     onSkip,
+    nextLabel = 'Next',
+    backLabel = 'Back',
+    skipLabel = 'Skip This Step',
+    saveLabel = 'Save & Continue Later',
   }: {
     canGoNext: boolean
     isSaving: boolean
@@ -19,22 +24,26 @@ vi.mock('../StepNavigation', () => ({
     onBack: () => void
     onSaveForLater?: () => void
     onSkip?: () => void
+    nextLabel?: string
+    backLabel?: string
+    skipLabel?: string
+    saveLabel?: string
   }) => (
     <div>
       <button type="button" disabled={!canGoNext || isSaving} onClick={onNext}>
-        Continue
+        {nextLabel}
       </button>
       <button type="button" onClick={onBack}>
-        Back
+        {backLabel}
       </button>
       {onSaveForLater ? (
         <button type="button" onClick={onSaveForLater}>
-          Save & Continue Later
+          {saveLabel}
         </button>
       ) : null}
       {onSkip ? (
         <button type="button" onClick={onSkip}>
-          Skip This Step
+          {skipLabel}
         </button>
       ) : null}
     </div>
@@ -223,8 +232,8 @@ describe('ExperienceStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    expect(continueButton).toBeDisabled()
+    const nextButton = screen.getByRole('button', { name: /next: certifications/i })
+    expect(nextButton).toBeDisabled()
   })
 
   it('enables continue button when required fields are filled', async () => {
@@ -252,8 +261,8 @@ describe('ExperienceStep', () => {
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
     await waitFor(() => {
-      const continueButton = screen.getByRole('button', { name: /continue/i })
-      expect(continueButton).toBeEnabled()
+      const nextButton = screen.getByRole('button', { name: /next: certifications/i })
+      expect(nextButton).toBeEnabled()
     })
   })
 
@@ -271,8 +280,9 @@ describe('ExperienceStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: certifications/i })
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(screen.getByText('Job title is required')).toBeInTheDocument()
@@ -308,9 +318,10 @@ describe('ExperienceStep', () => {
     const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    await waitFor(() => expect(continueButton).toBeEnabled())
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: certifications/i })
+    await waitFor(() => expect(nextButton).toBeEnabled())
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith({
@@ -348,9 +359,10 @@ describe('ExperienceStep', () => {
     const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
-    const saveButton = screen.getByText('Save & Continue Later')
+    const user = userEvent.setup()
+    const saveButton = screen.getByRole('button', { name: /save & continue later/i })
     await waitFor(() => expect(saveButton).not.toBeDisabled())
-    fireEvent.click(saveButton)
+    await user.click(saveButton)
 
     await waitFor(() => {
       expect(onSaveForLater).toHaveBeenCalled()
@@ -371,8 +383,9 @@ describe('ExperienceStep', () => {
       />,
     )
 
-    const skipButton = screen.getByText('Skip This Step')
-    fireEvent.click(skipButton)
+    const user = userEvent.setup()
+    const skipButton = screen.getByRole('button', { name: /skip this step/i })
+    await user.click(skipButton)
 
     await waitFor(() => {
       expect(onSkip).toHaveBeenCalledTimes(1)
@@ -393,13 +406,14 @@ describe('ExperienceStep', () => {
       />,
     )
 
+    const user = userEvent.setup()
     const toggle = screen.getByTestId('toggle-current-job')
     expect(toggle).toBeChecked()
 
     const endDateInput = screen.getByTestId('input-end-date')
     expect(endDateInput).toBeDisabled()
 
-    fireEvent.click(toggle)
+    await user.click(toggle)
     await waitFor(() => {
       expect(endDateInput).not.toBeDisabled()
     })
@@ -425,15 +439,16 @@ describe('ExperienceStep', () => {
       />,
     )
 
+    const user = userEvent.setup()
     const toggle = screen.getByTestId('toggle-current-job')
-    fireEvent.click(toggle)
+    await user.click(toggle)
 
     const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    await waitFor(() => expect(continueButton).toBeEnabled())
-    fireEvent.click(continueButton)
+    const nextButton = screen.getByRole('button', { name: /next: certifications/i })
+    await waitFor(() => expect(nextButton).toBeEnabled())
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith(
@@ -495,9 +510,10 @@ describe('ExperienceStep', () => {
     const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-06' } })
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    await waitFor(() => expect(continueButton).toBeEnabled())
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: certifications/i })
+    await waitFor(() => expect(nextButton).toBeEnabled())
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith(

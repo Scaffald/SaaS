@@ -1,10 +1,11 @@
-import { useMemo } from 'react'
-import { YStack, XStack, Text, ScrollView, Separator, Card } from '@app/ui'
-import { Check } from '@tamagui/lucide-icons'
+import { useMemo, useState } from 'react'
+import { YStack, XStack, Text, ScrollView, Separator, Card, Button } from '@app/ui'
+import { Check, Pencil, X } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
 import { InquiryCommentThread } from './InquiryCommentThread'
-import type { InquirySectionName } from '@app/schemas'
+import { InquiryCreateForm } from './InquiryCreateForm'
+import type { InquirySectionName, InquiryCreateInput } from '@app/schemas'
 
 interface InquiryViewOrganizationProps {
   applicationId: string
@@ -196,15 +197,20 @@ export function InquiryViewOrganization({
   return (
     <ScrollView>
       <YStack gap="$4" p="$4">
-        {/* Header */}
-        <YStack gap="$2">
+        {/* Header with Edit button */}
+        <XStack justify="space-between" items="center">
           <Text fontSize="$8" fontWeight="600">
             Inquiry
           </Text>
-          <Text fontSize="$4" color="$color11">
-            {candidateName} - {jobTitle}
-          </Text>
-        </YStack>
+          {inquiry.status !== 'draft' && (
+            <Button variant="outlined" icon={Pencil} onPress={() => setIsEditing(true)}>
+              Edit
+            </Button>
+          )}
+        </XStack>
+        <Text fontSize="$4" color="$color11">
+          {candidateName} - {jobTitle}
+        </Text>
 
         {/* Employment Section */}
         <InquirySection title="Employment" sectionName="employment">

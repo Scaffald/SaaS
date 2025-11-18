@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,6 +13,10 @@ vi.mock('../StepNavigation', () => ({
     onBack,
     onSaveForLater,
     onSkip,
+    nextLabel = 'Next',
+    backLabel = 'Back',
+    skipLabel = 'Skip This Step',
+    saveLabel = 'Save & Continue Later',
   }: {
     canGoNext: boolean
     isSaving: boolean
@@ -19,22 +24,26 @@ vi.mock('../StepNavigation', () => ({
     onBack: () => void
     onSaveForLater?: () => void
     onSkip?: () => void
+    nextLabel?: string
+    backLabel?: string
+    skipLabel?: string
+    saveLabel?: string
   }) => (
     <div>
       <button type="button" disabled={!canGoNext || isSaving} onClick={onNext}>
-        Continue
+        {nextLabel}
       </button>
       <button type="button" onClick={onBack}>
-        Back
+        {backLabel}
       </button>
       {onSaveForLater ? (
         <button type="button" onClick={onSaveForLater}>
-          Save & Continue Later
+          {saveLabel}
         </button>
       ) : null}
       {onSkip ? (
         <button type="button" onClick={onSkip}>
-          Skip This Step
+          {skipLabel}
         </button>
       ) : null}
     </div>
@@ -241,8 +250,8 @@ describe('EmploymentPrefsStep', () => {
       />,
     )
 
-    expect(screen.getByDisplayValue('Seattle, WA')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('$35')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101')).toHaveValue('Seattle, WA')
+    expect(screen.getByPlaceholderText('$35 / hour')).toHaveValue('$35')
   })
 
   it('allows continue button to be enabled (step is optional)', () => {
@@ -259,8 +268,8 @@ describe('EmploymentPrefsStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    expect(continueButton).toBeEnabled()
+    const nextButton = screen.getByRole('button', { name: /next: education/i })
+    expect(nextButton).toBeEnabled()
   })
 
   it('submits trimmed values on continue', async () => {
@@ -289,8 +298,9 @@ describe('EmploymentPrefsStep', () => {
       fireEvent.change(availabilitySelect, { target: { value: 'full_time' } })
     }
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: education/i })
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith({
@@ -320,8 +330,9 @@ describe('EmploymentPrefsStep', () => {
       target: { value: 'Seattle, WA' },
     })
 
-    const saveButton = screen.getByText('Save & Continue Later')
-    fireEvent.click(saveButton)
+    const user = userEvent.setup()
+    const saveButton = screen.getByRole('button', { name: /save & continue later/i })
+    await user.click(saveButton)
 
     await waitFor(() => {
       expect(onSaveForLater).toHaveBeenCalled()
@@ -342,8 +353,9 @@ describe('EmploymentPrefsStep', () => {
       />,
     )
 
-    const skipButton = screen.getByText('Skip This Step')
-    fireEvent.click(skipButton)
+    const user = userEvent.setup()
+    const skipButton = screen.getByRole('button', { name: /skip this step/i })
+    await user.click(skipButton)
 
     await waitFor(() => {
       expect(onSkip).toHaveBeenCalledTimes(1)
@@ -393,8 +405,9 @@ describe('EmploymentPrefsStep', () => {
       fireEvent.change(workEnvironmentSelect, { target: { value: 'hybrid' } })
     }
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: education/i })
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith(
@@ -445,8 +458,9 @@ describe('EmploymentPrefsStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: education/i })
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith({
@@ -476,8 +490,9 @@ describe('EmploymentPrefsStep', () => {
       target: { value: '   ' },
     })
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: education/i })
+    await user.click(nextButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith(

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Platform } from 'react-native'
 import { Controller, FormProvider } from 'react-hook-form'
 import {
@@ -14,11 +14,15 @@ import {
 import { Adapt, Sheet, Select, Switch, TextArea } from 'tamagui'
 import { Check, Info, HelpCircle } from '@tamagui/lucide-icons'
 import { useInquiryForm } from '../hooks/useInquiryForm'
+import { useInquiryEdit } from '../hooks/useInquiryEdit'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 import type { InquiryCreateInput } from '@app/schemas'
 
 interface InquiryCreateFormProps {
   applicationId: string
+  inquiryId?: string
+  initialData?: InquiryCreateInput
+  mode?: 'create' | 'edit'
   onSuccess?: (inquiryId: string) => void
   onCancel?: () => void
 }
@@ -82,13 +86,34 @@ const getTimeInputProps = () => {
 
 export function InquiryCreateForm({
   applicationId,
+  inquiryId,
+  initialData,
+  mode = 'create',
   onSuccess,
   onCancel,
 }: InquiryCreateFormProps) {
-  const { form, handleSubmit, handleSaveDraft, isSubmitting } = useInquiryForm({
+  // Always call both hooks to satisfy React hooks rules, then use the appropriate one
+  const editHook = useInquiryEdit({
+    inquiryId: inquiryId || '',
+    initialData,
+    onSuccess: () => inquiryId && onSuccess?.(inquiryId),
+  })
+
+  const createHook = useInquiryForm({
     applicationId,
     onSuccess,
   })
+
+  // Use edit hook if in edit mode, otherwise use create hook
+  const { form, handleSubmit, handleSaveDraft, isSubmitting } =
+    mode === 'edit' && inquiryId ? editHook : createHook
+
+  // Pre-populate form if initialData provided
+  useEffect(() => {
+    if (initialData && form) {
+      form.reset(initialData)
+    }
+  }, [initialData, form])
 
   const {
     control,
@@ -808,23 +833,30 @@ export function InquiryCreateForm({
             justify="flex-end"
             $sm={{ flexDirection: 'column-reverse' }}
           >
-            <Button
-              variant="outlined"
-              onPress={onCancel}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="outlined"
-              onPress={onSaveDraft}
-              disabled={isSubmitting}
-            >
-              Save Draft
-            </Button>
-            <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
-              {isSubmitting ? 'Sending...' : 'Continue'}
-            </Button>
+            {onCancel && (
+              <Button variant="outlined" onPress={onCancel} disabled={isSubmitting}>
+                Cancel
+              </Button>
+            )}
+            {mode === 'create' && (
+              <>
+                <Button
+                  variant="outlined"
+                  onPress={onSaveDraft}
+                  disabled={isSubmitting}
+                >
+                  Save Draft
+                </Button>
+                <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
+                  {isSubmitting ? 'Sending...' : 'Continue'}
+                </Button>
+              </>
+            )}
+            {mode === 'edit' && (
+              <Button onPress={onSubmit} disabled={isSubmitting} theme="blue">
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </Button>
+            )}
           </XStack>
         </YStack>
 

@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,6 +13,10 @@ vi.mock('../StepNavigation', () => ({
     onBack,
     onSaveForLater,
     onSkip,
+    nextLabel = 'Next',
+    backLabel = 'Back',
+    skipLabel = 'Skip This Step',
+    saveLabel = 'Save & Continue Later',
   }: {
     canGoNext: boolean
     isSaving: boolean
@@ -19,22 +24,26 @@ vi.mock('../StepNavigation', () => ({
     onBack: () => void
     onSaveForLater?: () => void
     onSkip?: () => void
+    nextLabel?: string
+    backLabel?: string
+    skipLabel?: string
+    saveLabel?: string
   }) => (
     <div>
       <button type="button" disabled={!canGoNext || isSaving} onClick={onNext}>
-        Continue
+        {nextLabel}
       </button>
       <button type="button" onClick={onBack}>
-        Back
+        {backLabel}
       </button>
       {onSaveForLater ? (
         <button type="button" onClick={onSaveForLater}>
-          Save & Continue Later
+          {saveLabel}
         </button>
       ) : null}
       {onSkip ? (
         <button type="button" onClick={onSkip}>
-          Skip
+          {skipLabel}
         </button>
       ) : null}
     </div>
@@ -218,8 +227,8 @@ describe('EducationStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    expect(continueButton).toBeEnabled()
+    const finishButton = screen.getByRole('button', { name: /finish/i })
+    expect(finishButton).toBeEnabled()
   })
 
   it('submits trimmed values on continue', async () => {
@@ -246,8 +255,9 @@ describe('EducationStep', () => {
     const startDateInput = screen.getByTestId('input-start-date')
     fireEvent.change(startDateInput, { target: { value: '2018-01' } })
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const finishButton = screen.getByRole('button', { name: /finish/i })
+    await user.click(finishButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith({
@@ -278,8 +288,9 @@ describe('EducationStep', () => {
       target: { value: 'Bachelor of Science' },
     })
 
-    const saveButton = screen.getByText('Save & Continue Later')
-    fireEvent.click(saveButton)
+    const user = userEvent.setup()
+    const saveButton = screen.getByRole('button', { name: /save & continue later/i })
+    await user.click(saveButton)
 
     await waitFor(() => {
       expect(onSaveForLater).toHaveBeenCalled()
@@ -300,8 +311,9 @@ describe('EducationStep', () => {
       />,
     )
 
-    const skipButton = screen.getByText('Skip')
-    fireEvent.click(skipButton)
+    const user = userEvent.setup()
+    const skipButton = screen.getByRole('button', { name: /skip this step/i })
+    await user.click(skipButton)
 
     await waitFor(() => {
       expect(onSkip).toHaveBeenCalledTimes(1)
@@ -322,13 +334,14 @@ describe('EducationStep', () => {
       />,
     )
 
+    const user = userEvent.setup()
     const toggle = screen.getByTestId('toggle-current-enrollment')
     expect(toggle).not.toBeChecked()
 
     const endDateInput = screen.getByTestId('input-end-date')
     expect(endDateInput).not.toBeDisabled()
 
-    fireEvent.click(toggle)
+    await user.click(toggle)
     await waitFor(() => {
       expect(endDateInput).toBeDisabled()
     })
@@ -354,11 +367,12 @@ describe('EducationStep', () => {
       />,
     )
 
+    const user = userEvent.setup()
     const toggle = screen.getByTestId('toggle-current-enrollment')
-    fireEvent.click(toggle)
+    await user.click(toggle)
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const finishButton = screen.getByRole('button', { name: /finish/i })
+    await user.click(finishButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith(
@@ -417,8 +431,9 @@ describe('EducationStep', () => {
     const startDateInput = screen.getByTestId('input-start-date')
     fireEvent.change(startDateInput, { target: { value: '2018-06' } })
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const finishButton = screen.getByRole('button', { name: /finish/i })
+    await user.click(finishButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith(
@@ -443,8 +458,9 @@ describe('EducationStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
-    fireEvent.click(continueButton)
+    const user = userEvent.setup()
+    const finishButton = screen.getByRole('button', { name: /finish/i })
+    await user.click(finishButton)
 
     await waitFor(() => {
       expect(onContinue).toHaveBeenCalledWith({

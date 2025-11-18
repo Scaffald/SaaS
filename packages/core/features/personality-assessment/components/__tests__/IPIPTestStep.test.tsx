@@ -98,6 +98,10 @@ describe('IPIPTestStep', () => {
 
     const choiceButtons = screen.getAllByRole('button', { name: /Very Accurate/i })
     await user.click(choiceButtons[0])
+    // eslint-disable-next-line no-console
+    console.log('onSave calls', onSave.mock.calls.length)
+    // eslint-disable-next-line no-console
+    console.log('onDomainComplete calls', onDomainComplete.mock.calls.length)
 
     await waitFor(() => expect(onDomainComplete).toHaveBeenCalledTimes(1))
     const [domainArg, answersArg] = onDomainComplete.mock.calls[0]

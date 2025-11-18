@@ -27,8 +27,9 @@ export function StripeSettingsPage() {
       await utils.stripeSettings.getSettings.invalidate();
       toast.show("Success", { message: "Publishable key updated" });
     },
-    onError: (error) => {
-      toast.show("Error", { message: error.message });
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "Failed to update publishable key";
+      toast.show("Error", { message });
     },
   });
 
@@ -37,8 +38,9 @@ export function StripeSettingsPage() {
       await utils.stripeSettings.getSettings.invalidate();
       toast.show("Success", { message: "Secret key stored securely" });
     },
-    onError: (error) => {
-      toast.show("Error", { message: error.message });
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "Failed to store API secret";
+      toast.show("Error", { message });
     },
   });
 
@@ -47,8 +49,9 @@ export function StripeSettingsPage() {
       await utils.stripeSettings.getSettings.invalidate();
       toast.show("Success", { message: "Webhook secret stored securely" });
     },
-    onError: (error) => {
-      toast.show("Error", { message: error.message });
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "Failed to store webhook secret";
+      toast.show("Error", { message });
     },
   });
 
@@ -56,8 +59,9 @@ export function StripeSettingsPage() {
     onSuccess: async () => {
       await utils.stripeSettings.getSettings.invalidate();
     },
-    onError: (error) => {
-      toast.show("Error", { message: error.message });
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "Failed to update mode";
+      toast.show("Error", { message });
     },
   });
 
@@ -66,8 +70,9 @@ export function StripeSettingsPage() {
       await utils.stripeSettings.getSettings.invalidate();
       toast.show("Success", { message: "Stripe connection verified" });
     },
-    onError: (error) => {
-      toast.show("Error", { message: error.message });
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "Stripe connection test failed";
+      toast.show("Error", { message });
     },
   });
 
@@ -126,7 +131,7 @@ export function StripeSettingsPage() {
         </Paragraph>
       </YStack>
 
-      <YStack gap="$4" maw={720}>
+      <YStack gap="$4" maxWidth={720}>
         <Card p="$4" gap="$4">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="600">
@@ -145,7 +150,8 @@ export function StripeSettingsPage() {
             />
             <XStack gap="$2" justify="flex-end">
               <Button
-                theme="blue"
+                bg="$blue9"
+                color="$color1"
                 disabled={updatePublishableKey.isLoading || publishableKey.length < 16}
                 onPress={() =>
                   updatePublishableKey.mutate({
@@ -182,7 +188,8 @@ export function StripeSettingsPage() {
               />
               <XStack gap="$2" justify="flex-end">
                 <Button
-                  theme="green"
+                  bg="$green9"
+                  color="$color1"
                   disabled={updateApiKey.isLoading || apiSecret.length < 20}
                   onPress={() => {
                     updateApiKey.mutate({ secret: apiSecret });
@@ -215,7 +222,8 @@ export function StripeSettingsPage() {
               />
               <XStack gap="$2" justify="flex-end">
                 <Button
-                  theme="green"
+                  bg="$green9"
+                  color="$color1"
                   disabled={updateWebhookSecret.isLoading || webhookSecret.length < 10}
                   onPress={() => {
                     updateWebhookSecret.mutate({ secret: webhookSecret });
@@ -304,7 +312,8 @@ export function StripeSettingsPage() {
 
           <XStack gap="$2" justify="flex-end">
             <Button
-              theme="blue"
+              bg="$blue9"
+              color="$color1"
               disabled={testConnection.isLoading || !data?.hasApiKey}
               onPress={() => testConnection.mutate()}
             >

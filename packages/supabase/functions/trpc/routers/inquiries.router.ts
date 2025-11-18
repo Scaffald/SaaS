@@ -1046,6 +1046,29 @@ export const inquiriesRouter = router({
 
       snakeCaseData.updated_at = new Date().toISOString();
 
+      // Check if any terms fields changed (excluding negotiable flags)
+      const termsFields = [
+        "employment_type",
+        "work_schedule",
+        "working_hours_start",
+        "working_hours_end",
+        "working_hours_timezone",
+        "workdays",
+        "employment_start_date",
+        "employment_end_date",
+        "rate_type",
+        "rate_min_cents",
+        "rate_max_cents",
+        "endurance_required",
+        "willing_to_travel",
+        "travel_distance_miles",
+        "willing_to_work_overtime",
+        "has_drivers_license",
+        "additional_notes",
+      ];
+
+      const hasTermsChanged = termsFields.some((field) => field in snakeCaseData);
+
       // Update inquiry
       const { data: updated, error: updateError } = await supabase
         .schema("core")
@@ -1060,6 +1083,61 @@ export const inquiriesRouter = router({
           code: "INTERNAL_SERVER_ERROR",
           message: `Failed to update inquiry: ${updateError.message}`,
           cause: updateError,
+        });
+      }
+
+      // If terms changed and inquiry is not draft, reset section acceptances
+      if (hasTermsChanged && inquiry.status !== "draft") {
+        // Get existing sections with acceptances
+        const { data: existingSections } = await supabase
+          .schema("core")
+          .from("inquiry_sections")
+          .select("id, accepted_by")
+          .eq("inquiry_id", id);
+
+        const hasAcceptedSections = existingSections?.some(
+          (s) => s.accepted_by !== null
+        );
+
+        if (hasAcceptedSections) {
+          // Reset acceptances - clear accepted_by and accepted_at
+          await supabase
+            .schema("core")
+            .from("inquiry_sections")
+            .update({
+              accepted_by: null,
+              accepted_at: null,
+            })
+            .eq("inquiry_id", id);
+        }
+      }
+
+      // Get application and job info for notification
+      const { data: application } = await supabase
+        .schema("core")
+        .from("applications")
+        .select("user_id, job_id, jobs(organization_id, organizations(name))")
+        .eq("id", inquiry.application_id)
+        .single();
+
+      // Notify candidate if inquiry was sent
+      if (application && inquiry.status !== "draft" && hasTermsChanged) {
+        const job = application.jobs as any;
+        const orgName = job?.organizations?.name || "Organization";
+
+        await insertNotification(supabase, {
+          user_id: application.user_id,
+          type: "inquiry.updated",
+          severity: "info",
+          title: "Inquiry Terms Updated",
+          message: `${orgName} has updated the inquiry terms. Please review the changes.`,
+          cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
+          metadata: {
+            inquiry_id: id,
+            application_id: inquiry.application_id,
+            job_id: application.job_id,
+            organization_id: job?.organization_id,
+          },
         });
       }
 

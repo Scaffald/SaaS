@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -10,19 +11,23 @@ vi.mock('../StepNavigation', () => ({
     isSaving,
     onNext,
     onSaveForLater,
+    nextLabel = 'Next',
+    saveLabel = 'Save & Continue Later',
   }: {
     canGoNext: boolean
     isSaving: boolean
     onNext: () => void
     onSaveForLater?: () => void
+    nextLabel?: string
+    saveLabel?: string
   }) => (
     <div>
       <button type="button" disabled={!canGoNext || isSaving} onClick={onNext}>
-        Continue
+        {nextLabel}
       </button>
       {onSaveForLater ? (
         <button type="button" onClick={onSaveForLater}>
-          Save & Continue Later
+          {saveLabel}
         </button>
       ) : null}
     </div>
@@ -144,10 +149,10 @@ describe('GeneralInfoStep', () => {
       />,
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
+    const nextButton = screen.getByRole('button', { name: /next: skills/i })
 
     await waitFor(() => {
-      expect(continueButton).toBeDisabled()
+      expect(nextButton).toBeDisabled()
     })
 
     fireEvent.change(screen.getByPlaceholderText('First name'), { target: { value: '  Jane ' } })
@@ -161,7 +166,7 @@ describe('GeneralInfoStep', () => {
       { target: { value: ' Experienced and reliable. ' } },
     )
 
-    await waitFor(() => expect(continueButton).toBeEnabled())
+    await waitFor(() => expect(nextButton).toBeEnabled())
 
     const latestSnapshot =
       onStepStateChange.mock.calls[onStepStateChange.mock.calls.length - 1]?.[0]
@@ -204,13 +209,14 @@ describe('GeneralInfoStep', () => {
       { target: { value: ' Experienced and reliable. ' } },
     )
 
-    const continueButton = screen.getByRole('button', { name: /continue/i })
+    const user = userEvent.setup()
+    const nextButton = screen.getByRole('button', { name: /next: skills/i })
 
     await waitFor(() => {
-      expect(continueButton).toBeEnabled()
+      expect(nextButton).toBeEnabled()
     })
 
-    fireEvent.click(continueButton)
+    await user.click(nextButton)
 
     await waitFor(
       () => {
@@ -224,7 +230,7 @@ describe('GeneralInfoStep', () => {
       { timeout: 3000 },
     )
 
-    fireEvent.click(screen.getByText('Save & Continue Later'))
+    await user.click(screen.getByRole('button', { name: /save & continue later/i }))
 
     await waitFor(() =>
       expect(onSaveForLater).toHaveBeenCalledWith({
