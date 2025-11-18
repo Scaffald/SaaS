@@ -52,7 +52,7 @@ docs/
 │
 ├── deployment/                      # Deployment Guides
 │   ├── README.md
-│   ├── github-actions-netlify-setup.md
+│   ├── aws-setup.md
 │   ├── oauth-configuration.md
 │   ├── supabase-cloud-setup.md
 │   └── supabase-seeding.md
@@ -112,7 +112,7 @@ docs/
 - **[Deployment README](./deployment/README.md)** - Deployment overview
 - **[Supabase Setup](./deployment/supabase-cloud-setup.md)** - Database configuration
 - **[OAuth Config](./deployment/oauth-configuration.md)** - Authentication setup
-- **[GitHub Actions](./deployment/github-actions-netlify-setup.md)** - CI/CD setup
+- **[AWS Setup](./deployment/aws-setup.md)** - AWS S3 + CloudFront setup
 
 ### Roadmap
 - **[ATS Schema Design](./roadmap/ats-schema-design.md)** - Complete future ATS schema

@@ -21,7 +21,6 @@ export function StarRating({ label, value, onChange, readonly = false }: StarRat
             key={`star-${star}`}
             onPress={readonly ? undefined : () => onChange(star)}
             disabled={readonly}
-            style={{ cursor: readonly ? 'default' : 'pointer' }}
           >
             <Star
               size={32}

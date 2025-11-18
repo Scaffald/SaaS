@@ -89,14 +89,12 @@ for secret in "${EXPO_SECRETS[@]}"; do
 done
 
 echo ""
-echo -e "${BLUE}📋 Adding Supabase / Netlify secrets (if available)...${NC}"
+echo -e "${BLUE}📋 Adding Supabase secrets (if available)...${NC}"
 echo ""
 
 OPTIONAL_SECRETS=(
   "SUPABASE_ACCESS_TOKEN"
   "SUPABASE_PROJECT_ID"
-  "NETLIFY_AUTH_TOKEN"
-  "NETLIFY_SITE_ID"
 )
 
 for secret in "${OPTIONAL_SECRETS[@]}"; do

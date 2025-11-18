@@ -1,36 +1,53 @@
 # GitHub Secrets Setup Guide
 
-Complete guide for connecting GitHub Actions to Netlify and Supabase for automatic deployments.
+Complete guide for connecting GitHub Actions to AWS and Supabase for automatic deployments.
 
 ## 🎯 Overview
 
 To enable automatic deployments, you need to configure secrets in your GitHub repository. These secrets allow GitHub Actions to:
-- Deploy your web app to Netlify
+- Deploy your web app to AWS S3 + CloudFront
 - Deploy Edge Functions to Supabase
 - Access environment variables during build
 
 ## 📋 Required Secrets
 
-### 1. Netlify Secrets
+### 1. AWS Secrets
 
-#### `NETLIFY_AUTH_TOKEN`
-**Purpose:** Allows GitHub Actions to deploy to your Netlify site
-
-**How to get it:**
-1. Go to [Netlify](https://app.netlify.com)
-2. Click your profile icon (bottom left) → **User settings**
-3. Navigate to **Applications** → **Personal access tokens**
-4. Click **New access token**
-5. Name it: `GitHub Actions Deployment`
-6. Copy the token (you won't see it again!)
-
-#### `NETLIFY_SITE_ID`
-**Purpose:** Identifies which Netlify site to deploy to
+#### `AWS_ACCESS_KEY_ID`
+**Purpose:** Allows GitHub Actions to deploy to your AWS S3 bucket and CloudFront
 
 **How to get it:**
-1. Go to your (Netlify site dashboard)[https://app.netlify.com/projects/scaffald/configuration/general]
-2. Navigate to **Site settings** → **General** → **Site details**
-3. Copy the **Site ID** (looks like: `abc123-def456-ghi789`)
+1. Go to [AWS IAM Console](https://console.aws.amazon.com/iam/)
+2. Navigate to **Users** → Select your deployment user
+3. Go to **Security credentials** tab
+4. Click **Create access key**
+5. Select **Application running outside AWS**
+6. Copy the **Access key ID** and **Secret access key**
+
+#### `AWS_SECRET_ACCESS_KEY`
+**Purpose:** Secret key paired with the access key ID
+
+**How to get it:**
+- Generated together with `AWS_ACCESS_KEY_ID` (see above)
+- Copy immediately - you won't see it again!
+
+#### `AWS_REGION`
+**Purpose:** AWS region where your S3 bucket and CloudFront are located
+
+**Example:** `us-east-1`
+
+#### `AWS_S3_BUCKET_PROD`
+**Purpose:** S3 bucket name for production deployments
+
+**Example:** `scaffald-app-prod`
+
+#### `AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD`
+**Purpose:** CloudFront distribution ID for production
+
+**How to get it:**
+1. Go to [AWS CloudFront Console](https://console.aws.amazon.com/cloudfront/)
+2. Select your distribution
+3. Copy the **Distribution ID** (looks like: `E1234567890ABC`)
 
 ### 2. Supabase Secrets (Optional but Recommended)
 
@@ -68,7 +85,7 @@ These are your actual app configuration values:
 
 #### `EXPO_PUBLIC_URL`
 - Your production website URL
-- Example: `https://your-site.netlify.app` or your custom domain
+- Example: `https://your-domain.cloudfront.net` or your custom domain
 
 #### Google OAuth (if using)
 - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
@@ -81,7 +98,7 @@ These are your actual app configuration values:
 
 ### 4. Preview Environment Overrides
 
-To keep the `preview` branch completely isolated from production, duplicate the required secrets with a `PREVIEW_` prefix. These values should point to your preview Supabase project, Netlify site, and any preview-specific OAuth/Mapbox credentials.
+To keep the `preview` branch completely isolated from production, duplicate the required secrets with a `PREVIEW_` prefix. These values should point to your preview Supabase project, AWS resources, and any preview-specific OAuth/Mapbox credentials.
 
 | Secret | Purpose |
 | --- | --- |
@@ -93,14 +110,12 @@ To keep the `preview` branch completely isolated from production, duplicate the 
 | `PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_SCHEME` | Preview custom URL scheme |
 | `PREVIEW_EXPO_PUBLIC_MAPBOX_TOKEN` | Preview Mapbox token |
 | `PREVIEW_EXPO_PUBLIC_MAPBOX_API_URL` | Preview Mapbox API URL override |
-| `PREVIEW_NETLIFY_SITE_ID` | Dedicated Netlify site for preview deploys *(optional if using one site)* |
-| `PREVIEW_NETLIFY_AUTH_TOKEN` | Netlify access token scoped to the preview site *(optional)* |
+| `PREVIEW_AWS_S3_BUCKET` | Preview S3 bucket name |
+| `PREVIEW_AWS_CLOUDFRONT_DISTRIBUTION_ID` | Preview CloudFront distribution ID |
 | `PREVIEW_SUPABASE_ACCESS_TOKEN` | Supabase access token for preview |
 | `PREVIEW_SUPABASE_PROJECT_ID` | Preview Supabase project ref |
 
-> ⚠️ The GitHub Action intentionally fails for the `preview` branch when Supabase/App secrets are missing. For Netlify, you only need `PREVIEW_NETLIFY_*` if you operate a dedicated preview site. When using a single Netlify site with branch deploys (e.g., `preview.scaffald.com` mapped to the `preview` branch), you can reuse the main `NETLIFY_*` secrets.
-
-> ✅ **Single-site Netlify tip:** In Netlify → Domain management → Branch subdomains, add `preview` mapped to `preview.scaffald.com`. Our workflow sets `branch: preview` and `alias: preview`, so each push to the `preview` branch updates that subdomain while `main` continues to drive `app.scaffald.com`.
+> ⚠️ The GitHub Action intentionally fails for the `preview` branch when Supabase/App secrets are missing. For AWS, you can use separate S3 buckets and CloudFront distributions for preview and production environments.
 
 ## 🔧 Adding Secrets to GitHub
 
@@ -111,7 +126,7 @@ To keep the `preview` branch completely isolated from production, duplicate the 
 3. Click **Secrets and variables** → **Actions** (left sidebar)
 4. Click **New repository secret**
 5. Add each secret:
-   - **Name:** Enter the secret name (e.g., `NETLIFY_AUTH_TOKEN`)
+   - **Name:** Enter the secret name (e.g., `AWS_ACCESS_KEY_ID`)
    - **Value:** Paste the secret value
    - Click **Add secret**
 6. Repeat for all secrets
@@ -119,11 +134,14 @@ To keep the `preview` branch completely isolated from production, duplicate the 
 ### Via GitHub CLI (Alternative)
 
 ```bash
-# Netlify secrets (add preview variants only if you have a separate site)
-gh secret set NETLIFY_AUTH_TOKEN
-gh secret set NETLIFY_SITE_ID
-# gh secret set PREVIEW_NETLIFY_AUTH_TOKEN   # optional when using two sites
-# gh secret set PREVIEW_NETLIFY_SITE_ID
+# AWS secrets
+gh secret set AWS_ACCESS_KEY_ID
+gh secret set AWS_SECRET_ACCESS_KEY
+gh secret set AWS_REGION
+gh secret set AWS_S3_BUCKET_PROD
+gh secret set AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD
+gh secret set PREVIEW_AWS_S3_BUCKET
+gh secret set PREVIEW_AWS_CLOUDFRONT_DISTRIBUTION_ID
 
 # Supabase secrets
 gh secret set SUPABASE_ACCESS_TOKEN
@@ -152,37 +170,39 @@ gh secret set PREVIEW_EXPO_PUBLIC_MAPBOX_TOKEN
 gh secret set PREVIEW_EXPO_PUBLIC_MAPBOX_API_URL
 ```
 
-## 📝 Netlify Site Setup (Simplified)
+## 📝 AWS Setup
 
-Good news! Your project already has a `netlify.toml` configured, so setup is much simpler.
+### 1. Create S3 Bucket
 
-### 1. Get Your Netlify Site ID
+1. Go to [AWS S3 Console](https://console.aws.amazon.com/s3/)
+2. Click **Create bucket**
+3. Configure:
+   - **Bucket name**: e.g., `scaffald-app-prod`
+   - **Region**: Choose your preferred region
+   - **Block Public Access**: Uncheck (needed for static website hosting)
+   - **Bucket Versioning**: Enable (recommended)
+4. Click **Create bucket**
 
-**If you already have a site:**
-1. Go to [Netlify Dashboard](https://app.netlify.com)
-2. Select your site
-3. Go to **Site settings** → **General** → **Site details**
-4. Copy the **Site ID** (e.g., `ce335a05-285b-4e5b-84f9-5da31a6cdf6f`)
+### 2. Configure S3 for Static Website Hosting
 
-**If you need to create a site:**
-1. Go to [Netlify](https://app.netlify.com)
-2. Click **Add new site** → **Import an existing project**
-3. Connect to GitHub and select your repository
-4. **Important:** Choose "Deploy without building" or skip build settings
-5. Your `netlify.toml` will be automatically detected
-6. Copy the Site ID from Site settings
+1. Select your bucket → **Properties** tab
+2. Scroll to **Static website hosting**
+3. Click **Edit** → Enable
+4. Set **Index document**: `index.html`
+5. Set **Error document**: `index.html` (for SPA routing)
+6. Save and note the **Bucket website endpoint**
 
-### 2. What netlify.toml Provides
+### 3. Create CloudFront Distribution
 
-Your `netlify.toml` already configures:
-- ✅ Build settings (deploys pre-built files from GitHub Actions)
-- ✅ Publish directory (`apps/expo/dist`)
-- ✅ SPA routing redirects
-- ✅ Security headers
-- ✅ Caching strategy
-- ✅ Production/staging contexts
-
-**No manual Netlify configuration needed!**
+1. Go to [AWS CloudFront Console](https://console.aws.amazon.com/cloudfront/)
+2. Click **Create distribution**
+3. Configure:
+   - **Origin domain**: Select your S3 bucket
+   - **Origin access**: Use website endpoint
+   - **Viewer protocol policy**: Redirect HTTP to HTTPS
+   - **Default root object**: `index.html`
+4. Click **Create distribution**
+5. Copy the **Distribution ID** for GitHub secrets
 
 ## 🗄️ Supabase Project Setup
 
@@ -225,21 +245,25 @@ DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/post
 ## ✅ Verification Checklist
 
 ### GitHub Secrets
-- [ ] `NETLIFY_AUTH_TOKEN` set
-- [ ] `NETLIFY_SITE_ID` set
-- [ ] `PREVIEW_NETLIFY_SITE_ID` set *(only when using a separate Netlify site)*
+- [ ] `AWS_ACCESS_KEY_ID` set
+- [ ] `AWS_SECRET_ACCESS_KEY` set
+- [ ] `AWS_REGION` set
+- [ ] `AWS_S3_BUCKET_PROD` set
+- [ ] `AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD` set
+- [ ] `PREVIEW_AWS_S3_BUCKET` set (if using separate preview bucket)
+- [ ] `PREVIEW_AWS_CLOUDFRONT_DISTRIBUTION_ID` set (if using separate preview distribution)
 - [ ] `SUPABASE_ACCESS_TOKEN` set (optional)
 - [ ] `SUPABASE_PROJECT_ID` set (optional)
 - [ ] `PREVIEW_SUPABASE_PROJECT_ID` set (optional)
 - [ ] All `EXPO_PUBLIC_*` variables set
 - [ ] All `PREVIEW_EXPO_PUBLIC_*` variables set
 
-### Netlify
-- [ ] Site created
-- [ ] Site ID copied
-- [ ] Auth token generated
-- [ ] Production branch set to `production`
-- [ ] Automatic builds disabled (GitHub Actions handles it)
+### AWS
+- [ ] S3 bucket created
+- [ ] S3 bucket configured for static website hosting
+- [ ] CloudFront distribution created
+- [ ] IAM user created with S3 and CloudFront permissions
+- [ ] Access keys generated
 
 ### Supabase
 - [ ] Project created
@@ -249,14 +273,14 @@ DATABASE_URL=postgresql://postgres:[password]@db.[project].supabase.co:5432/post
 
 ## 🚀 Testing the Setup
 
-### 1. Test GitHub Actions → Netlify
+### 1. Test GitHub Actions → AWS
 
 ```bash
 # Make a small change
 echo "# Test deployment" >> README.md
 git add README.md
 git commit -m "test: verify deployment pipeline"
-git push origin production
+git push origin main
 ```
 
 Watch the GitHub Actions workflow:
@@ -264,11 +288,11 @@ Watch the GitHub Actions workflow:
 https://github.com/YOUR-USERNAME/SCF-Neue/actions
 ```
 
-### 2. Verify Netlify Deployment
+### 2. Verify AWS Deployment
 
-1. Check GitHub Actions logs for "Deploy to Netlify" step
-2. Look for deployment URL in logs
-3. Visit your Netlify site
+1. Check GitHub Actions logs for "Deploy to AWS S3 + CloudFront" step
+2. Look for CloudFront distribution URL in logs
+3. Visit your CloudFront distribution URL
 4. Verify the site is live
 
 ### 3. Test Edge Functions Deployment
@@ -281,18 +305,20 @@ If you configured Supabase secrets:
 
 ## 🔍 Troubleshooting
 
-### "Netlify deployment failed"
+### "AWS deployment failed"
 
 **Check:**
-- `NETLIFY_AUTH_TOKEN` is correct
-- `NETLIFY_SITE_ID` is correct
-- Token has deploy permissions
-- Site exists in Netlify
+- `AWS_ACCESS_KEY_ID` is correct
+- `AWS_SECRET_ACCESS_KEY` is correct
+- IAM user has S3 and CloudFront permissions
+- S3 bucket exists and is accessible
+- CloudFront distribution exists
 
 **Fix:**
-1. Regenerate Netlify access token
-2. Update GitHub secret
-3. Re-run workflow
+1. Verify IAM user permissions
+2. Check S3 bucket policy
+3. Verify CloudFront distribution ID
+4. Re-run workflow
 
 ### "Edge Functions deployment failed"
 
@@ -321,7 +347,7 @@ If you configured Supabase secrets:
 ## 📊 Deployment Flow Summary
 
 ```
-Developer pushes to production branch
+Developer pushes to main branch
           ↓
 GitHub Actions triggered
           ↓
@@ -333,7 +359,7 @@ Upload artifacts
           ↓
 Deploy Edge Functions to Supabase (if configured)
           ↓
-Deploy to Netlify (using auth token)
+Deploy to AWS S3 + CloudFront (using access keys)
           ↓
 ✅ Production live!
 ```
@@ -359,12 +385,14 @@ After secrets are configured:
 
 4. **Monitor:**
    - GitHub Actions: Build logs
-   - Netlify: Deployment logs
+   - AWS CloudWatch: Deployment metrics
    - Supabase: Function logs
 
 ## 🔗 Quick Links
 
 - [GitHub Secrets Documentation](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
-- [Netlify Deploy Tokens](https://docs.netlify.com/cli/get-started/#obtain-a-token-via-the-command-line)
+- [AWS IAM User Guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html)
+- [AWS S3 Static Website Hosting](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html)
+- [AWS CloudFront Documentation](https://docs.aws.amazon.com/cloudfront/)
 - [Supabase Access Tokens](https://supabase.com/docs/guides/cli/managing-environments#access-tokens)
 - [Supabase Edge Functions](https://supabase.com/docs/guides/functions)

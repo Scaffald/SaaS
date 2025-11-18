@@ -14,13 +14,12 @@ This interactive command prompts you to select which components to deploy:
 1. **Migrations** - Database schema changes (with diff guard)
 2. **Functions** - Supabase Edge Functions (selective deployment)
 3. **Seed** - Database seeding (with production warning)
-4. **Netlify** - Web app deployment (preview or production)
-5. **Database Reset** - DESTRUCTIVE database reset (requires "RESET" confirmation)
+4. **Database Reset** - DESTRUCTIVE database reset (requires "RESET" confirmation)
 
 **Example:**
 ```bash
 pnpm prod
-# Select options: 1,2,4 (migrations, functions, netlify)
+# Select options: 1,2,3 (migrations, functions, seed)
 # Review migration diff, confirm each step
 ```
 
@@ -33,11 +32,11 @@ pnpm prod
 # Destructive database reset deployment
 pnpm deploy:reset
 
-# Netlify deployment (preview)
-pnpm deploy:netlify
+# AWS deployment (preview)
+pnpm deploy:aws:preview
 
-# Netlify deployment (production)
-pnpm deploy:netlify:prod
+# AWS deployment (production)
+pnpm deploy:aws:prod
 
 # Verify deployment health
 pnpm deploy:verify
@@ -99,16 +98,19 @@ EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
 EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
 EXPO_PUBLIC_GOOGLE_IOS_SCHEME
 EXPO_PUBLIC_MAPBOX_TOKEN
-NETLIFY_AUTH_TOKEN
-NETLIFY_SITE_ID
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+AWS_S3_BUCKET_PROD
+AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD
 ```
 
-### 4. Netlify Configuration
+### 4. AWS Configuration
 
-1. Create Netlify site
-2. Note site ID
-3. Generate auth token (User Settings → Applications)
-4. Add to GitHub secrets
+1. Create S3 bucket for static website hosting
+2. Create CloudFront distribution
+3. Set up IAM user with S3 and CloudFront permissions
+4. Generate access keys and add to GitHub secrets
 
 ## 🚀 Deployment Workflow
 
@@ -124,7 +126,6 @@ pnpm prod
    - Migrations (with `db diff` guard)
    - Functions (selective deployment)
    - Seed (with production warning)
-   - Netlify (preview or production)
    - Database Reset (DESTRUCTIVE - requires "RESET" confirmation)
 3. Guards and dry runs before each deployment step
 4. Non-blocking error handling (continues with other deployments if one fails)
@@ -133,13 +134,12 @@ pnpm prod
 **Example Workflow:**
 ```bash
 pnpm prod
-# Select: 1,2,4 (migrations, functions, netlify)
+# Select: 1,2,3 (migrations, functions, seed)
 # Review migration diff
 # Confirm migrations (y/n)
 # Select functions to deploy (1,2,3 or 'all')
 # Confirm function deployment (y/n)
-# Choose Netlify method (direct or GitHub Actions)
-# Choose Netlify environment (preview or production)
+# Confirm seed (y/n)
 # Review deployment summary
 ```
 
@@ -159,11 +159,13 @@ pnpm prod
 # Choose functions, confirm
 ```
 
-**Netlify Only:**
+**AWS Deployment (Separate Command):**
 ```bash
-pnpm prod
-# Select: 4
-# Choose method and environment
+# Preview
+pnpm deploy:aws:preview
+
+# Production
+pnpm deploy:aws:prod
 ```
 
 **Database Reset (Destructive):**
@@ -180,13 +182,13 @@ pnpm prod
 pnpm deploy:reset
 ```
 
-**Netlify Deployment (Legacy):**
+**AWS Deployment (Legacy):**
 ```bash
 # Preview
-pnpm deploy:netlify
+pnpm deploy:aws:preview
 
 # Production
-pnpm deploy:netlify:prod
+pnpm deploy:aws:prod
 ```
 
 **Note:** Legacy commands are kept for backward compatibility. The interactive `pnpm prod` script is recommended for new deployments.
@@ -340,25 +342,26 @@ pnpx supabase db remote --status
 2. Check function versions in dashboard
 
 **Web:**
-1. Rollback in Netlify dashboard
-2. Or re-deploy previous commit
+1. Redeploy previous commit: `git checkout <previous-commit> && pnpm deploy:aws:prod`
+2. Or restore from S3 versioning (if enabled)
 
 ## 📈 Build Optimization
 
 ### GitHub Actions Strategy
 
-**Why GitHub Actions + Netlify?**
-- Avoids Netlify build timeout (10 min)
+**Why GitHub Actions + AWS?**
+- Avoids build timeouts
 - Faster builds with caching
 - More build resources
 - Better control over process
+- Scalable infrastructure
 
 **Build Process:**
 1. GitHub Actions builds all packages
 2. Incremental builds (UI → Core → Schemas → Web)
 3. Dependency caching
 4. Pre-built artifacts uploaded
-5. Netlify deploys pre-built files (fast)
+5. AWS S3 + CloudFront deploys pre-built files (fast)
 
 ### Performance Tips
 
@@ -379,7 +382,7 @@ pnpx supabase db remote --status
 
 **On push to `main`:**
 - GitHub Actions builds web app
-- Auto-deploys to Netlify
+- Auto-deploys to AWS S3 + CloudFront
 - Runs quality checks
 
 **Manual Deployment:**
@@ -409,7 +412,8 @@ After deploying:
 
 - [Supabase Production Checklist](https://supabase.com/docs/guides/platform/going-into-prod)
 - [Edge Functions Guide](https://supabase.com/docs/guides/functions)
-- [Netlify Deployment](https://docs.netlify.com/)
+- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
+- [AWS CloudFront Documentation](https://docs.aws.amazon.com/cloudfront/)
 - [GitHub Actions](https://docs.github.com/en/actions)
 
 ## 🆘 Getting Help
@@ -419,7 +423,7 @@ If deployment fails:
 1. **Check deployment logs:**
    - GitHub Actions logs
    - Supabase function logs
-   - Netlify deployment logs
+   - AWS CloudWatch logs
 
 2. **Verify configuration:**
    - `.env.production` complete
@@ -434,7 +438,7 @@ If deployment fails:
 4. **Manual intervention:**
    - Supabase Dashboard for database
    - GitHub Actions for re-runs
-   - Netlify Dashboard for deploys
+   - AWS Console for S3 and CloudFront
 
 ## 🎉 Success!
 
@@ -452,7 +456,7 @@ After successful deployment:
 
 3. **Monitor:**
    - Supabase Dashboard
-   - Netlify Analytics
+   - AWS CloudWatch
    - Error tracking
 
 4. **Celebrate! 🎊**

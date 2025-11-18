@@ -20,27 +20,8 @@ Sync GitHub Actions secrets from your local environment files.
 **Details:**
 - Reads from `.env.production` or `.env.preview`
 - Automatically applies the `PREVIEW_` prefix for preview secrets (e.g., `PREVIEW_EXPO_PUBLIC_URL`)
-- Also sets optional Supabase and Netlify secrets when present
+- Also sets optional Supabase secrets when present
 - Requires GitHub CLI authentication (`gh auth login`)
-
-### `scripts/sync-netlify-env.sh`
-
-Push environment variables into the linked Netlify site.
-
-**Usage:**
-```bash
-# Production site (app.scaffald.com)
-./scripts/sync-netlify-env.sh
-
-# Preview site (preview.scaffald.com)
-./scripts/sync-netlify-env.sh preview
-```
-
-**Details:**
-- Reads from `.env.production` or `.env.preview`
-- If `NETLIFY_SITE_ID` is present, automatically links the appropriate site before syncing
-- Sets the `production` context for each site so custom domains point at the latest deploy
-- Requires Netlify CLI login (`npx netlify login`)
 
 ## Interactive Deployment (Recommended)
 
@@ -53,7 +34,6 @@ Push environment variables into the linked Netlify site.
   - Migrations (with `db diff` guard)
   - Functions (selective deployment)
   - Seed (production warning)
-  - Netlify (preview/production choice)
   - Database Reset (DESTRUCTIVE - with strong warnings)
 - Pre-flight checks (uncommitted changes, Supabase link, .env.production)
 - Guards and dry runs before each deployment step
@@ -66,19 +46,17 @@ pnpm prod
 
 ### `pnpm preview`
 
-**Interactive preview deployment** - Deploys to preview environment (Supabase fork and Netlify preview branch) to avoid cross-contamination with production.
+**Interactive preview deployment** - Deploys to preview environment (Supabase fork) to avoid cross-contamination with production.
 
 **What it does:**
 - Uses `.env.preview` instead of `.env.production`
 - Deploys to preview Supabase project (database fork)
-- Deploys to Netlify preview branch/context
 - Same interactive menu as `pnpm prod` but with preview context
 - Pre-flight checks verify you're deploying to preview, not production
 - Interactive menu to select deployment components:
   - Migrations (with `db diff` guard)
   - Functions (selective deployment)
   - Seed (preview warning)
-  - Netlify (preview deployment only)
   - Database Reset (DESTRUCTIVE - resets preview database)
 
 **Usage:**
@@ -93,7 +71,7 @@ pnpm preview
 
 **Example Workflow:**
 1. Run `pnpm preview`
-2. Select options (e.g., `1,2,4` for migrations, functions, and netlify)
+2. Select options (e.g., `1,2,3` for migrations, functions, and seed)
 3. Review migration diff (if migrations selected)
 4. Confirm each step as prompted
 5. Review deployment summary
@@ -105,7 +83,7 @@ pnpm preview
 
 **Example Workflow:**
 1. Run `pnpm prod`
-2. Select options (e.g., `1,2,4` for migrations, functions, and netlify)
+2. Select options (e.g., `1,2,3` for migrations, functions, and seed)
 3. Review migration diff (if migrations selected)
 4. Confirm each step as prompted
 5. Review deployment summary
@@ -114,7 +92,6 @@ pnpm preview
 - **Migrations**: Shows `pnpm supa db diff --linked` before applying changes
 - **Functions**: Lists available functions and allows selective deployment
 - **Seed**: Shows production warning before seeding
-- **Netlify**: Prompts for preview vs production deployment
 - **Reset**: Requires typing "RESET" to confirm destructive operation
 
 ## Legacy Scripts (Backward Compatibility)
@@ -139,20 +116,18 @@ pnpm deploy:reset
 
 **Note:** This functionality is also available in the interactive `pnpm prod` script (option 5).
 
-### `pnpm deploy:netlify` / `pnpm deploy:netlify:prod`
+### `pnpm deploy:aws` / `pnpm deploy:aws:prod`
 
-**Local Netlify deployment** - Build and deploy web app directly to Netlify from local machine.
+**Local AWS deployment** - Build and deploy web app directly to AWS S3 + CloudFront from local machine.
 
 **Usage:**
 ```bash
 # Preview deployment
-pnpm deploy:netlify
+pnpm deploy:aws:preview
 
 # Production deployment
-pnpm deploy:netlify:prod
+pnpm deploy:aws:prod
 ```
-
-**Note:** This functionality is also available in the interactive `pnpm prod` script (option 4).
 
 ### `pnpm deploy:verify`
 
@@ -241,10 +216,16 @@ SUPABASE_SERVICE_ROLE_KEY=your-preview-service-role-key
    gh auth login
    ```
 
-3. **Netlify CLI (optional, for direct Netlify deployments):**
+3. **AWS CLI (optional, for direct AWS deployments):**
    ```bash
-   npm install -g netlify-cli
-   netlify login
+   # macOS
+   brew install awscli
+   
+   # Or via pip
+   pip install awscli
+   
+   # Configure credentials
+   aws configure
    ```
 
 ## Deployment Workflow
@@ -261,7 +242,7 @@ pnpm check
 
 # 3. Deploy interactively
 pnpm prod
-# Select options: 1,2,4 (migrations, functions, netlify)
+# Select options: 1,2,3 (migrations, functions, seed)
 # Review diff, confirm each step
 ```
 
@@ -276,9 +257,8 @@ pnpm prod
 pnpm prod
 # Select: 2
 
-# Deploy only Netlify (preview)
-pnpm prod
-# Select: 4, then choose preview
+# Deploy only AWS (preview)
+pnpm deploy:aws:preview
 ```
 
 ## What Gets Deployed
@@ -301,12 +281,9 @@ pnpm prod
 - Requires confirmation before seeding
 - Uses production environment variables
 
-### Netlify Deployment
-- Two methods:
-  1. **Direct deployment** - Build locally and deploy
-     - Choose preview or production
-  2. **GitHub Actions trigger** - Trigger remote build
-     - Uses GitHub Actions workflow
+### AWS Deployment
+- Deploys to S3 bucket and invalidates CloudFront cache
+- Supports multiple environments (dev, preview, production)
 - Builds workspace packages first
 - Verifies build output before deployment
 
@@ -337,10 +314,13 @@ pnpx supabase functions deploy trpc
 pnpm supa:seed:prod
 ```
 
-### Netlify Build Fails
+### AWS Deployment Fails
 ```bash
 # Check build locally first
 pnpm web:build
+
+# Verify AWS credentials
+aws sts get-caller-identity
 
 # Verify environment variables
 cat .env.production
@@ -376,20 +356,19 @@ pnpm supa status
 ### View Logs
 
 - **Supabase Dashboard**: https://supabase.com/dashboard/project/_
-- **Netlify Dashboard**: https://app.netlify.com/
+- **AWS CloudWatch**: https://console.aws.amazon.com/cloudwatch/
 - **GitHub Actions**: https://github.com/YOUR-ORG/SCF-Neue/actions
 
 ## Legacy Scripts Archive
 
 Legacy deployment scripts have been archived to `scripts/archive/`:
 - `deploy.sh.legacy` - Original safe deployment script
-- `deploy-netlify.sh.legacy` - Original Netlify deployment script
 - `deploy-preview.sh.legacy` - Original preview deployment script (replaced by `deploy.sh preview`)
 - `deploy-production.sh.legacy` - Original production deployment script (replaced by `deploy.sh production`)
 
 These scripts are kept for reference but are superseded by the unified `deploy.sh` script. The following scripts remain available for specific use cases:
 - `deploy-reset.sh` - Standalone database reset script (`pnpm deploy:reset`)
-- `deploy-netlify.sh` - Standalone Netlify deployment script (`pnpm deploy:netlify`)
+- `deploy-aws.sh` - Standalone AWS deployment script (`pnpm deploy:aws`)
 - `verify-prod-deployment.sh` - Production deployment verification (`pnpm deploy:verify`)
 
 ## Security Notes
@@ -405,5 +384,4 @@ These scripts are kept for reference but are superseded by the unified `deploy.s
 
 - [Production Deployment Guide](../docs/deployment/PRODUCTION_DEPLOYMENT.md)
 - [Supabase Cloud Setup](../docs/deployment/supabase-cloud-setup.md)
-- [GitHub Actions Setup](../docs/deployment/github-actions-netlify-setup.md)
-- [Netlify Local Deployment](../docs/deployment/netlify-local-deployment.md)
+- [AWS Setup Guide](../docs/deployment/aws-setup.md)

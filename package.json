@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "reset": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo apps/*/.turbo packages/*/.turbo apps/expo/.expo apps/expo/.netlify apps/expo/.tamagui apps/expo/dist apps/expo/android/build apps/expo/ios/build apps/expo/.next **/tsconfig.tsbuildinfo **/.DS_Store && pnpm store prune && echo '✅ Cache cleared! Run pnpm install to reinstall dependencies.'",
+    "reset": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo apps/*/.turbo packages/*/.turbo apps/expo/.expo apps/expo/.tamagui apps/expo/dist apps/expo/android/build apps/expo/ios/build apps/expo/.next **/tsconfig.tsbuildinfo **/.DS_Store && pnpm store prune && echo '✅ Cache cleared! Run pnpm install to reinstall dependencies.'",
     "reset:full": "pnpm reset && rm -rf apps/expo/android apps/expo/ios && echo '✅ Full reset complete! Run pnpm prebuild to regenerate native directories.'",
     "env-local": "dotenv -e .env --",
     "env-prod": "dotenv -e .env.production --",
@@ -21,8 +21,6 @@
     "preview": "./scripts/deploy.sh preview",
     "deploy": "pnpm prod",
     "deploy:reset": "./scripts/deploy-reset.sh",
-    "deploy:netlify": "./scripts/deploy-netlify.sh",
-    "deploy:netlify:prod": "./scripts/deploy-netlify.sh --prod",
     "deploy:aws": "./scripts/deploy-aws.sh",
     "deploy:aws:dev": "./scripts/deploy-aws.sh dev",
     "deploy:aws:preview": "./scripts/deploy-aws.sh preview",
@@ -33,7 +31,6 @@
     "deploy:aws:setup:prod": "./scripts/setup-aws-infra.sh production",
     "deploy:verify": "./scripts/verify-prod-deployment.sh",
     "secrets:add": "./scripts/add-github-secrets.sh",
-    "netlify:env:sync": "./scripts/sync-netlify-env.sh",
     "watch": "turbo watch",
     "format": "turbo format",
     "format:fix": "turbo format:fix",
@@ -114,7 +111,6 @@
     "fs-extra": "^11.2.0",
     "jsdom": "^24.1.1",
     "msw": "^2.4.2",
-    "netlify-cli": "^23.9.1",
     "turbo": "^2.6.1",
     "typescript": "catalog:",
     "vite-tsconfig-paths": "^4.3.2",

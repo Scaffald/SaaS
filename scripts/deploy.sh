@@ -23,7 +23,6 @@ if [ "$ENV" = "preview" ]; then
     ENV_DISPLAY_LOWER="preview"
     PROJECT_REF_VAR="PREVIEW_PROJECT_REF"
     BRANCH_CHECK="preview"
-    NETLIFY_BRANCH="preview"
     SEED_CMD="pnpm supa:seed:preview"
 else
     ENV_FILE=".env.production"
@@ -32,7 +31,6 @@ else
     ENV_DISPLAY_LOWER="production"
     PROJECT_REF_VAR="PROD_PROJECT_REF"
     BRANCH_CHECK="main"
-    NETLIFY_BRANCH="main"
     SEED_CMD="pnpm supa:seed"
 fi
 
@@ -212,12 +210,10 @@ echo "  1) Migrations (database schema changes)"
 echo "  2) Functions (Supabase Edge Functions)"
 if [ "$ENV" = "preview" ]; then
     echo "  3) Seed (seed preview database)"
-    echo "  4) Netlify (web app deployment)"
-    echo "  5) Database Reset (DESTRUCTIVE - resets preview database)"
+    echo "  4) Database Reset (DESTRUCTIVE - resets preview database)"
 else
     echo "  3) Seed (seed production database)"
-    echo "  4) Netlify (web app deployment)"
-    echo "  5) Database Reset (DESTRUCTIVE - resets production database)"
+    echo "  4) Database Reset (DESTRUCTIVE - resets production database)"
 fi
 echo ""
 read -p "Select options (comma-separated, e.g., 1,2,3): " SELECTIONS
@@ -226,7 +222,6 @@ read -p "Select options (comma-separated, e.g., 1,2,3): " SELECTIONS
 DEPLOY_MIGRATIONS=false
 DEPLOY_FUNCTIONS=false
 DEPLOY_SEED=false
-DEPLOY_NETLIFY=false
 DEPLOY_RESET=false
 
 IFS=',' read -ra ADDR <<< "$SELECTIONS"
@@ -235,14 +230,13 @@ for i in "${ADDR[@]}"; do
         1) DEPLOY_MIGRATIONS=true ;;
         2) DEPLOY_FUNCTIONS=true ;;
         3) DEPLOY_SEED=true ;;
-        4) DEPLOY_NETLIFY=true ;;
-        5) DEPLOY_RESET=true ;;
+        4) DEPLOY_RESET=true ;;
         *) echo -e "${YELLOW}⚠️  Ignoring invalid option: $i${NC}" ;;
     esac
 done
 
 # Validate at least one option selected
-if [ "$DEPLOY_MIGRATIONS" = false ] && [ "$DEPLOY_FUNCTIONS" = false ] && [ "$DEPLOY_SEED" = false ] && [ "$DEPLOY_NETLIFY" = false ] && [ "$DEPLOY_RESET" = false ]; then
+if [ "$DEPLOY_MIGRATIONS" = false ] && [ "$DEPLOY_FUNCTIONS" = false ] && [ "$DEPLOY_SEED" = false ] && [ "$DEPLOY_RESET" = false ]; then
     echo -e "${RED}❌ No valid options selected${NC}"
     exit 1
 fi
@@ -252,7 +246,6 @@ echo -e "${CYAN}Selected deployments (${ENV_NAME} ENVIRONMENT):${NC}"
 [ "$DEPLOY_MIGRATIONS" = true ] && echo "  ✅ Migrations"
 [ "$DEPLOY_FUNCTIONS" = true ] && echo "  ✅ Functions"
 [ "$DEPLOY_SEED" = true ] && echo "  ✅ Seed"
-[ "$DEPLOY_NETLIFY" = true ] && echo "  ✅ Netlify"
 [ "$DEPLOY_RESET" = true ] && echo "  🔴 Database Reset (DESTRUCTIVE)"
 echo ""
 
@@ -700,121 +693,6 @@ if [ "$DEPLOY_SEED" = true ]; then
     fi
 fi
 
-# Deploy Netlify
-if [ "$DEPLOY_NETLIFY" = true ]; then
-    echo ""
-    echo "═══════════════════════════════════════"
-    echo "📋 Netlify Deployment (${ENV_DISPLAY})"
-    echo "═══════════════════════════════════════"
-    
-    # Check if netlify CLI is installed
-    if ! command -v netlify &> /dev/null; then
-        echo -e "${RED}❌ Error: Netlify CLI not installed${NC}"
-        echo ""
-        echo "Install with:"
-        echo "  npm install -g netlify-cli"
-        echo ""
-        echo -e "${YELLOW}⚠️  Skipping Netlify deployment${NC}"
-    else
-        echo ""
-        echo "Select deployment method:"
-        echo "  1) Direct Netlify deployment (local build)"
-        echo "  2) GitHub Actions trigger"
-        echo ""
-        read -p "Select option (1 or 2): " NETLIFY_METHOD
-        
-        if [ "$NETLIFY_METHOD" = "1" ]; then
-            # Direct Netlify deployment
-            echo ""
-            echo -e "${CYAN}Deployment configuration:${NC}"
-            echo "  Environment: ${ENV_DISPLAY_LOWER}"
-            echo "  Branch: ${NETLIFY_BRANCH}"
-            echo "  Working Directory: $(pwd)"
-            echo ""
-            
-            if prompt_continue "Continue with Netlify ${ENV_DISPLAY_LOWER} deployment?"; then
-                echo ""
-                echo -e "${BLUE}Step 1: Building application...${NC}"
-                echo "----------------------------------------"
-                
-                # Build packages first
-                echo "Building workspace packages..."
-                if pnpm --filter @app/ui build && \
-                   pnpm --filter @app/core build && \
-                   pnpm --filter @app/schemas build; then
-                    echo -e "${GREEN}✅ Workspace packages built${NC}"
-                else
-                    echo -e "${RED}❌ Package build failed${NC}"
-                    echo -e "${YELLOW}⚠️  Skipping Netlify deployment${NC}"
-                fi
-                
-                # Build web app
-                echo ""
-                echo "Building web application..."
-                cd apps/expo
-                
-                if pnpm web:build; then
-                    echo -e "${GREEN}✅ Web build complete${NC}"
-                    
-                    # Verify build output
-                    if [ ! -d "dist" ]; then
-                        echo -e "${RED}❌ Build output directory not found${NC}"
-                        cd ../..
-                    else
-                        echo -e "${GREEN}✅ Build verified: dist/ directory exists${NC}"
-                        cd ../..
-                        
-                        echo ""
-                        echo -e "${BLUE}Step 2: Deploying to Netlify (${ENV_DISPLAY})...${NC}"
-                        echo "----------------------------------------"
-                        
-                        if [ "$ENV" = "preview" ]; then
-                            netlify deploy --dir=apps/expo/dist --branch=preview
-                        else
-                            netlify deploy --dir=apps/expo/dist --prod
-                        fi
-                        
-                        echo -e "${GREEN}✅ Netlify ${ENV_DISPLAY_LOWER} deployment complete${NC}"
-                    fi
-                else
-                    echo -e "${RED}❌ Web build failed${NC}"
-                    cd ../..
-                fi
-            else
-                echo -e "${YELLOW}⏹️  Skipping Netlify deployment${NC}"
-            fi
-        elif [ "$NETLIFY_METHOD" = "2" ]; then
-            # GitHub Actions trigger
-            echo ""
-            echo -e "${BLUE}Triggering GitHub Actions workflow for ${ENV_DISPLAY_LOWER}...${NC}"
-            
-            if command -v gh &> /dev/null; then
-                if gh workflow run deploy-web.yml --ref ${NETLIFY_BRANCH}; then
-                    echo -e "${GREEN}✅ GitHub Actions workflow triggered for ${ENV_DISPLAY_LOWER}${NC}"
-                    echo ""
-                    echo "Monitor deployment:"
-                    echo "  gh run list --workflow=deploy-web.yml"
-                    echo "  or visit: https://github.com/$(git config --get remote.origin.url | sed 's/.*://;s/.git$//')/actions"
-                else
-                    echo -e "${YELLOW}⚠️  Failed to trigger GitHub Actions${NC}"
-                    echo ""
-                    echo "Manual deployment options:"
-                    echo "  1. Push to ${NETLIFY_BRANCH} branch: git push origin ${NETLIFY_BRANCH}"
-                    echo "  2. Trigger manually in GitHub Actions UI"
-                fi
-            else
-                echo -e "${YELLOW}⚠️  GitHub CLI (gh) not installed${NC}"
-                echo ""
-                echo "Install gh CLI: brew install gh"
-                echo ""
-                echo "Alternative: Push to ${NETLIFY_BRANCH} branch to trigger deployment"
-            fi
-        else
-            echo -e "${YELLOW}⏹️  Invalid option, skipping Netlify deployment${NC}"
-        fi
-    fi
-fi
-
 # Deployment Summary
 echo ""
 echo "═══════════════════════════════════════"
@@ -834,11 +712,9 @@ echo ""
 [ "$DEPLOY_MIGRATIONS" = true ] && echo -e "${GREEN}✅ Migrations${NC}"
 [ "$DEPLOY_FUNCTIONS" = true ] && echo -e "${GREEN}✅ Functions${NC}"
 [ "$DEPLOY_SEED" = true ] && echo -e "${GREEN}✅ Seed${NC}"
-[ "$DEPLOY_NETLIFY" = true ] && echo -e "${GREEN}✅ Netlify${NC}"
 echo ""
 echo "🔗 Important Links:"
 echo "   Supabase: https://supabase.com/dashboard/project/${PROJECT_REF}"
-echo "   Netlify: https://app.netlify.com/"
 echo "   GitHub Actions: https://github.com/$(git config --get remote.origin.url | sed 's/.*://;s/.git$//')/actions"
 echo ""
 if [ "$ENV" = "preview" ]; then

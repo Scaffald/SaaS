@@ -1,12 +1,12 @@
 # SCF-Neue Production Deployment Guide
 
-Complete guide for deploying SCF-Neue to production using Netlify (frontend) and Supabase (backend).
+Complete guide for deploying SCF-Neue to production using AWS (frontend) and Supabase (backend).
 
 ## 📚 Documentation Structure
 
 This deployment documentation is organized into focused guides:
 
-1. **[GitHub Actions + Netlify Setup](./github-actions-netlify-setup.md)** - Frontend deployment
+1. **[AWS Setup](./aws-setup.md)** - Frontend deployment
 2. **[Supabase Cloud Setup](./supabase-cloud-setup.md)** - Backend deployment
 3. **[Quick Start](#-quick-start)** - Rapid deployment checklist (this document)
 
@@ -17,7 +17,7 @@ Follow this checklist to deploy from scratch in ~1 hour:
 ### Prerequisites (5 minutes)
 
 - [ ] GitHub account with repository access
-- [ ] Netlify account (free tier)
+- [ ] AWS account with S3 and CloudFront access
 - [ ] Supabase account (free tier)
 - [ ] Google Cloud Console access (for OAuth)
 - [ ] Mapbox account (for maps)
@@ -40,34 +40,39 @@ SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_ANON_KEY=eyJxxx...
 ```
 
-### Phase 2: Netlify Setup (15 minutes)
+### Phase 2: AWS Setup (15 minutes)
 
-Follow: [GitHub Actions + Netlify Setup Guide](./github-actions-netlify-setup.md)
+Follow: [AWS Setup Guide](./aws-setup.md)
 
-- [ ] Install Netlify CLI: `npm install -g netlify-cli`
-- [ ] Login: `netlify login`
-- [ ] Create site: `netlify init`
-- [ ] Get site ID and auth token
-- [ ] Configure Netlify build settings
+- [ ] Create S3 bucket for hosting
+- [ ] Configure CloudFront distribution
+- [ ] Set up IAM user with S3 and CloudFront permissions
+- [ ] Get AWS access key and secret key
+- [ ] Configure bucket policies and CloudFront settings
 
 **Save these values:**
 ```
-NETLIFY_SITE_ID=abc123-...
-NETLIFY_AUTH_TOKEN=nfp_xxx...
+AWS_ACCESS_KEY_ID=AKIA...
+AWS_SECRET_ACCESS_KEY=...
+AWS_REGION=us-east-1
+AWS_S3_BUCKET_PROD=your-bucket-name
+AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD=E123...
 ```
 
 ### Phase 3: GitHub Configuration (10 minutes)
 
 - [ ] Add all secrets to GitHub repository
 - [ ] Verify workflow file exists: `.github/workflows/deploy-web.yml`
-- [ ] Verify netlify.toml exists
 - [ ] Push to main branch
 - [ ] Watch GitHub Actions build
 
 **Required GitHub Secrets:**
 ```
-NETLIFY_AUTH_TOKEN
-NETLIFY_SITE_ID
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_REGION
+AWS_S3_BUCKET_PROD
+AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD
 EXPO_PUBLIC_SUPABASE_URL
 EXPO_PUBLIC_SUPABASE_ANON_KEY
 EXPO_PUBLIC_URL
@@ -109,7 +114,7 @@ Create `.env.production` with these values:
 # App Configuration
 NODE_ENV=production
 APP_ENV=production
-EXPO_PUBLIC_URL=https://your-domain.netlify.app
+EXPO_PUBLIC_URL=https://your-domain.cloudfront.net
 
 # Supabase (from Supabase Dashboard)
 EXPO_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
@@ -148,7 +153,7 @@ GitHub Actions triggers
   ↓
 10-15 minute build
   ↓
-Deploy to Netlify
+Deploy to AWS S3 + CloudFront
   ↓
 Production live!
 ```
@@ -157,17 +162,13 @@ Production live!
 
 ```bash
 # 1. Build locally
-chmod +x scripts/build-production.sh
-./scripts/build-production.sh
+pnpm web:build
 
-# 2. Deploy to Netlify
-netlify deploy --dir=apps/expo/dist --prod
+# 2. Deploy to AWS
+pnpm deploy:aws:prod
 ```
 
 ## 🚨 Common Issues
-
-### Build Timeout on Netlify
-✅ **Solved** - Using GitHub Actions for builds
 
 ### OAuth Redirects Fail
 - Check redirect URLs match exactly
@@ -194,10 +195,11 @@ netlify deploy --dir=apps/expo/dist --prod
 - 2 GB bandwidth
 - Unlimited API requests
 
-**Netlify Free Tier:**
-- 100 GB bandwidth
-- 300 build minutes/month
-- Unlimited sites
+**AWS Free Tier:**
+- 5 GB S3 storage
+- 20,000 GET requests
+- 2,000 PUT requests
+- 50 GB CloudFront data transfer
 
 **GitHub Actions Free Tier:**
 - 2,000 minutes/month (public repos unlimited)
@@ -206,19 +208,20 @@ netlify deploy --dir=apps/expo/dist --prod
 
 Upgrade when you exceed:
 - Database size > 500 MB
-- Monthly bandwidth > 100 GB
-- Build minutes > 300/month
+- S3 storage > 5 GB
+- CloudFront transfer > 50 GB/month
 
 ## 🔐 Security Checklist
 
 - [ ] All secrets in GitHub Secrets (not in code)
 - [ ] `.env.production` in `.gitignore`
-- [ ] HTTPS enabled on custom domain
+- [ ] HTTPS enabled on CloudFront distribution
 - [ ] Supabase RLS policies active
 - [ ] OAuth credentials for production only
 - [ ] Database backups configured
 - [ ] Function secrets set in Supabase
-- [ ] Security headers configured in netlify.toml
+- [ ] S3 bucket policies configured correctly
+- [ ] CloudFront security headers configured
 
 ## 📈 Monitoring
 
@@ -230,10 +233,11 @@ Upgrade when you exceed:
    - Edge Function logs
    - Storage usage
 
-2. **Netlify Dashboard**
-   - Deploy status
-   - Bandwidth usage
-   - Function logs
+2. **AWS CloudWatch**
+   - S3 bucket metrics
+   - CloudFront distribution metrics
+   - Request/error rates
+   - Data transfer
 
 3. **GitHub Actions**
    - Build success/failure
@@ -252,13 +256,15 @@ Upgrade when you exceed:
 ### Frontend Rollback
 
 ```bash
-# In Netlify Dashboard
-Deploys → Previous deploy → Publish deploy
+# Redeploy previous version from Git
+git checkout <previous-commit>
+pnpm deploy:aws:prod
 ```
 
-Or via CLI:
+Or restore from S3 versioning (if enabled):
 ```bash
-netlify rollback
+aws s3api list-object-versions --bucket your-bucket-name
+aws s3api restore-object --bucket your-bucket-name --key path/to/file
 ```
 
 ### Database Rollback
@@ -280,7 +286,8 @@ pnpm supa functions deploy trpc
 
 - [Expo Web Documentation](https://docs.expo.dev/workflow/web/)
 - [Supabase Production Guide](https://supabase.com/docs/guides/platform/going-into-prod)
-- [Netlify Documentation](https://docs.netlify.com/)
+- [AWS S3 Documentation](https://docs.aws.amazon.com/s3/)
+- [AWS CloudFront Documentation](https://docs.aws.amazon.com/cloudfront/)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 
 ## 🆘 Support
@@ -288,14 +295,14 @@ pnpm supa functions deploy trpc
 If you need help:
 
 1. Review detailed guides:
-   - [GitHub Actions + Netlify Setup](./github-actions-netlify-setup.md)
+   - [AWS Setup](./aws-setup.md)
    - [Supabase Cloud Setup](./supabase-cloud-setup.md)
 
 2. Check troubleshooting sections in each guide
 
 3. Review logs:
    - GitHub Actions workflow logs
-   - Netlify deploy logs
+   - AWS CloudWatch logs
    - Supabase function logs
 
 4. Create an issue in the repository with:
