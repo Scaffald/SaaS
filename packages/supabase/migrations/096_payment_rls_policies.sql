@@ -100,6 +100,7 @@ CREATE POLICY background_check_addons_manage_service_role
 ALTER TABLE core.background_check_consent ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.background_check_disclosures ENABLE ROW LEVEL SECURITY;
 ALTER TABLE core.background_check_access ENABLE ROW LEVEL SECURITY;
+ALTER TABLE core.background_check_disputes ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS background_check_consent_select ON core.background_check_consent;
 CREATE POLICY background_check_consent_select
@@ -205,6 +206,56 @@ CREATE POLICY background_check_access_select
 DROP POLICY IF EXISTS background_check_access_manage_service_role ON core.background_check_access;
 CREATE POLICY background_check_access_manage_service_role
   ON core.background_check_access
+  FOR ALL
+  TO service_role
+  USING (TRUE)
+  WITH CHECK (TRUE);
+
+DROP POLICY IF EXISTS background_check_disputes_select ON core.background_check_disputes;
+CREATE POLICY background_check_disputes_select
+  ON core.background_check_disputes
+  FOR SELECT
+  TO authenticated
+  USING (
+    worker_user_id = auth.uid()
+    OR EXISTS (
+      SELECT 1
+      FROM core.background_checks bc
+      WHERE bc.id = background_check_id
+        AND (
+          bc.requested_by_user_id = auth.uid()
+          OR EXISTS (
+            SELECT 1
+            FROM core.role_assignments ra
+            JOIN core.roles r ON r.id = ra.role_id
+            WHERE ra.user_id = auth.uid()
+              AND (
+                ra.scope_org_id = bc.organization_id
+                OR (r.scope = 'platform' AND r.name IN ('office', 'background_check_admin', 'super_admin'))
+              )
+          )
+        )
+    )
+  );
+
+DROP POLICY IF EXISTS background_check_disputes_insert_worker ON core.background_check_disputes;
+CREATE POLICY background_check_disputes_insert_worker
+  ON core.background_check_disputes
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (worker_user_id = auth.uid());
+
+DROP POLICY IF EXISTS background_check_disputes_update_worker ON core.background_check_disputes;
+CREATE POLICY background_check_disputes_update_worker
+  ON core.background_check_disputes
+  FOR UPDATE
+  TO authenticated
+  USING (worker_user_id = auth.uid())
+  WITH CHECK (worker_user_id = auth.uid());
+
+DROP POLICY IF EXISTS background_check_disputes_manage_service_role ON core.background_check_disputes;
+CREATE POLICY background_check_disputes_manage_service_role
+  ON core.background_check_disputes
   FOR ALL
   TO service_role
   USING (TRUE)
@@ -338,6 +389,7 @@ GRANT SELECT ON core.background_check_addons TO authenticated;
 GRANT SELECT, INSERT ON core.background_check_consent TO authenticated;
 GRANT SELECT ON core.background_check_disclosures TO authenticated;
 GRANT SELECT ON core.background_check_access TO authenticated;
+GRANT SELECT, INSERT, UPDATE ON core.background_check_disputes TO authenticated;
 GRANT SELECT ON core.id_verifications TO authenticated;
 GRANT SELECT ON core.payment_transactions TO authenticated;
 -- Grants for stripe_settings (if table exists)
@@ -360,6 +412,7 @@ GRANT ALL ON core.background_check_addons TO service_role;
 GRANT ALL ON core.background_check_consent TO service_role;
 GRANT ALL ON core.background_check_disclosures TO service_role;
 GRANT ALL ON core.background_check_access TO service_role;
+GRANT ALL ON core.background_check_disputes TO service_role;
 GRANT ALL ON core.id_verifications TO service_role;
 GRANT ALL ON core.payment_transactions TO service_role;
 

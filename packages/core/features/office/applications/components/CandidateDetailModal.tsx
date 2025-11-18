@@ -7,6 +7,7 @@ import { CandidateProfileTab } from './CandidateProfileTab'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { NotesTab } from './NotesTab'
 import { MessagesTab } from './MessagesTab'
+import { InquiryTab } from './InquiryTab'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -22,9 +23,16 @@ interface CandidateDetailModalProps {
 }
 
 export const CandidateDetailModal = ({ application, open, onClose }: CandidateDetailModalProps) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'application' | 'notes' | 'messages'>(
+  const [activeTab, setActiveTab] = useState<'profile' | 'application' | 'notes' | 'messages' | 'inquiry'>(
     'profile'
   )
+
+  // Check if there's an inquiry for this application
+  const { data: inquiryData } = api.inquiries.getByApplication.useQuery(
+    { applicationId: application?.id || '' },
+    { enabled: !!application?.id && open }
+  )
+  const hasInquiry = !!inquiryData?.inquiry
 
   if (!application) return null
 
@@ -219,6 +227,13 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
               Messages ({application.messages.length})
             </Text>
           </Tabs.Tab>
+          {hasInquiry && (
+            <Tabs.Tab value="inquiry" flex={1}>
+              <Text fontSize="$3" fontWeight="600">
+                Inquiry
+              </Text>
+            </Tabs.Tab>
+          )}
         </Tabs.List>
 
         <Tabs.Content value="profile" pt="$4">
@@ -240,6 +255,17 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         <Tabs.Content value="messages" pt="$4">
           <MessagesTab messages={application.messages} applicationId={application.id} />
         </Tabs.Content>
+
+        {hasInquiry && inquiryData && (
+          <Tabs.Content value="inquiry" pt="$4">
+            <InquiryTab
+              applicationId={application.id}
+              inquiryId={inquiryData.inquiry.id}
+              candidateName={application.candidate.name}
+              jobTitle={application.job.title}
+            />
+          </Tabs.Content>
+        )}
       </Tabs>
     </ResponsiveModal>
   )

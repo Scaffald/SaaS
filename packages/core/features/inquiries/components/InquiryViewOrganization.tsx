@@ -8,6 +8,8 @@ import type { InquirySectionName } from '@app/schemas'
 interface InquiryViewOrganizationProps {
   applicationId: string
   inquiryId: string
+  candidateName?: string
+  jobTitle?: string
 }
 
 interface AcceptanceBadgeProps {
@@ -40,6 +42,8 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
 export function InquiryViewOrganization({
   applicationId,
   inquiryId,
+  candidateName: providedCandidateName,
+  jobTitle: providedJobTitle,
 }: InquiryViewOrganizationProps) {
   const { data, isLoading, error } = api.inquiries.getByApplication.useQuery({
     applicationId,
@@ -110,10 +114,9 @@ export function InquiryViewOrganization({
     return inquiry.workdays.map((day: string) => dayLabels[day] || day).join(', ')
   }
 
-  // Candidate and job info would be fetched separately or included in inquiry response
-  // For now, use placeholder names
-  const candidateName = 'Candidate'
-  const jobTitle = 'Job'
+  // Use provided candidate/job names or placeholders
+  const candidateName = providedCandidateName || 'Candidate'
+  const jobTitle = providedJobTitle || 'Job'
 
   const NonNegotiableBadge = () => (
     <XStack bg="$gray3" px="$2" py="$1" rounded="$2">
