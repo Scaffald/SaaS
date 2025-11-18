@@ -122,89 +122,80 @@ describe('Profile Cancel Button Pattern', () => {
   })
 
   it('should show confirmation dialog when cancel is clicked', () => {
-    const [showDialog, setShowDialog] = React.useState(false)
+    function Harness() {
+      const [showDialog, setShowDialog] = React.useState(false)
+      return (
+        <>
+          <button type="button" onClick={() => setShowDialog(true)} data-testid="cancel-button">
+            Cancel
+          </button>
+          {showDialog ? (
+            <div data-testid="confirmation-dialog">
+              <button type="button" onClick={() => setShowDialog(false)}>Keep Editing</button>
+              <button type="button" onClick={() => setShowDialog(false)}>Discard Changes</button>
+            </div>
+          ) : null}
+        </>
+      )
+    }
 
-    const cancelButton = (
-      <button type="button" onClick={() => setShowDialog(true)} data-testid="cancel-button">
-        Cancel
-      </button>
-    )
+    render(<Harness />)
 
-    const dialog = showDialog ? (
-      <div data-testid="confirmation-dialog">
-        <button type="button" onClick={() => setShowDialog(false)}>Keep Editing</button>
-        <button type="button" onClick={() => setShowDialog(false)}>Discard Changes</button>
-      </div>
-    ) : null
+    fireEvent.click(screen.getByTestId('cancel-button'))
 
-    const { container, rerender } = render(
-      <>
-        {cancelButton}
-        {dialog}
-      </>,
-    )
-
-    const button = container.querySelector('[data-testid="cancel-button"]') as HTMLButtonElement
-    fireEvent.click(button)
-
-    rerender(
-      <>
-        {cancelButton}
-        {showDialog ? dialog : null}
-      </>,
-    )
-
-    expect(container.querySelector('[data-testid="confirmation-dialog"]')).toBeInTheDocument()
+    expect(screen.getByTestId('confirmation-dialog')).toBeInTheDocument()
   })
 
   it('should reset form when "Discard Changes" is confirmed', () => {
     const reset = vi.fn()
-    const [showDialog, setShowDialog] = React.useState(true)
 
-    const handleDiscard = () => {
-      reset({ name: 'Test User', email: 'test@example.com' })
-      setShowDialog(false)
+    function Harness() {
+      const [showDialog, setShowDialog] = React.useState(true)
+      const handleDiscard = () => {
+        reset({ name: 'Test User', email: 'test@example.com' })
+        setShowDialog(false)
+      }
+
+      return showDialog ? (
+        <div data-testid="confirmation-dialog">
+          <button type="button" onClick={() => setShowDialog(false)}>Keep Editing</button>
+          <button type="button" onClick={handleDiscard} data-testid="discard-button">
+            Discard Changes
+          </button>
+        </div>
+      ) : (
+        <span>No dialog</span>
+      )
     }
 
-    const dialog = showDialog ? (
-      <div data-testid="confirmation-dialog">
-        <button type="button" onClick={() => setShowDialog(false)}>Keep Editing</button>
-        <button type="button" onClick={handleDiscard} data-testid="discard-button">
-          Discard Changes
-        </button>
-      </div>
-    ) : null
-
-    const { container } = render(dialog)
-    const discardButton = container.querySelector('[data-testid="discard-button"]') as HTMLButtonElement
-
-    fireEvent.click(discardButton)
+    render(<Harness />)
+    fireEvent.click(screen.getByTestId('discard-button'))
 
     expect(reset).toHaveBeenCalledWith({ name: 'Test User', email: 'test@example.com' })
   })
 
   it('should close dialog without changes when "Keep Editing" is clicked', () => {
     const reset = vi.fn()
-    const [showDialog, setShowDialog] = React.useState(true)
 
-    const dialog = showDialog ? (
-      <div data-testid="confirmation-dialog">
-        <button type="button" onClick={() => setShowDialog(false)} data-testid="keep-editing-button">
-          Keep Editing
-        </button>
-        <button type="button" onClick={() => reset()}>Discard Changes</button>
-      </div>
-    ) : null
+    function Harness() {
+      const [showDialog, setShowDialog] = React.useState(true)
+      return showDialog ? (
+        <div data-testid="confirmation-dialog">
+          <button type="button" onClick={() => setShowDialog(false)} data-testid="keep-editing-button">
+            Keep Editing
+          </button>
+          <button type="button" onClick={() => reset()}>Discard Changes</button>
+        </div>
+      ) : (
+        <span>No dialog</span>
+      )
+    }
 
-    const { container, rerender } = render(dialog)
-    const keepButton = container.querySelector('[data-testid="keep-editing-button"]') as HTMLButtonElement
-
-    fireEvent.click(keepButton)
-
-    rerender(showDialog ? dialog : null)
+    render(<Harness />)
+    fireEvent.click(screen.getByTestId('keep-editing-button'))
 
     expect(reset).not.toHaveBeenCalled()
-    expect(container.querySelector('[data-testid="confirmation-dialog"]')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('confirmation-dialog')).not.toBeInTheDocument()
   })
 })
 

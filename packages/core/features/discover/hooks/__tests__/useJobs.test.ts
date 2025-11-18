@@ -1,7 +1,5 @@
-import { renderHook, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-// Mock Supabase client - use vi.hoisted
 const mockFrom = vi.hoisted(() => vi.fn())
 const mockSelect = vi.hoisted(() => vi.fn())
 const mockEq = vi.hoisted(() => vi.fn())
@@ -17,17 +15,10 @@ vi.mock('@app/core/utils/supabase/client', () => ({
   supabase: mockSupabaseClient,
 }))
 
-// Mock React Query
-const mockUseQuery = vi.hoisted(() => vi.fn())
-
-vi.mock('@tanstack/react-query', () => ({
-  useQuery: mockUseQuery,
-}))
-
-import { useJobs } from '../useJobs'
+import { buildJobsQuery } from '../useJobs'
 import type { ViewportBounds } from '@app/ui'
 
-describe('useJobs', () => {
+describe('buildJobsQuery', () => {
   const mockBounds: ViewportBounds = {
     north: 43,
     south: 42,
@@ -35,10 +26,14 @@ describe('useJobs', () => {
     west: -72,
   }
 
+  const runJobsQuery = (options?: { bounds?: ViewportBounds | null; limit?: number }) => {
+    const fetchJobs = buildJobsQuery(options)
+    return fetchJobs()
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
-    
-    // Set up the chain properly
+
     mockReturns.mockResolvedValue({
       data: [],
       error: null,
@@ -56,34 +51,10 @@ describe('useJobs', () => {
     mockSchema.mockReturnValue({
       from: mockFrom,
     })
-
-    mockUseQuery.mockReturnValue({
-      data: [],
-      isLoading: false,
-      error: null,
-    })
   })
 
-  it('filters by status="open"', () => {
-    mockReturns.mockResolvedValue({
-      data: [],
-      error: null,
-    })
-
-    mockUseQuery.mockImplementation((options) => {
-      // Execute queryFn to trigger the actual query
-      if (options.queryFn) {
-        options.queryFn()
-      }
-      return {
-        data: [],
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    renderHook(() => useJobs({ bounds: mockBounds }))
-
+  it('filters by status="open"', async () => {
+    await runJobsQuery({ bounds: mockBounds })
     expect(mockEq).toHaveBeenCalledWith('status', 'open')
   })
 
@@ -97,7 +68,7 @@ describe('useJobs', () => {
         remote_option: 'hybrid',
         location: 'Boston, MA',
         address: {
-          longitude: -71.0589, // Within bounds
+          longitude: -71.0589,
           latitude: 42.3601,
           city: 'Boston',
           state: 'MA',
@@ -117,7 +88,7 @@ describe('useJobs', () => {
         remote_option: null,
         location: 'New York, NY',
         address: {
-          longitude: -100, // Outside bounds
+          longitude: -100,
           latitude: 50,
         },
         pay_range_min_cents: null,
@@ -134,45 +105,13 @@ describe('useJobs', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    const { result } = renderHook(() => useJobs({ bounds: mockBounds }))
-
-    await waitFor(() => {
-      expect(result.current.data).toBeDefined()
-      // Only job-1 should be in results (job-2 is outside bounds)
-      expect(result.current.data?.length).toBe(1)
-      expect(result.current.data?.[0].id).toBe('job-1')
-    })
+    const jobs = await runJobsQuery({ bounds: mockBounds })
+    expect(jobs).toHaveLength(1)
+    expect(jobs[0].id).toBe('job-1')
   })
 
-  it('enforces limit of 500', () => {
-    mockReturns.mockResolvedValue({
-      data: [],
-      error: null,
-    })
-
-    mockUseQuery.mockImplementation((options) => {
-      // Execute queryFn to trigger the actual query
-      if (options.queryFn) {
-        options.queryFn()
-      }
-      return {
-        data: [],
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    renderHook(() => useJobs({ bounds: mockBounds, limit: 1000 }))
-
+  it('enforces limit of 500', async () => {
+    await runJobsQuery({ bounds: mockBounds, limit: 1000 })
     expect(mockLimit).toHaveBeenCalledWith(500)
   })
 
@@ -203,25 +142,13 @@ describe('useJobs', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    const { result } = renderHook(() => useJobs({ bounds: mockBounds }))
-
-    await waitFor(() => {
-      expect(result.current.data?.[0]).toMatchObject({
-        id: 'job-1',
-        title: 'Software Engineer',
-        organization_name: 'Acme Corp',
-        coordinates: [-71.0589, 42.3601],
-        status: 'open',
-      })
+    const jobs = await runJobsQuery({ bounds: mockBounds })
+    expect(jobs[0]).toMatchObject({
+      id: 'job-1',
+      title: 'Software Engineer',
+      organization_name: 'Acme Corp',
+      coordinates: [-71.0589, 42.3601],
+      status: 'open',
     })
   })
 
@@ -250,20 +177,8 @@ describe('useJobs', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    const { result } = renderHook(() => useJobs({ bounds: mockBounds }))
-
-    await waitFor(() => {
-      expect(result.current.data?.[0].coordinates).toEqual([-71.0589, 42.3601])
-    })
+    const jobs = await runJobsQuery({ bounds: mockBounds })
+    expect(jobs[0].coordinates).toEqual([-71.0589, 42.3601])
   })
 
   it('filters out jobs without valid coordinates', async () => {
@@ -293,7 +208,7 @@ describe('useJobs', () => {
         employment_type: null,
         remote_option: null,
         location: null,
-        address: null, // No address/coordinates
+        address: null,
         pay_range_min_cents: null,
         pay_range_max_cents: null,
         pay_range_type: null,
@@ -308,50 +223,21 @@ describe('useJobs', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    const { result } = renderHook(() => useJobs({ bounds: mockBounds }))
-
-    await waitFor(() => {
-      // Only valid job should be included
-      expect(result.current.data?.length).toBe(1)
-      expect(result.current.data?.[0].id).toBe('job-1')
-    })
+    const jobs = await runJobsQuery({ bounds: mockBounds })
+    expect(jobs).toHaveLength(1)
+    expect(jobs[0].id).toBe('job-1')
   })
 
-  it('handles database errors', () => {
+  it('handles database errors', async () => {
     const error = { message: 'Database error' }
     mockReturns.mockResolvedValue({
       data: null,
       error,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      let queryError = null
-      try {
-        if (options.queryFn) {
-          await options.queryFn()
-        }
-      } catch (err) {
-        queryError = err
-      }
-      return {
-        data: undefined,
-        isLoading: false,
-        error: queryError,
-      }
-    })
-
-    const { result } = renderHook(() => useJobs({ bounds: mockBounds }))
-
-    expect(result.current.error).toBeTruthy()
+    await expect(runJobsQuery({ bounds: mockBounds })).rejects.toThrow(
+      'Failed to fetch jobs: Database error',
+    )
   })
 
   it('returns empty array for no results', async () => {
@@ -360,20 +246,7 @@ describe('useJobs', () => {
       error: null,
     })
 
-    mockUseQuery.mockImplementation(async (options) => {
-      const data = options.queryFn ? await options.queryFn() : []
-      return {
-        data,
-        isLoading: false,
-        error: null,
-      }
-    })
-
-    const { result } = renderHook(() => useJobs({ bounds: mockBounds }))
-
-    await waitFor(() => {
-      expect(result.current.data).toEqual([])
-    })
+    const jobs = await runJobsQuery({ bounds: mockBounds })
+    expect(jobs).toEqual([])
   })
 })
-
