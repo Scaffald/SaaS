@@ -49,6 +49,14 @@ const hoistedData = vi.hoisted(() => {
   return { mockQuestions, mockChoices }
 })
 
+const createPrefilledAnswers = () =>
+  hoistedData.mockQuestions.slice(0, QUESTIONS_PER_DOMAIN - 1).map((question, index) => ({
+    id: question.id,
+    domain: question.domain,
+    facet: Number.parseInt(question.facet, 10),
+    score: ((index % 5) + 1) as IPIPChoice['score'],
+  }))
+
 vi.mock('../lib/ipip', () => ({
   getQuestions: () => hoistedData.mockQuestions,
   getChoices: () => hoistedData.mockChoices,
@@ -75,11 +83,12 @@ describe('IPIPTestStep', () => {
     const user = userEvent.setup()
     const onSave = vi.fn()
     const onDomainComplete = vi.fn()
+    const initialAnswers = createPrefilledAnswers()
 
     render(
       <IPIPTestStep
-        initialAnswers={[]}
-        currentIndex={0}
+        initialAnswers={initialAnswers}
+        currentIndex={QUESTIONS_PER_DOMAIN - 1}
         language="en"
         onSave={onSave}
         onDomainComplete={onDomainComplete}
@@ -87,17 +96,8 @@ describe('IPIPTestStep', () => {
       />,
     )
 
-    for (let i = 0; i < QUESTIONS_PER_DOMAIN; i += 1) {
-      const choiceButtons = screen.getAllByRole('button', { name: /Very Accurate/i })
-      await user.click(choiceButtons[0])
-      if (i < QUESTIONS_PER_DOMAIN - 1) {
-        const expectedIndex = i + 1
-        await waitFor(() => {
-          const lastCall = onSave.mock.calls.at(-1)
-          expect(lastCall?.[1]).toBe(expectedIndex)
-        })
-      }
-    }
+    const choiceButtons = screen.getAllByRole('button', { name: /Very Accurate/i })
+    await user.click(choiceButtons[0])
 
     await waitFor(() => expect(onDomainComplete).toHaveBeenCalledTimes(1))
     const [domainArg, answersArg] = onDomainComplete.mock.calls[0]

@@ -4,9 +4,11 @@ import { XStack, YStack, Text, Card, Avatar, type GetThemeValueForKey } from 'ta
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DroppableColumn, DraggableCard } from '@app/ui'
+import { api } from '@app/core/utils/api'
 import type { MockApplication, ApplicationStatus } from '../../mock-data/ats-mock-data'
 import { CandidateDetailModal } from './CandidateDetailModal'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
+import { InquiryStatusBadges } from './kanban/InquiryStatusBadges'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 
 const STATUSES: ApplicationStatus[] = ['new', 'screen', 'inquired', 'interview', 'offer', 'hired', 'rejected']
@@ -215,6 +217,12 @@ const ApplicationCard = ({ application, onPress }: ApplicationCardProps) => {
     application.score >= 80 ? '$green10' : application.score >= 60 ? '$blue10' : '$red10'
   const scoreBg = application.score >= 80 ? '$green3' : application.score >= 60 ? '$blue3' : '$red3'
 
+  // Fetch inquiry data if status is 'inquired'
+  const { data: inquiryData } = api.inquiries.getByApplication.useQuery(
+    { applicationId: application.id },
+    { enabled: application.status === 'inquired' }
+  )
+
   return (
     <Card
       data-testid={`kanban-card-${application.id}`}
@@ -266,6 +274,17 @@ const ApplicationCard = ({ application, onPress }: ApplicationCardProps) => {
       <Text fontSize="$1" mt="$2" numberOfLines={1} opacity={0.6}>
         {application.job.title}
       </Text>
+
+      {/* Inquiry Status Badges */}
+      {application.status === 'inquired' && inquiryData?.inquiry && (
+        <InquiryStatusBadges
+          inquiryData={{
+            sections: inquiryData.sections,
+            comments: inquiryData.comments,
+            capabilityResponses: inquiryData.capabilityResponses,
+          }}
+        />
+      )}
     </Card>
   )
 }

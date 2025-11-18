@@ -111,6 +111,21 @@ export interface MockApplication {
     changedAt: string;
     reason?: string;
   }>;
+  inquiry?: {
+    id: string;
+    sections: Array<{
+      section_name: string;
+      accepted_by: string | null;
+      accepted_at: string | null;
+    }>;
+    comments: Array<{
+      sender_id: string;
+      read_by: string[];
+    }>;
+    capabilityResponses: Array<{
+      capability_name: string;
+    }>;
+  } | null;
 }
 
 export const mockApplications: MockApplication[] = [
