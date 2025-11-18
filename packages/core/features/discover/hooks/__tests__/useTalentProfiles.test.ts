@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // Mock Supabase client - use vi.hoisted
@@ -8,6 +8,7 @@ const mockGte = vi.hoisted(() => vi.fn())
 const mockLte = vi.hoisted(() => vi.fn())
 const mockLimit = vi.hoisted(() => vi.fn())
 const mockOrder = vi.hoisted(() => vi.fn())
+const mockIn = vi.hoisted(() => vi.fn())
 const mockSchema = vi.hoisted(() => vi.fn())
 
 const mockSupabaseClient = vi.hoisted(() => ({
@@ -25,7 +26,7 @@ vi.mock('@tanstack/react-query', () => ({
   useQuery: mockUseQuery,
 }))
 
-import { useTalentProfiles } from '../useTalentProfiles'
+import { buildTalentProfilesQuery, useTalentProfiles } from '../useTalentProfiles'
 import type { ViewportBounds } from '@app/ui'
 
 describe('useTalentProfiles', () => {
@@ -36,11 +37,20 @@ describe('useTalentProfiles', () => {
     west: -72,
   }
 
+  const runTalentProfilesQuery = (options?: { bounds?: ViewportBounds | null; limit?: number }) => {
+    const fetchProfiles = buildTalentProfilesQuery(options)
+    return fetchProfiles()
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
     
     // Set up the chain properly
     mockLimit.mockResolvedValue({
+      data: [],
+      error: null,
+    })
+    mockIn.mockResolvedValue({
       data: [],
       error: null,
     })
@@ -52,6 +62,7 @@ describe('useTalentProfiles', () => {
       lte: mockLte,
       limit: mockLimit,
       order: mockOrder,
+      in: mockIn,
     })
     mockFrom.mockReturnValue({
       select: mockSelect,
@@ -85,10 +96,7 @@ describe('useTalentProfiles', () => {
     })
 
     mockUseQuery.mockImplementation((options) => {
-      // Execute queryFn to trigger the actual query
-      if (options.queryFn) {
-        options.queryFn()
-      }
+      options.queryFn?.()
       return {
         data: [],
         isLoading: false,
@@ -112,10 +120,7 @@ describe('useTalentProfiles', () => {
     })
 
     mockUseQuery.mockImplementation((options) => {
-      // Execute queryFn to trigger the actual query
-      if (options.queryFn) {
-        options.queryFn()
-      }
+      options.queryFn?.()
       return {
         data: [],
         isLoading: false,
@@ -150,38 +155,34 @@ describe('useTalentProfiles', () => {
       error: null,
     })
 
-    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
-      data: undefined,
-      isLoading: true,
+    mockIn.mockResolvedValue({
+      data: [
+        {
+          worker_user_id: 'profile-1',
+          badge_status: 'active',
+          badge_expires_at: '2025-01-01',
+        },
+      ],
       error: null,
-    }
-
-    mockUseQuery.mockImplementation((options) => {
-      if (options?.queryFn) {
-        Promise.resolve(options.queryFn())
-          .then((data) => {
-            queryResult.data = data
-            queryResult.isLoading = false
-          })
-          .catch((err) => {
-            queryResult.error = err instanceof Error ? err : new Error(String(err))
-            queryResult.isLoading = false
-          })
-      }
-      return queryResult
     })
 
-    const { result, rerender } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
+    const profiles = await runTalentProfilesQuery({ bounds: mockBounds })
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 10))
-      rerender()
-    })
-
-    await waitFor(() => {
-      expect(result.current.data).toBeDefined()
-      expect(result.current.data?.[0]?.name).toBe('John Doe')
-    }, { timeout: 3000 })
+    expect(profiles).toHaveLength(1)
+    const profile = profiles[0]
+    expect(profile.id).toBe('profile-1')
+    expect(profile.name).toBe('John Doe')
+    expect(profile.title).toBe('Software Engineer')
+    expect(profile.experienceYears).toBe(5)
+    expect(profile.hourlyRate).toBe(50)
+    expect(profile.coordinates).toEqual([-71.0589, 42.3601])
+    expect(profile.locationLabel).toBe('Boston, MA')
+    expect(profile.badges).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: expect.stringContaining('ID Verified') }),
+        expect.objectContaining({ label: 'JavaScript' }),
+      ]),
+    )
   })
 
   it('handles database errors', async () => {
@@ -191,36 +192,7 @@ describe('useTalentProfiles', () => {
       error,
     })
 
-    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
-      data: undefined,
-      isLoading: true,
-      error: null,
-    }
-
-    mockUseQuery.mockImplementation((options) => {
-      if (options?.queryFn) {
-        Promise.resolve(options.queryFn())
-          .then(() => {
-            queryResult.isLoading = false
-          })
-          .catch((err) => {
-            queryResult.error = err instanceof Error ? err : new Error(String(err))
-            queryResult.isLoading = false
-          })
-      }
-      return queryResult
-    })
-
-    const { result, rerender } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 10))
-      rerender()
-    })
-
-    await waitFor(() => {
-      expect(result.current.error).toBeTruthy()
-    }, { timeout: 3000 })
+    await expect(runTalentProfilesQuery({ bounds: mockBounds })).rejects.toThrow('Failed to fetch profiles: Database error')
   })
 
   it('returns empty array for no results', async () => {
@@ -229,37 +201,8 @@ describe('useTalentProfiles', () => {
       error: null,
     })
 
-    const queryResult: { data: unknown; isLoading: boolean; error: Error | null } = {
-      data: undefined,
-      isLoading: true,
-      error: null,
-    }
-
-    mockUseQuery.mockImplementation((options) => {
-      if (options?.queryFn) {
-        Promise.resolve(options.queryFn())
-          .then((data) => {
-            queryResult.data = data
-            queryResult.isLoading = false
-          })
-          .catch((err) => {
-            queryResult.error = err instanceof Error ? err : new Error(String(err))
-            queryResult.isLoading = false
-          })
-      }
-      return queryResult
-    })
-
-    const { result, rerender } = renderHook(() => useTalentProfiles({ bounds: mockBounds }))
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 10))
-      rerender()
-    })
-
-    await waitFor(() => {
-      expect(result.current.data).toEqual([])
-    }, { timeout: 3000 })
+    const profiles = await runTalentProfilesQuery({ bounds: mockBounds })
+    expect(profiles).toEqual([])
   })
 
   it('respects enabled flag', () => {

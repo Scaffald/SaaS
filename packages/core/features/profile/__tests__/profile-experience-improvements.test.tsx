@@ -131,13 +131,13 @@ describe('Profile Experience Improvements', () => {
       const [endDate, setEndDate] = React.useState<Date | null>(null)
       const [error, setError] = React.useState<string | null>(null)
 
-      const validateDates = () => {
+      React.useEffect(() => {
         if (startDate && endDate && endDate < startDate) {
           setError('End date must be after start date')
         } else {
           setError(null)
         }
-      }
+      }, [startDate, endDate])
 
       return (
         <div>
@@ -147,7 +147,6 @@ describe('Profile Experience Improvements', () => {
             onChange={(e) => {
               const nextValue = e.target.value
               setStartDate(nextValue ? new Date(`${nextValue}-01T12:00:00Z`) : null)
-              validateDates()
             }}
             data-testid="start-date"
           />
@@ -157,7 +156,6 @@ describe('Profile Experience Improvements', () => {
             onChange={(e) => {
               const nextValue = e.target.value
               setEndDate(nextValue ? new Date(`${nextValue}-01T12:00:00Z`) : null)
-              validateDates()
             }}
             data-testid="end-date"
           />

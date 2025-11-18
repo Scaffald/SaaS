@@ -172,6 +172,21 @@ export function InquiryCreateForm({
 
   const smartDefaults = useMemo(() => smartDefaultsData?.defaults ?? null, [smartDefaultsData])
   const smartDefaultsFieldCount = smartDefaultsData?.appliedFields?.length ?? 0
+  const smartDefaultsSourceDescription = useMemo(() => {
+    if (!smartDefaultsData?.jobTitle) {
+      return smartDefaultsData?.jobLocation ?? 'job posting'
+    }
+    if (smartDefaultsData.jobLocation) {
+      return `${smartDefaultsData.jobTitle} (${smartDefaultsData.jobLocation})`
+    }
+    return smartDefaultsData.jobTitle
+  }, [smartDefaultsData])
+  const autoFilledFields = useMemo(() => {
+    if (!smartDefaultsApplied || !smartDefaultsData?.appliedFields) {
+      return new Set<string>()
+    }
+    return new Set<string>(smartDefaultsData.appliedFields)
+  }, [smartDefaultsApplied, smartDefaultsData])
 
   const getErrorMessage = useCallback((error: unknown, fallback: string) => {
     if (error instanceof Error) {
@@ -352,6 +367,29 @@ export function InquiryCreateForm({
     return Math.round(parsed * 100)
   }
 
+  const renderSmartLabel = useCallback(
+    (label: string, fieldKeys: string | string[]) => {
+      const keys = Array.isArray(fieldKeys) ? fieldKeys : [fieldKeys]
+      const isAutoFilled = keys.some((key) => autoFilledFields.has(key))
+
+      return (
+        <XStack items="center" gap="$2">
+          <Text fontWeight="600" fontSize="$4">
+            {label}
+          </Text>
+          {isAutoFilled && (
+            <XStack px="$2" py="$1" bg="$green3" rounded="$2">
+              <Text fontSize="$2" color="$green11" fontWeight="600">
+                Auto-filled
+              </Text>
+            </XStack>
+          )}
+        </XStack>
+      )
+    },
+    [autoFilledFields]
+  )
+
   return (
     <>
       <FormProvider {...form}>
@@ -499,12 +537,8 @@ export function InquiryCreateForm({
                       ) : smartDefaultsFieldCount > 0 ? (
                         <Text fontSize="$3" color="$color11">
                           {smartDefaultsApplied
-                            ? `Applied ${smartDefaultsFieldCount} fields from ${
-                                smartDefaultsData?.jobTitle ?? 'the job posting'
-                              }.`
-                            : `Prefill ${smartDefaultsFieldCount} fields from ${
-                                smartDefaultsData?.jobTitle ?? 'the job posting'
-                              }.`}
+                            ? `Applied ${smartDefaultsFieldCount} fields from ${smartDefaultsSourceDescription}.`
+                            : `Prefill ${smartDefaultsFieldCount} fields from ${smartDefaultsSourceDescription}.`}
                         </Text>
                       ) : (
                         <Text fontSize="$3" color="$color11">
@@ -548,9 +582,7 @@ export function InquiryCreateForm({
 
                 {/* Employment Type */}
                 <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Employment type
-                  </Text>
+                  {renderSmartLabel('Employment type', 'employmentType')}
                   <Controller
                     control={control}
                     name="employmentType"
@@ -597,9 +629,7 @@ export function InquiryCreateForm({
 
                 {/* Work Schedule */}
                 <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Work schedule
-                  </Text>
+                  {renderSmartLabel('Work schedule', 'workSchedule')}
                   <Controller
                     control={control}
                     name="workSchedule"
@@ -666,9 +696,11 @@ export function InquiryCreateForm({
 
                 {/* Working Hours */}
                 <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Working hours
-                  </Text>
+                  {renderSmartLabel('Working hours', [
+                    'workingHoursStart',
+                    'workingHoursEnd',
+                    'workingHoursTimezone',
+                  ])}
                   <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
                     <YStack gap="$2" flex={1}>
                       <Controller
@@ -773,9 +805,7 @@ export function InquiryCreateForm({
 
                 {/* Workdays */}
                 <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Workdays
-                  </Text>
+                  {renderSmartLabel('Workdays', 'workdays')}
                   <Controller
                     control={control}
                     name="workdays"
@@ -832,9 +862,7 @@ export function InquiryCreateForm({
 
                 {/* Date of Employment */}
                 <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Date of employment
-                  </Text>
+                  {renderSmartLabel('Date of employment', 'employmentStartDate')}
                   <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
                     <YStack gap="$2" flex={1}>
                   <Controller
@@ -915,9 +943,7 @@ export function InquiryCreateForm({
 
                 {/* Rate Type */}
                 <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Rate
-                  </Text>
+                  {renderSmartLabel('Rate', ['rateType', 'rateMinCents', 'rateMaxCents'])}
                   <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
                     <YStack gap="$2" flex={2}>
                       <Controller
