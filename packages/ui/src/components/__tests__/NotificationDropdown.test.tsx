@@ -124,7 +124,28 @@ vi.mock('tamagui', () => {
   }: {
     children?: ReactNode
     asChild?: boolean
-  }) => <div data-testid="popover-trigger">{children}</div>
+  }) => {
+    const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+      // Forward click to button inside
+      const button = (e.currentTarget as HTMLElement).querySelector('button')
+      if (button) {
+        button.click()
+      }
+    }
+    return (
+      <div
+        data-testid="popover-trigger"
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleClick(e)
+          }
+        }}
+      >
+        {children}
+      </div>
+    )
+  }
 
   Popover.Content = ({
     children,
@@ -256,38 +277,44 @@ describe('NotificationDropdown', () => {
       expect(screen.queryByText('99+')).not.toBeInTheDocument()
     })
 
-    it('shows loading state', () => {
+    it('shows loading state', async () => {
       render(<NotificationDropdown notifications={[]} unreadCount={0} isLoading={true} />)
 
-      // Open dropdown first
-      const trigger = screen.getByTestId('popover-trigger')
-      fireEvent.click(trigger)
+      // Open dropdown first - click the button directly
+      const button = screen.getByLabelText('Notifications')
+      fireEvent.click(button)
 
-      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByTestId('spinner')).toBeInTheDocument()
+      })
       expect(screen.getByText('Loading notifications...')).toBeInTheDocument()
     })
 
-    it('shows empty state when no notifications', () => {
+    it('shows empty state when no notifications', async () => {
       render(<NotificationDropdown notifications={[]} unreadCount={0} isLoading={false} />)
 
-      // Open dropdown first
-      const trigger = screen.getByTestId('popover-trigger')
-      fireEvent.click(trigger)
+      // Open dropdown first - click the button directly
+      const button = screen.getByLabelText('Notifications')
+      fireEvent.click(button)
 
-      expect(screen.getByText('No notifications')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText('No notifications')).toBeInTheDocument()
+      })
       expect(screen.getByText("You're all caught up!")).toBeInTheDocument()
     })
   })
 
   describe('Notification Organization', () => {
-    it('organizes notifications into unread and read sections', () => {
+    it('organizes notifications into unread and read sections', async () => {
       render(<NotificationDropdown notifications={mockNotifications} unreadCount={2} />)
 
-      // Open dropdown
-      const trigger = screen.getByTestId('popover-trigger')
-      fireEvent.click(trigger)
+      // Open dropdown - click the button directly
+      const button = screen.getByLabelText('Notifications (2 unread)')
+      fireEvent.click(button)
 
-      expect(screen.getByText('Unread (2)')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText('Unread (2)')).toBeInTheDocument()
+      })
       expect(screen.getByText('Read')).toBeInTheDocument()
     })
 
@@ -528,8 +555,9 @@ describe('NotificationDropdown', () => {
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
 
-      // Should show "2 hours ago" or similar
-      expect(screen.getByText(/ago/)).toBeInTheDocument()
+      // Should show "2 hours ago" or similar - use getAllByText since there are multiple
+      const timeElements = screen.getAllByText(/ago/)
+      expect(timeElements.length).toBeGreaterThan(0)
     })
 
     it('displays severity pill', () => {
@@ -538,8 +566,11 @@ describe('NotificationDropdown', () => {
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
 
-      expect(screen.getByText('INFO')).toBeInTheDocument()
-      expect(screen.getByText('IMPORTANT')).toBeInTheDocument()
+      // Use getAllByText since there may be multiple notifications with same severity
+      const infoElements = screen.getAllByText('INFO')
+      const importantElements = screen.getAllByText('IMPORTANT')
+      expect(infoElements.length).toBeGreaterThan(0)
+      expect(importantElements.length).toBeGreaterThan(0)
     })
 
     it('displays channels pill when available', () => {

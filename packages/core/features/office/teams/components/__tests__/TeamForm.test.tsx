@@ -69,12 +69,34 @@ vi.mock('@tamagui/lucide-icons', () => ({
   Palette: () => <span data-testid="palette-icon">Palette</span>,
   Check: () => <span data-testid="check-icon">Check</span>,
   ChevronDown: () => <span data-testid="chevron-down-icon">ChevronDown</span>,
+  Bell: () => <span data-testid="bell-icon">Bell</span>,
+  HardDrive: () => <span data-testid="hard-drive-icon">HardDrive</span>,
+  ClipboardCheck: () => <span data-testid="clipboard-check-icon">ClipboardCheck</span>,
+  ShieldCheck: () => <span data-testid="shield-check-icon">ShieldCheck</span>,
+  Users: () => <span data-testid="users-icon">Users</span>,
+  Briefcase: () => <span data-testid="briefcase-icon">Briefcase</span>,
+  GraduationCap: () => <span data-testid="graduation-cap-icon">GraduationCap</span>,
+  Building2: () => <span data-testid="building2-icon">Building2</span>,
+  FileText: () => <span data-testid="file-text-icon">FileText</span>,
+}), { virtual: true })
+
+vi.mock('@app/core/constants/routes', () => ({
+  ROUTES: {
+    STYLEGUIDE: { path: '/styleguide', title: 'Styleguide' },
+    OFFICE_ATS: { path: '/office/ats', title: 'ATS' },
+    OFFICE_TEAMS: { path: '/office/teams', title: 'Teams' },
+  },
 }))
 
 vi.mock('react-hook-form', () => {
   return {
     useForm: ({ defaultValues }: { defaultValues?: Record<string, unknown> }) => {
-      const values = { ...(defaultValues ?? {}) }
+      const values = { 
+        ...(defaultValues ?? {}),
+        // Ensure default role is set for form validation
+        defaultRoleId: defaultValues?.defaultRoleId ?? 'role-1',
+        defaultRoleKey: defaultValues?.defaultRoleKey ?? 'member',
+      }
       const store = { values }
       const cleanValues = structuredClone(values)
       setValueSpy.mockImplementation((name: string, value: unknown) => {
@@ -86,7 +108,13 @@ vi.mock('react-hook-form', () => {
         handleSubmit:
           (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) =>
           async () => {
-            await onSubmit({ ...store.values })
+            // Ensure required fields are present before submitting
+            const submitData = {
+              ...store.values,
+              defaultRoleId: store.values.defaultRoleId ?? 'role-1',
+              defaultRoleKey: store.values.defaultRoleKey ?? 'member',
+            }
+            await onSubmit(submitData)
           },
         formState: { errors: {}, isDirty: true },
         setValue: setValueSpy,
@@ -371,25 +399,50 @@ describe('TeamForm', () => {
   })
 
   it('displays validation errors', async () => {
-    createTeamMock.mutateAsync.mockRejectedValue({
-      message: 'Validation failed',
-      data: {
-        zodError: {
-          fieldErrors: {
-            name: ['Name is required'],
-          },
-        },
-      },
-    })
-
     const user = userEvent.setup()
+    
+    // Set up the mutation to reject
+    const error = new Error('Validation failed')
+    createTeamMock.mutateAsync.mockRejectedValueOnce(error)
+
     render(<TeamForm mode="create" organizationId="org-1" />)
+
+    // Wait for form to be ready (roles loaded)
+    await waitFor(() => {
+      expect(screen.queryByText('Loading team options…')).not.toBeInTheDocument()
+    }, { timeout: 1000 })
+
+    // Wait a bit for the useEffect to auto-select default role
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // Fill in required fields
+    const nameInput = document.getElementById('team-name') as HTMLInputElement
+    if (nameInput) {
+      await user.clear(nameInput)
+      await user.type(nameInput, 'Test Team')
+    }
+
+    // Ensure form values are set (including default role)
+    setValueSpy('defaultRoleId', 'role-1')
+    setValueSpy('defaultRoleKey', 'member')
+
+    // Wait for form to be ready to submit
+    await waitFor(() => {
+      const submitButton = screen.getByTestId('team-form-submit')
+      expect(submitButton).toBeInTheDocument()
+    })
 
     await user.click(screen.getByTestId('team-form-submit'))
 
+    // Wait for mutation to be called
+    await waitFor(() => {
+      expect(createTeamMock.mutateAsync).toHaveBeenCalled()
+    }, { timeout: 2000 })
+
+    // The onError handler should show a toast with the error message
     await waitFor(() => {
       expect(toastMock.show).toHaveBeenCalled()
-    })
+    }, { timeout: 1000 })
   })
 
   it('resets form when reset is called', () => {

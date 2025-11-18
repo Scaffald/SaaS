@@ -102,7 +102,7 @@ describe('TeamCommentThread', () => {
     const commentInput = screen.getByPlaceholderText(/add a comment/i)
     await user.type(commentInput, 'New comment')
     
-    const submitButton = screen.getByLabelText(/post comment/i)
+    const submitButton = screen.getByText(/post comment/i)
     await user.click(submitButton)
 
     await waitFor(() => {

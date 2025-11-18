@@ -3,6 +3,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest'
 import type { ReactNode } from 'react'
 
 const mockUseInfiniteQuery = vi.fn()
+const mockUseMutation = vi.fn()
 
 const mockUseUtils = vi.fn(() => ({
   teams: {
@@ -75,6 +76,7 @@ vi.mock('@app/core/utils/api', () => ({
     teams: {
       analytics: {
         activity: { useInfiniteQuery: mockUseInfiniteQuery },
+        postComment: { useMutation: mockUseMutation },
       },
     },
     useUtils: mockUseUtils,
@@ -97,6 +99,10 @@ const { TeamActivityFeed } = await import('../TeamActivityFeed')
 describe('TeamActivityFeed', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseMutation.mockReturnValue({
+      mutateAsync: vi.fn().mockResolvedValue({}),
+      isPending: false,
+    })
     mockUseInfiniteQuery.mockReturnValue({
       data: {
         pages: [
@@ -135,7 +141,9 @@ describe('TeamActivityFeed', () => {
 
     render(<TeamActivityFeed teamId="team-1" />)
 
-    expect(screen.getByText(/Loading/i)).toBeInTheDocument()
+    // Check for spinner (which renders "Loading" text)
+    const loadingElements = screen.getAllByText(/Loading/i)
+    expect(loadingElements.length).toBeGreaterThan(0)
   })
 
   it('handles empty activity feed', () => {
