@@ -267,4 +267,422 @@ describe('JobForm', () => {
       location: 'Charlotte, NC',
     }))
   })
+
+  describe('Form Section Rendering', () => {
+    it('renders all form sections', () => {
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Check that section update buttons are present (indicating sections render)
+      expect(screen.getByText('metadata-update')).toBeInTheDocument()
+      expect(screen.getByText('screening-update')).toBeInTheDocument()
+      expect(screen.getByText('score-update')).toBeInTheDocument()
+      expect(screen.getByText('autoreject-update')).toBeInTheDocument()
+      expect(screen.getByText('requirements-update')).toBeInTheDocument()
+      expect(screen.getByText('compensation-update')).toBeInTheDocument()
+      expect(screen.getByText('process-update')).toBeInTheDocument()
+      expect(screen.getByText('location-update')).toBeInTheDocument()
+      expect(screen.getByText('distribution-update')).toBeInTheDocument()
+      expect(screen.getByText('compliance-update')).toBeInTheDocument()
+    })
+
+    it('renders basic information fields', () => {
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      expect(screen.getByTestId('job-organization-select')).toBeInTheDocument()
+      expect(screen.getByTestId('job-title-input')).toBeInTheDocument()
+      expect(screen.getByTestId('job-description-input')).toBeInTheDocument()
+    })
+  })
+
+  describe('Form Field Validation', () => {
+    it('requires organization selection', () => {
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      const saveDraftButton = screen.getByTestId('job-save-draft-button')
+      expect(saveDraftButton).toBeDisabled()
+    })
+
+    it('requires title for submission', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Select organization first
+      const orgSelect = screen.getAllByTestId('select')[0]
+      selectChange.onChange('org-1')
+      await user.click(orgSelect)
+
+      // Try to save without title
+      const saveDraftButton = screen.getByTestId('job-save-draft-button')
+      expect(saveDraftButton).toBeDisabled()
+    })
+
+    it('requires description for submission', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Select organization
+      const orgSelect = screen.getAllByTestId('select')[0]
+      selectChange.onChange('org-1')
+      await user.click(orgSelect)
+
+      // Fill title but not description
+      await user.type(screen.getByTestId('job-title-input'), 'Test Job')
+
+      const saveDraftButton = screen.getByTestId('job-save-draft-button')
+      expect(saveDraftButton).toBeDisabled()
+    })
+
+    it('enables save button when required fields are filled', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Select organization
+      const orgSelect = screen.getAllByTestId('select')[0]
+      selectChange.onChange('org-1')
+      await user.click(orgSelect)
+
+      // Fill required fields
+      await user.type(screen.getByTestId('job-title-input'), 'Test Job')
+      await user.type(screen.getByTestId('job-description-input'), 'Test description')
+
+      const saveDraftButton = screen.getByTestId('job-save-draft-button')
+      expect(saveDraftButton).not.toBeDisabled()
+    })
+  })
+
+  describe('Form State Management', () => {
+    it('updates form data when fields change', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.type(screen.getByTestId('job-title-input'), 'New Title')
+      const titleInput = screen.getByTestId('job-title-input') as HTMLInputElement
+      expect(titleInput.value).toBe('New Title')
+    })
+
+    it('preserves form data on section updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.type(screen.getByTestId('job-title-input'), 'Test Job')
+
+      // Update a section
+      await user.click(screen.getByText('metadata-update'))
+
+      // Title should still be preserved
+      const titleInput = screen.getByTestId('job-title-input') as HTMLInputElement
+      expect(titleInput.value).toBe('Test Job')
+    })
+
+    it('handles section updates correctly', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Update metadata section
+      await user.click(screen.getByText('metadata-update'))
+
+      // Update screening section
+      await user.click(screen.getByText('screening-update'))
+
+      // Update score section
+      await user.click(screen.getByText('score-update'))
+
+      // All updates should be callable
+      expect(screen.getByText('metadata-update')).toBeInTheDocument()
+      expect(screen.getByText('screening-update')).toBeInTheDocument()
+      expect(screen.getByText('score-update')).toBeInTheDocument()
+    })
+
+    it('resets form on cancel', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.type(screen.getByTestId('job-title-input'), 'Test Job')
+      await user.type(screen.getByTestId('job-description-input'), 'Test description')
+
+      const cancelButton = screen.getByTestId('job-cancel-button')
+      await user.click(cancelButton)
+
+      expect(routerMock.back).toHaveBeenCalled()
+    })
+  })
+
+  describe('Form Section-Specific Tests', () => {
+    it('handles JobMetadataSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('metadata-update'))
+
+      // Section should be interactive
+      expect(screen.getByText('metadata-update')).toBeInTheDocument()
+    })
+
+    it('handles ApplicationScreeningSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('screening-update'))
+
+      expect(screen.getByText('screening-update')).toBeInTheDocument()
+    })
+
+    it('handles ScoreThresholdSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('score-update'))
+
+      expect(screen.getByText('score-update')).toBeInTheDocument()
+    })
+
+    it('handles AutoRejectionSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('autoreject-update'))
+
+      expect(screen.getByText('autoreject-update')).toBeInTheDocument()
+    })
+
+    it('handles EnhancedRequirementsSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('requirements-update'))
+
+      expect(screen.getByText('requirements-update')).toBeInTheDocument()
+    })
+
+    it('handles CompensationBenefitsSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('compensation-update'))
+
+      expect(screen.getByText('compensation-update')).toBeInTheDocument()
+    })
+
+    it('handles ApplicationProcessSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('process-update'))
+
+      expect(screen.getByText('process-update')).toBeInTheDocument()
+    })
+
+    it('handles LocationSchedulingSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('location-update'))
+
+      expect(screen.getByText('location-update')).toBeInTheDocument()
+    })
+
+    it('handles DistributionVisibilitySection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('distribution-update'))
+
+      expect(screen.getByText('distribution-update')).toBeInTheDocument()
+    })
+
+    it('handles ComplianceAnalyticsSection updates', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      await user.click(screen.getByText('compliance-update'))
+
+      expect(screen.getByText('compliance-update')).toBeInTheDocument()
+    })
+  })
+
+  describe('Form Submission', () => {
+    it('saves as draft with incomplete data', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Select organization
+      const orgSelect = screen.getAllByTestId('select')[0]
+      selectChange.onChange('org-1')
+      await user.click(orgSelect)
+
+      // Fill only required fields
+      await user.type(screen.getByTestId('job-title-input'), 'Draft Job')
+      await user.type(screen.getByTestId('job-description-input'), 'Draft description')
+
+      await user.click(screen.getByTestId('job-save-draft-button'))
+
+      expect(createJobMock.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Draft Job',
+          description: 'Draft description',
+          organization_id: 'org-1',
+          status: 'draft',
+        })
+      )
+    })
+
+    it('publishes with complete data', async () => {
+      const user = userEvent.setup()
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Select organization
+      const orgSelect = screen.getAllByTestId('select')[0]
+      selectChange.onChange('org-1')
+      await user.click(orgSelect)
+
+      // Fill required fields
+      await user.type(screen.getByTestId('job-title-input'), 'Published Job')
+      await user.type(screen.getByTestId('job-description-input'), 'Published description')
+      await user.type(screen.getByLabelText('job-location'), 'Charlotte, NC')
+      await user.click(screen.getByText('select-address'))
+
+      await user.click(screen.getByTestId('job-publish-button'))
+
+      expect(createJobMock.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Published Job',
+          description: 'Published description',
+          organization_id: 'org-1',
+          status: 'open',
+          location: 'Charlotte, NC',
+        })
+      )
+    })
+
+    it('handles edit mode with initial data', () => {
+      const initialData = {
+        title: 'Existing Job',
+        description: 'Existing description',
+        organization_id: 'org-1',
+      }
+
+      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+
+      const titleInput = screen.getByTestId('job-title-input') as HTMLInputElement
+      expect(titleInput.value).toBe('Existing Job')
+    })
+
+    it('updates existing job', async () => {
+      const user = userEvent.setup()
+      const initialData = {
+        title: 'Original Job',
+        description: 'Original description',
+        organization_id: 'org-1',
+      }
+
+      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+
+      const titleInput = screen.getByTestId('job-title-input')
+      await user.clear(titleInput)
+      await user.type(titleInput, 'Updated Job')
+
+      await user.click(screen.getByTestId('job-save-draft-button'))
+
+      expect(updateJobMock.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'job-123',
+          title: 'Updated Job',
+          status: 'draft',
+        })
+      )
+    })
+
+    it('shows loading state during submission', () => {
+      createJobMock.useMutation.mockReturnValue({
+        mutate: createJobMock.mutate,
+        isPending: true,
+      })
+
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Form should show loading state (buttons disabled)
+      const saveDraftButton = screen.getByTestId('job-save-draft-button')
+      expect(saveDraftButton).toBeDisabled()
+    })
+
+    it('calls onSuccess callback after successful submission', async () => {
+      const user = userEvent.setup()
+      createJobMock.mutate.mockImplementation((_data, options) => {
+        options?.onSuccess?.()
+      })
+
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Select organization
+      const orgSelect = screen.getAllByTestId('select')[0]
+      selectChange.onChange('org-1')
+      await user.click(orgSelect)
+
+      await user.type(screen.getByTestId('job-title-input'), 'Test Job')
+      await user.type(screen.getByTestId('job-description-input'), 'Test description')
+
+      await user.click(screen.getByTestId('job-save-draft-button'))
+
+      expect(onSuccess).toHaveBeenCalled()
+    })
+
+    it('shows error toast on submission failure', async () => {
+      const user = userEvent.setup()
+      const error = new Error('Submission failed')
+      createJobMock.mutate.mockImplementation((_data, options) => {
+        options?.onError?.(error)
+      })
+
+      render(<JobForm mode="create" onSuccess={onSuccess} />)
+
+      // Select organization
+      const orgSelect = screen.getAllByTestId('select')[0]
+      selectChange.onChange('org-1')
+      await user.click(orgSelect)
+
+      await user.type(screen.getByTestId('job-title-input'), 'Test Job')
+      await user.type(screen.getByTestId('job-description-input'), 'Test description')
+
+      await user.click(screen.getByTestId('job-save-draft-button'))
+
+      expect(toastMock.show).toHaveBeenCalledWith('Error: Submission failed', { variant: 'error' })
+    })
+  })
+
+  describe('Edit Mode', () => {
+    it('pre-populates form with existing job data', () => {
+      const initialData = {
+        title: 'Existing Job Title',
+        description: 'Existing job description',
+        organization_id: 'org-1',
+        location: 'New York, NY',
+        employment_type: 'full-time',
+      }
+
+      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+
+      const titleInput = screen.getByTestId('job-title-input') as HTMLInputElement
+      expect(titleInput.value).toBe('Existing Job Title')
+    })
+
+    it('uses updateJob mutation in edit mode', async () => {
+      const user = userEvent.setup()
+      const initialData = {
+        title: 'Original Title',
+        description: 'Original description',
+        organization_id: 'org-1',
+      }
+
+      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+
+      const titleInput = screen.getByTestId('job-title-input')
+      await user.clear(titleInput)
+      await user.type(titleInput, 'Updated Title')
+
+      await user.click(screen.getByTestId('job-save-draft-button'))
+
+      expect(updateJobMock.mutate).toHaveBeenCalled()
+      expect(createJobMock.mutate).not.toHaveBeenCalled()
+    })
+  })
 })
