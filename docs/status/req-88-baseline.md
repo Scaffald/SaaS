@@ -21,7 +21,7 @@ This document captures the current implementation state for every BrainGrid task
 | 5 | Set up cron jobs for success fee final payments and duration tracking | ✅ COMPLETED | `097_success_fee_cron_jobs.sql` introduces queue tables/functions | Need Supabase Edge functions or scheduled invocations that call the RPCs |
 | 6 | Create background checks tRPC router with NationSearch integration | 🔄 IN_PROGRESS | Router exists with payment intent creation, NationSearch client (`_shared/nationsearch/client.ts`), webhook skeleton in `functions/background-check-webhook` | Need to validate env vars, finish webhook + retry logic, ensure Expo wizard uses live data, and add Deno tests for payments/sharing |
 | 7 | Create ID verification tRPC router with Persona integration | ✅ COMPLETED | `id-verification.router.ts` now supports STRIPE_MOCK mode, persists persona metadata, and the new `persona-webhook` function syncs badge state end-to-end | None |
-| 8 | Integrate success fee payment verification into hiring flow | 🟡 PLANNED | Hiring modal (`ApplicationStatusChangeModal.tsx`) instantiates payment intents and confirm mutations | Replace mock `MockApplication` data with real application/job payloads, enforce payment before exposing worker contact info, add legal acknowledgement |
+| 8 | Integrate success fee payment verification into hiring flow | 🔄 IN_PROGRESS | Hiring modal now queries live success-fee status, reuses existing payment intents, enforces legal acknowledgement, and blocks candidate contact info until upfront fees are paid | Finalize legal copy/storage workflow, add analytics + final-payment automation |
 | 9 | Create frontend payment UI components with Stripe.js integration | 🟡 PLANNED | `PaymentIntentForm` + `useStripeConfig` exist for web/native | Need shared stories/tests, loading/error UX, and usage guides so other flows can reuse without duplication |
 | 10 | Build admin pricing management interface | 🟡 PLANNED | Background check admin catalog (`AdminCatalogManager.tsx`) manages packages/types | Extend to edit `core.service_pricing` rows (tiers + ID verification), add tRPC admin CRUD + tests |
 | 11 | Create payment monitoring and analytics dashboard | 🟡 PLANNED | None | Need backend aggregations (probably via `payments.router`) and Office UI (KPIs, failure queues, exports) |
@@ -38,7 +38,7 @@ This document captures the current implementation state for every BrainGrid task
 
 1. Validate Background Check + NationSearch integration end-to-end (Task 6) and backfill router/UI tests.
 2. Finish Persona webhook + badge lifecycle automation (Tasks 7, 12, 13).
-3. Replace mock data + add legal gating in the hiring flow before charging success fees (Task 8).
+3. Finalize legal copy/storage plus final-payment automation for success fees (Task 8 & 5 follow-ups).
 
 These actions align with the approved implementation plan and unblock downstream payment operations work.
 

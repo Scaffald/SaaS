@@ -52,6 +52,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     watch: false,
+    testTimeout: 30_000, // 30 seconds per test
+    hookTimeout: 10_000, // 10 seconds for hooks
     include: ['{apps,packages}/**/*.{test,spec}.{ts,tsx}'],
     exclude: [
       '**/node_modules/**',

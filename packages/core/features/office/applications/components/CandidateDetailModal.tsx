@@ -59,6 +59,40 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
   const [activeTab, setActiveTab] = useState<'profile' | 'application' | 'notes' | 'messages' | 'inquiry'>(
     'profile'
   )
+  const organizationId = application?.organizationId ?? application?.job.organizationId ?? ''
+  const workerUserId = application?.workerUserId ?? application?.candidate.id ?? ''
+  const applicationId = application?.id ?? ''
+
+  const successFeeStatusQuery = api.successFees.getStatusByApplication.useQuery(
+    {
+      organizationId,
+      applicationId,
+      workerUserId,
+    },
+    {
+      enabled: Boolean(open && organizationId && applicationId && workerUserId),
+      staleTime: 10 * 1000,
+    }
+  )
+
+  const contactUnlocked = Boolean(successFeeStatusQuery.data?.status === 'upfront_paid')
+
+  const contactInfoQuery = api.userProfile.getUserContactInfo.useQuery(
+    {
+      userId: workerUserId,
+      organizationId,
+      applicationId,
+    },
+    {
+      enabled: Boolean(contactUnlocked && organizationId && applicationId && workerUserId),
+    }
+  )
+
+  const contactLockReason = contactUnlocked
+    ? undefined
+    : workerUserId
+      ? 'Complete the upfront success fee to unlock contact information.'
+      : 'This candidate does not have a linked worker account yet.'
 
   // Check if there's an inquiry for this application
   const { data: inquiryData, isLoading: isInquiryLoading } = api.inquiries.getByApplication.useQuery(
@@ -293,7 +327,12 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         </Tabs.List>
 
         <Tabs.Content value="profile" pt="$4">
-          <CandidateProfileTab candidate={application.candidate} />
+          <CandidateProfileTab
+            candidate={application.candidate}
+            contactInfo={contactInfoQuery.data ?? undefined}
+            isContactLocked={!contactUnlocked}
+            lockReason={contactLockReason}
+          />
         </Tabs.Content>
 
         <Tabs.Content value="application" pt="$4">

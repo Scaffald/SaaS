@@ -2,6 +2,82 @@ import { z } from "zod";
 import { t } from "../middleware.ts";
 import { enrichUserSkills } from "./utils/skill-enrichment.ts";
 import { TRPCError } from "@trpc/server";
+import type { Context } from "../context.ts";
+
+async function userHasPlatformRole(ctx: Context): Promise<boolean> {
+  if (!ctx.user?.id) return false;
+  const { data, error } = await (ctx.supabaseAdmin ?? ctx.supabase)
+    .schema("core")
+    .from("role_assignments")
+    .select("role:roles(name, scope)")
+    .eq("user_id", ctx.user.id);
+
+  if (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Unable to verify platform roles: ${error.message}`,
+    });
+  }
+
+  return Boolean(
+    data?.some(
+      (assignment) =>
+        assignment.role?.scope === "platform" &&
+        ["office", "super_admin"].includes(assignment.role?.name ?? ""),
+    ),
+  );
+}
+
+async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
+  if (!ctx.user?.id) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  if (await userHasPlatformRole(ctx)) {
+    return;
+  }
+
+  const supabase = ctx.supabaseAdmin ?? ctx.supabase;
+  const { data: organization, error: orgError } = await supabase
+    .schema("core")
+    .from("organizations")
+    .select("id, owner_user_id")
+    .eq("id", organizationId)
+    .maybeSingle();
+
+  if (orgError) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to load organization: ${orgError.message}`,
+    });
+  }
+
+  if (!organization) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Organization not found",
+    });
+  }
+
+  if (organization.owner_user_id === ctx.user.id) {
+    return;
+  }
+
+  const { data: assignment } = await supabase
+    .schema("core")
+    .from("role_assignments")
+    .select("scope_org_id")
+    .eq("user_id", ctx.user.id)
+    .eq("scope_org_id", organizationId)
+    .maybeSingle();
+
+  if (!assignment) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You do not have access to this organization",
+    });
+  }
+}
 
 export const userProfileRouter = t.router({
   /**
@@ -290,10 +366,31 @@ export const userProfileRouter = t.router({
     .input(
       z.object({
         userId: z.string().uuid(),
+        organizationId: z.string().uuid(),
+        applicationId: z.string().uuid(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      // TODO: Add permission check - should only return if user has permission
+      await ensureOrganizationAccess(ctx, input.organizationId);
+
+      const supabaseAdmin = ctx.supabaseAdmin ?? ctx.supabase;
+      const { data: successFee } = await supabaseAdmin
+        .schema("core")
+        .from("success_fees")
+        .select("id")
+        .eq("organization_id", input.organizationId)
+        .eq("application_id", input.applicationId)
+        .eq("worker_user_id", input.userId)
+        .eq("status", "upfront_paid")
+        .maybeSingle();
+
+      if (!successFee) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Success fee payment is required to access worker contact information.",
+        });
+      }
+
       const { data: contactInfo, error } = await ctx.supabase
         .schema("core")
         .from("profile")
@@ -311,8 +408,10 @@ export const userProfileRouter = t.router({
         .single();
 
       if (error) {
-        // Return null if not found or permission denied
-        return null;
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Contact information not found",
+        });
       }
 
       return contactInfo;

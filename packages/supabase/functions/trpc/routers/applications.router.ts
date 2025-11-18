@@ -269,7 +269,7 @@ export const applicationsRouter = router({
       const { data: application } = await supabase
         .schema("core")
         .from("applications")
-        .select("user_id")
+        .select("user_id, job_id, organization_id")
         .eq("id", input.application_id)
         .single();
 
@@ -280,7 +280,45 @@ export const applicationsRouter = router({
         });
       }
 
+      let resolvedOrganizationId = application.organization_id ?? null;
+      if (!resolvedOrganizationId && application.job_id) {
+        const { data: job } = await (ctx.supabaseAdmin ?? supabase)
+          .schema("core")
+          .from("jobs")
+          .select("organization_id")
+          .eq("id", application.job_id)
+          .maybeSingle();
+        resolvedOrganizationId = job?.organization_id ?? null;
+      }
+
       const { application_id, ...updateData } = input;
+
+      if (updateData.status === "hired") {
+        if (!resolvedOrganizationId) {
+          throw new TRPCError({
+            code: "FAILED_PRECONDITION",
+            message: "Unable to determine organization for success fee verification.",
+          });
+        }
+
+        const supabaseAdmin = ctx.supabaseAdmin ?? supabase;
+        const { data: successFee } = await supabaseAdmin
+          .schema("core")
+          .from("success_fees")
+          .select("id")
+          .eq("organization_id", resolvedOrganizationId)
+          .eq("application_id", application_id)
+          .eq("worker_user_id", application.user_id)
+          .eq("status", "upfront_paid")
+          .maybeSingle();
+
+        if (!successFee) {
+          throw new TRPCError({
+            code: "FAILED_PRECONDITION",
+            message: "Upfront success fee payment is required before marking this hire.",
+          });
+        }
+      }
 
       const { data: updated, error } = await supabase
         .schema("core")

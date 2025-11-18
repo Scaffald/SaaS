@@ -3,9 +3,34 @@ import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface CandidateProfileTabProps {
   candidate: MockApplication['candidate']
+  contactInfo?: {
+    email?: string | null
+    phone?: string | null
+    location?: string | null
+    employment_city?: string | null
+    employment_state?: string | null
+    employment_zip?: string | null
+  }
+  isContactLocked?: boolean
+  lockReason?: string
 }
 
-export const CandidateProfileTab = ({ candidate }: CandidateProfileTabProps) => {
+export const CandidateProfileTab = ({
+  candidate,
+  contactInfo,
+  isContactLocked = false,
+  lockReason,
+}: CandidateProfileTabProps) => {
+  const resolvedEmail = contactInfo?.email ?? candidate.email
+  const resolvedPhone = contactInfo?.phone ?? candidate.phone
+  const contactLocationFromProfile = [contactInfo?.employment_city, contactInfo?.employment_state]
+    .filter(Boolean)
+    .join(', ')
+  const resolvedLocation = contactInfo?.location ?? (contactLocationFromProfile || candidate.location)
+
+  const lockedMessage =
+    lockReason ?? 'Pay the upfront success fee to unlock email and phone details.'
+
   return (
     <YStack gap="$4">
       {/* Contact Info */}
@@ -13,20 +38,29 @@ export const CandidateProfileTab = ({ candidate }: CandidateProfileTabProps) => 
         <Text fontSize="$5" fontWeight="600" mb="$3">
           Contact Information
         </Text>
-        <YStack gap="$2">
-          <XStack justify="space-between">
-            <Text opacity={0.7}>Email</Text>
-            <Text fontWeight="600">{candidate.email}</Text>
-          </XStack>
-          <XStack justify="space-between">
-            <Text opacity={0.7}>Phone</Text>
-            <Text fontWeight="600">{candidate.phone}</Text>
-          </XStack>
-          <XStack justify="space-between">
-            <Text opacity={0.7}>Location</Text>
-            <Text fontWeight="600">{candidate.location}</Text>
-          </XStack>
-        </YStack>
+        {isContactLocked ? (
+          <YStack gap="$2">
+            <Text color="$orange11" fontWeight="600">
+              Contact details locked
+            </Text>
+            <Text color="$color11">{lockedMessage}</Text>
+          </YStack>
+        ) : (
+          <YStack gap="$2">
+            <XStack justify="space-between">
+              <Text opacity={0.7}>Email</Text>
+              <Text fontWeight="600">{resolvedEmail}</Text>
+            </XStack>
+            <XStack justify="space-between">
+              <Text opacity={0.7}>Phone</Text>
+              <Text fontWeight="600">{resolvedPhone}</Text>
+            </XStack>
+            <XStack justify="space-between">
+              <Text opacity={0.7}>Location</Text>
+              <Text fontWeight="600">{resolvedLocation}</Text>
+            </XStack>
+          </YStack>
+        )}
       </Card>
 
       {/* Skills */}

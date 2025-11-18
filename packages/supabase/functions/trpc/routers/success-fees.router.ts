@@ -27,6 +27,12 @@ const confirmPaymentInput = z.object({
   paymentIntentId: z.string().min(5),
 });
 
+const getStatusByApplicationInput = z.object({
+  organizationId: z.string().uuid(),
+  applicationId: z.string().uuid(),
+  workerUserId: z.string().uuid(),
+});
+
 const adjustScheduleInput = z.object({
   successFeeId: z.string().uuid(),
   newJobDurationDays: z.number().int().positive(),
@@ -37,7 +43,7 @@ const processFinalPaymentInput = z.object({
   successFeeId: z.string().uuid(),
 });
 
-type PaymentScheduleResult = {
+type SuccessFeeSchedule = {
   paymentSchedule: "standard" | "short";
   upfrontPercentage: number;
   finalPercentage: number;
@@ -65,9 +71,21 @@ type SuccessFeeRecord = {
   upfront_payment_intent_id: string | null;
   final_payment_intent_id: string | null;
   status: "pending" | "upfront_paid" | "completed" | "failed" | "cancelled";
+  upfront_paid_at: string | null;
+  created_at: string;
 };
 
 const FEE_PERCENTAGE = 10;
+
+type SuccessFeeStatus = {
+  successFeeId: string;
+  schedule: SuccessFeeSchedule;
+  status: SuccessFeeRecord["status"];
+  upfrontPaidAt: string | null;
+  upfrontPaymentIntentId: string | null;
+  finalPaymentIntentId: string | null;
+  createdAt: string;
+};
 
 function calculateFinalDueDate(
   paymentSchedule: "standard" | "short",
@@ -92,7 +110,7 @@ function determinePaymentSchedule(params: {
   totalFeeCents: number;
   jobDurationDays: number;
   hireStartDate?: string;
-}): PaymentScheduleResult {
+}): SuccessFeeSchedule {
   const { totalFeeCents, jobDurationDays, hireStartDate } = params;
   const useStandard = jobDurationDays >= 30;
   const paymentSchedule: "standard" | "short" = useStandard ? "standard" : "short";
@@ -113,6 +131,86 @@ function determinePaymentSchedule(params: {
       ? calculateFinalDueDate(paymentSchedule, hireStartDate, jobDurationDays)
       : null,
   };
+}
+
+function scheduleFromRecord(record: SuccessFeeRecord): SuccessFeeSchedule {
+  return {
+    paymentSchedule: record.payment_schedule,
+    upfrontPercentage: record.upfront_percentage,
+    finalPercentage: record.final_percentage,
+    upfrontAmountCents: record.upfront_amount_cents,
+    finalAmountCents: record.final_amount_cents,
+    finalPaymentDueDate: record.final_payment_due_date,
+  };
+}
+
+async function findLatestSuccessFee(
+  ctx: Context,
+  filters: { organizationId: string; applicationId: string; workerUserId: string },
+): Promise<SuccessFeeRecord | null> {
+  const supabase = ctx.supabaseAdmin ?? ctx.supabase;
+  const { data, error } = await supabase
+    .schema("core")
+    .from("success_fees")
+    .select("*")
+    .eq("organization_id", filters.organizationId)
+    .eq("application_id", filters.applicationId)
+    .eq("worker_user_id", filters.workerUserId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to load success fee: ${error.message}`,
+    });
+  }
+
+  return (data as SuccessFeeRecord | null) ?? null;
+}
+
+async function ensureUpfrontPaymentIntent(
+  ctx: Context,
+  successFee: SuccessFeeRecord,
+  schedule: SuccessFeeSchedule,
+): Promise<Stripe.PaymentIntent> {
+  const stripe = await loadStripeClient(ctx);
+
+  if (successFee.upfront_payment_intent_id) {
+    return await stripe.paymentIntents.retrieve(successFee.upfront_payment_intent_id);
+  }
+
+  const intent = await stripe.paymentIntents.create({
+    amount: schedule.upfrontAmountCents,
+    currency: "usd",
+    metadata: {
+      success_fee_id: successFee.id,
+      organization_id: successFee.organization_id,
+      stage: "upfront",
+    },
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+
+  const supabase = ctx.supabaseAdmin ?? ctx.supabase;
+  const { error: updateError } = await supabase
+    .schema("core")
+    .from("success_fees")
+    .update({
+      upfront_payment_intent_id: intent.id,
+    })
+    .eq("id", successFee.id);
+
+  if (updateError) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `Failed to link payment intent: ${updateError.message}`,
+    });
+  }
+
+  return intent;
 }
 
 async function loadStripeClient(ctx: Context): Promise<Stripe> {
@@ -319,6 +417,13 @@ export const successFeesRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       await ensureOrganizationAccess(ctx, input.organizationId);
 
+      if (!input.applicationId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "applicationId is required to create a success fee.",
+        });
+      }
+
       const totalFeeCents = Math.round(
         input.totalHireValueCents * (FEE_PERCENTAGE / 100),
       );
@@ -331,102 +436,130 @@ export const successFeesRouter = t.router({
 
       const now = new Date().toISOString();
 
-      const { data: successFee, error: insertError } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("success_fees")
-        .insert({
-          organization_id: input.organizationId,
-          worker_user_id: input.workerUserId,
-          job_id: input.jobId ?? null,
-          application_id: input.applicationId ?? null,
-          total_hire_value_cents: input.totalHireValueCents,
-          fee_percentage: FEE_PERCENTAGE,
-          total_fee_cents: totalFeeCents,
-          job_duration_days: input.jobDurationDays,
-          payment_schedule: schedule.paymentSchedule,
-          upfront_percentage: schedule.upfrontPercentage,
-          final_percentage: schedule.finalPercentage,
-          upfront_amount_cents: schedule.upfrontAmountCents,
-          final_amount_cents: schedule.finalAmountCents,
-          final_payment_due_date: schedule.finalPaymentDueDate,
-          hire_start_date: input.hireStartDate,
-          hire_confirmed_at: now,
-          status: "pending",
-        })
-        .select("*")
-        .maybeSingle();
+      const latest = await findLatestSuccessFee(ctx, {
+        organizationId: input.organizationId,
+        applicationId: input.applicationId,
+        workerUserId: input.workerUserId,
+      });
 
-      if (insertError || !successFee) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: insertError
-            ? `Failed to create success fee: ${insertError.message}`
-            : "Failed to create success fee",
-        });
+      const supabase = ctx.supabaseAdmin ?? ctx.supabase;
+      let successFee: SuccessFeeRecord;
+      let calculatedSchedule = schedule;
+      let createdNewSuccessFee = false;
+
+      if (!latest) {
+        const { data: inserted, error: insertError } = await supabase
+          .schema("core")
+          .from("success_fees")
+          .insert({
+            organization_id: input.organizationId,
+            worker_user_id: input.workerUserId,
+            job_id: input.jobId ?? null,
+            application_id: input.applicationId,
+            total_hire_value_cents: input.totalHireValueCents,
+            fee_percentage: FEE_PERCENTAGE,
+            total_fee_cents: totalFeeCents,
+            job_duration_days: input.jobDurationDays,
+            payment_schedule: schedule.paymentSchedule,
+            upfront_percentage: schedule.upfrontPercentage,
+            final_percentage: schedule.finalPercentage,
+            upfront_amount_cents: schedule.upfrontAmountCents,
+            final_amount_cents: schedule.finalAmountCents,
+            final_payment_due_date: schedule.finalPaymentDueDate,
+            hire_start_date: input.hireStartDate,
+            hire_confirmed_at: now,
+            status: "pending",
+          })
+          .select("*")
+          .maybeSingle();
+
+        if (insertError || !inserted) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: insertError
+              ? `Failed to create success fee: ${insertError.message}`
+              : "Failed to create success fee",
+          });
+        }
+
+        successFee = inserted as SuccessFeeRecord;
+        createdNewSuccessFee = true;
+      } else {
+        successFee = latest;
+        calculatedSchedule = scheduleFromRecord(latest);
       }
 
+      if (successFee.status === "upfront_paid") {
+        return {
+          successFeeId: successFee.id,
+          clientSecret: null,
+          paymentIntentId: successFee.upfront_payment_intent_id,
+          schedule: calculatedSchedule,
+          status: successFee.status,
+          upfrontPaidAt: successFee.upfront_paid_at ?? null,
+        };
+      }
+
+      const stripe = await loadStripeClient(ctx);
       let intent: Stripe.PaymentIntent;
-      try {
-        const stripe = await loadStripeClient(ctx);
+      let createdNewIntent = false;
+
+      if (successFee.upfront_payment_intent_id) {
+        intent = await stripe.paymentIntents.retrieve(successFee.upfront_payment_intent_id);
+      } else {
         intent = await stripe.paymentIntents.create({
-          amount: schedule.upfrontAmountCents,
+          amount: calculatedSchedule.upfrontAmountCents,
           currency: "usd",
           metadata: {
             success_fee_id: successFee.id,
-            organization_id: input.organizationId,
+            organization_id: successFee.organization_id,
             stage: "upfront",
           },
           automatic_payment_methods: {
             enabled: true,
           },
         });
-      } catch (error) {
-        await ctx.supabaseAdmin
+
+        const { error: updateError } = await supabase
           .schema("core")
           .from("success_fees")
-          .delete()
+          .update({
+            upfront_payment_intent_id: intent.id,
+          })
           .eq("id", successFee.id);
 
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: error instanceof Error
-            ? `Failed to create payment intent: ${error.message}`
-            : "Failed to create payment intent",
-        });
+        if (updateError) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Failed to link payment intent: ${updateError.message}`,
+          });
+        }
+
+        successFee.upfront_payment_intent_id = intent.id;
+        createdNewIntent = true;
       }
 
-      const { error: updateError } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("success_fees")
-        .update({
-          upfront_payment_intent_id: intent.id,
-        })
-        .eq("id", successFee.id);
-
-      if (updateError) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to link payment intent: ${updateError.message}`,
+      if (createdNewSuccessFee || createdNewIntent) {
+        await recordTransaction(ctx, {
+          organizationId: successFee.organization_id,
+          userId: ctx.user?.id,
+          amountCents: calculatedSchedule.upfrontAmountCents,
+          transactionType: "success_fee_upfront",
+          successFeeId: successFee.id,
+          paymentIntentId: intent.id,
+          metadata: {
+            stage: "upfront",
+          },
         });
       }
-
-      await recordTransaction(ctx, {
-        organizationId: input.organizationId,
-        userId: ctx.user?.id,
-        amountCents: schedule.upfrontAmountCents,
-        transactionType: "success_fee_upfront",
-        successFeeId: successFee.id,
-        paymentIntentId: intent.id,
-        metadata: {
-          stage: "upfront",
-        },
-      });
 
       return {
         successFeeId: successFee.id,
         clientSecret: intent.client_secret,
         paymentIntentId: intent.id,
-        schedule,
+        schedule: calculatedSchedule,
+        status: successFee.status,
+        upfrontPaidAt: successFee.upfront_paid_at ?? null,
       };
     }),
 
@@ -489,6 +622,32 @@ export const successFeesRouter = t.router({
         .eq("stripe_payment_intent_id", input.paymentIntentId);
 
       return { ok: true };
+    }),
+
+  getStatusByApplication: protectedProcedure
+    .input(getStatusByApplicationInput)
+    .query(async ({ ctx, input }) => {
+      await ensureOrganizationAccess(ctx, input.organizationId);
+
+      const successFee = await findLatestSuccessFee(ctx, {
+        organizationId: input.organizationId,
+        applicationId: input.applicationId,
+        workerUserId: input.workerUserId,
+      });
+
+      if (!successFee) {
+        return null;
+      }
+
+      return {
+        successFeeId: successFee.id,
+        status: successFee.status,
+        schedule: scheduleFromRecord(successFee),
+        upfrontPaidAt: successFee.upfront_paid_at ?? null,
+        upfrontPaymentIntentId: successFee.upfront_payment_intent_id,
+        finalPaymentIntentId: successFee.final_payment_intent_id,
+        createdAt: successFee.created_at,
+      } satisfies SuccessFeeStatus;
     }),
 
   adjustPaymentSchedule: protectedProcedure

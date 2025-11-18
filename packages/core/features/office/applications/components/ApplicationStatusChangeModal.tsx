@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { YStack, Button, Text, XStack, ResponsiveModal, Spinner } from '@app/ui'
+import { YStack, Button, Text, XStack, ResponsiveModal, Spinner, CustomCheckbox } from '@app/ui'
 import { Card, TextArea } from 'tamagui'
 import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
@@ -60,6 +60,31 @@ export const ApplicationStatusChangeModal = ({
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
   const [paymentCompleted, setPaymentCompleted] = useState(false)
+  const [legalAccepted, setLegalAccepted] = useState(false)
+  const [resumeAttempted, setResumeAttempted] = useState(false)
+
+  const canQuerySuccessFeeStatus =
+    Boolean(
+      isHire &&
+        open &&
+        application?.organizationId &&
+        application?.id &&
+        hireInputs?.workerUserId
+    ) && Boolean(hireInputs?.organizationId)
+
+  const successFeeStatusQuery = api.successFees.getStatusByApplication.useQuery(
+    {
+      organizationId: hireInputs?.organizationId ?? application?.organizationId ?? '',
+      applicationId: application?.id ?? '',
+      workerUserId: hireInputs?.workerUserId ?? '',
+    },
+    {
+      enabled: canQuerySuccessFeeStatus,
+      staleTime: 10 * 1000,
+    }
+  )
+
+  const successFeeStatus = successFeeStatusQuery.data
 
   const hireInputsKey = hireInputs
     ? [
@@ -74,17 +99,34 @@ export const ApplicationStatusChangeModal = ({
     : 'missing'
 
   useEffect(() => {
+    if (!open) return
+    setResumeAttempted(false)
+  }, [hireInputsKey, open])
+
+  useEffect(() => {
     if (!open || !isHire) {
       setIntentState(null)
       setPaymentError(null)
       setPaymentCompleted(false)
       setInitializingIntent(false)
+       setResumeAttempted(false)
+       setLegalAccepted(false)
       return
     }
 
     if (!hireInputs) {
       setIntentState(null)
       setPaymentError(null)
+      return
+    }
+
+    if (successFeeStatusQuery.isLoading) {
+      return
+    }
+
+    if (successFeeStatus?.status === 'upfront_paid') {
+      setPaymentCompleted(true)
+      setIntentState(null)
       return
     }
 
@@ -118,12 +160,23 @@ export const ApplicationStatusChangeModal = ({
       }
     }
 
-    createIntent()
+    if (!resumeAttempted) {
+      createIntent()
+      setResumeAttempted(true)
+    }
 
     return () => {
       cancelled = true
     }
-  }, [open, isHire, hireInputsKey, successFeeMutation])
+  }, [
+    open,
+    isHire,
+    hireInputsKey,
+    successFeeMutation,
+    successFeeStatus?.status,
+    successFeeStatusQuery.isLoading,
+    resumeAttempted,
+  ])
 
   const handleConfirm = async () => {
     if (isHire) {
@@ -153,8 +206,10 @@ export const ApplicationStatusChangeModal = ({
         successFeeId: intentState.successFeeId,
         paymentIntentId,
       })
+      // TODO: Capture signed legal acknowledgement + generated PDF once available.
       setPaymentCompleted(true)
       toast.show('Upfront fee paid', { message: 'Hire confirmed successfully.' })
+      await successFeeStatusQuery.refetch()
       await onConfirm(reason)
       setReason('')
     } catch (error) {
@@ -168,6 +223,9 @@ export const ApplicationStatusChangeModal = ({
       setIsProcessingPayment(false)
     }
   }
+
+  const legalCopy =
+    'TODO: Replace with the final anti-circumvention clause before launch. Paying this fee confirms you agree to keep communication and hires on-platform.'
 
   return (
     <ResponsiveModal
@@ -197,9 +255,11 @@ export const ApplicationStatusChangeModal = ({
               isProcessing={initializingIntent}
               hasMissingData={!hireInputs}
               paymentError={paymentError}
+              successFeeStatus={successFeeStatus}
+              isStatusLoading={successFeeStatusQuery.isLoading}
             />
 
-            {initializingIntent && (
+            {initializingIntent && !paymentCompleted && (
               <YStack gap="$1" items="center">
                 <Spinner size="small" />
                 <Text color="$color11" fontSize="$3">
@@ -208,16 +268,46 @@ export const ApplicationStatusChangeModal = ({
               </YStack>
             )}
 
-            {hireInputs && intentState?.clientSecret && hireSummary && (
-              <PaymentIntentForm
-                clientSecret={intentState.clientSecret}
-                amountCents={intentState.schedule.upfrontAmountCents}
-                description={`Charge ${intentState.schedule.upfrontPercentage}% upfront success fee`}
-                submitLabel={paymentCompleted ? 'Payment complete' : 'Charge & Confirm Hire'}
-                disabled={paymentCompleted || isProcessingPayment}
-                onSuccess={handlePaymentSuccess}
-              />
+            {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
+              <Card p="$3" bg="$green2" borderColor="$green6" borderWidth={1}>
+                <Text fontWeight="600" color="$green11">
+                  Upfront fee paid on{' '}
+                  {successFeeStatus.upfrontPaidAt
+                    ? new Date(successFeeStatus.upfrontPaidAt).toLocaleDateString()
+                    : 'recently'}
+                  .
+                </Text>
+                <Text color="$green11">You can now mark this candidate as hired.</Text>
+              </Card>
             )}
+
+            {hireInputs &&
+              intentState?.clientSecret &&
+              hireSummary &&
+              successFeeStatus?.status !== 'upfront_paid' && (
+                <YStack gap="$3">
+                  <Card p="$3" bg="$color2" borderColor="$borderColor" borderWidth={1}>
+                    <XStack gap="$2" items="center">
+                      <CustomCheckbox
+                        aria-label="Acknowledge success-fee agreement"
+                        checked={legalAccepted}
+                        onCheckedChange={(next) => setLegalAccepted(Boolean(next))}
+                      />
+                      <Text flex={1} fontSize="$3" color="$color11">
+                        {legalCopy}
+                      </Text>
+                    </XStack>
+                  </Card>
+                  <PaymentIntentForm
+                    clientSecret={intentState.clientSecret}
+                    amountCents={intentState.schedule.upfrontAmountCents}
+                    description={`Charge ${intentState.schedule.upfrontPercentage}% upfront success fee`}
+                    submitLabel={paymentCompleted ? 'Payment complete' : 'Charge & Confirm Hire'}
+                    disabled={!legalAccepted || paymentCompleted || isProcessingPayment}
+                    onSuccess={handlePaymentSuccess}
+                  />
+                </YStack>
+              )}
           </YStack>
         )}
 
@@ -279,6 +369,10 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   maximumFractionDigits: 0,
 })
+
+type SuccessFeeStatusResult = ReturnType<
+  typeof api.successFees.getStatusByApplication.useQuery
+>['data']
 
 interface HireInputs {
   organizationId: string
@@ -377,11 +471,15 @@ function HireSummaryCard({
   isProcessing,
   hasMissingData,
   paymentError,
+  successFeeStatus,
+  isStatusLoading,
 }: {
   hireSummary: ReturnType<typeof deriveSchedule> | null
   isProcessing: boolean
   hasMissingData: boolean
   paymentError: string | null
+  successFeeStatus?: SuccessFeeStatusResult
+  isStatusLoading?: boolean
 }) {
   if (hasMissingData) {
     return (
@@ -428,6 +526,16 @@ function HireSummaryCard({
         {paymentError && (
           <Text fontSize="$2" color="$red10">
             {paymentError}
+          </Text>
+        )}
+        {isStatusLoading && (
+          <Text fontSize="$2" color="$color11">
+            Checking latest payment status…
+          </Text>
+        )}
+        {!isStatusLoading && successFeeStatus?.status && (
+          <Text fontSize="$2" color="$color11">
+            Current status: {successFeeStatus.status.replace(/_/g, ' ')}
           </Text>
         )}
       </YStack>

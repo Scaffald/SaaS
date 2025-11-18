@@ -66,6 +66,21 @@ const TIMEZONE_OPTIONS = [
   { value: 'Pacific/Honolulu', label: 'Hawaii Time (HST)' },
 ]
 
+const _SMART_DEFAULT_FIELD_LABELS: Record<string, string> = {
+  employmentType: 'Employment type',
+  workSchedule: 'Work schedule',
+  workingHoursTimezone: 'Time zone',
+  employmentStartDate: 'Start date',
+  rateType: 'Rate type',
+  rateMinCents: 'Minimum rate',
+  rateMaxCents: 'Maximum rate',
+  willingToTravel: 'Travel requirement',
+  hasDriversLicense: "Driver's license",
+  willingToWorkOvertime: 'Overtime expectation',
+  scheduleShifts: 'Shift scheduling',
+  additionalNotes: 'Additional notes',
+}
+
 const getDateInputProps = () => {
   if (Platform.OS === 'web') {
     return { type: 'date' as const }
