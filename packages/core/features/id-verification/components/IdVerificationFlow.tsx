@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { AlertCircle, ShieldCheck, ShieldQuestion } from "@tamagui/lucide-icons";
+import { AlertCircle } from "@tamagui/lucide-icons";
 import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from "tamagui";
 import { useToastController } from "@tamagui/toast";
 
 import { PaymentIntentForm } from "@app/core/features/payments/components/PaymentIntentForm";
 import { api } from "@app/core/utils/api";
 import { useUser } from "@app/core/utils/useUser";
+import { IdVerificationBadge } from "./IdVerificationBadge";
 
 type PricingRow = {
   id: string;
@@ -214,8 +215,8 @@ function renderStatusCard(
   if (queryReturn.isLoading) {
     return (
       <Card p="$4" bordered>
-        <YStack gap="$2" items="center">
-          <Spinner size="small" />
+        <YStack gap="$2">
+          <IdVerificationBadge status={null} muted size="md" />
           <Text color="$color11">Loading your verification badge…</Text>
         </YStack>
       </Card>
@@ -242,12 +243,7 @@ function renderStatusCard(
     return (
       <Card p="$4" bordered>
         <YStack gap="$2">
-          <XStack gap="$2" items="center">
-            <ShieldQuestion size={24} color="$orange10" />
-            <Text fontSize="$5" fontWeight="600">
-              No verification on file
-            </Text>
-          </XStack>
+          <IdVerificationBadge status={null} muted size="md" />
           <Text color="$color11">
             Purchase a verification to unlock the “Verified Identity” badge on your profile.
           </Text>
@@ -256,34 +252,22 @@ function renderStatusCard(
     );
   }
 
-  const isExpired = badge.badgeStatus === "expired";
-  const isRevoked = badge.badgeStatus === "revoked";
-  const iconColor = isRevoked ? "$red10" : isExpired ? "$orange10" : "$green10";
-  const title =
-    badge.badgeStatus === "active"
-      ? "Verification active"
-      : isExpired
-        ? "Verification expired"
-        : "Verification revoked";
-  const subtitle =
-    badge.badgeStatus === "active"
-      ? `Valid until ${formatDate(badge.badgeExpiresAt)} (${formatDuration(
-          badge.badgeExpiresAt,
-        )})`
-      : badge.badgeStatus === "expired"
-        ? `Expired on ${formatDate(badge.badgeExpiresAt)}`
-        : "Contact support to resolve revocation.";
-
   return (
     <Card p="$4" bordered>
       <YStack gap="$2">
-        <XStack gap="$2" items="center">
-          <ShieldCheck size={24} color={iconColor} />
-          <Text fontSize="$5" fontWeight="600" color={isRevoked ? "$red12" : "$color12"}>
-            {title}
-          </Text>
-        </XStack>
-        <Text color="$color11">{subtitle}</Text>
+        <IdVerificationBadge
+          status={badge.badgeStatus as "active" | "expired" | "revoked"}
+          badgeExpiresAt={badge.badgeExpiresAt}
+        />
+        <Text color="$color11">
+          {badge.badgeStatus === "active"
+            ? `Valid until ${formatDate(badge.badgeExpiresAt)} (${formatDuration(
+                badge.badgeExpiresAt,
+              )})`
+            : badge.badgeStatus === "expired"
+              ? `Expired on ${formatDate(badge.badgeExpiresAt)}`
+              : "Contact support to resolve revocation."}
+        </Text>
         <Text color="$color10">
           Verified on {formatDate(badge.verifiedAt)} • Level: {badge.verificationLevel ?? "N/A"}
         </Text>

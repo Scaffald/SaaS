@@ -1,16 +1,11 @@
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import { useRouter } from "expo-router";
-import { ShieldCheck, ShieldQuestion } from "@tamagui/lucide-icons";
-import { Text, XStack, YStack, type GetThemeValueForKey } from "tamagui";
+import { Text, YStack } from "tamagui";
 
 import { DashboardWidget, UIButton as Button } from "@app/ui";
 import { RouteBuilder } from "@app/core/constants/routes";
 import { api } from "@app/core/utils/api";
-
-const formatDate = (value?: string | null) => {
-  if (!value) return null;
-  return new Date(value).toLocaleDateString();
-};
+import { IdVerificationBadge } from "./IdVerificationBadge";
 
 export function IdVerificationWidget() {
   const router = useRouter();
@@ -23,18 +18,15 @@ export function IdVerificationWidget() {
   return (
     <DashboardWidget>
       <YStack gap="$3">
-        <XStack gap="$2" items="center">
-          {status.icon}
-          <YStack gap="$1">
-            <Text fontSize="$4" fontWeight="600" color="$color12">
-              Identity verification
-            </Text>
-            <Text fontSize="$2" color={status.color}>
-              {status.label}
-            </Text>
-          </YStack>
-        </XStack>
-
+        <Text fontSize="$4" fontWeight="600" color="$color12">
+          Identity verification
+        </Text>
+        <IdVerificationBadge
+          status={status.badgeStatus}
+          badgeExpiresAt={status.badgeExpiresAt}
+          muted={status.muted}
+          size="md"
+        />
         {status.caption && (
           <Text fontSize="$2" color="$color11">
             {status.caption}
@@ -54,10 +46,10 @@ export function IdVerificationWidget() {
 }
 
 type StatusDescriptor = {
-  icon: ReactNode;
-  label: string;
+  badgeStatus: "active" | "expired" | "revoked" | null;
+  badgeExpiresAt?: string | null;
   caption?: string | null;
-  color: GetThemeValueForKey<"color">;
+  muted?: boolean;
 };
 
 function deriveStatus(
@@ -65,51 +57,29 @@ function deriveStatus(
 ): StatusDescriptor {
   if (badgeQuery.isLoading) {
     return {
-      icon: <ShieldQuestion size={20} color="$yellow10" />,
-      label: "Loading badge…",
+      badgeStatus: null,
       caption: "Fetching your latest verification status.",
-      color: "$color11",
+      muted: true,
     };
   }
 
   if (badgeQuery.isError || !badgeQuery.data) {
     return {
-      icon: <ShieldQuestion size={20} color="$orange10" />,
-      label: "Not verified",
+      badgeStatus: null,
       caption: "Add a verified badge to boost trust with organizations.",
-      color: "$orange11",
+      muted: true,
     };
   }
 
   const badge = badgeQuery.data;
-  const isExpired = badge.badgeStatus === "expired";
-  const isRevoked = badge.badgeStatus === "revoked";
-  const expiresOn = formatDate(badge.badgeExpiresAt);
-
-  if (isRevoked) {
-    return {
-      icon: <ShieldQuestion size={20} color="$red10" />,
-      label: "Verification revoked",
-      caption: "Contact support to resolve badge issues.",
-      color: "$red11",
-    };
-  }
-
-  if (isExpired) {
-    return {
-      icon: <ShieldQuestion size={20} color="$orange10" />,
-      label: "Verification expired",
-      caption: expiresOn ? `Expired on ${expiresOn}` : undefined,
-      color: "$orange11",
-    };
-  }
-
   return {
-    icon: <ShieldCheck size={20} color="$green10" />,
-    label: "Badge active",
-    caption: expiresOn ? `Valid until ${expiresOn}` : undefined,
-    color: "$green11",
+    badgeStatus: badge.badgeStatus as "active" | "expired" | "revoked",
+    badgeExpiresAt: badge.badgeExpiresAt ?? null,
+    caption:
+      badge.badgeStatus === "revoked"
+        ? "Contact support to resolve badge issues."
+        : badge.badgeStatus === "expired"
+          ? "Renew to keep your profile highlighted."
+          : "Renew before expiry to keep this badge active.",
   };
 }
-
-

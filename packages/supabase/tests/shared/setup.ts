@@ -1,3 +1,5 @@
+/// <reference lib="deno.ns" />
+
 /**
  * Shared test setup helpers for the standalone tRPC test workspace.
  */

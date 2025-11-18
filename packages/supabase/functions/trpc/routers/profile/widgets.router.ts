@@ -92,10 +92,25 @@ export const profileWidgetsRouter = t.router({
         }
       }
 
+      const { data: idVerificationBadge, error: badgeError } = await supabase
+        .schema("core")
+        .from("v_id_verification_latest")
+        .select("badge_status, badge_expires_at, verified_at")
+        .eq("worker_user_id", targetUserId)
+        .maybeSingle();
+
+      if (badgeError && badgeError.code !== "PGRST116") {
+        console.warn("[profile.widgets.getGeneralInfo] Failed to load ID verification badge", {
+          userId: targetUserId,
+          error: badgeError.message,
+        });
+      }
+
       return {
         ...profile,
         calculatedYearsOfExperience: calculatedYears ?? profile?.years_of_experience ?? 0,
         privateData,
+        idVerificationBadge,
       };
     }),
 

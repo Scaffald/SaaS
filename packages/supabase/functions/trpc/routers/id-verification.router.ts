@@ -4,9 +4,19 @@ import { z } from "zod";
 
 import type { Context } from "../context.ts";
 import { officeProcedure, protectedProcedure, t } from "../middleware.ts";
+import { mergeMetadata } from "../../_shared/id-verification-utils.ts";
 
 const STRIPE_API_VERSION = "2024-06-20";
 const stripeHttpClient = Stripe.createFetchHttpClient();
+const mockStripePaymentIntents = new Map<
+  string,
+  {
+    amount: number;
+    currency: string;
+    clientSecret: string;
+    metadata: Record<string, unknown>;
+  }
+>();
 
 const requestVerificationInput = z.object({
   workerUserId: z.string().uuid(),
@@ -46,7 +56,61 @@ type PricingRow = {
   price_cents: number;
 };
 
+function stripeMockEnabled(): boolean {
+  return typeof Deno !== "undefined" && Deno.env.get("STRIPE_MOCK_MODE") === "1";
+}
+
+function createMockStripeClient(): Stripe {
+  return {
+    paymentIntents: {
+      create: async (payload: Stripe.PaymentIntentCreateParams) => {
+        const id = `pi_${crypto.randomUUID()}`;
+        const clientSecret = `cs_${crypto.randomUUID()}`;
+        mockStripePaymentIntents.set(id, {
+          amount: payload.amount ?? 0,
+          currency: payload.currency ?? "usd",
+          clientSecret,
+          metadata: payload.metadata ?? {},
+        });
+        return {
+          id,
+          amount: payload.amount ?? 0,
+          currency: payload.currency ?? "usd",
+          client_secret: clientSecret,
+          metadata: payload.metadata ?? {},
+          status: "requires_confirmation",
+          created: Math.floor(Date.now() / 1000),
+          object: "payment_intent",
+        } as Stripe.PaymentIntent;
+      },
+      retrieve: async (paymentIntentId: string) => {
+        const stored = mockStripePaymentIntents.get(paymentIntentId);
+        if (!stored) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Mock payment intent not found",
+          });
+        }
+        return {
+          id: paymentIntentId,
+          amount: stored.amount,
+          currency: stored.currency,
+          client_secret: stored.clientSecret,
+          metadata: stored.metadata,
+          status: "succeeded",
+          created: Math.floor(Date.now() / 1000),
+          object: "payment_intent",
+        } as Stripe.PaymentIntent;
+      },
+    },
+  } as unknown as Stripe;
+}
+
 async function loadStripeClient(ctx: Context): Promise<Stripe> {
+  if (stripeMockEnabled()) {
+    return createMockStripeClient();
+  }
+
   const { data: settings, error } = await ctx.supabaseAdmin
     .schema("core")
     .from("stripe_settings")
@@ -384,9 +448,9 @@ export const idVerificationRouter = t.router({
           verified_at: verifiedAt.toISOString(),
           badge_status: "active",
           badge_expires_at: badgeExpiresAt.toISOString(),
-          metadata: {
+          metadata: mergeMetadata(metadata, {
             service_pricing_id: metadata.service_pricing_id ?? null,
-          },
+          }),
         })
         .select("*")
         .maybeSingle();

@@ -16,6 +16,51 @@ type ProfileSearchRow =
     calculatedYearsOfExperience?: number | null;
   };
 
+type VerificationBadgeRow = Database["core"]["Views"]["v_id_verification_latest"]["Row"];
+
+function buildVerificationBadge(row: VerificationBadgeRow | undefined) {
+  if (!row?.badge_status) {
+    return null;
+  }
+
+  const formatDate = (value: string | null | undefined) => {
+    if (!value) return null;
+    try {
+      return new Date(value).toLocaleDateString();
+    } catch {
+      return null;
+    }
+  };
+
+  const expiresOn = formatDate(row.badge_expires_at ?? undefined);
+
+  if (row.badge_status === "active") {
+    return {
+      id: `id-verification-${row.worker_user_id}`,
+      label: expiresOn ? `ID Verified · exp ${expiresOn}` : "ID Verified",
+      tone: "success" as const,
+    };
+  }
+
+  if (row.badge_status === "expired") {
+    return {
+      id: `id-verification-${row.worker_user_id}`,
+      label: "ID badge expired",
+      tone: "warning" as const,
+    };
+  }
+
+  if (row.badge_status === "revoked") {
+    return {
+      id: `id-verification-${row.worker_user_id}`,
+      label: "ID badge revoked",
+      tone: "danger" as const,
+    };
+  }
+
+  return null;
+}
+
 interface UseTalentProfilesOptions {
   bounds?: ViewportBounds | null;
   limit?: number;
@@ -59,11 +104,36 @@ export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
       }
 
       if (!profiles || profiles.length === 0) {
-        console.log("No profiles found in database");
         return [];
       }
 
-      console.log(`Found ${profiles.length} profiles from database`);
+      const profileIds = profiles
+        .map((profile) => profile.id)
+        .filter((id): id is string => typeof id === "string" && id.length > 0);
+
+      let badgeMap = new Map<string, VerificationBadgeRow>();
+      if (profileIds.length > 0) {
+        const { data: badgeRows, error: badgeError } = await supabase
+          .schema("core")
+          .from("v_id_verification_latest")
+          .select("worker_user_id, badge_status, badge_expires_at")
+          .in("worker_user_id", profileIds);
+
+        if (badgeError) {
+          console.warn(
+            "[useTalentProfiles] Failed to load ID verification badges",
+            badgeError,
+          );
+        } else if (badgeRows) {
+          badgeMap = new Map(
+            badgeRows
+              .filter((row): row is VerificationBadgeRow & { worker_user_id: string } =>
+                typeof row.worker_user_id === "string" && row.worker_user_id.length > 0
+              )
+              .map((row) => [row.worker_user_id as string, row]),
+          );
+        }
+      }
 
       // Transform to TalentProfile format
       return profiles.map((profile: ProfileSearchRow): TalentProfile => {
@@ -73,7 +143,12 @@ export const useTalentProfiles = (options: UseTalentProfilesOptions = {}) => {
         const certifications = profile.certifications || [];
 
         // Create badges from skills and certifications
+        const verificationBadge = profile.id
+          ? buildVerificationBadge(badgeMap.get(profile.id))
+          : null;
+
         const badges = [
+          ...(verificationBadge ? [verificationBadge] : []),
           ...skills.slice(0, 3).map((skill: string) => ({
             id: skill.toLowerCase().replace(/\s+/g, "-"),
             label: skill,

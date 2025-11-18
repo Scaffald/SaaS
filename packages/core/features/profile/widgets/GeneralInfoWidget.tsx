@@ -3,6 +3,7 @@ import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import { IdVerificationBadge } from '@app/core/features/id-verification'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -70,6 +71,7 @@ export function GeneralInfoWidget({ userId, variant = 'full' }: ProfileWidgetPro
       : data.username)
 
   const showPrivateInfo = !!data.privateData
+  const badge = data.idVerificationBadge
 
   return (
     <DashboardWidget>
@@ -99,6 +101,14 @@ export function GeneralInfoWidget({ userId, variant = 'full' }: ProfileWidgetPro
                 @{data.username}
               </Text>
             )}
+          {badge && (
+            <IdVerificationBadge
+              status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
+              badgeExpiresAt={badge.badge_expires_at ?? undefined}
+              size="sm"
+              muted={false}
+            />
+          )}
           </YStack>
 
           {/* Status Badges */}
