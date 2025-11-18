@@ -30,24 +30,34 @@ vi.mock('@tamagui/toast', () => ({
   useToastController: () => ({ show: mockShow }),
 }))
 
-vi.mock('tamagui', () => ({
-  Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  YStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
-  XStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
-  Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
-  Input: ({ value, onChangeText, placeholder }: { value?: string; onChangeText?: (text: string) => void; placeholder?: string }) => (
-    <input
-      type="text"
+vi.mock('tamagui', () => {
+  const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
+  const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
+    <button type="button" onClick={onPress}>{children}</button>
+  )
+  const TextArea = ({ value, onChangeText, placeholder }: { value?: string; onChangeText?: (text: string) => void; placeholder?: string }) => (
+    <textarea
       value={value || ''}
       onChange={(e) => onChangeText?.(e.target.value)}
       placeholder={placeholder}
     />
-  ),
-  Button: ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
-    <button type="button" onClick={onPress}>{children}</button>
-  ),
-  useMedia: () => ({ sm: false }),
-}))
+  )
+  const Card = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const Spinner = () => <span>Loading</span>
+  
+  return {
+    Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+    YStack: Stack,
+    XStack: Stack,
+    Text,
+    Button,
+    TextArea,
+    Card,
+    Spinner,
+    useMedia: () => ({ sm: false }),
+  }
+})
 
 vi.mock('@tamagui/lucide-icons', () => ({
   MessageCircle: () => <span data-testid="message-circle-icon">MessageCircle</span>,
@@ -89,10 +99,10 @@ describe('TeamCommentThread', () => {
     const user = userEvent.setup()
     render(<TeamCommentThread teamId="team-1" />)
 
-    const commentInput = screen.getByPlaceholderText(/comment/i)
+    const commentInput = screen.getByPlaceholderText(/add a comment/i)
     await user.type(commentInput, 'New comment')
     
-    const submitButton = screen.getByRole('button', { name: /post|submit/i })
+    const submitButton = screen.getByLabelText(/post comment/i)
     await user.click(submitButton)
 
     await waitFor(() => {
@@ -108,7 +118,7 @@ describe('TeamCommentThread', () => {
 
     render(<TeamCommentThread teamId="team-1" />)
 
-    expect(screen.getByText(/Loading/i)).toBeInTheDocument()
+    expect(screen.getByText(/Loading discussion/i)).toBeInTheDocument()
   })
 })
 

@@ -4,13 +4,56 @@ import type { ReactNode } from 'react'
 
 const mockUseQuery = vi.fn()
 
-vi.mock('tamagui', () => ({
-  Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  YStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
-  XStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
-  Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
-  Spinner: () => <span>Loading</span>,
-}))
+vi.mock('tamagui', () => {
+  const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
+  const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
+    <button type="button" onClick={onPress}>{children}</button>
+  )
+  const Spinner = () => <span>Loading</span>
+  
+  const SelectTrigger = ({ children }: { children?: ReactNode; iconAfter?: ReactNode; size?: string }) => (
+    <button type="button">{children}</button>
+  )
+  const SelectValue = ({ children, placeholder }: { children?: ReactNode; placeholder?: string }) => (
+    <span>{children || placeholder}</span>
+  )
+  const SelectContent = ({ children }: { children?: ReactNode; zIndex?: number }) => <div>{children}</div>
+  const SelectViewport = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const SelectGroup = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const SelectLabel = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const SelectItem = ({ children, value }: { children?: ReactNode; value?: string }) => (
+    <div data-value={value}>{children}</div>
+  )
+  const SelectItemText = ({ children }: { children?: ReactNode }) => <span>{children}</span>
+  const SelectItemIndicator = ({ children }: { children?: ReactNode }) => <span>{children}</span>
+  const SelectScrollUpButton = () => null
+  const SelectScrollDownButton = () => null
+  
+  const Select = Object.assign((_props: { value?: string; onValueChange?: (value: string) => void }) => null, {
+    Trigger: SelectTrigger,
+    Value: SelectValue,
+    Content: SelectContent,
+    Viewport: SelectViewport,
+    Group: SelectGroup,
+    Label: SelectLabel,
+    Item: SelectItem,
+    ItemText: SelectItemText,
+    ItemIndicator: SelectItemIndicator,
+    ScrollUpButton: SelectScrollUpButton,
+    ScrollDownButton: SelectScrollDownButton,
+  })
+  
+  return {
+    Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+    YStack: Stack,
+    XStack: Stack,
+    Text,
+    Button,
+    Select,
+    Spinner,
+  }
+})
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
