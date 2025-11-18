@@ -12,8 +12,8 @@ vi.mock('../AvatarCropModal', () => ({
 }))
 
 // Mock UploadSurface
-const mockOnSelect = vi.fn()
-const mockOnError = vi.fn()
+let storedOnSelect: ((selection: unknown) => Promise<void> | void) | null = null
+let storedOnError: ((message: string) => void) | null = null
 const mockOpen = vi.fn()
 const mockGetRootProps = vi.fn((props) => ({ ...props, 'data-testid': 'upload-root' }))
 const mockGetInputProps = vi.fn((props) => ({ ...props, 'data-testid': 'upload-input' }))
@@ -31,11 +31,11 @@ vi.mock('../../upload/UploadSurface', () => ({
       isDragActive: boolean
       isProcessing: boolean
     }) => ReactNode
-    onSelect?: typeof mockOnSelect
-    onError?: typeof mockOnError
+    onSelect?: (selection: unknown) => Promise<void> | void
+    onError?: (message: string) => void
   }) => {
-    if (onSelect) mockOnSelect.mockImplementation(onSelect)
-    if (onError) mockOnError.mockImplementation(onError)
+    storedOnSelect = onSelect || null
+    storedOnError = onError || null
     return children({
       getRootProps: mockGetRootProps,
       getInputProps: mockGetInputProps,
@@ -127,6 +127,8 @@ describe('AvatarImagePicker', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    storedOnSelect = null
+    storedOnError = null
     mockCreateObjectURL.mockReturnValue('blob:test-url')
   })
 
