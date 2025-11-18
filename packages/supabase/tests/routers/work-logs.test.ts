@@ -3443,3 +3443,668 @@ Deno.test({
     }
   },
 });
+
+Deno.test({
+  name: "Work logs router - moveToProject creates move request",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const sourceProjectId = crypto.randomUUID();
+    const targetProjectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Move Org ${suffix}`,
+          slug: `move-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert([
+          {
+            id: sourceProjectId,
+            organization_id: organizationId,
+            name: `Source Project ${suffix}`,
+            project_number: `SRC-${suffix}`,
+            status: "active",
+          },
+          {
+            id: targetProjectId,
+            organization_id: organizationId,
+            name: `Target Project ${suffix}`,
+            project_number: `TGT-${suffix}`,
+            status: "active",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: sourceProjectId,
+          entry_type: "daily",
+          log_date: new Date().toISOString().split("T")[0],
+          status: "draft",
+          work_description: "Test work log for move",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.moveToProject",
+        {
+          workLogId,
+          targetProjectId,
+        },
+        { authToken },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected move request payload");
+      assertEquals(
+        payload.pending_move_to_project_id,
+        targetProjectId,
+        "Should set pending move project id",
+      );
+      assertEquals(
+        payload.project_id,
+        sourceProjectId,
+        "Should keep original project id until approved",
+      );
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .in("id", [sourceProjectId, targetProjectId]);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - moveToProject rejects non-owner",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const projectId = crypto.randomUUID();
+    const targetProjectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+    const otherUserId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert([
+          {
+            id: userId,
+            username: `test-user-${suffix}`,
+            slug: `test-user-${suffix}`,
+            display_name: "Test User",
+          },
+          {
+            id: otherUserId,
+            username: `other-user-${suffix}`,
+            slug: `other-user-${suffix}`,
+            display_name: "Other User",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Move Org ${suffix}`,
+          slug: `move-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert([
+          {
+            id: projectId,
+            organization_id: organizationId,
+            name: `Source Project ${suffix}`,
+            project_number: `SRC-${suffix}`,
+            status: "active",
+          },
+          {
+            id: targetProjectId,
+            organization_id: organizationId,
+            name: `Target Project ${suffix}`,
+            project_number: `TGT-${suffix}`,
+            status: "active",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: otherUserId,
+          project_id: projectId,
+          entry_type: "daily",
+          log_date: new Date().toISOString().split("T")[0],
+          status: "draft",
+          work_description: "Test work log",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.moveToProject",
+        {
+          workLogId,
+          targetProjectId,
+        },
+        { authToken },
+      );
+
+      const error = response[0]?.error;
+      assertExists(error, "Expected error payload");
+      const code = error?.data?.code ?? "";
+      assertEquals(
+        code,
+        "FORBIDDEN",
+        "Should reject move request from non-owner",
+      );
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .in("id", [projectId, targetProjectId]);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - approveMoveRequest completes move",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const sourceProjectId = crypto.randomUUID();
+    const targetProjectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Move Org ${suffix}`,
+          slug: `move-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert([
+          {
+            id: sourceProjectId,
+            organization_id: organizationId,
+            name: `Source Project ${suffix}`,
+            project_number: `SRC-${suffix}`,
+            status: "active",
+          },
+          {
+            id: targetProjectId,
+            organization_id: organizationId,
+            name: `Target Project ${suffix}`,
+            project_number: `TGT-${suffix}`,
+            status: "active",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: sourceProjectId,
+          pending_move_to_project_id: targetProjectId,
+          entry_type: "daily",
+          log_date: new Date().toISOString().split("T")[0],
+          status: "draft",
+          work_description: "Test work log for move",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.approveMoveRequest",
+        {
+          workLogId,
+        },
+        { authToken },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected approved move payload");
+      assertEquals(
+        payload.project_id,
+        targetProjectId,
+        "Should move work log to target project",
+      );
+      assertEquals(
+        payload.pending_move_to_project_id,
+        null,
+        "Should clear pending move request",
+      );
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .in("id", [sourceProjectId, targetProjectId]);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - denyMoveRequest cancels move",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const sourceProjectId = crypto.randomUUID();
+    const targetProjectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Move Org ${suffix}`,
+          slug: `move-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert([
+          {
+            id: sourceProjectId,
+            organization_id: organizationId,
+            name: `Source Project ${suffix}`,
+            project_number: `SRC-${suffix}`,
+            status: "active",
+          },
+          {
+            id: targetProjectId,
+            organization_id: organizationId,
+            name: `Target Project ${suffix}`,
+            project_number: `TGT-${suffix}`,
+            status: "active",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: sourceProjectId,
+          pending_move_to_project_id: targetProjectId,
+          entry_type: "daily",
+          log_date: new Date().toISOString().split("T")[0],
+          status: "draft",
+          work_description: "Test work log for move",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.denyMoveRequest",
+        {
+          workLogId,
+        },
+        { authToken },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected denied move payload");
+      assertEquals(
+        payload.project_id,
+        sourceProjectId,
+        "Should keep work log in source project",
+      );
+      assertEquals(
+        payload.pending_move_to_project_id,
+        null,
+        "Should clear pending move request",
+      );
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .in("id", [sourceProjectId, targetProjectId]);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});
+
+Deno.test({
+  name: "Work logs router - cancelMoveRequest cancels pending move",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const admin = createAdminClient();
+    const cachedTokens = await loadCachedTokens();
+
+    let authToken = cachedTokens?.regular?.token ?? null;
+    if (!authToken) {
+      authToken = await getAuthToken(
+        TEST_USERS.regular.email,
+        TEST_USERS.regular.password,
+      );
+    }
+
+    assertExists(authToken, "Authentication token required");
+
+    let userId = cachedTokens?.regular?.userId ?? null;
+    if (!userId) {
+      const { data: userResponse, error: userLookupError } = await admin.auth
+        .admin.getUserByEmail(TEST_USERS.regular.email);
+      if (userLookupError) {
+        throw userLookupError;
+      }
+      userId = userResponse?.user?.id ?? null;
+    }
+
+    assertExists(userId, "Unable to resolve test user id");
+
+    const suffix = crypto.randomUUID().slice(0, 8);
+    const organizationId = crypto.randomUUID();
+    const sourceProjectId = crypto.randomUUID();
+    const targetProjectId = crypto.randomUUID();
+    const workLogId = crypto.randomUUID();
+
+    try {
+      await admin
+        .schema("core")
+        .from("users")
+        .upsert({
+          id: userId,
+          username: `test-user-${suffix}`,
+          slug: `test-user-${suffix}`,
+          display_name: "Test User",
+        });
+
+      await admin
+        .schema("core")
+        .from("organizations")
+        .insert({
+          id: organizationId,
+          owner_user_id: userId,
+          name: `Move Org ${suffix}`,
+          slug: `move-org-${suffix}`,
+          visibility: "public",
+        });
+
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .insert([
+          {
+            id: sourceProjectId,
+            organization_id: organizationId,
+            name: `Source Project ${suffix}`,
+            project_number: `SRC-${suffix}`,
+            status: "active",
+          },
+          {
+            id: targetProjectId,
+            organization_id: organizationId,
+            name: `Target Project ${suffix}`,
+            project_number: `TGT-${suffix}`,
+            status: "active",
+          },
+        ]);
+
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .insert({
+          id: workLogId,
+          user_id: userId,
+          project_id: sourceProjectId,
+          pending_move_to_project_id: targetProjectId,
+          entry_type: "daily",
+          log_date: new Date().toISOString().split("T")[0],
+          status: "draft",
+          work_description: "Test work log for move",
+        });
+
+      const response = await callTRPCEndpoint(
+        "workLogs.cancelMoveRequest",
+        {
+          workLogId,
+        },
+        { authToken },
+      );
+
+      const payload = response[0]?.result?.data;
+      assertExists(payload, "Expected cancelled move payload");
+      assertEquals(
+        payload.project_id,
+        sourceProjectId,
+        "Should keep work log in source project",
+      );
+      assertEquals(
+        payload.pending_move_to_project_id,
+        null,
+        "Should clear pending move request",
+      );
+    } finally {
+      await admin
+        .schema("core")
+        .from("work_logs")
+        .delete()
+        .eq("id", workLogId);
+      await admin
+        .schema("core")
+        .from("construction_projects")
+        .delete()
+        .in("id", [sourceProjectId, targetProjectId]);
+      await admin
+        .schema("core")
+        .from("organizations")
+        .delete()
+        .eq("id", organizationId);
+    }
+  },
+});

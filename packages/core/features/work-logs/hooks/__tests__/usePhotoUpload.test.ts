@@ -6,6 +6,14 @@ import { usePhotoUpload } from '../usePhotoUpload';
 import * as api from '@app/core/utils/api';
 import type { ResolvedWorkLogPhoto } from '../../types/photos';
 
+const mockUseUtils = vi.fn(() => ({
+  workLogs: {
+    getById: {
+      invalidate: vi.fn(),
+    },
+  },
+}));
+
 vi.mock('@app/core/utils/api', () => ({
   api: {
     workLogs: {
@@ -25,13 +33,7 @@ vi.mock('@app/core/utils/api', () => ({
         useMutation: vi.fn(),
       },
     },
-    useUtils: vi.fn(() => ({
-      workLogs: {
-        getById: {
-          invalidate: vi.fn(),
-        },
-      },
-    })),
+    useUtils: mockUseUtils,
   },
 }));
 
@@ -87,6 +89,13 @@ describe('usePhotoUpload', () => {
     mockCreateSignedUrl.mockResolvedValue({
       data: { signedUrl: 'https://example.com/signed-url.jpg' },
       error: null,
+    });
+    mockUseUtils.mockReturnValue({
+      workLogs: {
+        getById: {
+          invalidate: vi.fn().mockResolvedValue(undefined),
+        },
+      },
     });
     vi.mocked(api.api.workLogs.getById.useQuery).mockReturnValue(
       mockGetByIdQuery as never,
@@ -268,7 +277,7 @@ describe('usePhotoUpload', () => {
 
   it('refreshes photos', async () => {
     const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(api.api.useUtils).mockReturnValue({
+    vi.mocked(mockUseUtils).mockReturnValue({
       workLogs: {
         getById: {
           invalidate: mockInvalidate,
@@ -303,7 +312,7 @@ describe('usePhotoUpload', () => {
     mockUploadMutation.mockResolvedValue(mockUploadResponse);
 
     const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(api.api.useUtils).mockReturnValue({
+    vi.mocked(mockUseUtils).mockReturnValue({
       workLogs: {
         getById: {
           invalidate: mockInvalidate,
@@ -471,7 +480,7 @@ describe('usePhotoUpload', () => {
     );
 
     const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(api.api.useUtils).mockReturnValue({
+    vi.mocked(mockUseUtils).mockReturnValue({
       workLogs: {
         getById: {
           invalidate: mockInvalidate,
