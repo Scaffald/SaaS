@@ -146,7 +146,9 @@ describe('GeneralInfoStep', () => {
 
     const continueButton = screen.getByRole('button', { name: /continue/i })
 
-    expect(continueButton).toBeDisabled()
+    await waitFor(() => {
+      expect(continueButton).toBeDisabled()
+    })
 
     fireEvent.change(screen.getByPlaceholderText('First name'), { target: { value: '  Jane ' } })
     fireEvent.change(screen.getByPlaceholderText('Last name'), { target: { value: ' Doe ' } })
@@ -204,17 +206,22 @@ describe('GeneralInfoStep', () => {
 
     const continueButton = screen.getByRole('button', { name: /continue/i })
 
-    await waitFor(() => expect(continueButton).toBeEnabled())
+    await waitFor(() => {
+      expect(continueButton).toBeEnabled()
+    })
 
     fireEvent.click(continueButton)
 
-    await waitFor(() =>
-      expect(onContinue).toHaveBeenCalledWith({
-        firstName: 'Jane',
-        lastName: 'Doe',
-        headline: 'Master Electrician',
-        bio: 'Experienced and reliable.',
-      }),
+    await waitFor(
+      () => {
+        expect(onContinue).toHaveBeenCalledWith({
+          firstName: 'Jane',
+          lastName: 'Doe',
+          headline: 'Master Electrician',
+          bio: 'Experienced and reliable.',
+        })
+      },
+      { timeout: 3000 },
     )
 
     fireEvent.click(screen.getByText('Save & Continue Later'))

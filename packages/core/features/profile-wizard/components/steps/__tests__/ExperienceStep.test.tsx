@@ -34,7 +34,7 @@ vi.mock('../StepNavigation', () => ({
       ) : null}
       {onSkip ? (
         <button type="button" onClick={onSkip}>
-          Skip
+          Skip This Step
         </button>
       ) : null}
     </div>
@@ -248,7 +248,7 @@ describe('ExperienceStep', () => {
       target: { value: 'City Power' },
     })
 
-    const startDateInput = screen.getByTestId('input-start-date')
+    const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
     await waitFor(() => {
@@ -305,7 +305,7 @@ describe('ExperienceStep', () => {
       target: { value: '  Led electrical installations  ' },
     })
 
-    const startDateInput = screen.getByTestId('input-start-date')
+    const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
     const continueButton = screen.getByRole('button', { name: /continue/i })
@@ -345,7 +345,7 @@ describe('ExperienceStep', () => {
       target: { value: 'City Power' },
     })
 
-    const startDateInput = screen.getByTestId('input-start-date')
+    const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
     const saveButton = screen.getByText('Save & Continue Later')
@@ -371,7 +371,7 @@ describe('ExperienceStep', () => {
       />,
     )
 
-    const skipButton = screen.getByText('Skip')
+    const skipButton = screen.getByText('Skip This Step')
     fireEvent.click(skipButton)
 
     await waitFor(() => {
@@ -428,7 +428,7 @@ describe('ExperienceStep', () => {
     const toggle = screen.getByTestId('toggle-current-job')
     fireEvent.click(toggle)
 
-    const startDateInput = screen.getByTestId('input-start-date')
+    const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
 
     const continueButton = screen.getByRole('button', { name: /continue/i })
@@ -492,7 +492,7 @@ describe('ExperienceStep', () => {
       target: { value: 'City Power' },
     })
 
-    const startDateInput = screen.getByTestId('input-start-date')
+    const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-06' } })
 
     const continueButton = screen.getByRole('button', { name: /continue/i })

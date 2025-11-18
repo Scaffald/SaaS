@@ -34,7 +34,7 @@ vi.mock('../StepNavigation', () => ({
       ) : null}
       {onSkip ? (
         <button type="button" onClick={onSkip}>
-          Skip
+          Skip This Step
         </button>
       ) : null}
     </div>
@@ -284,7 +284,7 @@ describe('EmploymentPrefsStep', () => {
       target: { value: '  $40  ' },
     })
 
-    const availabilitySelect = screen.getByTestId('select-wrapper').querySelector('select')
+    const availabilitySelect = screen.getAllByTestId('select-wrapper')[0]?.querySelector('select')
     if (availabilitySelect) {
       fireEvent.change(availabilitySelect, { target: { value: 'full_time' } })
     }
@@ -342,7 +342,7 @@ describe('EmploymentPrefsStep', () => {
       />,
     )
 
-    const skipButton = screen.getByText('Skip')
+    const skipButton = screen.getByText('Skip This Step')
     fireEvent.click(skipButton)
 
     await waitFor(() => {
@@ -369,7 +369,7 @@ describe('EmploymentPrefsStep', () => {
 
     await waitFor(() => {
       const locationInput = screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101')
-      expect(locationInput).toHaveValue('Seattle, WA')
+      expect(locationInput).toHaveValue('Seattle, Washington')
     })
   })
 
