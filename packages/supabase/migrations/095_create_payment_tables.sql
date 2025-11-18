@@ -28,6 +28,18 @@ ALTER TABLE core.background_checks
   ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE,
   ADD COLUMN IF NOT EXISTS shared_with_org_ids UUID[] DEFAULT '{}'::UUID[];
 
+ALTER TABLE core.background_checks
+  ALTER COLUMN user_id DROP NOT NULL;
+
+ALTER TABLE core.background_checks
+  DROP CONSTRAINT IF EXISTS background_checks_user_id_fkey;
+
+ALTER TABLE core.background_checks
+  ADD CONSTRAINT background_checks_user_id_fkey
+    FOREIGN KEY (user_id)
+    REFERENCES core.users(id)
+    ON DELETE SET NULL;
+
 CREATE INDEX IF NOT EXISTS background_checks_public_idx
   ON core.background_checks (is_public)
   WHERE is_public = TRUE;
@@ -120,9 +132,11 @@ CREATE TABLE IF NOT EXISTS core.service_pricing (
   display_order INTEGER NOT NULL DEFAULT 0,
   metadata JSONB NOT NULL DEFAULT '{}'::JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (service_type, COALESCE(tier, ''), name)
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS service_pricing_unique_idx
+  ON core.service_pricing (service_type, COALESCE(tier, ''), name);
 
 COMMENT ON TABLE core.service_pricing
   IS 'Configurable pricing rows for background checks, ID verification, and other payment-based services.';
@@ -193,6 +207,9 @@ CREATE TABLE IF NOT EXISTS core.background_check_disclosures (
 CREATE INDEX IF NOT EXISTS background_check_disclosures_check_idx
   ON core.background_check_disclosures (background_check_id);
 
+-- Note: background_check_disputes table already exists from migration 032
+-- This migration does not recreate it to avoid conflicts
+
 CREATE TABLE IF NOT EXISTS core.background_check_access (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   background_check_id UUID NOT NULL REFERENCES core.background_checks(id) ON DELETE CASCADE,
@@ -223,7 +240,7 @@ CREATE TRIGGER background_check_access_set_updated_at
 CREATE TABLE IF NOT EXISTS core.id_verifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-  worker_user_id UUID NOT NULL REFERENCES core.users(id) ON DELETE CASCADE,
+  worker_user_id UUID REFERENCES core.users(id) ON DELETE SET NULL,
   initiated_by_user_id UUID REFERENCES core.users(id) ON DELETE SET NULL,
   initiated_by_org_id UUID REFERENCES core.organizations(id) ON DELETE SET NULL,
 
@@ -379,6 +396,18 @@ BEGIN
   UPDATE core.success_fees
     SET worker_user_id = NULL
     WHERE worker_user_id = p_worker_user_id;
+
+  UPDATE core.background_checks
+    SET user_id = NULL
+    WHERE user_id = p_worker_user_id;
+
+  UPDATE core.background_check_consent
+    SET worker_user_id = NULL
+    WHERE worker_user_id = p_worker_user_id;
+
+  UPDATE core.background_check_disputes
+    SET user_id = NULL
+    WHERE user_id = p_worker_user_id;
 
   UPDATE core.id_verifications
     SET worker_user_id = NULL

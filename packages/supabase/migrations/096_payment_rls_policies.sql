@@ -279,41 +279,54 @@ CREATE POLICY payment_transactions_manage_service_role
 
 -- =========================================================
 -- STRIPE SETTINGS
+-- Note: stripe_settings table is created in migration 098
+-- RLS policies are also defined there to ensure table exists first
 -- =========================================================
 
-ALTER TABLE core.stripe_settings ENABLE ROW LEVEL SECURITY;
+-- Only enable RLS if the table exists (created in migration 098)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'stripe_settings'
+  ) THEN
+    ALTER TABLE core.stripe_settings ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS stripe_settings_select ON core.stripe_settings;
-CREATE POLICY stripe_settings_select
-  ON core.stripe_settings
-  FOR SELECT
-  TO authenticated
-  USING (
-    core.user_has_role(auth.uid(), 'office')
-    OR core.user_has_role(auth.uid(), 'super_admin')
-  );
+    DROP POLICY IF EXISTS stripe_settings_select ON core.stripe_settings;
+    CREATE POLICY stripe_settings_select
+      ON core.stripe_settings
+      FOR SELECT
+      TO authenticated
+      USING (
+        core.user_has_role(auth.uid(), 'office')
+        OR core.user_has_role(auth.uid(), 'super_admin')
+      );
 
-DROP POLICY IF EXISTS stripe_settings_update ON core.stripe_settings;
-CREATE POLICY stripe_settings_update
-  ON core.stripe_settings
-  FOR UPDATE
-  TO authenticated
-  USING (
-    core.user_has_role(auth.uid(), 'office')
-    OR core.user_has_role(auth.uid(), 'super_admin')
-  )
-  WITH CHECK (
-    core.user_has_role(auth.uid(), 'office')
-    OR core.user_has_role(auth.uid(), 'super_admin')
-  );
+    DROP POLICY IF EXISTS stripe_settings_update ON core.stripe_settings;
+    CREATE POLICY stripe_settings_update
+      ON core.stripe_settings
+      FOR UPDATE
+      TO authenticated
+      USING (
+        core.user_has_role(auth.uid(), 'office')
+        OR core.user_has_role(auth.uid(), 'super_admin')
+      )
+      WITH CHECK (
+        core.user_has_role(auth.uid(), 'office')
+        OR core.user_has_role(auth.uid(), 'super_admin')
+      );
 
-DROP POLICY IF EXISTS stripe_settings_manage_service_role ON core.stripe_settings;
-CREATE POLICY stripe_settings_manage_service_role
-  ON core.stripe_settings
-  FOR ALL
-  TO service_role
-  USING (TRUE)
-  WITH CHECK (TRUE);
+    DROP POLICY IF EXISTS stripe_settings_manage_service_role ON core.stripe_settings;
+    CREATE POLICY stripe_settings_manage_service_role
+      ON core.stripe_settings
+      FOR ALL
+      TO service_role
+      USING (TRUE)
+      WITH CHECK (TRUE);
+  END IF;
+END $$;
 
 -- =========================================================
 -- GRANTS
@@ -327,7 +340,19 @@ GRANT SELECT ON core.background_check_disclosures TO authenticated;
 GRANT SELECT ON core.background_check_access TO authenticated;
 GRANT SELECT ON core.id_verifications TO authenticated;
 GRANT SELECT ON core.payment_transactions TO authenticated;
-GRANT SELECT, UPDATE ON core.stripe_settings TO authenticated;
+-- Grants for stripe_settings (if table exists)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema = 'core'
+      AND table_name = 'stripe_settings'
+  ) THEN
+    GRANT SELECT, UPDATE ON core.stripe_settings TO authenticated;
+    GRANT ALL ON core.stripe_settings TO service_role;
+  END IF;
+END $$;
 
 GRANT ALL ON core.success_fees TO service_role;
 GRANT ALL ON core.service_pricing TO service_role;
@@ -337,7 +362,6 @@ GRANT ALL ON core.background_check_disclosures TO service_role;
 GRANT ALL ON core.background_check_access TO service_role;
 GRANT ALL ON core.id_verifications TO service_role;
 GRANT ALL ON core.payment_transactions TO service_role;
-GRANT ALL ON core.stripe_settings TO service_role;
 
 COMMIT;
 

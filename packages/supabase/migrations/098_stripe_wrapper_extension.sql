@@ -124,20 +124,25 @@ CREATE OR REPLACE FUNCTION core.configure_stripe_server(
   p_api_key_secret_id UUID,
   p_api_version TEXT DEFAULT '2024-06-20'
 ) RETURNS VOID AS $$
+DECLARE
+  v_sql TEXT;
 BEGIN
   IF p_api_key_secret_id IS NULL THEN
     RAISE EXCEPTION 'api_key_secret_id is required';
   END IF;
 
-  EXECUTE format(
-    $$ALTER SERVER stripe_server OPTIONS (
-      SET api_key_id '%s',
-      SET api_version '%s',
-      SET api_url 'https://api.stripe.com/v1/'
-    )$$,
-    p_api_key_secret_id,
+  -- Build the ALTER SERVER statement
+  v_sql := format(
+    'ALTER SERVER stripe_server OPTIONS (
+      SET api_key_id %L,
+      SET api_version %L,
+      SET api_url ''https://api.stripe.com/v1/''
+    )',
+    p_api_key_secret_id::TEXT,
     p_api_version
   );
+
+  EXECUTE v_sql;
 END;
 $$ LANGUAGE plpgsql
 SECURITY DEFINER
