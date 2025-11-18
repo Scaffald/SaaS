@@ -29,7 +29,7 @@ test.use({ storageState: 'tests/.auth/super-admin.json' })
 test.describe('Office • /office/applications - Kanban Board', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
   // Authentication handled by storage state (tests/.auth/super-admin.json)
-    await page.goto('/office/ats', { waitUntil: 'domcontentloaded' })
+    await page.goto('/office/applications', { waitUntil: 'domcontentloaded' })
     await waitForKanbanLoad(page)
   })
 

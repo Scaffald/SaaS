@@ -84,7 +84,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
 vi.mock('@app/core/constants/routes', () => ({
   ROUTES: {
     STYLEGUIDE: { path: '/styleguide', title: 'Styleguide' },
-    OFFICE_ATS: { path: '/office/ats', title: 'ATS' },
+    OFFICE_APPLICATIONS: { path: '/office/applications', title: 'Applications' },
     OFFICE_TEAMS: { path: '/office/teams', title: 'Teams' },
   },
 }))

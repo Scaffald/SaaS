@@ -12,8 +12,8 @@ import type { Page } from '@playwright/test'
 export const OFFICE_ROUTES = {
   // Main office routes
   DASHBOARD: '/office',
-  APPLICATIONS: '/office/ats',
-  APPLICATIONS_INDEX: '/office/ats',
+  APPLICATIONS: '/office/applications',
+  APPLICATIONS_INDEX: '/office/applications',
 
   // User management
   USERS: '/office/users',
@@ -46,7 +46,8 @@ export const buildOfficeRoute = {
   organizationEdit: (orgId: string) => `/office/organizations/${orgId}/edit`,
   organizationView: (orgId: string) => `/office/organizations/${orgId}`,
   universityEdit: (universityId: string) => `/office/universities/${universityId}/edit`,
-  applicationView: (applicationId: string) => `/office/ats/${applicationId}`,
+  applicationView: (applicationId: string) =>
+    `/office/applications/${applicationId}/inquiry`,
 }
 
 /**
