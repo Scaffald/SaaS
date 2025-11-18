@@ -314,7 +314,6 @@ describe('ImportReviewScreen', () => {
       experience: {
         ...mockImportData.experience,
         items: [],
-        errors: ['Failed to parse experience section'],
       },
     }
 

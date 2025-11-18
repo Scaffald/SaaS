@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useProfileWizard } from '../useProfileWizard'
 
 const mockGetProgressQuery = {
-  data: undefined,
+  data: undefined as unknown,
   isLoading: false,
   isError: false,
   refetch: vi.fn().mockResolvedValue({}),
@@ -74,7 +74,7 @@ describe('useProfileWizard', () => {
   })
 
   it('loads saved progress from API', async () => {
-    const savedProgress = {
+    const savedProgress: unknown = {
       currentStep: 'experience' as const,
       completedSteps: ['general', 'skills'],
       completionPercentage: 35,
@@ -352,7 +352,7 @@ describe('useProfileWizard', () => {
   })
 
   it('preserves initial step when data loads if step is valid', async () => {
-    const savedProgress = {
+    const savedProgress: unknown = {
       currentStep: 'experience' as const,
       completedSteps: [],
       completionPercentage: 0,
@@ -371,7 +371,7 @@ describe('useProfileWizard', () => {
   })
 
   it('uses saved currentStep when initial step is invalid', async () => {
-    const savedProgress = {
+    const savedProgress: unknown = {
       currentStep: 'experience' as const,
       completedSteps: [],
       completionPercentage: 0,

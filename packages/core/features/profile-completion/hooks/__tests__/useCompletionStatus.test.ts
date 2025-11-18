@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCompletionStatus } from '../useCompletionStatus'
 
 const mockGetStatusQuery = {
-  data: undefined,
+  data: undefined as unknown,
   isLoading: false,
   isError: false,
   refetch: vi.fn().mockResolvedValue({}),
@@ -63,7 +63,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('maps raw API response to CompletionStatus', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [
         {
           id: 'general',
@@ -122,7 +122,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('calculates section progress correctly', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [
         {
           id: 'general',
@@ -158,7 +158,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('identifies incomplete sections', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [
         {
           id: 'general',
@@ -201,7 +201,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('tracks milestone badges', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [],
       milestoneBadges: [
         {
@@ -260,7 +260,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('sets modal mode to first-login when completion is 0%', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [],
       milestoneBadges: [],
       completionPercentage: 0,
@@ -281,7 +281,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('sets modal mode to progress-reminder when completion > 0%', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [],
       milestoneBadges: [],
       completionPercentage: 42,
@@ -302,7 +302,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('calculates summary correctly', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [
         {
           id: 'general',
@@ -345,7 +345,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('handles nudge status correctly', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [],
       milestoneBadges: [],
       completionPercentage: 30,
@@ -373,7 +373,7 @@ describe('useCompletionStatus', () => {
   })
 
   it('returns user type from user metadata', () => {
-    const rawStatus = {
+    const rawStatus: unknown = {
       sectionProgress: [],
       milestoneBadges: [],
       completionPercentage: 0,

@@ -1,0 +1,277 @@
+import { renderHook, waitFor } from '@testing-library/react'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+
+// Mock dependencies before importing the hook
+const mockProvider = {
+  search: vi.fn(),
+  geocode: vi.fn(),
+  reverseGeocode: vi.fn(),
+}
+
+let mockIsReady = true
+
+vi.mock('../useGeocodingProvider', () => ({
+  useGeocodingProvider: () => ({
+    provider: mockProvider,
+    isReady: mockIsReady,
+    error: null,
+  }),
+}))
+
+vi.mock('../useDebounce', () => ({
+  useAddressDebounce: (query: string, _delay: number) => query,
+  useAddressDebouncedCallback: vi.fn(),
+}))
+
+import { useAddressAutocomplete } from '../useAddressAutocomplete'
+import type { AddressResult } from '../../types'
+
+describe('useAddressAutocomplete', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('initializes with empty state', () => {
+    const { result } = renderHook(() => useAddressAutocomplete())
+
+    expect(result.current.results).toEqual([])
+    expect(result.current.loading).toBe(false)
+    expect(result.current.error).toBeNull()
+  })
+
+  it('executes search after debounce delay', async () => {
+    const mockResults: AddressResult[] = [
+      {
+        id: 'test-1',
+        formattedAddress: 'Boston, MA',
+        streetNumber: '',
+        route: 'Boston',
+        streetAddress: 'Boston',
+        locality: 'Boston',
+        administrativeAreaLevel1: 'Massachusetts',
+        stateAbbreviation: 'MA',
+        postalCode: '',
+        country: 'United States',
+        countryCode: 'US',
+        coordinates: { lat: 42.3601, lng: -71.0589 },
+        types: ['locality'],
+      },
+    ]
+
+    mockProvider.search.mockResolvedValue(mockResults)
+
+    const { result } = renderHook(() => useAddressAutocomplete())
+
+    result.current.search('Boston')
+
+    await waitFor(() => {
+      expect(mockProvider.search).toHaveBeenCalledWith('Boston', expect.any(Object))
+    })
+
+    await waitFor(() => {
+      expect(result.current.results).toEqual(mockResults)
+    })
+  })
+
+  it('stores results in state', async () => {
+    const mockResults: AddressResult[] = [
+      {
+        id: 'test-1',
+        formattedAddress: 'Boston, MA',
+        streetNumber: '',
+        route: 'Boston',
+        streetAddress: 'Boston',
+        locality: 'Boston',
+        administrativeAreaLevel1: 'Massachusetts',
+        stateAbbreviation: 'MA',
+        postalCode: '',
+        country: 'United States',
+        countryCode: 'US',
+        coordinates: { lat: 42.3601, lng: -71.0589 },
+        types: ['locality'],
+      },
+    ]
+
+    mockProvider.search.mockResolvedValue(mockResults)
+
+    const { result } = renderHook(() => useAddressAutocomplete())
+
+    result.current.search('Boston')
+
+    await waitFor(() => {
+      expect(result.current.results).toEqual(mockResults)
+    })
+  })
+
+  it('updates loading state correctly', async () => {
+    let resolveSearch: (value: AddressResult[]) => void
+    const searchPromise = new Promise<AddressResult[]>((resolve) => {
+      resolveSearch = resolve
+    })
+    mockProvider.search.mockReturnValue(searchPromise)
+
+    const { result } = renderHook(() => useAddressAutocomplete())
+
+    result.current.search('Boston')
+
+    // Wait for debounced query to trigger search
+    await waitFor(() => {
+      expect(result.current.loading).toBe(true)
+    }, { timeout: 2000 })
+
+    // Resolve the search
+    resolveSearch!([])
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+  })
+
+  it('captures and stores errors', async () => {
+    const error = new Error('Search failed')
+    mockProvider.search.mockRejectedValue(error)
+
+    const { result } = renderHook(() => useAddressAutocomplete())
+
+    result.current.search('Boston')
+
+    await waitFor(() => {
+      expect(result.current.error).toBeTruthy()
+      expect(result.current.results).toEqual([])
+    })
+  })
+
+  it('clears results when clearResults is called', async () => {
+    const mockResults: AddressResult[] = [
+      {
+        id: 'test-1',
+        formattedAddress: 'Boston, MA',
+        streetNumber: '',
+        route: 'Boston',
+        streetAddress: 'Boston',
+        locality: 'Boston',
+        administrativeAreaLevel1: 'Massachusetts',
+        stateAbbreviation: 'MA',
+        postalCode: '',
+        country: 'United States',
+        countryCode: 'US',
+        coordinates: { lat: 42.3601, lng: -71.0589 },
+        types: ['locality'],
+      },
+    ]
+
+    mockProvider.search.mockResolvedValue(mockResults)
+
+    const { result } = renderHook(() => useAddressAutocomplete())
+
+    result.current.search('Boston')
+
+    await waitFor(() => {
+      expect(result.current.results).toEqual(mockResults)
+    }, { timeout: 2000 })
+
+    result.current.clearResults()
+
+    // clearResults sets results to empty array, error to null, and query to ''
+    // The results should be cleared immediately
+    await waitFor(() => {
+      expect(result.current.results).toEqual([])
+      expect(result.current.error).toBeNull()
+    })
+  })
+
+  it('cancels pending requests when clearResults is called', async () => {
+    const abortSpy = vi.fn()
+    const originalAbortController = global.AbortController
+
+    // Mock AbortController
+    global.AbortController = vi.fn(() => ({
+      abort: abortSpy,
+      signal: { aborted: false },
+    })) as any
+
+    mockProvider.search.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve([]), 1000))
+    )
+
+    const { result } = renderHook(() => useAddressAutocomplete())
+
+    result.current.search('Boston')
+    
+    // Wait a bit for the search to start
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    
+    result.current.clearResults()
+
+    // Abort should be called when clearing
+    await waitFor(() => {
+      expect(abortSpy).toHaveBeenCalled()
+    }, { timeout: 1000 })
+
+    // Restore original
+    global.AbortController = originalAbortController
+  })
+
+  it('prevents search when query is shorter than minLength', async () => {
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({
+        minLength: 3,
+      })
+    )
+
+    result.current.search('Bo') // Only 2 characters
+
+    // Wait a bit to ensure no search is triggered
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    expect(mockProvider.search).not.toHaveBeenCalled()
+  })
+
+  it('limits results to maxResults', async () => {
+    const manyResults: AddressResult[] = Array.from({ length: 10 }, (_, i) => ({
+      id: `test-${i}`,
+      formattedAddress: `City ${i}, MA`,
+      streetNumber: '',
+      route: `City ${i}`,
+      streetAddress: `City ${i}`,
+      locality: `City ${i}`,
+      administrativeAreaLevel1: 'Massachusetts',
+      stateAbbreviation: 'MA',
+      postalCode: '',
+      country: 'United States',
+      countryCode: 'US',
+      coordinates: { lat: 42.3601, lng: -71.0589 },
+      types: ['locality'],
+    }))
+
+    mockProvider.search.mockResolvedValue(manyResults)
+
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({
+        maxResults: 5,
+      })
+    )
+
+    result.current.search('City')
+
+    await waitFor(() => {
+      expect(mockProvider.search).toHaveBeenCalledWith('City', expect.objectContaining({ limit: 5 }))
+    })
+  })
+
+  it('handles provider not ready state', async () => {
+    mockIsReady = false
+    const { result, rerender } = renderHook(() => useAddressAutocomplete())
+
+    result.current.search('Boston')
+
+    await waitFor(() => {
+      expect(result.current.error).toBe('Geocoding provider not available')
+      expect(result.current.loading).toBe(false)
+    })
+
+    // Reset for other tests
+    mockIsReady = true
+  })
+})
+
