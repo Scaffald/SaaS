@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { Button, Text, XStack, YStack, Progress } from 'tamagui'
 import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { FacetList } from './FacetList'
@@ -16,7 +16,7 @@ export interface DomainCardProps {
 /**
  * DomainCard - Expandable card showing domain score, narrative, and facets
  */
-export function DomainCard({
+export const DomainCard = memo(function DomainCard({
   domain,
   score,
   normalizedScore,
@@ -126,5 +126,5 @@ export function DomainCard({
       )}
     </YStack>
   )
-}
+})
 

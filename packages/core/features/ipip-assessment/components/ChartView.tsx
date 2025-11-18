@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'
 import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { RadarChart, BarChart } from '@app/ui'
@@ -40,35 +41,46 @@ export function ChartView({
   }
 
   // Prepare radar chart data for Big Five domains
-  // Use normalized scores if available, otherwise calculate from raw scores
-  const radarData = DOMAIN_ORDER.map((domain) => {
-    const normalized = normalizedScores?.[domain]
-    const domainScore = scores?.[domain]
-    const domainName = DOMAIN_NAMES[domain]
+  const radarData = useMemo(() => {
+    return DOMAIN_ORDER.map((domain) => {
+      const normalized = normalizedScores?.[domain]
+      const domainScore = scores?.[domain]
+      const domainName = DOMAIN_NAMES[domain]
 
-    let value = 0
-    if (normalized?.percentage !== undefined) {
-      value = normalized.percentage
-    } else if (domainScore && domainScore.count > 0) {
-      // Fallback: calculate percentage from raw score
-      const average = domainScore.score / domainScore.count
-      value = Math.round(((average - 1) / 4) * 100)
-    }
+      let value = 0
+      if (normalized?.percentage !== undefined) {
+        value = normalized.percentage
+      } else if (domainScore && domainScore.count > 0) {
+        // Fallback: calculate percentage from raw score
+        const average = domainScore.score / domainScore.count
+        value = Math.round(((average - 1) / 4) * 100)
+      }
 
-    return {
-      value,
-      label: domainName.substring(0, 3), // Short labels: "Ope", "Con", etc.
-      result: normalized?.result ?? domainScore?.result ?? 'neutral',
-      domainName,
-    }
-  })
+      return {
+        value,
+        label: domainName.substring(0, 3),
+        result: normalized?.result ?? domainScore?.result ?? 'neutral',
+        domainName,
+      }
+    })
+  }, [normalizedScores, scores])
 
-  const radarSummaryText = radarData
-    .map(
-      (data) =>
-        `${data.domainName}: ${data.value}% (${data.result === 'neutral' ? 'balanced' : data.result}).`,
-    )
-    .join(' ')
+  const radarSummaryText = useMemo(
+    () =>
+      radarData
+        .map(
+          (data) =>
+            `${data.domainName}: ${data.value}% (${
+              data.result === 'neutral' ? 'balanced' : data.result
+            }).`,
+        )
+        .join(' '),
+    [radarData],
+  )
+
+  const topTraits = useMemo(() => {
+    return [...radarData].sort((a, b) => b.value - a.value).slice(0, 3)
+  }, [radarData])
 
   return (
     <YStack gap="$6" width="100%">
@@ -135,25 +147,21 @@ export function ChartView({
         </YStack>
         {/* Domain Labels with Scores */}
         <YStack gap="$2" mt="$2">
-          {DOMAIN_ORDER.map((domain) => {
-            const normalized = normalizedScores[domain]
-            const domainName = DOMAIN_NAMES[domain]
-            const score = normalized?.percentage || 0
-            const result = normalized?.result || 'neutral'
+          {topTraits.map((trait) => {
             const resultColor =
-              result === 'high' ? '$green10' : result === 'low' ? '$blue10' : '$gray10'
+              trait.result === 'high' ? '$green10' : trait.result === 'low' ? '$blue10' : '$gray10'
 
             return (
-              <XStack key={domain} justify="space-between" items="center" p="$2" bg="$color1" rounded="$2">
+              <XStack key={trait.domainName} justify="space-between" items="center" p="$2" bg="$color1" rounded="$2">
                 <Text fontSize="$4" fontWeight="500" color="$color12">
-                  {domainName}
+                  {trait.domainName}
                 </Text>
                 <XStack gap="$3" items="center">
                   <Text fontSize="$3" color="$color10">
-                    {score}%
+                    {trait.value}%
                   </Text>
                   <Text fontSize="$2" fontWeight="600" color={resultColor}>
-                    {result.toUpperCase()}
+                    {trait.result.toUpperCase()}
                   </Text>
                 </XStack>
               </XStack>

@@ -27,7 +27,10 @@ export default function SharedIPIPResultsRoute() {
     {
       enabled: !!token,
       retry: false,
-    }
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 30,
+      refetchOnWindowFocus: false,
+    },
   )
 
   // Process shared results data
@@ -111,48 +114,48 @@ export default function SharedIPIPResultsRoute() {
 
         <Tabs.Content value="narrative" p="$4">
           <YStack bg="$color1" rounded="$4" borderWidth={1} borderColor="$borderColor" p="$4">
-          {processedResults ? (
-            <NarrativeView
-              scores={processedResults.scores}
-              normalizedScores={processedResults.normalizedScores}
-              narratives={processedResults.narratives}
-              isComplete={true}
-              completedDomains={5}
-            />
-          ) : (
-            <YStack items="center" p="$4">
-              <Text fontSize="$4" color="$color11">
-                Processing results...
-              </Text>
-            </YStack>
-          )}
+            {processedResults ? (
+              <NarrativeView
+                scores={processedResults.scores}
+                normalizedScores={processedResults.normalizedScores}
+                narratives={processedResults.narratives}
+                isComplete={true}
+                completedDomains={5}
+              />
+            ) : (
+              <YStack items="center" p="$4">
+                <Text fontSize="$4" color="$color11">
+                  Processing results...
+                </Text>
+              </YStack>
+            )}
           </YStack>
         </Tabs.Content>
 
         <Tabs.Content value="chart" p="$4">
           <YStack bg="$color1" rounded="$4" borderWidth={1} borderColor="$borderColor" p="$4">
-          {processedResults ? (
-            <ChartView
-              scores={processedResults.scores}
-              normalizedScores={processedResults.normalizedScores}
-              archetype={
-                processedResults.archetype
-                  ? {
-                      archetype: processedResults.archetype.name || '',
-                      confidence: processedResults.archetype.confidence || 0,
-                    }
-                  : null
-              }
-              isComplete={true}
-              completedDomains={5}
-            />
-          ) : (
-            <YStack items="center" p="$4">
-              <Text fontSize="$4" color="$color11">
-                Processing results...
-              </Text>
-            </YStack>
-          )}
+            {processedResults ? (
+              <ChartView
+                scores={processedResults.scores}
+                normalizedScores={processedResults.normalizedScores}
+                archetype={
+                  processedResults.archetype
+                    ? {
+                        archetype: processedResults.archetype.name || '',
+                        confidence: processedResults.archetype.confidence || 0,
+                      }
+                    : null
+                }
+                isComplete={true}
+                completedDomains={5}
+              />
+            ) : (
+              <YStack items="center" p="$4">
+                <Text fontSize="$4" color="$color11">
+                  Processing results...
+                </Text>
+              </YStack>
+            )}
           </YStack>
         </Tabs.Content>
       </Tabs>

@@ -4,6 +4,9 @@ import { getScore, getResults } from '@app/core/features/personality-assessment/
 import { normalizeScores } from '../utils/scoreNormalizer'
 import type { IPIPAnswer, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 
+const RESULTS_STALE_TIME_MS = 1000 * 60 * 5 // 5 minutes
+const RESULTS_CACHE_TIME_MS = 1000 * 60 * 30 // 30 minutes
+
 export interface IPIPResultsData {
   scores: IPIPScores | null
   normalizedScores: ReturnType<typeof normalizeScores> | null
@@ -35,12 +38,22 @@ export interface IPIPResultsData {
  * Hook to fetch and process IPIP assessment results
  */
 export function useIPIPResults(): IPIPResultsData {
-  const { data: assessment, isLoading: assessmentLoading, error: assessmentError } =
-    api.personalityAssessment.getAssessmentStatus.useQuery()
+  const {
+    data: assessment,
+    isLoading: assessmentLoading,
+    error: assessmentError,
+  } = api.personalityAssessment.getAssessmentStatus.useQuery(undefined, {
+    staleTime: RESULTS_STALE_TIME_MS,
+    cacheTime: RESULTS_CACHE_TIME_MS,
+    refetchOnWindowFocus: false,
+  })
 
   const { data: archetypeData, isLoading: archetypeLoading } =
     api.personalityAssessment.getArchetype.useQuery(undefined, {
       enabled: !!assessment?.ipip_completed_at,
+      staleTime: RESULTS_STALE_TIME_MS,
+      cacheTime: RESULTS_CACHE_TIME_MS,
+      refetchOnWindowFocus: false,
     })
 
   const answers = (assessment?.ipip_answers as IPIPAnswer[]) || []

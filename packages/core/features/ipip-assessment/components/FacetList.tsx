@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'
 import type { IPIPFacetScore, IPIPResultFacets } from '@app/core/features/personality-assessment/lib/ipip'
 
@@ -9,7 +10,7 @@ export interface FacetListProps {
 /**
  * FacetList - Displays 6 facets for a domain with scores and narratives
  */
-export function FacetList({ facets, facetNarratives }: FacetListProps) {
+export const FacetList = memo(function FacetList({ facets, facetNarratives }: FacetListProps) {
   const facetKeys = Object.keys(facets).sort()
 
   return (
@@ -61,5 +62,5 @@ export function FacetList({ facets, facetNarratives }: FacetListProps) {
       })}
     </YStack>
   )
-}
+})
 
