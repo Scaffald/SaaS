@@ -16,7 +16,7 @@ export const generalProfileSchema = z.object({
   last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
 
   // About section - optional
-  about: z.string().max(500, 'About section must be 500 characters or less').optional(),
+  about: z.string().max(1500, 'About section must be 1500 characters or less').optional(),
 
   // Contact information - optional
   phone: phoneNumberSchema,

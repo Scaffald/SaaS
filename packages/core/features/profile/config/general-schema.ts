@@ -22,7 +22,7 @@ export const generalProfileSchema = z.object({
 
   // About section - accepts both string (legacy) and JSONContent (TipTap format)
   about: z.union([
-    z.string().max(500, "About section must be 500 characters or less"),
+    z.string().max(1500, "About section must be 1500 characters or less"),
     z.object({
       type: z.string(),
       content: z.array(z.any()).optional(),

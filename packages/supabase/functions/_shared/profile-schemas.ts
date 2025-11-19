@@ -22,7 +22,7 @@ export const generalProfileSchema = z.object({
   ),
 
   // About section - optional
-  about: z.string().max(500, "About section must be 500 characters or less")
+  about: z.string().max(1500, "About section must be 1500 characters or less")
     .optional(),
 
   // Contact information - optional

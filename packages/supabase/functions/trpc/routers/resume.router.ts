@@ -434,6 +434,12 @@ async function extractResumeText(
 }
 
 function buildParsingPrompt(resumeText: string): string {
+  const normalized = resumeText.trim();
+  const truncated = normalized.slice(0, 1500);
+  const truncationNote =
+    normalized.length > 1500
+      ? "\n[Note: Resume text truncated to first 1500 characters.]\n"
+      : "";
   return `Parse this resume and return JSON that matches the following rules exactly:
 - Always respond with an object containing only the keys: general, experience, education, skills, certifications, employment.
 - Each of general, experience, education, skills, certifications MUST be arrays. Use an empty array [] if no data is found. Do not return plain strings.
@@ -447,7 +453,7 @@ function buildParsingPrompt(resumeText: string): string {
 - Do not include any explanatory text—return raw JSON only.
 
 Resume text to parse:
-${resumeText}`;
+${truncationNote}${truncated}`;
 }
 
 function collectOpenAIContentFragments(
