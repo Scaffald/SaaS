@@ -105,6 +105,9 @@ export function useSearch<T>(config: UseSearchConfig<T>): UseSearchResult<T> {
 
       const ranges: SearchSelectHighlightRange[] = []
       for (const match of matches) {
+        if (match.key && match.key !== 'label') {
+          continue
+        }
         for (const [start, end] of match.indices) {
           ranges.push({ start, end })
         }

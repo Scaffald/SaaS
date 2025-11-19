@@ -1,0 +1,163 @@
+import { memo, useMemo } from 'react'
+import type { ComponentType, CSSProperties, ReactNode } from 'react'
+import { Platform } from 'react-native'
+import { ScrollView, Separator, SizableText, YStack } from 'tamagui'
+import { EmptyState } from './EmptyState'
+import { ErrorState } from './ErrorState'
+import { ResultItem } from './ResultItem'
+import { ResultsSkeletonLoader } from './SkeletonLoader'
+import type { SearchSelectOption } from '../types'
+
+const isWeb = Platform.OS === 'web'
+type FixedSizeListComponent = ComponentType<{
+  height: number
+  width: number | string
+  itemCount: number
+  itemSize: number
+  className?: string
+  children: (props: { index: number; style: CSSProperties }) => ReactNode
+}>
+let FixedSizeList: FixedSizeListComponent | null = null
+
+if (isWeb) {
+  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+  const reactWindow = require('react-window') as { FixedSizeList?: FixedSizeListComponent }
+  FixedSizeList = reactWindow?.FixedSizeList ?? null
+}
+
+export interface ResultsListProps<T> {
+  options: SearchSelectOption<T>[]
+  activeIndex?: number
+  selectedValues?: Set<string>
+  onOptionPress: (option: SearchSelectOption<T>) => void
+  renderOption?: (option: SearchSelectOption<T>) => ReactNode
+  maxHeight?: number
+  loading?: boolean
+  loadingLabel?: string
+  error?: string | null
+  emptyContent?: ReactNode
+  onRetry?: () => void
+  virtualizationThreshold?: number
+  itemHeight?: number
+  headerContent?: ReactNode
+  footerContent?: ReactNode
+}
+
+function ResultsListComponent<T>({
+  options,
+  activeIndex = -1,
+  selectedValues,
+  onOptionPress,
+  renderOption,
+  maxHeight = 300,
+  loading,
+  loadingLabel = 'Searching…',
+  error,
+  emptyContent,
+  onRetry,
+  virtualizationThreshold = 60,
+  itemHeight = 48,
+  headerContent,
+  footerContent,
+}: ResultsListProps<T>) {
+  const selectedSet = useMemo(() => selectedValues ?? new Set<string>(), [selectedValues])
+
+  if (loading) {
+    return (
+      <YStack gap="$3" aria-busy={true}>
+        <SizableText fontSize="$3" color="$color11" px="$3">
+          {loadingLabel}
+        </SizableText>
+        <ResultsSkeletonLoader />
+      </YStack>
+    )
+  }
+
+  if (error) {
+    return <ErrorState message={error} onRetry={onRetry} />
+  }
+
+  if (options.length === 0) {
+    return emptyContent ?? <EmptyState />
+  }
+
+  const listboxRole = isWeb ? 'listbox' : undefined
+  const activeDescendant = isWeb && activeIndex >= 0 ? `search-result-${activeIndex}` : undefined
+
+  const accessibilityProps = isWeb
+    ? ({ role: 'listbox', 'aria-activedescendant': activeDescendant } as Record<string, unknown>)
+    : {}
+
+  const shouldVirtualize =
+    isWeb && Boolean(FixedSizeList) && options.length >= virtualizationThreshold
+
+  if (shouldVirtualize && FixedSizeList) {
+    const height = Math.min(maxHeight, options.length * itemHeight)
+    const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
+      const option = options[index]
+      const optionId = `search-result-${index}`
+      return (
+        <YStack style={style} width="100%">
+          <ResultItem
+            option={option}
+            index={index}
+            isActive={activeIndex === index}
+            isSelected={selectedSet.has(option.value)}
+            onPress={onOptionPress}
+            renderOption={renderOption}
+            itemId={optionId}
+          />
+          {index < options.length - 1 ? <Separator bg="$borderColor" /> : null}
+        </YStack>
+      )
+    }
+
+    return (
+      <YStack {...accessibilityProps}>
+        {headerContent}
+        <FixedSizeList
+          height={height}
+          itemCount={options.length}
+          itemSize={itemHeight}
+          width="100%"
+          className="search-select-virtual-list"
+        >
+          {Row}
+        </FixedSizeList>
+        {footerContent}
+      </YStack>
+    )
+  }
+
+  return (
+    <YStack {...accessibilityProps}>
+      {headerContent}
+      <YStack style={{ maxHeight, overflow: 'hidden' }}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          <YStack>
+            {options.map((option, index) => {
+              const optionId = `search-result-${index}`
+              return (
+                <YStack key={option.value}>
+                  <ResultItem
+                    option={option}
+                    index={index}
+                    isActive={activeIndex === index}
+                    isSelected={selectedSet.has(option.value)}
+                    onPress={onOptionPress}
+                    renderOption={renderOption}
+                    itemId={optionId}
+                  />
+                  {index < options.length - 1 ? <Separator bg="$borderColor" /> : null}
+                </YStack>
+              )
+            })}
+          </YStack>
+        </ScrollView>
+      </YStack>
+      {footerContent}
+    </YStack>
+  )
+}
+
+export const ResultsList = memo(ResultsListComponent) as typeof ResultsListComponent

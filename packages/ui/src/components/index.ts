@@ -30,3 +30,4 @@ export {
   type SkeletonListProps,
   type SkeletonFormProps,
 } from './skeletons'
+export * from './search-select'
