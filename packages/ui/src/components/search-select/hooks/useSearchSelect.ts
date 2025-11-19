@@ -93,8 +93,13 @@ export function useSearchSelect<T>(props: SearchSelectProps<T>): UseSearchSelect
 
   const updateInputValue = useCallback(
     (next: string) => {
+      // Always call onInputChange if provided, regardless of controlled state
+      // This allows parent components to trigger searches even when input is uncontrolled
+      onInputChange?.(next)
+      
       if (isInputControlled) {
-        onInputChange?.(next)
+        // If controlled, parent manages state via onInputChange
+        // Don't set internal state
       } else {
         setInternalInput(next)
       }
@@ -232,6 +237,27 @@ export function useSearchSelect<T>(props: SearchSelectProps<T>): UseSearchSelect
     [selectionMap]
   )
 
+  const setSelection = useCallback(
+    (nextValue: T | T[] | null) => {
+      if (mode === 'multiple') {
+        if (Array.isArray(nextValue)) {
+          emitChange(nextValue as T[])
+        } else if (nextValue) {
+          emitChange([nextValue])
+        } else {
+          emitChange([] as T[])
+        }
+      } else {
+        if (Array.isArray(nextValue)) {
+          emitChange(nextValue[0] ?? null)
+        } else {
+          emitChange(nextValue ?? null)
+        }
+      }
+    },
+    [emitChange, mode]
+  )
+
   return {
     mode,
     query: search.query,
@@ -252,5 +278,6 @@ export function useSearchSelect<T>(props: SearchSelectProps<T>): UseSearchSelect
     isSelected,
     clearResults: search.clearResults,
     refreshResults: search.refresh,
+    setSelection,
   }
 }
