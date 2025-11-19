@@ -17,6 +17,8 @@ import {
 } from "../../../_shared/schemas/profileImport.ts";
 import { protectedProcedure, t } from "../../middleware.ts";
 import type { Context } from "../../context.ts";
+// @ts-ignore - Deno requires file extension
+import { extractTextFromPdf as sharedExtractTextFromPdf } from "../../../_shared/pdf/extract-text.ts";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const IMPORT_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -72,26 +74,6 @@ async function scanForMalware(fileBytes: Uint8Array, fileName: string): Promise<
   console.log("[profileImport] Malware scan placeholder executed");
 }
 
-async function extractTextFromPdf(fileBytes: Uint8Array): Promise<string> {
-  try {
-    // Dynamic import to avoid module initialization issues with test files
-    const pdfParse = (await import("pdf-parse")).default;
-    const buffer = Buffer.from(fileBytes);
-    const parsed = await pdfParse(buffer);
-    if (parsed.text && parsed.text.trim().length > 0) {
-      return parsed.text;
-    }
-  } catch (error) {
-    console.warn("[profileImport] PDF extraction failed:", error);
-  }
-
-  try {
-    return new TextDecoder("utf-8", { fatal: false }).decode(fileBytes);
-  } catch {
-    return "";
-  }
-}
-
 async function extractTextFromDocx(fileBytes: Uint8Array): Promise<string> {
   try {
     const zip = await JSZip.loadAsync(fileBytes.buffer);
@@ -118,7 +100,9 @@ async function extractResumeText(
 ): Promise<string> {
   switch (fileType) {
     case "application/pdf":
-      return await extractTextFromPdf(fileBytes);
+      return (await sharedExtractTextFromPdf(fileBytes, {
+        namespace: "profileImport",
+      })).text;
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
       return await extractTextFromDocx(fileBytes);
     default:

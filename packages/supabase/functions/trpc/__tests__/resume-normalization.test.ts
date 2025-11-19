@@ -45,3 +45,26 @@ Deno.test("normalizeOpenAiResumePayload drops non-object employment payloads", (
   assertEquals(normalized.employment, undefined);
 });
 
+Deno.test("normalizeOpenAiResumePayload converts nested nulls to undefined", () => {
+  const normalized = normalizeOpenAiResumePayload({
+    general: [{
+      firstName: null,
+      lastName: "Doe",
+    }],
+    skills: [{
+      name: "JavaScript",
+      confidence: null,
+    }],
+    employment: {
+      hourlyRate: null,
+      locations: ["Remote", null],
+      openToTravel: null,
+    },
+  });
+
+  assertEquals(normalized.general?.[0]?.firstName, undefined);
+  assertEquals(normalized.skills?.[0]?.confidence, undefined);
+  assertEquals(normalized.employment?.hourlyRate, undefined);
+  assertEquals(normalized.employment?.locations, ["Remote"]);
+});
+

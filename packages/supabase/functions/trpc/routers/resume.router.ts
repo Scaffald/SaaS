@@ -13,6 +13,8 @@ import {
   profileEmploymentInputSchema,
   profileGeneralInputSchema,
 } from "../../_shared/schemas/consolidated.ts";
+// @ts-ignore - Deno requires file extension
+import { extractTextFromPdf as sharedExtractTextFromPdf } from "../../_shared/pdf/extract-text.ts";
 
 type DbClient = SupabaseClient<Database>;
 
@@ -238,7 +240,30 @@ export function normalizeOpenAiResumePayload(
     }
   }
 
-  return normalized;
+  return convertNullToUndefined(normalized);
+}
+
+function convertNullToUndefined<T>(value: T): T {
+  if (value === null) {
+    return undefined as T;
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => convertNullToUndefined(item))
+      .filter((item) => item !== undefined) as T;
+  }
+
+  if (typeof value === "object" && value !== null) {
+    const recordValue = value as Record<string, unknown>;
+    const result: Record<string, unknown> = {};
+    for (const [key, entryValue] of Object.entries(recordValue)) {
+      result[key] = convertNullToUndefined(entryValue);
+    }
+    return result as T;
+  }
+
+  return value;
 }
 
 const parseErrorSchema = z.object({
@@ -369,22 +394,6 @@ async function downloadResumeFile(
   });
 }
 
-async function extractTextFromPdf(bytes: Uint8Array): Promise<string> {
-  try {
-    // Dynamic import to avoid module initialization issues with test files
-    const pdfParse = (await import("pdf-parse")).default;
-    const buffer = Buffer.from(bytes);
-    const parsed = await pdfParse(buffer);
-    if (parsed.text && parsed.text.trim().length > 0) {
-      return parsed.text;
-    }
-  } catch (error) {
-    console.warn("[resume] pdf extraction failed", error);
-  }
-
-  return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
-}
-
 async function extractTextFromDocLike(bytes: Uint8Array): Promise<string> {
   try {
     const result = await extractRawText({ buffer: Buffer.from(bytes) });
@@ -407,7 +416,10 @@ async function extractResumeText(
   mimeType: string,
 ): Promise<string> {
   if (mimeType === "application/pdf") {
-    return await extractTextFromPdf(bytes);
+    const { text } = await sharedExtractTextFromPdf(bytes, {
+      namespace: "resume",
+    });
+    return text;
   }
 
   if (
