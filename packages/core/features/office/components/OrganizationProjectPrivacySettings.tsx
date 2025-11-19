@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Select, Adapt, Sheet, Card, Spinner } from 'tamagui'
+import { YStack, XStack, Text, Button, Select, Adapt, Card, Spinner } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Check, ChevronDown, ExternalLink } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'

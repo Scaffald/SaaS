@@ -11,10 +11,10 @@ import {
   Slider,
   Card,
   Separator,
-  useMedia,
-  Sheet,
+  useWindowDimensions,
   type GetThemeValueForKey,
 } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Search, X, ChevronRight, ArrowLeft } from '@tamagui/lucide-icons'
 
 /**
@@ -106,8 +106,10 @@ export function SkillSearchModal({
   isSearching = false,
   existingSkillIds = [],
 }: SkillSearchModalProps) {
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
+  // Use window dimensions for conditional rendering
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width } = useWindowDimensions()
+  const isMobile = width <= 800
   const [step, setStep] = useState<SelectionStep>('search-parent')
   const [searchQuery, setSearchQuery] = useState('')
   const [parentResults, setParentResults] = useState<ParentSkill[]>([])

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Dialog, YStack, XStack, Text, Button, ScrollView, Select, Adapt, Sheet, Label } from 'tamagui'
+import { Dialog, YStack, XStack, Text, Button, ScrollView, Select, Adapt, Label } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { X, Check, CheckCircle2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { AddressAutocomplete } from '@app/ui'

@@ -10,7 +10,8 @@ import {
   AddressForm,
   CustomCheckbox,
 } from '@app/ui'
-import { Adapt, Sheet, Select, Card } from 'tamagui'
+import { Adapt, Select, Card } from 'tamagui'
+import { Sheet } from '@app/ui'
 import type { AddressResult } from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
 import { RichTextEditor } from '@app/ui/components/rich-text'
@@ -161,7 +162,6 @@ type JobFormProps = {
   onSuccess?: () => void
 }
 
-
 export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const router = useRouter()
   const toast = useToastController()
@@ -259,7 +259,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       organizationId: formData.organization_id || undefined,
       includeArchived: false,
     },
-    { enabled: teamsQueryEnabled },
+    { enabled: teamsQueryEnabled }
   )
   const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
 
@@ -308,12 +308,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     setFormData((prev) => {
       const currentTeamIds = prev.team_ids ?? []
       const filtered = currentTeamIds.filter((id) => availableIds.has(id))
-      const nextAssigned = prev.assigned_team_id && availableIds.has(prev.assigned_team_id)
-        ? prev.assigned_team_id
-        : null
-      const nextPrimary = prev.primary_team_id && availableIds.has(prev.primary_team_id)
-        ? prev.primary_team_id
-        : null
+      const nextAssigned =
+        prev.assigned_team_id && availableIds.has(prev.assigned_team_id)
+          ? prev.assigned_team_id
+          : null
+      const nextPrimary =
+        prev.primary_team_id && availableIds.has(prev.primary_team_id) ? prev.primary_team_id : null
 
       if (
         filtered.length === currentTeamIds.length &&
@@ -351,10 +351,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   useEffect(() => {
     setFormData((prev) => {
-      if (
-        prev.assigned_team_id === primaryTeamId &&
-        prev.primary_team_id === primaryTeamId
-      ) {
+      if (prev.assigned_team_id === primaryTeamId && prev.primary_team_id === primaryTeamId) {
         return prev
       }
 
@@ -466,7 +463,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   // Skills and certifications handlers
   const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
-  const { data: primaryIndustryData } = api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
+  const { data: primaryIndustryData } =
+    api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
   const searchCertificationsQuery = api.office.searchCertifications.useQuery(
     { query: '', limit: 50 },
     { enabled: false }
@@ -483,11 +481,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           taxonomy: 'both',
           limit: 25,
         })
-        return result.skills.map((skill: { skill_id: string; name: string; display_code?: string; code?: string }) => ({
-          id: skill.skill_id,
-          name: skill.name,
-          code: skill.display_code || skill.code || skill.skill_id,
-        }))
+        return result.skills.map(
+          (skill: { skill_id: string; name: string; display_code?: string; code?: string }) => ({
+            id: skill.skill_id,
+            name: skill.name,
+            code: skill.display_code || skill.code || skill.skill_id,
+          })
+        )
       } catch (error) {
         console.error('Failed to search skills', error)
         return []
@@ -960,7 +960,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </YStack>
 
           {/* Minimum Elevate Score */}
-          <ScoreThresholdSection minimumScore={formData.minimum_score} onUpdate={handleScoreUpdate} />
+          <ScoreThresholdSection
+            minimumScore={formData.minimum_score}
+            onUpdate={handleScoreUpdate}
+          />
 
           {/* Elevate Teams */}
           <YStack gap="$2">
@@ -1181,7 +1184,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         />
 
         {/* Schedule Publish Section */}
-        <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+        <YStack
+          gap="$3"
+          p="$4"
+          bg="$color2"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
           <XStack gap="$3" items="center" justify="space-between">
             <YStack flex={1} gap="$1">
               <Text fontSize="$4" fontWeight="600" color="$color12">
@@ -1259,20 +1269,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         </YStack>
 
         {/* Actions */}
-        <XStack 
-          gap="$3" 
-          pt="$4"
-          $sm={{ flexDirection: 'column' }}
-          $gtSm={{ flexDirection: 'row' }}
-        >
-          <Button 
-            data-testid="job-cancel-button" 
-            flex={1} 
-            variant="outlined" 
-            onPress={() => router.back()} 
+        <XStack gap="$3" pt="$4" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
+          <Button
+            data-testid="job-cancel-button"
+            flex={1}
+            variant="outlined"
+            onPress={() => router.back()}
             disabled={isLoading}
             $sm={{ height: 44, width: '100%' }}
-            $gtSm={{ height: undefined, width: undefined }}
+            $md={{ height: undefined, width: undefined }}
           >
             Cancel
           </Button>
@@ -1284,7 +1289,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               onPress={() => setPreviewOpen(true)}
               disabled={isLoading || !formData.title || !formData.organization_id}
               $sm={{ height: 44 }}
-              $gtSm={{ height: undefined }}
+              $md={{ height: undefined }}
             >
               Preview
             </Button>
@@ -1303,7 +1308,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 extractPlainText(formData.description).trim().length === 0)
             }
             $sm={{ height: 44, width: '100%' }}
-            $gtSm={{ height: undefined, width: undefined }}
+            $md={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
             {!isLoading && 'Save as Draft'}
@@ -1323,18 +1328,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 new Date(formData.scheduled_publish_at) <= new Date())
             }
             $sm={{ height: 44, width: '100%' }}
-            $gtSm={{ height: undefined, width: undefined }}
+            $md={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
             {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}
           </Button>
         </XStack>
         {jobId && (
-          <JobPreviewModal
-            jobId={jobId}
-            open={previewOpen}
-            onOpenChange={setPreviewOpen}
-          />
+          <JobPreviewModal jobId={jobId} open={previewOpen} onOpenChange={setPreviewOpen} />
         )}
       </YStack>
     </ScrollView>

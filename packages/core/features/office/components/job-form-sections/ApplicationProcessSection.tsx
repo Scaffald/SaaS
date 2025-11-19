@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { YStack, XStack, Text, Input, ToggleSwitch, Button } from '@app/ui'
-import { Adapt, Sheet, Select, Switch, Card, Label } from 'tamagui'
+import { Adapt, Select, Switch, Card, Label } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Plus, X, Check } from '@tamagui/lucide-icons'
 
 interface CapabilityQuestion {

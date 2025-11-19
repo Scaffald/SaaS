@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from 'react'
 import { Platform, Pressable } from 'react-native'
-import { Text, YStack, XStack, Spinner, Switch, Paragraph, Sheet } from 'tamagui'
+import { Text, YStack, XStack, Spinner, Switch, Paragraph } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Settings2, RefreshCw, AlertCircle, ExternalLink } from '@tamagui/lucide-icons'
 import { UIButton as StyledButton, spacing } from '@app/ui'
 import { useRouter } from 'expo-router'

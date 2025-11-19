@@ -11,7 +11,8 @@ import {
   Separator,
   CustomCheckbox,
 } from '@app/ui'
-import { Adapt, Sheet, Select, Switch, TextArea } from 'tamagui'
+import { Adapt, Select, Switch, TextArea } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Check, Info, HelpCircle } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'

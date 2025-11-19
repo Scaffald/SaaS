@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Button, Spinner } from 'tamagui'
+import { YStack, XStack, Text, Select, Adapt, Separator, Button, Spinner } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { ChevronDown, Check } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { ProfileFormPanel, InlineSkillSearch } from './components'

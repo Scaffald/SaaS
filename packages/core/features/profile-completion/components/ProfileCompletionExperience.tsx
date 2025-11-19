@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Sheet, Text, YStack } from 'tamagui'
+import { Button, Text, YStack } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { EnhancedProfileCompletionWidget } from './EnhancedProfileCompletionWidget'
 import { ProfileCompletionModal } from './ProfileCompletionModal'
 import { ProfileWizard } from '@app/core/features/profile-wizard/components/ProfileWizard'

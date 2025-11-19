@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState } from 'react'
-import { Adapt, Select, Sheet, Text, YStack } from 'tamagui'
+import { Adapt, Select, Text, YStack } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { StyleguidePage } from '@app/styleguide'
 import { AnchorHeading } from '@app/styleguide'
 import { ExampleCard } from '@app/styleguide'

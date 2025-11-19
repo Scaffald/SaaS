@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
-import { Adapt, Sheet, Select, Label, TextArea } from 'tamagui'
+import { Adapt, Select, Label, TextArea } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
 interface CompensationBenefitsSectionProps {

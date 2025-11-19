@@ -11,7 +11,8 @@ import {
   Separator,
   CustomCheckbox,
 } from '@app/ui'
-import { Sheet, Select, TextArea } from 'tamagui'
+import { Select, TextArea } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Check } from '@tamagui/lucide-icons'
 import { Progress } from 'tamagui'
 import { api } from '@app/core/utils/api'

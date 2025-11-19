@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
-import { YStack, XStack, Text, Input, H4, TextArea, Select, Adapt, Sheet, useWindowDimensions, Spinner, Label } from 'tamagui'
+import { YStack, XStack, Text, Input, H4, TextArea, Select, Adapt, useWindowDimensions, Spinner, Label } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {

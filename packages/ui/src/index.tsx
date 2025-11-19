@@ -76,6 +76,7 @@ export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'
 export { NotificationDropdown, type NotificationItem } from './components/NotificationDropdown'
 export { ResponsiveModal, type ResponsiveModalProps } from './components/ResponsiveModal'
+export { Sheet, type SheetProps } from './components/sheets/Sheet'
 
 // Layout components
 export { DashboardLayout } from './components/layouts/DashboardLayout'

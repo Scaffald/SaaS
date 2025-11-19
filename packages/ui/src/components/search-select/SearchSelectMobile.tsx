@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { Button, Sheet, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { FilterChip } from '../chips/FilterChip'
 import { FieldError } from '../FieldError'
-import type { SearchSelectProps } from './types'
+import type { SearchSelectProps, SearchSelectOption } from './types'
 import { SearchInput } from './components/SearchInput'
 import { ResultsList } from './components/ResultsList'
 import { useSearchSelect } from './hooks/useSearchSelect'
@@ -80,6 +81,15 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
     closeSheet()
   }
 
+  const handleOptionPress = useCallback(
+    (option: SearchSelectOption<T>) => {
+      handleOptionSelect(option)
+      // Close sheet after selection (for both single and multi-select)
+      closeSheet()
+    },
+    [handleOptionSelect, closeSheet]
+  )
+
   const minSearchLength = props.minSearchLength ?? 2
   const trimmedQuery = inputValue.trim()
   const requiresAdditionalCharacters =
@@ -147,8 +157,8 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
         snapPoints={[90, 60]}
         dismissOnSnapToBottom
       >
-        <Sheet.Overlay opacity={0.5} />
-        <Sheet.Frame gap="$3" p="$4" bg="$background">
+        <Sheet.Overlay />
+        <Sheet.Frame gap="$3" p="$4">
           <Sheet.Handle />
           <XStack justify="space-between" items="center">
             <Button variant="outlined" onPress={handleCancel} size="$2">
@@ -188,7 +198,7 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
           <ResultsList
             options={results}
             selectedValues={selectedValueSet}
-            onOptionPress={handleOptionSelect}
+            onOptionPress={handleOptionPress}
             loading={isSearching}
             loadingLabel={strings.searching}
             error={error}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { YStack, XStack, Text, Input, UserSearch, ToggleSwitch } from '@app/ui'
-import { Adapt, Sheet, Select, Label } from 'tamagui'
+import { Adapt, Select, Label } from 'tamagui'
+import { Sheet } from '@app/ui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 
 interface JobMetadataSectionProps {
