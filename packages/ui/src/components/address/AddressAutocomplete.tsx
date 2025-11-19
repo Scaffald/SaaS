@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useEffect } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Text } from 'tamagui'
 import { SearchSelect, type SearchSelectOption } from '../search-select'
 import { useAddressAutocomplete } from './hooks'
@@ -70,103 +70,13 @@ export function AddressAutocomplete({
     maxResults,
   })
 
-  // Track the current query being searched and pending resolver
-  const currentQueryRef = useRef<string>('')
-  const pendingQueryRef = useRef<{
-    query: string
-    resolve: (results: AddressResult[]) => void
-    reject: (error: Error) => void
-  } | null>(null)
-  const prevLoadingRef = useRef(loading)
-  const hasResolvedRef = useRef(false)
-
-  // Resolve pending query when search completes (loading changes from true to false)
-  useEffect(() => {
-    const wasLoading = prevLoadingRef.current
-    const isLoading = loading
-
-    // Only process if we transitioned from loading to not loading
-    if (wasLoading && !isLoading && pendingQueryRef.current) {
-      const pending = pendingQueryRef.current
-      // Only resolve if the query matches the current query and we haven't resolved yet
-      if (pending.query === currentQueryRef.current && !hasResolvedRef.current) {
-        hasResolvedRef.current = true
-        // Use setTimeout to avoid resolving during render
-        setTimeout(() => {
-          if (pendingQueryRef.current === pending) {
-            pending.resolve(results)
-            pendingQueryRef.current = null
-          }
-        }, 0)
+  // Handle input change - trigger search when input changes
+  // Don't call onChange here to avoid loops - only sync on selection
+  const handleInputChange = useCallback(
+    (value: string) => {
+      if (value.trim().length >= minLength) {
+        search(value)
       }
-    }
-
-    // Reset resolved flag when loading starts
-    if (!wasLoading && isLoading) {
-      hasResolvedRef.current = false
-    }
-
-    prevLoadingRef.current = loading
-  }, [loading, results])
-
-  // Create async search function for SearchSelect
-  const handleSearch = useCallback(
-    async (query: string): Promise<AddressResult[]> => {
-      const trimmed = query.trim()
-      if (trimmed.length < minLength) {
-        // Clear any pending query if query is too short
-        if (pendingQueryRef.current) {
-          const pending = pendingQueryRef.current
-          pendingQueryRef.current = null
-          pending.reject(new Error('Query too short'))
-        }
-        hasResolvedRef.current = false
-        return []
-      }
-
-      // Update current query and reset resolved flag
-      currentQueryRef.current = trimmed
-      hasResolvedRef.current = false
-
-      // If there's a pending query for a different query, reject it
-      if (pendingQueryRef.current && pendingQueryRef.current.query !== trimmed) {
-        const oldPending = pendingQueryRef.current
-        pendingQueryRef.current = null
-        oldPending.reject(new Error('Query superseded'))
-      }
-
-      // Trigger the search via the hook
-      search(trimmed)
-
-      // Return a Promise that resolves when results arrive
-      return new Promise<AddressResult[]>((resolve, reject) => {
-        // Set up timeout first
-        const timeoutId = setTimeout(() => {
-          if (pendingQueryRef.current && pendingQueryRef.current.query === trimmed) {
-            const pending = pendingQueryRef.current
-            pendingQueryRef.current = null
-            hasResolvedRef.current = false
-            pending.reject(new Error('Search timeout'))
-          }
-        }, 10000)
-
-        // Create wrapped resolve/reject that clean up timeout
-        const wrappedResolve = (value: AddressResult[]) => {
-          clearTimeout(timeoutId)
-          resolve(value)
-        }
-        const wrappedReject = (error: Error) => {
-          clearTimeout(timeoutId)
-          reject(error)
-        }
-
-        // Store the resolver for this query
-        pendingQueryRef.current = {
-          query: trimmed,
-          resolve: wrappedResolve,
-          reject: wrappedReject,
-        }
-      })
     },
     [search, minLength]
   )
@@ -204,7 +114,8 @@ export function AddressAutocomplete({
     <SearchSelect<AddressResult>
       value={selectedAddress}
       onChange={handleChange}
-      onSearch={handleSearch}
+      options={results}
+      onInputChange={handleInputChange}
       getOptionLabel={(address) => address.formattedAddress}
       getOptionValue={(address) => address.id}
       getOptionDescription={(address) => address.locality || undefined}
@@ -213,7 +124,6 @@ export function AddressAutocomplete({
       disabled={disabled}
       placeholder={placeholder}
       minSearchLength={minLength}
-      debounceMs={debounceMs}
       enableFuzzyMatch={false}
       renderOption={renderOption}
     />

@@ -122,9 +122,48 @@ export function useSearch<T>(config: UseSearchConfig<T>): UseSearchResult<T> {
     [normalizedStaticOptions]
   )
 
+  // Filter static options with current query
+  const filterLocalResults = useCallback(
+    (searchQuery: string) => {
+      const trimmed = searchQuery.trim()
+      if (!trimmed) {
+        setDefaultLocalResults()
+      } else if (enableFuzzyMatch && fuse) {
+        const fuseResults = fuse.search(trimmed)
+        const mapped = fuseResults.map((result) => ({
+          ...result.item,
+          meta: {
+            ...(result.item.meta ?? {}),
+            origin: 'static' as const,
+            highlightRanges: buildHighlightRanges(result.matches),
+          },
+        }))
+        setLocalResults(mapped)
+      } else {
+        const filtered = normalizedStaticOptions.filter((option) =>
+          option.searchable.toLowerCase().includes(trimmed.toLowerCase())
+        )
+        const normalized = filtered.map((option) => ({
+          ...option,
+          meta: {
+            ...(option.meta ?? {}),
+            origin: 'static' as const,
+          },
+        }))
+        setLocalResults(normalized)
+      }
+    },
+    [enableFuzzyMatch, fuse, normalizedStaticOptions, buildHighlightRanges, setDefaultLocalResults]
+  )
+
+  // When options update, re-filter with current query if there is one
   useEffect(() => {
-    setDefaultLocalResults()
-  }, [setDefaultLocalResults])
+    if (query) {
+      filterLocalResults(query)
+    } else {
+      setDefaultLocalResults()
+    }
+  }, [normalizedStaticOptions, query, filterLocalResults, setDefaultLocalResults])
 
   useEffect(() => {
     return () => {
@@ -202,47 +241,18 @@ export function useSearch<T>(config: UseSearchConfig<T>): UseSearchResult<T> {
 
       const trimmed = next.trim()
       if (!trimmed) {
-        setDefaultLocalResults()
         setRemoteResults([])
         setError(null)
-      } else if (enableFuzzyMatch && fuse) {
-        const fuseResults = fuse.search(trimmed)
-        const mapped = fuseResults.map((result) => ({
-          ...result.item,
-          meta: {
-            ...(result.item.meta ?? {}),
-            origin: 'static' as const,
-            highlightRanges: buildHighlightRanges(result.matches),
-          },
-        }))
-        setLocalResults(mapped)
-      } else {
-        const filtered = normalizedStaticOptions.filter((option) =>
-          option.searchable.toLowerCase().includes(trimmed.toLowerCase())
-        )
-        const normalized = filtered.map((option) => ({
-          ...option,
-          meta: {
-            ...(option.meta ?? {}),
-            origin: 'static' as const,
-          },
-        }))
-        setLocalResults(normalized)
       }
 
-      if (onSearch) {
+      // Filter local results with the query
+      filterLocalResults(next)
+
+      if (onSearch && trimmed) {
         scheduleRemoteSearch(trimmed)
       }
     },
-    [
-      buildHighlightRanges,
-      enableFuzzyMatch,
-      fuse,
-      normalizedStaticOptions,
-      onSearch,
-      scheduleRemoteSearch,
-      setDefaultLocalResults,
-    ]
+    [onSearch, scheduleRemoteSearch, filterLocalResults]
   )
 
   const clearResults = useCallback(() => {
