@@ -57,14 +57,14 @@ export function UniversityAutocomplete({
   searchError,
 }: UniversityAutocompleteProps) {
   // Handle input change - trigger search when input changes
+  // Don't call onChange here to avoid loops - only sync on selection
   const handleInputChange = useCallback(
     (inputValue: string) => {
-      onChange?.(inputValue)
       if (inputValue.trim().length >= 3) {
         onSearch(inputValue)
       }
     },
-    [onChange, onSearch]
+    [onSearch]
   )
 
   // Handle selection
@@ -105,7 +105,6 @@ export function UniversityAutocomplete({
     <SearchSelect<University>
       value={selectedUniversity}
       onChange={handleChange}
-      inputValue={value}
       onInputChange={handleInputChange}
       options={results}
       getOptionLabel={(university) => university.name}

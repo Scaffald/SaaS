@@ -71,17 +71,17 @@ export function AddressAutocomplete({
   })
 
   // Handle input change - trigger search when input changes
+  // Don't call onChange here to avoid loops - only sync on selection
   const handleInputChange = useCallback(
     (value: string) => {
-      onChange?.(value)
       if (value.trim().length >= minLength) {
         search(value)
       }
     },
-    [onChange, search, minLength]
+    [search, minLength]
   )
 
-  // Handle selection
+  // Handle selection - this is when we sync with parent
   const handleChange = useCallback(
     (value: AddressResult | AddressResult[] | null) => {
       if (value && !Array.isArray(value)) {
@@ -114,7 +114,6 @@ export function AddressAutocomplete({
     <SearchSelect<AddressResult>
       value={selectedAddress}
       onChange={handleChange}
-      inputValue={propsValue || ''}
       onInputChange={handleInputChange}
       options={results}
       getOptionLabel={(address) => address.formattedAddress}
