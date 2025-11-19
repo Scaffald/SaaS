@@ -50,57 +50,54 @@ export const Onboarding = ({ onOnboarded, steps }: OnboardingProps) => {
   const scrollRef = useRef<RNScrollView>(null)
 
   return (
-    <YStack
-      flex={1}
-      bg="$color3"
-      overflow="hidden"
-      pb={safeAreaInsets.bottom}
-      pr={safeAreaInsets.right}
-      pt={safeAreaInsets.top}
-      pl={safeAreaInsets.left}
-    >
+    <YStack flex={1} bg="$color3" overflow="hidden">
       <Background backgroundImage={currentStep.backgroundImage} />
 
-      <YStack flex={1}>
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          pagingEnabled
-          scrollEventThrottle={16}
-          showsHorizontalScrollIndicator={false}
-          onScroll={handleScroll}
-        >
-          {steps.map((step, idx) => {
-            const isActive = idx === stepIdx
-            return (
-              <YStack
-                key={`onboarding-step-${step.backgroundImage}-step`}
-                width={dimensions.width - (safeAreaInsets.left + safeAreaInsets.right)}
-              >
-                {isActive && <step.Content key={`onboarding-content-${step.backgroundImage}`} />}
-              </YStack>
-            )
-          })}
-        </ScrollView>
-        <XStack gap={10} justify="center" my="$4">
-          {Array.from({ length: stepsCount }, (_, idx) => {
-            const isActive = idx === stepIdx
-            return (
-              <Point
-                key={`point-${idx}-${stepsCount}`}
-                active={isActive}
-                onPress={() => setStepIdx(idx)}
-              />
-            )
-          })}
-        </XStack>
+      <YStack flex={1} justify="space-between">
+        <YStack flex={1} pt={safeAreaInsets.top} pl={safeAreaInsets.left} pr={safeAreaInsets.right}>
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            pagingEnabled
+            scrollEventThrottle={16}
+            showsHorizontalScrollIndicator={false}
+            onScroll={handleScroll}
+          >
+            {steps.map((step, idx) => {
+              const isActive = idx === stepIdx
+              return (
+                <YStack
+                  key={`onboarding-step-${step.backgroundImage}-step`}
+                  width={dimensions.width - (safeAreaInsets.left + safeAreaInsets.right)}
+                >
+                  {isActive && <step.Content key={`onboarding-content-${step.backgroundImage}`} />}
+                </YStack>
+              )
+            })}
+          </ScrollView>
+          <XStack gap={10} justify="center" my="$4">
+            {Array.from({ length: stepsCount }, (_, idx) => {
+              const isActive = idx === stepIdx
+              return (
+                <Point
+                  key={`point-${idx}-${stepsCount}`}
+                  active={isActive}
+                  onPress={() => setStepIdx(idx)}
+                />
+              )
+            })}
+          </XStack>
+        </YStack>
+
+        <YStack pl={safeAreaInsets.left} pr={safeAreaInsets.right} pb={safeAreaInsets.bottom || 0}>
+          <OnboardingControls
+            currentIdx={stepIdx}
+            onChange={(val) => changePage(val)}
+            stepsCount={stepsCount}
+            onFinish={onOnboarded}
+          />
+        </YStack>
       </YStack>
-      <OnboardingControls
-        currentIdx={stepIdx}
-        onChange={(val) => changePage(val)}
-        stepsCount={stepsCount}
-        onFinish={onOnboarded}
-      />
     </YStack>
   )
 }

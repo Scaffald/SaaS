@@ -1,5 +1,5 @@
 import { ChevronRight } from '@tamagui/lucide-icons'
-import { Button, XStack } from 'tamagui'
+import { Button, Theme, XStack } from 'tamagui'
 
 import type { OnboardingControlsProps } from './OnboardingControls'
 
@@ -22,33 +22,38 @@ export const OnboardingControls = ({
   }
 
   return (
-    <XStack justify="space-between" items="center" p="$5" gap="$5">
-      <Button
-        chromeless
-        pressStyle={{
-          bg: '$color6',
-        }}
-        rounded="$10"
-        onPress={() => handleSkip()}
-      >
-        <Button.Text color="$color">Skip</Button.Text>
-      </Button>
+    <Theme name="primary">
+      <XStack justify="space-between" items="center" p="$5" gap="$5">
+        <Button
+          chromeless
+          pressStyle={{
+            bg: '$color4',
+          }}
+          rounded="$10"
+          onPress={() => handleSkip()}
+        >
+          <Button.Text color="$color10" fontWeight="700">
+            Skip
+          </Button.Text>
+        </Button>
 
-      <Button
-        pressStyle={{
-          bg: '$color6',
-          borderColor: '$color6',
-        }}
-        chromeless
-        bordered
-        borderColor="$color"
-        flex={1}
-        rounded="$10"
-        onPress={() => handleGoNext()}
-        iconAfter={ChevronRight}
-      >
-        <Button.Text color="$color">Continue</Button.Text>
-      </Button>
-    </XStack>
+        <Button
+          flex={1}
+          rounded="$10"
+          borderWidth={0}
+          bg="$color8"
+          pressStyle={{
+            bg: '$color9',
+            scale: 0.98,
+          }}
+          onPress={() => handleGoNext()}
+          iconAfter={ChevronRight}
+        >
+          <Button.Text color="$color1" fontWeight="700">
+            Continue
+          </Button.Text>
+        </Button>
+      </XStack>
+    </Theme>
   )
 }
