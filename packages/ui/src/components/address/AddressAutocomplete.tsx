@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef, useEffect } from 'react'
 import { Text } from 'tamagui'
 import { SearchSelect, type SearchSelectOption } from '../search-select'
 import { useAddressAutocomplete } from './hooks'
@@ -70,13 +70,46 @@ export function AddressAutocomplete({
     maxResults,
   })
 
-  // Handle input change - trigger search when input changes
-  // Don't call onChange here to avoid loops - only sync on selection
-  const handleInputChange = useCallback(
-    (value: string) => {
-      if (value.trim().length >= minLength) {
-        search(value)
+  // Track pending search queries to resolve Promises when results arrive
+  const pendingQueriesRef = useRef<Map<string, { resolve: (results: AddressResult[]) => void; reject: (error: Error) => void }>>(new Map())
+  const prevLoadingRef = useRef(loading)
+
+  // Resolve pending queries when search completes (loading changes from true to false)
+  useEffect(() => {
+    if (prevLoadingRef.current && !loading && pendingQueriesRef.current.size > 0) {
+      // Search completed - resolve all pending queries with current results
+      for (const [query, { resolve }] of pendingQueriesRef.current) {
+        resolve(results)
       }
+      pendingQueriesRef.current.clear()
+    }
+    prevLoadingRef.current = loading
+  }, [loading, results])
+
+  // Create async search function for SearchSelect
+  const handleSearch = useCallback(
+    async (query: string): Promise<AddressResult[]> => {
+      const trimmed = query.trim()
+      if (trimmed.length < minLength) {
+        return []
+      }
+
+      // Trigger the search via the hook
+      search(trimmed)
+
+      // Return a Promise that resolves when results arrive
+      return new Promise<AddressResult[]>((resolve, reject) => {
+        // Store the resolver for this query
+        pendingQueriesRef.current.set(trimmed, { resolve, reject })
+
+        // Reject after timeout if no results
+        setTimeout(() => {
+          if (pendingQueriesRef.current.has(trimmed)) {
+            pendingQueriesRef.current.delete(trimmed)
+            reject(new Error('Search timeout'))
+          }
+        }, 10000)
+      })
     },
     [search, minLength]
   )
@@ -114,8 +147,7 @@ export function AddressAutocomplete({
     <SearchSelect<AddressResult>
       value={selectedAddress}
       onChange={handleChange}
-      onInputChange={handleInputChange}
-      options={results}
+      onSearch={handleSearch}
       getOptionLabel={(address) => address.formattedAddress}
       getOptionValue={(address) => address.id}
       getOptionDescription={(address) => address.locality || undefined}
@@ -124,6 +156,7 @@ export function AddressAutocomplete({
       disabled={disabled}
       placeholder={placeholder}
       minSearchLength={minLength}
+      debounceMs={debounceMs}
       enableFuzzyMatch={false}
       renderOption={renderOption}
     />

@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import type { ComponentProps } from 'react'
 import type { TextInput } from 'react-native'
 import { Button, Input, Spinner, XStack } from 'tamagui'
-import { Search, X } from '@tamagui/lucide-icons'
+import { X } from '@tamagui/lucide-icons'
 
 interface SearchInputProps
   extends Omit<ComponentProps<typeof Input>, 'value' | 'defaultValue' | 'onChangeText'> {
@@ -12,6 +12,7 @@ interface SearchInputProps
   showClear?: boolean
   onClear?: () => void
   isInvalid?: boolean
+  editable?: boolean
 }
 
 export const SearchInput = forwardRef<TextInput, SearchInputProps>(
@@ -25,6 +26,7 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
       onClear,
       disabled,
       isInvalid,
+      editable = true,
       ...inputProps
     },
     ref
@@ -42,13 +44,12 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
         focusStyle={{ borderColor: '$color8' }}
         opacity={disabled ? 0.75 : 1}
       >
-        <Search size={16} color="$color10" style={{ marginLeft: 12 }} aria-hidden={true} />
         <Input
           ref={ref}
           flex={1}
           bg="transparent"
           borderWidth={0}
-          px="$3"
+          px="$4"
           py="$3"
           placeholder={placeholder}
           value={value}
@@ -56,6 +57,10 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           disabled={disabled}
           color="$color12"
           fontSize="$4"
+          editable={editable}
+          autoComplete="off"
+          autoCorrect={false}
+          autoCapitalize="none"
           {...inputProps}
         />
 
