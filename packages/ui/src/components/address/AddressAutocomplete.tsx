@@ -70,19 +70,42 @@ export function AddressAutocomplete({
     maxResults,
   })
 
-  // Track pending search queries to resolve Promises when results arrive
-  const pendingQueriesRef = useRef<Map<string, { resolve: (results: AddressResult[]) => void; reject: (error: Error) => void }>>(new Map())
+  // Track the current query being searched and pending resolver
+  const currentQueryRef = useRef<string>('')
+  const pendingQueryRef = useRef<{
+    query: string
+    resolve: (results: AddressResult[]) => void
+    reject: (error: Error) => void
+  } | null>(null)
   const prevLoadingRef = useRef(loading)
+  const hasResolvedRef = useRef(false)
 
-  // Resolve pending queries when search completes (loading changes from true to false)
+  // Resolve pending query when search completes (loading changes from true to false)
   useEffect(() => {
-    if (prevLoadingRef.current && !loading && pendingQueriesRef.current.size > 0) {
-      // Search completed - resolve all pending queries with current results
-      for (const [query, { resolve }] of pendingQueriesRef.current) {
-        resolve(results)
+    const wasLoading = prevLoadingRef.current
+    const isLoading = loading
+
+    // Only process if we transitioned from loading to not loading
+    if (wasLoading && !isLoading && pendingQueryRef.current) {
+      const pending = pendingQueryRef.current
+      // Only resolve if the query matches the current query and we haven't resolved yet
+      if (pending.query === currentQueryRef.current && !hasResolvedRef.current) {
+        hasResolvedRef.current = true
+        // Use setTimeout to avoid resolving during render
+        setTimeout(() => {
+          if (pendingQueryRef.current === pending) {
+            pending.resolve(results)
+            pendingQueryRef.current = null
+          }
+        }, 0)
       }
-      pendingQueriesRef.current.clear()
     }
+
+    // Reset resolved flag when loading starts
+    if (!wasLoading && isLoading) {
+      hasResolvedRef.current = false
+    }
+
     prevLoadingRef.current = loading
   }, [loading, results])
 
@@ -91,7 +114,25 @@ export function AddressAutocomplete({
     async (query: string): Promise<AddressResult[]> => {
       const trimmed = query.trim()
       if (trimmed.length < minLength) {
+        // Clear any pending query if query is too short
+        if (pendingQueryRef.current) {
+          const pending = pendingQueryRef.current
+          pendingQueryRef.current = null
+          pending.reject(new Error('Query too short'))
+        }
+        hasResolvedRef.current = false
         return []
+      }
+
+      // Update current query and reset resolved flag
+      currentQueryRef.current = trimmed
+      hasResolvedRef.current = false
+
+      // If there's a pending query for a different query, reject it
+      if (pendingQueryRef.current && pendingQueryRef.current.query !== trimmed) {
+        const oldPending = pendingQueryRef.current
+        pendingQueryRef.current = null
+        oldPending.reject(new Error('Query superseded'))
       }
 
       // Trigger the search via the hook
@@ -99,16 +140,32 @@ export function AddressAutocomplete({
 
       // Return a Promise that resolves when results arrive
       return new Promise<AddressResult[]>((resolve, reject) => {
-        // Store the resolver for this query
-        pendingQueriesRef.current.set(trimmed, { resolve, reject })
-
-        // Reject after timeout if no results
-        setTimeout(() => {
-          if (pendingQueriesRef.current.has(trimmed)) {
-            pendingQueriesRef.current.delete(trimmed)
-            reject(new Error('Search timeout'))
+        // Set up timeout first
+        const timeoutId = setTimeout(() => {
+          if (pendingQueryRef.current && pendingQueryRef.current.query === trimmed) {
+            const pending = pendingQueryRef.current
+            pendingQueryRef.current = null
+            hasResolvedRef.current = false
+            pending.reject(new Error('Search timeout'))
           }
         }, 10000)
+
+        // Create wrapped resolve/reject that clean up timeout
+        const wrappedResolve = (value: AddressResult[]) => {
+          clearTimeout(timeoutId)
+          resolve(value)
+        }
+        const wrappedReject = (error: Error) => {
+          clearTimeout(timeoutId)
+          reject(error)
+        }
+
+        // Store the resolver for this query
+        pendingQueryRef.current = {
+          query: trimmed,
+          resolve: wrappedResolve,
+          reject: wrappedReject,
+        }
       })
     },
     [search, minLength]
