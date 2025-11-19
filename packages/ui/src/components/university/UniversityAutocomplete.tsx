@@ -56,24 +56,23 @@ export function UniversityAutocomplete({
   loading,
   searchError,
 }: UniversityAutocompleteProps) {
-  // Convert University[] to SearchSelectOption<University>[]
-  const options = useMemo<SearchSelectOption<University>[]>(
-    () =>
-      results.map((university) => ({
-        id: university.id,
-        label: university.name,
-        value: university,
-        searchableText: `${university.name} ${university.country}`,
-      })),
-    [results]
+  // Handle input change - trigger search when input changes
+  const handleInputChange = useCallback(
+    (inputValue: string) => {
+      onChange?.(inputValue)
+      if (inputValue.trim().length >= 3) {
+        onSearch(inputValue)
+      }
+    },
+    [onChange, onSearch]
   )
 
   // Handle selection
-  const handleSelect = useCallback(
-    (option: SearchSelectOption<University> | null) => {
-      if (option) {
-        onUniversitySelect?.(option.value)
-        onChange?.(option.value.name)
+  const handleChange = useCallback(
+    (university: University | University[] | null) => {
+      if (university && !Array.isArray(university)) {
+        onUniversitySelect?.(university)
+        onChange?.(university.name)
       } else {
         onChange?.('')
       }
@@ -81,15 +80,21 @@ export function UniversityAutocomplete({
     [onUniversitySelect, onChange]
   )
 
+  // Find matching university from results if value matches
+  const selectedUniversity = useMemo(() => {
+    if (!value) return null
+    return results.find((uni) => uni.name === value) || null
+  }, [value, results])
+
   // Custom render function for university results
   const renderOption = useCallback(
     (option: SearchSelectOption<University>) => (
       <YStack items="flex-start" gap="$1">
         <Text fontSize="$3" color="$color12" numberOfLines={1} fontWeight="600">
-          {option.value.name}
+          {option.raw.name}
         </Text>
         <Text fontSize="$2" color="$color11" numberOfLines={1}>
-          {option.value.country}
+          {option.raw.country}
         </Text>
       </YStack>
     ),
@@ -98,16 +103,20 @@ export function UniversityAutocomplete({
 
   return (
     <SearchSelect<University>
-      value={value}
-      onChange={onChange}
-      onSelect={handleSelect}
-      options={options}
-      onSearch={onSearch}
-      loading={loading}
+      value={selectedUniversity}
+      onChange={handleChange}
+      inputValue={value}
+      onInputChange={handleInputChange}
+      options={results}
+      getOptionLabel={(university) => university.name}
+      getOptionValue={(university) => university.id}
+      getOptionDescription={(university) => university.country}
+      isLoading={loading}
       error={error || searchError || undefined}
       disabled={disabled}
       placeholder={placeholder}
       minSearchLength={3}
+      enableFuzzyMatch={false}
       renderOption={renderOption}
     />
   )

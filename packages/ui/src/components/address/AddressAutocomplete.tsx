@@ -70,32 +70,23 @@ export function AddressAutocomplete({
     maxResults,
   })
 
-  // Convert AddressResult[] to SearchSelectOption<AddressResult>[]
-  const options = useMemo<SearchSelectOption<AddressResult>[]>(
-    () =>
-      results.map((address) => ({
-        id: address.id,
-        label: address.formattedAddress,
-        value: address,
-        searchableText: address.formattedAddress,
-      })),
-    [results]
-  )
-
-  // Handle search
-  const handleSearch = useCallback(
-    (query: string) => {
-      search(query)
+  // Handle input change - trigger search when input changes
+  const handleInputChange = useCallback(
+    (value: string) => {
+      onChange?.(value)
+      if (value.trim().length >= minLength) {
+        search(value)
+      }
     },
-    [search]
+    [onChange, search, minLength]
   )
 
   // Handle selection
-  const handleSelect = useCallback(
-    (option: SearchSelectOption<AddressResult> | null) => {
-      if (option) {
-        onAddressSelect?.(option.value)
-        onChange?.(option.value.formattedAddress)
+  const handleChange = useCallback(
+    (value: AddressResult | AddressResult[] | null) => {
+      if (value && !Array.isArray(value)) {
+        onAddressSelect?.(value)
+        onChange?.(value.formattedAddress)
       } else {
         onChange?.('')
       }
@@ -113,21 +104,29 @@ export function AddressAutocomplete({
     []
   )
 
+  // Find matching address from results if value matches
+  const selectedAddress = useMemo(() => {
+    if (!propsValue) return null
+    return results.find((addr) => addr.formattedAddress === propsValue) || null
+  }, [propsValue, results])
+
   return (
     <SearchSelect<AddressResult>
-      value={propsValue}
-      onChange={onChange}
-      onSelect={handleSelect}
-      options={options}
-      onSearch={handleSearch}
-      loading={loading}
+      value={selectedAddress}
+      onChange={handleChange}
+      inputValue={propsValue || ''}
+      onInputChange={handleInputChange}
+      options={results}
+      getOptionLabel={(address) => address.formattedAddress}
+      getOptionValue={(address) => address.id}
+      getOptionDescription={(address) => address.locality || undefined}
+      isLoading={loading}
       error={error || searchError || undefined}
       disabled={disabled}
       placeholder={placeholder}
       minSearchLength={minLength}
-      debounceMs={debounceMs}
+      enableFuzzyMatch={false}
       renderOption={renderOption}
-      containerProps={containerProps}
     />
   )
 }
