@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Input, Spinner, Slider, Card, Separator, Label } from 'tamagui'
-import { Search } from '@tamagui/lucide-icons'
+import { YStack, XStack, Text, Button, Slider, Card, Separator, Label } from 'tamagui'
+import { SearchSelect, type SearchSelectOption } from '@app/ui'
 import { CustomCheckbox } from '@app/ui'
 
 /**
@@ -77,88 +77,35 @@ export function InlineSkillSearch({
   externalSearchTaxonomy,
   onConsumeExternalSearchTerm,
 }: InlineSkillSearchProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<ParentSkill[]>([])
   const [selectedSkill, setSelectedSkill] = useState<ParentSkill | null>(null)
   const [selectedTaxonomy, setSelectedTaxonomy] = useState<string>('csi')
   const [proficiency, setProficiency] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
   const [searchCSI, setSearchCSI] = useState(true)
   const [searchONET, setSearchONET] = useState(false)
   const lastExternalTermRef = useRef<string | null>(null)
 
-  // Search skills with debounce and query cancellation
-  const abortControllerRef = useRef<AbortController | null>(null)
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const handleSearchChange = useCallback(
-    (text: string) => {
-      setSearchQuery(text)
-
-      // Clear existing debounce timer
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
+  // Handle search with taxonomy filtering
+  const handleSearch = useCallback(
+    async (query: string): Promise<ParentSkill[]> => {
+      if (query.trim().length < 2) {
+        return []
       }
 
-      // Cancel previous search if in progress
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
+      const taxonomies: string[] = []
+      if (searchCSI) taxonomies.push('csi')
+      if (searchONET) taxonomies.push('onet')
+
+      if (taxonomies.length === 0) {
+        return []
       }
 
-      if (text.trim().length < 2) {
-        setSearchResults([])
-        setIsLoading(false)
-        return
-      }
+      const results = await onSearchSkills(query, taxonomies)
 
-      // Create new abort controller for this search
-      abortControllerRef.current = new AbortController()
-      const currentAbortController = abortControllerRef.current
-
-      // Debounce the search
-      debounceTimerRef.current = setTimeout(async () => {
-        setIsLoading(true)
-        try {
-          const taxonomies: string[] = []
-          if (searchCSI) taxonomies.push('csi')
-          if (searchONET) taxonomies.push('onet')
-
-          const results = await onSearchSkills(text, taxonomies)
-
-          // Filter out existing skills to prevent duplicates
-          const filteredResults = results.filter(
-            (skill) => !existingSkillIds.includes(skill.id)
-          )
-
-          // Only update if not aborted
-          if (!currentAbortController.signal.aborted) {
-            setSearchResults(filteredResults)
-            setIsLoading(false)
-          }
-        } catch (error) {
-          // Only update error if not aborted
-          if (!currentAbortController.signal.aborted) {
-            console.error('Search error:', error)
-            setSearchResults([])
-            setIsLoading(false)
-          }
-        }
-      }, 300)
+      // Filter out existing skills to prevent duplicates
+      return results.filter((skill) => !existingSkillIds.includes(skill.id))
     },
-    [onSearchSkills, searchCSI, searchONET, existingSkillIds],
+    [onSearchSkills, searchCSI, searchONET, existingSkillIds]
   )
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current)
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-    }
-  }, [])
 
   // Apply external search term when provided (e.g., suggestion chip)
   useEffect(() => {
@@ -182,15 +129,8 @@ export function InlineSkillSearch({
       setSearchONET(true)
     }
 
-    setSearchQuery(externalSearchTerm)
-    handleSearchChange(externalSearchTerm)
     onConsumeExternalSearchTerm?.()
-  }, [
-    externalSearchTerm,
-    externalSearchTaxonomy,
-    handleSearchChange,
-    onConsumeExternalSearchTerm,
-  ])
+  }, [externalSearchTerm, externalSearchTaxonomy, onConsumeExternalSearchTerm])
 
   // Handle skill selection
   const handleSkillSelect = useCallback((skill: ParentSkill, taxonomy: string) => {
@@ -207,10 +147,6 @@ export function InlineSkillSearch({
         proficiency,
         selectedTaxonomy,
         selectedSkill
-      )
-      // Remove added skill from search results, keep query and other results
-      setSearchResults((prev) =>
-        prev.filter((skill) => skill.id !== selectedSkill.id)
       )
       // Reset to search mode but keep search query
       setSelectedSkill(null)
@@ -327,6 +263,59 @@ export function InlineSkillSearch({
     )
   }
 
+  // Handle skill selection from SearchSelect
+  const handleChange = useCallback(
+    (value: ParentSkill | ParentSkill[] | null) => {
+      if (value && !Array.isArray(value)) {
+        // Determine taxonomy from skill code (CSI codes are numeric, O*NET have dashes)
+        const taxonomy = value.code.includes('-') ? 'onet' : 'csi'
+        handleSkillSelect(value, taxonomy)
+      }
+    },
+    [handleSkillSelect]
+  )
+
+  // Custom render function for skill results
+  const renderOption = useCallback(
+    (option: SearchSelectOption<ParentSkill>, _state: { isActive: boolean; isSelected: boolean; index: number }) => {
+      const skill = option.raw
+      const isExisting = existingSkillIds.includes(skill.id)
+      // Determine taxonomy from skill code (CSI codes are numeric, O*NET have dashes)
+      const taxonomy = skill.code.includes('-') ? 'onet' : 'csi'
+      return (
+        <Card
+          size="$4"
+          bordered
+          borderColor={isExisting ? '$blue9' : undefined}
+          borderWidth={isExisting ? 2 : 1}
+          pressStyle={{ scale: 0.98, bg: '$color5' }}
+          animation="quick"
+        >
+          <Card.Header>
+            <XStack justify="space-between" items="center">
+              <YStack flex={1}>
+                <Text fontSize="$4" fontWeight="600">
+                  {skill.name}
+                </Text>
+                {skill.code && (
+                  <Text fontSize="$2" color="$color10">
+                    {skill.code} ({taxonomy.toUpperCase()})
+                  </Text>
+                )}
+              </YStack>
+              {isExisting && (
+                <Text fontSize="$2" color="$blue9" fontWeight="600">
+                  Added
+                </Text>
+              )}
+            </XStack>
+          </Card.Header>
+        </Card>
+      )
+    },
+    [existingSkillIds]
+  )
+
   // Show search interface
   return (
     <YStack gap="$4">
@@ -363,77 +352,25 @@ export function InlineSkillSearch({
         </XStack>
       </XStack>
 
-      {/* Search Input */}
-      <XStack gap="$2" items="center">
-        <Input
-          flex={1}
-          placeholder="Search for a skill (e.g., Concrete, Plumbing)..."
-          value={searchQuery}
-          onChangeText={handleSearchChange}
-          size="$4"
-        />
-        {(isLoading || isSearching) && <Spinner size="small" />}
-      </XStack>
-
-      {/* Search Results */}
-      <YStack gap="$2" minH={200}>
-        {searchResults.length === 0 && searchQuery.trim().length >= 2 && !isLoading && (
-          <YStack p="$4" items="center" gap="$2">
-            <Text color="$color11">No skills found</Text>
-            <Text fontSize="$2" color="$color11" text="center">
-              Try a different search term or enable more taxonomies
-            </Text>
-          </YStack>
-        )}
-
-        {searchResults.length === 0 && searchQuery.trim().length < 2 && (
-          <YStack p="$4" items="center" gap="$2">
-            <Search size={32} color="$color11" />
-            <Text color="$color11">Start typing to search</Text>
-            <Text fontSize="$2" color="$color11" text="center">
-              Search for skills like "Concrete" or "Electrical"
-            </Text>
-          </YStack>
-        )}
-
-        {searchResults.map((skill) => {
-          const isExisting = existingSkillIds.includes(skill.id)
-          // Determine taxonomy from skill code (CSI codes are numeric, O*NET have dashes)
-          const taxonomy = skill.code.includes('-') ? 'onet' : 'csi'
-          return (
-            <Card
-              key={skill.id}
-              size="$4"
-              bordered
-              borderColor={isExisting ? '$blue9' : undefined}
-              borderWidth={isExisting ? 2 : 1}
-              pressStyle={{ scale: 0.98, backgroundColor: '$color5' }}
-              animation="quick"
-              onPress={() => handleSkillSelect(skill, taxonomy)}
-            >
-              <Card.Header>
-                <XStack justify="space-between" items="center">
-                  <YStack flex={1}>
-                    <Text fontSize="$4" fontWeight="600">
-                      {skill.name}
-                    </Text>
-                    {skill.code && (
-                      <Text fontSize="$2" color="$color10">
-                        {skill.code} ({taxonomy.toUpperCase()})
-                      </Text>
-                    )}
-                  </YStack>
-                  {isExisting && (
-                    <Text fontSize="$2" color="$blue9" fontWeight="600">
-                      Added
-                    </Text>
-                  )}
-                </XStack>
-              </Card.Header>
-            </Card>
-          )
-        })}
-      </YStack>
+      {/* SearchSelect Component */}
+      <SearchSelect<ParentSkill>
+        mode="single"
+        onSearch={handleSearch}
+        onChange={handleChange}
+        getOptionLabel={(skill: ParentSkill) => skill.name}
+        getOptionValue={(skill: ParentSkill) => skill.id}
+        getOptionDescription={(skill: ParentSkill) => skill.code || undefined}
+        placeholder="Search for a skill (e.g., Concrete, Plumbing)..."
+        minSearchLength={2}
+        debounceMs={300}
+        isLoading={isSearching}
+        renderOption={renderOption}
+        inputValue={externalSearchTerm || undefined}
+        strings={{
+          noResults: 'No skills found',
+          minCharacters: (count: number) => `Type at least ${count} characters to search`,
+        }}
+      />
     </YStack>
   )
 }
