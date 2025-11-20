@@ -96,6 +96,28 @@ interface CallTRPCEndpointOptions {
   headers?: Record<string, string>
 }
 
+/**
+ * Fetch with timeout protection
+ */
+export async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeoutMs = 5000,
+): Promise<Response> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    })
+    return response
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
+
 export async function callTRPCEndpoint(
   path: string,
   input?: unknown,
@@ -117,13 +139,17 @@ export async function callTRPCEndpoint(
   const baseUrl = `${TEST_SUPABASE_URL}/functions/v1/trpc/${path}`
 
   if (type === 'mutation') {
-    const response = await fetch(`${baseUrl}?batch=1`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        0: input ?? null,
-      }),
-    })
+    const response = await fetchWithTimeout(
+      `${baseUrl}?batch=1`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          0: input ?? null,
+        }),
+      },
+      5000,
+    )
 
     const data = await response.json()
     return Array.isArray(data) ? data : [data]
@@ -134,10 +160,14 @@ export async function callTRPCEndpoint(
       ? baseUrl
       : `${baseUrl}?batch=1&input=${encodeURIComponent(JSON.stringify({ '0': input }))}`
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers,
-  })
+  const response = await fetchWithTimeout(
+    url,
+    {
+      method: 'GET',
+      headers,
+    },
+    5000,
+  )
 
   const data = await response.json()
   return Array.isArray(data) ? data : [data]
@@ -231,23 +261,36 @@ export interface InbucketEmail {
 
 /**
  * Get latest email from Mailpit for a specific recipient
+ * Uses timeout-based polling instead of retry loops to prevent hanging
  */
 export async function getLatestEmail(
   recipient: string,
-  maxRetries = 10,
-  retryDelay = 500
+  timeoutMs = 5000,
 ): Promise<InbucketEmail | null> {
-  for (let i = 0; i < maxRetries; i++) {
+  const startTime = Date.now()
+  const pollInterval = 500
+
+  while (Date.now() - startTime < timeoutMs) {
     try {
-      // Get list of emails from Mailpit
-      const response = await fetch(`${TEST_MAILPIT_URL}/api/v1/messages`)
+      // Check if we have time for another poll
+      const remainingTime = timeoutMs - (Date.now() - startTime)
+      if (remainingTime < pollInterval) {
+        break
+      }
+
+      // Get list of emails from Mailpit with timeout
+      const response = await fetchWithTimeout(
+        `${TEST_MAILPIT_URL}/api/v1/messages`,
+        {},
+        Math.min(2000, remainingTime),
+      )
 
       if (!response.ok) {
-        if (i < maxRetries - 1) {
-          await new Promise((resolve) => setTimeout(resolve, retryDelay))
-          continue
+        // Wait before retrying if we have time
+        if (Date.now() - startTime + pollInterval < timeoutMs) {
+          await new Promise((resolve) => setTimeout(resolve, pollInterval))
         }
-        return null
+        continue
       }
 
       const data = await response.json()
@@ -259,19 +302,23 @@ export async function getLatestEmail(
       )
 
       if (!recipientEmails.length) {
-        if (i < maxRetries - 1) {
-          await new Promise((resolve) => setTimeout(resolve, retryDelay))
-          continue
+        // Wait before retrying if we have time
+        if (Date.now() - startTime + pollInterval < timeoutMs) {
+          await new Promise((resolve) => setTimeout(resolve, pollInterval))
         }
-        return null
+        continue
       }
 
       // Get the latest email (first in list)
       const latestEmail = recipientEmails[0]
-      const emailResponse = await fetch(`${TEST_MAILPIT_URL}/api/v1/message/${latestEmail.ID}`)
+      const emailResponse = await fetchWithTimeout(
+        `${TEST_MAILPIT_URL}/api/v1/message/${latestEmail.ID}`,
+        {},
+        Math.min(2000, timeoutMs - (Date.now() - startTime)),
+      )
 
       if (!emailResponse.ok) {
-        return null
+        throw new Error(`Failed to fetch email details: ${emailResponse.status}`)
       }
 
       const emailData = await emailResponse.json()
@@ -289,16 +336,23 @@ export async function getLatestEmail(
         },
       }
     } catch (error) {
-      console.error(`Error fetching email (attempt ${i + 1}):`, error)
-      if (i < maxRetries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, retryDelay))
+      if (error instanceof Error && error.name === 'AbortError') {
+        // Timeout occurred, check if we have time for another attempt
+        if (Date.now() - startTime + pollInterval < timeoutMs) {
+          await new Promise((resolve) => setTimeout(resolve, pollInterval))
+          continue
+        }
+      }
+      // For other errors, log and continue if we have time
+      if (Date.now() - startTime + pollInterval < timeoutMs) {
+        console.error(`Error fetching email:`, error)
+        await new Promise((resolve) => setTimeout(resolve, pollInterval))
         continue
       }
-      return null
     }
   }
 
-  return null
+  throw new Error(`Email not received within ${timeoutMs}ms for ${recipient}`)
 }
 
 /**
