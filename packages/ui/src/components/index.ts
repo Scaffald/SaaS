@@ -1,6 +1,11 @@
 export { FileUpload, type FileUploadProps } from './FileUpload'
 export { IconSelector } from './IconSelector'
 export { ImageUpload, type ImageUploadProps } from './ImageUpload'
+export {
+  ResponsiveSelect,
+  type ResponsiveSelectOption,
+  type ResponsiveSelectProps,
+} from './ResponsiveSelect'
 export type { RichTextDisplayProps, RichTextEditorProps } from './rich-text'
 export {
   createEmptyDocument,

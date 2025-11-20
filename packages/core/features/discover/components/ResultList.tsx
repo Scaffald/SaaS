@@ -1,4 +1,5 @@
-import { SkeletonList } from '@app/ui'
+import { EmptyState, ErrorState, SkeletonList } from '@app/ui'
+import { Search } from '@tamagui/lucide-icons'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
@@ -21,6 +22,8 @@ type ResultListProps = {
   selectedId: string | null
   onSelect: (id: string) => void
   isLoading?: boolean
+  error?: Error | null
+  onRetry?: () => void
 }
 
 export interface ResultListRef {
@@ -28,7 +31,7 @@ export interface ResultListRef {
 }
 
 const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
-  ({ profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading }, ref) => {
+  ({ profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry }, ref) => {
     const scrollViewRef = useRef<ScrollView>(null)
 
     // Combine profiles, organizations, and jobs into a single list
@@ -131,6 +134,20 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
       )
     }
 
+    if (error) {
+      return (
+        <YStack flex={1} p="$4" width="100%">
+          <ErrorState
+            title="Failed to load results"
+            description="We encountered an error while loading workers. Please try again."
+            error={error}
+            retry={onRetry}
+            retryText="Retry"
+          />
+        </YStack>
+      )
+    }
+
     return (
       <YStack flex={1} gap="$3" overflow="hidden" width="100%">
         <XStack justify="space-between" items="center" shrink={0} pt="$3" px="$3">
@@ -147,11 +164,11 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
         >
           <YStack gap="$2" pb="$6" width="100%">
             {allResults.length === 0 ? (
-              <YStack p="$4" items="center" justify="center" minH={200} width="100%">
-                <Text color="$color10" fontSize="$4" style={{ textAlign: 'center' }}>
-                  No results found
-                </Text>
-              </YStack>
+              <EmptyState
+                icon={<Search size={48} color="$color9" />}
+                title="No results found"
+                description="Try adjusting your search filters or search terms to find more workers."
+              />
             ) : (
               allResults.map((result, index) => (
                 <YStack key={result.id} gap="$2">

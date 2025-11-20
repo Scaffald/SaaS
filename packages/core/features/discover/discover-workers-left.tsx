@@ -31,7 +31,7 @@ export function DiscoverWorkersLeft({
   resultListRef,
 }: DiscoverWorkersLeftProps) {
   // Fetch workers using the same hook as the map page
-  const { data: talentProfiles = [], isLoading } = useTalentProfiles()
+  const { data: talentProfiles = [], isLoading, error, refetch } = useTalentProfiles()
   const { session } = useAuth()
   const currentUserId = session?.user?.id ?? null
 
@@ -88,6 +88,8 @@ export function DiscoverWorkersLeft({
         selectedId={selectedProfileId}
         onSelect={onSelect}
         isLoading={isLoading}
+        error={error ?? null}
+        onRetry={() => void refetch()}
       />
     </YStack>
   )
