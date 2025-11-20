@@ -470,6 +470,9 @@ export function ProfileEducationLeft() {
                                       nameField.onChange(text)
                                       universityField.onChange(null)
                                     }}
+                                    aria-label="Institution name"
+                                    accessibilityLabel="Institution name"
+                                    aria-required="true"
                                   />
                                   <FieldError message={entryErrors?.institution_name?.message} />
                                   <Button
@@ -538,6 +541,8 @@ export function ProfileEducationLeft() {
                                     placeholder="Specify degree type"
                                     value={customField.value || ''}
                                     onChangeText={customField.onChange}
+                                    aria-label="Custom degree type"
+                                    accessibilityLabel="Custom degree type"
                                   />
                                   <FieldError message={entryErrors?.custom_degree_type?.message} />
                                 </>
@@ -561,6 +566,8 @@ export function ProfileEducationLeft() {
                         placeholder="e.g. Computer Science"
                         value={field.value || ''}
                         onChangeText={field.onChange}
+                        aria-label="Field of study"
+                        accessibilityLabel="Field of study"
                       />
                     )}
                   />
@@ -586,6 +593,8 @@ export function ProfileEducationLeft() {
                           <Input
                             placeholder="e.g. 3.5 (0.0 - 4.0)"
                             value={localValue}
+                            aria-label="GPA"
+                            accessibilityLabel="GPA"
                             onChangeText={(text) => {
                               // Allow empty string
                               if (text === '') {

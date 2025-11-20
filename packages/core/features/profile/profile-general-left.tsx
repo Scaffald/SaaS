@@ -286,11 +286,16 @@ export function ProfileGeneralLeft() {
                   value={field.value}
                   onChangeText={field.onChange}
                   borderColor={errors.first_name ? '$red8' : '$borderColor'}
+                  aria-label="First name"
+                  accessibilityLabel="First name"
+                  aria-required="true"
+                  aria-invalid={!!errors.first_name}
+                  aria-describedby={errors.first_name ? 'first_name-error' : undefined}
                 />
               )}
             />
             {errors.first_name && (
-              <Text color="$red10" fontSize="$2">
+              <Text id="first_name-error" color="$red10" fontSize="$2" role="alert">
                 {errors.first_name.message}
               </Text>
             )}
@@ -307,11 +312,16 @@ export function ProfileGeneralLeft() {
                   value={field.value}
                   onChangeText={field.onChange}
                   borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                  aria-label="Last name"
+                  accessibilityLabel="Last name"
+                  aria-required="true"
+                  aria-invalid={!!errors.last_name}
+                  aria-describedby={errors.last_name ? 'last_name-error' : undefined}
                 />
               )}
             />
             {errors.last_name && (
-              <Text color="$red10" fontSize="$2">
+              <Text id="last_name-error" color="$red10" fontSize="$2" role="alert">
                 {errors.last_name.message}
               </Text>
             )}
