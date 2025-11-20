@@ -259,82 +259,77 @@ export const Breadcrumb = React.memo(function Breadcrumb({
   }
 
   return (
-    <nav aria-label="Breadcrumb navigation">
-      <XStack items="center" gap="$2" flexWrap="wrap">
-        {showEllipsis && showEllipsisDropdown && hiddenItems.length > 0 ? (
-          <>
-            {renderEllipsisDropdown()}
-            <ChevronRight size={12} color="var(--color8)" />
-          </>
-        ) : showEllipsis ? (
-          <>
-            <Text fontSize={12} color="$color10">
-              ...
-            </Text>
-            <ChevronRight size={12} color="var(--color8)" />
-          </>
-        ) : null}
-        {displayItems.map((item, displayIndex) => {
-          // Calculate actual index in original items array
-          let actualIndex: number
-          if (isMobile && showEllipsis) {
-            // Mobile: displayItems are the last N items
-            actualIndex = items.length - displayItems.length + displayIndex
-          } else if (!isMobile && showEllipsis) {
-            // Desktop: first item + last N-1 items
-            if (displayIndex === 0) {
-              actualIndex = 0
-            } else {
-              actualIndex = items.length - (displayItems.length - 1) + (displayIndex - 1)
-            }
+    <XStack items="center" gap="$2" flexWrap="wrap" aria-label="Breadcrumb navigation">
+      {showEllipsis && showEllipsisDropdown && hiddenItems.length > 0 ? (
+        <>
+          {renderEllipsisDropdown()}
+          <ChevronRight size={12} color="var(--color8)" />
+        </>
+      ) : showEllipsis ? (
+        <>
+          <Text fontSize={12} color="$color10">
+            ...
+          </Text>
+          <ChevronRight size={12} color="var(--color8)" />
+        </>
+      ) : null}
+      {displayItems.map((item, displayIndex) => {
+        // Calculate actual index in original items array
+        let actualIndex: number
+        if (isMobile && showEllipsis) {
+          // Mobile: displayItems are the last N items
+          actualIndex = items.length - displayItems.length + displayIndex
+        } else if (!isMobile && showEllipsis) {
+          // Desktop: first item + last N-1 items
+          if (displayIndex === 0) {
+            actualIndex = 0
           } else {
-            actualIndex = displayIndex
+            actualIndex = items.length - (displayItems.length - 1) + (displayIndex - 1)
           }
+        } else {
+          actualIndex = displayIndex
+        }
 
-          const isLast = displayIndex === displayItems.length - 1
-          const isActive = item.isActive ?? isLast
+        const isLast = displayIndex === displayItems.length - 1
+        const isActive = item.isActive ?? isLast
 
-          // Render regular breadcrumb item (no dropdowns - simplified)
-          // Terminal routes (isActive) should not be clickable
-          const isClickable = !isActive && (item.href || onItemPress)
+        // Render regular breadcrumb item (no dropdowns - simplified)
+        // Terminal routes (isActive) should not be clickable
+        const isClickable = !isActive && (item.href || onItemPress)
 
-          const content = (
-            <Text
-              fontSize={12}
-              color={isActive ? '$color11' : '$color10'}
-              fontWeight={isActive ? '600' : '400'}
-              style={{
-                cursor: isClickable ? 'pointer' : 'default',
-              }}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              {item.label}
-            </Text>
-          )
+        const content = (
+          <Text
+            fontSize={12}
+            color={isActive ? '$color11' : '$color10'}
+            fontWeight={isActive ? '600' : '400'}
+            style={{
+              cursor: isClickable ? 'pointer' : 'default',
+            }}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {item.label}
+          </Text>
+        )
 
-          return (
-            <React.Fragment key={`${item.label}-${actualIndex}`}>
-              {isClickable && item.href && !onItemPress ? (
-                <Link href={item.href} asChild>
-                  <XStack pressStyle={{ opacity: 0.7 }} cursor="pointer">
-                    {content}
-                  </XStack>
-                </Link>
-              ) : isClickable && onItemPress ? (
-                <XStack
-                  onPress={() => onItemPress(item, actualIndex)}
-                  pressStyle={{ opacity: 0.7 }}
-                >
+        return (
+          <React.Fragment key={`${item.label}-${actualIndex}`}>
+            {isClickable && item.href && !onItemPress ? (
+              <Link href={item.href} asChild>
+                <XStack pressStyle={{ opacity: 0.7 }} cursor="pointer">
                   {content}
                 </XStack>
-              ) : (
-                content
-              )}
-              {!isLast && <ChevronRight size={12} color="var(--color8)" />}
-            </React.Fragment>
-          )
-        })}
-      </XStack>
-    </nav>
+              </Link>
+            ) : isClickable && onItemPress ? (
+              <XStack onPress={() => onItemPress(item, actualIndex)} pressStyle={{ opacity: 0.7 }}>
+                {content}
+              </XStack>
+            ) : (
+              content
+            )}
+            {!isLast && <ChevronRight size={12} color="var(--color8)" />}
+          </React.Fragment>
+        )
+      })}
+    </XStack>
   )
 })
