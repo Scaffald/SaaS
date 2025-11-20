@@ -19,11 +19,11 @@ export default mergeConfig(
         { find: 'react-native', replacement: 'react-native-web' },
         {
           find: '@testing-library/react-native',
-          replacement: fileURLToPath(new URL('../../test/mocks/testing-library-react-native.ts', import.meta.url)),
+          replacement: fileURLToPath(new URL('../../tests/infrastructure/vitest/mocks/testing-library-react-native.ts', import.meta.url)),
         },
         {
           find: 'expo-constants',
-          replacement: fileURLToPath(new URL('../../test/mocks/expo-constants.ts', import.meta.url)),
+          replacement: fileURLToPath(new URL('../../tests/infrastructure/vitest/mocks/expo-constants.ts', import.meta.url)),
         },
       ],
     },
