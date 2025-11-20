@@ -19,7 +19,7 @@ const ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 
 /**
- * Helper to call Supabase REST API
+ * Helper to call Supabase REST API with timeout protection
  */
 async function callSupabaseRPC(
   functionName: string,
@@ -27,27 +27,34 @@ async function callSupabaseRPC(
   token = ANON_KEY,
 ) {
   const url = new URL(`${SUPABASE_URL}/rest/v1/rpc/${functionName}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-  const response = await fetch(url.toString(), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": token,
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify(params),
-  });
+  try {
+    const response = await fetch(url.toString(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": token,
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(params),
+      signal: controller.signal,
+    });
 
-  return {
-    ok: response.ok,
-    status: response.status,
-    data: response.ok ? await response.json() : null,
-    error: !response.ok ? await response.text() : null,
-  };
+    return {
+      ok: response.ok,
+      status: response.status,
+      data: response.ok ? await response.json() : null,
+      error: !response.ok ? await response.text() : null,
+    };
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /**
- * Helper to query a view via Supabase REST API
+ * Helper to query a view via Supabase REST API with timeout protection
  */
 async function querySupabaseView(
   viewName: string,
@@ -61,20 +68,28 @@ async function querySupabaseView(
     url.searchParams.append(key, value);
   }
 
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "apikey": token,
-      "Authorization": `Bearer ${token}`,
-    },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-  return {
-    ok: response.ok,
-    status: response.status,
-    data: response.ok ? await response.json() : null,
-    error: !response.ok ? await response.text() : null,
-  };
+  try {
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        "apikey": token,
+        "Authorization": `Bearer ${token}`,
+      },
+      signal: controller.signal,
+    });
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      data: response.ok ? await response.json() : null,
+      error: !response.ok ? await response.text() : null,
+    };
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 Deno.test({
