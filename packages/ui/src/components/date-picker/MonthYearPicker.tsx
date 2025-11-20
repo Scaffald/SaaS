@@ -1,6 +1,6 @@
-import { YStack, Text, Select, Adapt } from 'tamagui'
-import { Sheet } from '@app/ui'
 import { Calendar } from '@tamagui/lucide-icons'
+import { Adapt, Select, Text, YStack } from 'tamagui'
+import { Sheet } from '../sheets/Sheet'
 
 interface MonthYearPickerProps {
   value: Date | null | undefined

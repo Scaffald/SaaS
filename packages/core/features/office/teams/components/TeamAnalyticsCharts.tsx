@@ -1,12 +1,11 @@
-import { useMemo } from 'react'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { BarChart, LineChart, PieChart } from '@app/ui/components/charts'
+import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
+import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
 import { Card, Spinner, Text, YStack } from 'tamagui'
-
-import { api } from '@app/core/utils/api'
-import { BarChart, LineChart, PieChart } from '@app/ui/components/charts'
-import type { AppRouter } from '@app/supabase/client-types'
-import type { inferRouterOutputs } from '@trpc/server'
 
 type OverviewOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['overview']
 type MetricRecord = NonNullable<OverviewOutput['metrics']>[number]
@@ -46,7 +45,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     },
     {
       keepPreviousData: true,
-    },
+    }
   )
 
   const workloadQuery = api.teams.analytics.workload.useQuery(
@@ -56,7 +55,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     },
     {
       staleTime: 60_000,
-    },
+    }
   )
 
   const metrics = (overviewQuery.data?.metrics ?? []) as MetricRecord[]
@@ -65,29 +64,25 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
   const applicationsTrend = useMemo((): Array<{ value: number; label: string }> => {
     if (metrics.length === 0) return []
 
-    return [...metrics]
-      .reverse()
-      .map((entry) => ({
-        value: Number(entry.applications?.reviewed ?? 0),
-        label: new Date(entry.date).toLocaleDateString(undefined, {
-          month: 'short',
-          day: 'numeric',
-        }),
-      }))
+    return [...metrics].reverse().map((entry) => ({
+      value: Number(entry.applications?.reviewed ?? 0),
+      label: new Date(entry.date).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+      }),
+    }))
   }, [metrics])
 
   const timeToFirstReviewTrend = useMemo((): Array<{ value: number; label: string }> => {
     if (metrics.length === 0) return []
 
-    return [...metrics]
-      .reverse()
-      .map((entry) => ({
-        value: Number(entry.timeToFirstReview?.averageSeconds ?? 0) / 3600,
-        label: new Date(entry.date).toLocaleDateString(undefined, {
-          month: 'short',
-          day: 'numeric',
-        }),
-      }))
+    return [...metrics].reverse().map((entry) => ({
+      value: Number(entry.timeToFirstReview?.averageSeconds ?? 0) / 3600,
+      label: new Date(entry.date).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+      }),
+    }))
   }, [metrics])
 
   const workloadBreakdown = useMemo((): Array<{ text: string; value: number }> => {
@@ -113,7 +108,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     const latestPoint = applicationsTrend[applicationsTrend.length - 1]
     const peakPoint = applicationsTrend.reduce(
       (prev, point) => (point.value > prev.value ? point : prev),
-      applicationsTrend[0],
+      applicationsTrend[0]
     )
 
     return `Reviewed ${totalReviewed} applications over the past ${applicationsTrend.length} days. Latest day ${latestPoint.label} recorded ${latestPoint.value} reviews, while the peak day ${peakPoint.label} reached ${peakPoint.value}.`
@@ -137,14 +132,17 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
     const totalAssignments = workloadBreakdown.reduce((sum, entry) => sum + entry.value, 0)
     const busiestMember = workloadBreakdown.reduce(
       (prev, entry) => (entry.value > prev.value ? entry : prev),
-      workloadBreakdown[0],
+      workloadBreakdown[0]
     )
 
     return `Team members are handling ${totalAssignments} active or pending assignments. ${busiestMember.text} currently has the highest workload with ${busiestMember.value} assignments.`
   }, [workloadBreakdown])
 
   const isLoading =
-    overviewQuery.isLoading || workloadQuery.isLoading || overviewQuery.isFetching || workloadQuery.isFetching
+    overviewQuery.isLoading ||
+    workloadQuery.isLoading ||
+    overviewQuery.isFetching ||
+    workloadQuery.isFetching
 
   if (isLoading && metrics.length === 0) {
     return (
@@ -162,7 +160,8 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
           Insights unavailable
         </Text>
         <Text color="$color11">
-          We&apos;ll start charting metrics once your team begins reviewing applications and recording activity.
+          We&apos;ll start charting metrics once your team begins reviewing applications and
+          recording activity.
         </Text>
       </Card>
     )
@@ -179,9 +178,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
           horizontal={isSmallScreen}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={
-            isSmallScreen
-              ? { paddingVertical: 8, paddingRight: 24 }
-              : undefined
+            isSmallScreen ? { paddingVertical: 8, paddingRight: 24 } : undefined
           }
         >
           <YStack
@@ -211,9 +208,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
           horizontal={isSmallScreen}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={
-            isSmallScreen
-              ? { paddingVertical: 8, paddingRight: 24 }
-              : undefined
+            isSmallScreen ? { paddingVertical: 8, paddingRight: 24 } : undefined
           }
         >
           <YStack
@@ -246,9 +241,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
             horizontal={isSmallScreen}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={
-              isSmallScreen
-                ? { paddingVertical: 8, paddingRight: 24 }
-                : undefined
+              isSmallScreen ? { paddingVertical: 8, paddingRight: 24 } : undefined
             }
           >
             <YStack
@@ -316,5 +309,3 @@ function AnalyticsCard({
     </Card>
   )
 }
-
-

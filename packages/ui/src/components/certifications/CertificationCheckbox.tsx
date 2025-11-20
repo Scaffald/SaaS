@@ -1,5 +1,5 @@
-import { XStack, YStack, Text, Checkbox, Button } from 'tamagui'
 import { Check, Link } from '@tamagui/lucide-icons'
+import { Button, Checkbox, Text, XStack, YStack } from 'tamagui'
 
 interface Certification {
   id: string

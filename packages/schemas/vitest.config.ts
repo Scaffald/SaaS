@@ -1,9 +1,8 @@
-import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
-
-import baseConfig from '../../vitest.config'
-import { defineConfig, mergeConfig } from 'vitest/config'
+import { fileURLToPath } from 'node:url'
 import type { Config } from 'vitest'
+import { defineConfig, mergeConfig } from 'vitest/config'
+import baseConfig from '../../vitest.config'
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 const sharedConfig = baseConfig as Config

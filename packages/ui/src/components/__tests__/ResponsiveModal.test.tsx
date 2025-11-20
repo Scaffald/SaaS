@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
 const windowDimensions = vi.hoisted(() => ({ width: 1024 }))
 const dialogProps = vi.hoisted(() => ({ content: null as Record<string, unknown> | null }))
@@ -75,7 +75,10 @@ vi.mock('tamagui', () => {
     onPress,
     children,
     ...rest
-  }: { onPress?: () => void; children?: ReactNode }) => (
+  }: {
+    onPress?: () => void
+    children?: ReactNode
+  }) => (
     <button type="button" onClick={onPress} {...rest}>
       {children}
     </button>

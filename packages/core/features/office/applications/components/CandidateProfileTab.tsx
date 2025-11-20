@@ -1,4 +1,4 @@
-import { YStack, XStack, Text, Card } from 'tamagui'
+import { Card, Text, XStack, YStack } from 'tamagui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface CandidateProfileTabProps {
@@ -26,7 +26,8 @@ export const CandidateProfileTab = ({
   const contactLocationFromProfile = [contactInfo?.employment_city, contactInfo?.employment_state]
     .filter(Boolean)
     .join(', ')
-  const resolvedLocation = contactInfo?.location ?? (contactLocationFromProfile || candidate.location)
+  const resolvedLocation =
+    contactInfo?.location ?? (contactLocationFromProfile || candidate.location)
 
   const lockedMessage =
     lockReason ?? 'Pay the upfront success fee to unlock email and phone details.'

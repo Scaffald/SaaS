@@ -16,12 +16,16 @@ test('capture real Supabase localStorage keys', async ({ page }) => {
 
   console.log('\n=== Filling sign-in form ===')
   // Wait for and fill email
-  const emailInput = page.locator('input[type="email"], input[name="email"], input[placeholder*="email" i]').first()
+  const emailInput = page
+    .locator('input[type="email"], input[name="email"], input[placeholder*="email" i]')
+    .first()
   await emailInput.waitFor({ state: 'visible', timeout: 10000 })
   await emailInput.fill('ewongagent@gmail.com')
 
   // Fill password
-  const passwordInput = page.locator('input[type="password"], input[name="password"], input[placeholder*="password" i]').first()
+  const passwordInput = page
+    .locator('input[type="password"], input[name="password"], input[placeholder*="password" i]')
+    .first()
   await passwordInput.fill('password123')
 
   // Submit - try multiple possible selectors
@@ -46,12 +50,16 @@ test('capture real Supabase localStorage keys', async ({ page }) => {
       const key = localStorage.key(i)
       if (key) {
         const value = localStorage.getItem(key)
-        if (value && key.includes('sb-') || key.includes('supabase') || key.includes('auth')) {
+        if ((value && key.includes('sb-')) || key.includes('supabase') || key.includes('auth')) {
           try {
             const parsed = JSON.parse(value)
             result[key] = {
               type: typeof parsed,
-              keys: Array.isArray(parsed) ? `Array[${parsed.length}]` : (typeof parsed === 'object' ? Object.keys(parsed) : []),
+              keys: Array.isArray(parsed)
+                ? `Array[${parsed.length}]`
+                : typeof parsed === 'object'
+                  ? Object.keys(parsed)
+                  : [],
               sample: typeof parsed === 'string' ? parsed.substring(0, 50) + '...' : typeof parsed,
             }
           } catch {

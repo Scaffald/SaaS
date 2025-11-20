@@ -1,9 +1,9 @@
-import { useCallback } from 'react'
-import { XStack, Paragraph, YStack } from 'tamagui'
-import { Link } from 'expo-router'
-import { ChevronRight } from '@tamagui/lucide-icons'
-import { isActivePath } from '@app/core/features/drawer/utils'
 import type { RouteConfig } from '@app/core/constants/routes'
+import { isActivePath } from '@app/core/features/drawer/utils'
+import { ChevronRight } from '@tamagui/lucide-icons'
+import { Link } from 'expo-router'
+import { useCallback } from 'react'
+import { Paragraph, XStack, YStack } from 'tamagui'
 
 export interface OfficeFlyoutMenuItemProps {
   route: RouteConfig & { key: string }
@@ -78,9 +78,7 @@ export const OfficeFlyoutMenuItem = ({
               {route.title}
             </Paragraph>
           </XStack>
-          {hasChildren && (
-            <ChevronRight size={14} color={active ? '$color1' : '$color10'} />
-          )}
+          {hasChildren && <ChevronRight size={14} color={active ? '$color1' : '$color10'} />}
         </XStack>
       </Link>
 
@@ -101,4 +99,3 @@ export const OfficeFlyoutMenuItem = ({
     </YStack>
   )
 }
-

@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { phoneNumberSchema } from '../common/phone'
 import { addressSchema } from '../common/address'
+import { phoneNumberSchema } from '../common/phone'
 
 /**
  * General Profile Form Schema

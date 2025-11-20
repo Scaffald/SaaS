@@ -1,6 +1,6 @@
-import type { CSSProperties, ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { CSSProperties, ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('tamagui', async () => {
@@ -80,7 +80,11 @@ vi.mock('tamagui', async () => {
     children,
     onPress,
     ...rest
-  }: { children: ReactNode; onPress?: () => void; style?: CSSProperties }) => {
+  }: {
+    children: ReactNode
+    onPress?: () => void
+    style?: CSSProperties
+  }) => {
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <button type="button" onClick={onPress} style={style} {...passthrough}>

@@ -1,11 +1,11 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { View, Text } from 'tamagui'
-import type { MapContainerProps, MapContainerRef } from './types'
-import { MapFallback } from './MapFallback'
-import type { MapView, Camera, PointAnnotation } from '@rnmapbox/maps'
-import MapboxGL from '@rnmapbox/maps'
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
+import type { Camera, MapView, PointAnnotation } from '@rnmapbox/maps'
+import MapboxGL from '@rnmapbox/maps'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { Text, View } from 'tamagui'
+import { MapFallback } from './MapFallback'
 import { getMapStyleUrl } from './mapboxStyleConfig'
+import type { MapContainerProps, MapContainerRef } from './types'
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, onMapReady, style }, ref) => {

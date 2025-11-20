@@ -65,5 +65,3 @@ export class PrerequisiteFormHelpers {
     return this.page.getByRole('checkbox', { name })
   }
 }
-
-

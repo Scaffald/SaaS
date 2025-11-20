@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const styledCalls = vi.hoisted(() => [] as Array<Record<string, unknown>>)
 const platformState = vi.hoisted(() => ({ OS: 'web' }))

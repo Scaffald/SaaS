@@ -1,7 +1,7 @@
 import type { api } from '@app/core/utils/api'
 
 export async function invalidateProfileQueries(
-  utils: ReturnType<typeof api.useContext>,
+  utils: ReturnType<typeof api.useContext>
 ): Promise<void> {
   const tasks: Array<Promise<unknown>> = [
     utils.profile.getGeneral.invalidate(),
@@ -23,4 +23,3 @@ export async function invalidateProfileQueries(
 
   await Promise.allSettled(tasks)
 }
-

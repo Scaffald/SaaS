@@ -5,7 +5,7 @@
  * across multiple viewport sizes.
  */
 
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 /**
@@ -15,7 +15,7 @@ import { expect } from '@playwright/test'
 export async function assertNoHorizontalScroll(page: Page): Promise<void> {
   const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
   const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
-  
+
   expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
 }
 
@@ -23,16 +23,13 @@ export async function assertNoHorizontalScroll(page: Page): Promise<void> {
  * Assert that an element is fully visible within the viewport
  * Checks that element exists, is visible, and is within viewport bounds
  */
-export async function assertElementVisible(
-  page: Page,
-  selector: string
-): Promise<void> {
+export async function assertElementVisible(page: Page, selector: string): Promise<void> {
   const element = page.locator(selector)
   await expect(element).toBeVisible()
-  
+
   const box = await element.boundingBox()
   expect(box).toBeTruthy()
-  
+
   if (box) {
     // Element should be within viewport bounds
     const viewport = page.viewportSize()
@@ -56,20 +53,18 @@ export async function assertNoOverlap(
 ): Promise<void> {
   const box1 = await page.locator(selector1).boundingBox()
   const box2 = await page.locator(selector2).boundingBox()
-  
+
   expect(box1).toBeTruthy()
   expect(box2).toBeTruthy()
-  
+
   if (box1 && box2) {
     // Check if boxes don't overlap
     // Boxes overlap if:
     // - box1.x < box2.x + box2.width AND box1.x + box1.width > box2.x
     // - AND box1.y < box2.y + box2.height AND box1.y + box1.height > box2.y
-    const horizontalOverlap =
-      box1.x < box2.x + box2.width && box1.x + box1.width > box2.x
-    const verticalOverlap =
-      box1.y < box2.y + box2.height && box1.y + box1.height > box2.y
-    
+    const horizontalOverlap = box1.x < box2.x + box2.width && box1.x + box1.width > box2.x
+    const verticalOverlap = box1.y < box2.y + box2.height && box1.y + box1.height > box2.y
+
     const noOverlap = !(horizontalOverlap && verticalOverlap)
     expect(noOverlap).toBeTruthy()
   }
@@ -82,25 +77,22 @@ export async function assertNoOverlap(
  * - Content should be accessible via scrolling
  * - No horizontal overflow
  */
-export async function assertModalResponsive(
-  page: Page,
-  modalSelector: string
-): Promise<void> {
+export async function assertModalResponsive(page: Page, modalSelector: string): Promise<void> {
   const viewport = page.viewportSize()
   if (!viewport) {
     throw new Error('Viewport size not available')
   }
-  
+
   const isMobile = viewport.width <= 800
-  
+
   // Modal should be visible
   const modal = page.locator(modalSelector)
   await expect(modal).toBeVisible()
-  
+
   // Modal should be fully within viewport
   const modalBox = await modal.boundingBox()
   expect(modalBox).toBeTruthy()
-  
+
   if (modalBox) {
     // On mobile: Modal should be full-screen (within small margin)
     // On desktop: Modal should be centered with reasonable margins
@@ -117,7 +109,7 @@ export async function assertModalResponsive(
       expect(modalBox.x + modalBox.width).toBeLessThan(viewport.width) // Not extending beyond
     }
   }
-  
+
   // Check for horizontal overflow within modal
   const modalScrollWidth = await modal.evaluate((el) => el.scrollWidth)
   const modalClientWidth = await modal.evaluate((el) => el.clientWidth)
@@ -132,51 +124,50 @@ export async function assertModalResponsive(
  * - Action buttons should meet 44px touch target minimum on mobile
  * - No horizontal scrolling required
  */
-export async function assertFormResponsive(
-  page: Page,
-  formSelector: string
-): Promise<void> {
+export async function assertFormResponsive(page: Page, formSelector: string): Promise<void> {
   const viewport = page.viewportSize()
   if (!viewport) {
     throw new Error('Viewport size not available')
   }
-  
+
   const isMobile = viewport.width <= 800
-  
+
   const form = page.locator(formSelector)
   await expect(form).toBeVisible()
-  
+
   // Form should not require horizontal scrolling
   const formScrollWidth = await form.evaluate((el) => el.scrollWidth)
   const formClientWidth = await form.evaluate((el) => el.clientWidth)
   expect(formScrollWidth).toBeLessThanOrEqual(formClientWidth + 1) // Allow 1px tolerance
-  
+
   // Get all input fields in the form
   const inputs = form.locator('input, textarea, select')
   const inputCount = await inputs.count()
-  
+
   // Verify all inputs are visible and accessible
   for (let i = 0; i < Math.min(inputCount, 10); i++) {
     // Check first 10 inputs to avoid too many checks
     const input = inputs.nth(i)
     await expect(input).toBeVisible()
-    
+
     const inputBox = await input.boundingBox()
     if (inputBox && isMobile) {
       // On mobile, inputs should meet minimum touch target (44px)
       expect(inputBox.height).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
     }
   }
-  
+
   // Check action buttons (submit, cancel, etc.)
-  const buttons = form.locator('button[type="submit"], button:has-text("Save"), button:has-text("Cancel"), button:has-text("Submit")')
+  const buttons = form.locator(
+    'button[type="submit"], button:has-text("Save"), button:has-text("Cancel"), button:has-text("Submit")'
+  )
   const buttonCount = await buttons.count()
-  
+
   for (let i = 0; i < Math.min(buttonCount, 5); i++) {
     // Check first 5 buttons
     const button = buttons.nth(i)
     await expect(button).toBeVisible()
-    
+
     if (isMobile) {
       const buttonBox = await button.boundingBox()
       if (buttonBox) {
@@ -192,13 +183,10 @@ export async function assertFormResponsive(
  * Assert that text content is readable and properly wrapped
  * Checks that text doesn't extend beyond viewport width
  */
-export async function assertTextResponsive(
-  page: Page,
-  textSelector: string
-): Promise<void> {
+export async function assertTextResponsive(page: Page, textSelector: string): Promise<void> {
   const element = page.locator(textSelector)
   await expect(element).toBeVisible()
-  
+
   const elementBox = await element.boundingBox()
   if (elementBox) {
     const viewport = page.viewportSize()
@@ -213,19 +201,16 @@ export async function assertTextResponsive(
  * Assert that an element respects the safe area on mobile devices
  * Useful for checking that modals/drawers respect notches and safe areas
  */
-export async function assertSafeArea(
-  page: Page,
-  elementSelector: string
-): Promise<void> {
+export async function assertSafeArea(page: Page, elementSelector: string): Promise<void> {
   const viewport = page.viewportSize()
   if (!viewport || viewport.width > 800) {
     // Only check on mobile devices
     return
   }
-  
+
   const element = page.locator(elementSelector)
   const box = await element.boundingBox()
-  
+
   if (box) {
     // Safe area insets are typically 20-50px on mobile devices
     // We check that element doesn't extend to absolute edges
@@ -244,7 +229,7 @@ export function getViewportCategory(page: Page): 'mobile' | 'tablet' | 'desktop'
   if (!viewport) {
     return 'desktop' // Default fallback
   }
-  
+
   if (viewport.width <= 800) {
     return 'mobile'
   } else if (viewport.width <= 1024) {
@@ -252,4 +237,3 @@ export function getViewportCategory(page: Page): 'mobile' | 'tablet' | 'desktop'
   }
   return 'desktop'
 }
-

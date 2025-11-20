@@ -6,22 +6,20 @@
  */
 
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Increase timeout for tests with external RSS feeds
 test.setTimeout(60000)
 
 test.describe('News Feed Widget', () => {
-
   test('should display news widget with all core elements', async ({ page }: { page: Page }) => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Verify "News" heading is visible
@@ -45,10 +43,9 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Wait for either news items, loading state, error state, or empty state
     await page.waitForTimeout(5000) // Allow time for RSS feed to load
@@ -61,20 +58,23 @@ test.describe('News Feed Widget', () => {
     // News items would be rendered via NewsCard component
     // NewsCard doesn't have explicit testid, so we check for timestamps
     const timestamps = page.locator('text=/ago|Just now/')
-    const hasNewsItems = await timestamps.count() > 0
+    const hasNewsItems = (await timestamps.count()) > 0
 
     // At least one state should be true
     expect(hasError || hasLoading || hasEmpty || hasNewsItems).toBeTruthy()
   })
 
-  test('should display feed selector dropdown with options (web only)', async ({ page }: { page: Page }) => {
+  test('should display feed selector dropdown with options (web only)', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Check if feed selector is present (web only)
@@ -110,14 +110,17 @@ test.describe('News Feed Widget', () => {
     expect(hasRegional || hasTopics).toBeTruthy()
   })
 
-  test('should allow selecting different feed from dropdown (web only)', async ({ page }: { page: Page }) => {
+  test('should allow selecting different feed from dropdown (web only)', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Check if feed selector is present (web only)
@@ -158,10 +161,9 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Click refresh button
@@ -186,10 +188,9 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(5000)
 
     // Check if we have news items (by looking for timestamps)
@@ -210,10 +211,9 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(5000)
 
     // Check if error state is shown
@@ -245,10 +245,9 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Wait for loading to complete
     await page.waitForTimeout(5000)
@@ -268,10 +267,9 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Refresh to trigger loading state
     const refreshButton = page.locator('[data-testid="news-refresh-button"]')
@@ -281,11 +279,16 @@ test.describe('News Feed Widget', () => {
     await page.waitForTimeout(200)
 
     const loadingText = page.locator('text=Loading news...')
-    const loadingSpinner = page.locator('[role="progressbar"]').or(page.locator('svg[class*="spinner"]'))
+    const loadingSpinner = page
+      .locator('[role="progressbar"]')
+      .or(page.locator('svg[class*="spinner"]'))
 
     // At least one loading indicator might appear (may be very fast)
     const hasLoading = await loadingText.isVisible().catch(() => false)
-    const hasSpinner = await loadingSpinner.first().isVisible().catch(() => false)
+    const hasSpinner = await loadingSpinner
+      .first()
+      .isVisible()
+      .catch(() => false)
 
     // Note: Loading might be very fast, so this test passes either way
     expect(true).toBeTruthy()
@@ -295,15 +298,16 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(5000)
 
     // Check if any news items have categories
     // Categories are rendered as colored buttons (Safety, Technology, etc.)
-    const categories = page.locator('text=/Safety|Technology|Sustainability|Finance|Workforce|Equipment|General/')
+    const categories = page.locator(
+      'text=/Safety|Technology|Sustainability|Finance|Workforce|Equipment|General/'
+    )
     const categoryCount = await categories.count()
 
     // If categories exist, verify they're visible
@@ -315,19 +319,22 @@ test.describe('News Feed Widget', () => {
     expect(true).toBeTruthy()
   })
 
-  test('should display metadata (timestamps, read time, author)', async ({ page }: { page: Page }) => {
+  test('should display metadata (timestamps, read time, author)', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(5000)
 
     // Look for timestamp indicators
     const timestamps = page.locator('text=/ago|Just now|day/')
-    const hasTimestamps = await timestamps.count() > 0
+    const hasTimestamps = (await timestamps.count()) > 0
 
     if (hasTimestamps) {
       // Verify at least one timestamp is visible
@@ -335,7 +342,7 @@ test.describe('News Feed Widget', () => {
 
       // Check for separators (•) which indicate additional metadata
       const separators = page.locator('text=•')
-      const hasSeparators = await separators.count() > 0
+      const hasSeparators = (await separators.count()) > 0
 
       // Separators present means read time or author info exists
       expect(hasSeparators || hasTimestamps).toBeTruthy()
@@ -346,10 +353,9 @@ test.describe('News Feed Widget', () => {
     await signInAsTestUser(page)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // News feeds can be slow - verify UI remains stable
     await page.waitForTimeout(8000)

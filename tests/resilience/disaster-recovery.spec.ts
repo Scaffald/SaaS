@@ -7,7 +7,7 @@
  * Task 25: Execute Disaster Recovery and Failover Testing
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Disaster Recovery and Failover Testing', () => {
   test('database failover', async ({ page }) => {
@@ -17,7 +17,7 @@ test.describe('Disaster Recovery and Failover Testing', () => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Page should load successfully (assuming primary database is up)
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Page should load with primary database').toBeGreaterThan(0)
   })
 
@@ -28,7 +28,7 @@ test.describe('Disaster Recovery and Failover Testing', () => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Page should load successfully
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Page should load after backup restoration').toBeGreaterThan(0)
   })
 
@@ -40,7 +40,9 @@ test.describe('Disaster Recovery and Failover Testing', () => {
 
     // Measure page load time as proxy for recovery time
     const loadTime = await page.evaluate(() => {
-      const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+      const navigationEntry = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming
       return navigationEntry ? navigationEntry.loadEventEnd - navigationEntry.fetchStart : 0
     })
 
@@ -60,4 +62,3 @@ test.describe('Disaster Recovery and Failover Testing', () => {
  * These tests validate basic infrastructure.
  * Full disaster recovery testing should be done via disaster recovery drills.
  */
-

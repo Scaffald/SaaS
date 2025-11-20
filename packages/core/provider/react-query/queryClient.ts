@@ -1,14 +1,14 @@
-import type { QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from '@tanstack/react-query'
 
 // Global query client instance accessible throughout the app
-let globalQueryClient: QueryClient | null = null;
+let globalQueryClient: QueryClient | null = null
 
 /**
  * Set the global query client instance
  * Called by QueryProvider during initialization
  */
 export function setGlobalQueryClient(client: QueryClient): void {
-  globalQueryClient = client;
+  globalQueryClient = client
 }
 
 /**
@@ -17,5 +17,5 @@ export function setGlobalQueryClient(client: QueryClient): void {
  * Useful for clearing cache during auth cleanup
  */
 export function getGlobalQueryClient(): QueryClient | null {
-  return globalQueryClient;
+  return globalQueryClient
 }

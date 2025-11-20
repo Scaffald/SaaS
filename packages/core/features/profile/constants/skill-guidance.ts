@@ -118,4 +118,3 @@ export const getSkillGuidanceForIndustry = (industrySlug: string | undefined): S
 
   return SKILL_GUIDANCE_BY_INDUSTRY[industrySlug] ?? defaultGuidance
 }
-

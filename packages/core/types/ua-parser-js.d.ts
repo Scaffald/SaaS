@@ -1,4 +1,1 @@
-declare module "ua-parser-js";
-
-
-
+declare module 'ua-parser-js'

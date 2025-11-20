@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Card, Button } from 'tamagui'
-import { Star, MapPin, Award, DollarSign, Briefcase, MessageSquare } from '@tamagui/lucide-icons'
+import { Award, Briefcase, DollarSign, MapPin, MessageSquare, Star } from '@tamagui/lucide-icons'
+import { Button, Card, Text, XStack, YStack } from 'tamagui'
 
 interface UserProfileHeaderProps {
   profile: {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseQuery = vi.fn()
 
@@ -8,17 +8,29 @@ vi.mock('tamagui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
-    <button type="button" onClick={onPress}>{children}</button>
+    <button type="button" onClick={onPress}>
+      {children}
+    </button>
   )
   const Spinner = () => <span>Loading</span>
-  
-  const SelectTrigger = ({ children }: { children?: ReactNode; iconAfter?: ReactNode; size?: string }) => (
-    <button type="button">{children}</button>
+
+  const SelectTrigger = ({
+    children,
+  }: {
+    children?: ReactNode
+    iconAfter?: ReactNode
+    size?: string
+  }) => <button type="button">{children}</button>
+  const SelectValue = ({
+    children,
+    placeholder,
+  }: {
+    children?: ReactNode
+    placeholder?: string
+  }) => <span>{children || placeholder}</span>
+  const SelectContent = ({ children }: { children?: ReactNode; zIndex?: number }) => (
+    <div>{children}</div>
   )
-  const SelectValue = ({ children, placeholder }: { children?: ReactNode; placeholder?: string }) => (
-    <span>{children || placeholder}</span>
-  )
-  const SelectContent = ({ children }: { children?: ReactNode; zIndex?: number }) => <div>{children}</div>
   const SelectViewport = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const SelectGroup = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const SelectLabel = ({ children }: { children?: ReactNode }) => <div>{children}</div>
@@ -29,21 +41,24 @@ vi.mock('tamagui', () => {
   const SelectItemIndicator = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const SelectScrollUpButton = () => null
   const SelectScrollDownButton = () => null
-  
-  const Select = Object.assign((_props: { value?: string; onValueChange?: (value: string) => void }) => null, {
-    Trigger: SelectTrigger,
-    Value: SelectValue,
-    Content: SelectContent,
-    Viewport: SelectViewport,
-    Group: SelectGroup,
-    Label: SelectLabel,
-    Item: SelectItem,
-    ItemText: SelectItemText,
-    ItemIndicator: SelectItemIndicator,
-    ScrollUpButton: SelectScrollUpButton,
-    ScrollDownButton: SelectScrollDownButton,
-  })
-  
+
+  const Select = Object.assign(
+    (_props: { value?: string; onValueChange?: (value: string) => void }) => null,
+    {
+      Trigger: SelectTrigger,
+      Value: SelectValue,
+      Content: SelectContent,
+      Viewport: SelectViewport,
+      Group: SelectGroup,
+      Label: SelectLabel,
+      Item: SelectItem,
+      ItemText: SelectItemText,
+      ItemIndicator: SelectItemIndicator,
+      ScrollUpButton: SelectScrollUpButton,
+      ScrollDownButton: SelectScrollDownButton,
+    }
+  )
+
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     YStack: Stack,
@@ -123,4 +138,3 @@ describe('TeamAnalyticsSummary', () => {
     expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
   })
 })
-

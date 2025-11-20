@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import type { ProfileWizardStepId } from '@app/supabase/client-types'
+import { useMemo } from 'react'
 import { resolveSectionMetadata } from '../constants/sectionMetadata'
 
 interface RawCompletionSection {
@@ -120,7 +120,7 @@ export function useCompletionStatus() {
           missingFields: section.missingFields ?? [],
           actionRoute: metadata.route,
         }
-      },
+      }
     )
 
     const milestoneBadges: CompletionMilestone[] = rawStatus.milestoneBadges.map(
@@ -130,7 +130,7 @@ export function useCompletionStatus() {
         threshold: milestone.threshold,
         achieved: milestone.achieved,
         reachedAt: milestone.reachedAt ?? null,
-      }),
+      })
     )
 
     const milestoneHistory = rawStatus.milestoneHistory ?? {}
@@ -147,7 +147,7 @@ export function useCompletionStatus() {
     const totalWeight = sections.reduce((total, section) => total + section.weight, 0)
     const completedWeight = sections.reduce(
       (total, section) => (section.completed ? total + section.weight : total),
-      0,
+      0
     )
 
     return {

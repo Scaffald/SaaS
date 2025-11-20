@@ -1,3 +1,3 @@
-export * from "./types";
-export * from "./quiz";
-export * from "./score";
+export * from './quiz'
+export * from './score'
+export * from './types'

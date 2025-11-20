@@ -59,13 +59,13 @@ vi.mock('tamagui', () => {
       ref,
       placeholder,
       value,
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
-        onChangeText?.(event.target.value),
+      onChange: (event: React.ChangeEvent<HTMLInputElement>) => onChangeText?.(event.target.value),
       'data-testid': 'proof-url-input',
     })
   )
 
-  const Text = ({ children }: { children?: ReactNode }) => React.createElement('span', null, children)
+  const Text = ({ children }: { children?: ReactNode }) =>
+    React.createElement('span', null, children)
   const ScrollView = ({ children }: { children?: ReactNode }) =>
     React.createElement('div', null, children)
 
@@ -257,4 +257,3 @@ describe('ProfileCertificationsRight', () => {
     })
   })
 })
-

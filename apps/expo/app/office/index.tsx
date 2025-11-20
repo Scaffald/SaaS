@@ -1,7 +1,6 @@
-import { ScrollView, Separator, YStack } from 'tamagui'
-
 import { OfficeNotificationsConsole } from '@app/core/features/office/office-notifications-console'
 import { OfficeStorageDashboard } from '@app/core/features/office/office-storage-dashboard'
+import { ScrollView, Separator, YStack } from 'tamagui'
 
 export default function OfficeIndex() {
   return (

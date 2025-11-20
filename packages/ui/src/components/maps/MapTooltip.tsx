@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { View, Text, XStack, YStack } from 'tamagui'
+import { Text, View, XStack, YStack } from 'tamagui'
 import type { MapTooltipData } from './types'
 
 interface MapTooltipProps {

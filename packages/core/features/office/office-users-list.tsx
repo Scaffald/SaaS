@@ -1,13 +1,13 @@
-import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
-import { useMemo, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { createColumnHelper, type ColumnDef, type VisibilityState } from '@tanstack/react-table'
-import { Paragraph, XStack, YStack } from 'tamagui'
+import { api } from '@app/core/utils/api'
+import type { TableColumnVisibilityOption } from '@app/ui'
 import { DashboardLayout, Text } from '@app/ui'
+import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Paragraph, XStack, YStack } from 'tamagui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
-import type { TableColumnVisibilityOption } from '@app/ui'
 
 type User = {
   id: string
@@ -198,8 +198,8 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
               children: (
                 <YStack gap="$3">
                   <Paragraph size="$4" color="$color11">
-                    This modal will collect user details in an upcoming iteration. Until then, use the
-                    primary action below to launch the full create page.
+                    This modal will collect user details in an upcoming iteration. Until then, use
+                    the primary action below to launch the full create page.
                   </Paragraph>
                 </YStack>
               ),

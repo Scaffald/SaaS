@@ -1,10 +1,8 @@
 // @ts-nocheck
-import React, { useState } from 'react'
-import { Button, Paragraph, Text, YStack } from '@app/ui'
-import { ResponsiveModal } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
+import { Button, Paragraph, ResponsiveModal, Text, YStack } from '@app/ui'
+import { useState } from 'react'
 
 export default function ModalPage() {
   const [open, setOpen] = useState(false)

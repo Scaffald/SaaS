@@ -1,10 +1,9 @@
-import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import { RefreshCcw, X } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { RefreshCcw, X } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useMemo } from 'react'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import { getStatusMetadata } from '../components/status.utils'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
@@ -24,14 +23,19 @@ const formatDateTime = (value: string | null | undefined) => {
   return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
 }
 
-const formatStatus = (status: string) => getStatusMetadata(status as OrganizationCheckDetail['status']).label
+const formatStatus = (status: string) =>
+  getStatusMetadata(status as OrganizationCheckDetail['status']).label
 
-export function OrganizationCheckDetails({ checkId, summary, onClose }: OrganizationCheckDetailsProps) {
+export function OrganizationCheckDetails({
+  checkId,
+  summary,
+  onClose,
+}: OrganizationCheckDetailsProps) {
   const checkQuery = api.backgroundChecks.organizationGet.useQuery(
     { background_check_id: checkId },
     {
       refetchOnWindowFocus: false,
-    },
+    }
   )
 
   const detail = checkQuery.data
@@ -99,14 +103,19 @@ export function OrganizationCheckDetails({ checkId, summary, onClose }: Organiza
           </YStack>
 
           <YStack gap="$2">
-            <InfoRow label="Status" value={formatStatus(detail?.status ?? summary?.status ?? 'pending')} />
+            <InfoRow
+              label="Status"
+              value={formatStatus(detail?.status ?? summary?.status ?? 'pending')}
+            />
             <InfoRow
               label="Worker"
               value={
                 summary
-                  ? summary.worker?.display_name ??
+                  ? (summary.worker?.display_name ??
                     summary.worker?.username ??
-                    (summary.worker_user_id ? `User ${summary.worker_user_id.substring(0, 8)}` : 'Unknown worker')
+                    (summary.worker_user_id
+                      ? `User ${summary.worker_user_id.substring(0, 8)}`
+                      : 'Unknown worker'))
                   : '—'
               }
             />
@@ -114,10 +123,22 @@ export function OrganizationCheckDetails({ checkId, summary, onClose }: Organiza
               label="Package"
               value={summary?.package?.display_name ?? summary?.package?.slug ?? 'Unknown package'}
             />
-            <InfoRow label="Requested" value={formatDateTime(detail?.created_at ?? summary?.created_at)} />
-            <InfoRow label="Invited" value={formatDateTime(detail?.invited_at ?? summary?.invited_at)} />
-            <InfoRow label="Completed" value={formatDateTime(detail?.completed_at ?? summary?.completed_at)} />
-            <InfoRow label="Expires" value={formatDateTime(detail?.expires_at ?? summary?.expires_at)} />
+            <InfoRow
+              label="Requested"
+              value={formatDateTime(detail?.created_at ?? summary?.created_at)}
+            />
+            <InfoRow
+              label="Invited"
+              value={formatDateTime(detail?.invited_at ?? summary?.invited_at)}
+            />
+            <InfoRow
+              label="Completed"
+              value={formatDateTime(detail?.completed_at ?? summary?.completed_at)}
+            />
+            <InfoRow
+              label="Expires"
+              value={formatDateTime(detail?.expires_at ?? summary?.expires_at)}
+            />
             <InfoRow
               label="Estimated Completion"
               value={formatDateTime(detail?.estimated_completion_date ?? null)}
@@ -157,9 +178,15 @@ export function OrganizationCheckDetails({ checkId, summary, onClose }: Organiza
               </Text>
               <YStack gap="$2">
                 {componentStatuses.map((component, index) => (
-                  <YStack key={`${component.check_type_id ?? index}`} p="$3" bg="$color3" rounded="$4">
+                  <YStack
+                    key={`${component.check_type_id ?? index}`}
+                    p="$3"
+                    bg="$color3"
+                    rounded="$4"
+                  >
                     <Text fontSize="$3" fontWeight="600" color="$color12">
-                      {(component.check_type_id as string | undefined)?.slice(0, 8) ?? `Component ${index + 1}`}
+                      {(component.check_type_id as string | undefined)?.slice(0, 8) ??
+                        `Component ${index + 1}`}
                     </Text>
                     <InfoRow
                       label="Status"
@@ -190,7 +217,11 @@ export function OrganizationCheckDetails({ checkId, summary, onClose }: Organiza
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Metadata
               </Text>
-              <Text fontSize="$3" color="$color10" style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+              <Text
+                fontSize="$3"
+                color="$color10"
+                style={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
+              >
                 {JSON.stringify(detail.metadata, null, 2)}
               </Text>
             </YStack>
@@ -218,4 +249,3 @@ function InfoRow({ label, value }: InfoRowProps) {
     </XStack>
   )
 }
-

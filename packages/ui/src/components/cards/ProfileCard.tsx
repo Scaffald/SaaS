@@ -1,12 +1,12 @@
-import { memo, forwardRef } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack, YStack, useWindowDimensions } from 'tamagui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { SelectableCard } from './SelectableCard'
+import { forwardRef, memo } from 'react'
+import type { TamaguiElement } from 'tamagui'
+import { Paragraph, Text, XStack, YStack } from 'tamagui'
+import { CardBadges } from './CardBadges'
 import { CardHeader } from './CardHeader'
 import { CardMetadata } from './CardMetadata'
-import { CardBadges } from './CardBadges'
+import { SelectableCard } from './SelectableCard'
 import type { BadgeConfig, MetadataItem } from './types'
 
 /**

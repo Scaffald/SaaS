@@ -1,9 +1,7 @@
 // @ts-nocheck
-import React from 'react'
-import { Button, Paragraph, Text, XStack, YStack } from '@app/ui'
-import { BarChart, type BarChartData } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
+
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
+import { BarChart, type BarChartData, Button, Paragraph, Text, XStack, YStack } from '@app/ui'
 
 const barData: BarChartData[] = [
   { value: 45, label: 'Mon', frontColor: '#4FC3F7' },

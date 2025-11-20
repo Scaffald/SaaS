@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
 import { usePathname } from '@app/core/utils/usePathname'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface OfficeFlyoutMenuState {
   isOpen: boolean
@@ -51,4 +51,3 @@ export const useOfficeFlyoutMenu = (): OfficeFlyoutMenuState & OfficeFlyoutMenuA
     triggerRef,
   }
 }
-

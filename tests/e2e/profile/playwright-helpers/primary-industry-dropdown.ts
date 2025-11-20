@@ -1,50 +1,49 @@
 // @ts-nocheck
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 
 /**
  * Get the Primary Industry dropdown trigger element
  */
 export async function getPrimaryIndustryTrigger(page: Page): Promise<Locator> {
   // Wait for the page to load and the trigger to be available
-  await page.waitForFunction(
-    () => !document.body.textContent?.includes('Loading...'),
-    { timeout: 10000 }
-  ).catch(() => {})
+  await page
+    .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+    .catch(() => {})
   await page.waitForTimeout(1500)
 
   // Try multiple selector strategies
   // Strategy 1: data-testid (if Tamagui passes it through)
   let trigger = page.getByTestId('primary-industry-select-trigger')
   const testIdCount = await trigger.count().catch(() => 0)
-  
+
   if (testIdCount > 0) {
     await trigger.first().waitFor({ state: 'visible', timeout: 5000 })
     return trigger.first()
   }
-  
+
   // Strategy 2: Find by placeholder text "Select an industry"
   trigger = page.getByPlaceholder('Select an industry')
   const placeholderCount = await trigger.count().catch(() => 0)
-  
+
   if (placeholderCount > 0) {
     await trigger.first().waitFor({ state: 'visible', timeout: 5000 })
     return trigger.first()
   }
-  
+
   // Strategy 3: Find button/select near "Primary Industry" text
   // Wait for "Primary Industry" text to be visible
   await page.waitForSelector('text=/Primary Industry/i', { timeout: 5000 }).catch(() => {})
-  
+
   // Find all buttons and selects, then filter for ones near "Primary Industry"
   const allButtons = page.locator('button, [role="button"], select')
   const buttonCount = await allButtons.count()
-  
+
   if (buttonCount > 0) {
     // Return the first button/select (likely the industry selector)
     await allButtons.first().waitFor({ state: 'visible', timeout: 5000 })
     return allButtons.first()
   }
-  
+
   // Fallback: Use a more generic selector
   throw new Error('Could not find Primary Industry dropdown trigger')
 }
@@ -84,10 +83,7 @@ export async function openPrimaryIndustryDropdownKeyboard(page: Page): Promise<v
 /**
  * Select an industry option from the dropdown
  */
-export async function selectIndustryOption(
-  page: Page,
-  industryName: string
-): Promise<void> {
+export async function selectIndustryOption(page: Page, industryName: string): Promise<void> {
   // Wait for dropdown content to be visible
   const option = page.getByRole('option', { name: new RegExp(industryName, 'i') })
   await option.waitFor({ state: 'visible', timeout: 5000 })
@@ -119,7 +115,9 @@ export async function isDropdownOpen(page: Page): Promise<boolean> {
  */
 export async function getIndustryOptions(page: Page): Promise<Locator[]> {
   const options = page.getByRole('option')
-  await options.first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
+  await options
+    .first()
+    .waitFor({ state: 'visible', timeout: 5000 })
+    .catch(() => {})
   return await options.all()
 }
-

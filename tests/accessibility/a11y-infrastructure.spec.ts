@@ -7,11 +7,11 @@
  * Task 4: Set up Accessibility Testing Infrastructure
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
+  assertFocusIndicators,
   assertFormLabels,
   assertHeadingHierarchy,
-  assertFocusIndicators,
   assertImageAltText,
 } from '../infrastructure/playwright/helpers/accessibility'
 
@@ -67,7 +67,9 @@ test.describe('Accessibility Testing Infrastructure', () => {
 
     // Check that keyboard navigation can be tested
     // Note: Not all pages need interactive elements (e.g., loading/error pages)
-    const focusableElements = await page.locator('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])').count()
+    const focusableElements = await page
+      .locator('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])')
+      .count()
 
     // Page should have HTML structure (if no focusable elements, that's okay for infrastructure test)
     const hasHTML = await page.evaluate(() => document.body !== null)
@@ -86,4 +88,3 @@ test.describe('Accessibility Testing Infrastructure', () => {
  * These tests validate basic infrastructure.
  * Full accessibility testing is performed by dedicated accessibility test suites.
  */
-

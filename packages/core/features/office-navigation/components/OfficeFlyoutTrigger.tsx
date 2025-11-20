@@ -1,8 +1,8 @@
-import { Button } from 'tamagui'
 import { Popover } from '@app/ui'
 import { Briefcase } from '@tamagui/lucide-icons'
-import { OfficeFlyoutMenu } from './OfficeFlyoutMenu'
+import { Button } from 'tamagui'
 import { useOfficeFlyoutMenu } from '../hooks/useOfficeFlyoutMenu'
+import { OfficeFlyoutMenu } from './OfficeFlyoutMenu'
 
 export interface OfficeFlyoutTriggerProps {
   isOpen: boolean

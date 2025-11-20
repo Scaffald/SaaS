@@ -10,23 +10,26 @@
  * TEST Task: becdedb9-b83e-4662-9788-6802fca9cc7c
  */
 
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 const ROUTE_PATH = '/dashboard/discover/employers'
 
 test.describe('Admin • /dashboard/discover/employers - Employer Discovery', () => {
-
   // Setup: Sign in as admin and navigate to employer discovery route before each test
   test.beforeEach(async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     // signInAsAdmin leaves us on /dashboard, now navigate to the employer discovery route
     await page.goto(ROUTE_PATH, { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)
   })
 
   test.describe('1. Route Access & Navigation', () => {
-    test('should navigate to employer discovery route successfully', async ({ page }: { page: Page }) => {
+    test('should navigate to employer discovery route successfully', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
       expect(page.url()).toContain(ROUTE_PATH)
     })
@@ -43,7 +46,7 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
 
       // Filter out expected errors (like network errors during test cleanup)
       const relevantErrors = consoleErrors.filter(
-        err => !err.includes('net::ERR_') && !err.includes('Failed to fetch')
+        (err) => !err.includes('net::ERR_') && !err.includes('Failed to fetch')
       )
       expect(relevantErrors).toHaveLength(0)
     })
@@ -56,7 +59,9 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       await expect(searchLabel).toBeVisible()
 
       // Check for employer list or loading state (left panel)
-      const loadingOrContent = page.locator('text=Loading employers').or(page.locator('text=Employers'))
+      const loadingOrContent = page
+        .locator('text=Loading employers')
+        .or(page.locator('text=Employers'))
       await expect(loadingOrContent.first()).toBeVisible()
     })
   })
@@ -74,10 +79,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       }
 
       // Eventually should show content
-      await page.waitForFunction(
-        () => !document.body.textContent?.includes('Loading employers'),
-        { timeout: 10000 }
-      ).catch(() => {})
+      await page
+        .waitForFunction(() => !document.body.textContent?.includes('Loading employers'), {
+          timeout: 10000,
+        })
+        .catch(() => {})
     })
 
     test('should transition from loading to content state', async ({ page }: { page: Page }) => {
@@ -87,7 +93,9 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       await page.waitForTimeout(3000)
 
       // Should show either employers or empty state
-      const employersOrEmpty = page.locator('text=Employers').or(page.locator('text=No employers found'))
+      const employersOrEmpty = page
+        .locator('text=Employers')
+        .or(page.locator('text=No employers found'))
       await expect(employersOrEmpty.first()).toBeVisible()
     })
   })
@@ -166,7 +174,14 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
     test('should display all 6 industry filter buttons', async ({ page }: { page: Page }) => {
       // Already on ROUTE_PATH from beforeEach
 
-      const industries = ['Construction', 'Manufacturing', 'Engineering', 'Technology', 'Healthcare', 'Education']
+      const industries = [
+        'Construction',
+        'Manufacturing',
+        'Engineering',
+        'Technology',
+        'Healthcare',
+        'Education',
+      ]
 
       for (const industry of industries) {
         const button = page.getByRole('button', { name: industry, exact: true })
@@ -174,7 +189,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       }
     })
 
-    test('should display industry filter section with icon and title', async ({ page }: { page: Page }) => {
+    test('should display industry filter section with icon and title', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       const industriesHeading = page.locator('text=Industries')
@@ -234,7 +253,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
   })
 
   test.describe('5. Combined Filters (Search + Industry)', () => {
-    test('should apply both search and industry filters together', async ({ page }: { page: Page }) => {
+    test('should apply both search and industry filters together', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       // Apply search filter
@@ -255,7 +278,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       expect(bodyText).toContain('Industries:')
     })
 
-    test('should maintain search filter when industry is selected', async ({ page }: { page: Page }) => {
+    test('should maintain search filter when industry is selected', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       const searchInput = page.getByPlaceholder('Search employers...')
@@ -289,7 +316,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
   })
 
   test.describe('6. Clear Filters Functionality', () => {
-    test('should show clear button only when filters are active', async ({ page }: { page: Page }) => {
+    test('should show clear button only when filters are active', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       // Initially, clear button should not be visible (or not exist)
@@ -305,7 +336,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       await expect(clearButton).toBeVisible()
     })
 
-    test('should reset all filters when clear button is clicked', async ({ page }: { page: Page }) => {
+    test('should reset all filters when clear button is clicked', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       // Apply multiple filters
@@ -349,7 +384,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
   })
 
   test.describe('7. Active Filters Summary', () => {
-    test('should display active filters section when search is active', async ({ page }: { page: Page }) => {
+    test('should display active filters section when search is active', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       const searchInput = page.getByPlaceholder('Search employers...')
@@ -363,7 +402,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       await expect(searchSummary).toBeVisible()
     })
 
-    test('should display active filters section when industries are selected', async ({ page }: { page: Page }) => {
+    test('should display active filters section when industries are selected', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       await page.getByRole('button', { name: 'Healthcare', exact: true }).click()
@@ -394,7 +437,11 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       expect(bodyText).toContain('Active Filters')
     })
 
-    test('should hide active filters when all filters are cleared', async ({ page }: { page: Page }) => {
+    test('should hide active filters when all filters are cleared', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       // Apply filter
@@ -440,12 +487,22 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       }
     })
 
-    test('should display employer cards when data is available', async ({ page }: { page: Page }) => {
+    test('should display employer cards when data is available', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
       // Check if we have employers or empty state
-      const hasEmployers = await page.locator('text=/\\d+ Employer/').isVisible().catch(() => false)
-      const hasEmpty = await page.locator('text=No employers found').isVisible().catch(() => false)
+      const hasEmployers = await page
+        .locator('text=/\\d+ Employer/')
+        .isVisible()
+        .catch(() => false)
+      const hasEmpty = await page
+        .locator('text=No employers found')
+        .isVisible()
+        .catch(() => false)
 
       // One of these should be true
       expect(hasEmployers || hasEmpty).toBe(true)
@@ -457,7 +514,10 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       // Already on ROUTE_PATH from beforeEach
 
       // Check if we have employer cards
-      const hasEmployers = await page.locator('text=/\\d+ Employer/').isVisible().catch(() => false)
+      const hasEmployers = await page
+        .locator('text=/\\d+ Employer/')
+        .isVisible()
+        .catch(() => false)
 
       if (hasEmployers) {
         // There should be at least one employer card with the View Details button
@@ -469,7 +529,10 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
     test('should display View Details button on each card', async ({ page }: { page: Page }) => {
       // Already on ROUTE_PATH from beforeEach
 
-      const hasEmployers = await page.locator('text=/\\d+ Employer/').isVisible().catch(() => false)
+      const hasEmployers = await page
+        .locator('text=/\\d+ Employer/')
+        .isVisible()
+        .catch(() => false)
 
       if (hasEmployers) {
         const viewDetailsButtons = page.getByRole('button', { name: 'View Details' })
@@ -478,10 +541,17 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       }
     })
 
-    test('should log employer details when View Details is clicked', async ({ page }: { page: Page }) => {
+    test('should log employer details when View Details is clicked', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Already on ROUTE_PATH from beforeEach
 
-      const hasEmployers = await page.locator('text=/\\d+ Employer/').isVisible().catch(() => false)
+      const hasEmployers = await page
+        .locator('text=/\\d+ Employer/')
+        .isVisible()
+        .catch(() => false)
 
       if (hasEmployers) {
         const consoleMessages: string[] = []
@@ -510,7 +580,8 @@ test.describe('Admin • /dashboard/discover/employers - Employer Discovery', ()
       await expect(searchHeading).toBeVisible()
 
       // Left panel has employers or loading/empty state
-      const leftPanelContent = page.locator('text=Loading employers')
+      const leftPanelContent = page
+        .locator('text=Loading employers')
         .or(page.locator('text=/\\d+ Employer/'))
         .or(page.locator('text=No employers found'))
       await expect(leftPanelContent.first()).toBeVisible()

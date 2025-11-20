@@ -1,5 +1,5 @@
-import { test as setup, expect } from '@playwright/test'
 import * as fs from 'node:fs'
+import { expect, test as setup } from '@playwright/test'
 import { getSession } from '../../playwright-helpers/playwright-helpers/auth'
 
 const authFile = 'tests/.auth/admin.json'
@@ -84,16 +84,19 @@ setup('authenticate as admin', async ({ page }) => {
       // This matches the format used by create-auth-states.ts which works
       localStorage.setItem(authKey, JSON.stringify(sessionData))
       // Also set the generic keys for compatibility
-      localStorage.setItem('supabase.auth.token', JSON.stringify({
-        currentSession: sessionData,
-        expiresAt: sessionData.expires_at,
-      }))
+      localStorage.setItem(
+        'supabase.auth.token',
+        JSON.stringify({
+          currentSession: sessionData,
+          expiresAt: sessionData.expires_at,
+        })
+      )
       localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
-      
+
       // Verify it was set
       const stored = localStorage.getItem(authKey)
       const allKeys = Object.keys(localStorage)
-      
+
       return {
         authKey,
         stored: stored ? 'yes' : 'no',
@@ -138,14 +141,14 @@ setup('authenticate as admin', async ({ page }) => {
   // Navigate to dashboard to verify auth works
   // Use waitForURL to wait for either dashboard or auth (to detect redirect)
   await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded', timeout: 30000 })
-  
+
   // Wait a bit for Supabase to process the session
   await page.waitForTimeout(3000)
-  
+
   // Check what URL we ended up at
   const currentUrl = page.url()
   console.log(`📍 Current URL after navigation: ${currentUrl}`)
-  
+
   // Check localStorage on the current page (might be /auth if redirected)
   const localStorageOnCurrentPage = await page.evaluate(() => {
     const keys = Object.keys(localStorage)
@@ -170,7 +173,9 @@ setup('authenticate as admin', async ({ page }) => {
       }
     })
     console.log('🔍 localStorage debug:', JSON.stringify(localStorageCheck, null, 2))
-    throw new Error(`Authentication failed - redirected to /auth. localStorage keys: ${localStorageCheck.authKeys.join(', ')}`)
+    throw new Error(
+      `Authentication failed - redirected to /auth. localStorage keys: ${localStorageCheck.authKeys.join(', ')}`
+    )
   }
 
   await expect(page).toHaveURL(/dashboard/)
@@ -233,16 +238,19 @@ setup('authenticate as user', async ({ page }) => {
       // This matches the format used by create-auth-states.ts which works
       localStorage.setItem(authKey, JSON.stringify(sessionData))
       // Also set the generic keys for compatibility
-      localStorage.setItem('supabase.auth.token', JSON.stringify({
-        currentSession: sessionData,
-        expiresAt: sessionData.expires_at,
-      }))
+      localStorage.setItem(
+        'supabase.auth.token',
+        JSON.stringify({
+          currentSession: sessionData,
+          expiresAt: sessionData.expires_at,
+        })
+      )
       localStorage.setItem('supabase.auth.user', JSON.stringify(sessionData.user))
-      
+
       // Verify it was set
       const stored = localStorage.getItem(authKey)
       const allKeys = Object.keys(localStorage)
-      
+
       return {
         authKey,
         stored: stored ? 'yes' : 'no',
@@ -287,14 +295,14 @@ setup('authenticate as user', async ({ page }) => {
   // Navigate to dashboard to verify auth works
   // Use waitForURL to wait for either dashboard or auth (to detect redirect)
   await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded', timeout: 30000 })
-  
+
   // Wait a bit for Supabase to process the session
   await page.waitForTimeout(3000)
-  
+
   // Check what URL we ended up at
   const currentUrl = page.url()
   console.log(`📍 Current URL after navigation: ${currentUrl}`)
-  
+
   // Check localStorage on the current page (might be /auth if redirected)
   const localStorageOnCurrentPage = await page.evaluate(() => {
     const keys = Object.keys(localStorage)
@@ -319,7 +327,9 @@ setup('authenticate as user', async ({ page }) => {
       }
     })
     console.log('🔍 localStorage debug:', JSON.stringify(localStorageCheck, null, 2))
-    throw new Error(`Authentication failed - redirected to /auth. localStorage keys: ${localStorageCheck.authKeys.join(', ')}`)
+    throw new Error(
+      `Authentication failed - redirected to /auth. localStorage keys: ${localStorageCheck.authKeys.join(', ')}`
+    )
   }
 
   await expect(page).toHaveURL(/dashboard/)
@@ -362,7 +372,9 @@ setup('authenticate as super admin', async ({ page }) => {
   const safeSession = {
     access_token: session.session.access_token,
     refresh_token: session.session.refresh_token ?? session.session.access_token,
-    expires_at: session.session.expires_at ?? Math.floor(Date.now() / 1000) + (session.session.expires_in ?? 3600),
+    expires_at:
+      session.session.expires_at ??
+      Math.floor(Date.now() / 1000) + (session.session.expires_in ?? 3600),
     expires_in: session.session.expires_in ?? 3600,
     token_type: session.session.token_type ?? 'bearer',
     user: plainUser,

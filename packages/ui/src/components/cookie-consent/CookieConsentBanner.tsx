@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { Platform } from 'react-native'
 import {
   Anchor,
@@ -8,10 +8,10 @@ import {
   type CardProps,
   Paragraph,
   SizableText,
+  type StackProps,
   View,
   XStack,
   YStack,
-  type StackProps,
 } from 'tamagui'
 
 import { useCookieConsent } from './CookieConsentProvider'

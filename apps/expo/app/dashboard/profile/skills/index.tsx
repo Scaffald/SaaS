@@ -3,12 +3,12 @@ import {
   ProfileSkillsProvider,
   ProfileSkillsRight,
 } from '@app/core/features/profile'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { ProfileLayout, QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileSkillsPage() {
   return (
     <ProfileSkillsProvider>
-      <DashboardLayout
+      <ProfileLayout
         leftContent={<ProfileSkillsLeft />}
         rightContent={
           <QuickLinksSidebar>

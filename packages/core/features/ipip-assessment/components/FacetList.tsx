@@ -1,6 +1,9 @@
+import type {
+  IPIPFacetScore,
+  IPIPResultFacets,
+} from '@app/core/features/personality-assessment/lib/ipip'
 import { memo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'
-import type { IPIPFacetScore, IPIPResultFacets } from '@app/core/features/personality-assessment/lib/ipip'
 
 export interface FacetListProps {
   facets: Record<string, IPIPFacetScore>
@@ -63,4 +66,3 @@ export const FacetList = memo(function FacetList({ facets, facetNarratives }: Fa
     </YStack>
   )
 })
-

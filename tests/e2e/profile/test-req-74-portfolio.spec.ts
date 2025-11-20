@@ -3,7 +3,7 @@
  * Tests portfolio gallery and management functionality
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { setupAuth } from '../infrastructure/playwright/setup/auth.setup'
 
 test.describe('Portfolio Management', () => {
@@ -16,7 +16,10 @@ test.describe('Portfolio Management', () => {
     await page.waitForTimeout(2000)
 
     // Look for portfolio section
-    const portfolioSection = page.locator('text=Portfolio').or(page.locator('[data-testid*="portfolio"]')).first()
+    const portfolioSection = page
+      .locator('text=Portfolio')
+      .or(page.locator('[data-testid*="portfolio"]'))
+      .first()
     const sectionCount = await portfolioSection.count()
 
     if (sectionCount > 0) {
@@ -51,21 +54,34 @@ test.describe('Portfolio Management', () => {
     await page.waitForTimeout(2000)
 
     // Look for "Add Portfolio Item" button
-    const addButton = page.locator('text=Add Portfolio Item').or(page.locator('button:has-text("Add Portfolio Item")')).first()
+    const addButton = page
+      .locator('text=Add Portfolio Item')
+      .or(page.locator('button:has-text("Add Portfolio Item")'))
+      .first()
     const buttonCount = await addButton.count()
 
     if (buttonCount > 0) {
       await addButton.click()
 
       // Form should appear
-      await expect(page.locator('text=Add Portfolio Item').or(page.locator('input[placeholder*="Project Name"]'))).toBeVisible({ timeout: 3000 })
+      await expect(
+        page
+          .locator('text=Add Portfolio Item')
+          .or(page.locator('input[placeholder*="Project Name"]'))
+      ).toBeVisible({ timeout: 3000 })
 
       // Fill in title
-      const titleInput = page.locator('input[placeholder*="Project Name"]').or(page.locator('input[type="text"]')).first()
+      const titleInput = page
+        .locator('input[placeholder*="Project Name"]')
+        .or(page.locator('input[type="text"]'))
+        .first()
       await titleInput.fill('Test Portfolio Item')
 
       // Save (if save button is visible)
-      const saveButton = page.locator('button:has-text("Add Portfolio Item")').or(page.locator('button:has-text("Save")')).first()
+      const saveButton = page
+        .locator('button:has-text("Add Portfolio Item")')
+        .or(page.locator('button:has-text("Save")'))
+        .first()
       const saveCount = await saveButton.count()
 
       if (saveCount > 0) {
@@ -90,7 +106,9 @@ test.describe('Portfolio Management', () => {
       await editButton.click()
 
       // Edit form should appear
-      await expect(page.locator('text=Edit Portfolio Item').or(page.locator('input[type="text"]'))).toBeVisible({ timeout: 3000 })
+      await expect(
+        page.locator('text=Edit Portfolio Item').or(page.locator('input[type="text"]'))
+      ).toBeVisible({ timeout: 3000 })
     } else {
       test.skip()
     }
@@ -147,4 +165,3 @@ test.describe('Portfolio Management', () => {
     }
   })
 })
-

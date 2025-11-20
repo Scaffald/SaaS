@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from 'react'
-import { YStack, XStack, Button, Separator } from 'tamagui'
-import { Popover } from '@app/ui'
+import { Button, Separator, XStack, YStack } from 'tamagui'
 import { FilterChip } from '../chips/FilterChip'
 import { FieldError } from '../FieldError'
-import type { SearchSelectProps } from './types'
-import { SearchInput } from './components/SearchInput'
+import { Popover } from '../popovers/Popover'
 import { ResultsList } from './components/ResultsList'
-import { useSearchSelect } from './hooks/useSearchSelect'
-import { useKeyboardNav } from './hooks/useKeyboardNav'
+import { SearchInput } from './components/SearchInput'
 import { DEFAULT_STRINGS } from './constants'
+import { useKeyboardNav } from './hooks/useKeyboardNav'
+import { useSearchSelect } from './hooks/useSearchSelect'
+import type { SearchSelectProps } from './types'
 
 export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
   const {

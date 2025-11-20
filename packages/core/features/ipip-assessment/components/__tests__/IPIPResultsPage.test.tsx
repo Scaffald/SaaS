@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
 import type { IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { IPIPResultsPage } from '../IPIPResultsPage'
@@ -150,5 +150,3 @@ describe('IPIPResultsPage', () => {
     expect(screen.getByTestId('share-results')).toHaveTextContent('share-enabled')
   })
 })
-
-

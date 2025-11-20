@@ -1,8 +1,12 @@
-import { Controller, useForm } from 'react-hook-form'
+import { type OrganizationSettingsInput, organizationSettingsSchema } from '@app/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, H4, Input, Separator, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
-import { organizationSettingsSchema, type OrganizationSettingsInput } from '@app/schemas'
-import { useOrganizationSettings, useOrganizationStorageUsage, useUpdateOrganizationSettings } from '../api'
+import {
+  useOrganizationSettings,
+  useOrganizationStorageUsage,
+  useUpdateOrganizationSettings,
+} from '../api'
 
 type OrganizationSettingsPanelProps = {
   organizationId: string
@@ -47,7 +51,8 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
         <H4>Organization Settings</H4>
         {usage.data ? (
           <Text color="$color10">
-            {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used ({usage.data.documentCount} docs)
+            {(usage.data.percentUsed ?? 0).toFixed(1)}% storage used ({usage.data.documentCount}{' '}
+            docs)
           </Text>
         ) : null}
       </XStack>
@@ -118,4 +123,3 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
     </Card>
   )
 }
-

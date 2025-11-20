@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type DependencyList } from 'react'
+import { type DependencyList, useEffect, useRef, useState } from 'react'
 
 /**
  * Debounce hook that delays updating a value until after a specified delay

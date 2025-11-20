@@ -1,7 +1,7 @@
 import { YStack } from 'tamagui'
+import { spacing } from '../../config/spacing'
 import { SkeletonBox } from './SkeletonBox'
 import { SkeletonText } from './SkeletonText'
-import { spacing } from '../../config/spacing'
 
 export interface SkeletonFormProps {
   /** Number of form fields to render */

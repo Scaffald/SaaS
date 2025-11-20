@@ -1,8 +1,7 @@
-import { useCallback, useMemo, useState } from 'react'
-import { Accordion, Paragraph, YStack } from 'tamagui'
-import { Link } from 'expo-router'
 import { ChevronDown } from '@tamagui/lucide-icons'
-import { Button, XStack } from 'tamagui'
+import { Link } from 'expo-router'
+import { useCallback, useMemo, useState } from 'react'
+import { Accordion, Button, Paragraph, XStack, YStack } from 'tamagui'
 
 type AccordionItemLink = {
   key: string

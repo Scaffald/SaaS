@@ -1,163 +1,164 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button, Input, Label, Select, Text, XStack, YStack } from "tamagui";
-import { Check, ChevronDown, CreditCard, RefreshCcw, ShieldCheck } from "@tamagui/lucide-icons";
-import { useToastController } from "@tamagui/toast";
-import type { inferRouterOutputs } from "@trpc/server";
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
+import { api } from '@app/core/utils/api'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
+import type { AppRouter } from '@app/supabase/client-types'
+import { Check, ChevronDown, CreditCard, RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Input, Label, Select, Text, XStack, YStack } from 'tamagui'
 
-import { PaymentIntentForm } from "@app/core/features/payments/components/PaymentIntentForm";
-import { useAllOrganizations } from "@app/core/utils/useAllOrganizations";
-import { api } from "@app/core/utils/api";
-import type { AppRouter } from "@app/supabase/client-types";
-
-type RouterOutputs = inferRouterOutputs<AppRouter>;
-type OrganizationOption = RouterOutputs["office"]["getOrganizations"]["organizations"][number];
-type WorkerSummary = RouterOutputs["workers"]["getWorkers"]["workers"][number];
-type PricingOption = RouterOutputs["idVerification"]["getPricing"][number];
+type RouterOutputs = inferRouterOutputs<AppRouter>
+type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
+type WorkerSummary = RouterOutputs['workers']['getWorkers']['workers'][number]
+type PricingOption = RouterOutputs['idVerification']['getPricing'][number]
 
 interface IdVerificationRequestPanelProps {
-  selectedOrganizationId: string | null;
-  onOrganizationChange: (organizationId: string | null) => void;
+  selectedOrganizationId: string | null
+  onOrganizationChange: (organizationId: string | null) => void
 }
 
 type PaymentSession = {
-  paymentIntentId: string;
-  clientSecret: string;
-  amountCents: number;
-};
+  paymentIntentId: string
+  clientSecret: string
+  amountCents: number
+}
 
 const formatCurrency = (value: number | null | undefined) => {
-  if (typeof value !== "number") return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  if (typeof value !== 'number') return '—'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(value / 100);
-};
+  }).format(value / 100)
+}
 
 export function IdVerificationRequestPanel({
   selectedOrganizationId,
   onOrganizationChange,
 }: IdVerificationRequestPanelProps) {
-  const toast = useToastController();
-  const utils = api.useUtils();
+  const toast = useToastController()
+  const utils = api.useUtils()
 
-  const { data: organizationsData } = useAllOrganizations();
+  const { data: organizationsData } = useAllOrganizations()
   const organizations = useMemo<OrganizationOption[]>(
     () => (organizationsData?.organizations ?? []) as OrganizationOption[],
-    [organizationsData?.organizations],
-  );
+    [organizationsData?.organizations]
+  )
 
-  const [organizationId, setOrganizationId] = useState<string | null>(selectedOrganizationId);
+  const [organizationId, setOrganizationId] = useState<string | null>(selectedOrganizationId)
   useEffect(() => {
-    setOrganizationId(selectedOrganizationId);
-  }, [selectedOrganizationId]);
+    setOrganizationId(selectedOrganizationId)
+  }, [selectedOrganizationId])
 
   const handleOrganizationChange = (value: string) => {
-    const nextValue = value === "__none__" ? null : value;
-    setOrganizationId(nextValue);
-    onOrganizationChange(nextValue);
-  };
+    const nextValue = value === '__none__' ? null : value
+    setOrganizationId(nextValue)
+    onOrganizationChange(nextValue)
+  }
 
-  const [workerSearch, setWorkerSearch] = useState("");
+  const [workerSearch, setWorkerSearch] = useState('')
   const workersQuery = api.workers.getWorkers.useQuery(
     { search: workerSearch || undefined, limit: 50 },
-    { staleTime: 60_000 },
-  );
+    { staleTime: 60_000 }
+  )
   const workers = useMemo<WorkerSummary[]>(
     () => workersQuery.data?.workers ?? [],
-    [workersQuery.data?.workers],
-  );
+    [workersQuery.data?.workers]
+  )
 
   const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
     staleTime: 5 * 60_000,
-  });
-  const pricingOptions = (pricingQuery.data ?? []) as PricingOption[];
+  })
+  const pricingOptions = (pricingQuery.data ?? []) as PricingOption[]
 
-  const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null);
-  const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null);
+  const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null)
+  const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null)
   useEffect(() => {
     if (!selectedPricingId && pricingOptions.length > 0) {
-      setSelectedPricingId(pricingOptions[0]?.id ?? null);
+      setSelectedPricingId(pricingOptions[0]?.id ?? null)
     }
-  }, [pricingOptions, selectedPricingId]);
+  }, [pricingOptions, selectedPricingId])
 
   const requestVerification = api.idVerification.requestVerification.useMutation({
     onError: (error: Error) => {
-      toast.show("Unable to create payment", {
+      toast.show('Unable to create payment', {
         message: error.message,
-        type: "error",
-      });
+        type: 'error',
+      })
     },
-  });
+  })
 
   const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation({
     onSuccess: async () => {
-      toast.show("Verification requested", {
-        message: "Worker receives a Persona link immediately.",
-        type: "success",
-      });
-      await utils.idVerification.listVerifications.invalidate();
-      resetForm();
+      toast.show('Verification requested', {
+        message: 'Worker receives a Persona link immediately.',
+        type: 'success',
+      })
+      await utils.idVerification.listVerifications.invalidate()
+      resetForm()
     },
     onError: (error: Error) => {
-      toast.show("Payment confirmation failed", {
+      toast.show('Payment confirmation failed', {
         message: error.message,
-        type: "error",
-      });
+        type: 'error',
+      })
     },
-  });
+  })
 
-  const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null);
-  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
+  const [paymentError, setPaymentError] = useState<string | null>(null)
 
-  const selectedPricing = pricingOptions.find((option) => option.id === selectedPricingId) ?? null;
+  const selectedPricing = pricingOptions.find((option) => option.id === selectedPricingId) ?? null
   const canSubmit =
-    Boolean(selectedWorkerId) && Boolean(selectedPricingId) && Boolean(organizationId && selectedPricing);
+    Boolean(selectedWorkerId) &&
+    Boolean(selectedPricingId) &&
+    Boolean(organizationId && selectedPricing)
 
   const createPaymentSession = async () => {
     if (!organizationId) {
-      toast.show("Select an organization", {
-        message: "Choose which organization should be billed.",
-        type: "error",
-      });
-      return;
+      toast.show('Select an organization', {
+        message: 'Choose which organization should be billed.',
+        type: 'error',
+      })
+      return
     }
 
     if (!selectedWorkerId || !selectedPricingId) {
-      toast.show("Missing details", {
-        message: "Select a worker and pricing plan to continue.",
-        type: "error",
-      });
-      return;
+      toast.show('Missing details', {
+        message: 'Select a worker and pricing plan to continue.',
+        type: 'error',
+      })
+      return
     }
 
-    setPaymentError(null);
+    setPaymentError(null)
     try {
       const session = await requestVerification.mutateAsync({
         workerUserId: selectedWorkerId,
         pricingId: selectedPricingId,
         organizationId,
-      });
-      setPaymentSession(session);
+      })
+      setPaymentSession(session)
     } catch (error) {
       setPaymentError(
-        error instanceof Error ? error.message : "Unable to create Stripe payment session.",
-      );
+        error instanceof Error ? error.message : 'Unable to create Stripe payment session.'
+      )
     }
-  };
+  }
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
-    await confirmVerification.mutateAsync({ paymentIntentId });
-  };
+    await confirmVerification.mutateAsync({ paymentIntentId })
+  }
 
   const resetForm = () => {
-    setSelectedWorkerId(null);
-    setWorkerSearch("");
-    setPaymentSession(null);
-    setPaymentError(null);
-  };
+    setSelectedWorkerId(null)
+    setWorkerSearch('')
+    setPaymentSession(null)
+    setPaymentError(null)
+  }
 
-  const workerPlaceholder = workersQuery.isLoading ? "Loading workers…" : "Select worker";
+  const workerPlaceholder = workersQuery.isLoading ? 'Loading workers…' : 'Select worker'
 
   return (
     <YStack gap="$4" p="$4" borderWidth={1} borderColor="$borderColor" rounded="$4">
@@ -174,7 +175,7 @@ export function IdVerificationRequestPanel({
         <Label htmlFor="idv-organization">Organization</Label>
         <Select
           id="idv-organization"
-          value={organizationId ?? "__none__"}
+          value={organizationId ?? '__none__'}
           onValueChange={handleOrganizationChange}
           disablePreventBodyScroll
         >
@@ -182,8 +183,9 @@ export function IdVerificationRequestPanel({
             <Select.Value
               placeholder={
                 organizationId
-                  ? organizations.find((org) => org.id === organizationId)?.name ?? "Select organization"
-                  : "Select organization"
+                  ? (organizations.find((org) => org.id === organizationId)?.name ??
+                    'Select organization')
+                  : 'Select organization'
               }
             />
           </Select.Trigger>
@@ -200,7 +202,7 @@ export function IdVerificationRequestPanel({
                 </Select.Item>
                 {organizations.map((org, index) => (
                   <Select.Item key={org.id as string} value={org.id as string} index={index + 1}>
-                    <Select.ItemText>{(org.name as string) ?? "Untitled org"}</Select.ItemText>
+                    <Select.ItemText>{(org.name as string) ?? 'Untitled org'}</Select.ItemText>
                     <Select.ItemIndicator>
                       <Check size={16} />
                     </Select.ItemIndicator>
@@ -224,7 +226,7 @@ export function IdVerificationRequestPanel({
         />
         <Select
           id="idv-worker"
-          value={selectedWorkerId ?? ""}
+          value={selectedWorkerId ?? ''}
           onValueChange={(value) => setSelectedWorkerId(value)}
           disablePreventBodyScroll
         >
@@ -242,7 +244,11 @@ export function IdVerificationRequestPanel({
                   </Select.Item>
                 ) : (
                   workers.map((worker, index) => (
-                    <Select.Item key={worker.id as string} value={worker.id as string} index={index}>
+                    <Select.Item
+                      key={worker.id as string}
+                      value={worker.id as string}
+                      index={index}
+                    >
                       <Select.ItemText>
                         {worker.display_name ??
                           worker.email ??
@@ -266,7 +272,7 @@ export function IdVerificationRequestPanel({
         <Label htmlFor="idv-pricing">Verification plan</Label>
         <Select
           id="idv-pricing"
-          value={selectedPricingId ?? ""}
+          value={selectedPricingId ?? ''}
           onValueChange={(value) => setSelectedPricingId(value)}
           disablePreventBodyScroll
         >
@@ -276,8 +282,8 @@ export function IdVerificationRequestPanel({
                 selectedPricing
                   ? `${selectedPricing.name} (${formatCurrency(selectedPricing.priceCents)})`
                   : pricingQuery.isLoading
-                    ? "Loading pricing…"
-                    : "Select pricing"
+                    ? 'Loading pricing…'
+                    : 'Select pricing'
               }
             />
           </Select.Trigger>
@@ -311,7 +317,7 @@ export function IdVerificationRequestPanel({
           disabled={!canSubmit || requestVerification.isPending}
           onPress={createPaymentSession}
         >
-          {requestVerification.isPending ? "Preparing payment…" : "Collect payment"}
+          {requestVerification.isPending ? 'Preparing payment…' : 'Collect payment'}
         </Button>
       ) : null}
 
@@ -328,9 +334,9 @@ export function IdVerificationRequestPanel({
           description={
             selectedPricing
               ? `ID Verification • ${selectedPricing.name}`
-              : "ID verification payment"
+              : 'ID verification payment'
           }
-          submitLabel={confirmVerification.isPending ? "Confirming…" : "Charge & send Persona link"}
+          submitLabel={confirmVerification.isPending ? 'Confirming…' : 'Charge & send Persona link'}
           disabled={confirmVerification.isPending}
           onSuccess={handlePaymentSuccess}
         />
@@ -357,12 +363,10 @@ export function IdVerificationRequestPanel({
         </XStack>
         <Text fontSize="$3" color="$color11">
           After payment succeeds we automatically create a Persona inquiry using the worker&apos;s
-          profile details. They receive an email and in-app notification with a secure link to upload
-          their government ID. Most verifications finish within minutes.
+          profile details. They receive an email and in-app notification with a secure link to
+          upload their government ID. Most verifications finish within minutes.
         </Text>
       </YStack>
     </YStack>
-  );
+  )
 }
-
-

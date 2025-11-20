@@ -1,8 +1,8 @@
-import { useRouter } from 'expo-router'
-import { YStack, Text, Spinner, XStack, Progress } from 'tamagui'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { Progress, Spinner, Text, XStack, YStack } from 'tamagui'
 
 /**
  * PersonalityAssessmentWidget - Dashboard widget for personality assessment

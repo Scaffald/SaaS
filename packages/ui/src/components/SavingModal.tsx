@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Button, Spinner } from 'tamagui'
 import { AlertCircle } from '@tamagui/lucide-icons'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 import { ResponsiveModal } from './ResponsiveModal'
 
 export interface SavingModalProps {

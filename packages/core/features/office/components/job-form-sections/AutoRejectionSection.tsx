@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, ToggleSwitch } from '@app/ui'
-import { Label } from 'tamagui'
+import { Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { HelpCircle } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Label } from 'tamagui'
 
 interface AutoRejectCriteria {
   score_minimum?: number

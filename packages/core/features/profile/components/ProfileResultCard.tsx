@@ -1,5 +1,5 @@
-import { Card, XStack, YStack, Button, Spinner, Text, type CardProps } from 'tamagui'
 import { X } from '@tamagui/lucide-icons'
+import { Button, Card, type CardProps, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 /**
@@ -49,7 +49,7 @@ test.describe('Admin • /auth', () => {
     await page.waitForTimeout(1000)
 
     // Check if welcome screen content is present (scaffold logo, welcome text, etc.)
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // The page should contain both login form and welcome content on large screens
     expect(pageText.length).toBeGreaterThan(100)
@@ -72,7 +72,7 @@ test.describe('Admin • /auth', () => {
     await page.waitForTimeout(1500)
 
     // Check for validation message
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.toLowerCase()).toMatch(/invalid|valid email|please enter/i)
   })
 
@@ -94,12 +94,13 @@ test.describe('Admin • /auth', () => {
 
     // Verify either navigation to verify page or success message
     const currentUrl = page.url()
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Should navigate to verify page or show success message
     const hasNavigated = currentUrl.includes('/verify') || currentUrl.includes('/success')
-    const hasSuccessMessage = pageContent.toLowerCase().includes('check your email') ||
-                               pageContent.toLowerCase().includes('magic link sent')
+    const hasSuccessMessage =
+      pageContent.toLowerCase().includes('check your email') ||
+      pageContent.toLowerCase().includes('magic link sent')
 
     expect(hasNavigated || hasSuccessMessage).toBe(true)
   })
@@ -126,7 +127,7 @@ test.describe('Admin • /auth', () => {
     await page.waitForTimeout(1000)
 
     // On mobile, may show welcome screen first or just login
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify either welcome screen or login form is visible
     const hasWelcome = pageText.toLowerCase().includes('welcome')
@@ -164,7 +165,7 @@ test.describe('Admin • /auth', () => {
   })
 
   test('navigation from auth page after sign in', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate back to auth page
     await page.goto('/auth', { waitUntil: 'domcontentloaded' })
@@ -172,7 +173,7 @@ test.describe('Admin • /auth', () => {
 
     // Authenticated users visiting /auth may be redirected or shown the auth page
     // Verify page loads without errors
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
@@ -214,7 +215,7 @@ test.describe('Admin • /auth', () => {
     expect(body).toBe(1)
 
     // Verify page has content
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(50)
   })
 

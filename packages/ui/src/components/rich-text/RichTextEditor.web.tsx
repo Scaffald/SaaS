@@ -3,17 +3,17 @@
  * Uses TipTap for web browsers
  */
 
-import { useEffect, useMemo } from 'react'
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Placeholder from '@tiptap/extension-placeholder'
+import { Bold, Italic, List, ListOrdered, Underline as UnderlineIcon } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
-import { YStack, XStack, Button, Text, styled } from 'tamagui'
-import { Bold, Italic, Underline as UnderlineIcon, List, ListOrdered } from '@tamagui/lucide-icons'
+import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
+import { EditorContent, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import { useEffect, useMemo } from 'react'
+import { Button, styled, Text, XStack, YStack } from 'tamagui'
 import type { RichTextEditorProps } from './types'
 import { RICH_TEXT_LIMITS, RICH_TEXT_PLACEHOLDERS } from './utils/constants'
-import { sanitizeTipTapJSON, extractPlainText, createEmptyDocument } from './utils/sanitize'
+import { createEmptyDocument, extractPlainText, sanitizeTipTapJSON } from './utils/sanitize'
 
 /**
  * Toolbar button component
@@ -93,13 +93,7 @@ if (typeof document !== 'undefined' && !document.getElementById('rich-text-edito
 /**
  * Character count display
  */
-const CharacterCount = ({
-  current,
-  max,
-}: {
-  current: number
-  max: number
-}) => {
+const CharacterCount = ({ current, max }: { current: number; max: number }) => {
   const isNearLimit = current > max * 0.9
   const isOverLimit = current > max
 

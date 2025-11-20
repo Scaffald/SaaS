@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { SizableText, XStack, YStack, useWindowDimensions } from 'tamagui'
+import { SizableText, useWindowDimensions, XStack, YStack } from 'tamagui'
 import type { CardHeaderProps } from './types'
 
 /**

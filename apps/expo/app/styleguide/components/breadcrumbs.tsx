@@ -1,10 +1,8 @@
 // @ts-nocheck
-import React from 'react'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
+import { Breadcrumb, Text, useBreadcrumbs, XStack, YStack } from '@app/ui'
 import { ChevronRight } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack, Breadcrumb, useBreadcrumbs } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
 
 const trail = ['Home', 'Teams', 'Compliance', 'Training']
 

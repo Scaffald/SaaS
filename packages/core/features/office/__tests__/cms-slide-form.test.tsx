@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('tamagui', () => ({
@@ -14,25 +14,39 @@ vi.mock('tamagui', () => ({
       {children}
     </form>
   ),
-  Button: ({ children, onPress, disabled }: { children: ReactNode; onPress?: () => void; disabled?: boolean }) => (
+  Button: ({
+    children,
+    onPress,
+    disabled,
+  }: {
+    children: ReactNode
+    onPress?: () => void
+    disabled?: boolean
+  }) => (
     <button type="button" onClick={onPress} disabled={disabled}>
       {children}
     </button>
   ),
-  Input: ({ value, onChangeText, ...rest }: { value?: string; onChangeText?: (value: string) => void }) => (
-    <input
-      value={value}
-      onChange={(event) => onChangeText?.(event.target.value)}
-      {...rest}
-    />
+  Input: ({
+    value,
+    onChangeText,
+    ...rest
+  }: {
+    value?: string
+    onChangeText?: (value: string) => void
+  }) => <input value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />,
+  Label: ({ children, htmlFor }: { children: ReactNode; htmlFor?: string }) => (
+    <label htmlFor={htmlFor}>{children}</label>
   ),
-  Label: ({ children, htmlFor }: { children: ReactNode; htmlFor?: string }) => <label htmlFor={htmlFor}>{children}</label>,
-  TextArea: ({ value, onChangeText, ...rest }: { value?: string; onChangeText?: (value: string) => void }) => (
-    <textarea
-      value={value}
-      onChange={(event) => onChangeText?.(event.target.value)}
-      {...rest}
-    />
+  TextArea: ({
+    value,
+    onChangeText,
+    ...rest
+  }: {
+    value?: string
+    onChangeText?: (value: string) => void
+  }) => (
+    <textarea value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
   ),
   XStack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   YStack: ({ children }: { children: ReactNode }) => <div>{children}</div>,
@@ -45,7 +59,15 @@ vi.mock('@tamagui/lucide-icons', () => ({
 }))
 
 vi.mock('@app/ui', () => ({
-  IconSelector: ({ value, onChange, disabled }: { value: string; onChange: (value: string) => void; disabled?: boolean }) => (
+  IconSelector: ({
+    value,
+    onChange,
+    disabled,
+  }: {
+    value: string
+    onChange: (value: string) => void
+    disabled?: boolean
+  }) => (
     <select
       data-testid="icon-selector"
       value={value}
@@ -57,11 +79,23 @@ vi.mock('@app/ui', () => ({
     </select>
   ),
   ImageUpload: ({ onChange }: { onChange: (url: string | null) => void }) => (
-    <button type="button" data-testid="image-upload" onClick={() => onChange('https://example.com/image.png')}>
+    <button
+      type="button"
+      data-testid="image-upload"
+      onClick={() => onChange('https://example.com/image.png')}
+    >
       upload-image
     </button>
   ),
-  ToggleSwitch: ({ checked, onCheckedChange, disabled }: { checked: boolean; onCheckedChange: (value: boolean) => void; disabled?: boolean }) => (
+  ToggleSwitch: ({
+    checked,
+    onCheckedChange,
+    disabled,
+  }: {
+    checked: boolean
+    onCheckedChange: (value: boolean) => void
+    disabled?: boolean
+  }) => (
     <button
       type="button"
       data-testid="toggle-switch"

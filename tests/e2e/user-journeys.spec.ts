@@ -7,7 +7,7 @@
  * Task 28: Execute End-to-End User Journey Testing
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('End-to-End User Journey Testing', () => {
   test('complete user registration flow', async ({ page }) => {
@@ -15,8 +15,10 @@ test.describe('End-to-End User Journey Testing', () => {
     await page.goto('/', { waitUntil: 'networkidle' })
 
     // Navigate to auth page
-    const authLink = page.locator('a[href*="auth"], a[href*="signup"], a:has-text("Sign up")').first()
-    if (await authLink.count() > 0) {
+    const authLink = page
+      .locator('a[href*="auth"], a[href*="signup"], a:has-text("Sign up")')
+      .first()
+    if ((await authLink.count()) > 0) {
       await authLink.click()
       await page.waitForTimeout(1000)
     }
@@ -45,7 +47,7 @@ test.describe('End-to-End User Journey Testing', () => {
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'networkidle' })
 
     // Jobs should be visible
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Job discovery should work').toBeGreaterThan(0)
   })
 
@@ -54,7 +56,9 @@ test.describe('End-to-End User Journey Testing', () => {
     await page.goto('/dashboard/discover/jobs', { waitUntil: 'networkidle' })
 
     // Look for apply button
-    const applyButton = page.locator('button:has-text("Apply"), button:has-text("Apply Now")').first()
+    const applyButton = page
+      .locator('button:has-text("Apply"), button:has-text("Apply Now")')
+      .first()
     const buttonCount = await applyButton.count()
 
     // Application flow should be accessible
@@ -66,7 +70,7 @@ test.describe('End-to-End User Journey Testing', () => {
     await page.goto('/office/jobs', { waitUntil: 'networkidle' }).catch(() => {})
 
     // Office routes should be accessible
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Office user workflow should be accessible').toBeGreaterThan(0)
   })
 
@@ -83,9 +87,11 @@ test.describe('End-to-End User Journey Testing', () => {
       await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
       // Journey should work on all viewports
-      const bodyText = await page.textContent('body') || ''
-      expect(bodyText.length, `Journey should work on viewport ${viewport.width}x${viewport.height}`).toBeGreaterThan(0)
+      const bodyText = (await page.textContent('body')) || ''
+      expect(
+        bodyText.length,
+        `Journey should work on viewport ${viewport.width}x${viewport.height}`
+      ).toBeGreaterThan(0)
     }
   })
 })
-

@@ -1,9 +1,10 @@
 // @ts-nocheck
-import React, { useCallback, useEffect, useRef } from 'react'
-import { Link } from 'expo-router'
-import { Input, Text, Theme, View, XStack, YStack, isWeb } from 'tamagui'
-import { Github, Search } from '@tamagui/lucide-icons'
+
 import { ScaffaldLogo } from '@app/core/assets/ScaffaldLogo'
+import { Github, Search } from '@tamagui/lucide-icons'
+import { Link } from 'expo-router'
+import React, { useCallback, useEffect, useRef } from 'react'
+import { Input, isWeb, Text, Theme, View, XStack, YStack } from 'tamagui'
 import { Button } from '../../components/buttons/Button'
 
 type StyleguideTopNavProps = {

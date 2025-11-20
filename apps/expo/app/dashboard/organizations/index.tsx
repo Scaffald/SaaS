@@ -1,9 +1,9 @@
-import { useLocalSearchParams } from 'expo-router'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { Paragraph, YStack } from 'tamagui'
-import { OrganizationMembersPanel } from '@app/core/features/organizations/components/OrganizationMembersPanel'
 import { OrganizationDocumentsPanel } from '@app/core/features/organizations/components/OrganizationDocumentsPanel'
+import { OrganizationMembersPanel } from '@app/core/features/organizations/components/OrganizationMembersPanel'
 import { OrganizationSettingsPanel } from '@app/core/features/organizations/components/OrganizationSettingsPanel'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { useLocalSearchParams } from 'expo-router'
+import { Paragraph, YStack } from 'tamagui'
 
 export default function DashboardOrganizationsPage() {
   const params = useLocalSearchParams<{ organizationId?: string }>()

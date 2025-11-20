@@ -1,4 +1,4 @@
-import { YStack, Text, Card } from 'tamagui'
+import { Card, Text, YStack } from 'tamagui'
 
 interface UserProfileAboutProps {
   bio: string

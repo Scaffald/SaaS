@@ -1,8 +1,8 @@
 // @ts-nocheck
-import React, { useState } from 'react'
+
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
 import { Button, Input, Paragraph, Switch, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
+import { useState } from 'react'
 
 export default function SettingsExamplePage() {
   const [name, setName] = useState('Scaffald HQ')

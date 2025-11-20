@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format } from 'date-fns'
 
 /**
  * Format a date string to a readable format
@@ -6,11 +6,11 @@ import { format } from "date-fns";
  * @returns Formatted date string (MMM yyyy) or 'N/A' if invalid
  */
 export function formatDate(dateStr: string | null | undefined): string {
-  if (!dateStr) return "N/A";
+  if (!dateStr) return 'N/A'
   try {
-    return format(new Date(dateStr), "MMM yyyy");
+    return format(new Date(dateStr), 'MMM yyyy')
   } catch {
-    return dateStr;
+    return dateStr
   }
 }
 
@@ -26,15 +26,13 @@ export function formatDateRange(
   startDate: string | null | undefined,
   endDate: string | null | undefined,
   isCurrent: boolean,
-  expectedGraduationDate?: string | null | undefined,
+  expectedGraduationDate?: string | null | undefined
 ): string {
-  const start = formatDate(startDate);
+  const start = formatDate(startDate)
   if (isCurrent) {
-    const expected = expectedGraduationDate ? formatDate(expectedGraduationDate) : null;
-    return expected 
-      ? `${start} - Present (Expected: ${expected})`
-      : `${start} - Present`;
+    const expected = expectedGraduationDate ? formatDate(expectedGraduationDate) : null
+    return expected ? `${start} - Present (Expected: ${expected})` : `${start} - Present`
   }
-  const end = formatDate(endDate);
-  return `${start} - ${end}`;
+  const end = formatDate(endDate)
+  return `${start} - ${end}`
 }

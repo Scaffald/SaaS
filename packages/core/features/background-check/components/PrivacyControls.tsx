@@ -1,9 +1,8 @@
+import { api } from '@app/core/utils/api'
+import { Share2 } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Alert } from 'react-native'
-import { Share2 } from '@tamagui/lucide-icons'
 import { Button, Separator, Switch, Text, XStack, YStack } from 'tamagui'
-
-import { api } from '@app/core/utils/api'
 
 import type { BackgroundCheckDetail } from './status.utils'
 
@@ -53,7 +52,9 @@ function parsePrivacy(metadata?: BackgroundCheckDetail['metadata']): PrivacySett
 export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
   const initialSettings = useMemo(() => parsePrivacy(metadata), [metadata])
   const [sharePublicly, setSharePublicly] = useState(initialSettings.share_publicly)
-  const [organizationIds, setOrganizationIds] = useState(initialSettings.shared_with_organization_ids)
+  const [organizationIds, setOrganizationIds] = useState(
+    initialSettings.shared_with_organization_ids
+  )
 
   const updatePrivacyMutation = api.backgroundChecks.updatePrivacy.useMutation()
 
@@ -75,7 +76,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           setOrganizationIds(previousOrganizations)
           Alert.alert('Could not update privacy settings', error.message ?? 'Please try again.')
         },
-      },
+      }
     )
   }
 
@@ -86,7 +87,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
   const handleRevokeAccess = (organizationId: string) => {
     applyUpdate(
       sharePublicly,
-      organizationIds.filter((id) => id !== organizationId),
+      organizationIds.filter((id) => id !== organizationId)
     )
   }
 
@@ -99,7 +100,8 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           Privacy controls
         </Text>
         <Text fontSize="$2" color="$color10">
-          Manage who can see your background check results. These settings apply across the platform.
+          Manage who can see your background check results. These settings apply across the
+          platform.
         </Text>
       </YStack>
 
@@ -137,7 +139,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
             onPress={() =>
               Alert.alert(
                 'Coming soon',
-                'Sharing with specific organizations will be available once invitations are enabled.',
+                'Sharing with specific organizations will be available once invitations are enabled.'
               )
             }
           >
@@ -147,7 +149,14 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
 
         <YStack gap="$2">
           {organizationIds.length === 0 && (
-            <YStack gap="$1" p="$3" bg="$color2" rounded="$3" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$1"
+              p="$3"
+              bg="$color2"
+              rounded="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               <Text fontSize="$2" color="$color10">
                 No organizations currently have access to view your results.
               </Text>
@@ -190,4 +199,3 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
     </YStack>
   )
 }
-

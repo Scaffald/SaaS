@@ -1,4 +1,4 @@
-import type { ProcessImageOptions, ProcessedImageResult } from './imageProcessing.types'
+import type { ProcessedImageResult, ProcessImageOptions } from './imageProcessing.types'
 
 const DEFAULT_TARGET_SIZE = 512
 const DEFAULT_MAX_BYTES = 500 * 1024

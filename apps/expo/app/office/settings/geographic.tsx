@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Button, Card, Spinner } from 'tamagui'
-import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
 import { supabase } from '@app/core/utils/supabase/client'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Button, Card, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export default function GeographicSettingsPage() {
   const toast = useToastController()

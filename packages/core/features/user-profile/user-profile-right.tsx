@@ -1,15 +1,14 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, H4, Avatar, Progress, Spinner } from 'tamagui'
-import { ResponsiveModal } from '@app/ui'
-import { DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { useUser } from '@app/core/utils/useUser'
-import { UserProfileReviews } from './user-profile-reviews'
-import { ReviewWizard } from '../reviews/components/ReviewWizard'
-import { SkillsWidget } from '../profile/widgets/SkillsWidget'
+import { DashboardWidget, ResponsiveModal } from '@app/ui'
+import { useState } from 'react'
+import { Avatar, H4, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
 import { CertificationsWidget } from '../profile/widgets/CertificationsWidget'
 import { ExperienceWidget } from '../profile/widgets/ExperienceWidget'
-import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import { SkillsWidget } from '../profile/widgets/SkillsWidget'
+import { ReviewWizard } from '../reviews/components/ReviewWizard'
+import { UserProfileReviews } from './user-profile-reviews'
 
 interface UserProfileRightProps {
   userId: string
@@ -96,12 +95,12 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
   const resolvedYearsOfExperience =
     typeof generalInfo?.calculatedYearsOfExperience === 'number'
       ? generalInfo.calculatedYearsOfExperience
-      : generalInfo?.years_of_experience ?? 0
+      : (generalInfo?.years_of_experience ?? 0)
 
   const formattedYearsOfExperience =
     Number.isFinite(resolvedYearsOfExperience) && resolvedYearsOfExperience % 1 !== 0
       ? resolvedYearsOfExperience.toFixed(1)
-      : resolvedYearsOfExperience ?? 0
+      : (resolvedYearsOfExperience ?? 0)
 
   const displayName =
     generalInfo?.display_name ||

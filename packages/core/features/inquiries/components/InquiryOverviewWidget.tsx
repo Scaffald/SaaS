@@ -1,10 +1,9 @@
-import { useRouter } from 'expo-router'
-import { Button, SkeletonCard, Text, YStack } from '@app/ui'
-import type { inferRouterOutputs } from '@trpc/server'
-
+import { RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { RouteBuilder } from '@app/core/constants/routes'
+import { Button, SkeletonCard, Text, YStack } from '@app/ui'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
 
 type ApplicationRecord = NonNullable<
   inferRouterOutputs<AppRouter>['applications']['getUserApplications']
@@ -64,9 +63,7 @@ export function InquiryOverviewWidget() {
           </Text>
           <Button
             size="$3"
-            onPress={() =>
-              router.push(RouteBuilder.dashboardApplicationInquiry(application.id))
-            }
+            onPress={() => router.push(RouteBuilder.dashboardApplicationInquiry(application.id))}
           >
             View Inquiry
           </Button>

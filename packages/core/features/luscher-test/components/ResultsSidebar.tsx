@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Text, YStack, XStack } from 'tamagui'
 import { Award, Clock } from '@tamagui/lucide-icons'
+import { useEffect, useState } from 'react'
+import { Text, XStack, YStack } from 'tamagui'
 
 export interface ResultsSidebarProps {
   xpAwarded?: number
@@ -130,5 +130,3 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
     </YStack>
   )
 }
-
-

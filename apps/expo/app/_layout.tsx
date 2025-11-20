@@ -1,14 +1,14 @@
 import '../tamagui-web.css'
-import type { Session } from '@supabase/auth-js'
-import { Provider, loadThemePromise } from '@app/core/provider'
+
+import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
+import { loadThemePromise, Provider } from '@app/core/provider'
 import { supabase } from '@app/core/utils/supabase/client'
+import type { Session } from '@supabase/auth-js'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack, useSegments } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { LogBox, View } from 'react-native'
+import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-
-import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
 
 SplashScreen.preventAutoHideAsync()
 

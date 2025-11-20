@@ -1,12 +1,12 @@
+import { useAssessmentStatus } from '@app/core/features/assessments/hooks/useAssessmentStatus'
+import { usePathname } from '@app/core/utils/usePathname'
 import type { DrawerContentComponentProps } from '@react-navigation/drawer'
+import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { useCallback, useState } from 'react'
 import type { GestureResponderEvent } from 'react-native'
 import { YStack } from 'tamagui'
-import { DrawerContentScrollView } from '@react-navigation/drawer'
 import { getDrawerItems } from './config'
 import { DrawerLink } from './DrawerLink'
-import { useAssessmentStatus } from '@app/core/features/assessments/hooks/useAssessmentStatus'
-import { usePathname } from '@app/core/utils/usePathname'
 import { normalizePath } from './utils'
 
 export type DrawerContentProps = DrawerContentComponentProps & {

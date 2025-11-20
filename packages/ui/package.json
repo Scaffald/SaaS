@@ -2,11 +2,15 @@
   "name": "@app/ui",
   "version": "0.0.1",
   "private": true,
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "types": "./src",
   "main": "src/index.tsx",
   "module:jsx": "src",
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "exports": {
     ".": "./src/index.tsx",
     "./styleguide": "./src/styleguide/index.ts",

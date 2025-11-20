@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@app/core/utils/api";
-import type { ViewportBounds } from "@app/ui";
+import { api } from '@app/core/utils/api'
+import type { ViewportBounds } from '@app/ui'
+import { useQuery } from '@tanstack/react-query'
 
 /**
  * Calculate approximate viewport bounds from a location point
@@ -9,28 +9,28 @@ import type { ViewportBounds } from "@app/ui";
 function calculateBoundsFromLocation(
   lat: number,
   lng: number,
-  radiusDegrees = 0.5,
+  radiusDegrees = 0.5
 ): ViewportBounds {
   return {
     north: lat + radiusDegrees,
     south: lat - radiusDegrees,
     east: lng + radiusDegrees,
     west: lng - radiusDegrees,
-  };
+  }
 }
 
 interface UseLocationResultCountsOptions {
-  coordinates?: { lat: number; lng: number } | null;
-  city?: string;
-  state?: string;
-  enabled?: boolean;
+  coordinates?: { lat: number; lng: number } | null
+  city?: string
+  state?: string
+  enabled?: boolean
 }
 
 interface LocationResultCounts {
-  workers: number;
-  jobs: number;
-  employers: number;
-  cached: boolean;
+  workers: number
+  jobs: number
+  employers: number
+  cached: boolean
 }
 
 /**
@@ -44,9 +44,7 @@ export function useLocationResultCounts({
   enabled = true,
 }: UseLocationResultCountsOptions) {
   // Calculate bounds from coordinates if provided
-  const bounds = coordinates
-    ? calculateBoundsFromLocation(coordinates.lat, coordinates.lng)
-    : null;
+  const bounds = coordinates ? calculateBoundsFromLocation(coordinates.lat, coordinates.lng) : null
 
   // Use tRPC query to fetch counts
   const query = api.map.getLocationCounts.useQuery(
@@ -63,25 +61,25 @@ export function useLocationResultCounts({
     {
       enabled: enabled && !!bounds,
       staleTime: 5 * 60 * 1000, // 5 minutes - counts don't change frequently
-    },
-  );
+    }
+  )
 
   return {
     counts: query.data as LocationResultCounts | undefined,
     isLoading: query.isLoading,
     error: query.error,
     isCached: query.data?.cached ?? false,
-  };
+  }
 }
 
 /**
  * Format number with commas
  */
-export function formatCount(count: number | "many"): string {
-  if (count === "many" || count >= 500) {
-    return "Many results";
+export function formatCount(count: number | 'many'): string {
+  if (count === 'many' || count >= 500) {
+    return 'Many results'
   }
-  return new Intl.NumberFormat("en-US").format(count);
+  return new Intl.NumberFormat('en-US').format(count)
 }
 
 /**
@@ -91,27 +89,27 @@ export function formatCount(count: number | "many"): string {
 export function formatLocationWithCounts(
   city: string,
   state: string,
-  counts?: LocationResultCounts,
+  counts?: LocationResultCounts
 ): string {
-  const location = `${city}, ${state}`;
+  const location = `${city}, ${state}`
   if (!counts) {
-    return location;
+    return location
   }
 
-  const parts: string[] = [];
+  const parts: string[] = []
   if (counts.workers > 0) {
-    parts.push(`${formatCount(counts.workers)} workers`);
+    parts.push(`${formatCount(counts.workers)} workers`)
   }
   if (counts.jobs > 0) {
-    parts.push(`${formatCount(counts.jobs)} jobs`);
+    parts.push(`${formatCount(counts.jobs)} jobs`)
   }
   if (counts.employers > 0) {
-    parts.push(`${formatCount(counts.employers)} employers`);
+    parts.push(`${formatCount(counts.employers)} employers`)
   }
 
   if (parts.length === 0) {
-    return location;
+    return location
   }
 
-  return `${location} - ${parts.join(", ")}`;
+  return `${location} - ${parts.join(', ')}`
 }

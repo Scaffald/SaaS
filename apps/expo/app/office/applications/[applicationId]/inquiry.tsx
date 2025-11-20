@@ -1,10 +1,9 @@
-import { ScrollView, Spinner } from 'tamagui'
-import { useLocalSearchParams } from 'expo-router'
-import { Text, YStack } from '@app/ui'
-
-import { api } from '@app/core/utils/api'
-import { InquiryViewOrganization } from '@app/core/features/inquiries/components/InquiryViewOrganization'
 import { InquiryHistoryTimeline } from '@app/core/features/inquiries/components/InquiryHistoryTimeline'
+import { InquiryViewOrganization } from '@app/core/features/inquiries/components/InquiryViewOrganization'
+import { api } from '@app/core/utils/api'
+import { Text, YStack } from '@app/ui'
+import { useLocalSearchParams } from 'expo-router'
+import { ScrollView, Spinner } from 'tamagui'
 
 export default function OfficeApplicationInquiryRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()

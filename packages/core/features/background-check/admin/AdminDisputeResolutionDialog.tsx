@@ -1,5 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
 import { AlertTriangle, Gavel } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Dialog,
@@ -12,11 +16,6 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
-
-import { api } from '@app/core/utils/api'
-import type { AppRouter } from '@app/supabase/client-types'
 
 const RESOLUTION_STATUSES = [
   { value: 'resolved', label: 'Resolved' },
@@ -161,14 +160,24 @@ export function AdminDisputeResolutionDialog({
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Dispute reason
                   </Text>
-                  <TextArea value={dispute.dispute_reason ?? ''} editable={false} rows={3} bg="$color2" />
+                  <TextArea
+                    value={dispute.dispute_reason ?? ''}
+                    editable={false}
+                    rows={3}
+                    bg="$color2"
+                  />
                 </YStack>
 
                 <YStack gap="$2">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Dispute details
                   </Text>
-                  <TextArea value={dispute.dispute_details ?? ''} editable={false} rows={5} bg="$color2" />
+                  <TextArea
+                    value={dispute.dispute_details ?? ''}
+                    editable={false}
+                    rows={5}
+                    bg="$color2"
+                  />
                 </YStack>
 
                 <Separator />
@@ -255,4 +264,3 @@ export function AdminDisputeResolutionDialog({
     </Dialog>
   )
 }
-

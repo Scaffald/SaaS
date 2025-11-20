@@ -1,54 +1,48 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { protectedProcedure, t } from "../middleware.ts";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure, t } from '../middleware.ts'
 
-const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 /**
  * Helper function to check if user can edit a project
  */
-async function canEditProject(
-  supabase: any,
-  userId: string,
-  projectId: string,
-): Promise<boolean> {
+async function canEditProject(supabase: any, userId: string, projectId: string): Promise<boolean> {
   // Get project
   const { data: project, error } = await supabase
-    .schema("core")
-    .from("projects")
-    .select("created_by, organization_id")
-    .eq("id", projectId)
-    .single();
+    .schema('core')
+    .from('projects')
+    .select('created_by, organization_id')
+    .eq('id', projectId)
+    .single()
 
   if (error || !project) {
-    return false;
+    return false
   }
 
   // Creator can always edit
   if (project.created_by === userId) {
-    return true;
+    return true
   }
 
   // Check if user is org admin or super admin
   const { data: roleAssignments } = await supabase
-    .schema("core")
-    .from("role_assignments")
-    .select("role:roles(name, scope), scope_org_id")
-    .eq("user_id", userId);
+    .schema('core')
+    .from('role_assignments')
+    .select('role:roles(name, scope), scope_org_id')
+    .eq('user_id', userId)
 
   if (!roleAssignments) {
-    return false;
+    return false
   }
 
   return roleAssignments.some(
     (assignment: any) =>
       assignment.role &&
       (assignment.scope_org_id === project.organization_id ||
-        (assignment.role.name === "admin" &&
-          assignment.role.scope === "platform") ||
-        (assignment.role.name === "super_admin" &&
-          assignment.role.scope === "platform")),
-  );
+        (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||
+        (assignment.role.name === 'super_admin' && assignment.role.scope === 'platform'))
+  )
 }
 
 /**
@@ -57,27 +51,25 @@ async function canEditProject(
 async function isOrganizationMember(
   supabase: any,
   userId: string,
-  organizationId: string,
+  organizationId: string
 ): Promise<boolean> {
   const { data: roleAssignments } = await supabase
-    .schema("core")
-    .from("role_assignments")
-    .select("role:roles(name, scope), scope_org_id")
-    .eq("user_id", userId);
+    .schema('core')
+    .from('role_assignments')
+    .select('role:roles(name, scope), scope_org_id')
+    .eq('user_id', userId)
 
   if (!roleAssignments) {
-    return false;
+    return false
   }
 
   return roleAssignments.some(
     (assignment: any) =>
       assignment.role &&
       (assignment.scope_org_id === organizationId ||
-        (assignment.role.name === "admin" &&
-          assignment.role.scope === "platform") ||
-        (assignment.role.name === "super_admin" &&
-          assignment.role.scope === "platform")),
-  );
+        (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||
+        (assignment.role.name === 'super_admin' && assignment.role.scope === 'platform'))
+  )
 }
 
 /**
@@ -92,63 +84,57 @@ export const projectsRouter = t.router({
     .input(
       z.object({
         organization_id: z.string().uuid(),
-        name: z.string().min(1, "Name is required").max(255),
+        name: z.string().min(1, 'Name is required').max(255),
         description: z.string().optional(),
-        status: z.enum(["planning", "active", "completed", "on_hold"]).optional(),
+        status: z.enum(['planning', 'active', 'completed', 'on_hold']).optional(),
         start_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional(),
         end_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional(),
         location_visibility: z
-          .enum(["public", "authenticated", "organization_only", "private"])
+          .enum(['public', 'authenticated', 'organization_only', 'private'])
           .optional(),
         location_visibility_override: z.boolean().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Check if user is organization member
-      const isMember = await isOrganizationMember(
-        ctx.supabase,
-        ctx.user.id,
-        input.organization_id,
-      );
+      const isMember = await isOrganizationMember(ctx.supabase, ctx.user.id, input.organization_id)
 
       if (!isMember) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to create projects for this organization",
-        });
+          code: 'FORBIDDEN',
+          message: 'You do not have permission to create projects for this organization',
+        })
       }
 
       // Get organization default visibility if not overridden
       const { data: org } = await ctx.supabase
-        .schema("core")
-        .from("organizations")
-        .select("default_project_location_visibility")
-        .eq("id", input.organization_id)
-        .single();
+        .schema('core')
+        .from('organizations')
+        .select('default_project_location_visibility')
+        .eq('id', input.organization_id)
+        .single()
 
       const locationVisibility =
-        input.location_visibility ||
-        org?.default_project_location_visibility ||
-        "organization_only";
+        input.location_visibility || org?.default_project_location_visibility || 'organization_only'
 
       const { data: project, error } = await ctx.supabase
-        .schema("core")
-        .from("projects")
+        .schema('core')
+        .from('projects')
         .insert({
           organization_id: input.organization_id,
           name: input.name.trim(),
           description: input.description?.trim() || null,
-          status: input.status || "planning",
+          status: input.status || 'planning',
           start_date: input.start_date || null,
           end_date: input.end_date || null,
           location_visibility: locationVisibility,
@@ -156,16 +142,16 @@ export const projectsRouter = t.router({
           created_by: ctx.user.id,
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to create project: ${error.message}`,
-        });
+        })
       }
 
-      return { project };
+      return { project }
     }),
 
   /**
@@ -177,71 +163,68 @@ export const projectsRouter = t.router({
         id: z.string().uuid(),
         name: z.string().min(1).max(255).optional(),
         description: z.string().optional().nullable(),
-        status: z.enum(["planning", "active", "completed", "on_hold"]).optional(),
+        status: z.enum(['planning', 'active', 'completed', 'on_hold']).optional(),
         start_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional()
           .nullable(),
         end_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional()
           .nullable(),
         location_visibility: z
-          .enum(["public", "authenticated", "organization_only", "private"])
+          .enum(['public', 'authenticated', 'organization_only', 'private'])
           .optional(),
         location_visibility_override: z.boolean().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { id, ...updates } = input;
+      const { id, ...updates } = input
 
       // Check permissions
-      const canEdit = await canEditProject(ctx.supabase, ctx.user.id, id);
+      const canEdit = await canEditProject(ctx.supabase, ctx.user.id, id)
 
       if (!canEdit) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to edit this project",
-        });
+          code: 'FORBIDDEN',
+          message: 'You do not have permission to edit this project',
+        })
       }
 
-      const updateData: any = {};
-      if (updates.name !== undefined) updateData.name = updates.name.trim();
+      const updateData: any = {}
+      if (updates.name !== undefined) updateData.name = updates.name.trim()
       if (updates.description !== undefined)
-        updateData.description = updates.description?.trim() || null;
-      if (updates.status !== undefined) updateData.status = updates.status;
-      if (updates.start_date !== undefined)
-        updateData.start_date = updates.start_date || null;
-      if (updates.end_date !== undefined)
-        updateData.end_date = updates.end_date || null;
+        updateData.description = updates.description?.trim() || null
+      if (updates.status !== undefined) updateData.status = updates.status
+      if (updates.start_date !== undefined) updateData.start_date = updates.start_date || null
+      if (updates.end_date !== undefined) updateData.end_date = updates.end_date || null
       if (updates.location_visibility !== undefined)
-        updateData.location_visibility = updates.location_visibility;
+        updateData.location_visibility = updates.location_visibility
       if (updates.location_visibility_override !== undefined)
-        updateData.location_visibility_override =
-          updates.location_visibility_override;
+        updateData.location_visibility_override = updates.location_visibility_override
 
       const { data: project, error } = await ctx.supabase
-        .schema("core")
-        .from("projects")
+        .schema('core')
+        .from('projects')
         .update(updateData)
-        .eq("id", id)
+        .eq('id', id)
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to update project: ${error.message}`,
-        });
+        })
       }
 
-      return { project };
+      return { project }
     }),
 
   /**
@@ -251,8 +234,8 @@ export const projectsRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: project, error } = await ctx.supabase
-        .schema("core")
-        .from("projects")
+        .schema('core')
+        .from('projects')
         .select(
           `
           *,
@@ -292,20 +275,20 @@ export const projectsRouter = t.router({
             role_on_project,
             notes
           )
-        `,
+        `
         )
-        .eq("id", input.id)
-        .single();
+        .eq('id', input.id)
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "NOT_FOUND",
+          code: 'NOT_FOUND',
           message: `Project not found: ${error.message}`,
-        });
+        })
       }
 
       // RLS will handle visibility filtering, but we can add additional checks here if needed
-      return { project };
+      return { project }
     }),
 
   /**
@@ -315,40 +298,40 @@ export const projectsRouter = t.router({
     .input(
       z.object({
         organization_id: z.string().uuid().optional(),
-        status: z.enum(["planning", "active", "completed", "on_hold"]).optional(),
+        status: z.enum(['planning', 'active', 'completed', 'on_hold']).optional(),
         limit: z.number().min(1).max(100).default(20),
         offset: z.number().min(0).default(0),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       let query = ctx.supabase
-        .schema("core")
-        .from("projects")
-        .select("*", { count: "exact" })
-        .order("created_at", { ascending: false })
-        .range(input.offset, input.offset + input.limit - 1);
+        .schema('core')
+        .from('projects')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(input.offset, input.offset + input.limit - 1)
 
       if (input.organization_id) {
-        query = query.eq("organization_id", input.organization_id);
+        query = query.eq('organization_id', input.organization_id)
       }
 
       if (input.status) {
-        query = query.eq("status", input.status);
+        query = query.eq('status', input.status)
       }
 
-      const { data: projects, error, count } = await query;
+      const { data: projects, error, count } = await query
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to list projects: ${error.message}`,
-        });
+        })
       }
 
       return {
         projects: projects || [],
         count: count || 0,
-      };
+      }
     }),
 
   /**
@@ -360,73 +343,69 @@ export const projectsRouter = t.router({
         project_id: z.string().uuid(),
         site_id: z.string().uuid(),
         is_primary: z.boolean().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Check permissions
-      const canEdit = await canEditProject(
-        ctx.supabase,
-        ctx.user.id,
-        input.project_id,
-      );
+      const canEdit = await canEditProject(ctx.supabase, ctx.user.id, input.project_id)
 
       if (!canEdit) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to edit this project",
-        });
+          code: 'FORBIDDEN',
+          message: 'You do not have permission to edit this project',
+        })
       }
 
       // Check if site exists
       const { data: site } = await ctx.supabase
-        .schema("core")
-        .from("sites")
-        .select("id, boundary")
-        .eq("id", input.site_id)
-        .single();
+        .schema('core')
+        .from('sites')
+        .select('id, boundary')
+        .eq('id', input.site_id)
+        .single()
 
       if (!site) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Site not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Site not found',
+        })
       }
 
       // Check for overlaps (validation will be done by trigger, but we can warn here)
       // Note: Overlap notifications are created automatically by the database trigger
       const { data: overlaps } = await ctx.supabase
-        .rpc("check_site_overlaps", {
+        .rpc('check_site_overlaps', {
           p_site_id: input.site_id,
           p_boundary: site.boundary,
         })
-        .catch(() => ({ data: null })); // Ignore errors, trigger will handle it
+        .catch(() => ({ data: null })) // Ignore errors, trigger will handle it
 
       const { data: projectSite, error } = await ctx.supabase
-        .schema("core")
-        .from("project_sites")
+        .schema('core')
+        .from('project_sites')
         .insert({
           project_id: input.project_id,
           site_id: input.site_id,
           is_primary: input.is_primary || false,
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to add site to project: ${error.message}`,
-        });
+        })
       }
 
       return {
         project_site: projectSite,
         overlaps: overlaps || [],
-      };
+      }
     }),
 
   /**
@@ -438,46 +417,42 @@ export const projectsRouter = t.router({
         project_id: z.string().uuid(),
         address_id: z.string().uuid(),
         is_primary: z.boolean().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Check permissions
-      const canEdit = await canEditProject(
-        ctx.supabase,
-        ctx.user.id,
-        input.project_id,
-      );
+      const canEdit = await canEditProject(ctx.supabase, ctx.user.id, input.project_id)
 
       if (!canEdit) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have permission to edit this project",
-        });
+          code: 'FORBIDDEN',
+          message: 'You do not have permission to edit this project',
+        })
       }
 
       const { data: projectAddress, error } = await ctx.supabase
-        .schema("core")
-        .from("project_addresses")
+        .schema('core')
+        .from('project_addresses')
         .insert({
           project_id: input.project_id,
           address_id: input.address_id,
           is_primary: input.is_primary || false,
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to add address to project: ${error.message}`,
-        });
+        })
       }
 
-      return { project_address: projectAddress };
+      return { project_address: projectAddress }
     }),
 
   /**
@@ -491,43 +466,39 @@ export const projectsRouter = t.router({
         job_id: z.string().uuid().optional(),
         start_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional(),
         end_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional(),
         role_on_project: z.string().optional(),
         notes: z.string().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Check permissions (manager/admin)
-      const canEdit = await canEditProject(
-        ctx.supabase,
-        ctx.user.id,
-        input.project_id,
-      );
+      const canEdit = await canEditProject(ctx.supabase, ctx.user.id, input.project_id)
 
       if (!canEdit) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Only project managers and admins can assign workers",
-        });
+          code: 'FORBIDDEN',
+          message: 'Only project managers and admins can assign workers',
+        })
       }
 
       const { data: worker, error } = await ctx.supabase
-        .schema("core")
-        .from("project_workers")
+        .schema('core')
+        .from('project_workers')
         .insert({
           project_id: input.project_id,
           user_id: input.user_id,
           job_id: input.job_id || null,
-          status: "approved",
+          status: 'approved',
           assigned_by_manager: true,
           approved_by: ctx.user.id,
           approved_at: new Date().toISOString(),
@@ -537,16 +508,16 @@ export const projectsRouter = t.router({
           notes: input.notes || null,
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to add worker: ${error.message}`,
-        });
+        })
       }
 
-      return { worker };
+      return { worker }
     }),
 
   /**
@@ -559,29 +530,29 @@ export const projectsRouter = t.router({
         job_id: z.string().uuid().optional(),
         start_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional(),
         end_date: z
           .string()
-          .regex(DATE_ONLY_REGEX, "Invalid date format. Expected YYYY-MM-DD.")
+          .regex(DATE_ONLY_REGEX, 'Invalid date format. Expected YYYY-MM-DD.')
           .optional(),
         role_on_project: z.string().optional(),
         notes: z.string().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       const { data: worker, error } = await ctx.supabase
-        .schema("core")
-        .from("project_workers")
+        .schema('core')
+        .from('project_workers')
         .insert({
           project_id: input.project_id,
           user_id: ctx.user.id,
           job_id: input.job_id || null,
-          status: "pending",
+          status: 'pending',
           claimed_by_worker: true,
           start_date: input.start_date || null,
           end_date: input.end_date || null,
@@ -589,16 +560,16 @@ export const projectsRouter = t.router({
           notes: input.notes || null,
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to claim work: ${error.message}`,
-        });
+        })
       }
 
-      return { worker };
+      return { worker }
     }),
 
   /**
@@ -608,58 +579,54 @@ export const projectsRouter = t.router({
     .input(z.object({ project_worker_id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Get project_worker to find project_id
       const { data: projectWorker } = await ctx.supabase
-        .schema("core")
-        .from("project_workers")
-        .select("project_id")
-        .eq("id", input.project_worker_id)
-        .single();
+        .schema('core')
+        .from('project_workers')
+        .select('project_id')
+        .eq('id', input.project_worker_id)
+        .single()
 
       if (!projectWorker) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Worker association not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Worker association not found',
+        })
       }
 
       // Check permissions
-      const canEdit = await canEditProject(
-        ctx.supabase,
-        ctx.user.id,
-        projectWorker.project_id,
-      );
+      const canEdit = await canEditProject(ctx.supabase, ctx.user.id, projectWorker.project_id)
 
       if (!canEdit) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Only project managers and admins can approve worker claims",
-        });
+          code: 'FORBIDDEN',
+          message: 'Only project managers and admins can approve worker claims',
+        })
       }
 
       const { data: worker, error } = await ctx.supabase
-        .schema("core")
-        .from("project_workers")
+        .schema('core')
+        .from('project_workers')
         .update({
-          status: "approved",
+          status: 'approved',
           approved_by: ctx.user.id,
           approved_at: new Date().toISOString(),
         })
-        .eq("id", input.project_worker_id)
+        .eq('id', input.project_worker_id)
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to approve worker: ${error.message}`,
-        });
+        })
       }
 
-      return { worker };
+      return { worker }
     }),
 
   /**
@@ -670,66 +637,61 @@ export const projectsRouter = t.router({
       z.object({
         project_worker_id: z.string().uuid(),
         reason: z.string().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Get project_worker to find project_id
       const { data: projectWorker } = await ctx.supabase
-        .schema("core")
-        .from("project_workers")
-        .select("project_id")
-        .eq("id", input.project_worker_id)
-        .single();
+        .schema('core')
+        .from('project_workers')
+        .select('project_id')
+        .eq('id', input.project_worker_id)
+        .single()
 
       if (!projectWorker) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Worker association not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Worker association not found',
+        })
       }
 
       // Check permissions
-      const canEdit = await canEditProject(
-        ctx.supabase,
-        ctx.user.id,
-        projectWorker.project_id,
-      );
+      const canEdit = await canEditProject(ctx.supabase, ctx.user.id, projectWorker.project_id)
 
       if (!canEdit) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Only project managers and admins can reject worker claims",
-        });
+          code: 'FORBIDDEN',
+          message: 'Only project managers and admins can reject worker claims',
+        })
       }
 
       const updateData: any = {
-        status: "rejected",
-      };
+        status: 'rejected',
+      }
 
       if (input.reason) {
-        updateData.notes = input.reason;
+        updateData.notes = input.reason
       }
 
       const { data: worker, error } = await ctx.supabase
-        .schema("core")
-        .from("project_workers")
+        .schema('core')
+        .from('project_workers')
         .update(updateData)
-        .eq("id", input.project_worker_id)
+        .eq('id', input.project_worker_id)
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to reject worker: ${error.message}`,
-        });
+        })
       }
 
-      return { worker };
+      return { worker }
     }),
-});
-
+})

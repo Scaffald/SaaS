@@ -1,29 +1,29 @@
-import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip';
-import { normalizeScores } from './scoreNormalizer';
+import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
+import { normalizeScores } from './scoreNormalizer'
 
 /**
  * Condition for archetype matching
  */
 export interface ArchetypeCondition {
-  domain: IPIPDomain;
-  level: 'low' | 'neutral' | 'high';
-  weight: number; // 0-1, importance of this condition
+  domain: IPIPDomain
+  level: 'low' | 'neutral' | 'high'
+  weight: number // 0-1, importance of this condition
 }
 
 /**
  * Archetype definition with mapping rules
  */
 export interface ArchetypeDefinition {
-  name: string;
-  conditions: ArchetypeCondition[];
+  name: string
+  conditions: ArchetypeCondition[]
 }
 
 /**
  * Result of archetype mapping
  */
 export interface ArchetypeResult {
-  archetype: string; // Archetype name, or "Evolving [Archetype]" if confidence < 60%
-  confidence: number; // 0-100, match percentage
+  archetype: string // Archetype name, or "Evolving [Archetype]" if confidence < 60%
+  confidence: number // 0-100, match percentage
 }
 
 /**
@@ -92,7 +92,7 @@ const ARCHETYPES: ArchetypeDefinition[] = [
       { domain: 'C', level: 'low', weight: 0.5 },
     ],
   },
-];
+]
 
 /**
  * Map Big Five domain scores to archetype with confidence scoring
@@ -112,57 +112,57 @@ const ARCHETYPES: ArchetypeDefinition[] = [
 export function mapToArchetype(scores: IPIPScores): ArchetypeResult {
   // Calculate match score for each archetype
   const archetypeScores = ARCHETYPES.map((archetype) => {
-    let totalWeight = 0;
-    let matchedWeight = 0;
+    let totalWeight = 0
+    let matchedWeight = 0
 
     // Check each condition
     for (const condition of archetype.conditions) {
-      totalWeight += condition.weight;
+      totalWeight += condition.weight
 
-      const domainScore = scores[condition.domain];
+      const domainScore = scores[condition.domain]
       if (!domainScore) {
         // Domain not scored, skip this condition
-        continue;
+        continue
       }
 
       // Check if domain level matches condition
       if (domainScore.result === condition.level) {
-        matchedWeight += condition.weight;
+        matchedWeight += condition.weight
       }
     }
 
     // Calculate match percentage
-    const matchPercentage = totalWeight > 0 ? (matchedWeight / totalWeight) * 100 : 0;
+    const matchPercentage = totalWeight > 0 ? (matchedWeight / totalWeight) * 100 : 0
 
     return {
       name: archetype.name,
       score: matchPercentage,
-    };
-  });
+    }
+  })
 
   // Sort by score descending
-  archetypeScores.sort((a, b) => b.score - a.score);
+  archetypeScores.sort((a, b) => b.score - a.score)
 
   // Get top archetype
-  const topArchetype = archetypeScores[0];
+  const topArchetype = archetypeScores[0]
 
   if (!topArchetype) {
     // Edge case: no archetypes (shouldn't happen)
     return {
       archetype: 'Evolving Builder',
       confidence: 0,
-    };
+    }
   }
 
-  const confidence = Math.round(topArchetype.score);
+  const confidence = Math.round(topArchetype.score)
 
   // Apply "Evolving" prefix if confidence < 60%
-  const archetypeName = confidence < 60 ? `Evolving ${topArchetype.name}` : topArchetype.name;
+  const archetypeName = confidence < 60 ? `Evolving ${topArchetype.name}` : topArchetype.name
 
   return {
     archetype: archetypeName,
     confidence,
-  };
+  }
 }
 
 /**
@@ -173,30 +173,29 @@ export function mapToArchetype(scores: IPIPScores): ArchetypeResult {
  */
 export function getAllArchetypeScores(scores: IPIPScores): Array<{ name: string; score: number }> {
   const archetypeScores = ARCHETYPES.map((archetype) => {
-    let totalWeight = 0;
-    let matchedWeight = 0;
+    let totalWeight = 0
+    let matchedWeight = 0
 
     for (const condition of archetype.conditions) {
-      totalWeight += condition.weight;
+      totalWeight += condition.weight
 
-      const domainScore = scores[condition.domain];
+      const domainScore = scores[condition.domain]
       if (!domainScore) {
-        continue;
+        continue
       }
 
       if (domainScore.result === condition.level) {
-        matchedWeight += condition.weight;
+        matchedWeight += condition.weight
       }
     }
 
-    const matchPercentage = totalWeight > 0 ? (matchedWeight / totalWeight) * 100 : 0;
+    const matchPercentage = totalWeight > 0 ? (matchedWeight / totalWeight) * 100 : 0
 
     return {
       name: archetype.name,
       score: Math.round(matchPercentage),
-    };
-  });
+    }
+  })
 
-  return archetypeScores.sort((a, b) => b.score - a.score);
+  return archetypeScores.sort((a, b) => b.score - a.score)
 }
-

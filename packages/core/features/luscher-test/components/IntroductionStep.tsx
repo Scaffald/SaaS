@@ -1,4 +1,4 @@
-import { Button, Text, YStack, XStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from 'tamagui'
 
 export interface IntroductionStepProps {
   onBegin: () => void
@@ -60,12 +60,7 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
         </YStack>
 
         <YStack gap="$3" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
-          <Text
-            fontSize="$5"
-            fontWeight="600"
-            color="$color12"
-            style={{ textAlign: 'center' }}
-          >
+          <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             Pick the colors that feel most right to you right now.
           </Text>
           <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>

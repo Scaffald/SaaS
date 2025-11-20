@@ -1,7 +1,7 @@
 // generate-apple-secret.js
 import fs from 'fs'
-import path from 'path'
 import jwt from 'jsonwebtoken'
+import path from 'path'
 
 const DEFAULTS = {
   teamId: 'DAC62CF44G',

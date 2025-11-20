@@ -110,9 +110,9 @@ describe('analytics client', () => {
     
     // Set default environment
     process.env.APP_ENV = 'development'
-    process.env.POSTHOG_KEY = 'test-key'
-    process.env.POSTHOG_HOST = 'https://app.posthog.com'
-    delete process.env.EXPO_PUBLIC_POSTHOG_API_KEY
+    process.env.EXPO_PUBLIC_POSTHOG_API_KEY = 'test-key'
+    process.env.EXPO_PUBLIC_POSTHOG_HOST = 'https://app.posthog.com'
+    delete process.env.POSTHOG_KEY
     
     // Reset __DEV__
     ;(global as any).__DEV__ = true
@@ -137,8 +137,8 @@ describe('analytics client', () => {
 
     test('does not initialize when PostHog key is missing', async () => {
       vi.resetModules()
-      process.env.POSTHOG_KEY = ''
       process.env.EXPO_PUBLIC_POSTHOG_API_KEY = ''
+      delete process.env.POSTHOG_KEY
       delete process.env.POSTHOG_KEY_DEV
       delete process.env.POSTHOG_KEY_STAGING
       delete process.env.POSTHOG_KEY_PROD
@@ -398,7 +398,8 @@ describe('analytics client', () => {
 
     test('isAnalyticsAvailable returns false when key is missing', async () => {
       vi.resetModules()
-      process.env.POSTHOG_KEY = ''
+      process.env.EXPO_PUBLIC_POSTHOG_API_KEY = ''
+      delete process.env.POSTHOG_KEY
       const { isAnalyticsAvailable } = await import('../client')
       
       // May still return true if key comes from expo config

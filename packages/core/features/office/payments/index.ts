@@ -1,6 +1,5 @@
-export { OfficePaymentAnalytics } from "./office-payment-analytics";
-export { OrganizationPaymentMethodsPanel } from "./OrganizationPaymentMethodsPanel";
-export { OfficeTransactionHistory } from "./OfficeTransactionHistory";
-export { TransactionReceiptModal } from "./TransactionReceiptModal";
-export { OrganizationCreditsPanel } from "./OrganizationCreditsPanel";
-
+export { OfficeTransactionHistory } from './OfficeTransactionHistory'
+export { OrganizationCreditsPanel } from './OrganizationCreditsPanel'
+export { OrganizationPaymentMethodsPanel } from './OrganizationPaymentMethodsPanel'
+export { OfficePaymentAnalytics } from './office-payment-analytics'
+export { TransactionReceiptModal } from './TransactionReceiptModal'

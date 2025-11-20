@@ -1,8 +1,8 @@
-import { forwardRef } from 'react'
+import { X } from '@tamagui/lucide-icons'
 import type { ComponentProps } from 'react'
+import { forwardRef } from 'react'
 import type { TextInput } from 'react-native'
 import { Button, Input, Spinner, XStack } from 'tamagui'
-import { X } from '@tamagui/lucide-icons'
 
 interface SearchInputProps
   extends Omit<ComponentProps<typeof Input>, 'value' | 'defaultValue' | 'onChangeText'> {

@@ -3,18 +3,19 @@
  * Use the router navigation to /dashboard/discover/jobs/[id] instead.
  * This component is kept for backward compatibility but will be removed in a future version.
  */
-import { YStack, XStack, Text, Button, Separator, ScrollView } from 'tamagui'
+
 import { Dialog } from '@app/ui'
 import {
+  Briefcase,
   Building2,
-  MapPin,
   Clock,
   DollarSign,
   ExternalLink,
+  MapPin,
   X,
-  Briefcase,
 } from '@tamagui/lucide-icons'
 import { Linking } from 'react-native'
+import { Button, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 import type { ExternalJob } from './ExternalJobCard'
 
 interface ExternalJobDetailModalProps {

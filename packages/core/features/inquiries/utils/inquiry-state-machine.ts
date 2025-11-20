@@ -23,10 +23,7 @@ export type InquiryStatus =
   | 'rejected'
   | 'withdrawn'
 
-export type ApplicationStatusForInquiry =
-  | 'screen'
-  | 'inquired'
-  | 'offer'
+export type ApplicationStatusForInquiry = 'screen' | 'inquired' | 'offer'
 
 /**
  * Valid status transitions for each inquiry status.
@@ -50,7 +47,10 @@ export const INQUIRY_STATUS_TRANSITIONS: Record<InquiryStatus, InquiryStatus[]> 
  * Applications should present an `inquired` stage whenever the negotiation is in-flight
  * and fall back to `screen` once negotiations end unsuccessfully.
  */
-export const INQUIRY_TO_APPLICATION_STATUS: Record<InquiryStatus, ApplicationStatusForInquiry | null> = {
+export const INQUIRY_TO_APPLICATION_STATUS: Record<
+  InquiryStatus,
+  ApplicationStatusForInquiry | null
+> = {
   draft: 'screen', // Draft inquiries don't change application status
   sent: 'inquired',
   candidate_responded: 'inquired',
@@ -107,4 +107,3 @@ export function isTerminalStatus(status: InquiryStatus): boolean {
 export function getNextPossibleStatuses(currentStatus: InquiryStatus): InquiryStatus[] {
   return [...INQUIRY_STATUS_TRANSITIONS[currentStatus]]
 }
-

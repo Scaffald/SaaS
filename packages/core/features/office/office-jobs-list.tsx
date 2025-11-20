@@ -1,15 +1,14 @@
-import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
-import { useMemo, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Adapt, Button, Select, Switch, Text, XStack, YStack, H2 } from 'tamagui'
-import { Sheet } from '@app/ui'
+import { api } from '@app/core/utils/api'
+import { DashboardLayout, Sheet } from '@app/ui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
-import { DashboardLayout } from '@app/ui'
+import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Adapt, Button, H2, Select, Switch, Text, XStack, YStack } from 'tamagui'
+import { JobsKanbanBoard } from './components/JobsKanbanBoard'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
-import { JobsKanbanBoard } from './components/JobsKanbanBoard'
 
 type Job = {
   id: string
@@ -119,7 +118,13 @@ export interface OfficeJobsListProps {
   showHeader?: boolean
 }
 
-type SortOption = 'created_desc' | 'created_asc' | 'title_asc' | 'title_desc' | 'status_asc' | 'status_desc'
+type SortOption =
+  | 'created_desc'
+  | 'created_asc'
+  | 'title_asc'
+  | 'title_desc'
+  | 'status_asc'
+  | 'status_desc'
 
 export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) {
   const router = useRouter()
@@ -219,11 +224,11 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const teamFilterPlaceholder = teamsLoading ? 'Loading teams...' : 'All teams'
 
   const columns = createColumns(router)
-  
+
   const handleRowEdit = (job: Job) => {
     router.push(RouteBuilder.officeJobsEdit(job.id))
   }
-  
+
   const handleRowDelete = async (job: Job) => {
     await handleDelete(job.id)
   }
@@ -231,7 +236,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const handleRowDuplicate = async (job: Job) => {
     await handleDuplicate(job.id)
   }
-  
+
   const getItemName = (job: Job) => job.title
 
   const filtersAccessory = (
@@ -331,14 +336,16 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                       <Check size={16} />
                     </Select.ItemIndicator>
                   </Select.Item>
-                  {organizationsData.organizations.map((org: typeof organizationsData.organizations[0], index: number) => (
-                    <Select.Item key={org.id} value={org.id} index={index + 1}>
-                      <Select.ItemText>{org.name}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
+                  {organizationsData.organizations.map(
+                    (org: (typeof organizationsData.organizations)[0], index: number) => (
+                      <Select.Item key={org.id} value={org.id} index={index + 1}>
+                        <Select.ItemText>{org.name}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    )
+                  )}
                 </Select.Group>
               </Select.Viewport>
               <Select.ScrollDownButton />
@@ -488,27 +495,17 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                   {filteredAndSortedJobs.length} total jobs
                 </Text>
               </YStack>
-            <XStack gap="$2">
-              <Button
-                size="$3"
-                onPress={() => setViewMode('kanban')}
-                variant="outlined"
-              >
-                Kanban
-              </Button>
-              <Button
-                size="$3"
-                onPress={() => setViewMode('list')}
-              >
-                List
-              </Button>
-              <Button
-                size="$3"
-                onPress={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
-              >
-                Create Job
-              </Button>
-            </XStack>
+              <XStack gap="$2">
+                <Button size="$3" onPress={() => setViewMode('kanban')} variant="outlined">
+                  Kanban
+                </Button>
+                <Button size="$3" onPress={() => setViewMode('list')}>
+                  List
+                </Button>
+                <Button size="$3" onPress={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}>
+                  Create Job
+                </Button>
+              </XStack>
             </XStack>
             {/* Filters for Kanban view */}
             <XStack gap="$2" items="center" flexWrap="wrap">
@@ -556,17 +553,10 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
               rightAccessory: (
                 <XStack gap="$2" items="center">
                   {filtersAccessory}
-                  <Button
-                    size="$2"
-                    onPress={() => setViewMode('kanban')}
-                    variant="outlined"
-                  >
+                  <Button size="$2" onPress={() => setViewMode('kanban')} variant="outlined">
                     Kanban
                   </Button>
-                  <Button
-                    size="$2"
-                    onPress={() => setViewMode('list')}
-                  >
+                  <Button size="$2" onPress={() => setViewMode('list')}>
                     List
                   </Button>
                 </XStack>

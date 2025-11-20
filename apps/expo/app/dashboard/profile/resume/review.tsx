@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { YStack, Text, Button } from 'tamagui'
 import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@app/core/features/resume'
+import { ProfileLayout, QuickLinksSidebar } from '@app/ui'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { Button, Text, YStack } from 'tamagui'
 
 function useResumeIdFromParams() {
   const params = useLocalSearchParams<{ resumeId?: string }>()
@@ -51,13 +51,13 @@ export default function ResumeReviewPage() {
 
   if (!resumeId) {
     return (
-      <DashboardLayout leftContent={<ResumeReviewContent />} rightContent={<QuickLinksSidebar />} />
+      <ProfileLayout leftContent={<ResumeReviewContent />} rightContent={<QuickLinksSidebar />} />
     )
   }
 
   return (
     <ResumeWizardProvider resumeId={resumeId}>
-      <DashboardLayout
+      <ProfileLayout
         leftContent={<ResumeReviewContent resumeId={resumeId} />}
         rightContent={<ResumeStepsSidebar />}
       />

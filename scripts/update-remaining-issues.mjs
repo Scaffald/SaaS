@@ -5,34 +5,34 @@
  * Focuses on issues related to in-progress BrainGrid requirements
  */
 
-import { execSync } from 'child_process';
+import { execSync } from 'child_process'
 
 function runCommand(command) {
   try {
-    return execSync(command, { encoding: 'utf-8', stdio: 'pipe' }).trim();
+    return execSync(command, { encoding: 'utf-8', stdio: 'pipe' }).trim()
   } catch (error) {
-    return null;
+    return null
   }
 }
 
 function getIssueDetails(issueNumber) {
-  const json = runCommand(`gh issue view ${issueNumber} --json number,title,state,body,labels`);
-  if (!json) return null;
-  return JSON.parse(json);
+  const json = runCommand(`gh issue view ${issueNumber} --json number,title,state,body,labels`)
+  if (!json) return null
+  return JSON.parse(json)
 }
 
 function commentOnIssue(issueNumber, comment) {
-  console.log(`\n📝 Commenting on issue #${issueNumber}...`);
-  const escapedComment = comment.replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/\n/g, '\\n');
-  runCommand(`gh issue comment ${issueNumber} --body "${escapedComment}"`);
+  console.log(`\n📝 Commenting on issue #${issueNumber}...`)
+  const escapedComment = comment.replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/\n/g, '\\n')
+  runCommand(`gh issue comment ${issueNumber} --body "${escapedComment}"`)
 }
 
 function main() {
-  console.log('🚀 Updating remaining GitHub issues...\n');
-  
+  console.log('🚀 Updating remaining GitHub issues...\n')
+
   // Issue #110: ATS: Verify hiring/negotiation/messaging flows match v1.0 functionality
   // Related to REQ-217 (in progress) and REQ-221 (in progress)
-  const issue110 = getIssueDetails(110);
+  const issue110 = getIssueDetails(110)
   if (issue110 && issue110.state === 'OPEN') {
     const comment = `## 🚧 Status Update - November 18, 2025
 
@@ -60,13 +60,13 @@ function main() {
 - Compare to v1.0 functionality once complete
 
 **Tracking:**
-- See REQ-217 and REQ-221 in BrainGrid for detailed progress`;
-    
-    commentOnIssue(110, comment);
+- See REQ-217 and REQ-221 in BrainGrid for detailed progress`
+
+    commentOnIssue(110, comment)
   }
-  
+
   // Issue #109: Organization Types - might relate to completed work
-  const issue109 = getIssueDetails(109);
+  const issue109 = getIssueDetails(109)
   if (issue109 && issue109.state === 'OPEN') {
     const comment = `## 📋 Status Update - November 18, 2025
 
@@ -82,13 +82,13 @@ function main() {
 - Test organization creation with new industry options
 - Verify industry filters work correctly
 
-**Priority:** Medium - Blocks use cases for non-construction organizations`;
-    
-    commentOnIssue(109, comment);
+**Priority:** Medium - Blocks use cases for non-construction organizations`
+
+    commentOnIssue(109, comment)
   }
-  
+
   // Issue #107: Search UX - might relate to REQ-13 (completed)
-  const issue107 = getIssueDetails(107);
+  const issue107 = getIssueDetails(107)
   if (issue107 && issue107.state === 'OPEN') {
     const comment = `## 📋 Status Update - November 18, 2025
 
@@ -107,13 +107,12 @@ function main() {
 - Investigate why direct typing causes stuck state
 - Improve search visibility/prominence
 - Add clear/reset functionality
-- Test across all discovery screens`;
-    
-    commentOnIssue(107, comment);
+- Test across all discovery screens`
+
+    commentOnIssue(107, comment)
   }
-  
-  console.log('\n✅ Remaining issues update complete!');
+
+  console.log('\n✅ Remaining issues update complete!')
 }
 
-main();
-
+main()

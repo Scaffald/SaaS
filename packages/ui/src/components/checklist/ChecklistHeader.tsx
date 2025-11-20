@@ -1,5 +1,4 @@
-import React from 'react'
-import { YStack, Text } from 'tamagui'
+import { Text, YStack } from 'tamagui'
 import type { ChecklistHeaderProps } from './types'
 
 /**

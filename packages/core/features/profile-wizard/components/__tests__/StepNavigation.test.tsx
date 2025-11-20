@@ -10,11 +10,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Button = ({
     children,
@@ -68,7 +64,7 @@ describe('StepNavigation', () => {
         isSaving={false}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     expect(screen.getByText('Next')).toBeInTheDocument()
@@ -84,7 +80,7 @@ describe('StepNavigation', () => {
         isSaving={false}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     const nextButton = screen.getByText('Next')
@@ -100,7 +96,7 @@ describe('StepNavigation', () => {
         isSaving={false}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     const backButton = screen.getByText('Back')
@@ -116,7 +112,7 @@ describe('StepNavigation', () => {
         isSaving={true}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     const nextButton = screen.getByText('Next')
@@ -134,7 +130,7 @@ describe('StepNavigation', () => {
         isSaving={false}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     expect(screen.getByText('Finish')).toBeInTheDocument()
@@ -151,7 +147,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         nextLabel="Next: Experience"
-      />,
+      />
     )
 
     expect(screen.getByText('Next: Experience')).toBeInTheDocument()
@@ -167,7 +163,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         backLabel="Previous"
-      />,
+      />
     )
 
     expect(screen.getByText('Previous')).toBeInTheDocument()
@@ -182,7 +178,7 @@ describe('StepNavigation', () => {
         isSaving={false}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     const nextButton = screen.getByText('Next')
@@ -200,7 +196,7 @@ describe('StepNavigation', () => {
         isSaving={false}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     const backButton = screen.getByText('Back')
@@ -219,7 +215,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         onSaveForLater={onSaveForLater}
-      />,
+      />
     )
 
     expect(screen.getByText('Save & Continue Later')).toBeInTheDocument()
@@ -235,7 +231,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         onSaveForLater={onSaveForLater}
-      />,
+      />
     )
 
     const saveButton = screen.getByText('Save & Continue Later')
@@ -254,7 +250,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         onSaveForLater={onSaveForLater}
-      />,
+      />
     )
 
     const saveButton = screen.getByText('Save & Continue Later')
@@ -271,7 +267,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         onSkip={onSkip}
-      />,
+      />
     )
 
     expect(screen.getByText('Skip This Step')).toBeInTheDocument()
@@ -288,7 +284,7 @@ describe('StepNavigation', () => {
         onNext={onNext}
         onSkip={onSkip}
         skipLabel="Skip Certifications"
-      />,
+      />
     )
 
     expect(screen.getByText('Skip Certifications')).toBeInTheDocument()
@@ -304,7 +300,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         onSkip={onSkip}
-      />,
+      />
     )
 
     const skipButton = screen.getByText('Skip This Step')
@@ -323,7 +319,7 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         onSkip={onSkip}
-      />,
+      />
     )
 
     const skipButton = screen.getByText('Skip This Step')
@@ -339,7 +335,7 @@ describe('StepNavigation', () => {
         isSaving={true}
         onBack={onBack}
         onNext={onNext}
-      />,
+      />
     )
 
     expect(screen.getByText('Saving your progress...')).toBeInTheDocument()
@@ -357,10 +353,9 @@ describe('StepNavigation', () => {
         onBack={onBack}
         onNext={onNext}
         footerSlot={footerContent}
-      />,
+      />
     )
 
     expect(screen.getByTestId('footer-slot')).toBeInTheDocument()
   })
 })
-

@@ -1,5 +1,5 @@
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 import type { Mock } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { processCroppedImage } from '../imageProcessing'
 
@@ -100,7 +100,17 @@ describe('processCroppedImage (web)', () => {
 
     expect(canvasMock.width).toBe(200)
     expect(canvasMock.height).toBe(200)
-    expect(ctxMock.drawImage).toHaveBeenCalledWith(expect.anything(), 10, 20, 200, 220, 0, 0, 200, 200)
+    expect(ctxMock.drawImage).toHaveBeenCalledWith(
+      expect.anything(),
+      10,
+      20,
+      200,
+      220,
+      0,
+      0,
+      200,
+      200
+    )
   })
 
   it('applies flip transformations', async () => {
@@ -120,30 +130,32 @@ describe('processCroppedImage (web)', () => {
   describe('Compression and Size Limits', () => {
     it('reduces quality when JPEG exceeds size limit', async () => {
       let callCount = 0
-      canvasMock.toBlob = vi.fn((callback: (blob: Blob | null) => void, mime: string, quality?: number) => {
-        callCount++
-        // First call: large blob (600KB)
-        if (callCount === 1) {
-          const largeBlob = {
-            type: mime,
-            size: 600 * 1024, // 600KB
-            async arrayBuffer() {
-              return new Uint8Array(600 * 1024).buffer
-            },
+      canvasMock.toBlob = vi.fn(
+        (callback: (blob: Blob | null) => void, mime: string, quality?: number) => {
+          callCount++
+          // First call: large blob (600KB)
+          if (callCount === 1) {
+            const largeBlob = {
+              type: mime,
+              size: 600 * 1024, // 600KB
+              async arrayBuffer() {
+                return new Uint8Array(600 * 1024).buffer
+              },
+            }
+            callback(largeBlob as unknown as Blob)
+          } else {
+            // Subsequent calls: smaller blob
+            const smallBlob = {
+              type: mime,
+              size: 400 * 1024, // 400KB
+              async arrayBuffer() {
+                return new Uint8Array(400 * 1024).buffer
+              },
+            }
+            callback(smallBlob as unknown as Blob)
           }
-          callback(largeBlob as unknown as Blob)
-        } else {
-          // Subsequent calls: smaller blob
-          const smallBlob = {
-            type: mime,
-            size: 400 * 1024, // 400KB
-            async arrayBuffer() {
-              return new Uint8Array(400 * 1024).buffer
-            },
-          }
-          callback(smallBlob as unknown as Blob)
         }
-      }) as Mock<[(blob: Blob | null) => void, string, number?], void>
+      ) as Mock<[(blob: Blob | null) => void, string, number?], void>
 
       const result = await processCroppedImage({
         imageSrc: 'data:image/jpeg;base64,AAAA',
@@ -240,18 +252,20 @@ describe('processCroppedImage (web)', () => {
 
     it('stops quality reduction at quality floor', async () => {
       let quality = 0.85
-      canvasMock.toBlob = vi.fn((callback: (blob: Blob | null) => void, mime: string, q?: number) => {
-        quality = q ?? 0.85
-        // Always return large blob to force quality reduction
-        const largeBlob = {
-          type: mime,
-          size: 600 * 1024,
-          async arrayBuffer() {
-            return new Uint8Array(600 * 1024).buffer
-          },
+      canvasMock.toBlob = vi.fn(
+        (callback: (blob: Blob | null) => void, mime: string, q?: number) => {
+          quality = q ?? 0.85
+          // Always return large blob to force quality reduction
+          const largeBlob = {
+            type: mime,
+            size: 600 * 1024,
+            async arrayBuffer() {
+              return new Uint8Array(600 * 1024).buffer
+            },
+          }
+          callback(largeBlob as unknown as Blob)
         }
-        callback(largeBlob as unknown as Blob)
-      }) as Mock<[(blob: Blob | null) => void, string, number?], void>
+      ) as Mock<[(blob: Blob | null) => void, string, number?], void>
 
       await expect(
         processCroppedImage({
@@ -415,9 +429,11 @@ describe('processCroppedImage (web)', () => {
     })
 
     it('throws error when blob generation fails', async () => {
-      canvasMock.toBlob = vi.fn((callback: (blob: Blob | null) => void, _mime?: string, _quality?: number) => {
-        callback(null) // Simulate blob generation failure
-      }) as unknown as Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>
+      canvasMock.toBlob = vi.fn(
+        (callback: (blob: Blob | null) => void, _mime?: string, _quality?: number) => {
+          callback(null) // Simulate blob generation failure
+        }
+      ) as unknown as Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>
 
       await expect(
         processCroppedImage({
@@ -489,4 +505,3 @@ describe('processCroppedImage (web)', () => {
     })
   })
 })
-

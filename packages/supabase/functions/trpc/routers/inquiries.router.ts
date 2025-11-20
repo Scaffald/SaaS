@@ -1,20 +1,20 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
 import {
-  inquiryCreateSchema,
   bulkInquirySchema,
-  inquiryUpdateSchema,
-  inquiryCommentSchema,
   capabilityResponseSchema,
-  sectionAcceptanceSchema,
   commentReadStatusSchema,
+  type InquiryCreateInput,
+  inquiryCommentSchema,
+  inquiryCreateSchema,
+  inquiryTemplateApplySchema,
   inquiryTemplateCreateSchema,
   inquiryTemplateUpdateSchema,
-  inquiryTemplateApplySchema,
-  type InquiryCreateInput,
-} from "../../_shared/inquiry-schemas.ts";
-import { protectedProcedure, t } from "../middleware.ts";
-import { insertNotification } from "../../_shared/notifications/utils.ts";
+  inquiryUpdateSchema,
+  sectionAcceptanceSchema,
+} from '../../_shared/inquiry-schemas.ts'
+import { insertNotification } from '../../_shared/notifications/utils.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 // Import state machine utilities (inline since we can't import from core)
 type InquiryStatus =
@@ -26,10 +26,7 @@ type InquiryStatus =
   | 'rejected'
   | 'withdrawn'
 
-type ApplicationStatusForInquiry =
-  | 'screen'
-  | 'inquired'
-  | 'offer'
+type ApplicationStatusForInquiry = 'screen' | 'inquired' | 'offer'
 
 type JobCapabilityQuestion = {
   name: string
@@ -37,7 +34,7 @@ type JobCapabilityQuestion = {
   type: string
   unit?: string
   required: boolean
-};
+}
 
 const INQUIRY_STATUS_TRANSITIONS: Record<InquiryStatus, InquiryStatus[]> = {
   draft: ['sent', 'withdrawn'],
@@ -91,10 +88,10 @@ async function updateInquiryStatus(
     throw new TRPCError({
       code: 'BAD_REQUEST',
       message: `Cannot transition from ${currentStatus} to ${newStatus}`,
-    });
+    })
   }
 
-  const now = new Date().toISOString();
+  const now = new Date().toISOString()
 
   // Update inquiry status
   const { error } = await supabase
@@ -104,17 +101,17 @@ async function updateInquiryStatus(
       status: newStatus,
       updated_at: now,
     })
-    .eq('id', inquiryId);
+    .eq('id', inquiryId)
 
   if (error) {
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: `Failed to update inquiry status: ${error.message}`,
       cause: error,
-    });
+    })
   }
 
-  return newStatus;
+  return newStatus
 }
 
 /**
@@ -125,14 +122,14 @@ async function syncApplicationStatus(
   applicationId: string,
   inquiryStatus: InquiryStatus
 ): Promise<void> {
-  const applicationStatus = getApplicationStatusForInquiry(inquiryStatus);
+  const applicationStatus = getApplicationStatusForInquiry(inquiryStatus)
 
   if (!applicationStatus) {
     // No status change needed (e.g., draft)
-    return;
+    return
   }
 
-  const now = new Date().toISOString();
+  const now = new Date().toISOString()
 
   const { error } = await supabaseAdmin
     .schema('core')
@@ -141,11 +138,11 @@ async function syncApplicationStatus(
       status: applicationStatus,
       stage_changed_at: now,
     })
-    .eq('id', applicationId);
+    .eq('id', applicationId)
 
   if (error) {
     // Log but don't fail - inquiry status is already updated
-    console.error('Failed to sync application status:', error);
+    console.error('Failed to sync application status:', error)
   }
 }
 
@@ -179,9 +176,7 @@ interface ApplicationDetails {
   } | null
 }
 
-function mapApplicationRecord(
-  application: Record<string, any> | null
-): {
+function mapApplicationRecord(application: Record<string, any> | null): {
   application: ApplicationDetails | null
   capabilityQuestions: JobCapabilityQuestion[]
 } {
@@ -189,29 +184,25 @@ function mapApplicationRecord(
     return { application: null, capabilityQuestions: [] }
   }
 
-  const job = application.job as
-    | {
-        id: string
-        title: string | null
-        employment_type: string | null
-        location: string | null
-        remote_option: string | null
-        pay_range_min_cents: number | null
-        pay_range_max_cents: number | null
-        pay_range_type: string | null
-        organization: { id: string; name: string | null } | null
-        inquiry_capability_questions?: JobCapabilityQuestion[] | null
-      }
-    | null
+  const job = application.job as {
+    id: string
+    title: string | null
+    employment_type: string | null
+    location: string | null
+    remote_option: string | null
+    pay_range_min_cents: number | null
+    pay_range_max_cents: number | null
+    pay_range_type: string | null
+    organization: { id: string; name: string | null } | null
+    inquiry_capability_questions?: JobCapabilityQuestion[] | null
+  } | null
 
-  const candidate = application.candidate as
-    | {
-        id: string
-        display_name: string | null
-        username: string | null
-        avatar_path: string | null
-      }
-    | null
+  const candidate = application.candidate as {
+    id: string
+    display_name: string | null
+    username: string | null
+    avatar_path: string | null
+  } | null
 
   const rawCapabilityQuestions = job?.inquiry_capability_questions ?? []
   const capabilityQuestions = Array.isArray(rawCapabilityQuestions)
@@ -261,27 +252,24 @@ function mapApplicationRecord(
   }
 }
 
-const router = t.router;
+const router = t.router
 
 /**
  * Helper function to get user display name
  */
-async function getUserDisplayName(
-  supabase: any,
-  userId: string,
-): Promise<string> {
+async function getUserDisplayName(supabase: any, userId: string): Promise<string> {
   const { data } = await supabase
-    .schema("core")
-    .from("users")
-    .select("display_name, username")
-    .eq("id", userId)
-    .maybeSingle();
+    .schema('core')
+    .from('users')
+    .select('display_name, username')
+    .eq('id', userId)
+    .maybeSingle()
 
   if (!data) {
-    return "User";
+    return 'User'
   }
 
-  return data.display_name?.trim() || data.username?.trim() || "User";
+  return data.display_name?.trim() || data.username?.trim() || 'User'
 }
 
 /**
@@ -289,23 +277,22 @@ async function getUserDisplayName(
  */
 async function getOrganizationInfo(
   supabase: any,
-  jobId: string,
+  jobId: string
 ): Promise<{ id: string | null; name: string | null }> {
   const { data: job } = await supabase
-    .schema("core")
-    .from("jobs")
-    .select("organization_id, organizations(name)")
-    .eq("id", jobId)
-    .single();
+    .schema('core')
+    .from('jobs')
+    .select('organization_id, organizations(name)')
+    .eq('id', jobId)
+    .single()
 
-  const organizationId = (job as { organization_id?: string } | null)?.organization_id ?? null;
-  const organizationName =
-    (job?.organizations as { name: string | null } | null)?.name ?? null;
+  const organizationId = (job as { organization_id?: string } | null)?.organization_id ?? null
+  const organizationName = (job?.organizations as { name: string | null } | null)?.name ?? null
 
   return {
     id: organizationId,
     name: organizationName,
-  };
+  }
 }
 
 /**
@@ -316,11 +303,11 @@ async function verifyApplicationAccess(
   supabase: any,
   userId: string,
   applicationId: string,
-  requireOrgAccess = false,
+  requireOrgAccess = false
 ) {
   const { data: application, error } = await supabase
-    .schema("core")
-    .from("applications")
+    .schema('core')
+    .from('applications')
     .select(
       `
       id,
@@ -334,150 +321,138 @@ async function verifyApplicationAccess(
           owner_user_id
         )
       )
-    `,
+    `
     )
-    .eq("id", applicationId)
-    .single();
+    .eq('id', applicationId)
+    .single()
 
   if (error || !application) {
     throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "Application not found",
-    });
+      code: 'NOT_FOUND',
+      message: 'Application not found',
+    })
   }
 
   // Check if user is the applicant
   if (application.user_id === userId) {
-    return application;
+    return application
   }
 
   // Check if user has organization access
-  const orgId = application.job?.organization_id;
-  const ownerId = application.job?.organization?.owner_user_id;
+  const orgId = application.job?.organization_id
+  const ownerId = application.job?.organization?.owner_user_id
 
   if (ownerId === userId) {
-    return application;
+    return application
   }
 
   // Check organization membership via role_assignments
   if (orgId) {
     const { data: roleAssignment } = await supabase
-      .schema("core")
-      .from("role_assignments")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("scope_org_id", orgId)
-      .maybeSingle();
+      .schema('core')
+      .from('role_assignments')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('scope_org_id', orgId)
+      .maybeSingle()
 
     if (roleAssignment) {
-      return application;
+      return application
     }
   }
 
   if (requireOrgAccess) {
     throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "You do not have permission to access this inquiry",
-    });
+      code: 'FORBIDDEN',
+      message: 'You do not have permission to access this inquiry',
+    })
   }
 
   throw new TRPCError({
-    code: "FORBIDDEN",
-    message: "You do not have access to this application",
-  });
+    code: 'FORBIDDEN',
+    message: 'You do not have access to this application',
+  })
 }
 
 /**
  * Helper function to check if user is the applicant
  */
-async function verifyIsApplicant(
-  supabase: any,
-  userId: string,
-  applicationId: string,
-) {
+async function verifyIsApplicant(supabase: any, userId: string, applicationId: string) {
   const { data: application } = await supabase
-    .schema("core")
-    .from("applications")
-    .select("user_id")
-    .eq("id", applicationId)
-    .single();
+    .schema('core')
+    .from('applications')
+    .select('user_id')
+    .eq('id', applicationId)
+    .single()
 
   if (!application || application.user_id !== userId) {
     throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Only the applicant can perform this action",
-    });
+      code: 'FORBIDDEN',
+      message: 'Only the applicant can perform this action',
+    })
   }
 }
 
 /**
  * Ensure the current user is a member/owner of the target organization
  */
-async function ensureOrganizationMembership(
-  supabase: any,
-  userId: string,
-  organizationId: string,
-) {
+async function ensureOrganizationMembership(supabase: any, userId: string, organizationId: string) {
   const { data: organization } = await supabase
-    .schema("core")
-    .from("organizations")
-    .select("id, owner_user_id")
-    .eq("id", organizationId)
-    .single();
+    .schema('core')
+    .from('organizations')
+    .select('id, owner_user_id')
+    .eq('id', organizationId)
+    .single()
 
   if (!organization) {
     throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "Organization not found",
-    });
+      code: 'NOT_FOUND',
+      message: 'Organization not found',
+    })
   }
 
   if (organization.owner_user_id === userId) {
-    return organization;
+    return organization
   }
 
   const { data: membership } = await supabase
-    .schema("core")
-    .from("role_assignments")
-    .select("id")
-    .eq("user_id", userId)
-    .eq("scope_org_id", organizationId)
-    .maybeSingle();
+    .schema('core')
+    .from('role_assignments')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('scope_org_id', organizationId)
+    .maybeSingle()
 
   if (!membership) {
     throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "You do not have access to this organization",
-    });
+      code: 'FORBIDDEN',
+      message: 'You do not have access to this organization',
+    })
   }
 
-  return organization;
+  return organization
 }
 
 /**
  * Verify the user has access to the requested template
  */
-async function verifyTemplateAccess(
-  supabase: any,
-  userId: string,
-  templateId: string,
-) {
+async function verifyTemplateAccess(supabase: any, userId: string, templateId: string) {
   const { data: template, error } = await supabase
-    .schema("core")
-    .from("inquiry_templates")
-    .select("*")
-    .eq("id", templateId)
-    .single();
+    .schema('core')
+    .from('inquiry_templates')
+    .select('*')
+    .eq('id', templateId)
+    .single()
 
   if (error || !template) {
     throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "Inquiry template not found",
-    });
+      code: 'NOT_FOUND',
+      message: 'Inquiry template not found',
+    })
   }
 
-  await ensureOrganizationMembership(supabase, userId, template.organization_id);
-  return template;
+  await ensureOrganizationMembership(supabase, userId, template.organization_id)
+  return template
 }
 
 /**
@@ -485,145 +460,156 @@ async function verifyTemplateAccess(
  */
 async function getApplicationOrganizationId(
   supabase: any,
-  application: Record<string, any> | null,
+  application: Record<string, any> | null
 ) {
   const organizationId =
     (application?.job as { organization_id?: string } | null)?.organization_id ??
     application?.job?.organization_id ??
-    null;
+    null
 
   if (organizationId) {
-    return organizationId;
+    return organizationId
   }
 
   if (!application?.job_id) {
-    return null;
+    return null
   }
 
   const { data: job } = await supabase
-    .schema("core")
-    .from("jobs")
-    .select("organization_id")
-    .eq("id", application.job_id)
-    .single();
+    .schema('core')
+    .from('jobs')
+    .select('organization_id')
+    .eq('id', application.job_id)
+    .single()
 
-  return job?.organization_id ?? null;
+  return job?.organization_id ?? null
 }
 
-type InquiryDefaultField = keyof InquiryCreateInput;
+type InquiryDefaultField = keyof InquiryCreateInput
 
 function formatDateOnly(value?: string | null) {
-  if (!value) return null;
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return parsed.toISOString().split("T")[0];
+  if (!value) return null
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return null
+  return parsed.toISOString().split('T')[0]
 }
 
 function mapEmploymentTypeDefault(
-  value?: string | null,
-): InquiryCreateInput["employmentType"] | undefined {
-  if (!value) return undefined;
-  const normalized = value.toLowerCase();
-  if (normalized.includes("temp") || normalized.includes("contract") || normalized.includes("intern")) {
-    return "temporary";
+  value?: string | null
+): InquiryCreateInput['employmentType'] | undefined {
+  if (!value) return undefined
+  const normalized = value.toLowerCase()
+  if (
+    normalized.includes('temp') ||
+    normalized.includes('contract') ||
+    normalized.includes('intern')
+  ) {
+    return 'temporary'
   }
-  if (normalized.includes("perm")) {
-    return "permanent";
+  if (normalized.includes('perm')) {
+    return 'permanent'
   }
-  if (normalized === "temporary" || normalized === "contract") {
-    return "temporary";
+  if (normalized === 'temporary' || normalized === 'contract') {
+    return 'temporary'
   }
-  if (normalized === "permanent") {
-    return "permanent";
+  if (normalized === 'permanent') {
+    return 'permanent'
   }
-  return undefined;
+  return undefined
 }
 
 function mapWorkScheduleDefault(
-  value?: string | null,
-): InquiryCreateInput["workSchedule"] | undefined {
-  if (!value) return undefined;
-  const normalized = value.toLowerCase();
-  if (normalized.includes("part")) return "part_time";
-  if (normalized.includes("full")) return "full_time";
-  if (normalized.includes("day") || normalized.includes("shift") || normalized.includes("contract")) return "day_week";
-  if (normalized === "full_time") return "full_time";
-  if (normalized === "part_time") return "part_time";
-  if (normalized === "day_week") return "day_week";
-  return undefined;
+  value?: string | null
+): InquiryCreateInput['workSchedule'] | undefined {
+  if (!value) return undefined
+  const normalized = value.toLowerCase()
+  if (normalized.includes('part')) return 'part_time'
+  if (normalized.includes('full')) return 'full_time'
+  if (normalized.includes('day') || normalized.includes('shift') || normalized.includes('contract'))
+    return 'day_week'
+  if (normalized === 'full_time') return 'full_time'
+  if (normalized === 'part_time') return 'part_time'
+  if (normalized === 'day_week') return 'day_week'
+  return undefined
 }
 
-function mapRateTypeDefault(
-  value?: string | null,
-): InquiryCreateInput["rateType"] | undefined {
-  if (!value) return undefined;
-  const normalized = value.toLowerCase();
-  if (normalized.includes("hour")) return "hourly";
-  if (normalized.includes("salary") || normalized.includes("annual") || normalized.includes("year")) {
-    return "salary";
+function mapRateTypeDefault(value?: string | null): InquiryCreateInput['rateType'] | undefined {
+  if (!value) return undefined
+  const normalized = value.toLowerCase()
+  if (normalized.includes('hour')) return 'hourly'
+  if (
+    normalized.includes('salary') ||
+    normalized.includes('annual') ||
+    normalized.includes('year')
+  ) {
+    return 'salary'
   }
-  if (normalized === "hourly") return "hourly";
-  if (normalized === "salary") return "salary";
-  return undefined;
+  if (normalized === 'hourly') return 'hourly'
+  if (normalized === 'salary') return 'salary'
+  return undefined
 }
 
 function addDefaultField(
   defaults: Partial<InquiryCreateInput>,
   fields: InquiryDefaultField[],
   key: InquiryDefaultField,
-  value: InquiryCreateInput[typeof key] | null | undefined,
+  value: InquiryCreateInput[typeof key] | null | undefined
 ) {
   if (value === undefined || value === null) {
-    return;
+    return
   }
-  if (typeof value === "string" && value.trim().length === 0) {
-    return;
+  if (typeof value === 'string' && value.trim().length === 0) {
+    return
   }
   if (Array.isArray(value) && value.length === 0) {
-    return;
+    return
   }
-  defaults[key] = value;
+  defaults[key] = value
   if (!fields.includes(key)) {
-    fields.push(key);
+    fields.push(key)
   }
 }
 
-const DEFAULT_WORKDAYS: Array<"monday" | "tuesday" | "wednesday" | "thursday" | "friday"> = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-];
+const DEFAULT_WORKDAYS: Array<'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'> = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+]
 
 const DEFAULT_WORKING_HOURS = {
-  start: "09:00",
-  end: "17:00",
-};
+  start: '09:00',
+  end: '17:00',
+}
 
 function guessTimezoneFromLocation(location: string | null): string {
-  if (!location) return "America/New_York";
-  const normalized = location.toLowerCase();
-  if (/(seattle|portland|washington|oregon|pacific|ca\b|california|los angeles|san francisco|santa)/.test(normalized)) {
-    return "America/Los_Angeles";
+  if (!location) return 'America/New_York'
+  const normalized = location.toLowerCase()
+  if (
+    /(seattle|portland|washington|oregon|pacific|ca\b|california|los angeles|san francisco|santa)/.test(
+      normalized
+    )
+  ) {
+    return 'America/Los_Angeles'
   }
   if (/(denver|colorado|mountain)/.test(normalized)) {
-    return "America/Denver";
+    return 'America/Denver'
   }
   if (/(chicago|illinois|midwest|texas|houston|dallas|austin|central)/.test(normalized)) {
-    return "America/Chicago";
+    return 'America/Chicago'
   }
   if (/(phoenix|arizona)/.test(normalized)) {
-    return "America/Phoenix";
+    return 'America/Phoenix'
   }
-  return "America/New_York";
+  return 'America/New_York'
 }
 
 function getDefaultStartDate(): string {
-  const today = new Date();
-  const twoWeeksMs = 14 * 24 * 60 * 60 * 1000;
-  const target = new Date(today.getTime() + twoWeeksMs);
-  return target.toISOString().slice(0, 10);
+  const today = new Date()
+  const twoWeeksMs = 14 * 24 * 60 * 60 * 1000
+  const target = new Date(today.getTime() + twoWeeksMs)
+  return target.toISOString().slice(0, 10)
 }
 
 /**
@@ -636,41 +622,41 @@ export const inquiriesRouter = router({
   getTemplatesForApplication: protectedProcedure
     .input(z.object({ applicationId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
       const application = await verifyApplicationAccess(
         supabase,
         user.id,
         input.applicationId,
-        true,
-      );
+        true
+      )
 
-      const organizationId = await getApplicationOrganizationId(supabase, application);
+      const organizationId = await getApplicationOrganizationId(supabase, application)
 
       if (!organizationId) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Application is missing organization context",
-        });
+          code: 'BAD_REQUEST',
+          message: 'Application is missing organization context',
+        })
       }
 
       const { data: templates, error } = await supabase
-        .schema("core")
-        .from("inquiry_templates")
-        .select("*")
-        .eq("organization_id", organizationId)
-        .order("is_default", { ascending: false })
-        .order("usage_count", { ascending: false })
-        .order("created_at", { ascending: false });
+        .schema('core')
+        .from('inquiry_templates')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .order('is_default', { ascending: false })
+        .order('usage_count', { ascending: false })
+        .order('created_at', { ascending: false })
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to load templates: ${error.message}`,
           cause: error,
-        });
+        })
       }
 
-      return templates ?? [];
+      return templates ?? []
     }),
 
   /**
@@ -679,24 +665,24 @@ export const inquiriesRouter = router({
   createTemplate: protectedProcedure
     .input(inquiryTemplateCreateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
       const application = await verifyApplicationAccess(
         supabase,
         user.id,
         input.applicationId,
-        true,
-      );
+        true
+      )
 
-      const organizationId = await getApplicationOrganizationId(supabase, application);
+      const organizationId = await getApplicationOrganizationId(supabase, application)
 
       if (!organizationId) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Application is missing organization context",
-        });
+          code: 'BAD_REQUEST',
+          message: 'Application is missing organization context',
+        })
       }
 
-      await ensureOrganizationMembership(supabase, user.id, organizationId);
+      await ensureOrganizationMembership(supabase, user.id, organizationId)
 
       const payload = {
         organization_id: organizationId,
@@ -704,24 +690,24 @@ export const inquiriesRouter = router({
         name: input.name.trim(),
         description: input.description ?? null,
         template_data: input.templateData,
-      };
+      }
 
       const { data, error } = await supabase
-        .schema("core")
-        .from("inquiry_templates")
+        .schema('core')
+        .from('inquiry_templates')
         .insert(payload)
         .select()
-        .single();
+        .single()
 
       if (error || !data) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to create template: ${error?.message ?? "Unknown error"}`,
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to create template: ${error?.message ?? 'Unknown error'}`,
           cause: error,
-        });
+        })
       }
 
-      return data;
+      return data
     }),
 
   /**
@@ -730,47 +716,47 @@ export const inquiriesRouter = router({
   updateTemplate: protectedProcedure
     .input(inquiryTemplateUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
-      await verifyTemplateAccess(supabase, user.id, input.templateId);
+      const { supabase, user } = ctx
+      await verifyTemplateAccess(supabase, user.id, input.templateId)
 
-      const updateData: Record<string, unknown> = {};
+      const updateData: Record<string, unknown> = {}
       if (input.name !== undefined) {
-        updateData.name = input.name.trim();
+        updateData.name = input.name.trim()
       }
       if (input.description !== undefined) {
-        updateData.description = input.description ?? null;
+        updateData.description = input.description ?? null
       }
       if (input.templateData !== undefined) {
-        updateData.template_data = input.templateData;
+        updateData.template_data = input.templateData
       }
 
       if (Object.keys(updateData).length === 0) {
         const { data: existing } = await supabase
-          .schema("core")
-          .from("inquiry_templates")
-          .select("*")
-          .eq("id", input.templateId)
-          .single();
-        return existing;
+          .schema('core')
+          .from('inquiry_templates')
+          .select('*')
+          .eq('id', input.templateId)
+          .single()
+        return existing
       }
 
       const { data, error } = await supabase
-        .schema("core")
-        .from("inquiry_templates")
+        .schema('core')
+        .from('inquiry_templates')
         .update(updateData)
-        .eq("id", input.templateId)
+        .eq('id', input.templateId)
         .select()
-        .single();
+        .single()
 
       if (error || !data) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to update template: ${error?.message ?? "Unknown error"}`,
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to update template: ${error?.message ?? 'Unknown error'}`,
           cause: error,
-        });
+        })
       }
 
-      return data;
+      return data
     }),
 
   /**
@@ -779,24 +765,24 @@ export const inquiriesRouter = router({
   deleteTemplate: protectedProcedure
     .input(z.object({ templateId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
-      await verifyTemplateAccess(supabase, user.id, input.templateId);
+      const { supabase, user } = ctx
+      await verifyTemplateAccess(supabase, user.id, input.templateId)
 
       const { error } = await supabase
-        .schema("core")
-        .from("inquiry_templates")
+        .schema('core')
+        .from('inquiry_templates')
         .delete()
-        .eq("id", input.templateId);
+        .eq('id', input.templateId)
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to delete template: ${error.message}`,
           cause: error,
-        });
+        })
       }
 
-      return { success: true };
+      return { success: true }
     }),
 
   /**
@@ -805,56 +791,52 @@ export const inquiriesRouter = router({
   applyTemplate: protectedProcedure
     .input(inquiryTemplateApplySchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
       const application = await verifyApplicationAccess(
         supabase,
         user.id,
         input.applicationId,
-        true,
-      );
-      const template = await verifyTemplateAccess(
-        supabase,
-        user.id,
-        input.templateId,
-      );
+        true
+      )
+      const template = await verifyTemplateAccess(supabase, user.id, input.templateId)
 
-      const organizationId = await getApplicationOrganizationId(supabase, application);
+      const organizationId = await getApplicationOrganizationId(supabase, application)
 
       if (!organizationId) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Application is missing organization context",
-        });
+          code: 'BAD_REQUEST',
+          message: 'Application is missing organization context',
+        })
       }
 
       if (organizationId !== template.organization_id) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Template does not belong to this organization",
-        });
+          code: 'FORBIDDEN',
+          message: 'Template does not belong to this organization',
+        })
       }
 
       const { error } = await supabase
-        .schema("core")
-        .from("inquiry_templates")
+        .schema('core')
+        .from('inquiry_templates')
         .update({
           usage_count: (template.usage_count ?? 0) + 1,
           last_used_at: new Date().toISOString(),
         })
-        .eq("id", template.id);
+        .eq('id', template.id)
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to record template usage: ${error.message}`,
           cause: error,
-        });
+        })
       }
 
       return {
         templateData: template.template_data,
         templateId: template.id,
-      };
+      }
     }),
 
   /**
@@ -863,25 +845,23 @@ export const inquiriesRouter = router({
   getSmartDefaults: protectedProcedure
     .input(z.object({ applicationId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
       const application = await verifyApplicationAccess(
         supabase,
         user.id,
         input.applicationId,
-        true,
-      );
+        true
+      )
 
-      const jobId =
-        application.job_id ??
-        ((application.job as { id?: string } | null)?.id ?? null);
+      const jobId = application.job_id ?? (application.job as { id?: string } | null)?.id ?? null
 
       if (!jobId) {
-        return { defaults: null, fields: [], job: null };
+        return { defaults: null, fields: [], job: null }
       }
 
       const { data: job, error: jobError } = await supabase
-        .schema("core")
-        .from("jobs")
+        .schema('core')
+        .from('jobs')
         .select(
           `
           id,
@@ -901,90 +881,71 @@ export const inquiriesRouter = router({
           work_schedule,
           work_schedule_details,
           shift_requirements
-        `,
+        `
         )
-        .eq("id", jobId)
-        .single();
+        .eq('id', jobId)
+        .single()
 
       if (jobError || !job) {
-        return { defaults: null, fields: [], job: null };
+        return { defaults: null, fields: [], job: null }
       }
 
-      const defaults: Partial<InquiryCreateInput> = {};
-      const fields: InquiryDefaultField[] = [];
+      const defaults: Partial<InquiryCreateInput> = {}
+      const fields: InquiryDefaultField[] = []
 
-      const employmentTypeDefault = mapEmploymentTypeDefault(job.employment_type);
-      addDefaultField(defaults, fields, "employmentType", employmentTypeDefault);
+      const employmentTypeDefault = mapEmploymentTypeDefault(job.employment_type)
+      addDefaultField(defaults, fields, 'employmentType', employmentTypeDefault)
 
       const workScheduleDefault =
         mapWorkScheduleDefault(job.work_schedule ?? job.employment_type) ??
-        (employmentTypeDefault === "temporary" ? "day_week" : undefined);
-      addDefaultField(defaults, fields, "workSchedule", workScheduleDefault);
+        (employmentTypeDefault === 'temporary' ? 'day_week' : undefined)
+      addDefaultField(defaults, fields, 'workSchedule', workScheduleDefault)
 
       if (job.remote_option) {
-        addDefaultField(defaults, fields, "workScheduleNegotiable", true);
+        addDefaultField(defaults, fields, 'workScheduleNegotiable', true)
       }
 
-      addDefaultField(defaults, fields, "workingHoursStart", DEFAULT_WORKING_HOURS.start);
-      addDefaultField(defaults, fields, "workingHoursEnd", DEFAULT_WORKING_HOURS.end);
+      addDefaultField(defaults, fields, 'workingHoursStart', DEFAULT_WORKING_HOURS.start)
+      addDefaultField(defaults, fields, 'workingHoursEnd', DEFAULT_WORKING_HOURS.end)
 
-      const addressData = (job.address ?? null) as Record<string, any> | null;
+      const addressData = (job.address ?? null) as Record<string, any> | null
       const addressTimezone =
-        addressData && typeof addressData.timezone === "string" ? (addressData.timezone as string) : null;
+        addressData && typeof addressData.timezone === 'string'
+          ? (addressData.timezone as string)
+          : null
       const addressCity =
-        addressData && typeof addressData.city === "string" ? (addressData.city as string) : null;
+        addressData && typeof addressData.city === 'string' ? (addressData.city as string) : null
 
       const timezone =
         job.timezone ??
         addressTimezone ??
-        guessTimezoneFromLocation(job.location ?? addressCity ?? null);
-      addDefaultField(defaults, fields, "workingHoursTimezone", timezone);
+        guessTimezoneFromLocation(job.location ?? addressCity ?? null)
+      addDefaultField(defaults, fields, 'workingHoursTimezone', timezone)
 
-      addDefaultField(defaults, fields, "workdays", DEFAULT_WORKDAYS);
+      addDefaultField(defaults, fields, 'workdays', DEFAULT_WORKDAYS)
 
-      const startDate =
-        formatDateOnly(job.target_start_date) ?? getDefaultStartDate();
-      addDefaultField(defaults, fields, "employmentStartDate", startDate);
+      const startDate = formatDateOnly(job.target_start_date) ?? getDefaultStartDate()
+      addDefaultField(defaults, fields, 'employmentStartDate', startDate)
 
-      const rateTypeDefault = mapRateTypeDefault(job.pay_range_type);
-      addDefaultField(defaults, fields, "rateType", rateTypeDefault);
-      addDefaultField(defaults, fields, "rateMinCents", job.pay_range_min_cents);
-      addDefaultField(defaults, fields, "rateMaxCents", job.pay_range_max_cents);
+      const rateTypeDefault = mapRateTypeDefault(job.pay_range_type)
+      addDefaultField(defaults, fields, 'rateType', rateTypeDefault)
+      addDefaultField(defaults, fields, 'rateMinCents', job.pay_range_min_cents)
+      addDefaultField(defaults, fields, 'rateMaxCents', job.pay_range_max_cents)
 
       if (job.travel_percentage !== undefined && job.travel_percentage !== null) {
-        addDefaultField(
-          defaults,
-          fields,
-          "willingToTravel",
-          job.travel_percentage > 0,
-        );
+        addDefaultField(defaults, fields, 'willingToTravel', job.travel_percentage > 0)
       }
 
       if (job.require_drivers_license !== undefined) {
-        addDefaultField(
-          defaults,
-          fields,
-          "hasDriversLicense",
-          job.require_drivers_license,
-        );
+        addDefaultField(defaults, fields, 'hasDriversLicense', job.require_drivers_license)
       }
       if (job.overtime_eligible !== undefined) {
-        addDefaultField(
-          defaults,
-          fields,
-          "willingToWorkOvertime",
-          job.overtime_eligible,
-        );
+        addDefaultField(defaults, fields, 'willingToWorkOvertime', job.overtime_eligible)
       }
       if (job.shift_requirements) {
-        addDefaultField(defaults, fields, "scheduleShifts", true);
+        addDefaultField(defaults, fields, 'scheduleShifts', true)
       }
-      addDefaultField(
-        defaults,
-        fields,
-        "additionalNotes",
-        job.work_schedule_details ?? undefined,
-      );
+      addDefaultField(defaults, fields, 'additionalNotes', job.work_schedule_details ?? undefined)
 
       return {
         defaults: fields.length ? defaults : null,
@@ -994,148 +955,137 @@ export const inquiriesRouter = router({
           title: job.title ?? null,
           location: job.location ?? null,
         },
-      };
+      }
     }),
 
   /**
    * Create a new inquiry for an application
    * Organization members can create inquiries for applications to their jobs
    */
-  create: protectedProcedure
-    .input(inquiryCreateSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+  create: protectedProcedure.input(inquiryCreateSchema).mutation(async ({ ctx, input }) => {
+    const { supabase, user } = ctx
 
-      // Verify user has organization access to this application
-      const application = await verifyApplicationAccess(
-        supabase,
-        user.id,
-        input.applicationId,
-        true,
-      );
+    // Verify user has organization access to this application
+    const application = await verifyApplicationAccess(supabase, user.id, input.applicationId, true)
 
-      // Check if inquiry already exists
-      const { data: existingInquiry } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("id, status")
-        .eq("application_id", input.applicationId)
-        .single();
+    // Check if inquiry already exists
+    const { data: existingInquiry } = await supabase
+      .schema('core')
+      .from('application_inquiries')
+      .select('id, status')
+      .eq('application_id', input.applicationId)
+      .single()
 
-      if (existingInquiry && existingInquiry.status !== "withdrawn") {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "An active inquiry already exists for this application",
-        });
-      }
+    if (existingInquiry && existingInquiry.status !== 'withdrawn') {
+      throw new TRPCError({
+        code: 'CONFLICT',
+        message: 'An active inquiry already exists for this application',
+      })
+    }
 
-      // Prepare inquiry data (convert camelCase to snake_case)
-      const inquiryData = {
-        application_id: input.applicationId,
-        created_by: user.id,
-        status: "draft" as const,
-        employment_type: input.employmentType ?? null,
-        employment_type_negotiable: input.employmentTypeNegotiable,
-        work_schedule: input.workSchedule ?? null,
-        work_schedule_negotiable: input.workScheduleNegotiable,
-        schedule_shifts: input.scheduleShifts,
-        working_hours_start: input.workingHoursStart ?? null,
-        working_hours_end: input.workingHoursEnd ?? null,
-        working_hours_timezone: input.workingHoursTimezone ?? null,
-        working_hours_negotiable: input.workingHoursNegotiable,
-        workdays: input.workdays.length > 0 ? input.workdays : null,
-        workdays_negotiable: input.workdaysNegotiable,
-        employment_start_date: input.employmentStartDate,
-        employment_end_date: input.employmentEndDate ?? null,
-        employment_dates_negotiable: input.employmentDatesNegotiable,
-        rate_type: input.rateType,
-        rate_min_cents: input.rateMinCents,
-        rate_max_cents: input.rateMaxCents ?? null,
-        rate_negotiable: input.rateNegotiable,
-        endurance_required: input.enduranceRequired,
-        willing_to_travel: input.willingToTravel ?? null,
-        travel_distance_miles: input.travelDistanceMiles ?? null,
-        willing_to_work_overtime: input.willingToWorkOvertime ?? null,
-        has_drivers_license: input.hasDriversLicense ?? null,
-        additional_notes: input.additionalNotes ?? null,
-      };
+    // Prepare inquiry data (convert camelCase to snake_case)
+    const inquiryData = {
+      application_id: input.applicationId,
+      created_by: user.id,
+      status: 'draft' as const,
+      employment_type: input.employmentType ?? null,
+      employment_type_negotiable: input.employmentTypeNegotiable,
+      work_schedule: input.workSchedule ?? null,
+      work_schedule_negotiable: input.workScheduleNegotiable,
+      schedule_shifts: input.scheduleShifts,
+      working_hours_start: input.workingHoursStart ?? null,
+      working_hours_end: input.workingHoursEnd ?? null,
+      working_hours_timezone: input.workingHoursTimezone ?? null,
+      working_hours_negotiable: input.workingHoursNegotiable,
+      workdays: input.workdays.length > 0 ? input.workdays : null,
+      workdays_negotiable: input.workdaysNegotiable,
+      employment_start_date: input.employmentStartDate,
+      employment_end_date: input.employmentEndDate ?? null,
+      employment_dates_negotiable: input.employmentDatesNegotiable,
+      rate_type: input.rateType,
+      rate_min_cents: input.rateMinCents,
+      rate_max_cents: input.rateMaxCents ?? null,
+      rate_negotiable: input.rateNegotiable,
+      endurance_required: input.enduranceRequired,
+      willing_to_travel: input.willingToTravel ?? null,
+      travel_distance_miles: input.travelDistanceMiles ?? null,
+      willing_to_work_overtime: input.willingToWorkOvertime ?? null,
+      has_drivers_license: input.hasDriversLicense ?? null,
+      additional_notes: input.additionalNotes ?? null,
+    }
 
-      // Create inquiry
-      const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .insert(inquiryData)
-        .select()
-        .single();
+    // Create inquiry
+    const { data: inquiry, error: inquiryError } = await supabase
+      .schema('core')
+      .from('application_inquiries')
+      .insert(inquiryData)
+      .select()
+      .single()
 
-      if (inquiryError) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to create inquiry: ${inquiryError.message}`,
-          cause: inquiryError,
-        });
-      }
+    if (inquiryError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to create inquiry: ${inquiryError.message}`,
+        cause: inquiryError,
+      })
+    }
 
-      // Initialize inquiry sections
-      const sections = ["employment", "compensation", "capabilities", "other"];
-      const sectionData = sections.map((sectionName) => ({
+    // Initialize inquiry sections
+    const sections = ['employment', 'compensation', 'capabilities', 'other']
+    const sectionData = sections.map((sectionName) => ({
+      inquiry_id: inquiry.id,
+      section_name: sectionName,
+    }))
+
+    const { error: sectionsError } = await supabase
+      .schema('core')
+      .from('inquiry_sections')
+      .insert(sectionData)
+
+    if (sectionsError) {
+      // Rollback inquiry creation
+      await supabase.schema('core').from('application_inquiries').delete().eq('id', inquiry.id)
+
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to create inquiry sections: ${sectionsError.message}`,
+        cause: sectionsError,
+      })
+    }
+
+    // Get job's capability questions and initialize capability responses
+    const { data: job } = await supabase
+      .schema('core')
+      .from('jobs')
+      .select('inquiry_capability_questions')
+      .eq('id', application.job_id)
+      .single()
+
+    const jobCapabilityQuestions = Array.isArray(job?.inquiry_capability_questions)
+      ? (job.inquiry_capability_questions as JobCapabilityQuestion[])
+      : []
+
+    if (jobCapabilityQuestions.length > 0) {
+      const capabilityData = jobCapabilityQuestions.map((question) => ({
         inquiry_id: inquiry.id,
-        section_name: sectionName,
-      }));
+        capability_name: question.name,
+        response_value: null,
+        response_text: null,
+      }))
 
-      const { error: sectionsError } = await supabase
-        .schema("core")
-        .from("inquiry_sections")
-        .insert(sectionData);
+      const { error: capabilityError } = await supabase
+        .schema('core')
+        .from('inquiry_capability_responses')
+        .insert(capabilityData)
 
-      if (sectionsError) {
-        // Rollback inquiry creation
-        await supabase
-          .schema("core")
-          .from("application_inquiries")
-          .delete()
-          .eq("id", inquiry.id);
-
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to create inquiry sections: ${sectionsError.message}`,
-          cause: sectionsError,
-        });
+      if (capabilityError) {
+        // Log but don't fail - capability questions are optional
+        console.error('Failed to create capability questions:', capabilityError)
       }
+    }
 
-      // Get job's capability questions and initialize capability responses
-      const { data: job } = await supabase
-        .schema("core")
-        .from("jobs")
-        .select("inquiry_capability_questions")
-        .eq("id", application.job_id)
-        .single();
-
-      const jobCapabilityQuestions = Array.isArray(job?.inquiry_capability_questions)
-        ? (job.inquiry_capability_questions as JobCapabilityQuestion[])
-        : [];
-
-      if (jobCapabilityQuestions.length > 0) {
-        const capabilityData = jobCapabilityQuestions.map((question) => ({
-          inquiry_id: inquiry.id,
-          capability_name: question.name,
-          response_value: null,
-          response_text: null,
-        }));
-
-        const { error: capabilityError } = await supabase
-          .schema("core")
-          .from("inquiry_capability_responses")
-          .insert(capabilityData);
-
-        if (capabilityError) {
-          // Log but don't fail - capability questions are optional
-          console.error("Failed to create capability questions:", capabilityError);
-        }
-      }
-
-      return inquiry;
-    }),
+    return inquiry
+  }),
 
   /**
    * Create inquiries for multiple applications in bulk
@@ -1149,55 +1099,50 @@ export const inquiriesRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
       const results: Array<{
-        applicationId: string;
-        success: boolean;
-        inquiryId?: string;
-        error?: string;
-      }> = [];
+        applicationId: string
+        success: boolean
+        inquiryId?: string
+        error?: string
+      }> = []
 
       // Get service role client for status updates
-      const { createClient } = await import("@supabase/supabase-js");
+      const { createClient } = await import('@supabase/supabase-js')
       const supabaseServiceRole = createClient(
-        Deno.env.get("SUPABASE_URL") ?? "",
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
         { auth: { persistSession: false } }
-      );
+      )
 
       // Process each application
       for (const applicationId of input.applicationIds) {
         try {
           // Verify user has organization access to this application
-          const application = await verifyApplicationAccess(
-            supabase,
-            user.id,
-            applicationId,
-            true,
-          );
+          const application = await verifyApplicationAccess(supabase, user.id, applicationId, true)
 
           // Check if inquiry already exists
           const { data: existingInquiry } = await supabase
-            .schema("core")
-            .from("application_inquiries")
-            .select("id, status")
-            .eq("application_id", applicationId)
-            .single();
+            .schema('core')
+            .from('application_inquiries')
+            .select('id, status')
+            .eq('application_id', applicationId)
+            .single()
 
-          if (existingInquiry && existingInquiry.status !== "withdrawn") {
+          if (existingInquiry && existingInquiry.status !== 'withdrawn') {
             results.push({
               applicationId,
               success: false,
-              error: "An active inquiry already exists for this application",
-            });
-            continue;
+              error: 'An active inquiry already exists for this application',
+            })
+            continue
           }
 
           // Prepare inquiry data (convert camelCase to snake_case)
           const inquiryData = {
             application_id: applicationId,
             created_by: user.id,
-            status: "sent" as const, // Bulk inquiries are sent immediately
+            status: 'sent' as const, // Bulk inquiries are sent immediately
             sent_at: new Date().toISOString(),
             employment_type: input.inquiryData.employmentType ?? null,
             employment_type_negotiable: input.inquiryData.employmentTypeNegotiable,
@@ -1223,64 +1168,64 @@ export const inquiriesRouter = router({
             willing_to_work_overtime: input.inquiryData.willingToWorkOvertime ?? null,
             has_drivers_license: input.inquiryData.hasDriversLicense ?? null,
             additional_notes: input.inquiryData.additionalNotes ?? null,
-          };
+          }
 
           // Create inquiry
           const { data: inquiry, error: inquiryError } = await supabase
-            .schema("core")
-            .from("application_inquiries")
+            .schema('core')
+            .from('application_inquiries')
             .insert(inquiryData)
             .select()
-            .single();
+            .single()
 
           if (inquiryError || !inquiry) {
             results.push({
               applicationId,
               success: false,
-              error: inquiryError?.message || "Failed to create inquiry",
-            });
-            continue;
+              error: inquiryError?.message || 'Failed to create inquiry',
+            })
+            continue
           }
 
           // Initialize inquiry sections
-          const sections = ["employment", "compensation", "capabilities", "other"];
+          const sections = ['employment', 'compensation', 'capabilities', 'other']
           const sectionData = sections.map((sectionName) => ({
             inquiry_id: inquiry.id,
             section_name: sectionName,
-          }));
+          }))
 
           const { error: sectionsError } = await supabase
-            .schema("core")
-            .from("inquiry_sections")
-            .insert(sectionData);
+            .schema('core')
+            .from('inquiry_sections')
+            .insert(sectionData)
 
           if (sectionsError) {
             // Rollback inquiry creation
             await supabase
-              .schema("core")
-              .from("application_inquiries")
+              .schema('core')
+              .from('application_inquiries')
               .delete()
-              .eq("id", inquiry.id);
+              .eq('id', inquiry.id)
 
             results.push({
               applicationId,
               success: false,
               error: `Failed to create inquiry sections: ${sectionsError.message}`,
-            });
-            continue;
+            })
+            continue
           }
 
           // Get job's capability questions and initialize capability responses
           const { data: job } = await supabase
-            .schema("core")
-            .from("jobs")
-            .select("inquiry_capability_questions")
-            .eq("id", application.job_id)
-            .single();
+            .schema('core')
+            .from('jobs')
+            .select('inquiry_capability_questions')
+            .eq('id', application.job_id)
+            .single()
 
           const jobCapabilityQuestions = Array.isArray(job?.inquiry_capability_questions)
             ? (job.inquiry_capability_questions as JobCapabilityQuestion[])
-            : [];
+            : []
 
           if (jobCapabilityQuestions.length > 0) {
             const capabilityData = jobCapabilityQuestions.map((question) => ({
@@ -1288,41 +1233,41 @@ export const inquiriesRouter = router({
               capability_name: question.name,
               response_value: null,
               response_text: null,
-            }));
+            }))
 
             const { error: capabilityError } = await supabase
-              .schema("core")
-              .from("inquiry_capability_responses")
-              .insert(capabilityData);
+              .schema('core')
+              .from('inquiry_capability_responses')
+              .insert(capabilityData)
 
             if (capabilityError) {
               // Log but don't fail - capability questions are optional
-              console.error("Failed to create capability questions:", capabilityError);
+              console.error('Failed to create capability questions:', capabilityError)
             }
           }
 
           // Sync application status to 'inquired'
-          await syncApplicationStatus(supabaseServiceRole, applicationId, "sent");
+          await syncApplicationStatus(supabaseServiceRole, applicationId, 'sent')
 
           // Get candidate info for notification
           const { data: applicationData } = await supabase
-            .schema("core")
-            .from("applications")
-            .select("user_id, job_id")
-            .eq("id", applicationId)
-            .single();
+            .schema('core')
+            .from('applications')
+            .select('user_id, job_id')
+            .eq('id', applicationId)
+            .single()
 
           if (applicationData) {
             // Get organization metadata for notification
-            const organization = await getOrganizationInfo(supabase, applicationData.job_id);
-            const organizationName = organization.name ?? "Organization";
+            const organization = await getOrganizationInfo(supabase, applicationData.job_id)
+            const organizationName = organization.name ?? 'Organization'
 
             // Send notification
             await insertNotification(supabaseServiceRole, {
               user_id: applicationData.user_id,
-              type: "inquiry.sent",
-              severity: "info",
-              title: "New Inquiry Received",
+              type: 'inquiry.sent',
+              severity: 'info',
+              title: 'New Inquiry Received',
               message: `You have received an inquiry from ${organizationName}`,
               cta_url: `/dashboard/applications/${applicationId}/inquiry`,
               metadata: {
@@ -1331,34 +1276,33 @@ export const inquiriesRouter = router({
                 job_id: applicationData.job_id,
                 organization_id: organization.id,
               },
-            });
+            })
           }
 
           results.push({
             applicationId,
             success: true,
             inquiryId: inquiry.id,
-          });
+          })
         } catch (error: unknown) {
-          const errorMessage =
-            error instanceof Error ? error.message : "Unknown error occurred";
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
           results.push({
             applicationId,
             success: false,
             error: errorMessage,
-          });
+          })
         }
       }
 
-      const successful = results.filter((r) => r.success).length;
-      const failed = results.filter((r) => !r.success).length;
+      const successful = results.filter((r) => r.success).length
+      const failed = results.filter((r) => !r.success).length
 
       return {
         total: input.applicationIds.length,
         successful,
         failed,
         results,
-      };
+      }
     }),
 
   /**
@@ -1368,85 +1312,85 @@ export const inquiriesRouter = router({
   getByApplication: protectedProcedure
     .input(z.object({ applicationId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Verify user has access to this application
-      await verifyApplicationAccess(supabase, user.id, input.applicationId);
+      await verifyApplicationAccess(supabase, user.id, input.applicationId)
 
       // Get inquiry
       const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("*")
-        .eq("application_id", input.applicationId)
-        .single();
+        .schema('core')
+        .from('application_inquiries')
+        .select('*')
+        .eq('application_id', input.applicationId)
+        .single()
 
       if (inquiryError) {
-        if (inquiryError.code === "PGRST116") {
+        if (inquiryError.code === 'PGRST116') {
           // Not found - return null
-          return null;
+          return null
         }
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch inquiry: ${inquiryError.message}`,
           cause: inquiryError,
-        });
+        })
       }
 
       if (!inquiry) {
-        return null;
+        return null
       }
 
       // Get sections
       const { data: sections, error: sectionsError } = await supabase
-        .schema("core")
-        .from("inquiry_sections")
-        .select("*")
-        .eq("inquiry_id", inquiry.id)
-        .order("section_name");
+        .schema('core')
+        .from('inquiry_sections')
+        .select('*')
+        .eq('inquiry_id', inquiry.id)
+        .order('section_name')
 
       if (sectionsError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch sections: ${sectionsError.message}`,
           cause: sectionsError,
-        });
+        })
       }
 
       // Get comments
       const { data: comments, error: commentsError } = await supabase
-        .schema("core")
-        .from("inquiry_comments")
-        .select("*")
-        .eq("inquiry_id", inquiry.id)
-        .order("created_at", { ascending: true });
+        .schema('core')
+        .from('inquiry_comments')
+        .select('*')
+        .eq('inquiry_id', inquiry.id)
+        .order('created_at', { ascending: true })
 
       if (commentsError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch comments: ${commentsError.message}`,
           cause: commentsError,
-        });
+        })
       }
 
       // Get capability responses
       const { data: capabilityResponses, error: responsesError } = await supabase
-        .schema("core")
-        .from("inquiry_capability_responses")
-        .select("*")
-        .eq("inquiry_id", inquiry.id);
+        .schema('core')
+        .from('inquiry_capability_responses')
+        .select('*')
+        .eq('inquiry_id', inquiry.id)
 
       if (responsesError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch capability responses: ${responsesError.message}`,
           cause: responsesError,
-        });
+        })
       }
 
       const { data: applicationRecord, error: applicationError } = await supabase
-        .schema("core")
-        .from("applications")
+        .schema('core')
+        .from('applications')
         .select(
           `
           id,
@@ -1479,27 +1423,26 @@ export const inquiriesRouter = router({
           )
         `
         )
-        .eq("id", input.applicationId)
-        .single();
+        .eq('id', input.applicationId)
+        .single()
 
       if (applicationError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch application: ${applicationError.message}`,
           cause: applicationError,
-        });
+        })
       }
 
       if (!applicationRecord) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Application not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Application not found',
+        })
       }
 
-      const { application: applicationDetails, capabilityQuestions } = mapApplicationRecord(
-        applicationRecord
-      );
+      const { application: applicationDetails, capabilityQuestions } =
+        mapApplicationRecord(applicationRecord)
 
       return {
         inquiry,
@@ -1510,7 +1453,7 @@ export const inquiriesRouter = router({
         candidate: applicationDetails?.candidate ?? null,
         job: applicationDetails?.job ?? null,
         capabilityQuestions,
-      };
+      }
     }),
 
   /**
@@ -1520,90 +1463,86 @@ export const inquiriesRouter = router({
   getMultiple: protectedProcedure
     .input(z.object({ inquiryIds: z.array(z.string().uuid()).min(2).max(5) }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Get inquiries
       const { data: inquiries, error: inquiriesError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("*")
-        .in("id", input.inquiryIds);
+        .schema('core')
+        .from('application_inquiries')
+        .select('*')
+        .in('id', input.inquiryIds)
 
       if (inquiriesError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch inquiries: ${inquiriesError.message}`,
           cause: inquiriesError,
-        });
+        })
       }
 
       if (!inquiries || inquiries.length === 0) {
-        return [];
+        return []
       }
 
       // Verify user has access to all inquiries
       for (const inquiry of inquiries) {
-        await verifyApplicationAccess(
-          supabase,
-          user.id,
-          inquiry.application_id,
-        );
+        await verifyApplicationAccess(supabase, user.id, inquiry.application_id)
       }
 
       // Fetch related data for all inquiries
-      const inquiryIds = inquiries.map((i) => i.id);
+      const inquiryIds = inquiries.map((i) => i.id)
 
       // Get sections
       const { data: sections, error: sectionsError } = await supabase
-        .schema("core")
-        .from("inquiry_sections")
-        .select("*")
-        .in("inquiry_id", inquiryIds);
+        .schema('core')
+        .from('inquiry_sections')
+        .select('*')
+        .in('inquiry_id', inquiryIds)
 
       if (sectionsError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch sections: ${sectionsError.message}`,
           cause: sectionsError,
-        });
+        })
       }
 
       // Get comments
       const { data: comments, error: commentsError } = await supabase
-        .schema("core")
-        .from("inquiry_comments")
-        .select("*")
-        .in("inquiry_id", inquiryIds)
-        .order("created_at", { ascending: true });
+        .schema('core')
+        .from('inquiry_comments')
+        .select('*')
+        .in('inquiry_id', inquiryIds)
+        .order('created_at', { ascending: true })
 
       if (commentsError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch comments: ${commentsError.message}`,
           cause: commentsError,
-        });
+        })
       }
 
       // Get capability responses
       const { data: capabilityResponses, error: responsesError } = await supabase
-        .schema("core")
-        .from("inquiry_capability_responses")
-        .select("*")
-        .in("inquiry_id", inquiryIds);
+        .schema('core')
+        .from('inquiry_capability_responses')
+        .select('*')
+        .in('inquiry_id', inquiryIds)
 
       if (responsesError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch capability responses: ${responsesError.message}`,
           cause: responsesError,
-        });
+        })
       }
 
       // Get applications with candidate info
-      const applicationIds = inquiries.map((i) => i.application_id);
+      const applicationIds = inquiries.map((i) => i.application_id)
       const { data: applications, error: applicationsError } = await supabase
-        .schema("core")
-        .from("applications")
+        .schema('core')
+        .from('applications')
         .select(
           `
           id,
@@ -1636,23 +1575,21 @@ export const inquiriesRouter = router({
           )
         `
         )
-        .in("id", applicationIds);
+        .in('id', applicationIds)
 
       if (applicationsError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch applications: ${applicationsError.message}`,
           cause: applicationsError,
-        });
+        })
       }
 
       // Combine data for each inquiry
       return inquiries.map((inquiry) => {
-        const applicationRecord =
-          applications?.find((a) => a.id === inquiry.application_id) ?? null;
-        const { application: applicationDetails, capabilityQuestions } = mapApplicationRecord(
-          applicationRecord
-        );
+        const applicationRecord = applications?.find((a) => a.id === inquiry.application_id) ?? null
+        const { application: applicationDetails, capabilityQuestions } =
+          mapApplicationRecord(applicationRecord)
 
         return {
           inquiry,
@@ -1664,8 +1601,8 @@ export const inquiriesRouter = router({
           candidate: applicationDetails?.candidate ?? null,
           job: applicationDetails?.job ?? null,
           capabilityQuestions,
-        };
-      });
+        }
+      })
     }),
 
   /**
@@ -1675,34 +1612,30 @@ export const inquiriesRouter = router({
   getHistory: protectedProcedure
     .input(z.object({ inquiryId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Get inquiry to verify access
       const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("id, application_id")
-        .eq("id", input.inquiryId)
-        .single();
+        .schema('core')
+        .from('application_inquiries')
+        .select('id, application_id')
+        .eq('id', input.inquiryId)
+        .single()
 
       if (inquiryError || !inquiry) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Inquiry not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Inquiry not found',
+        })
       }
 
       // Verify user has access to this inquiry
-      await verifyApplicationAccess(
-        supabase,
-        user.id,
-        inquiry.application_id,
-      );
+      await verifyApplicationAccess(supabase, user.id, inquiry.application_id)
 
       // Get audit log entries with actor information
       const { data: history, error: historyError } = await supabase
-        .schema("core")
-        .from("inquiry_audit_log")
+        .schema('core')
+        .from('inquiry_audit_log')
         .select(`
           id,
           event_type,
@@ -1716,18 +1649,18 @@ export const inquiriesRouter = router({
             avatar_path
           )
         `)
-        .eq("inquiry_id", input.inquiryId)
-        .order("created_at", { ascending: true });
+        .eq('inquiry_id', input.inquiryId)
+        .order('created_at', { ascending: true })
 
       if (historyError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to get inquiry history: ${historyError.message}`,
           cause: historyError,
-        });
+        })
       }
 
-      return history || [];
+      return history || []
     }),
 
   /**
@@ -1737,31 +1670,26 @@ export const inquiriesRouter = router({
   send: protectedProcedure
     .input(z.object({ inquiryId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Get inquiry to verify access
       const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("id, application_id, status, created_by")
-        .eq("id", input.inquiryId)
-        .single();
+        .schema('core')
+        .from('application_inquiries')
+        .select('id, application_id, status, created_by')
+        .eq('id', input.inquiryId)
+        .single()
 
       if (inquiryError || !inquiry) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Inquiry not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Inquiry not found',
+        })
       }
 
       // Verify user created the inquiry or has org access
       if (inquiry.created_by !== user.id) {
-        await verifyApplicationAccess(
-          supabase,
-          user.id,
-          inquiry.application_id,
-          true,
-        );
+        await verifyApplicationAccess(supabase, user.id, inquiry.application_id, true)
       }
 
       // Use state machine to validate and update status
@@ -1771,37 +1699,37 @@ export const inquiriesRouter = router({
         'sent',
         inquiry.status as InquiryStatus,
         user.id
-      );
+      )
 
       // Update sent_at timestamp
-      const now = new Date().toISOString();
+      const now = new Date().toISOString()
       await supabase
-        .schema("core")
-        .from("application_inquiries")
+        .schema('core')
+        .from('application_inquiries')
         .update({ sent_at: now })
-        .eq("id", input.inquiryId);
+        .eq('id', input.inquiryId)
 
       // Sync application status
-      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus);
+      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
 
       // Get application and job info for notification
       const { data: application } = await supabase
-        .schema("core")
-        .from("applications")
-        .select("user_id, job_id, jobs(title, organization_id, organizations(name))")
-        .eq("id", inquiry.application_id)
-        .single();
+        .schema('core')
+        .from('applications')
+        .select('user_id, job_id, jobs(title, organization_id, organizations(name))')
+        .eq('id', inquiry.application_id)
+        .single()
 
       if (application && application.user_id) {
-        const job = application.jobs as any;
-        const orgName = job?.organizations?.name || "Organization";
-        const jobTitle = job?.title || "Job";
+        const job = application.jobs as any
+        const orgName = job?.organizations?.name || 'Organization'
+        const jobTitle = job?.title || 'Job'
 
         // Notify candidate that inquiry has been sent
         await insertNotification(supabase, {
           user_id: application.user_id,
-          type: "inquiry.sent",
-          severity: "info",
+          type: 'inquiry.sent',
+          severity: 'info',
           title: `Inquiry from ${orgName}`,
           message: `${orgName} has sent you an inquiry for ${jobTitle}`,
           cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
@@ -1811,161 +1739,155 @@ export const inquiriesRouter = router({
             job_id: application.job_id,
             organization_id: job?.organization_id,
           },
-        });
+        })
       }
 
-      return { success: true };
+      return { success: true }
     }),
 
   /**
    * Add comment to an inquiry section
    * Updates inquiry status based on who is commenting
    */
-  addComment: protectedProcedure
-    .input(inquiryCommentSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+  addComment: protectedProcedure.input(inquiryCommentSchema).mutation(async ({ ctx, input }) => {
+    const { supabase, user } = ctx
 
-      // Get inquiry to verify access
-      const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("id, application_id, status, created_by")
-        .eq("id", input.inquiryId)
-        .single();
+    // Get inquiry to verify access
+    const { data: inquiry, error: inquiryError } = await supabase
+      .schema('core')
+      .from('application_inquiries')
+      .select('id, application_id, status, created_by')
+      .eq('id', input.inquiryId)
+      .single()
 
-      if (inquiryError || !inquiry) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Inquiry not found",
-        });
-      }
+    if (inquiryError || !inquiry) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Inquiry not found',
+      })
+    }
 
-      // Verify user has access
-      await verifyApplicationAccess(
+    // Verify user has access
+    await verifyApplicationAccess(supabase, user.id, inquiry.application_id)
+
+    // Create comment
+    const { data: comment, error: commentError } = await supabase
+      .schema('core')
+      .from('inquiry_comments')
+      .insert({
+        inquiry_id: input.inquiryId,
+        section_name: input.sectionName,
+        sender_id: user.id,
+        content: input.content,
+        read_by: [],
+      })
+      .select()
+      .single()
+
+    if (commentError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to add comment: ${commentError.message}`,
+        cause: commentError,
+      })
+    }
+
+    // Get application info to determine recipient and status
+    const { data: application } = await supabase
+      .schema('core')
+      .from('applications')
+      .select('user_id, job_id, jobs(organization_id, organizations(name))')
+      .eq('id', inquiry.application_id)
+      .single()
+
+    // Determine new status based on who is commenting
+    const isApplicant = application?.user_id === user.id
+    const isOrgMember = inquiry.created_by === user.id || !isApplicant
+    const currentStatus = inquiry.status as InquiryStatus
+
+    let targetStatus: InquiryStatus | null = null
+
+    if (isApplicant && currentStatus === 'sent') {
+      targetStatus = 'candidate_responded'
+    } else if (isOrgMember && currentStatus === 'candidate_responded') {
+      targetStatus = 'organization_responded'
+    }
+
+    // Update inquiry status if needed (using state machine validation)
+    if (targetStatus && targetStatus !== currentStatus) {
+      const newStatus = await updateInquiryStatus(
         supabase,
-        user.id,
-        inquiry.application_id,
-      );
+        input.inquiryId,
+        targetStatus,
+        currentStatus,
+        user.id
+      )
 
-      // Create comment
-      const { data: comment, error: commentError } = await supabase
-        .schema("core")
-        .from("inquiry_comments")
-        .insert({
-          inquiry_id: input.inquiryId,
-          section_name: input.sectionName,
-          sender_id: user.id,
-          content: input.content,
-          read_by: [],
-        })
-        .select()
-        .single();
+      // Sync application status
+      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
+    }
 
-      if (commentError) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to add comment: ${commentError.message}`,
-          cause: commentError,
-        });
+    if (application) {
+      const senderName = await getUserDisplayName(supabase, user.id)
+      const sectionLabels: Record<string, string> = {
+        employment: 'Employment',
+        compensation: 'Compensation',
+        capabilities: 'Capabilities',
+        other: 'Other',
       }
+      const sectionLabel = sectionLabels[input.sectionName] || input.sectionName
 
-      // Get application info to determine recipient and status
-      const { data: application } = await supabase
-        .schema("core")
-        .from("applications")
-        .select("user_id, job_id, jobs(organization_id, organizations(name))")
-        .eq("id", inquiry.application_id)
-        .single();
+      // Notify the other party
+      if (isApplicant) {
+        // Candidate commented, notify organization members
+        const job = application.jobs as any
+        if (job?.organization_id) {
+          // Get organization owner
+          const { data: org } = await supabase
+            .schema('core')
+            .from('organizations')
+            .select('owner_user_id')
+            .eq('id', job.organization_id)
+            .single()
 
-      // Determine new status based on who is commenting
-      const isApplicant = application?.user_id === user.id;
-      const isOrgMember = inquiry.created_by === user.id || !isApplicant;
-      const currentStatus = inquiry.status as InquiryStatus;
-
-      let targetStatus: InquiryStatus | null = null;
-
-      if (isApplicant && currentStatus === "sent") {
-        targetStatus = "candidate_responded";
-      } else if (isOrgMember && currentStatus === "candidate_responded") {
-        targetStatus = "organization_responded";
-      }
-
-      // Update inquiry status if needed (using state machine validation)
-      if (targetStatus && targetStatus !== currentStatus) {
-        const newStatus = await updateInquiryStatus(
-          supabase,
-          input.inquiryId,
-          targetStatus,
-          currentStatus,
-          user.id
-        );
-
-        // Sync application status
-        await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus);
-      }
-
-      if (application) {
-        const senderName = await getUserDisplayName(supabase, user.id);
-        const sectionLabels: Record<string, string> = {
-          employment: "Employment",
-          compensation: "Compensation",
-          capabilities: "Capabilities",
-          other: "Other",
-        };
-        const sectionLabel = sectionLabels[input.sectionName] || input.sectionName;
-
-        // Notify the other party
-        if (isApplicant) {
-          // Candidate commented, notify organization members
-          const job = application.jobs as any;
-          if (job?.organization_id) {
-            // Get organization owner
-            const { data: org } = await supabase
-              .schema("core")
-              .from("organizations")
-              .select("owner_user_id")
-              .eq("id", job.organization_id)
-              .single();
-
-            if (org?.owner_user_id) {
-              await insertNotification(supabase, {
-                user_id: org.owner_user_id,
-                type: "inquiry.comment_added",
-                severity: "info",
-                title: `New Comment from ${senderName}`,
-                message: `${senderName} commented on the ${sectionLabel} section`,
-                cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
-                metadata: {
-                  inquiry_id: inquiry.id,
-                  application_id: inquiry.application_id,
-                  section_name: input.sectionName,
-                  comment_id: comment.id,
-                },
-              });
-            }
+          if (org?.owner_user_id) {
+            await insertNotification(supabase, {
+              user_id: org.owner_user_id,
+              type: 'inquiry.comment_added',
+              severity: 'info',
+              title: `New Comment from ${senderName}`,
+              message: `${senderName} commented on the ${sectionLabel} section`,
+              cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
+              metadata: {
+                inquiry_id: inquiry.id,
+                application_id: inquiry.application_id,
+                section_name: input.sectionName,
+                comment_id: comment.id,
+              },
+            })
           }
-        } else {
-          // Organization commented, notify candidate
-          await insertNotification(supabase, {
-            user_id: application.user_id,
-            type: "inquiry.comment_added",
-            severity: "info",
-            title: `New Comment from ${senderName}`,
-            message: `${senderName} commented on the ${sectionLabel} section`,
-            cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
-            metadata: {
-              inquiry_id: inquiry.id,
-              application_id: inquiry.application_id,
-              section_name: input.sectionName,
-              comment_id: comment.id,
-            },
-          });
         }
+      } else {
+        // Organization commented, notify candidate
+        await insertNotification(supabase, {
+          user_id: application.user_id,
+          type: 'inquiry.comment_added',
+          severity: 'info',
+          title: `New Comment from ${senderName}`,
+          message: `${senderName} commented on the ${sectionLabel} section`,
+          cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
+          metadata: {
+            inquiry_id: inquiry.id,
+            application_id: inquiry.application_id,
+            section_name: input.sectionName,
+            comment_id: comment.id,
+          },
+        })
       }
+    }
 
-      return comment;
-    }),
+    return comment
+  }),
 
   /**
    * Mark comment as read
@@ -1974,60 +1896,56 @@ export const inquiriesRouter = router({
   markCommentRead: protectedProcedure
     .input(commentReadStatusSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Get comment to verify access
       const { data: comment, error: commentError } = await supabase
-        .schema("core")
-        .from("inquiry_comments")
-        .select("id, read_by, inquiry_id")
-        .eq("id", input.commentId)
-        .single();
+        .schema('core')
+        .from('inquiry_comments')
+        .select('id, read_by, inquiry_id')
+        .eq('id', input.commentId)
+        .single()
 
       if (commentError || !comment) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Comment not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Comment not found',
+        })
       }
 
       // Get inquiry to verify access
       const { data: inquiry } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("application_id")
-        .eq("id", comment.inquiry_id)
-        .single();
+        .schema('core')
+        .from('application_inquiries')
+        .select('application_id')
+        .eq('id', comment.inquiry_id)
+        .single()
 
       if (inquiry) {
-        await verifyApplicationAccess(
-          supabase,
-          user.id,
-          inquiry.application_id,
-        );
+        await verifyApplicationAccess(supabase, user.id, inquiry.application_id)
       }
 
       // Add user to read_by if not already present
-      const readBy = (comment.read_by || []) as string[];
+      const readBy = (comment.read_by || []) as string[]
       if (!readBy.includes(user.id)) {
-        readBy.push(user.id);
+        readBy.push(user.id)
 
         const { error: updateError } = await supabase
-          .schema("core")
-          .from("inquiry_comments")
+          .schema('core')
+          .from('inquiry_comments')
           .update({ read_by: readBy })
-          .eq("id", input.commentId);
+          .eq('id', input.commentId)
 
         if (updateError) {
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
+            code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to mark comment as read: ${updateError.message}`,
             cause: updateError,
-          });
+          })
         }
       }
 
-      return { success: true };
+      return { success: true }
     }),
 
   /**
@@ -2037,130 +1955,130 @@ export const inquiriesRouter = router({
   acceptSection: protectedProcedure
     .input(sectionAcceptanceSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Get inquiry to verify access
       const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("id, application_id, status")
-        .eq("id", input.inquiryId)
-        .single();
+        .schema('core')
+        .from('application_inquiries')
+        .select('id, application_id, status')
+        .eq('id', input.inquiryId)
+        .single()
 
       if (inquiryError || !inquiry) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Inquiry not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Inquiry not found',
+        })
       }
 
       // Verify user is the applicant
-      await verifyIsApplicant(supabase, user.id, inquiry.application_id);
+      await verifyIsApplicant(supabase, user.id, inquiry.application_id)
 
-      const now = new Date().toISOString();
+      const now = new Date().toISOString()
 
       // Update section acceptance
       const { error: sectionError } = await supabase
-        .schema("core")
-        .from("inquiry_sections")
+        .schema('core')
+        .from('inquiry_sections')
         .update({
           accepted_by: user.id,
           accepted_at: now,
         })
-        .eq("inquiry_id", input.inquiryId)
-        .eq("section_name", input.sectionName);
+        .eq('inquiry_id', input.inquiryId)
+        .eq('section_name', input.sectionName)
 
       if (sectionError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to accept section: ${sectionError.message}`,
           cause: sectionError,
-        });
+        })
       }
 
       // Check if all sections are accepted
       const { data: sections } = await supabase
-        .schema("core")
-        .from("inquiry_sections")
-        .select("accepted_by")
-        .eq("inquiry_id", input.inquiryId);
+        .schema('core')
+        .from('inquiry_sections')
+        .select('accepted_by')
+        .eq('inquiry_id', input.inquiryId)
 
-      const allAccepted = sections?.every((s) => s.accepted_by !== null);
+      const allAccepted = sections?.every((s) => s.accepted_by !== null)
 
       // Update inquiry status if all sections accepted (using state machine validation)
-      if (allAccepted && inquiry.status !== "accepted") {
+      if (allAccepted && inquiry.status !== 'accepted') {
         const newStatus = await updateInquiryStatus(
           supabase,
           input.inquiryId,
-          "accepted",
+          'accepted',
           inquiry.status as InquiryStatus,
           user.id
-        );
+        )
 
         // Sync application status
-        await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus);
+        await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
       }
 
       // Get application and job info for notification
       const { data: application } = await supabase
-        .schema("core")
-        .from("applications")
-        .select("user_id, job_id, jobs(organization_id, organizations(name))")
-        .eq("id", inquiry.application_id)
-        .single();
+        .schema('core')
+        .from('applications')
+        .select('user_id, job_id, jobs(organization_id, organizations(name))')
+        .eq('id', inquiry.application_id)
+        .single()
 
       if (application) {
-        const candidateName = await getUserDisplayName(supabase, user.id);
+        const candidateName = await getUserDisplayName(supabase, user.id)
         const sectionLabels: Record<string, string> = {
-          employment: "Employment",
-          compensation: "Compensation",
-          capabilities: "Capabilities",
-          other: "Other",
-        };
-        const sectionLabel = sectionLabels[input.sectionName] || input.sectionName;
-        const job = application.jobs as any;
+          employment: 'Employment',
+          compensation: 'Compensation',
+          capabilities: 'Capabilities',
+          other: 'Other',
+        }
+        const sectionLabel = sectionLabels[input.sectionName] || input.sectionName
+        const job = application.jobs as any
 
         if (allAccepted) {
           // All sections accepted - notify organization
           if (job?.organization_id) {
             const { data: org } = await supabase
-              .schema("core")
-              .from("organizations")
-              .select("owner_user_id")
-              .eq("id", job.organization_id)
-              .single();
+              .schema('core')
+              .from('organizations')
+              .select('owner_user_id')
+              .eq('id', job.organization_id)
+              .single()
 
             if (org?.owner_user_id) {
               await insertNotification(supabase, {
                 user_id: org.owner_user_id,
-                type: "inquiry.fully_accepted",
-                severity: "info",
-                title: "All Terms Accepted",
+                type: 'inquiry.fully_accepted',
+                severity: 'info',
+                title: 'All Terms Accepted',
                 message: `${candidateName} has accepted all inquiry terms`,
                 cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
                 metadata: {
                   inquiry_id: inquiry.id,
                   application_id: inquiry.application_id,
                 },
-              });
+              })
             }
           }
         } else {
           // Single section accepted - notify organization
           if (job?.organization_id) {
             const { data: org } = await supabase
-              .schema("core")
-              .from("organizations")
-              .select("owner_user_id")
-              .eq("id", job.organization_id)
-              .single();
+              .schema('core')
+              .from('organizations')
+              .select('owner_user_id')
+              .eq('id', job.organization_id)
+              .single()
 
             if (org?.owner_user_id) {
               await insertNotification(supabase, {
                 user_id: org.owner_user_id,
-                type: "inquiry.section_accepted",
-                severity: "info",
-                title: "Section Accepted",
+                type: 'inquiry.section_accepted',
+                severity: 'info',
+                title: 'Section Accepted',
                 message: `${candidateName} accepted the ${sectionLabel} terms`,
                 cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
                 metadata: {
@@ -2168,13 +2086,13 @@ export const inquiriesRouter = router({
                   application_id: inquiry.application_id,
                   section_name: input.sectionName,
                 },
-              });
+              })
             }
           }
         }
       }
 
-      return { success: true, allAccepted: !!allAccepted };
+      return { success: true, allAccepted: !!allAccepted }
     }),
 
   /**
@@ -2184,32 +2102,32 @@ export const inquiriesRouter = router({
   submitCapabilityResponse: protectedProcedure
     .input(capabilityResponseSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Get inquiry to verify access
       const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("id, application_id")
-        .eq("id", input.inquiryId)
-        .single();
+        .schema('core')
+        .from('application_inquiries')
+        .select('id, application_id')
+        .eq('id', input.inquiryId)
+        .single()
 
       if (inquiryError || !inquiry) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Inquiry not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Inquiry not found',
+        })
       }
 
       // Verify user is the applicant
-      await verifyIsApplicant(supabase, user.id, inquiry.application_id);
+      await verifyIsApplicant(supabase, user.id, inquiry.application_id)
 
-      const now = new Date().toISOString();
+      const now = new Date().toISOString()
 
       // Upsert capability response
       const { data: response, error: responseError } = await supabase
-        .schema("core")
-        .from("inquiry_capability_responses")
+        .schema('core')
+        .from('inquiry_capability_responses')
         .upsert(
           {
             inquiry_id: input.inquiryId,
@@ -2219,47 +2137,47 @@ export const inquiriesRouter = router({
             updated_at: now,
           },
           {
-            onConflict: "inquiry_id,capability_name",
-          },
+            onConflict: 'inquiry_id,capability_name',
+          }
         )
         .select()
-        .single();
+        .single()
 
       if (responseError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to submit response: ${responseError.message}`,
           cause: responseError,
-        });
+        })
       }
 
       // Get application and job info for notification
       const { data: application } = await supabase
-        .schema("core")
-        .from("applications")
-        .select("user_id, job_id, jobs(organization_id, organizations(name))")
-        .eq("id", inquiry.application_id)
-        .single();
+        .schema('core')
+        .from('applications')
+        .select('user_id, job_id, jobs(organization_id, organizations(name))')
+        .eq('id', inquiry.application_id)
+        .single()
 
       if (application) {
-        const candidateName = await getUserDisplayName(supabase, user.id);
-        const job = application.jobs as any;
+        const candidateName = await getUserDisplayName(supabase, user.id)
+        const job = application.jobs as any
 
         // Notify organization of capability response
         if (job?.organization_id) {
           const { data: org } = await supabase
-            .schema("core")
-            .from("organizations")
-            .select("owner_user_id")
-            .eq("id", job.organization_id)
-            .single();
+            .schema('core')
+            .from('organizations')
+            .select('owner_user_id')
+            .eq('id', job.organization_id)
+            .single()
 
           if (org?.owner_user_id) {
             await insertNotification(supabase, {
               user_id: org.owner_user_id,
-              type: "inquiry.capability_answered",
-              severity: "info",
-              title: "Capability Question Answered",
+              type: 'inquiry.capability_answered',
+              severity: 'info',
+              title: 'Capability Question Answered',
               message: `${candidateName} answered a capability question`,
               cta_url: `/office/applications/${inquiry.application_id}/inquiry`,
               metadata: {
@@ -2267,227 +2185,216 @@ export const inquiriesRouter = router({
                 application_id: inquiry.application_id,
                 capability_name: input.capabilityName,
               },
-            });
+            })
           }
         }
       }
 
-      return response;
+      return response
     }),
 
   /**
    * Update inquiry
    * Only organization members can update inquiries
    */
-  update: protectedProcedure
-    .input(inquiryUpdateSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+  update: protectedProcedure.input(inquiryUpdateSchema).mutation(async ({ ctx, input }) => {
+    const { supabase, user } = ctx
 
-      const { id, ...updateData } = input;
+    const { id, ...updateData } = input
 
-      // Get inquiry to verify access
-      const { data: inquiry, error: inquiryError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .select("id, application_id, created_by, status")
-        .eq("id", id)
-        .single();
+    // Get inquiry to verify access
+    const { data: inquiry, error: inquiryError } = await supabase
+      .schema('core')
+      .from('application_inquiries')
+      .select('id, application_id, created_by, status')
+      .eq('id', id)
+      .single()
 
-      if (inquiryError || !inquiry) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Inquiry not found",
-        });
-      }
+    if (inquiryError || !inquiry) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Inquiry not found',
+      })
+    }
 
-      // Verify user created the inquiry or has org access
-      if (inquiry.created_by !== user.id) {
-        await verifyApplicationAccess(
-          supabase,
-          user.id,
-          inquiry.application_id,
-          true,
-        );
-      }
+    // Verify user created the inquiry or has org access
+    if (inquiry.created_by !== user.id) {
+      await verifyApplicationAccess(supabase, user.id, inquiry.application_id, true)
+    }
 
-      // Convert camelCase to snake_case for update
-      const snakeCaseData: Record<string, unknown> = {};
+    // Convert camelCase to snake_case for update
+    const snakeCaseData: Record<string, unknown> = {}
 
-      if (updateData.employmentType !== undefined) {
-        snakeCaseData.employment_type = updateData.employmentType;
-      }
-      if (updateData.employmentTypeNegotiable !== undefined) {
-        snakeCaseData.employment_type_negotiable = updateData.employmentTypeNegotiable;
-      }
-      if (updateData.workSchedule !== undefined) {
-        snakeCaseData.work_schedule = updateData.workSchedule;
-      }
-      if (updateData.workScheduleNegotiable !== undefined) {
-        snakeCaseData.work_schedule_negotiable = updateData.workScheduleNegotiable;
-      }
-      if (updateData.scheduleShifts !== undefined) {
-        snakeCaseData.schedule_shifts = updateData.scheduleShifts;
-      }
-      if (updateData.workingHoursStart !== undefined) {
-        snakeCaseData.working_hours_start = updateData.workingHoursStart;
-      }
-      if (updateData.workingHoursEnd !== undefined) {
-        snakeCaseData.working_hours_end = updateData.workingHoursEnd;
-      }
-      if (updateData.workingHoursTimezone !== undefined) {
-        snakeCaseData.working_hours_timezone = updateData.workingHoursTimezone;
-      }
-      if (updateData.workingHoursNegotiable !== undefined) {
-        snakeCaseData.working_hours_negotiable = updateData.workingHoursNegotiable;
-      }
-      if (updateData.workdays !== undefined) {
-        snakeCaseData.workdays =
-          updateData.workdays.length > 0 ? updateData.workdays : null;
-      }
-      if (updateData.workdaysNegotiable !== undefined) {
-        snakeCaseData.workdays_negotiable = updateData.workdaysNegotiable;
-      }
-      if (updateData.employmentStartDate !== undefined) {
-        snakeCaseData.employment_start_date = updateData.employmentStartDate;
-      }
-      if (updateData.employmentEndDate !== undefined) {
-        snakeCaseData.employment_end_date = updateData.employmentEndDate ?? null;
-      }
-      if (updateData.employmentDatesNegotiable !== undefined) {
-        snakeCaseData.employment_dates_negotiable =
-          updateData.employmentDatesNegotiable;
-      }
-      if (updateData.rateType !== undefined) {
-        snakeCaseData.rate_type = updateData.rateType;
-      }
-      if (updateData.rateMinCents !== undefined) {
-        snakeCaseData.rate_min_cents = updateData.rateMinCents;
-      }
-      if (updateData.rateMaxCents !== undefined) {
-        snakeCaseData.rate_max_cents = updateData.rateMaxCents ?? null;
-      }
-      if (updateData.rateNegotiable !== undefined) {
-        snakeCaseData.rate_negotiable = updateData.rateNegotiable;
-      }
-      if (updateData.enduranceRequired !== undefined) {
-        snakeCaseData.endurance_required = updateData.enduranceRequired;
-      }
-      if (updateData.willingToTravel !== undefined) {
-        snakeCaseData.willing_to_travel = updateData.willingToTravel ?? null;
-      }
-      if (updateData.travelDistanceMiles !== undefined) {
-        snakeCaseData.travel_distance_miles = updateData.travelDistanceMiles ?? null;
-      }
-      if (updateData.willingToWorkOvertime !== undefined) {
-        snakeCaseData.willing_to_work_overtime = updateData.willingToWorkOvertime ?? null;
-      }
-      if (updateData.hasDriversLicense !== undefined) {
-        snakeCaseData.has_drivers_license = updateData.hasDriversLicense ?? null;
-      }
-      if (updateData.additionalNotes !== undefined) {
-        snakeCaseData.additional_notes = updateData.additionalNotes ?? null;
-      }
+    if (updateData.employmentType !== undefined) {
+      snakeCaseData.employment_type = updateData.employmentType
+    }
+    if (updateData.employmentTypeNegotiable !== undefined) {
+      snakeCaseData.employment_type_negotiable = updateData.employmentTypeNegotiable
+    }
+    if (updateData.workSchedule !== undefined) {
+      snakeCaseData.work_schedule = updateData.workSchedule
+    }
+    if (updateData.workScheduleNegotiable !== undefined) {
+      snakeCaseData.work_schedule_negotiable = updateData.workScheduleNegotiable
+    }
+    if (updateData.scheduleShifts !== undefined) {
+      snakeCaseData.schedule_shifts = updateData.scheduleShifts
+    }
+    if (updateData.workingHoursStart !== undefined) {
+      snakeCaseData.working_hours_start = updateData.workingHoursStart
+    }
+    if (updateData.workingHoursEnd !== undefined) {
+      snakeCaseData.working_hours_end = updateData.workingHoursEnd
+    }
+    if (updateData.workingHoursTimezone !== undefined) {
+      snakeCaseData.working_hours_timezone = updateData.workingHoursTimezone
+    }
+    if (updateData.workingHoursNegotiable !== undefined) {
+      snakeCaseData.working_hours_negotiable = updateData.workingHoursNegotiable
+    }
+    if (updateData.workdays !== undefined) {
+      snakeCaseData.workdays = updateData.workdays.length > 0 ? updateData.workdays : null
+    }
+    if (updateData.workdaysNegotiable !== undefined) {
+      snakeCaseData.workdays_negotiable = updateData.workdaysNegotiable
+    }
+    if (updateData.employmentStartDate !== undefined) {
+      snakeCaseData.employment_start_date = updateData.employmentStartDate
+    }
+    if (updateData.employmentEndDate !== undefined) {
+      snakeCaseData.employment_end_date = updateData.employmentEndDate ?? null
+    }
+    if (updateData.employmentDatesNegotiable !== undefined) {
+      snakeCaseData.employment_dates_negotiable = updateData.employmentDatesNegotiable
+    }
+    if (updateData.rateType !== undefined) {
+      snakeCaseData.rate_type = updateData.rateType
+    }
+    if (updateData.rateMinCents !== undefined) {
+      snakeCaseData.rate_min_cents = updateData.rateMinCents
+    }
+    if (updateData.rateMaxCents !== undefined) {
+      snakeCaseData.rate_max_cents = updateData.rateMaxCents ?? null
+    }
+    if (updateData.rateNegotiable !== undefined) {
+      snakeCaseData.rate_negotiable = updateData.rateNegotiable
+    }
+    if (updateData.enduranceRequired !== undefined) {
+      snakeCaseData.endurance_required = updateData.enduranceRequired
+    }
+    if (updateData.willingToTravel !== undefined) {
+      snakeCaseData.willing_to_travel = updateData.willingToTravel ?? null
+    }
+    if (updateData.travelDistanceMiles !== undefined) {
+      snakeCaseData.travel_distance_miles = updateData.travelDistanceMiles ?? null
+    }
+    if (updateData.willingToWorkOvertime !== undefined) {
+      snakeCaseData.willing_to_work_overtime = updateData.willingToWorkOvertime ?? null
+    }
+    if (updateData.hasDriversLicense !== undefined) {
+      snakeCaseData.has_drivers_license = updateData.hasDriversLicense ?? null
+    }
+    if (updateData.additionalNotes !== undefined) {
+      snakeCaseData.additional_notes = updateData.additionalNotes ?? null
+    }
 
-      snakeCaseData.updated_at = new Date().toISOString();
+    snakeCaseData.updated_at = new Date().toISOString()
 
-      // Check if any terms fields changed (excluding negotiable flags)
-      const termsFields = [
-        "employment_type",
-        "work_schedule",
-        "working_hours_start",
-        "working_hours_end",
-        "working_hours_timezone",
-        "workdays",
-        "employment_start_date",
-        "employment_end_date",
-        "rate_type",
-        "rate_min_cents",
-        "rate_max_cents",
-        "endurance_required",
-        "willing_to_travel",
-        "travel_distance_miles",
-        "willing_to_work_overtime",
-        "has_drivers_license",
-        "additional_notes",
-      ];
+    // Check if any terms fields changed (excluding negotiable flags)
+    const termsFields = [
+      'employment_type',
+      'work_schedule',
+      'working_hours_start',
+      'working_hours_end',
+      'working_hours_timezone',
+      'workdays',
+      'employment_start_date',
+      'employment_end_date',
+      'rate_type',
+      'rate_min_cents',
+      'rate_max_cents',
+      'endurance_required',
+      'willing_to_travel',
+      'travel_distance_miles',
+      'willing_to_work_overtime',
+      'has_drivers_license',
+      'additional_notes',
+    ]
 
-      const hasTermsChanged = termsFields.some((field) => field in snakeCaseData);
+    const hasTermsChanged = termsFields.some((field) => field in snakeCaseData)
 
-      // Update inquiry
-      const { data: updated, error: updateError } = await supabase
-        .schema("core")
-        .from("application_inquiries")
-        .update(snakeCaseData)
-        .eq("id", id)
-        .select()
-        .single();
+    // Update inquiry
+    const { data: updated, error: updateError } = await supabase
+      .schema('core')
+      .from('application_inquiries')
+      .update(snakeCaseData)
+      .eq('id', id)
+      .select()
+      .single()
 
-      if (updateError) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to update inquiry: ${updateError.message}`,
-          cause: updateError,
-        });
+    if (updateError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to update inquiry: ${updateError.message}`,
+        cause: updateError,
+      })
+    }
+
+    // If terms changed and inquiry is not draft, reset section acceptances
+    if (hasTermsChanged && inquiry.status !== 'draft') {
+      // Get existing sections with acceptances
+      const { data: existingSections } = await supabase
+        .schema('core')
+        .from('inquiry_sections')
+        .select('id, accepted_by')
+        .eq('inquiry_id', id)
+
+      const hasAcceptedSections = existingSections?.some((s) => s.accepted_by !== null)
+
+      if (hasAcceptedSections) {
+        // Reset acceptances - clear accepted_by and accepted_at
+        await supabase
+          .schema('core')
+          .from('inquiry_sections')
+          .update({
+            accepted_by: null,
+            accepted_at: null,
+          })
+          .eq('inquiry_id', id)
       }
+    }
 
-      // If terms changed and inquiry is not draft, reset section acceptances
-      if (hasTermsChanged && inquiry.status !== "draft") {
-        // Get existing sections with acceptances
-        const { data: existingSections } = await supabase
-          .schema("core")
-          .from("inquiry_sections")
-          .select("id, accepted_by")
-          .eq("inquiry_id", id);
+    // Get application and job info for notification
+    const { data: application } = await supabase
+      .schema('core')
+      .from('applications')
+      .select('user_id, job_id, jobs(organization_id, organizations(name))')
+      .eq('id', inquiry.application_id)
+      .single()
 
-        const hasAcceptedSections = existingSections?.some(
-          (s) => s.accepted_by !== null
-        );
+    // Notify candidate if inquiry was sent
+    if (application && inquiry.status !== 'draft' && hasTermsChanged) {
+      const job = application.jobs as any
+      const orgName = job?.organizations?.name || 'Organization'
 
-        if (hasAcceptedSections) {
-          // Reset acceptances - clear accepted_by and accepted_at
-          await supabase
-            .schema("core")
-            .from("inquiry_sections")
-            .update({
-              accepted_by: null,
-              accepted_at: null,
-            })
-            .eq("inquiry_id", id);
-        }
-      }
+      await insertNotification(supabase, {
+        user_id: application.user_id,
+        type: 'inquiry.updated',
+        severity: 'info',
+        title: 'Inquiry Terms Updated',
+        message: `${orgName} has updated the inquiry terms. Please review the changes.`,
+        cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
+        metadata: {
+          inquiry_id: id,
+          application_id: inquiry.application_id,
+          job_id: application.job_id,
+          organization_id: job?.organization_id,
+        },
+      })
+    }
 
-      // Get application and job info for notification
-      const { data: application } = await supabase
-        .schema("core")
-        .from("applications")
-        .select("user_id, job_id, jobs(organization_id, organizations(name))")
-        .eq("id", inquiry.application_id)
-        .single();
-
-      // Notify candidate if inquiry was sent
-      if (application && inquiry.status !== "draft" && hasTermsChanged) {
-        const job = application.jobs as any;
-        const orgName = job?.organizations?.name || "Organization";
-
-        await insertNotification(supabase, {
-          user_id: application.user_id,
-          type: "inquiry.updated",
-          severity: "info",
-          title: "Inquiry Terms Updated",
-          message: `${orgName} has updated the inquiry terms. Please review the changes.`,
-          cta_url: `/dashboard/applications/${inquiry.application_id}/inquiry`,
-          metadata: {
-            inquiry_id: id,
-            application_id: inquiry.application_id,
-            job_id: application.job_id,
-            organization_id: job?.organization_id,
-          },
-        });
-      }
-
-      return updated;
-    }),
+    return updated
+  }),
 
   /**
    * Change inquiry status explicitly
@@ -2508,7 +2415,7 @@ export const inquiriesRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Get current inquiry
       const { data: inquiry, error: inquiryError } = await supabase
@@ -2516,23 +2423,18 @@ export const inquiriesRouter = router({
         .from('application_inquiries')
         .select('id, status, application_id, created_by')
         .eq('id', input.inquiryId)
-        .single();
+        .single()
 
       if (inquiryError || !inquiry) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Inquiry not found',
-        });
+        })
       }
 
       // Verify user has access
       if (inquiry.created_by !== user.id) {
-        await verifyApplicationAccess(
-          supabase,
-          user.id,
-          inquiry.application_id,
-          true,
-        );
+        await verifyApplicationAccess(supabase, user.id, inquiry.application_id, true)
       }
 
       // Update status with validation
@@ -2542,16 +2444,11 @@ export const inquiriesRouter = router({
         input.newStatus as InquiryStatus,
         inquiry.status as InquiryStatus,
         user.id
-      );
+      )
 
       // Sync application status
-      await syncApplicationStatus(
-        ctx.supabaseAdmin,
-        inquiry.application_id,
-        newStatus
-      );
+      await syncApplicationStatus(ctx.supabaseAdmin, inquiry.application_id, newStatus)
 
-      return { success: true, newStatus };
+      return { success: true, newStatus }
     }),
-});
-
+})

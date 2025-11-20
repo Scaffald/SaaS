@@ -1,4 +1,4 @@
-import { YStack, XStack, Text } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
 import type { TagData } from '../types'
 
 interface TagCloudProps {

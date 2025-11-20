@@ -153,7 +153,7 @@ describe('QuickApplyModal', () => {
       () => {
         expect(mockSubmitMutation.mutateAsync).toHaveBeenCalled()
       },
-      { timeout: 3000 },
+      { timeout: 3000 }
     )
   })
 
@@ -183,7 +183,8 @@ describe('QuickApplyModal', () => {
   it('closes modal when close button is clicked', () => {
     render(<QuickApplyModal {...defaultProps} />)
 
-    const closeButton = screen.getByLabelText(/close/i) || screen.getByRole('button', { name: /close/i })
+    const closeButton =
+      screen.getByLabelText(/close/i) || screen.getByRole('button', { name: /close/i })
     if (closeButton) {
       fireEvent.click(closeButton)
       expect(mockOnOpenChange).toHaveBeenCalledWith(false)
@@ -226,4 +227,3 @@ describe('QuickApplyModal', () => {
     expect(mockShowToast).toBeDefined()
   })
 })
-

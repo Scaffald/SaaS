@@ -1,6 +1,6 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { protectedProcedure, t } from "../middleware.ts";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Sites Router
@@ -19,40 +19,38 @@ export const sitesRouter = t.router({
         zoning_classification: z.string().optional(),
         jurisdiction: z.string().optional(),
         metadata: z.record(z.any()).optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Convert boundary coordinates to PostGIS POLYGON format
       // PostGIS expects: POLYGON((lng lat, lng lat, ...))
-      const boundaryCoords = input.boundary
-        .map((coord) => `${coord[0]} ${coord[1]}`)
-        .join(", ");
+      const boundaryCoords = input.boundary.map((coord) => `${coord[0]} ${coord[1]}`).join(', ')
 
       // Ensure polygon is closed (first point = last point)
-      const firstCoord = input.boundary[0];
-      const lastCoord = input.boundary[input.boundary.length - 1];
+      const firstCoord = input.boundary[0]
+      const lastCoord = input.boundary[input.boundary.length - 1]
       const closedCoords =
         firstCoord[0] === lastCoord[0] && firstCoord[1] === lastCoord[1]
           ? boundaryCoords
-          : `${boundaryCoords}, ${firstCoord[0]} ${firstCoord[1]}`;
+          : `${boundaryCoords}, ${firstCoord[0]} ${firstCoord[1]}`
 
-      const boundaryWKT = `POLYGON((${closedCoords}))`;
+      const boundaryWKT = `POLYGON((${closedCoords}))`
 
       // Check for overlaps before creating
       const { data: overlaps } = await ctx.supabase
-        .rpc("check_site_overlaps", {
+        .rpc('check_site_overlaps', {
           p_site_id: null,
           p_boundary: boundaryWKT,
         })
-        .catch(() => ({ data: [] }));
+        .catch(() => ({ data: [] }))
 
       const { data: site, error } = await ctx.supabase
-        .schema("core")
-        .from("sites")
+        .schema('core')
+        .from('sites')
         .insert({
           site_identifier: input.site_identifier || null,
           boundary: boundaryWKT,
@@ -62,20 +60,20 @@ export const sitesRouter = t.router({
           metadata: input.metadata || {},
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to create site: ${error.message}`,
-        });
+        })
       }
 
       // Note: Overlap notifications are created automatically by database trigger
       return {
         site,
         overlaps: overlaps || [],
-      };
+      }
     }),
 
   /**
@@ -91,71 +89,68 @@ export const sitesRouter = t.router({
         zoning_classification: z.string().optional().nullable(),
         jurisdiction: z.string().optional().nullable(),
         metadata: z.record(z.any()).optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { id, ...updates } = input;
+      const { id, ...updates } = input
 
-      const updateData: any = {};
+      const updateData: any = {}
       if (updates.site_identifier !== undefined)
-        updateData.site_identifier = updates.site_identifier;
-      if (updates.area_sqft !== undefined) updateData.area_sqft = updates.area_sqft;
+        updateData.site_identifier = updates.site_identifier
+      if (updates.area_sqft !== undefined) updateData.area_sqft = updates.area_sqft
       if (updates.zoning_classification !== undefined)
-        updateData.zoning_classification = updates.zoning_classification;
-      if (updates.jurisdiction !== undefined)
-        updateData.jurisdiction = updates.jurisdiction;
-      if (updates.metadata !== undefined) updateData.metadata = updates.metadata;
+        updateData.zoning_classification = updates.zoning_classification
+      if (updates.jurisdiction !== undefined) updateData.jurisdiction = updates.jurisdiction
+      if (updates.metadata !== undefined) updateData.metadata = updates.metadata
 
       // Handle boundary update
       if (updates.boundary) {
-        const boundaryCoords = updates.boundary
-          .map((coord) => `${coord[0]} ${coord[1]}`)
-          .join(", ");
+        const boundaryCoords = updates.boundary.map((coord) => `${coord[0]} ${coord[1]}`).join(', ')
 
-        const firstCoord = updates.boundary[0];
-        const lastCoord = updates.boundary[updates.boundary.length - 1];
+        const firstCoord = updates.boundary[0]
+        const lastCoord = updates.boundary[updates.boundary.length - 1]
         const closedCoords =
           firstCoord[0] === lastCoord[0] && firstCoord[1] === lastCoord[1]
             ? boundaryCoords
-            : `${boundaryCoords}, ${firstCoord[0]} ${firstCoord[1]}`;
+            : `${boundaryCoords}, ${firstCoord[0]} ${firstCoord[1]}`
 
-        updateData.boundary = `POLYGON((${closedCoords}))`;
+        updateData.boundary = `POLYGON((${closedCoords}))`
 
         // Check for overlaps
         const { data: overlaps } = await ctx.supabase
-          .rpc("check_site_overlaps", {
+          .rpc('check_site_overlaps', {
             p_site_id: id,
             p_boundary: updateData.boundary,
           })
-          .catch(() => ({ data: [] }));
+          .catch(() => ({ data: [] }))
 
         // Store overlaps in response (notifications created by trigger)
-        updateData._overlaps = overlaps || [];
+        updateData._overlaps = overlaps || []
       }
 
       const { data: site, error } = await ctx.supabase
-        .schema("core")
-        .from("sites")
+        .schema('core')
+        .from('sites')
         .update(updateData)
-        .eq("id", id)
+        .eq('id', id)
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to update site: ${error.message}`,
-        });
+        })
       }
 
       return {
         site,
         overlaps: updateData._overlaps || [],
-      };
+      }
     }),
 
   /**
@@ -165,8 +160,8 @@ export const sitesRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: site, error } = await ctx.supabase
-        .schema("core")
-        .from("sites")
+        .schema('core')
+        .from('sites')
         .select(
           `
           *,
@@ -185,19 +180,19 @@ export const sitesRouter = t.router({
             geo,
             property_type
           )
-        `,
+        `
         )
-        .eq("id", input.id)
-        .single();
+        .eq('id', input.id)
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "NOT_FOUND",
+          code: 'NOT_FOUND',
           message: `Site not found: ${error.message}`,
-        });
+        })
       }
 
-      return { site };
+      return { site }
     }),
 
   /**
@@ -208,37 +203,33 @@ export const sitesRouter = t.router({
       z.object({
         boundary: z.array(z.array(z.number()).length(2)),
         site_id: z.string().uuid().optional(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       // Convert boundary to PostGIS format
-      const boundaryCoords = input.boundary
-        .map((coord) => `${coord[0]} ${coord[1]}`)
-        .join(", ");
+      const boundaryCoords = input.boundary.map((coord) => `${coord[0]} ${coord[1]}`).join(', ')
 
-      const firstCoord = input.boundary[0];
-      const lastCoord = input.boundary[input.boundary.length - 1];
+      const firstCoord = input.boundary[0]
+      const lastCoord = input.boundary[input.boundary.length - 1]
       const closedCoords =
         firstCoord[0] === lastCoord[0] && firstCoord[1] === lastCoord[1]
           ? boundaryCoords
-          : `${boundaryCoords}, ${firstCoord[0]} ${firstCoord[1]}`;
+          : `${boundaryCoords}, ${firstCoord[0]} ${firstCoord[1]}`
 
-      const boundaryWKT = `POLYGON((${closedCoords}))`;
+      const boundaryWKT = `POLYGON((${closedCoords}))`
 
-      const { data: overlaps, error } = await ctx.supabase
-        .rpc("check_site_overlaps", {
-          p_site_id: input.site_id || null,
-          p_boundary: boundaryWKT,
-        });
+      const { data: overlaps, error } = await ctx.supabase.rpc('check_site_overlaps', {
+        p_site_id: input.site_id || null,
+        p_boundary: boundaryWKT,
+      })
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to check overlaps: ${error.message}`,
-        });
+        })
       }
 
-      return { overlaps: overlaps || [] };
+      return { overlaps: overlaps || [] }
     }),
-});
-
+})

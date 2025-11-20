@@ -1,71 +1,68 @@
-import { useState } from "react";
-import { Button, Card, Input, Spinner, Text, XStack, YStack } from "tamagui";
-import { CreditCard, DollarSign, Plus, TrendingUp } from "@tamagui/lucide-icons";
-import { useToastController } from "@tamagui/toast";
-
-import { api } from "@app/core/utils/api";
-import { PaymentIntentForm } from "@app/core/features/payments/components/PaymentIntentForm";
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
+import { api } from '@app/core/utils/api'
+import { CreditCard, DollarSign, Plus, TrendingUp } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useState } from 'react'
+import { Button, Card, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type OrganizationCreditsPanelProps = {
-  organizationId: string;
-};
+  organizationId: string
+}
 
-const formatCurrency = (cents: number, currency = "usd"): string => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
+const formatCurrency = (cents: number, currency = 'usd'): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
     currency: currency.toUpperCase(),
-  }).format(cents / 100);
-};
+  }).format(cents / 100)
+}
 
-export function OrganizationCreditsPanel({
-  organizationId,
-}: OrganizationCreditsPanelProps) {
-  const toast = useToastController();
-  const [showDepositForm, setShowDepositForm] = useState(false);
-  const [depositAmount, setDepositAmount] = useState("");
+export function OrganizationCreditsPanel({ organizationId }: OrganizationCreditsPanelProps) {
+  const toast = useToastController()
+  const [showDepositForm, setShowDepositForm] = useState(false)
+  const [depositAmount, setDepositAmount] = useState('')
 
   const creditsQuery = api.payments.getAccountCredits.useQuery(
     { organizationId },
     {
       enabled: Boolean(organizationId),
       staleTime: 30_000,
-    },
-  );
+    }
+  )
 
   const ledgerQuery = api.payments.getCreditLedger.useQuery(
     { organizationId, limit: 10 },
     {
       enabled: Boolean(organizationId),
       staleTime: 30_000,
-    },
-  );
+    }
+  )
 
   const depositMutation = api.payments.depositCredits.useMutation({
     onSuccess: () => {
-      toast.show("Credits deposited", {
-        message: "Your account credits have been updated successfully.",
-      });
-      creditsQuery.refetch();
-      ledgerQuery.refetch();
-      setShowDepositForm(false);
-      setDepositAmount("");
+      toast.show('Credits deposited', {
+        message: 'Your account credits have been updated successfully.',
+      })
+      creditsQuery.refetch()
+      ledgerQuery.refetch()
+      setShowDepositForm(false)
+      setDepositAmount('')
     },
     onError: (error: Error) => {
-      toast.show("Failed to deposit credits", {
+      toast.show('Failed to deposit credits', {
         message: error.message,
-        type: "error",
-      });
+        type: 'error',
+      })
     },
-  });
+  })
 
   const _handleDepositSubmit = async (_paymentIntentId: string) => {
-    const amountCents = Math.round(Number.parseFloat(depositAmount) * 100);
+    const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
     if (Number.isNaN(amountCents) || amountCents <= 0) {
-      toast.show("Invalid amount", {
-        message: "Please enter a valid amount greater than zero.",
-        type: "error",
-      });
-      return;
+      toast.show('Invalid amount', {
+        message: 'Please enter a valid amount greater than zero.',
+        type: 'error',
+      })
+      return
     }
 
     // The PaymentIntentForm will handle the payment, but we need to trigger
@@ -73,10 +70,10 @@ export function OrganizationCreditsPanel({
     // to handle this automatically when the payment succeeds.
     // The depositCredits endpoint creates the PaymentIntent and records it.
     // The webhook should handle the credit deposit when payment succeeds.
-  };
+  }
 
-  const credits = creditsQuery.data;
-  const isLoading = creditsQuery.isLoading;
+  const credits = creditsQuery.data
+  const isLoading = creditsQuery.isLoading
 
   if (isLoading) {
     return (
@@ -86,7 +83,7 @@ export function OrganizationCreditsPanel({
           <Text color="$color11">Loading account credits…</Text>
         </YStack>
       </Card>
-    );
+    )
   }
 
   return (
@@ -101,12 +98,7 @@ export function OrganizationCreditsPanel({
           </Text>
         </YStack>
         {!showDepositForm && (
-          <Button
-            size="$3"
-            theme="blue"
-            icon={Plus}
-            onPress={() => setShowDepositForm(true)}
-          >
+          <Button size="$3" theme="blue" icon={Plus} onPress={() => setShowDepositForm(true)}>
             Add Credits
           </Button>
         )}
@@ -149,8 +141,8 @@ export function OrganizationCreditsPanel({
               size="$4"
               variant="outlined"
               onPress={() => {
-                setShowDepositForm(false);
-                setDepositAmount("");
+                setShowDepositForm(false)
+                setDepositAmount('')
               }}
             >
               Cancel
@@ -160,22 +152,22 @@ export function OrganizationCreditsPanel({
               theme="blue"
               icon={CreditCard}
               onPress={() => {
-                const amountCents = Math.round(Number.parseFloat(depositAmount) * 100);
+                const amountCents = Math.round(Number.parseFloat(depositAmount) * 100)
                 if (Number.isNaN(amountCents) || amountCents <= 0) {
-                  toast.show("Invalid amount", {
-                    message: "Please enter a valid amount greater than zero.",
-                    type: "error",
-                  });
-                  return;
+                  toast.show('Invalid amount', {
+                    message: 'Please enter a valid amount greater than zero.',
+                    type: 'error',
+                  })
+                  return
                 }
                 depositMutation.mutate({
                   organizationId,
                   amountCents,
-                });
+                })
               }}
               disabled={depositMutation.isPending}
             >
-              {depositMutation.isPending ? "Processing…" : "Continue to Payment"}
+              {depositMutation.isPending ? 'Processing…' : 'Continue to Payment'}
             </Button>
           </XStack>
         </YStack>
@@ -188,39 +180,50 @@ export function OrganizationCreditsPanel({
                 Recent Transactions
               </Text>
               <YStack gap="$1">
-                {ledgerQuery.data.items.slice(0, 5).map((entry: { id: string; description?: string | null; transactionType: string; createdAt: string; amountCents: number; direction: "credit" | "debit"; currency?: string }) => (
-                  <XStack
-                    key={entry.id}
-                    justify="space-between"
-                    items="center"
-                    p="$2"
-                    bg="$color2"
-                    rounded="$2"
-                  >
-                    <YStack flex={1}>
-                      <Text fontSize="$3" fontWeight="500">
-                        {entry.description ?? entry.transactionType}
-                      </Text>
-                      <Text fontSize="$2" color="$color10">
-                        {new Date(entry.createdAt).toLocaleDateString()}
-                      </Text>
-                    </YStack>
-                    <Text
-                      fontSize="$4"
-                      fontWeight="600"
-                      color={entry.direction === "credit" ? "$green11" : "$red11"}
-                    >
-                      {entry.direction === "credit" ? "+" : "-"}
-                      {formatCurrency(entry.amountCents, entry.currency)}
-                    </Text>
-                  </XStack>
-                ))}
+                {ledgerQuery.data.items
+                  .slice(0, 5)
+                  .map(
+                    (entry: {
+                      id: string
+                      description?: string | null
+                      transactionType: string
+                      createdAt: string
+                      amountCents: number
+                      direction: 'credit' | 'debit'
+                      currency?: string
+                    }) => (
+                      <XStack
+                        key={entry.id}
+                        justify="space-between"
+                        items="center"
+                        p="$2"
+                        bg="$color2"
+                        rounded="$2"
+                      >
+                        <YStack flex={1}>
+                          <Text fontSize="$3" fontWeight="500">
+                            {entry.description ?? entry.transactionType}
+                          </Text>
+                          <Text fontSize="$2" color="$color10">
+                            {new Date(entry.createdAt).toLocaleDateString()}
+                          </Text>
+                        </YStack>
+                        <Text
+                          fontSize="$4"
+                          fontWeight="600"
+                          color={entry.direction === 'credit' ? '$green11' : '$red11'}
+                        >
+                          {entry.direction === 'credit' ? '+' : '-'}
+                          {formatCurrency(entry.amountCents, entry.currency)}
+                        </Text>
+                      </XStack>
+                    )
+                  )}
               </YStack>
             </YStack>
           )}
         </>
       )}
     </Card>
-  );
+  )
 }
-

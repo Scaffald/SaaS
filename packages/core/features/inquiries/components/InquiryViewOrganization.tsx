@@ -1,11 +1,11 @@
-import { useMemo } from 'react'
-import { YStack, XStack, Text, ScrollView, Separator, Button } from '@app/ui'
-import { Card } from 'tamagui'
-import { Check, Pencil, X } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
+import type { InquiryCreateInput, InquirySectionName } from '@app/schemas'
+import { Button, ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
+import { Check, Pencil, X } from '@tamagui/lucide-icons'
+import { useMemo } from 'react'
+import { Card } from 'tamagui'
 import { InquiryCommentThread } from './InquiryCommentThread'
-import type { InquirySectionName, InquiryCreateInput } from '@app/schemas'
 
 interface InquiryViewOrganizationProps {
   applicationId: string
@@ -88,9 +88,7 @@ export function InquiryViewOrganization({
   const formatRate = () => {
     if (!inquiry.rate_min_cents) return 'Not specified'
     const min = (inquiry.rate_min_cents / 100).toFixed(2)
-    const max = inquiry.rate_max_cents
-      ? (inquiry.rate_max_cents / 100).toFixed(2)
-      : null
+    const max = inquiry.rate_max_cents ? (inquiry.rate_max_cents / 100).toFixed(2) : null
     return max ? `$${min} - $${max}` : `$${min}`
   }
 
@@ -160,7 +158,9 @@ export function InquiryViewOrganization({
     sectionName: InquirySectionName
     children: React.ReactNode
   }) => {
-    const section = sections.find((s: { section_name: InquirySectionName }) => s.section_name === sectionName)
+    const section = sections.find(
+      (s: { section_name: InquirySectionName }) => s.section_name === sectionName
+    )
     const sectionComments = commentsBySection[sectionName] || []
 
     return (
@@ -171,10 +171,7 @@ export function InquiryViewOrganization({
             {title}
           </Text>
           {section && (
-            <AcceptanceBadge
-              acceptedBy={section.accepted_by}
-              acceptedAt={section.accepted_at}
-            />
+            <AcceptanceBadge acceptedBy={section.accepted_by} acceptedAt={section.accepted_at} />
           )}
         </XStack>
 
@@ -321,4 +318,3 @@ export function InquiryViewOrganization({
     </ScrollView>
   )
 }
-

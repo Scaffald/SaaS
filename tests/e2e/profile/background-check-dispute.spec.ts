@@ -1,7 +1,6 @@
-import { Buffer } from 'buffer'
-
 import type { Route } from '@playwright/test'
 import { expect, test } from '@playwright/test'
+import { Buffer } from 'buffer'
 
 function buildTrpcResponse<T>(data: T) {
   return [
@@ -38,23 +37,21 @@ test.describe('Background check dispute workflow', () => {
     ]
     const disputes: Array<Record<string, unknown>> = []
 
-    await page.route(
-      /backgroundChecks\.listPackages/,
-      (route) =>
-        fulfillJson(route, [
-          {
-            id: packageId,
-            slug: 'executive',
-            display_name: 'Executive',
-            description: null,
-            provider_package_code: 'EXEC',
-            platform_cost_cents: 5000,
-            retail_cost_cents: 8500,
-            estimated_completion_days: 5,
-            metadata: {},
-            components: [],
-          },
-        ]),
+    await page.route(/backgroundChecks\.listPackages/, (route) =>
+      fulfillJson(route, [
+        {
+          id: packageId,
+          slug: 'executive',
+          display_name: 'Executive',
+          description: null,
+          provider_package_code: 'EXEC',
+          platform_cost_cents: 5000,
+          retail_cost_cents: 8500,
+          estimated_completion_days: 5,
+          metadata: {},
+          components: [],
+        },
+      ])
     )
 
     await page.route(/backgroundChecks\.listChecks/, (route) =>
@@ -75,7 +72,7 @@ test.describe('Background check dispute workflow', () => {
           findings: null,
           metadata: {},
         },
-      ]),
+      ])
     )
 
     await page.route(/backgroundChecks\.getCheck/, (route) => {
@@ -120,7 +117,7 @@ test.describe('Background check dispute workflow', () => {
     })
 
     await page.route(/backgroundChecks\.listDisputesForCheck/, (route) =>
-      fulfillJson(route, disputes),
+      fulfillJson(route, disputes)
     )
 
     await page.route(/backgroundChecks\.createUploadUrl/, async (route) => {
@@ -172,7 +169,7 @@ test.describe('Background check dispute workflow', () => {
       route.fulfill({
         status: 200,
         body: '',
-      }),
+      })
     )
 
     await page.goto('/dashboard/profile/background-check')
@@ -180,7 +177,10 @@ test.describe('Background check dispute workflow', () => {
     await expect(page.getByText(/background check dashboard/i)).toBeVisible()
     await expect(page.getByText(/executive/i)).toBeVisible()
 
-    await page.getByRole('button', { name: /dispute/i }).first().click()
+    await page
+      .getByRole('button', { name: /dispute/i })
+      .first()
+      .click()
 
     const dialog = page.getByRole('dialog', { name: /dispute background check/i })
     await expect(dialog).toBeVisible()
@@ -190,9 +190,7 @@ test.describe('Background check dispute workflow', () => {
 
     await dialog
       .getByLabel(/explain what’s incorrect/i)
-      .fill(
-        'Automated test dispute describing inaccurate county records and requesting review.',
-      )
+      .fill('Automated test dispute describing inaccurate county records and requesting review.')
 
     const fileChooserPromise = page.waitForEvent('filechooser')
     await dialog.getByRole('button', { name: /choose file/i }).click()
@@ -211,5 +209,3 @@ test.describe('Background check dispute workflow', () => {
     await expect(dialog.getByText(/waiting for review/i)).toBeVisible()
   })
 })
-
-

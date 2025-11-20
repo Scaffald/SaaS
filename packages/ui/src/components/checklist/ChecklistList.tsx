@@ -1,4 +1,3 @@
-import React from 'react'
 import { YStack } from 'tamagui'
 import { ChecklistItem } from './ChecklistItem'
 import type { ChecklistItem as ChecklistItemType, ChecklistListProps } from './types'

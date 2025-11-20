@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const uploadMutateAsync = vi.fn()
 const parseMutateAsync = vi.fn()
@@ -100,7 +100,7 @@ describe.skip('ResumeUploadModal', () => {
     const onOpenChange = vi.fn()
 
     render(
-      <ResumeUploadModal open onOpenChange={onOpenChange} onUploadComplete={onUploadComplete} />,
+      <ResumeUploadModal open onOpenChange={onOpenChange} onUploadComplete={onUploadComplete} />
     )
 
     await userEvent.click(screen.getByTestId('mock-file-upload'))
@@ -120,14 +120,7 @@ describe.skip('ResumeUploadModal', () => {
     await waitFor(() => {
       expect(parseMutateAsync).toHaveBeenCalledWith({
         resumeId: 'resume-123',
-        sections: [
-          'general',
-          'experience',
-          'education',
-          'skills',
-          'certifications',
-          'employment',
-        ],
+        sections: ['general', 'experience', 'education', 'skills', 'certifications', 'employment'],
       })
     })
 

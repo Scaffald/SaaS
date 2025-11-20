@@ -1,30 +1,30 @@
-import { memo } from "react";
-import { Platform } from "react-native";
-import { Controller, useFormContext } from "react-hook-form";
-import { XStack, YStack, Input, Text, Button } from "tamagui";
-import { MinusCircle } from "@tamagui/lucide-icons";
+import { MinusCircle } from '@tamagui/lucide-icons'
+import { memo } from 'react'
+import { Controller, useFormContext } from 'react-hook-form'
+import { Platform } from 'react-native'
+import { Button, Input, Text, XStack, YStack } from 'tamagui'
 
-import type { CreateWorkLogInput } from "../schemas";
+import type { CreateWorkLogInput } from '../schemas'
 
 export interface TimeEntryInputProps {
-  index: number;
-  onRemove?: () => void;
-  disableRemove?: boolean;
+  index: number
+  onRemove?: () => void
+  disableRemove?: boolean
 }
 
 const getInputPropsForPlatform = () => {
-  if (Platform.OS === "web") {
+  if (Platform.OS === 'web') {
     return {
-      type: "time" as const,
+      type: 'time' as const,
       step: 300,
-    };
+    }
   }
 
   return {
-    inputMode: "numeric" as const,
-    keyboardType: "numbers-and-punctuation" as const,
-  };
-};
+    inputMode: 'numeric' as const,
+    keyboardType: 'numbers-and-punctuation' as const,
+  }
+}
 
 export const TimeEntryInput = memo(function TimeEntryInput({
   index,
@@ -34,9 +34,9 @@ export const TimeEntryInput = memo(function TimeEntryInput({
   const {
     control,
     formState: { errors },
-  } = useFormContext<CreateWorkLogInput>();
+  } = useFormContext<CreateWorkLogInput>()
 
-  const rowError = errors.timeEntries?.[index];
+  const rowError = errors.timeEntries?.[index]
 
   return (
     <YStack
@@ -103,16 +103,15 @@ export const TimeEntryInput = memo(function TimeEntryInput({
           disabled={disableRemove}
           icon={MinusCircle}
           accessibilityLabel="Remove time entry"
-          style={{ alignSelf: "flex-end" }}
+          style={{ alignSelf: 'flex-end' }}
         />
       </XStack>
 
-      {typeof rowError?.message === "string" && (
+      {typeof rowError?.message === 'string' && (
         <Text fontSize="$2" color="$red10">
           {rowError.message}
         </Text>
       )}
     </YStack>
-  );
-});
-
+  )
+})

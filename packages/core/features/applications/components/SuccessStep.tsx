@@ -1,7 +1,7 @@
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { ROUTES } from '@app/core/constants/routes'
 import { Check, ExternalLink, Home } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { ROUTES } from '@app/core/constants/routes'
+import { Button, Text, XStack, YStack } from 'tamagui'
 
 export interface SuccessStepProps {
   /**
@@ -52,7 +52,10 @@ export function SuccessStep({
   // Format application ID (e.g., #APP-12345)
   const formatApplicationId = (id: string): string => {
     // Extract numeric part or use last 5 characters
-    const numericPart = id.replace(/[^0-9]/g, '').slice(-5).padStart(5, '0')
+    const numericPart = id
+      .replace(/[^0-9]/g, '')
+      .slice(-5)
+      .padStart(5, '0')
     return `#APP-${numericPart}`
   }
 
@@ -62,7 +65,6 @@ export function SuccessStep({
   const handleReturnToDashboard = () => {
     router.push(ROUTES.DASHBOARD.path)
   }
-
 
   return (
     <YStack

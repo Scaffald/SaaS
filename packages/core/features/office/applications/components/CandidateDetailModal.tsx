@@ -1,19 +1,19 @@
-import { useEffect, useMemo, useState } from 'react'
-import { XStack, YStack, Text, Button, Avatar, Tabs, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { ResponsiveModal } from '@app/ui'
-import type { MockApplication } from '../../mock-data/ats-mock-data'
-import { CandidateProfileTab } from './CandidateProfileTab'
-import { ApplicationDetailsTab } from './ApplicationDetailsTab'
-import { NotesTab } from './NotesTab'
-import { MessagesTab } from './MessagesTab'
-import { InquiryTab } from './InquiryTab'
 import { InquiryCreateForm } from '@app/core/features/inquiries/components/InquiryCreateForm'
-import type { InquiryCreateInput } from '@app/schemas'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
+import type { InquiryCreateInput } from '@app/schemas'
 import type { AppRouter } from '@app/supabase/client-types'
+import { ResponsiveModal } from '@app/ui'
+import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
+import { useEffect, useMemo, useState } from 'react'
+import { Avatar, Button, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
+import type { MockApplication } from '../../mock-data/ats-mock-data'
+import { ApplicationDetailsTab } from './ApplicationDetailsTab'
+import { CandidateProfileTab } from './CandidateProfileTab'
+import { InquiryTab } from './InquiryTab'
+import { MessagesTab } from './MessagesTab'
+import { NotesTab } from './NotesTab'
 
 type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
 type MemberRecord = NonNullable<MembersListOutput['members']>[number]
@@ -56,9 +56,9 @@ interface CandidateDetailModalProps {
 }
 
 export const CandidateDetailModal = ({ application, open, onClose }: CandidateDetailModalProps) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'application' | 'notes' | 'messages' | 'inquiry'>(
-    'profile'
-  )
+  const [activeTab, setActiveTab] = useState<
+    'profile' | 'application' | 'notes' | 'messages' | 'inquiry'
+  >('profile')
   const organizationId = application?.organizationId ?? application?.job.organizationId ?? ''
   const workerUserId = application?.workerUserId ?? application?.candidate.id ?? ''
   const applicationId = application?.id ?? ''
@@ -95,12 +95,15 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       : 'This candidate does not have a linked worker account yet.'
 
   // Check if there's an inquiry for this application
-  const { data: inquiryData, isLoading: isInquiryLoading } = api.inquiries.getByApplication.useQuery(
-    { applicationId: application?.id || '' },
-    { enabled: !!application?.id && open }
-  )
+  const { data: inquiryData, isLoading: isInquiryLoading } =
+    api.inquiries.getByApplication.useQuery(
+      { applicationId: application?.id || '' },
+      { enabled: !!application?.id && open }
+    )
   const hasInquiry = !!inquiryData?.inquiry
-  const [inquiryMode, setInquiryMode] = useState<'view' | 'create' | 'edit'>(hasInquiry ? 'view' : 'create')
+  const [inquiryMode, setInquiryMode] = useState<'view' | 'create' | 'edit'>(
+    hasInquiry ? 'view' : 'create'
+  )
 
   useEffect(() => {
     setInquiryMode((currentMode) => {
@@ -124,7 +127,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
 
   const membersQuery = api.teams.members.list.useQuery(
     { teamId: teamIdForQuery },
-    { enabled: Boolean(teamId) },
+    { enabled: Boolean(teamId) }
   )
 
   const mentionOptions = useMemo((): Array<{ id: string; label: string }> => {
@@ -251,8 +254,8 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           </Text>
           <Text fontSize="$4" fontWeight="600">
             {application.team?.assignedUserId
-              ? mentionOptions.find((option) => option.id === application.team?.assignedUserId)?.label ??
-                `User ${application.team?.assignedUserId.slice(0, 6)}`
+              ? (mentionOptions.find((option) => option.id === application.team?.assignedUserId)
+                  ?.label ?? `User ${application.team?.assignedUserId.slice(0, 6)}`)
               : 'Unassigned'}
           </Text>
         </YStack>

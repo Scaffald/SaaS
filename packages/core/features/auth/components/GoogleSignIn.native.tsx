@@ -1,8 +1,8 @@
-import { Button } from 'tamagui'
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
-import { supabase } from '@app/core/utils/supabase/client'
 import { captureEvent } from '@app/core/utils/analytics/client'
+import { supabase } from '@app/core/utils/supabase/client'
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { useRouter } from 'expo-router'
+import { Button } from 'tamagui'
 
 import { IconGoogle } from './IconGoogle'
 

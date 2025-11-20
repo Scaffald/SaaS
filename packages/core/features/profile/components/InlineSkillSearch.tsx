@@ -1,7 +1,6 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Slider, Card, Separator, Label } from 'tamagui'
-import { SearchSelect, type SearchSelectOption } from '@app/ui'
-import { CustomCheckbox } from '@app/ui'
+import { CustomCheckbox, SearchSelect, type SearchSelectOption } from '@app/ui'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Button, Card, Label, Separator, Slider, Text, XStack, YStack } from 'tamagui'
 
 /**
  * Parent skill from search (multi-taxonomy format)
@@ -142,12 +141,7 @@ export function InlineSkillSearch({
   // Handle add skill
   const handleAddSkill = useCallback(() => {
     if (selectedSkill) {
-      onSelectSkill(
-        selectedSkill.id,
-        proficiency,
-        selectedTaxonomy,
-        selectedSkill
-      )
+      onSelectSkill(selectedSkill.id, proficiency, selectedTaxonomy, selectedSkill)
       // Reset to search mode but keep search query
       setSelectedSkill(null)
       setSelectedTaxonomy('csi')
@@ -277,7 +271,10 @@ export function InlineSkillSearch({
 
   // Custom render function for skill results
   const renderOption = useCallback(
-    (option: SearchSelectOption<ParentSkill>, _state: { isActive: boolean; isSelected: boolean; index: number }) => {
+    (
+      option: SearchSelectOption<ParentSkill>,
+      _state: { isActive: boolean; isSelected: boolean; index: number }
+    ) => {
       const skill = option.raw
       const isExisting = existingSkillIds.includes(skill.id)
       // Determine taxonomy from skill code (CSI codes are numeric, O*NET have dashes)

@@ -1,12 +1,11 @@
-import { useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { TeamInvitationList } from '@app/core/features/dashboard/components'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
 import { RefreshCw } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
-
-import { api } from '@app/core/utils/api'
-import { TeamInvitationList } from '@app/core/features/dashboard/components'
-import type { AppRouter } from '@app/supabase/client-types'
+import { useMemo } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
 

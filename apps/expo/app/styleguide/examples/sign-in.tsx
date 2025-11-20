@@ -1,8 +1,8 @@
 // @ts-nocheck
-import React, { useState } from 'react'
+
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
 import { Button, Input, Paragraph, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
+import { useState } from 'react'
 
 export default function SignInExamplePage() {
   const [email, setEmail] = useState('')

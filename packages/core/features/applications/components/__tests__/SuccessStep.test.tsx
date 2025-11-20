@@ -33,7 +33,9 @@ describe('SuccessStep', () => {
     render(<SuccessStep {...defaultProps} />)
 
     expect(screen.getByText('Application Submitted Successfully!')).toBeInTheDocument()
-    expect(screen.getByText(/Thank you for applying to Software Engineer at Tech Corp/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Thank you for applying to Software Engineer at Tech Corp/)
+    ).toBeInTheDocument()
   })
 
   it('displays formatted application ID', () => {
@@ -60,9 +62,15 @@ describe('SuccessStep', () => {
     render(<SuccessStep {...defaultProps} />)
 
     expect(screen.getByText('What happens next:')).toBeInTheDocument()
-    expect(screen.getByText(/Our team will review your application within 3-5 business days/)).toBeInTheDocument()
-    expect(screen.getByText(/You'll receive an email update on your application status/)).toBeInTheDocument()
-    expect(screen.getByText(/If selected, we'll contact you to schedule an interview/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Our team will review your application within 3-5 business days/)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/You'll receive an email update on your application status/)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/If selected, we'll contact you to schedule an interview/)
+    ).toBeInTheDocument()
   })
 
   it('calls onViewApplication when view application button is clicked', () => {
@@ -103,7 +111,7 @@ describe('SuccessStep', () => {
         {...defaultProps}
         onViewApplication={onViewApplication}
         onReturnToJobs={onReturnToJobs}
-      />,
+      />
     )
 
     expect(screen.getByText('View Application Status')).toBeInTheDocument()
@@ -127,4 +135,3 @@ describe('SuccessStep', () => {
     expect(mainElement).toHaveAttribute('aria-label', 'Application submitted successfully')
   })
 })
-

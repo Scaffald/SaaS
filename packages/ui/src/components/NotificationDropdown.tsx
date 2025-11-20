@@ -1,20 +1,20 @@
-import { useState, useCallback, useEffect, useRef, type ElementRef } from 'react'
+import { AlertCircle, Bell, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
+import type { Href } from 'expo-router'
+import { useRouter } from 'expo-router'
+import { type ElementRef, useCallback, useEffect, useRef, useState } from 'react'
 import {
-  YStack,
-  XStack,
-  Text,
-  ScrollView,
   Button,
-  Popover,
   Card,
+  Popover,
+  ScrollView,
   Separator,
   Spinner,
   type StackProps,
+  Text,
   type TextProps,
+  XStack,
+  YStack,
 } from 'tamagui'
-import { Bell, AlertCircle, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import type { Href } from 'expo-router'
 
 export interface NotificationItem {
   id: string

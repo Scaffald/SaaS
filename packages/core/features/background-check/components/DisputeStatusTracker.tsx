@@ -1,8 +1,7 @@
-import { useMemo } from 'react'
-import { RefreshCcw } from '@tamagui/lucide-icons'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack, type ColorTokens } from 'tamagui'
-
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
+import { RefreshCcw } from '@tamagui/lucide-icons'
+import { useMemo } from 'react'
+import { Button, Card, type ColorTokens, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 import type { BackgroundCheckDispute } from '../hooks/useDispute'
 
@@ -64,21 +63,28 @@ function getStatusMetadata(status: BackgroundCheckDispute['status']) {
       tone: 'neutral' as const,
     }
   }
-  return STATUS_METADATA[status] ?? {
-    label: status.replace(/_/g, ' ').replace(/\b\w/g, (char: string) => char.toUpperCase()),
-    description: 'Status information coming soon.',
-    tone: 'neutral' as const,
-  }
+  return (
+    STATUS_METADATA[status] ?? {
+      label: status.replace(/_/g, ' ').replace(/\b\w/g, (char: string) => char.toUpperCase()),
+      description: 'Status information coming soon.',
+      tone: 'neutral' as const,
+    }
+  )
 }
 
-export function DisputeStatusTracker({ disputes, isLoading, onRefresh }: DisputeStatusTrackerProps) {
+export function DisputeStatusTracker({
+  disputes,
+  isLoading,
+  onRefresh,
+}: DisputeStatusTrackerProps) {
   const latestDispute = disputes.length > 0 ? disputes[0] : null
 
   const pendingCount = useMemo(
     () =>
-      disputes.filter((dispute) => dispute.status === 'pending' || dispute.status === 'under_review')
-        .length,
-    [disputes],
+      disputes.filter(
+        (dispute) => dispute.status === 'pending' || dispute.status === 'under_review'
+      ).length,
+    [disputes]
   )
 
   if (isLoading) {
@@ -205,5 +211,3 @@ export function DisputeStatusTracker({ disputes, isLoading, onRefresh }: Dispute
     </YStack>
   )
 }
-
-

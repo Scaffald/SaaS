@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Select, Text, YStack } from 'tamagui'
+import { api } from '@app/core/utils/api'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-
-import { api } from '@app/core/utils/api'
+import { useEffect, useMemo, useState } from 'react'
+import { Select, Text, YStack } from 'tamagui'
 import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
 
 interface TeamMemberRoleSelectProps {
@@ -109,5 +108,3 @@ export function TeamMemberRoleSelect({
     </YStack>
   )
 }
-
-

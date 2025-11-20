@@ -1,36 +1,47 @@
-import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
-import { YStack, XStack, Text, Input, H4, TextArea, Select, Adapt, useWindowDimensions, Spinner, Label } from 'tamagui'
-import { Sheet } from '@app/ui'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Plus,
-  X,
-  ChevronDown,
-  Check,
-  CheckCircle,
-  AlertTriangle,
-} from '@tamagui/lucide-icons'
-import { formatDateRange } from './utils/date-formatting'
-import { randomUUID } from 'expo-crypto'
-import { useExperienceEdit } from './contexts/experience-edit-context'
-import {
-  experienceProfileSchema,
-  type ExperienceProfileFormData,
-  experienceProfileDefaults,
-  createNewExperienceEntry,
-  EMPLOYMENT_TYPE_OPTIONS,
-  CAREER_LEVEL_OPTIONS,
-} from './config'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, ConfirmationDialog, MonthYearPicker } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
+import {
+  UIButton as Button,
+  ConfirmationDialog,
+  CustomCheckbox,
+  DashboardWidget,
+  MonthYearPicker,
+  Sheet,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AlertTriangle, Check, CheckCircle, ChevronDown, Plus, X } from '@tamagui/lucide-icons'
+import { randomUUID } from 'expo-crypto'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import {
+  Adapt,
+  H4,
+  Input,
+  Label,
+  Select,
+  Spinner,
+  Text,
+  TextArea,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from 'tamagui'
+import {
+  CAREER_LEVEL_OPTIONS,
+  createNewExperienceEntry,
+  EMPLOYMENT_TYPE_OPTIONS,
+  type ExperienceProfileFormData,
+  experienceProfileDefaults,
+  experienceProfileSchema,
+} from './config'
+import { useExperienceEdit } from './contexts/experience-edit-context'
+import { formatDateRange } from './utils/date-formatting'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
@@ -78,9 +89,9 @@ export function ProfileExperienceLeft() {
       const previousSummary = utils.profile.getExperienceSummary.getData()
 
       utils.profile.getExperience.setData(undefined, input.experience_entries)
-      utils.profile
-        .getExperienceSummary
-        .setData(undefined, { career_level: input.career_level ?? null })
+      utils.profile.getExperienceSummary.setData(undefined, {
+        career_level: input.career_level ?? null,
+      })
 
       return { previousExperience, previousSummary }
     },
@@ -102,9 +113,10 @@ export function ProfileExperienceLeft() {
     },
   })
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')
-  const [saveBanner, setSaveBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(
-    null
-  )
+  const [saveBanner, setSaveBanner] = useState<{
+    type: 'success' | 'error'
+    message: string
+  } | null>(null)
   const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const buttonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -138,7 +150,7 @@ export function ProfileExperienceLeft() {
           // If location is string, keep as string for backward compatibility
           // ControlledAddressForm will handle conversion to structured format on edit
           const location = exp.location_structured || exp.location || undefined
-          
+
           // If location is a string and we need structured format, we'll let ControlledAddressForm handle it
           // For now, keep the raw location value (API already transforms it)
           return {
@@ -225,9 +237,7 @@ export function ProfileExperienceLeft() {
       setSaveBanner({
         type: 'error',
         message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to save changes. Please try again.',
+          error instanceof Error ? error.message : 'Failed to save changes. Please try again.',
       })
     }
   }
@@ -336,7 +346,7 @@ export function ProfileExperienceLeft() {
                     <Select.ScrollUpButton />
                     <Select.Viewport>
                       {CAREER_LEVEL_OPTIONS.map((level) => (
-                    <Select.Item key={level} value={level} index={0}>
+                        <Select.Item key={level} value={level} index={0}>
                           <Select.ItemText>{level}</Select.ItemText>
                         </Select.Item>
                       ))}
@@ -637,10 +647,7 @@ export function ProfileExperienceLeft() {
               ) : (
                 <AlertTriangle size={18} color="$red10" />
               )}
-              <Text
-                fontWeight="600"
-                color={saveBanner.type === 'success' ? '$green11' : '$red11'}
-              >
+              <Text fontWeight="600" color={saveBanner.type === 'success' ? '$green11' : '$red11'}>
                 {saveBanner.message}
               </Text>
             </XStack>

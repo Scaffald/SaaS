@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import { Button, YStack, Text, XStack } from 'tamagui'
-import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
+import { ROUTES } from '@app/core/constants/routes'
 import { AssessmentWizard } from '@app/core/features/assessments'
 import { OccupationSearch } from '@app/core/features/career-assessment/components/OccupationSearch'
 import { api } from '@app/core/utils/api'
-import { ROUTES } from '@app/core/constants/routes'
 import { Plus, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Button, Text, XStack, YStack } from 'tamagui'
 
 /**
  * OccupationAssessmentWizard - Standalone wizard for Occupation Preferences

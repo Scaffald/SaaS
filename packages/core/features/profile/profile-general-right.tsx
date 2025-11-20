@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react'
-import { useRouter } from 'expo-router'
-import { YStack, Text, H3, H4 } from 'tamagui'
-import { DashboardWidget, StackedCards, spacing } from '@app/ui'
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
-import { VanityUrlSection } from './components/VanityUrlSection'
 import { WorkLogVisibilitySettingsCard } from '@app/core/features/work-logs/components/WorkLogVisibilitySettingsCard'
+import { DashboardWidget, StackedCards, spacing } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { useCallback, useState } from 'react'
+import { H3, H4, Text, YStack } from 'tamagui'
+import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**
  * Profile General Right Component
@@ -20,56 +20,6 @@ export function ProfileGeneralRight() {
     },
     [router]
   )
-
-  // Profile improvement tip cards with marked-up children
-  const profileTipCards = [
-    {
-      children: (
-        <YStack gap="$3">
-          <H4 color="$color">📸 Add a Profile Photo</H4>
-          <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
-            Did you know that profiles with a photo are dramatically more visible?
-          </Text>
-          <Text fontSize="$3" color="$color8" lineHeight="$4">
-            Members with a profile picture receive up to 21× more profile views and as many as 36×
-            more messages. A simple upload could make the difference between getting passed over or
-            getting noticed.
-          </Text>
-        </YStack>
-      ),
-    },
-    {
-      children: (
-        <YStack gap="$3">
-          <H4 color="$color">⏱ First Impressions</H4>
-          <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
-            Make Every Second Count
-          </Text>
-          <Text fontSize="$3" color="$color8" lineHeight="$4">
-            Recruiters skim profiles and resumes quickly — often giving just 6 seconds in an initial
-            scan. Having your basic details like name, email, and phone filled out ensures they
-            don't miss something important about you in those crucial first moments.
-          </Text>
-        </YStack>
-      ),
-    },
-    {
-      children: (
-        <YStack gap="$3">
-          <H4 color="$color">🎖 Verified Credentials</H4>
-          <Text fontSize="$3" color="$color10" fontWeight="500" fontStyle="italic" lineHeight="$4">
-            Verified Details Build Trust
-          </Text>
-          <Text fontSize="$3" color="$color8" lineHeight="$4">
-            Sharing verified information builds credibility with employers. In one large-scale
-            study, discover who displayed credentials publicly increased their likelihood of gaining
-            new employment by about 6 percentage points compared to those who didn't. Trust really
-            does make a measurable difference.
-          </Text>
-        </YStack>
-      ),
-    },
-  ]
 
   return (
     <>
@@ -98,14 +48,6 @@ export function ProfileGeneralRight() {
         <VanityUrlSection />
         {/* TODO: Uncomment this when we implement fully */}
         {/* <WorkLogVisibilitySettingsCard /> */}
-
-        <StackedCards
-          cards={profileTipCards}
-          interval={8000}
-          autoPlay={true}
-          maxStackSize={2}
-          wrapperComponent={DashboardWidget}
-        />
       </YStack>
 
       <ResumeUploadModal

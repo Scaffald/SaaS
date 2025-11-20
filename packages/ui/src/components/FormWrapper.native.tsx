@@ -4,10 +4,10 @@ import { KeyboardAvoidingView, Platform } from 'react-native'
 import {
   ScrollView,
   type TamaguiElement,
-  YStack,
-  type YStackProps,
   useWindowDimensions,
   withStaticProperties,
+  YStack,
+  type YStackProps,
 } from 'tamagui'
 
 const useHeaderHeight = () => {

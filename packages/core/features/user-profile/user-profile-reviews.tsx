@@ -1,7 +1,7 @@
-import { YStack, XStack, Text, Card, Button, Spinner } from 'tamagui'
-import { Star, ThumbsUp, ThumbsDown, MessageSquarePlus, Shield } from '@tamagui/lucide-icons'
-import { randomUUID } from 'expo-crypto'
 import { api } from '@app/core/utils/api'
+import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
+import { randomUUID } from 'expo-crypto'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface CategoryRating {
   category: string

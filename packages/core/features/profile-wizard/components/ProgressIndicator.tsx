@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { XStack, YStack, Text, Progress, Separator } from 'tamagui'
+import { Progress, Separator, Text, XStack, YStack } from 'tamagui'
 import type { ProfileWizardStepId } from '../utils/wizardSteps'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
@@ -74,5 +74,3 @@ export const ProgressIndicator = memo(function ProgressIndicator({
     </YStack>
   )
 })
-
-

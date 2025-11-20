@@ -157,8 +157,8 @@ describe('analytics integration', () => {
     vi.resetModules()
     
     process.env.APP_ENV = 'development'
-    process.env.POSTHOG_KEY = 'test-key'
-    process.env.POSTHOG_HOST = 'https://app.posthog.com'
+    process.env.EXPO_PUBLIC_POSTHOG_API_KEY = 'test-key'
+    process.env.EXPO_PUBLIC_POSTHOG_HOST = 'https://app.posthog.com'
     mockPlatform.OS = 'ios'
     ;(global as any).__DEV__ = true
   })

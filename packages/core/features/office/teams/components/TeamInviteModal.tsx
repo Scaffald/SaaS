@@ -1,4 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { api } from '@app/core/utils/api'
+import {
+  TEAM_INVITATION_TTL_DEFAULT,
+  TEAM_INVITATION_TTL_MAX,
+  TEAM_INVITATION_TTL_MIN,
+} from '@app/schemas'
+import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
+import { UserSearch } from '@app/ui/components/user/UserSearch'
+import { Check, ChevronDown, Mail, UserPlus } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Input,
@@ -10,30 +20,19 @@ import {
   TextArea,
   XStack,
   YStack,
-} from 'tamagui';
-import { Check, ChevronDown, Mail, UserPlus } from '@tamagui/lucide-icons';
-import { useToastController } from '@tamagui/toast';
+} from 'tamagui'
 
-import { api } from '@app/core/utils/api';
-import { ResponsiveModal } from '@app/ui/components/ResponsiveModal';
-import { UserSearch } from '@app/ui/components/user/UserSearch';
-import {
-  TEAM_INVITATION_TTL_DEFAULT,
-  TEAM_INVITATION_TTL_MAX,
-  TEAM_INVITATION_TTL_MIN,
-} from '@app/schemas';
+import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
-import { useTeamFormOptions, type TeamRoleOption } from '../hooks/useTeamFormOptions';
-
-type InviteType = 'email' | 'user';
+type InviteType = 'email' | 'user'
 
 interface TeamInviteModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  teamId: string;
-  organizationId: string;
-  defaultRoleId?: string | null;
-  onInvited?: () => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  teamId: string
+  organizationId: string
+  defaultRoleId?: string | null
+  onInvited?: () => void
 }
 
 export function TeamInviteModal({
@@ -44,92 +43,92 @@ export function TeamInviteModal({
   defaultRoleId,
   onInvited,
 }: TeamInviteModalProps) {
-  const toast = useToastController();
-  const [inviteType, setInviteType] = useState<InviteType>('email');
-  const [email, setEmail] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState<string>('');
-  const [selectedUserName, setSelectedUserName] = useState<string>('');
-  const [selectedRoleId, setSelectedRoleId] = useState<string>('');
-  const [expiresInDays, setExpiresInDays] = useState<number>(TEAM_INVITATION_TTL_DEFAULT);
-  const [message, setMessage] = useState('');
-  const [formError, setFormError] = useState<string | null>(null);
-  const [formErrorSource, setFormErrorSource] = useState<'email' | 'user' | 'general' | null>(null);
+  const toast = useToastController()
+  const [inviteType, setInviteType] = useState<InviteType>('email')
+  const [email, setEmail] = useState('')
+  const [selectedUserId, setSelectedUserId] = useState<string>('')
+  const [selectedUserName, setSelectedUserName] = useState<string>('')
+  const [selectedRoleId, setSelectedRoleId] = useState<string>('')
+  const [expiresInDays, setExpiresInDays] = useState<number>(TEAM_INVITATION_TTL_DEFAULT)
+  const [message, setMessage] = useState('')
+  const [formError, setFormError] = useState<string | null>(null)
+  const [formErrorSource, setFormErrorSource] = useState<'email' | 'user' | 'general' | null>(null)
 
-  const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId });
+  const { roles, isLoading: isLoadingRoles } = useTeamFormOptions({ organizationId })
 
   const inviteMutation = api.teams.invitations.create.useMutation({
     onSuccess: () => {
       toast.show('Invitation sent', {
         message: inviteType === 'email' ? email : `${selectedUserName || 'Member'} can now join.`,
-      });
-      onOpenChange(false);
-      onInvited?.();
+      })
+      onOpenChange(false)
+      onInvited?.()
     },
     onError: (error: Error) => {
-      toast.show('Unable to send invitation', { message: error.message });
+      toast.show('Unable to send invitation', { message: error.message })
     },
-  });
+  })
 
-  const roleOptions: TeamRoleOption[] = useMemo(() => roles, [roles]);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    setInviteType('email');
-    setEmail('');
-    setSelectedUserId('');
-    setSelectedUserName('');
-    setExpiresInDays(TEAM_INVITATION_TTL_DEFAULT);
-    setMessage('');
-    setFormError(null);
-    setFormErrorSource(null);
-  }, [open]);
+  const roleOptions: TeamRoleOption[] = useMemo(() => roles, [roles])
 
   useEffect(() => {
     if (!open) {
-      return;
+      return
     }
 
-    const fallbackRoleId = defaultRoleId ?? roleOptions[0]?.id ?? '';
-    setSelectedRoleId(fallbackRoleId);
-  }, [open, defaultRoleId, roleOptions]);
+    setInviteType('email')
+    setEmail('')
+    setSelectedUserId('')
+    setSelectedUserName('')
+    setExpiresInDays(TEAM_INVITATION_TTL_DEFAULT)
+    setMessage('')
+    setFormError(null)
+    setFormErrorSource(null)
+  }, [open])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    const fallbackRoleId = defaultRoleId ?? roleOptions[0]?.id ?? ''
+    setSelectedRoleId(fallbackRoleId)
+  }, [open, defaultRoleId, roleOptions])
 
   const handleSubmit = async () => {
     if (inviteMutation.isPending) {
-      return;
+      return
     }
 
     if (inviteType === 'email' && !email.trim()) {
-      setFormError('Enter an email address to send the invitation.');
-      setFormErrorSource('email');
-      return;
+      setFormError('Enter an email address to send the invitation.')
+      setFormErrorSource('email')
+      return
     }
 
     if (inviteType === 'user' && !selectedUserId) {
-      setFormError('Select an existing member to invite.');
-      setFormErrorSource('user');
-      return;
+      setFormError('Select an existing member to invite.')
+      setFormErrorSource('user')
+      return
     }
 
-    const roleId = selectedRoleId || defaultRoleId || roleOptions[0]?.id;
+    const roleId = selectedRoleId || defaultRoleId || roleOptions[0]?.id
     if (!roleId) {
-      setFormError('No team roles are available for this organization.');
-      setFormErrorSource('general');
-      return;
+      setFormError('No team roles are available for this organization.')
+      setFormErrorSource('general')
+      return
     }
 
-    setFormError(null);
-    setFormErrorSource(null);
+    setFormError(null)
+    setFormErrorSource(null)
 
     const clampedDays = Math.min(
       Math.max(expiresInDays, TEAM_INVITATION_TTL_MIN),
-      TEAM_INVITATION_TTL_MAX,
-    );
+      TEAM_INVITATION_TTL_MAX
+    )
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + clampedDays);
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + clampedDays)
 
     await inviteMutation.mutateAsync({
       teamId,
@@ -138,13 +137,13 @@ export function TeamInviteModal({
       userId: inviteType === 'user' ? selectedUserId : undefined,
       expiresAt: expiresAt.toISOString(),
       message: message.trim() ? message.trim() : undefined,
-    });
-  };
+    })
+  }
 
   const inviteTypeDescription =
     inviteType === 'email'
       ? 'Send an email invitation to someone who is not yet part of the organization.'
-      : 'Invite an existing organization member without sending an email.';
+      : 'Invite an existing organization member without sending an email.'
 
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Invite team member">
@@ -175,10 +174,10 @@ export function TeamInviteModal({
               id="team-invite-email"
               value={email}
               onChangeText={(value) => {
-                setEmail(value);
+                setEmail(value)
                 if (formErrorSource === 'email') {
-                  setFormError(null);
-                  setFormErrorSource(null);
+                  setFormError(null)
+                  setFormErrorSource(null)
                 }
               }}
               keyboardType="email-address"
@@ -199,11 +198,11 @@ export function TeamInviteModal({
             <UserSearch
               value={selectedUserId}
               onUserSelect={(id, name) => {
-                setSelectedUserId(id);
-                setSelectedUserName(name);
+                setSelectedUserId(id)
+                setSelectedUserName(name)
                 if (formErrorSource === 'user') {
-                  setFormError(null);
-                  setFormErrorSource(null);
+                  setFormError(null)
+                  setFormErrorSource(null)
                 }
               }}
               placeholder="Search organization members…"
@@ -231,8 +230,8 @@ export function TeamInviteModal({
             >
               <Select.Trigger iconAfter={ChevronDown} disabled={inviteMutation.isPending}>
                 <Select.Value placeholder="Select a team role">
-                  {roleOptions.find((role) => role.id === (selectedRoleId || defaultRoleId))?.name ??
-                    'Select a team role'}
+                  {roleOptions.find((role) => role.id === (selectedRoleId || defaultRoleId))
+                    ?.name ?? 'Select a team role'}
                 </Select.Value>
                 {inviteMutation.isPending ? <Spinner size="small" ml="$2" /> : null}
               </Select.Trigger>
@@ -276,21 +275,18 @@ export function TeamInviteModal({
             value={String(expiresInDays)}
             keyboardType="numeric"
             onChangeText={(value) => {
-              const next = Number.parseInt(value, 10);
+              const next = Number.parseInt(value, 10)
               setExpiresInDays(
                 Number.isNaN(next)
                   ? TEAM_INVITATION_TTL_DEFAULT
-                  : Math.max(
-                      TEAM_INVITATION_TTL_MIN,
-                      Math.min(next, TEAM_INVITATION_TTL_MAX),
-                    ),
-              );
+                  : Math.max(TEAM_INVITATION_TTL_MIN, Math.min(next, TEAM_INVITATION_TTL_MAX))
+              )
             }}
             disabled={inviteMutation.isPending}
           />
           <Text fontSize="$3" color="$color11">
-            Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum {TEAM_INVITATION_TTL_MIN}, maximum{' '}
-            {TEAM_INVITATION_TTL_MAX}.
+            Defaults to {TEAM_INVITATION_TTL_DEFAULT} days. Minimum {TEAM_INVITATION_TTL_MIN},
+            maximum {TEAM_INVITATION_TTL_MAX}.
           </Text>
         </YStack>
 
@@ -315,12 +311,14 @@ export function TeamInviteModal({
             onPress={handleSubmit}
             disabled={inviteMutation.isPending || (inviteType === 'email' && !email.trim())}
           >
-            {inviteMutation.isPending ? <Spinner size="small" color="$color1" /> : 'Send Invitation'}
+            {inviteMutation.isPending ? (
+              <Spinner size="small" color="$color1" />
+            ) : (
+              'Send Invitation'
+            )}
           </Button>
         </XStack>
       </YStack>
     </ResponsiveModal>
-  );
+  )
 }
-
-

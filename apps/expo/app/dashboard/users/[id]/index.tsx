@@ -1,20 +1,20 @@
-import { useLocalSearchParams } from 'expo-router'
+import { ROUTES } from '@app/core/constants/routes'
+import {
+  CertificationsWidget,
+  EducationWidget,
+  ExperienceWidget,
+  GeneralInfoWidget,
+  ReviewsWidget,
+  SkillsWidget,
+} from '@app/core/features/profile/widgets'
+import { useAuth } from '@app/core/provider/auth/useAuth'
+import { api } from '@app/core/utils/api'
+import type { BreadcrumbItem } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { useNavigation } from '@react-navigation/native'
+import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo } from 'react'
 import { YStack } from 'tamagui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import {
-  GeneralInfoWidget,
-  ExperienceWidget,
-  EducationWidget,
-  SkillsWidget,
-  CertificationsWidget,
-  ReviewsWidget,
-} from '@app/core/features/profile/widgets'
-import { api } from '@app/core/utils/api'
-import { useAuth } from '@app/core/provider/auth/useAuth'
-import { ROUTES } from '@app/core/constants/routes'
-import type { BreadcrumbItem } from '@app/ui'
 
 /**
  * Dynamic User Profile Route

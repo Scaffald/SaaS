@@ -1,17 +1,17 @@
 /**
  * Example Playwright test using Supabase authentication helpers
- * 
+ *
  * Usage:
  * 1. Install Playwright: pnpm add -D @playwright/test
  * 2. Run: pnpm exec playwright test
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
-  signInAsUser,
-  signInAsTestUser,
-  signInAsAdmin,
   getBearerToken,
+  signInAsAdmin,
+  signInAsTestUser,
+  signInAsUser,
   TEST_USERS,
 } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
@@ -23,15 +23,14 @@ test.describe('Authentication', () => {
 
     // Now you can interact with authenticated pages
     await page.goto('/dashboard')
-    
+
     // Verify user is authenticated - check URL and page has content
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 })
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 15000 }
-    ).catch(() => {}) // Continue even if still loading
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 15000 })
+      .catch(() => {}) // Continue even if still loading
     await page.waitForTimeout(1000)
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
@@ -68,6 +67,3 @@ test.describe('API Testing', () => {
     expect(response.ok()).toBeTruthy()
   })
 })
-
-
-

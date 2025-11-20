@@ -1,5 +1,5 @@
-import { XStack, Text, Button } from 'tamagui'
 import { X } from '@tamagui/lucide-icons'
+import { Button, Text, XStack } from 'tamagui'
 
 interface CertificationChipProps {
   certification: {

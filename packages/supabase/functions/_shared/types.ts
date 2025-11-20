@@ -1,14 +1,14 @@
 import { z } from 'zod'
 import {
-  profileGeneralSchema,
-  profileGeneralOutputSchema,
-  profileEmploymentSchema,
   profileEmploymentOutputSchema,
-  profileSkillsSchema,
+  profileEmploymentSchema,
+  profileGeneralOutputSchema,
+  profileGeneralSchema,
   profileSkillsOutputSchema,
+  profileSkillsSchema,
   profileUpdateSchema,
-  userPrivateUpdateSchema,
   userPrivateEmploymentUpdateSchema,
+  userPrivateUpdateSchema,
 } from './schemas/profile'
 
 // Inferred TypeScript types from Zod schemas

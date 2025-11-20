@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Button, Text, YStack, XStack, Spinner } from 'tamagui'
-import { TwoStageTest, InterpretationLanguage, type MainColor } from 'luscher-test'
-import { getScore, getResults, type IPIPScores } from '../lib/ipip'
+import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
+import { useEffect, useState } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 import type { IPIPAnswer } from '../lib/ipip'
+import { getResults, getScore, type IPIPScores } from '../lib/ipip'
 
 export interface ResultsStepProps {
   assessment: {

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import {
-  i18n,
   getCurrentLocale,
+  i18n,
+  type SupportedLocale,
   setLocale as setGlobalLocale,
   subscribeToLocaleChanges,
-  type SupportedLocale,
 } from '../locales'
 
 interface TranslationOptions {

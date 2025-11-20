@@ -3,18 +3,18 @@
  */
 export interface ProfileWidgetProps {
   /** User ID to display profile for. If not provided, uses current user */
-  userId?: string;
+  userId?: string
   /** Show edit button and actions (for own profile view) */
-  showEdit?: boolean;
+  showEdit?: boolean
   /** Display variant */
-  variant?: "compact" | "full";
+  variant?: 'compact' | 'full'
 }
 
 /**
  * Widget data loading state
  */
 export interface WidgetState<T> {
-  data: T | null;
-  isLoading: boolean;
-  error: Error | null;
+  data: T | null
+  isLoading: boolean
+  error: Error | null
 }

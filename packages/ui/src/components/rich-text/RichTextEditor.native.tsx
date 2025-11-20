@@ -1,5 +1,5 @@
 import type React from 'react'
-import { TextArea, YStack, Text, XStack } from 'tamagui'
+import { Text, TextArea, XStack, YStack } from 'tamagui'
 import type { RichTextEditorProps } from './types'
 import { extractPlainText, plainTextToTipTap } from './utils/sanitize'
 
@@ -35,7 +35,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   // Get character limit based on field type
   const getCharacterLimit = (): number => {
     const limits: Record<string, number> = {
-      PROFILE_ABOUT: 500,
+      PROFILE_ABOUT: 1500,
       EXPERIENCE_DESCRIPTION: 1000,
       EDUCATION_DESCRIPTION: 500,
       JOB_DESCRIPTION: 3000,

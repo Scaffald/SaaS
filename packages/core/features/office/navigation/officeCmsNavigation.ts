@@ -159,5 +159,3 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
     ],
   },
 ]
-
-

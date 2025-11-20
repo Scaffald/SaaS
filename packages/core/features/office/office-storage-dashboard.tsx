@@ -1,89 +1,73 @@
-import { useMemo, useState } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
-import { createColumnHelper } from "@tanstack/react-table";
-import {
-  Button,
-  Card,
-  Input,
-  Paragraph,
-  Progress,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-} from "tamagui";
-import { RefreshCw } from "@tamagui/lucide-icons";
-import type { inferRouterOutputs } from "@trpc/server";
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { DataTable } from '@app/ui'
+import { RefreshCw } from '@tamagui/lucide-icons'
+import type { ColumnDef } from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useMemo, useState } from 'react'
+import { Button, Card, Input, Paragraph, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
 
-import type { AppRouter } from "@app/supabase/client-types";
-import { api } from "@app/core/utils/api";
-import { DataTable } from "@app/ui";
-
-type StorageAnalytics =
-  inferRouterOutputs<AppRouter>["office"]["storage"]["analytics"];
+type StorageAnalytics = inferRouterOutputs<AppRouter>['office']['storage']['analytics']
 
 type StorageTableRow = {
-  userId: string;
-  displayName: string;
-  username: string;
-  totalBytes: number;
-  workLogBytes: number;
-  portfolioBytes: number;
-  certificationBytes: number;
-  storageLimitBytes: number | null;
-  usagePercentOfLimit: number | null;
-  updatedAt: string | null;
-};
+  userId: string
+  displayName: string
+  username: string
+  totalBytes: number
+  workLogBytes: number
+  portfolioBytes: number
+  certificationBytes: number
+  storageLimitBytes: number | null
+  usagePercentOfLimit: number | null
+  updatedAt: string | null
+}
 
-const columnHelper = createColumnHelper<StorageTableRow>();
+const columnHelper = createColumnHelper<StorageTableRow>()
 
 const formatBytes = (bytes: number): string => {
   if (!Number.isFinite(bytes) || bytes <= 0) {
-    return "0 B";
+    return '0 B'
   }
 
-  const UNITS = ["B", "KB", "MB", "GB", "TB"];
-  const base = Math.log(bytes) / Math.log(1024);
-  const unitIndex = Math.min(Math.floor(base), UNITS.length - 1);
-  const scaled = bytes / 1024 ** unitIndex;
+  const UNITS = ['B', 'KB', 'MB', 'GB', 'TB']
+  const base = Math.log(bytes) / Math.log(1024)
+  const unitIndex = Math.min(Math.floor(base), UNITS.length - 1)
+  const scaled = bytes / 1024 ** unitIndex
 
-  return `${scaled.toFixed(unitIndex === 0 ? 0 : 1)} ${UNITS[unitIndex]}`;
-};
+  return `${scaled.toFixed(unitIndex === 0 ? 0 : 1)} ${UNITS[unitIndex]}`
+}
 
 const formatPercent = (value: number | null | undefined): string => {
   if (!Number.isFinite(value ?? Number.NaN)) {
-    return "—";
+    return '—'
   }
-  return `${value?.toFixed(1)}%`;
-};
+  return `${value?.toFixed(1)}%`
+}
 
 export function OfficeStorageDashboard() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('')
   const analyticsQuery = api.office.storage.analytics.useQuery(undefined, {
     staleTime: 60_000,
-  });
+  })
 
-  const analytics = analyticsQuery.data as StorageAnalytics | undefined;
+  const analytics = analyticsQuery.data as StorageAnalytics | undefined
 
-  const topUsers: StorageAnalytics["topUsers"] =
-    analytics?.topUsers ?? [];
+  const topUsers: StorageAnalytics['topUsers'] = analytics?.topUsers ?? []
 
   const tableRows = useMemo<StorageTableRow[]>(() => {
     if (topUsers.length === 0) {
-      return [];
+      return []
     }
 
-    return topUsers.map(
-      (user: StorageAnalytics["topUsers"][number]) => {
+    return topUsers.map((user: StorageAnalytics['topUsers'][number]) => {
       const displayName =
-        user.displayName?.trim() ||
-        user.username?.trim() ||
-        user.userId.slice(0, 8);
+        user.displayName?.trim() || user.username?.trim() || user.userId.slice(0, 8)
 
       return {
         userId: user.userId,
         displayName,
-        username: user.username ?? "",
+        username: user.username ?? '',
         totalBytes: user.totalBytes,
         workLogBytes: user.workLogBytes,
         portfolioBytes: user.portfolioBytes,
@@ -91,36 +75,35 @@ export function OfficeStorageDashboard() {
         storageLimitBytes: user.storageLimitBytes,
         usagePercentOfLimit: user.usagePercentOfLimit,
         updatedAt: user.updatedAt,
-      };
-      },
-    );
-  }, [topUsers]);
+      }
+    })
+  }, [topUsers])
 
   const filteredRows = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const query = search.trim().toLowerCase()
     if (!query) {
-      return tableRows;
+      return tableRows
     }
 
     return tableRows.filter((row) => {
       if (row.displayName.toLowerCase().includes(query)) {
-        return true;
+        return true
       }
 
       if (row.username.toLowerCase().includes(query)) {
-        return true;
+        return true
       }
 
-      return row.userId.toLowerCase().includes(query);
-    });
-  }, [tableRows, search]);
+      return row.userId.toLowerCase().includes(query)
+    })
+  }, [tableRows, search])
 
   const columns = useMemo(() => {
     const defs = [
-      columnHelper.accessor("displayName", {
-        header: "User",
+      columnHelper.accessor('displayName', {
+        header: 'User',
         cell: (info) => {
-          const row = info.row.original;
+          const row = info.row.original
           return (
             <YStack gap="$1">
               <Text fontWeight="600">{row.displayName}</Text>
@@ -128,120 +111,109 @@ export function OfficeStorageDashboard() {
                 {row.username ? `@${row.username}` : row.userId.slice(0, 8)}
               </Text>
             </YStack>
-          );
+          )
         },
       }),
-      columnHelper.accessor("totalBytes", {
-        header: "Total Usage",
+      columnHelper.accessor('totalBytes', {
+        header: 'Total Usage',
         cell: (info) => formatBytes(info.getValue()),
       }),
-      columnHelper.accessor("workLogBytes", {
-        header: "Work Logs",
+      columnHelper.accessor('workLogBytes', {
+        header: 'Work Logs',
         cell: (info) => formatBytes(info.getValue()),
       }),
-      columnHelper.accessor("portfolioBytes", {
-        header: "Portfolio",
+      columnHelper.accessor('portfolioBytes', {
+        header: 'Portfolio',
         cell: (info) => formatBytes(info.getValue()),
       }),
-      columnHelper.accessor("certificationBytes", {
-        header: "Certifications",
+      columnHelper.accessor('certificationBytes', {
+        header: 'Certifications',
         cell: (info) => formatBytes(info.getValue()),
       }),
-      columnHelper.accessor("usagePercentOfLimit", {
-        header: "Limit",
+      columnHelper.accessor('usagePercentOfLimit', {
+        header: 'Limit',
         cell: (info) => {
-          const row = info.row.original;
+          const row = info.row.original
           if (!row.storageLimitBytes) {
             return (
               <Text color="$color10" fontSize="$2">
                 No limit
               </Text>
-            );
+            )
           }
 
-          const percent = row.usagePercentOfLimit ?? 0;
-          const clamped = Math.min(Math.max(percent, 0), 200);
+          const percent = row.usagePercentOfLimit ?? 0
+          const clamped = Math.min(Math.max(percent, 0), 200)
 
           return (
             <YStack gap="$1">
-              <Progress
-                value={clamped}
-                max={100}
-                bg="$color3"
-                size="$1"
-              >
-                <Progress.Indicator
-                  animation="bouncy"
-                  bg={percent > 100 ? "$red10" : "$green10"}
-                />
+              <Progress value={clamped} max={100} bg="$color3" size="$1">
+                <Progress.Indicator animation="bouncy" bg={percent > 100 ? '$red10' : '$green10'} />
               </Progress>
               <Text fontSize="$2" color="$color10">
                 {formatPercent(percent)} of {formatBytes(row.storageLimitBytes)}
               </Text>
             </YStack>
-          );
+          )
         },
       }),
-      columnHelper.accessor("updatedAt", {
-        header: "Last Updated",
+      columnHelper.accessor('updatedAt', {
+        header: 'Last Updated',
         cell: (info) => {
-          const value = info.getValue();
+          const value = info.getValue()
           if (!value) {
-            return "—";
+            return '—'
           }
-          return new Date(value).toLocaleString();
+          return new Date(value).toLocaleString()
         },
       }),
-    ];
-    return defs as ColumnDef<StorageTableRow, unknown>[];
-  }, []);
+    ]
+    return defs as ColumnDef<StorageTableRow, unknown>[]
+  }, [])
 
-  const totals = analytics?.totals;
-  const breakdown =
-    (analytics?.breakdown ?? []) as StorageAnalytics["breakdown"];
+  const totals = analytics?.totals
+  const breakdown = (analytics?.breakdown ?? []) as StorageAnalytics['breakdown']
 
   const summaryCards = useMemo(() => {
     if (!totals) {
-      return [];
+      return []
     }
 
     const cards = [
       {
-        label: "Total storage used",
+        label: 'Total storage used',
         value: formatBytes(totals.totalBytes),
         subtext: totals.lastUpdatedAt
           ? `Updated ${new Date(totals.lastUpdatedAt).toLocaleString()}`
           : undefined,
       },
       {
-        label: "Tracked users",
+        label: 'Tracked users',
         value: totals.userCount.toLocaleString(),
         subtext: `Avg ${formatBytes(totals.averageBytes)} per user`,
       },
       {
-        label: "Configured limits",
+        label: 'Configured limits',
         value: totals.limitsConfiguredCount.toLocaleString(),
         subtext:
           totals.totalLimitBytes > 0
             ? `${formatBytes(totals.totalLimitBytes)} allocated`
-            : "No user limits configured",
+            : 'No user limits configured',
       },
       {
-        label: "Utilization",
-        value: totals.utilizationPercent !== null
-          ? formatPercent(totals.utilizationPercent)
-          : "—",
+        label: 'Utilization',
+        value: totals.utilizationPercent !== null ? formatPercent(totals.utilizationPercent) : '—',
         subtext:
           totals.overLimitCount > 0
             ? `${totals.overLimitCount} over limit`
-            : "All users within limits",
+            : 'All users within limits',
       },
-    ];
+    ]
 
-    return cards;
-  }, [totals]);
+    return cards
+  }, [totals])
 
-  const isLoading = analyticsQuery.isLoading;
+  const isLoading = analyticsQuery.isLoading
 
   return (
     <YStack flex={1} p="$4" gap="$4">
@@ -306,8 +278,7 @@ export function OfficeStorageDashboard() {
                 Usage breakdown
               </Text>
               <YStack gap="$3">
-                {breakdown.map(
-                  (entry: StorageAnalytics["breakdown"][number]) => (
+                {breakdown.map((entry: StorageAnalytics['breakdown'][number]) => (
                   <YStack key={entry.label} gap="$1">
                     <XStack justify="space-between" items="center">
                       <Text fontWeight="600">{entry.label}</Text>
@@ -315,12 +286,7 @@ export function OfficeStorageDashboard() {
                         {formatBytes(entry.bytes)} · {formatPercent(entry.percent)}
                       </Text>
                     </XStack>
-                    <Progress
-                      value={entry.percent}
-                      max={100}
-                      bg="$color3"
-                      size="$1"
-                    >
+                    <Progress value={entry.percent} max={100} bg="$color3" size="$1">
                       <Progress.Indicator animation="bouncy" bg="$blue10" />
                     </Progress>
                   </YStack>
@@ -361,6 +327,5 @@ export function OfficeStorageDashboard() {
         </>
       )}
     </YStack>
-  );
+  )
 }
-

@@ -1,4 +1,4 @@
-import { DashboardLayout, Paragraph, Text, YStack, Button, XStack } from '@app/ui'
+import { Button, DashboardLayout, Paragraph, Text, XStack, YStack } from '@app/ui'
 
 export default function DashboardLayoutExamplePage() {
   return (

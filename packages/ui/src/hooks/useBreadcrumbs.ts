@@ -1,6 +1,6 @@
-import { useState, useCallback, useMemo } from 'react'
+import { matchesRoute, ROUTES, type RouteConfig } from '@app/core/constants/routes'
 import { usePathname } from 'expo-router'
-import { ROUTES, matchesRoute, type RouteConfig } from '@app/core/constants/routes'
+import { useCallback, useMemo, useState } from 'react'
 import type { BreadcrumbItem, BreadcrumbSibling } from '../components/Breadcrumb'
 
 export interface UseBreadcrumbsOptions {
@@ -415,7 +415,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             .join(' ')
 
           // For intermediate segments (not terminal), find siblings
-          let segmentSiblings: BreadcrumbSibling[] | undefined = undefined
+          let segmentSiblings: BreadcrumbSibling[] | undefined
           if (!isLast) {
             const siblingRoutes = findRoutesAtPath(currentPath)
             segmentSiblings =

@@ -1,6 +1,6 @@
-import { XStack, YStack, Text } from 'tamagui'
 import { Star } from '@tamagui/lucide-icons'
 import { Pressable } from 'react-native'
+import { Text, XStack, YStack } from 'tamagui'
 
 interface StarRatingProps {
   label: string
@@ -22,11 +22,7 @@ export function StarRating({ label, value, onChange, readonly = false }: StarRat
             onPress={readonly ? undefined : () => onChange(star)}
             disabled={readonly}
           >
-            <Star
-              size={32}
-              color="$yellow10"
-              fill={star <= value ? '$yellow10' : 'transparent'}
-            />
+            <Star size={32} color="$yellow10" fill={star <= value ? '$yellow10' : 'transparent'} />
           </Pressable>
         ))}
         <Text fontSize="$6" fontWeight="700" color="$color11" ml="$2">

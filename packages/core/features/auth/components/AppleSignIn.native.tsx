@@ -1,9 +1,9 @@
+import { captureEvent } from '@app/core/utils/analytics/client'
 import { initiateAppleSignIn } from '@app/core/utils/auth/initiateAppleSignIn'
 import { supabase } from '@app/core/utils/supabase/client'
-import { captureEvent } from '@app/core/utils/analytics/client'
 import * as AppleAuthentication from 'expo-apple-authentication'
-import { Platform } from 'react-native'
 import { useRouter } from 'expo-router'
+import { Platform } from 'react-native'
 
 export function AppleSignIn() {
   // Using supabase directly from import
@@ -21,7 +21,11 @@ export function AppleSignIn() {
       if (error) throw error
     } catch (e) {
       const errorCode =
-        typeof e === 'object' && e && 'code' in e ? String((e as { code: unknown }).code) : e instanceof Error ? e.name : 'unknown'
+        typeof e === 'object' && e && 'code' in e
+          ? String((e as { code: unknown }).code)
+          : e instanceof Error
+            ? e.name
+            : 'unknown'
       const errorMessage = e instanceof Error ? e.message : null
       captureEvent('auth_social_sign_in_failed', {
         provider: 'apple',

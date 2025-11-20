@@ -1,9 +1,8 @@
-import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
-
-import baseConfig from '../../vitest.config'
-import { mergeConfig } from 'vitest/config'
+import { fileURLToPath } from 'node:url'
 import type { Config } from 'vitest'
+import { mergeConfig } from 'vitest/config'
+import baseConfig from '../../vitest.config'
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 const sharedConfig = baseConfig as Config
@@ -18,10 +17,12 @@ const packageConfig: Config = {
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
       { find: '@app/core', replacement: resolve(workspaceRoot, 'packages/core') },
-      { find: '@app/ui/components', replacement: resolve(workspaceRoot, 'packages/ui/src/components') },
+      {
+        find: '@app/ui/components',
+        replacement: resolve(workspaceRoot, 'packages/ui/src/components'),
+      },
     ],
   },
 }
 
 export default mergeConfig(sharedConfig, packageConfig)
-

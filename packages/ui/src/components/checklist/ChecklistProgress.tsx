@@ -1,5 +1,4 @@
-import React from 'react'
-import { YStack, XStack, Text, Progress } from 'tamagui'
+import { Progress, Text, XStack, YStack } from 'tamagui'
 import type { ChecklistProgressProps } from './types'
 
 /**

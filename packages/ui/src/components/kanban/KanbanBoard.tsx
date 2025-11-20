@@ -29,7 +29,11 @@ export interface KanbanBoardProps {
   /** Callback when drag ends */
   onDragEnd: (event: DragEndEvent) => void
   /** Optional callback when status changes (for confirmation modals, etc.) */
-  onStatusChange?: (itemId: string, fromColumnId: UniqueIdentifier, toColumnId: UniqueIdentifier) => Promise<void>
+  onStatusChange?: (
+    itemId: string,
+    fromColumnId: UniqueIdentifier,
+    toColumnId: UniqueIdentifier
+  ) => Promise<void>
   /** Optional drag overlay render function */
   renderDragOverlay?: (activeId: UniqueIdentifier) => ReactNode
   /** Optional callback when column add button is clicked */
@@ -130,7 +134,12 @@ export const KanbanBoard = ({
   const activeItem = activeId ? items.find((item) => item.id === activeId) : null
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <XStack gap="$3" pb="$4">
           {columns.map((column) => {
@@ -170,4 +179,3 @@ export const KanbanBoard = ({
     </DndContext>
   )
 }
-

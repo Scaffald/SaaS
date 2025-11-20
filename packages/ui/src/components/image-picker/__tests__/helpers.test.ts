@@ -1,16 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  detectMimeTypeFromSrc,
-  getNativeTransform,
-  getWebTransform,
-} from '../utils/helpers'
+import { detectMimeTypeFromSrc, getNativeTransform, getWebTransform } from '../utils/helpers'
 
 describe('AvatarCropModal helpers', () => {
   it('detects mime type from data URL', () => {
-    expect(
-      detectMimeTypeFromSrc('data:image/png;base64,abcd'),
-    ).toEqual('image/png')
+    expect(detectMimeTypeFromSrc('data:image/png;base64,abcd')).toEqual('image/png')
   })
 
   it('falls back to jpg when no mime header is present', () => {
@@ -31,13 +25,12 @@ describe('AvatarCropModal helpers', () => {
   it('generates native transform instructions', () => {
     const horizontal = getNativeTransform(100, 120, true, false)
     expect(horizontal).toEqual(
-      expect.arrayContaining([{ translateX: 100 }, { scaleX: -1 }, { scaleY: 1 }]),
+      expect.arrayContaining([{ translateX: 100 }, { scaleX: -1 }, { scaleY: 1 }])
     )
 
     const vertical = getNativeTransform(80, 60, false, true)
     expect(vertical).toEqual(
-      expect.arrayContaining([{ translateY: 60 }, { scaleX: 1 }, { scaleY: -1 }]),
+      expect.arrayContaining([{ translateY: 60 }, { scaleX: 1 }, { scaleY: -1 }])
     )
   })
 })
-

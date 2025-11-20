@@ -11,7 +11,7 @@
  * Task 1: Set up Performance Testing Infrastructure
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Lighthouse configuration
@@ -56,12 +56,14 @@ test.describe('Lighthouse Performance Testing', () => {
       expect(title, 'Page should have a title').toBeTruthy()
 
       // Verify page has content
-      const bodyText = await page.textContent('body') || ''
+      const bodyText = (await page.textContent('body')) || ''
       expect(bodyText.length, 'Page should have content').toBeGreaterThan(0)
 
       // Basic performance check - page should load within reasonable time
       const loadTime = await page.evaluate(() => {
-        const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+        const navigationEntry = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming
         return navigationEntry ? navigationEntry.loadEventEnd - navigationEntry.fetchStart : 0
       })
 
@@ -76,7 +78,9 @@ test.describe('Lighthouse Performance Testing', () => {
 
     // Verify that the test can access performance API
     // This confirms the test environment is ready for Lighthouse
-    expect(typeof PerformanceObserver !== 'undefined', 'PerformanceObserver should be available').toBeTruthy()
+    expect(
+      typeof PerformanceObserver !== 'undefined',
+      'PerformanceObserver should be available'
+    ).toBeTruthy()
   })
 })
-

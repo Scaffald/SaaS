@@ -1,12 +1,12 @@
 import {
   createContext,
+  type PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type PropsWithChildren,
 } from 'react'
 
 type HighlightStatus = 'added' | 'removed'
@@ -74,4 +74,3 @@ export function useProfileCertificationsHighlight(): ProfileCertificationsHighli
   }
   return ctx
 }
-

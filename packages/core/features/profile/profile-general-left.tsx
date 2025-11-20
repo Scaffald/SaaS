@@ -1,22 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Input, Avatar, H4, AnimatePresence, ScrollView, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
-import { UIButton as Button, PhoneNumberInput, SkeletonForm } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, AvatarImagePicker, RichTextEditor, plainTextToTipTap, ConfirmationDialog } from '@app/ui'
-import type { JSONContent } from '@tiptap/core'
 import { isValidPhoneNumber } from '@app/schemas/common/phone'
+import {
+  AvatarImagePicker,
+  UIButton as Button,
+  ConfirmationDialog,
+  DashboardWidget,
+  PhoneNumberInput,
+  plainTextToTipTap,
+  RichTextEditor,
+  SkeletonForm,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
+import type { JSONContent } from '@tiptap/core'
+import React, { useEffect, useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import {
+  AnimatePresence,
+  Avatar,
+  H4,
+  Input,
+  ScrollView,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
@@ -40,20 +58,20 @@ export function ProfileGeneralLeft() {
   const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update profile data
-  const {
-    data: profileData,
-    isLoading: isLoadingProfile,
-  } = api.profile.getGeneral.useQuery()
+  const { data: profileData, isLoading: isLoadingProfile } = api.profile.getGeneral.useQuery()
   const updateProfileMutation = api.profile.updateGeneral.useMutation({
     async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
       resetProfileSyncError()
       startProfileSync()
       await utils.profile.getGeneral.cancel()
       const previousGeneral = utils.profile.getGeneral.getData()
-      utils.profile.getGeneral.setData(undefined, (current: GeneralProfileFormData | undefined) => ({
-        ...(current ?? {}),
-        ...input,
-      }))
+      utils.profile.getGeneral.setData(
+        undefined,
+        (current: GeneralProfileFormData | undefined) => ({
+          ...(current ?? {}),
+          ...input,
+        })
+      )
       return { previousGeneral }
     },
     onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
@@ -63,7 +81,8 @@ export function ProfileGeneralLeft() {
       }
       failProfileSync()
       toast.show('Error', {
-        message: error instanceof Error ? error.message : 'Failed to save profile. Please try again.',
+        message:
+          error instanceof Error ? error.message : 'Failed to save profile. Please try again.',
       })
     },
     onSuccess: () => {

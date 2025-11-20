@@ -7,7 +7,7 @@
  * Task 3: Set up Security Testing Infrastructure
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { assertSecurityHeaders } from '../infrastructure/playwright/helpers/security'
 
 test.describe('Security Testing Infrastructure', () => {
@@ -24,9 +24,12 @@ test.describe('Security Testing Infrastructure', () => {
       // Production validation should enforce all headers
       const response = await page.goto(page.url())
       const headers = response?.headers() || {}
-      
+
       // At minimum, response should have headers
-      expect(Object.keys(headers).length, 'Response should have headers for security testing').toBeGreaterThan(0)
+      expect(
+        Object.keys(headers).length,
+        'Response should have headers for security testing'
+      ).toBeGreaterThan(0)
     }
   })
 
@@ -76,4 +79,3 @@ test.describe('Security Testing Infrastructure', () => {
  * These tests validate basic infrastructure.
  * Full security testing is performed by dedicated security testing tools.
  */
-

@@ -7,13 +7,13 @@
  * REQ-11: Responsive Layout Improvements
  */
 
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
 import {
-  assertNoHorizontalScroll,
   assertFormResponsive,
+  assertNoHorizontalScroll,
   getViewportCategory,
 } from '../../infrastructure/playwright/helpers/helpers/responsive'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Priority 2 viewports: tablet and desktop only
 const viewports = [
@@ -43,22 +43,27 @@ test.describe('Responsive Office Admin', () => {
       })
 
       for (const route of officeRoutes) {
-        test(`${route.name} page displays correctly without horizontal scroll`, async ({ page }: { page: Page }) => {
+        test(`${route.name} page displays correctly without horizontal scroll`, async ({
+          page,
+        }: {
+          page: Page
+        }) => {
           await page.goto(route.path)
           await page.waitForLoadState('networkidle')
           await page.waitForTimeout(3000)
 
           // Wait for loading to complete
-          await page.waitForFunction(
-            () => !document.body.textContent?.includes('Loading...'),
-            { timeout: 10000 }
-          ).catch(() => {})
+          await page
+            .waitForFunction(() => !document.body.textContent?.includes('Loading...'), {
+              timeout: 10000,
+            })
+            .catch(() => {})
 
           // Verify no horizontal scrolling required
           await assertNoHorizontalScroll(page)
 
           // Verify page content is visible
-          const pageContent = await page.locator('body').textContent() || ''
+          const pageContent = (await page.locator('body').textContent()) || ''
           expect(pageContent.length).toBeGreaterThan(0)
         })
 
@@ -91,9 +96,9 @@ test.describe('Responsive Office Admin', () => {
           if (!formFound) {
             const inputs = page.locator('input, textarea, select')
             const inputCount = await inputs.count()
-            
+
             // Page should load regardless of form presence
-            const pageContent = await page.locator('body').textContent() || ''
+            const pageContent = (await page.locator('body').textContent()) || ''
             expect(pageContent.length).toBeGreaterThan(0)
           }
         })
@@ -114,11 +119,13 @@ test.describe('Responsive Office Admin', () => {
         if (inputCount > 0) {
           // Verify first input is visible
           const firstInput = inputs.first()
-          await expect(firstInput).toBeVisible({ timeout: 10000 }).catch(() => {})
+          await expect(firstInput)
+            .toBeVisible({ timeout: 10000 })
+            .catch(() => {})
         }
 
         // At minimum, verify page loaded
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
       })
 
@@ -137,11 +144,13 @@ test.describe('Responsive Office Admin', () => {
         if (inputCount > 0) {
           // Verify first input is visible
           const firstInput = inputs.first()
-          await expect(firstInput).toBeVisible({ timeout: 10000 }).catch(() => {})
+          await expect(firstInput)
+            .toBeVisible({ timeout: 10000 })
+            .catch(() => {})
         }
 
         // At minimum, verify page loaded
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
       })
 
@@ -155,7 +164,7 @@ test.describe('Responsive Office Admin', () => {
         await assertNoHorizontalScroll(page)
 
         // Look for kanban board elements
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
 
         // Kanban boards typically have column elements or cards
@@ -165,7 +174,9 @@ test.describe('Responsive Office Admin', () => {
         if (columnCount > 0) {
           // Verify columns are visible
           const firstColumn = columns.first()
-          await expect(firstColumn).toBeVisible({ timeout: 5000 }).catch(() => {})
+          await expect(firstColumn)
+            .toBeVisible({ timeout: 5000 })
+            .catch(() => {})
         }
       })
 
@@ -192,10 +203,10 @@ test.describe('Responsive Office Admin', () => {
             // On tablet, may have single column or multi-column
             // On desktop, typically multi-column
             // Verify inputs don't significantly overlap
-            const significantOverlap = 
-              box1.x < box2.x + box2.width * 0.7 && 
+            const significantOverlap =
+              box1.x < box2.x + box2.width * 0.7 &&
               box1.x + box1.width * 0.7 > box2.x &&
-              box1.y < box2.y + box2.height * 0.7 && 
+              box1.y < box2.y + box2.height * 0.7 &&
               box1.y + box1.height * 0.7 > box2.y
 
             // Either stacked or side-by-side, but not significantly overlapping
@@ -216,7 +227,9 @@ test.describe('Responsive Office Admin', () => {
 
         if (buttonCount > 0) {
           const firstButton = actionButtons.first()
-          await expect(firstButton).toBeVisible({ timeout: 10000 }).catch(() => {})
+          await expect(firstButton)
+            .toBeVisible({ timeout: 10000 })
+            .catch(() => {})
 
           const buttonBox = await firstButton.boundingBox()
           if (buttonBox) {
@@ -240,7 +253,7 @@ test.describe('Responsive Office Admin', () => {
         await assertNoHorizontalScroll(page)
 
         // Verify page content is visible
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
       })
     })
@@ -252,7 +265,11 @@ test.describe('Responsive Office Admin', () => {
       await signInAsAdmin(page)
     })
 
-    test('office admin pages work consistently across tablet and desktop', async ({ page }: { page: Page }) => {
+    test('office admin pages work consistently across tablet and desktop', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       for (const viewport of viewports) {
         await page.setViewportSize({ width: viewport.width, height: viewport.height })
 
@@ -266,11 +283,10 @@ test.describe('Responsive Office Admin', () => {
           await assertNoHorizontalScroll(page)
 
           // At minimum, verify page loaded
-          const pageContent = await page.locator('body').textContent() || ''
+          const pageContent = (await page.locator('body').textContent()) || ''
           expect(pageContent.length).toBeGreaterThan(0)
         }
       }
     })
   })
 })
-

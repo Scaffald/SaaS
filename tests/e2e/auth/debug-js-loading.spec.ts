@@ -1,16 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.use({ storageState: 'tests/.auth/super-admin.json' })
 
 test('debug JS loading with console output', async ({ page }) => {
   // Capture console messages
-  page.on('console', msg => console.log(`BROWSER [${msg.type()}]:`, msg.text()))
+  page.on('console', (msg) => console.log(`BROWSER [${msg.type()}]:`, msg.text()))
 
   // Capture page errors
-  page.on('pageerror', error => console.log('PAGE ERROR:', error.message))
+  page.on('pageerror', (error) => console.log('PAGE ERROR:', error.message))
 
   // Capture network errors
-  page.on('requestfailed', request =>
+  page.on('requestfailed', (request) =>
     console.log('REQUEST FAILED:', request.url(), request.failure()?.errorText)
   )
 
@@ -40,10 +40,10 @@ test('debug authentication state loading', async ({ page }) => {
   console.log('\n=== AUTH DEBUG TEST START ===\n')
 
   // Capture console messages
-  page.on('console', msg => console.log(`BROWSER [${msg.type()}]:`, msg.text()))
+  page.on('console', (msg) => console.log(`BROWSER [${msg.type()}]:`, msg.text()))
 
   // Capture page errors
-  page.on('pageerror', error => console.log('PAGE ERROR:', error.message))
+  page.on('pageerror', (error) => console.log('PAGE ERROR:', error.message))
 
   console.log('=== Navigating to /office/organizations ===')
   await page.goto('http://localhost:8081/office/organizations')
@@ -63,11 +63,7 @@ test('debug authentication state loading', async ({ page }) => {
     let authTokenKey = null
 
     // Check common Supabase auth key patterns
-    const possibleKeys = [
-      'sb-127-auth-token',
-      'supabase.auth.token',
-      'sb-localhost-auth-token'
-    ]
+    const possibleKeys = ['sb-127-auth-token', 'supabase.auth.token', 'sb-localhost-auth-token']
 
     for (const key of localStorageKeys) {
       if (key.includes('auth') || key.includes('supabase')) {
@@ -87,7 +83,7 @@ test('debug authentication state loading', async ({ page }) => {
       authTokenKey: authTokenKey,
       hasAuthToken: !!authToken,
       authTokenLength: authToken ? authToken.length : 0,
-      authTokenPreview: authToken ? authToken.substring(0, 200) + '...' : null
+      authTokenPreview: authToken ? authToken.substring(0, 200) + '...' : null,
     }
   })
 
@@ -107,7 +103,7 @@ test('debug authentication state loading', async ({ page }) => {
     const hasSupabase = typeof (window as any).__supabase !== 'undefined'
     return {
       hasSupabase: hasSupabase,
-      windowKeys: Object.keys(window).filter(k => k.toLowerCase().includes('supabase'))
+      windowKeys: Object.keys(window).filter((k) => k.toLowerCase().includes('supabase')),
     }
   })
 
@@ -125,7 +121,7 @@ test('debug authentication state loading', async ({ page }) => {
   console.log('\n=== CHECKING PAGE CONTENT ===\n')
 
   // Check #root content
-  const rootContentLength = await page.locator('#root').evaluate(el => el.innerHTML.length)
+  const rootContentLength = await page.locator('#root').evaluate((el) => el.innerHTML.length)
   const rootHasContent = rootContentLength > 500
 
   console.log('  #root content length:', rootContentLength)
@@ -168,14 +164,14 @@ test('verify routing and route protection', async ({ page }) => {
   const urlHistory: string[] = []
   const redirects: Array<{ from: string; to: string }> = []
 
-  page.on('framenavigated', frame => {
+  page.on('framenavigated', (frame) => {
     if (frame === page.mainFrame()) {
       const url = frame.url()
       urlHistory.push(url)
       if (urlHistory.length > 1) {
         redirects.push({
           from: urlHistory[urlHistory.length - 2],
-          to: url
+          to: url,
         })
       }
       console.log(`NAVIGATED TO: ${url}`)
@@ -183,22 +179,22 @@ test('verify routing and route protection', async ({ page }) => {
   })
 
   // Capture console messages
-  page.on('console', msg => console.log(`BROWSER [${msg.type()}]:`, msg.text()))
+  page.on('console', (msg) => console.log(`BROWSER [${msg.type()}]:`, msg.text()))
 
   // Test 1: Direct navigation to /office/organizations
   console.log('\n=== TEST 1: Direct Navigation ===\n')
   const targetUrl = 'http://localhost:8081/office/organizations'
   console.log(`Navigating directly to: ${targetUrl}`)
-  
+
   await page.goto(targetUrl, { waitUntil: 'domcontentloaded' })
-  
+
   await page.waitForTimeout(3000) // Wait for React to initialize and any redirects
-  
+
   const finalUrl1 = page.url()
   console.log(`Final URL after direct navigation: ${finalUrl1}`)
   console.log(`Expected URL: ${targetUrl}`)
   console.log(`URL matches: ${finalUrl1 === targetUrl}`)
-  
+
   if (redirects.length > 0) {
     console.log('Redirects detected:')
     redirects.forEach((r, i) => {
@@ -209,7 +205,7 @@ test('verify routing and route protection', async ({ page }) => {
   // Check if we're still on the expected route or were redirected
   const isOnExpectedRoute = finalUrl1.includes('/office/organizations')
   console.log(`On expected route: ${isOnExpectedRoute}`)
-  
+
   if (!isOnExpectedRoute) {
     console.log(`WARNING: Redirected from /office/organizations to ${finalUrl1}`)
   }
@@ -217,12 +213,10 @@ test('verify routing and route protection', async ({ page }) => {
   // Check auth state persists
   const authAfterDirectNav = await page.evaluate(() => {
     const localStorageKeys = Object.keys(localStorage)
-    const authKeys = localStorageKeys.filter(k => 
-      k.includes('auth') || k.includes('supabase')
-    )
+    const authKeys = localStorageKeys.filter((k) => k.includes('auth') || k.includes('supabase'))
     return {
       hasAuthKeys: authKeys.length > 0,
-      authKeys: authKeys
+      authKeys: authKeys,
     }
   })
   console.log('Auth state after direct nav:', authAfterDirectNav)
@@ -258,7 +252,7 @@ test('verify routing and route protection', async ({ page }) => {
 
   const finalUrl2 = page.url()
   console.log(`Final URL after programmatic navigation: ${finalUrl2}`)
-  
+
   if (redirects.length > 0) {
     console.log('Redirects during programmatic nav:')
     redirects.forEach((r, i) => {
@@ -272,12 +266,10 @@ test('verify routing and route protection', async ({ page }) => {
   // Check auth state persists after programmatic navigation
   const authAfterProgrammaticNav = await page.evaluate(() => {
     const localStorageKeys = Object.keys(localStorage)
-    const authKeys = localStorageKeys.filter(k => 
-      k.includes('auth') || k.includes('supabase')
-    )
+    const authKeys = localStorageKeys.filter((k) => k.includes('auth') || k.includes('supabase'))
     return {
       hasAuthKeys: authKeys.length > 0,
-      authKeys: authKeys
+      authKeys: authKeys,
     }
   })
   console.log('Auth state after programmatic nav:', authAfterProgrammaticNav)
@@ -285,12 +277,7 @@ test('verify routing and route protection', async ({ page }) => {
   // Test 3: Check route protection - verify we can access office routes
   console.log('\n=== TEST 3: Route Protection Check ===\n')
 
-  const officeRoutes = [
-    '/office',
-    '/office/organizations',
-    '/office/jobs',
-    '/office/users'
-  ]
+  const officeRoutes = ['/office', '/office/organizations', '/office/jobs', '/office/users']
 
   for (const route of officeRoutes) {
     console.log(`\nTesting route: ${route}`)
@@ -313,7 +300,8 @@ test('verify routing and route protection', async ({ page }) => {
     }
 
     // Check for access denied messages
-    const accessDenied = await page.getByText(/access denied|unauthorized|forbidden|sign in/i)
+    const accessDenied = await page
+      .getByText(/access denied|unauthorized|forbidden|sign in/i)
       .first()
       .isVisible()
       .catch(() => false)
@@ -323,7 +311,7 @@ test('verify routing and route protection', async ({ page }) => {
 
   // Test 4: Verify root content is rendered
   console.log('\n=== TEST 4: Root Content Check ===\n')
-  
+
   await page.goto('http://localhost:8081/office/organizations', { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(3000)
 
@@ -340,14 +328,16 @@ test('verify routing and route protection', async ({ page }) => {
   }
 
   // Check for specific elements
-  const hasOrganizationsTable = await page.locator('[data-testid="organizations-table"]')
+  const hasOrganizationsTable = await page
+    .locator('[data-testid="organizations-table"]')
     .count()
-    .then(count => count > 0)
+    .then((count) => count > 0)
     .catch(() => false)
 
-  const hasCreateButton = await page.getByRole('button', { name: /create organization/i })
+  const hasCreateButton = await page
+    .getByRole('button', { name: /create organization/i })
     .count()
-    .then(count => count > 0)
+    .then((count) => count > 0)
     .catch(() => false)
 
   console.log(`Has organizations table: ${hasOrganizationsTable}`)

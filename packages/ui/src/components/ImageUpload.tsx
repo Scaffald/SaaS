@@ -1,11 +1,11 @@
-import { useState, useCallback, useRef, type ChangeEvent } from 'react'
-import { YStack, XStack, Text, Button, Spinner, Image, Circle } from 'tamagui'
-import { Upload, X, Image as ImageIcon, AlertCircle, Trash2 } from '@tamagui/lucide-icons'
-import { useFilePicker } from './image-picker/hooks/useFilePicker'
-import { MediaTypeOptions } from './image-picker/types'
 import { supabase } from '@app/core/utils/supabase/client'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import { AlertCircle, Image as ImageIcon, Trash2, Upload } from '@tamagui/lucide-icons'
+import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
+import { Button, Image, Spinner, Text, XStack, YStack } from 'tamagui'
+import { useFilePicker } from './image-picker/hooks/useFilePicker'
+import { MediaTypeOptions } from './image-picker/types'
 
 export interface ImageUploadProps {
   /** Current image URL (for edit mode) */
@@ -344,7 +344,7 @@ export function ImageUpload({
         p="$4"
         bg={isDragActive ? '$blue2' : hasImage ? '$background' : '$background'}
         opacity={disabled ? 0.5 : 1}
-        // @ts-ignore - drag events work on web
+        // @ts-expect-error - drag events work on web
         {...(getRootProps ? getRootProps() : {})}
       >
         {hasImage ? (

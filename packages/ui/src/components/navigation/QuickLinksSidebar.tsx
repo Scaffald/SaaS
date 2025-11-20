@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { YStack } from 'tamagui'
 
-import { useQuickLinks, type UseQuickLinksOptions } from '../../hooks/useQuickLinks'
+import { type UseQuickLinksOptions, useQuickLinks } from '../../hooks/useQuickLinks'
 
 export type QuickLinksSidebarProps = UseQuickLinksOptions & {
   children?: ReactNode

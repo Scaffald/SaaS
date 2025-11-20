@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { Button, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
-import { ArrowLeft } from '@tamagui/lucide-icons'
 import type { CustomQuestionAnswer } from '@app/schemas'
 import { ToggleSwitch } from '@app/ui'
+import { ArrowLeft } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Button, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
 
 export interface CustomQuestion {
   id: string
@@ -232,14 +232,7 @@ export function CustomQuestionsStep({
 
       {/* Validation Summary */}
       {Object.entries(errors).some(([, error]) => error !== undefined) && (
-        <YStack
-          p="$4"
-          rounded="$4"
-          bg="$red2"
-          borderWidth={1}
-          borderColor="$red7"
-          gap="$2"
-        >
+        <YStack p="$4" rounded="$4" bg="$red2" borderWidth={1} borderColor="$red7" gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$red11">
             Please complete the following:
           </Text>
@@ -294,9 +287,7 @@ export function CustomQuestionsStep({
                   <Text
                     fontSize="$2"
                     color={
-                      getCharacterCount(question.id) > getMaxLength(question)
-                        ? '$red10'
-                        : '$gray11'
+                      getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
                     }
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters
@@ -329,9 +320,7 @@ export function CustomQuestionsStep({
                   <Text
                     fontSize="$2"
                     color={
-                      getCharacterCount(question.id) > getMaxLength(question)
-                        ? '$red10'
-                        : '$gray11'
+                      getCharacterCount(question.id) > getMaxLength(question) ? '$red10' : '$gray11'
                     }
                   >
                     {getCharacterCount(question.id)} / {getMaxLength(question)} characters

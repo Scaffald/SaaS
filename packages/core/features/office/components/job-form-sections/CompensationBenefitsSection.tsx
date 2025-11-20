@@ -1,8 +1,7 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
-import { Adapt, Select, Label, TextArea } from 'tamagui'
-import { Sheet } from '@app/ui'
+import { Input, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Adapt, Label, Select, TextArea } from 'tamagui'
 
 interface CompensationBenefitsSectionProps {
   benefitsSummary?: string

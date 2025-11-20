@@ -10,7 +10,7 @@
  * Web-based tests validate basic touch interaction principles.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Mobile viewports for touch testing
@@ -59,8 +59,14 @@ test.describe('Touch Interaction and Gesture Testing', () => {
 
           if (box) {
             // Touch targets should be at least 44x44px (REQ-198 target)
-            expect(box.width, `Touch target ${i} should be at least 44px wide`).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
-            expect(box.height, `Touch target ${i} should be at least 44px tall`).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
+            expect(
+              box.width,
+              `Touch target ${i} should be at least 44px wide`
+            ).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
+            expect(
+              box.height,
+              `Touch target ${i} should be at least 44px tall`
+            ).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
           }
         }
       })
@@ -143,4 +149,3 @@ test.describe('Touch Interaction and Gesture Testing', () => {
  * These tests provide web-based validation of touch interaction principles.
  * Full mobile testing should be done on actual devices.
  */
-

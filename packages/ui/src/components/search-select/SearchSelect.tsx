@@ -1,7 +1,7 @@
 import { Platform } from 'react-native'
-import type { SearchSelectProps } from './types'
 import { SearchSelectMobile } from './SearchSelectMobile'
 import { SearchSelectWeb } from './SearchSelectWeb'
+import type { SearchSelectProps } from './types'
 
 export function SearchSelect<T>(props: SearchSelectProps<T>) {
   const isNative = Platform.OS === 'ios' || Platform.OS === 'android'

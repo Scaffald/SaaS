@@ -1,6 +1,6 @@
+import { Copy, Eye, Pencil, Trash2, X } from '@tamagui/lucide-icons'
 import { useEffect, useRef } from 'react'
-import { Button, YStack, XStack } from 'tamagui'
-import { Eye, Pencil, Trash2, X, Copy } from '@tamagui/lucide-icons'
+import { Button, XStack, YStack } from 'tamagui'
 import { DeleteButton } from './DeleteButton'
 import { DuplicateButton } from './DuplicateButton'
 
@@ -27,10 +27,10 @@ export interface RowActionOverlayProps<TData> {
 
 /**
  * RowActionOverlay - Overlay that appears on table row click
- * 
+ *
  * Shows View, Edit, Delete actions in an overlay positioned relative to the clicked row.
  * Dismisses on outside click or Escape key.
- * 
+ *
  * @example
  * ```tsx
  * <RowActionOverlay
@@ -159,15 +159,9 @@ export function RowActionOverlay<TData>({
         size="$2"
         variant="outlined"
       />
-      <Button
-        size="$2"
-        variant="outlined"
-        icon={X}
-        onPress={onClose}
-      >
+      <Button size="$2" variant="outlined" icon={X} onPress={onClose}>
         Close
       </Button>
     </XStack>
   )
 }
-

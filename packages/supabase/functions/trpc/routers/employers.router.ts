@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure, t } from "../middleware.ts";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Employers Router
@@ -14,29 +14,29 @@ export const employersRouter = t.router({
     .input(
       z.object({
         organizationId: z.string().uuid(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       const { data, error } = await ctx.supabase
-        .schema("core")
-        .from("user_experience")
-        .select("id, source, is_current, claimed_at, created_at")
-        .eq("user_id", ctx.user.id)
-        .eq("organization_id", input.organizationId)
-        .order("is_current", { ascending: false })
-        .order("created_at", { ascending: false })
+        .schema('core')
+        .from('user_experience')
+        .select('id, source, is_current, claimed_at, created_at')
+        .eq('user_id', ctx.user.id)
+        .eq('organization_id', input.organizationId)
+        .order('is_current', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1)
-        .maybeSingle();
+        .maybeSingle()
 
-      if (error && error.code !== "PGRST116") {
+      if (error && error.code !== 'PGRST116') {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to check employment status: ${error.message}`,
-        });
+        })
       }
 
       return {
@@ -46,7 +46,7 @@ export const employersRouter = t.router({
         isCurrent: data?.is_current ?? false,
         claimedAt: data?.claimed_at ?? null,
         createdAt: data?.created_at ?? null,
-      };
+      }
     }),
 
   /**
@@ -56,99 +56,99 @@ export const employersRouter = t.router({
     .input(
       z.object({
         organizationId: z.string().uuid(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       const { data: existingExperience, error: existingError } = await ctx.supabase
-        .schema("core")
-        .from("user_experience")
-        .select("id, source, is_current, claimed_at, created_at")
-        .eq("user_id", ctx.user.id)
-        .eq("organization_id", input.organizationId)
-        .maybeSingle();
+        .schema('core')
+        .from('user_experience')
+        .select('id, source, is_current, claimed_at, created_at')
+        .eq('user_id', ctx.user.id)
+        .eq('organization_id', input.organizationId)
+        .maybeSingle()
 
-      if (existingError && existingError.code !== "PGRST116") {
+      if (existingError && existingError.code !== 'PGRST116') {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to check existing employment: ${existingError.message}`,
-        });
+        })
       }
 
       if (existingExperience) {
         return {
           alreadyLinked: true,
           experience: existingExperience,
-        };
+        }
       }
 
       const { data: organization, error: organizationError } = await ctx.supabase
-        .schema("core")
-        .from("organizations")
-        .select("name")
-        .eq("id", input.organizationId)
-        .single();
+        .schema('core')
+        .from('organizations')
+        .select('name')
+        .eq('id', input.organizationId)
+        .single()
 
       if (organizationError) {
         throw new TRPCError({
-          code: "NOT_FOUND",
+          code: 'NOT_FOUND',
           message: `Organization not found: ${organizationError.message}`,
-        });
+        })
       }
 
       const { data: experience, error: createError } = await ctx.supabase
-        .schema("core")
-        .from("user_experience")
+        .schema('core')
+        .from('user_experience')
         .insert({
           user_id: ctx.user.id,
           organization_id: input.organizationId,
-          job_title: "Team Member",
-          company_name: organization.name ?? "Unknown Organization",
+          job_title: 'Team Member',
+          company_name: organization.name ?? 'Unknown Organization',
           is_current: true,
-          source: "claim",
+          source: 'claim',
           claimed_at: new Date().toISOString(),
         })
-        .select("id, source, is_current, claimed_at, created_at")
-        .single();
+        .select('id, source, is_current, claimed_at, created_at')
+        .single()
 
       if (createError) {
-        if (createError.code === "23505") {
+        if (createError.code === '23505') {
           const { data: existing, error: fetchError } = await ctx.supabase
-            .schema("core")
-            .from("user_experience")
-            .select("id, source, is_current, claimed_at, created_at")
-            .eq("user_id", ctx.user.id)
-            .eq("organization_id", input.organizationId)
-            .single();
+            .schema('core')
+            .from('user_experience')
+            .select('id, source, is_current, claimed_at, created_at')
+            .eq('user_id', ctx.user.id)
+            .eq('organization_id', input.organizationId)
+            .single()
 
-          if (fetchError && fetchError.code !== "PGRST116") {
+          if (fetchError && fetchError.code !== 'PGRST116') {
             throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
+              code: 'INTERNAL_SERVER_ERROR',
               message: `Failed to confirm existing employment link: ${fetchError.message}`,
-            });
+            })
           }
 
           if (existing) {
             return {
               alreadyLinked: true,
               experience: existing,
-            };
+            }
           }
         }
 
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to create employment link: ${createError.message}`,
-        });
+        })
       }
 
       return {
         alreadyLinked: false,
         experience: experience,
-      };
+      }
     }),
 
   /**
@@ -158,32 +158,32 @@ export const employersRouter = t.router({
     .input(
       z.object({
         organizationId: z.string().uuid(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       const { data: deletedRows, error } = await ctx.supabase
-        .schema("core")
-        .from("user_experience")
+        .schema('core')
+        .from('user_experience')
         .delete()
-        .eq("user_id", ctx.user.id)
-        .eq("organization_id", input.organizationId)
-        .eq("source", "claim")
-        .select("id");
+        .eq('user_id', ctx.user.id)
+        .eq('organization_id', input.organizationId)
+        .eq('source', 'claim')
+        .select('id')
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to remove employment link: ${error.message}`,
-        });
+        })
       }
 
       return {
         removed: (deletedRows ?? []).length > 0,
-      };
+      }
     }),
 
   /**
@@ -193,37 +193,37 @@ export const employersRouter = t.router({
     .input(
       z.object({
         organizationId: z.string().uuid(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       const { data, error } = await ctx.supabase
-        .schema("core")
-        .from("follows")
-        .select("id, created_at")
+        .schema('core')
+        .from('follows')
+        .select('id, created_at')
         .match({
-          follower_type: "user",
+          follower_type: 'user',
           follower_id: ctx.user.id,
-          followee_type: "organization",
+          followee_type: 'organization',
           followee_id: input.organizationId,
         })
-        .maybeSingle();
+        .maybeSingle()
 
-      if (error && error.code !== "PGRST116") {
+      if (error && error.code !== 'PGRST116') {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to check follow status: ${error.message}`,
-        });
+        })
       }
 
       return {
         isFollowing: Boolean(data?.id),
         followId: data?.id ?? null,
         createdAt: data?.created_at ?? null,
-      };
+      }
     }),
 
   /**
@@ -233,61 +233,61 @@ export const employersRouter = t.router({
     .input(
       z.object({
         organizationId: z.string().uuid(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       const payload = {
-        follower_type: "user" as const,
+        follower_type: 'user' as const,
         follower_id: ctx.user.id,
-        followee_type: "organization" as const,
+        followee_type: 'organization' as const,
         followee_id: input.organizationId,
-      };
+      }
 
       const { data, error } = await ctx.supabase
-        .schema("core")
-        .from("follows")
+        .schema('core')
+        .from('follows')
         .insert(payload)
-        .select("id, created_at")
-        .single();
+        .select('id, created_at')
+        .single()
 
       if (error) {
-        if (error.code === "23505") {
+        if (error.code === '23505') {
           const { data: existing, error: fetchError } = await ctx.supabase
-            .schema("core")
-            .from("follows")
-            .select("id, created_at")
+            .schema('core')
+            .from('follows')
+            .select('id, created_at')
             .match(payload)
-            .single();
+            .single()
 
-          if (fetchError && fetchError.code !== "PGRST116") {
+          if (fetchError && fetchError.code !== 'PGRST116') {
             throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
+              code: 'INTERNAL_SERVER_ERROR',
               message: `Failed to confirm existing follow: ${fetchError.message}`,
-            });
+            })
           }
 
           if (existing) {
             return {
               alreadyFollowing: true,
               follow: existing,
-            };
+            }
           }
         }
 
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to follow organization: ${error.message}`,
-        });
+        })
       }
 
       return {
         alreadyFollowing: false,
         follow: data,
-      };
+      }
     }),
 
   /**
@@ -297,32 +297,28 @@ export const employersRouter = t.router({
     .input(
       z.object({
         organizationId: z.string().uuid(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { error } = await ctx.supabase
-        .schema("core")
-        .from("follows")
-        .delete()
-        .match({
-          follower_type: "user",
-          follower_id: ctx.user.id,
-          followee_type: "organization",
-          followee_id: input.organizationId,
-        });
+      const { error } = await ctx.supabase.schema('core').from('follows').delete().match({
+        follower_type: 'user',
+        follower_id: ctx.user.id,
+        followee_type: 'organization',
+        followee_id: input.organizationId,
+      })
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to unfollow organization: ${error.message}`,
-        });
+        })
       }
 
-      return { success: true };
+      return { success: true }
     }),
 
   /**
@@ -337,26 +333,26 @@ export const employersRouter = t.router({
           employeeCountRanges: z.array(z.string()).optional(),
           limit: z.number().min(1).max(100).default(50),
         })
-        .optional(),
+        .optional()
     )
     .query(async ({ ctx, input }) => {
       type EmployerRecord = {
-        id: string;
-        name: string;
-        slug: string;
-        description: unknown;
-        website: string | null;
-        visibility: string;
-        address: unknown;
-        industry_id: string | null;
+        id: string
+        name: string
+        slug: string
+        description: unknown
+        website: string | null
+        visibility: string
+        address: unknown
+        industry_id: string | null
         industries?: {
-          id: string;
-          name: string;
-        } | null;
-        owner_user_id: string | null;
-        created_at: string;
-        updated_at: string;
-      };
+          id: string
+          name: string
+        } | null
+        owner_user_id: string | null
+        created_at: string
+        updated_at: string
+      }
 
       const selectFields = `
         id,
@@ -374,110 +370,113 @@ export const employersRouter = t.router({
         owner_user_id,
         created_at,
         updated_at
-      `;
+      `
 
       const createOrganizationsQuery = () =>
         ctx.supabase
-          .schema("core")
-          .from("organizations")
+          .schema('core')
+          .from('organizations')
           .select(selectFields)
-          .order("created_at", { ascending: false });
+          .order('created_at', { ascending: false })
 
-      type OrganizationsQueryBuilder = ReturnType<typeof createOrganizationsQuery>;
+      type OrganizationsQueryBuilder = ReturnType<typeof createOrganizationsQuery>
 
-      const applyFilters = (query: OrganizationsQueryBuilder, options: { applyLimit?: boolean } = {}) => {
-        let filteredQuery = query;
+      const applyFilters = (
+        query: OrganizationsQueryBuilder,
+        options: { applyLimit?: boolean } = {}
+      ) => {
+        let filteredQuery = query
 
         if (input?.search && input.search.trim().length > 0) {
-          const searchTerm = input.search.trim();
+          const searchTerm = input.search.trim()
           filteredQuery = filteredQuery.or(
-            `name.ilike.%${searchTerm}%,slug.ilike.%${searchTerm}%,website.ilike.%${searchTerm}%`,
-          );
+            `name.ilike.%${searchTerm}%,slug.ilike.%${searchTerm}%,website.ilike.%${searchTerm}%`
+          )
         }
 
         if (input?.industryIds && input.industryIds.length > 0) {
-          filteredQuery = filteredQuery.in("industry_id", input.industryIds);
+          filteredQuery = filteredQuery.in('industry_id', input.industryIds)
         }
 
         if (options.applyLimit && input?.limit) {
-          filteredQuery = filteredQuery.limit(input.limit);
+          filteredQuery = filteredQuery.limit(input.limit)
         }
 
-        return filteredQuery;
-      };
+        return filteredQuery
+      }
 
       // Always fetch public organizations first (respecting limit for performance)
       const { data: publicOrganizations, error: publicError } = await applyFilters(
-        createOrganizationsQuery().eq("visibility", "public"),
-        { applyLimit: true },
-      );
+        createOrganizationsQuery().eq('visibility', 'public'),
+        { applyLimit: true }
+      )
 
       if (publicError) {
-        throw new Error(`Failed to fetch organizations: ${publicError.message}`);
+        throw new Error(`Failed to fetch organizations: ${publicError.message}`)
       }
 
-      const organizationAccumulator = new Map<string, EmployerRecord>();
+      const organizationAccumulator = new Map<string, EmployerRecord>()
 
       for (const org of publicOrganizations ?? []) {
-        organizationAccumulator.set(org.id, org as EmployerRecord);
+        organizationAccumulator.set(org.id, org as EmployerRecord)
       }
 
       if (ctx.user) {
-        const userId = ctx.user.id;
+        const userId = ctx.user.id
 
         const { data: ownedOrgs, error: ownedError } = await applyFilters(
-          createOrganizationsQuery().eq("owner_user_id", userId),
-        );
+          createOrganizationsQuery().eq('owner_user_id', userId)
+        )
 
         if (ownedError) {
-          throw new Error(`Failed to fetch owned organizations: ${ownedError.message}`);
+          throw new Error(`Failed to fetch owned organizations: ${ownedError.message}`)
         }
 
         ownedOrgs?.forEach((org) => {
-          organizationAccumulator.set(org.id, org as EmployerRecord);
-        });
+          organizationAccumulator.set(org.id, org as EmployerRecord)
+        })
 
         const { data: teamMemberships, error: membershipsError } = await ctx.supabase
-          .schema("core")
-          .from("team_members")
-          .select("teams!inner(organization_id)")
-          .eq("user_id", userId);
+          .schema('core')
+          .from('team_members')
+          .select('teams!inner(organization_id)')
+          .eq('user_id', userId)
 
         if (membershipsError) {
-          throw new Error(`Failed to load team memberships: ${membershipsError.message}`);
+          throw new Error(`Failed to load team memberships: ${membershipsError.message}`)
         }
 
         const memberOrgIds =
           teamMemberships
             ?.map((entry) => entry.teams?.organization_id)
-            .filter((id): id is string => Boolean(id)) ?? [];
+            .filter((id): id is string => Boolean(id)) ?? []
 
         if (memberOrgIds.length > 0) {
           const { data: memberOrgs, error: memberError } = await applyFilters(
-            createOrganizationsQuery().in("id", memberOrgIds),
-          );
+            createOrganizationsQuery().in('id', memberOrgIds)
+          )
 
           if (memberError) {
-            throw new Error(`Failed to fetch member organizations: ${memberError.message}`);
+            throw new Error(`Failed to fetch member organizations: ${memberError.message}`)
           }
 
           memberOrgs?.forEach((org) => {
-            organizationAccumulator.set(org.id, org as EmployerRecord);
-          });
+            organizationAccumulator.set(org.id, org as EmployerRecord)
+          })
         }
       }
 
-      const organizations = Array.from(organizationAccumulator.values());
+      const organizations = Array.from(organizationAccumulator.values())
 
       const limitedResults =
         input?.limit && organizations.length > input.limit
           ? organizations.slice(0, input.limit)
-          : organizations;
+          : organizations
 
       return {
         employers: limitedResults,
         total: organizations.length,
-      };
+      }
     }),
 
   /**
@@ -487,12 +486,12 @@ export const employersRouter = t.router({
     .input(
       z.object({
         id: z.string().uuid(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       const { data: organization, error } = await ctx.supabase
-        .schema("core")
-        .from("organizations")
+        .schema('core')
+        .from('organizations')
         .select(
           `
           id,
@@ -510,17 +509,17 @@ export const employersRouter = t.router({
           owner_user_id,
           created_at,
           updated_at
-        `,
+        `
         )
-        .eq("id", input.id)
-        .eq("visibility", "public")
-        .single();
+        .eq('id', input.id)
+        .eq('visibility', 'public')
+        .single()
 
       if (error) {
-        throw new Error(`Failed to fetch organization: ${error.message}`);
+        throw new Error(`Failed to fetch organization: ${error.message}`)
       }
 
-      return organization;
+      return organization
     }),
 
   /**
@@ -530,12 +529,12 @@ export const employersRouter = t.router({
     .input(
       z.object({
         slug: z.string(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       const { data: organization, error } = await ctx.supabase
-        .schema("core")
-        .from("organizations")
+        .schema('core')
+        .from('organizations')
         .select(
           `
           id,
@@ -552,16 +551,16 @@ export const employersRouter = t.router({
           ),
           created_at,
           updated_at
-        `,
+        `
         )
-        .eq("slug", input.slug)
-        .eq("visibility", "public")
-        .single();
+        .eq('slug', input.slug)
+        .eq('visibility', 'public')
+        .single()
 
       if (error) {
-        throw new Error(`Failed to fetch organization: ${error.message}`);
+        throw new Error(`Failed to fetch organization: ${error.message}`)
       }
 
-      return organization;
+      return organization
     }),
-});
+})

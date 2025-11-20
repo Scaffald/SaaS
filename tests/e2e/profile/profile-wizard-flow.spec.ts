@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test'
 import * as fs from 'node:fs'
+import { expect, test } from '@playwright/test'
 
 const userAuthFile = 'tests/.auth/user.json'
 
@@ -60,7 +60,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
         lastSavedAt: null,
         requiredSteps: ['general', 'skills', 'experience'],
         stepData: {},
-      }),
+      })
     )
 
     await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -116,7 +116,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
         lastSavedAt: new Date().toISOString(),
         requiredSteps: ['general', 'skills', 'experience'],
         stepData,
-      }),
+      })
     )
 
     await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -157,13 +157,20 @@ test.describe('Profile Wizard Flow - E2E', () => {
     await page.route(/\/trpc\/profileWizard\.complete/, (route) =>
       fulfillJson(route, {
         currentStep: 'education',
-        completedSteps: ['general', 'skills', 'experience', 'certifications', 'preferences', 'education'],
+        completedSteps: [
+          'general',
+          'skills',
+          'experience',
+          'certifications',
+          'preferences',
+          'education',
+        ],
         completionPercentage: 100,
         lastSavedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
         requiredSteps: ['general', 'skills', 'experience'],
         stepData: {},
-      }),
+      })
     )
 
     await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -190,7 +197,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
         lastSavedAt: null,
         requiredSteps: ['general', 'skills', 'experience'],
         stepData: {},
-      }),
+      })
     )
 
     await page.route(/\/trpc\/profileWizard\.saveStep/, (route) => {
@@ -209,7 +216,10 @@ test.describe('Profile Wizard Flow - E2E', () => {
     await page.waitForTimeout(1000)
 
     // Check if progress indicator shows percentage
-    const progressText = await page.getByText(/\d+%/).textContent().catch(() => null)
+    const progressText = await page
+      .getByText(/\d+%/)
+      .textContent()
+      .catch(() => null)
     if (progressText) {
       const percentage = Number.parseInt(progressText.replace('%', ''), 10)
       expect(percentage).toBeGreaterThanOrEqual(0)
@@ -228,7 +238,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
         lastSavedAt: null,
         requiredSteps: ['general', 'skills', 'experience'],
         stepData: {},
-      }),
+      })
     )
 
     await page.route(/\/trpc\/profileWizard\.saveStep/, (route) =>
@@ -239,7 +249,7 @@ test.describe('Profile Wizard Flow - E2E', () => {
         lastSavedAt: new Date().toISOString(),
         requiredSteps: ['general', 'skills', 'experience'],
         stepData: { general: {} },
-      }),
+      })
     )
 
     await page.goto('/dashboard/profile/wizard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -270,4 +280,3 @@ test.describe('Profile Wizard Flow - E2E', () => {
     }
   })
 })
-

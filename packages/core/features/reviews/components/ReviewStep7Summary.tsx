@@ -1,4 +1,4 @@
-import { YStack, Text, TextArea } from 'tamagui'
+import { Text, TextArea, YStack } from 'tamagui'
 
 interface ReviewStep7SummaryProps {
   comment: string

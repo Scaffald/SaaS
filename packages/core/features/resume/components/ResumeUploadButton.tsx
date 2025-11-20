@@ -1,5 +1,5 @@
-import { Button, type ButtonProps } from 'tamagui'
 import { UploadCloud } from '@tamagui/lucide-icons'
+import { Button, type ButtonProps } from 'tamagui'
 
 export interface ResumeUploadButtonProps extends Omit<ButtonProps, 'children' | 'text'> {
   onPress: () => void
@@ -15,15 +15,8 @@ export function ResumeUploadButton({
   ...rest
 }: ResumeUploadButtonProps) {
   return (
-    <Button
-      size={size}
-      variant={variant}
-      icon={icon}
-      onPress={onPress}
-      {...rest}
-    >
+    <Button size={size} variant={variant} icon={icon} onPress={onPress} {...rest}>
       {label}
     </Button>
   )
 }
-

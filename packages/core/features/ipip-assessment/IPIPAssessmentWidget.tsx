@@ -1,12 +1,12 @@
-import { useRouter } from 'expo-router'
-import { YStack, Text, Spinner, XStack, Progress } from 'tamagui'
+import { ROUTES } from '@app/core/constants/routes'
+import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
+import { api } from '@app/core/utils/api'
 import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { ArrowRight, CheckCircle2 } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
-import { ROUTES } from '@app/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { Progress, Spinner, Text, XStack, YStack } from 'tamagui'
 import { useIPIPResults } from './hooks/useIPIPResults'
 import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/domainGrouping'
-import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
 
 /**
  * IPIPAssessmentWidget - Dashboard widget with CTA and results preview
@@ -64,7 +64,14 @@ export function IPIPAssessmentWidget() {
           </XStack>
 
           {/* Results Preview */}
-          <YStack gap={spacing.sm} p="$3" bg="$color2" rounded="$3" borderWidth={1} borderColor="$borderColor">
+          <YStack
+            gap={spacing.sm}
+            p="$3"
+            bg="$color2"
+            rounded="$3"
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
             <XStack justify="space-between" items="center">
               <YStack gap="$1" flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
@@ -115,11 +122,7 @@ export function IPIPAssessmentWidget() {
                         fontSize="$2"
                         fontWeight="600"
                         color={
-                          result === 'high'
-                            ? '$green10'
-                            : result === 'low'
-                              ? '$blue10'
-                              : '$gray10'
+                          result === 'high' ? '$green10' : result === 'low' ? '$blue10' : '$gray10'
                         }
                         style={{ minWidth: 50 }}
                       >
@@ -191,9 +194,7 @@ export function IPIPAssessmentWidget() {
         </StyledButton>
 
         <Text fontSize="$2" color="$color11">
-          {hasStarted
-            ? `${progress}/120 questions answered`
-            : 'Takes about 10-15 minutes'}
+          {hasStarted ? `${progress}/120 questions answered` : 'Takes about 10-15 minutes'}
         </Text>
       </YStack>
     </DashboardWidget>

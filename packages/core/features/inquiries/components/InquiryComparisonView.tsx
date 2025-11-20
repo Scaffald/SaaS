@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
-import { YStack, XStack, Text, ScrollView, Separator, Button } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { Button, ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
+import { useMemo } from 'react'
 import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColumn'
 
 interface InquiryComparisonViewProps {
@@ -9,12 +9,12 @@ interface InquiryComparisonViewProps {
   onRemoveInquiry?: (inquiryId: string) => void
 }
 
-export function InquiryComparisonView({ inquiryIds, onClose, onRemoveInquiry }: InquiryComparisonViewProps) {
-  const {
-    data,
-    isLoading,
-    error,
-  } = api.inquiries.getMultiple.useQuery({
+export function InquiryComparisonView({
+  inquiryIds,
+  onClose,
+  onRemoveInquiry,
+}: InquiryComparisonViewProps) {
+  const { data, isLoading, error } = api.inquiries.getMultiple.useQuery({
     inquiryIds,
   })
   const inquiries = data as InquiryComparisonRecord[] | undefined
@@ -33,8 +33,9 @@ export function InquiryComparisonView({ inquiryIds, onClose, onRemoveInquiry }: 
 
     compare('employmentType', (record) => record.inquiry.employment_type)
     compare('workSchedule', (record) => record.inquiry.work_schedule)
-    compare('workingHours', (record) =>
-      `${record.inquiry.working_hours_start}-${record.inquiry.working_hours_end}`,
+    compare(
+      'workingHours',
+      (record) => `${record.inquiry.working_hours_start}-${record.inquiry.working_hours_end}`
     )
     compare('workingHoursTimezone', (record) => record.inquiry.working_hours_timezone)
     compare('workdays', (record) => (record.inquiry.workdays ?? []).join(','))
@@ -42,8 +43,10 @@ export function InquiryComparisonView({ inquiryIds, onClose, onRemoveInquiry }: 
     compare('workScheduleNegotiable', (record) => record.inquiry.work_schedule_negotiable)
     compare('workingHoursNegotiable', (record) => record.inquiry.working_hours_negotiable)
     compare('employmentDatesNegotiable', (record) => record.inquiry.employment_dates_negotiable)
-    compare('rate', (record) =>
-      `${record.inquiry.rate_type}-${record.inquiry.rate_min_cents}-${record.inquiry.rate_max_cents}`,
+    compare(
+      'rate',
+      (record) =>
+        `${record.inquiry.rate_type}-${record.inquiry.rate_min_cents}-${record.inquiry.rate_max_cents}`
     )
     compare('rateNegotiable', (record) => record.inquiry.rate_negotiable)
     compare('willingToTravel', (record) => record.inquiry.willing_to_travel)
@@ -64,12 +67,12 @@ export function InquiryComparisonView({ inquiryIds, onClose, onRemoveInquiry }: 
       const serialized = inquiries.map((record) => {
         const response = record.capabilityResponses?.find(
           (entry: InquiryComparisonRecord['capabilityResponses'][number]) =>
-            entry.capability_name === name,
+            entry.capability_name === name
         )
         const value =
           response?.response_value !== null && response?.response_value !== undefined
             ? response.response_value.toString()
-            : response?.response_text ?? 'Not answered'
+            : (response?.response_text ?? 'Not answered')
         return serializeValue(value)
       })
       if (new Set(serialized).size > 1) {
@@ -158,4 +161,3 @@ function serializeValue(value: unknown) {
   if (typeof value === 'object') return JSON.stringify(value)
   return String(value)
 }
-

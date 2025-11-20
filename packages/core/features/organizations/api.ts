@@ -102,8 +102,7 @@ export const useArchiveOrganizationLocation = () => api.organizations.archiveLoc
 export const useOrganizationSettings = (organizationId: string) =>
   api.organizations.getSettings.useQuery({ organizationId }, { enabled: Boolean(organizationId) })
 
-export const useUpdateOrganizationSettings = () =>
-  api.organizations.updateSettings.useMutation()
+export const useUpdateOrganizationSettings = () => api.organizations.updateSettings.useMutation()
 
 export const useOrganizationAuditLog = (
   organizationId: string,
@@ -119,12 +118,10 @@ export const useOrganizationAuditLog = (
     { enabled: Boolean(organizationId) }
   )
 
-export const useExportOrganizationAuditLog = () =>
-  api.organizations.exportAuditLog.useMutation()
+export const useExportOrganizationAuditLog = () => api.organizations.exportAuditLog.useMutation()
 
 export const useOrganizationStorageUsage = (organizationId: string) =>
   api.organizations.getStorageUsageSummary.useQuery(
     { organizationId },
     { enabled: Boolean(organizationId), refetchInterval: 60_000 }
   )
-

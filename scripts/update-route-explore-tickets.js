@@ -4,37 +4,41 @@
  * Based on docs/testing/route-task-review.md
  */
 
-const { execSync } = require('child_process');
+const { execSync } = require('child_process')
 
 // Helper function to build the description
 function buildDescription(routePath, userType, userEmail, ticketNumber) {
-  const userLevel = userType === 'super-admin' ? 'super-admin' : userType;
-  const testPrefix = userType === 'super-admin' ? 'sa' : userType === 'admin' ? 'a' : 'r';
-  
+  const userLevel = userType === 'super-admin' ? 'super-admin' : userType
+  const testPrefix = userType === 'super-admin' ? 'sa' : userType === 'admin' ? 'a' : 'r'
+
   // Normalize route path
-  const normalizedRoute = routePath.startsWith('/') ? routePath : `/${routePath}`;
-  
+  const normalizedRoute = routePath.startsWith('/') ? routePath : `/${routePath}`
+
   // Create test file name
   const routeForFileName = normalizedRoute
     .replace(/:/g, '')
     .replace(/\//g, '-')
     .replace(/^-/, '')
-    .replace(/-$/, '');
-  const testFileName = `test-${testPrefix}${String(ticketNumber).padStart(3, '0')}-${routeForFileName}.spec.ts`;
-  
+    .replace(/-$/, '')
+  const testFileName = `test-${testPrefix}${String(ticketNumber).padStart(3, '0')}-${routeForFileName}.spec.ts`
+
   // Create test ticket format
-  const testTicketFormat = `test-${userType}-${routeForFileName}`;
-  
+  const testTicketFormat = `test-${userType}-${routeForFileName}`
+
   // Test describe name
-  const routeForDescribe = normalizedRoute.replace(/^\//, '').replace(/\//g, ' ');
-  
+  const routeForDescribe = normalizedRoute.replace(/^\//, '').replace(/\//g, ' ')
+
   // Helper function name
-  const signInHelper = userType === 'super-admin' ? 'signInAsSuperAdmin' : 
-                      userType === 'admin' ? 'signInAsAdmin' : 'signInAsTestUser';
-  
+  const signInHelper =
+    userType === 'super-admin'
+      ? 'signInAsSuperAdmin'
+      : userType === 'admin'
+        ? 'signInAsAdmin'
+        : 'signInAsTestUser'
+
   // User level display
-  const userLevelDisplay = userLevel === 'super-admin' ? 'Super Admin' : 
-                           userLevel === 'admin' ? 'Admin' : 'Regular';
+  const userLevelDisplay =
+    userLevel === 'super-admin' ? 'Super Admin' : userLevel === 'admin' ? 'Admin' : 'Regular'
 
   return `## Context
 - **Route**: \`${normalizedRoute}\` (normalized)
@@ -201,7 +205,7 @@ Create test file following the existing pattern from \`tests/test-r*.spec.ts\`:
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
 import { ${signInHelper} } from './playwright-helpers/auth'
-${userType === 'regular' ? 'import { ensureProfileComplete } from \'./playwright-helpers/profile\'\n' : ''}
+${userType === 'regular' ? "import { ensureProfileComplete } from './playwright-helpers/profile'\n" : ''}
 test.describe('${userLevelDisplay} • ${normalizedRoute}', () => {
   test('navigates and shows ${routeForDescribe} UI', async ({ page }: { page: Page }) => {
     await ${signInHelper}(page)
@@ -260,7 +264,7 @@ npx playwright test tests/${testFileName} --headed
 - [ ] Test file created at correct location following naming convention
 - [ ] Test imports correct helpers from \`tests/playwright-helpers/\`
 - [ ] Test uses appropriate sign-in helper (\`${signInHelper}\`)
-${userType === 'regular' ? '- [ ] Test calls \`ensureProfileComplete(page)\` if regular user\n' : ''}- [ ] Test runs successfully: \`npx playwright test tests/${testFileName}\`
+${userType === 'regular' ? '- [ ] Test calls `ensureProfileComplete(page)` if regular user\n' : ''}- [ ] Test runs successfully: \`npx playwright test tests/${testFileName}\`
 - [ ] All test cases pass
 - [ ] Test is deterministic (runs reliably multiple times)
 - [ ] Test uses proper selectors (prefer roles, labels, testIds)
@@ -281,7 +285,7 @@ Use these as reference when writing the test, but convert to standard Playwright
 
 ## Blocking Dependencies
 - [ ] Authentication helpers available (\`tests/playwright-helpers/auth.ts\`)
-${userType === 'regular' ? '- [ ] Profile completion helper available (\`tests/playwright-helpers/profile.ts\`) - for regular users\n' : ''}- [ ] Any BUG tickets (list below)
+${userType === 'regular' ? '- [ ] Profile completion helper available (`tests/playwright-helpers/profile.ts`) - for regular users\n' : ''}- [ ] Any BUG tickets (list below)
 
 ## Related Tickets
 - Exploration: \`${userType}-route-explore-${String(ticketNumber).padStart(3, '0')}\`
@@ -353,83 +357,88 @@ If ANY bugs are discovered during exploration:
 - Main plan: \`docs/testing/generalized-ui-testing-plan.md\`
 - Route task review: \`docs/testing/route-task-review.md\`
 - Audit guidance: \`tests/AUDIT-TASKS-GUIDANCE.md\`
-- Vibe-Kanban rules: \`.cursor/rules/vibe-kanban.mdc\``;
+- Vibe-Kanban rules: \`.cursor/rules/vibe-kanban.mdc\``
 }
 
 // Parse title to extract route, user type, and ticket number
 function parseTitle(title) {
-  let routePath, userType, ticketNumber;
-  
+  let routePath, userType, ticketNumber
+
   // Match admin format: admin-route-explore-###: /route/path
-  const adminMatch = title.match(/^admin-route-explore-(\d+):\s*(.+)$/);
+  const adminMatch = title.match(/^admin-route-explore-(\d+):\s*(.+)$/)
   if (adminMatch) {
-    userType = 'admin';
-    ticketNumber = parseInt(adminMatch[1], 10);
-    routePath = adminMatch[2].trim();
-    return { routePath, userType, ticketNumber };
+    userType = 'admin'
+    ticketNumber = parseInt(adminMatch[1], 10)
+    routePath = adminMatch[2].trim()
+    return { routePath, userType, ticketNumber }
   }
-  
+
   // Match super-admin format: super-admin-route-explore-### • /route/path — Manual exploration
-  const superAdminMatch = title.match(/^super-admin-route-explore-(\d+)\s+•\s+(.+?)\s+—/);
+  const superAdminMatch = title.match(/^super-admin-route-explore-(\d+)\s+•\s+(.+?)\s+—/)
   if (superAdminMatch) {
-    userType = 'super-admin';
-    ticketNumber = parseInt(superAdminMatch[1], 10);
-    routePath = superAdminMatch[2].trim();
-    return { routePath, userType, ticketNumber };
+    userType = 'super-admin'
+    ticketNumber = parseInt(superAdminMatch[1], 10)
+    routePath = superAdminMatch[2].trim()
+    return { routePath, userType, ticketNumber }
   }
-  
+
   // Fallback: try to extract any route-explore pattern
-  const fallbackMatch = title.match(/(?:admin|super-admin)-route-explore-(\d+)[:•]\s*(.+?)(?:\s+—|$)/);
+  const fallbackMatch = title.match(
+    /(?:admin|super-admin)-route-explore-(\d+)[:•]\s*(.+?)(?:\s+—|$)/
+  )
   if (fallbackMatch) {
-    userType = title.includes('super-admin') ? 'super-admin' : 'admin';
-    ticketNumber = parseInt(fallbackMatch[1], 10);
-    routePath = fallbackMatch[2].trim();
-    return { routePath, userType, ticketNumber };
+    userType = title.includes('super-admin') ? 'super-admin' : 'admin'
+    ticketNumber = parseInt(fallbackMatch[1], 10)
+    routePath = fallbackMatch[2].trim()
+    return { routePath, userType, ticketNumber }
   }
-  
-  throw new Error(`Could not parse title: ${title}`);
+
+  throw new Error(`Could not parse title: ${title}`)
 }
 
 // Get user email based on user type
 function getUserEmail(userType) {
   if (userType === 'super-admin') {
-    return 'zach@unicorn.love';
+    return 'zach@unicorn.love'
   } else if (userType === 'admin') {
-    return 'ewongagent@gmail.com';
+    return 'ewongagent@gmail.com'
   } else {
-    return 'lexis.salah@eths.education.com';
+    return 'lexis.salah@eths.education.com'
   }
 }
 
 // Main execution
-console.log('This script generates descriptions for route-explore tickets.');
-console.log('To use it, you need to call the vibe-kanban MCP update_task function');
-console.log('with the generated description for each ticket.\n');
+console.log('This script generates descriptions for route-explore tickets.')
+console.log('To use it, you need to call the vibe-kanban MCP update_task function')
+console.log('with the generated description for each ticket.\n')
 
 // Example usage
 const testTitles = [
   'admin-route-explore-039: /office/users/:id/edit',
-  'super-admin-route-explore-040 • /office/users/create — Manual exploration'
-];
+  'super-admin-route-explore-040 • /office/users/create — Manual exploration',
+]
 
-console.log('Example parsing:');
-testTitles.forEach(title => {
+console.log('Example parsing:')
+testTitles.forEach((title) => {
   try {
-    const { routePath, userType, ticketNumber } = parseTitle(title);
-    const userEmail = getUserEmail(userType);
-    console.log(`\nTitle: ${title}`);
-    console.log(`  Route: ${routePath}`);
-    console.log(`  User Type: ${userType}`);
-    console.log(`  Ticket Number: ${ticketNumber}`);
-    console.log(`  User Email: ${userEmail}`);
-    console.log(`  Description length: ${buildDescription(routePath, userType, userEmail, ticketNumber).length} chars`);
+    const { routePath, userType, ticketNumber } = parseTitle(title)
+    const userEmail = getUserEmail(userType)
+    console.log(`\nTitle: ${title}`)
+    console.log(`  Route: ${routePath}`)
+    console.log(`  User Type: ${userType}`)
+    console.log(`  Ticket Number: ${ticketNumber}`)
+    console.log(`  User Email: ${userEmail}`)
+    console.log(
+      `  Description length: ${buildDescription(routePath, userType, userEmail, ticketNumber).length} chars`
+    )
   } catch (error) {
-    console.error(`Error parsing "${title}":`, error.message);
+    console.error(`Error parsing "${title}":`, error.message)
   }
-});
+})
 
-console.log('\n✅ Script ready! The buildDescription function can be used to generate descriptions.');
-console.log('Export this module or use it with vibe-kanban MCP tools.');
+console.log(
+  '\n✅ Script ready! The buildDescription function can be used to generate descriptions.'
+)
+console.log('Export this module or use it with vibe-kanban MCP tools.')
 
-module.exports = { buildDescription, parseTitle, getUserEmail };
-
+module.exports = { buildDescription, parseTitle, getUserEmail }

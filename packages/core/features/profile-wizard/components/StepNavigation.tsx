@@ -1,5 +1,5 @@
-import { Button, XStack, YStack, Text } from 'tamagui'
 import type { ReactNode } from 'react'
+import { Button, Text, XStack, YStack } from 'tamagui'
 
 export interface StepNavigationProps {
   canGoBack: boolean
@@ -35,16 +35,16 @@ export function StepNavigation({
   return (
     <YStack gap="$3">
       <XStack gap="$3" flexWrap="wrap">
+        <Button size="$4" flex={1} onPress={onNext} disabled={!canGoNext || isSaving} themeInverse>
+          {isLastStep ? 'Finish' : nextLabel}
+        </Button>
         <Button
           size="$4"
           flex={1}
-          onPress={onNext}
-          disabled={!canGoNext || isSaving}
-          themeInverse
+          onPress={onBack}
+          disabled={!canGoBack || isSaving}
+          variant="outlined"
         >
-          {isLastStep ? 'Finish' : nextLabel}
-        </Button>
-        <Button size="$4" flex={1} onPress={onBack} disabled={!canGoBack || isSaving} variant="outlined">
           {backLabel}
         </Button>
       </XStack>
@@ -73,5 +73,3 @@ export function StepNavigation({
     </YStack>
   )
 }
-
-

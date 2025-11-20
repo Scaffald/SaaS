@@ -1,12 +1,11 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Button, ScrollView, Select, Adapt, Label } from 'tamagui'
-import { Sheet, Dialog } from '@app/ui'
-import { X, Check, CheckCircle2 } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import { AddressAutocomplete } from '@app/ui'
-import type { AddressResult } from '@app/ui'
-import type { ScreeningAnswers } from '@app/schemas'
 import { api } from '@app/core/utils/api'
+import type { ScreeningAnswers } from '@app/schemas'
+import type { AddressResult } from '@app/ui'
+import { AddressAutocomplete, Dialog, Sheet } from '@app/ui'
+import { Check, CheckCircle2, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useState } from 'react'
+import { Adapt, Button, Label, ScrollView, Select, Text, XStack, YStack } from 'tamagui'
 
 export interface QuickApplyModalProps {
   /**
@@ -261,13 +260,7 @@ export function QuickApplyModal({
     <Dialog modal open={open} onOpenChange={handleClose}>
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" />
-        <Dialog.Content
-          key="content"
-          gap="$4"
-          width="90%"
-          maxW={600}
-          maxH="90%"
-        >
+        <Dialog.Content key="content" gap="$4" width="90%" maxW={600} maxH="90%">
           {/* Header */}
           <YStack gap="$2">
             <XStack justify="space-between" items="center">
@@ -313,249 +306,255 @@ export function QuickApplyModal({
             /* Form Content */
             <ScrollView showsVerticalScrollIndicator={false} flex={1}>
               <YStack gap="$4" p="$4">
-              {/* Current Location */}
-              <YStack gap="$2">
-                <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
-                  You current location <Text color="$red10">*</Text>
-                </Label>
-                {mapboxToken ? (
-                  <AddressAutocomplete
-                    value={formData.current_location || ''}
-                    onChange={handleLocationChange}
-                    onAddressSelect={handleLocationSelect}
-                    placeholder="Search locations"
-                    provider="mapbox"
-                    apiKey={mapboxToken}
-                    zoomLevel="city"
-                    error={errors.current_location}
-                    disabled={isSubmitting}
-                  />
-                ) : (
+                {/* Current Location */}
+                <YStack gap="$2">
+                  <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
+                    You current location <Text color="$red10">*</Text>
+                  </Label>
+                  {mapboxToken ? (
+                    <AddressAutocomplete
+                      value={formData.current_location || ''}
+                      onChange={handleLocationChange}
+                      onAddressSelect={handleLocationSelect}
+                      placeholder="Search locations"
+                      provider="mapbox"
+                      apiKey={mapboxToken}
+                      zoomLevel="city"
+                      error={errors.current_location}
+                      disabled={isSubmitting}
+                    />
+                  ) : (
+                    <YStack gap="$2">
+                      <Text fontSize="$3" color="$red10">
+                        Location search is unavailable. Please enter your location manually.
+                      </Text>
+                      <Text fontSize="$2" color="$color10">
+                        Location search requires Mapbox API key configuration.
+                      </Text>
+                    </YStack>
+                  )}
+                  {errors.current_location && (
+                    <Text fontSize="$2" color="$red10">
+                      {errors.current_location}
+                    </Text>
+                  )}
+                </YStack>
+
+                {/* Willing to Relocate */}
+                <YStack gap="$2">
+                  <Label fontSize="$4" fontWeight="600">
+                    Are you willing to relocate? <Text color="$red10">*</Text>
+                  </Label>
+                  <XStack gap="$3">
+                    <Button
+                      flex={1}
+                      size="$4"
+                      theme={formData.willing_to_relocate ? 'info' : undefined}
+                      variant={formData.willing_to_relocate ? undefined : 'outlined'}
+                      onPress={() => {
+                        setFormData((prev) => ({ ...prev, willing_to_relocate: true }))
+                      }}
+                      disabled={isSubmitting}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      flex={1}
+                      size="$4"
+                      theme={!formData.willing_to_relocate ? 'info' : undefined}
+                      variant={!formData.willing_to_relocate ? undefined : 'outlined'}
+                      onPress={() => {
+                        setFormData((prev) => ({ ...prev, willing_to_relocate: false }))
+                      }}
+                      disabled={isSubmitting}
+                    >
+                      No
+                    </Button>
+                  </XStack>
+                </YStack>
+
+                {/* Years of Experience */}
+                <YStack gap="$2">
+                  <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
+                    Years of experience <Text color="$red10">*</Text>
+                  </Label>
+                  <Select
+                    value={getYearsExperienceValue()}
+                    onValueChange={handleYearsExperienceChange}
+                  >
+                    <Select.Trigger
+                      id="years_experience"
+                      borderColor={errors.years_experience ? '$red9' : '$borderColor'}
+                    >
+                      <Select.Value placeholder="Select experience" />
+                    </Select.Trigger>
+                    <Adapt when="sm" platform="touch">
+                      <Sheet modal dismissOnSnapToBottom>
+                        <Sheet.Frame>
+                          <Sheet.ScrollView>
+                            <Adapt.Contents />
+                          </Sheet.ScrollView>
+                        </Sheet.Frame>
+                        <Sheet.Overlay />
+                      </Sheet>
+                    </Adapt>
+                    <Select.Content zIndex={200000}>
+                      <Select.Viewport>
+                        {YEARS_EXPERIENCE_OPTIONS.map((option, index) => (
+                          <Select.Item key={option.value} value={option.value} index={index}>
+                            <Select.ItemText>{option.label}</Select.ItemText>
+                            <Select.ItemIndicator marginLeft="auto">
+                              <Check size={16} />
+                            </Select.ItemIndicator>
+                          </Select.Item>
+                        ))}
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select>
+                  {errors.years_experience && (
+                    <Text fontSize="$2" color="$red10">
+                      {errors.years_experience}
+                    </Text>
+                  )}
+                </YStack>
+
+                {/* Required Skills (Display Only) */}
+                {requiredSkills.length > 0 && (
                   <YStack gap="$2">
-                    <Text fontSize="$3" color="$red10">
-                      Location search is unavailable. Please enter your location manually.
-                    </Text>
-                    <Text fontSize="$2" color="$color10">
-                      Location search requires Mapbox API key configuration.
-                    </Text>
+                    <Label fontSize="$4" fontWeight="600">
+                      Required skills
+                    </Label>
+                    <YStack
+                      p="$3"
+                      bg="$gray3"
+                      rounded="$3"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                    >
+                      <Text fontSize="$3" color="$color11">
+                        {requiredSkills.join(', ')}
+                      </Text>
+                    </YStack>
                   </YStack>
                 )}
-                {errors.current_location && (
-                  <Text fontSize="$2" color="$red10">
-                    {errors.current_location}
-                  </Text>
+
+                {/* Optional Skills (Display Only) */}
+                {optionalSkills.length > 0 && (
+                  <YStack gap="$2">
+                    <Label fontSize="$4" fontWeight="600">
+                      Optional skills
+                    </Label>
+                    <YStack
+                      p="$3"
+                      bg="$gray3"
+                      rounded="$3"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                    >
+                      <Text fontSize="$3" color="$color11">
+                        {optionalSkills.join(', ')}
+                      </Text>
+                    </YStack>
+                  </YStack>
                 )}
-              </YStack>
 
-              {/* Willing to Relocate */}
-              <YStack gap="$2">
-                <Label fontSize="$4" fontWeight="600">
-                  Are you willing to relocate? <Text color="$red10">*</Text>
-                </Label>
-                <XStack gap="$3">
-                  <Button
-                    flex={1}
-                    size="$4"
-                    theme={formData.willing_to_relocate ? 'info' : undefined}
-                    variant={formData.willing_to_relocate ? undefined : 'outlined'}
-                    onPress={() => {
-                      setFormData((prev) => ({ ...prev, willing_to_relocate: true }))
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    Yes
-                  </Button>
-                  <Button
-                    flex={1}
-                    size="$4"
-                    theme={!formData.willing_to_relocate ? 'info' : undefined}
-                    variant={!formData.willing_to_relocate ? undefined : 'outlined'}
-                    onPress={() => {
-                      setFormData((prev) => ({ ...prev, willing_to_relocate: false }))
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    No
-                  </Button>
-                </XStack>
-              </YStack>
-
-              {/* Years of Experience */}
-              <YStack gap="$2">
-                <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
-                  Years of experience <Text color="$red10">*</Text>
-                </Label>
-                <Select
-                  value={getYearsExperienceValue()}
-                  onValueChange={handleYearsExperienceChange}
-                >
-                  <Select.Trigger
-                    id="years_experience"
-                    borderColor={errors.years_experience ? '$red9' : '$borderColor'}
-                  >
-                    <Select.Value placeholder="Select experience" />
-                  </Select.Trigger>
-                  <Adapt when="sm" platform="touch">
-                    <Sheet modal dismissOnSnapToBottom>
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay />
-                    </Sheet>
-                  </Adapt>
-                  <Select.Content zIndex={200000}>
-                    <Select.Viewport>
-                      {YEARS_EXPERIENCE_OPTIONS.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select>
-                {errors.years_experience && (
-                  <Text fontSize="$2" color="$red10">
-                    {errors.years_experience}
-                  </Text>
-                )}
-              </YStack>
-
-              {/* Required Skills (Display Only) */}
-              {requiredSkills.length > 0 && (
+                {/* Work Authorization */}
                 <YStack gap="$2">
                   <Label fontSize="$4" fontWeight="600">
-                    Required skills
+                    Are you authorized to work legally in the US? <Text color="$red10">*</Text>
                   </Label>
-                  <YStack
-                    p="$3"
-                    bg="$gray3"
-                    rounded="$3"
-                    borderWidth={1}
-                    borderColor="$borderColor"
-                  >
-                    <Text fontSize="$3" color="$color11">
-                      {requiredSkills.join(', ')}
+                  <XStack gap="$3">
+                    <Button
+                      flex={1}
+                      size="$4"
+                      theme={formData.is_authorized_to_work ? 'info' : undefined}
+                      variant={formData.is_authorized_to_work ? undefined : 'outlined'}
+                      onPress={() => {
+                        setFormData((prev) => ({ ...prev, is_authorized_to_work: true }))
+                        validateField('is_authorized_to_work', true)
+                      }}
+                      disabled={isSubmitting}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      flex={1}
+                      size="$4"
+                      theme={!formData.is_authorized_to_work ? 'info' : undefined}
+                      variant={!formData.is_authorized_to_work ? undefined : 'outlined'}
+                      onPress={() => {
+                        setFormData((prev) => ({ ...prev, is_authorized_to_work: false }))
+                        validateField('is_authorized_to_work', false)
+                      }}
+                      disabled={isSubmitting}
+                    >
+                      No
+                    </Button>
+                  </XStack>
+                  {errors.is_authorized_to_work && (
+                    <Text fontSize="$2" color="$red10">
+                      {errors.is_authorized_to_work}
                     </Text>
-                  </YStack>
+                  )}
                 </YStack>
-              )}
 
-              {/* Optional Skills (Display Only) */}
-              {optionalSkills.length > 0 && (
+                {/* Earliest Start Date */}
                 <YStack gap="$2">
-                  <Label fontSize="$4" fontWeight="600">
-                    Optional skills
+                  <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
+                    Earliest start date <Text color="$red10">*</Text>
                   </Label>
-                  <YStack
-                    p="$3"
-                    bg="$gray3"
-                    rounded="$3"
-                    borderWidth={1}
-                    borderColor="$borderColor"
+                  <Select
+                    value={formData.earliest_start_date}
+                    onValueChange={handleEarliestStartDateChange}
                   >
-                    <Text fontSize="$3" color="$color11">
-                      {optionalSkills.join(', ')}
+                    <Select.Trigger
+                      id="earliest_start_date"
+                      borderColor={errors.earliest_start_date ? '$red9' : '$borderColor'}
+                    >
+                      <Select.Value placeholder="Select one" />
+                    </Select.Trigger>
+                    <Adapt when="sm" platform="touch">
+                      <Sheet modal dismissOnSnapToBottom>
+                        <Sheet.Frame>
+                          <Sheet.ScrollView>
+                            <Adapt.Contents />
+                          </Sheet.ScrollView>
+                        </Sheet.Frame>
+                        <Sheet.Overlay />
+                      </Sheet>
+                    </Adapt>
+                    <Select.Content zIndex={200000}>
+                      <Select.Viewport>
+                        {EARLIEST_START_DATE_OPTIONS.map((option, index) => (
+                          <Select.Item key={option.value} value={option.value} index={index}>
+                            <Select.ItemText>{option.label}</Select.ItemText>
+                            <Select.ItemIndicator marginLeft="auto">
+                              <Check size={16} />
+                            </Select.ItemIndicator>
+                          </Select.Item>
+                        ))}
+                      </Select.Viewport>
+                    </Select.Content>
+                  </Select>
+                  {errors.earliest_start_date && (
+                    <Text fontSize="$2" color="$red10">
+                      {errors.earliest_start_date}
                     </Text>
-                  </YStack>
+                  )}
                 </YStack>
-              )}
-
-              {/* Work Authorization */}
-              <YStack gap="$2">
-                <Label fontSize="$4" fontWeight="600">
-                  Are you authorized to work legally in the US? <Text color="$red10">*</Text>
-                </Label>
-                <XStack gap="$3">
-                  <Button
-                    flex={1}
-                    size="$4"
-                    theme={formData.is_authorized_to_work ? 'info' : undefined}
-                    variant={formData.is_authorized_to_work ? undefined : 'outlined'}
-                    onPress={() => {
-                      setFormData((prev) => ({ ...prev, is_authorized_to_work: true }))
-                      validateField('is_authorized_to_work', true)
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    Yes
-                  </Button>
-                  <Button
-                    flex={1}
-                    size="$4"
-                    theme={!formData.is_authorized_to_work ? 'info' : undefined}
-                    variant={!formData.is_authorized_to_work ? undefined : 'outlined'}
-                    onPress={() => {
-                      setFormData((prev) => ({ ...prev, is_authorized_to_work: false }))
-                      validateField('is_authorized_to_work', false)
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    No
-                  </Button>
-                </XStack>
-                {errors.is_authorized_to_work && (
-                  <Text fontSize="$2" color="$red10">
-                    {errors.is_authorized_to_work}
-                  </Text>
-                )}
               </YStack>
-
-              {/* Earliest Start Date */}
-              <YStack gap="$2">
-                <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
-                  Earliest start date <Text color="$red10">*</Text>
-                </Label>
-                <Select
-                  value={formData.earliest_start_date}
-                  onValueChange={handleEarliestStartDateChange}
-                >
-                  <Select.Trigger
-                    id="earliest_start_date"
-                    borderColor={errors.earliest_start_date ? '$red9' : '$borderColor'}
-                  >
-                    <Select.Value placeholder="Select one" />
-                  </Select.Trigger>
-                  <Adapt when="sm" platform="touch">
-                    <Sheet modal dismissOnSnapToBottom>
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay />
-                    </Sheet>
-                  </Adapt>
-                  <Select.Content zIndex={200000}>
-                    <Select.Viewport>
-                      {EARLIEST_START_DATE_OPTIONS.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select>
-                {errors.earliest_start_date && (
-                  <Text fontSize="$2" color="$red10">
-                    {errors.earliest_start_date}
-                  </Text>
-                )}
-              </YStack>
-            </YStack>
-          </ScrollView>
+            </ScrollView>
           )}
 
           {/* Footer */}
           {!showSuccess && (
-            <XStack gap="$3" justify="flex-end" pt="$4" borderTopWidth={1} borderTopColor="$borderColor">
+            <XStack
+              gap="$3"
+              justify="flex-end"
+              pt="$4"
+              borderTopWidth={1}
+              borderTopColor="$borderColor"
+            >
               <Button size="$4" variant="outlined" onPress={handleClose} disabled={isSubmitting}>
                 Cancel
               </Button>
@@ -563,7 +562,9 @@ export function QuickApplyModal({
                 size="$4"
                 theme="info"
                 onPress={handleSubmit}
-                disabled={isSubmitting || Object.values(errors).some((error) => error !== undefined)}
+                disabled={
+                  isSubmitting || Object.values(errors).some((error) => error !== undefined)
+                }
               >
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </Button>
@@ -574,4 +575,3 @@ export function QuickApplyModal({
     </Dialog>
   )
 }
-

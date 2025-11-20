@@ -33,9 +33,7 @@ const mockImportData = {
   skills: {
     id: 'skills',
     title: 'Skills',
-    items: [
-      { id: 'skill-1', name: 'Electrical Wiring', confidence_score: 75 },
-    ],
+    items: [{ id: 'skill-1', name: 'Electrical Wiring', confidence_score: 75 }],
   },
   certifications: {
     id: 'certifications',
@@ -142,11 +140,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Button = ({
     children,
@@ -210,9 +204,7 @@ vi.mock('tamagui', () => {
     </div>
   )
 
-  const Separator = ({
-    ...rest
-  }: Record<string, unknown>) => <hr {...rest} />
+  const Separator = ({ ...rest }: Record<string, unknown>) => <hr {...rest} />
 
   const H5 = ({
     children,
@@ -349,19 +341,22 @@ describe('ImportReviewScreen', () => {
     render(<ImportReviewScreen />)
 
     // Component uses "Select" buttons - find the button specifically (not help text)
-    const selectButtons = screen.getAllByRole('button').filter(btn => 
-      btn.textContent?.toLowerCase().includes('select') && 
-      !btn.textContent?.toLowerCase().includes('select the items')
-    )
+    const selectButtons = screen
+      .getAllByRole('button')
+      .filter(
+        (btn) =>
+          btn.textContent?.toLowerCase().includes('select') &&
+          !btn.textContent?.toLowerCase().includes('select the items')
+      )
     expect(selectButtons.length).toBeGreaterThan(0)
-    
+
     if (selectButtons.length > 0) {
       fireEvent.click(selectButtons[0])
       await waitFor(() => {
         // After clicking, the button should change to "Selected" - look for button with "Selected" text
-        const selectedButtons = screen.getAllByRole('button').filter(btn => 
-          btn.textContent?.trim() === 'Selected'
-        )
+        const selectedButtons = screen
+          .getAllByRole('button')
+          .filter((btn) => btn.textContent?.trim() === 'Selected')
         expect(selectedButtons.length).toBeGreaterThan(0)
       })
     }
@@ -383,17 +378,17 @@ describe('ImportReviewScreen', () => {
     render(<ImportReviewScreen />)
 
     // First, select an item - find the "Select" button (not help text)
-    const selectButtons = screen.getAllByRole('button').filter(btn => 
-      btn.textContent?.trim() === 'Select'
-    )
+    const selectButtons = screen
+      .getAllByRole('button')
+      .filter((btn) => btn.textContent?.trim() === 'Select')
     expect(selectButtons.length).toBeGreaterThan(0)
     fireEvent.click(selectButtons[0])
 
     // Wait for selection to update
     await waitFor(() => {
-      const selectedButtons = screen.getAllByRole('button').filter(btn => 
-        btn.textContent?.trim() === 'Selected'
-      )
+      const selectedButtons = screen
+        .getAllByRole('button')
+        .filter((btn) => btn.textContent?.trim() === 'Selected')
       expect(selectedButtons.length).toBeGreaterThan(0)
     })
 
@@ -420,9 +415,7 @@ describe('ImportReviewScreen', () => {
               confidence_score: 80,
             },
           ],
-          skills: [
-            { id: 'skill-1', name: 'Electrical Wiring', confidence_score: 75 },
-          ],
+          skills: [{ id: 'skill-1', name: 'Electrical Wiring', confidence_score: 75 }],
           certifications: [],
           general: [],
         },

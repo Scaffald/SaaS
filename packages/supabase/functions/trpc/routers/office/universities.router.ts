@@ -1,10 +1,6 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import {
-  protectedProcedure,
-  officeProcedure,
-  t,
-} from "../../middleware.ts";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { officeProcedure, protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Office Universities router - handles university catalog management (admin only)
@@ -20,43 +16,40 @@ export const officeUniversitiesRouter = t.router({
         pageSize: z.number().min(1).max(100).default(20),
         search: z.string().optional(),
         country: z.string().optional(),
-        sortBy: z.enum(["name", "country", "created_at"]).default("name"),
-        sortOrder: z.enum(["asc", "desc"]).default("asc"),
-      }),
+        sortBy: z.enum(['name', 'country', 'created_at']).default('name'),
+        sortOrder: z.enum(['asc', 'desc']).default('asc'),
+      })
     )
     .query(async ({ ctx, input }) => {
-      const { supabase } = ctx;
-      const { page, pageSize, search, country, sortBy, sortOrder } = input;
+      const { supabase } = ctx
+      const { page, pageSize, search, country, sortBy, sortOrder } = input
 
-      let query = supabase
-        .schema("data")
-        .from("universities")
-        .select("*", { count: "exact" });
+      let query = supabase.schema('data').from('universities').select('*', { count: 'exact' })
 
       // Apply filters
       if (search) {
-        query = query.ilike("name", `%${search}%`);
+        query = query.ilike('name', `%${search}%`)
       }
 
       if (country) {
-        query = query.eq("country", country);
+        query = query.eq('country', country)
       }
 
       // Apply sorting
-      query = query.order(sortBy, { ascending: sortOrder === "asc" });
+      query = query.order(sortBy, { ascending: sortOrder === 'asc' })
 
       // Apply pagination
-      const from = (page - 1) * pageSize;
-      const to = from + pageSize - 1;
-      query = query.range(from, to);
+      const from = (page - 1) * pageSize
+      const to = from + pageSize - 1
+      query = query.range(from, to)
 
-      const { data, error, count } = await query;
+      const { data, error, count } = await query
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch universities: ${error.message}`,
-        });
+        })
       }
 
       return {
@@ -65,7 +58,7 @@ export const officeUniversitiesRouter = t.router({
         page,
         pageSize,
         totalPages: Math.ceil((count || 0) / pageSize),
-      };
+      }
     }),
 
   /**
@@ -74,23 +67,23 @@ export const officeUniversitiesRouter = t.router({
   getUniversity: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const { supabase } = ctx;
+      const { supabase } = ctx
 
       const { data, error } = await supabase
-        .schema("data")
-        .from("universities")
-        .select("*")
-        .eq("id", input.id)
-        .single();
+        .schema('data')
+        .from('universities')
+        .select('*')
+        .eq('id', input.id)
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "University not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'University not found',
+        })
       }
 
-      return data;
+      return data
     }),
 
   /**
@@ -103,73 +96,66 @@ export const officeUniversitiesRouter = t.router({
         query: z.string().min(1),
         country: z.string().optional(),
         limit: z.number().min(1).max(50).default(20),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
-      const { supabase } = ctx;
+      const { supabase } = ctx
 
       // Use the search_universities function for trigram similarity
       // Note: Must call from data schema since function is defined there
-      const { data, error } = await supabase
-        .schema("data")
-        .rpc("search_universities", {
-          p_query: input.query,
-          p_country: input.country || null,
-          p_limit: input.limit,
-        });
+      const { data, error } = await supabase.schema('data').rpc('search_universities', {
+        p_query: input.query,
+        p_country: input.country || null,
+        p_limit: input.limit,
+      })
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to search universities: ${error.message}`,
-        });
+        })
       }
 
-      return { universities: data || [] };
+      return { universities: data || [] }
     }),
 
   /**
    * Get list of countries with university counts
    */
   getCountries: officeProcedure.query(async ({ ctx }) => {
-    const { supabase } = ctx;
+    const { supabase } = ctx
 
-      const { data, error } = await supabase
-        .schema("data")
-        .from("universities")
-        .select("country, alpha_two_code");
+    const { data, error } = await supabase
+      .schema('data')
+      .from('universities')
+      .select('country, alpha_two_code')
 
     if (error) {
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
+        code: 'INTERNAL_SERVER_ERROR',
         message: `Failed to fetch countries: ${error.message}`,
-      });
+      })
     }
 
     // Group by country and count
-    const countryMap = new Map<
-      string,
-      { country: string; alpha_two_code: string; count: number }
-    >();
+    const countryMap = new Map<string, { country: string; alpha_two_code: string; count: number }>()
 
     for (const row of data) {
-      const existing = countryMap.get(row.country);
+      const existing = countryMap.get(row.country)
       if (existing) {
-        existing.count++;
+        existing.count++
       } else {
         countryMap.set(row.country, {
           country: row.country,
           alpha_two_code: row.alpha_two_code,
           count: 1,
-        });
+        })
       }
     }
 
     return {
-      countries: Array.from(countryMap.values()).sort((a, b) =>
-        a.country.localeCompare(b.country)
-      ),
-    };
+      countries: Array.from(countryMap.values()).sort((a, b) => a.country.localeCompare(b.country)),
+    }
   }),
 
   /**
@@ -178,38 +164,38 @@ export const officeUniversitiesRouter = t.router({
   createUniversity: officeProcedure
     .input(
       z.object({
-        name: z.string().min(1, "Name is required"),
-        slug: z.string().min(1, "Vanity URL is required"),
-        country: z.string().min(1, "Country is required"),
-        alpha_two_code: z.string().length(2, "Must be 2-letter country code"),
+        name: z.string().min(1, 'Name is required'),
+        slug: z.string().min(1, 'Vanity URL is required'),
+        country: z.string().min(1, 'Country is required'),
+        alpha_two_code: z.string().length(2, 'Must be 2-letter country code'),
         domains: z.array(z.string()).default([]),
         web_pages: z.array(z.string()).default([]),
         state_province: z.string().optional(),
         metadata: z.record(z.unknown()).default({}),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx;
+      const { supabase } = ctx
 
       try {
         // Check if slug already exists
         const { data: existing } = await supabase
-          .schema("data")
-          .from("universities")
-          .select("id")
-          .eq("slug", input.slug)
-          .single();
+          .schema('data')
+          .from('universities')
+          .select('id')
+          .eq('slug', input.slug)
+          .single()
 
         if (existing) {
           throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "A university with this slug already exists",
-          });
+            code: 'BAD_REQUEST',
+            message: 'A university with this slug already exists',
+          })
         }
 
         const { data, error } = await supabase
-          .schema("data")
-          .from("universities")
+          .schema('data')
+          .from('universities')
           .insert({
             name: input.name,
             slug: input.slug,
@@ -221,28 +207,26 @@ export const officeUniversitiesRouter = t.router({
             metadata: input.metadata,
           })
           .select()
-          .single();
+          .single()
 
         if (error) {
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
+            code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to create university: ${error.message}`,
-          });
+          })
         }
 
-        return { success: true, university: data };
+        return { success: true, university: data }
       } catch (error) {
         if (error instanceof TRPCError) {
-          throw error;
+          throw error
         }
-        const errorMessage = error instanceof Error
-          ? error.message
-          : String(error);
-        console.error("Create university error:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.error('Create university error:', error)
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to create university: ${errorMessage}`,
-        });
+        })
       }
     }),
 
@@ -253,43 +237,43 @@ export const officeUniversitiesRouter = t.router({
     .input(
       z.object({
         id: z.string().uuid(),
-        name: z.string().min(1, "Name is required"),
-        slug: z.string().min(1, "Vanity URL is required"),
-        country: z.string().min(1, "Country is required"),
-        alpha_two_code: z.string().length(2, "Must be 2-letter country code"),
+        name: z.string().min(1, 'Name is required'),
+        slug: z.string().min(1, 'Vanity URL is required'),
+        country: z.string().min(1, 'Country is required'),
+        alpha_two_code: z.string().length(2, 'Must be 2-letter country code'),
         domains: z.array(z.string()).default([]),
         web_pages: z.array(z.string()).default([]),
         state_province: z.string().optional(),
         metadata: z.record(z.unknown()).default({}),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx;
+      const { supabase } = ctx
 
       try {
-        const { id, ...updateData } = input;
+        const { id, ...updateData } = input
 
         // Check if slug is being changed to one that already exists
         if (updateData.slug) {
           const { data: existing } = await supabase
-            .schema("data")
-            .from("universities")
-            .select("id")
-            .eq("slug", updateData.slug)
-            .neq("id", id)
-            .single();
+            .schema('data')
+            .from('universities')
+            .select('id')
+            .eq('slug', updateData.slug)
+            .neq('id', id)
+            .single()
 
           if (existing) {
             throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "A university with this slug already exists",
-            });
+              code: 'BAD_REQUEST',
+              message: 'A university with this slug already exists',
+            })
           }
         }
 
         const { data, error } = await supabase
-          .schema("data")
-          .from("universities")
+          .schema('data')
+          .from('universities')
           .update({
             name: updateData.name,
             slug: updateData.slug,
@@ -301,30 +285,28 @@ export const officeUniversitiesRouter = t.router({
             metadata: updateData.metadata,
             updated_at: new Date().toISOString(),
           })
-          .eq("id", id)
+          .eq('id', id)
           .select()
-          .single();
+          .single()
 
         if (error) {
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
+            code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to update university: ${error.message}`,
-          });
+          })
         }
 
-        return { success: true, university: data };
+        return { success: true, university: data }
       } catch (error) {
         if (error instanceof TRPCError) {
-          throw error;
+          throw error
         }
-        const errorMessage = error instanceof Error
-          ? error.message
-          : String(error);
-        console.error("Update university error:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.error('Update university error:', error)
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to update university: ${errorMessage}`,
-        });
+        })
       }
     }),
 
@@ -334,50 +316,47 @@ export const officeUniversitiesRouter = t.router({
   deleteUniversity: officeProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx;
+      const { supabase } = ctx
 
       try {
         // Check if university is used in any user_education records
         const { count } = await supabase
-          .from("user_education")
-          .select("id", { count: "exact", head: true })
-          .eq("university_id", input.id);
+          .from('user_education')
+          .select('id', { count: 'exact', head: true })
+          .eq('university_id', input.id)
 
         if (count && count > 0) {
           throw new TRPCError({
-            code: "BAD_REQUEST",
-            message:
-              `Cannot delete university: ${count} user(s) have this in their education history`,
-          });
+            code: 'BAD_REQUEST',
+            message: `Cannot delete university: ${count} user(s) have this in their education history`,
+          })
         }
 
         // Hard delete
         const { error } = await supabase
-          .schema("data")
-          .from("universities")
+          .schema('data')
+          .from('universities')
           .delete()
-          .eq("id", input.id);
+          .eq('id', input.id)
 
         if (error) {
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
+            code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to delete university: ${error.message}`,
-          });
+          })
         }
 
-        return { success: true };
+        return { success: true }
       } catch (error) {
         if (error instanceof TRPCError) {
-          throw error;
+          throw error
         }
-        const errorMessage = error instanceof Error
-          ? error.message
-          : String(error);
-        console.error("Delete university error:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.error('Delete university error:', error)
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to delete university: ${errorMessage}`,
-        });
+        })
       }
     }),
 
@@ -385,32 +364,29 @@ export const officeUniversitiesRouter = t.router({
    * Get statistics about universities
    */
   getStatistics: officeProcedure.query(async ({ ctx }) => {
-    const { supabase } = ctx;
+    const { supabase } = ctx
 
     // Get total count
-      const { count: totalCount } = await supabase
-        .schema("data")
-        .from("universities")
-        .select("*", { count: "exact", head: true });
+    const { count: totalCount } = await supabase
+      .schema('data')
+      .from('universities')
+      .select('*', { count: 'exact', head: true })
 
     // Get country count
-      const { data: countries } = await supabase
-        .schema("data")
-        .from("universities")
-        .select("country");
+    const { data: countries } = await supabase.schema('data').from('universities').select('country')
 
-    const uniqueCountries = new Set(countries?.map((c) => c.country) || []);
+    const uniqueCountries = new Set(countries?.map((c) => c.country) || [])
 
     // Get universities with user education links
     const { count: usedCount } = await supabase
-      .from("user_education")
-      .select("university_id", { count: "exact", head: true })
-      .not("university_id", "is", null);
+      .from('user_education')
+      .select('university_id', { count: 'exact', head: true })
+      .not('university_id', 'is', null)
 
     return {
       total: totalCount || 0,
       countries: uniqueCountries.size,
       usedInEducation: usedCount || 0,
-    };
+    }
   }),
-});
+})

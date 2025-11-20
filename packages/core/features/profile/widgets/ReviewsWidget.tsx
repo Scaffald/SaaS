@@ -1,17 +1,10 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Card, Spinner } from 'tamagui'
-import { Star, ThumbsUp, ThumbsDown, MessageSquarePlus, Shield } from '@tamagui/lucide-icons'
-import { randomUUID } from 'expo-crypto'
-import {
-  DashboardWidget,
-  ResponsiveModal,
-  Heading,
-  LoadingState,
-  spacing,
-  UIButton,
-} from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
+import { DashboardWidget, Heading, LoadingState, ResponsiveModal, spacing, UIButton } from '@app/ui'
+import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
+import { randomUUID } from 'expo-crypto'
+import { useState } from 'react'
+import { Card, Spinner, Text, XStack, YStack } from 'tamagui'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import type { ProfileWidgetProps } from './types'
 

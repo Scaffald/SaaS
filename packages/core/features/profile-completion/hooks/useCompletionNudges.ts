@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '@app/core/utils/api'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface PersonalizedBenefit {
   id: string
@@ -70,7 +70,7 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
       const clampedIndex = Math.max(0, Math.min(index, benefits.length - 1))
       setCurrentIndex(clampedIndex)
     },
-    [benefits],
+    [benefits]
   )
 
   const currentBenefit = benefits.length > 0 ? benefits[currentIndex] : null
@@ -94,4 +94,3 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
     refetch,
   }
 }
-

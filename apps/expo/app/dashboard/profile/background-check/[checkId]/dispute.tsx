@@ -1,13 +1,12 @@
-import { useCallback, useMemo } from 'react'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { RefreshCcw } from '@tamagui/lucide-icons'
-import { ScrollView, Spinner, Text, XStack, YStack, Button } from 'tamagui'
-
-import { api } from '@app/core/utils/api'
 import { DisputeBackgroundCheckContent } from '@app/core/features/background-check'
-import type { inferRouterOutputs } from '@trpc/server'
+import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { RefreshCcw } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { useCallback, useMemo } from 'react'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckSummary = RouterOutputs['backgroundChecks']['listChecks'][number]

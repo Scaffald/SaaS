@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { Button, H2, Spinner, XStack, YStack, Text } from 'tamagui'
-import { Plus, Pencil, Trash2, Eye, EyeOff } from '@tamagui/lucide-icons'
-import { Link, useRouter } from 'expo-router'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
 import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@tamagui/lucide-icons'
+import { Link, useRouter } from 'expo-router'
+import { useState } from 'react'
+import { Button, H2, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export function OfficeCMSList() {
   const [includeInactive, setIncludeInactive] = useState(false)
@@ -161,12 +161,8 @@ export function OfficeCMSList() {
             <Text fontSize="$5" fontWeight="bold">
               About Welcome Slides
             </Text>
-            <Text>
-              Manage the onboarding slides shown to new users when they first sign in.
-            </Text>
-            <Text>
-              Slides are displayed in order based on the &quot;display_order&quot; value.
-            </Text>
+            <Text>Manage the onboarding slides shown to new users when they first sign in.</Text>
+            <Text>Slides are displayed in order based on the &quot;display_order&quot; value.</Text>
             <Text>Only active slides are shown to users.</Text>
           </YStack>
         </QuickLinksSidebar>

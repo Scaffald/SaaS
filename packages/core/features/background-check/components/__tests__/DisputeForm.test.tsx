@@ -1,8 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { renderHook, act } from '@testing-library/react'
+import { act, fireEvent, render, renderHook, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import { describe, expect, it, vi } from 'vitest'
 import { useForm } from 'react-hook-form'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { DisputeAttachment, DisputeFormValues } from '../../hooks/useDispute'
 import { DisputeForm } from '../DisputeForm'
@@ -100,7 +99,7 @@ describe('DisputeForm', () => {
         attachmentError={null}
         submissionError={null}
         hasActiveDispute
-      />,
+      />
     )
 
     expect(screen.getByText(/Dispute already in review/i)).toBeInTheDocument()
@@ -123,7 +122,7 @@ describe('DisputeForm', () => {
         attachmentError={null}
         submissionError={null}
         hasActiveDispute={false}
-      />,
+      />
     )
 
     expect(screen.getByLabelText(/Describe the issue/i)).toBeInTheDocument()
@@ -148,7 +147,7 @@ describe('DisputeForm', () => {
       formResult.current.setValue('reason', 'incorrect_records' as never)
       formResult.current.setValue(
         'details',
-        'Automated test summary describing inaccurate findings.',
+        'Automated test summary describing inaccurate findings.'
       )
     })
 
@@ -165,7 +164,7 @@ describe('DisputeForm', () => {
         attachmentError={null}
         submissionError={null}
         hasActiveDispute={false}
-      />,
+      />
     )
 
     expect(screen.getByText(/evidence\.pdf/i)).toBeInTheDocument()

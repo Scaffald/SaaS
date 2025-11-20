@@ -5,7 +5,7 @@
  * Specifically designed for @dnd-kit/core implementation used in ApplicationsKanbanBoard
  */
 
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 
 /**
  * Application status columns in the Kanban board
@@ -19,7 +19,7 @@ export const KANBAN_COLUMNS = {
   REJECTED: 'rejected',
 } as const
 
-export type KanbanColumn = typeof KANBAN_COLUMNS[keyof typeof KANBAN_COLUMNS]
+export type KanbanColumn = (typeof KANBAN_COLUMNS)[keyof typeof KANBAN_COLUMNS]
 
 /**
  * Get a Kanban column by status
@@ -32,7 +32,8 @@ export async function getKanbanColumn(
   const timeout = options?.timeout ?? 5000
 
   // Try multiple selector strategies for finding columns
-  const columnLocator = page.locator(`[data-column="${column}"]`)
+  const columnLocator = page
+    .locator(`[data-column="${column}"]`)
     .or(page.locator(`[data-status="${column}"]`))
     .or(page.getByTestId(`kanban-column-${column}`))
     .first()
@@ -54,7 +55,8 @@ export async function getCardsInColumn(
   const columnLocator = await getKanbanColumn(page, column, { timeout })
 
   // Find all draggable cards within the column
-  const cards = columnLocator.locator('[draggable="true"]')
+  const cards = columnLocator
+    .locator('[draggable="true"]')
     .or(columnLocator.locator('[data-draggable="true"]'))
     .or(columnLocator.locator('[role="button"]'))
 
@@ -196,7 +198,8 @@ export async function waitForStatusChangeModal(
   const timeout = options?.timeout ?? 5000
 
   // Look for modal/dialog with confirmation text
-  await page.getByRole('dialog')
+  await page
+    .getByRole('dialog')
     .or(page.locator('[role="alertdialog"]'))
     .or(page.getByText(/confirm|are you sure/i))
     .first()
@@ -324,21 +327,25 @@ export async function getApplicationCardDetails(
     }
   }
 
-  const candidateName = await card.locator('[data-candidate-name]')
+  const candidateName = await card
+    .locator('[data-candidate-name]')
     .or(card.locator('h3, h4').first())
     .textContent()
     .catch(() => null)
 
-  const jobTitle = await card.locator('[data-job-title]')
+  const jobTitle = await card
+    .locator('[data-job-title]')
     .textContent()
     .catch(() => null)
 
-  const score = await card.locator('[data-score]')
+  const score = await card
+    .locator('[data-score]')
     .or(card.getByText(/\d+%/))
     .textContent()
     .catch(() => null)
 
-  const date = await card.locator('[data-date]')
+  const date = await card
+    .locator('[data-date]')
     .or(card.locator('time'))
     .textContent()
     .catch(() => null)
@@ -354,10 +361,7 @@ export async function getApplicationCardDetails(
 /**
  * Wait for Kanban board to finish loading
  */
-export async function waitForKanbanLoad(
-  page: Page,
-  options?: { timeout?: number }
-): Promise<void> {
+export async function waitForKanbanLoad(page: Page, options?: { timeout?: number }): Promise<void> {
   const timeout = options?.timeout ?? 30000
 
   // First, wait for the page to load and any loading spinner to disappear
@@ -387,7 +391,8 @@ export async function waitForKanbanLoad(
 
   // Wait for loading indicators to disappear
   try {
-    await page.locator('[role="progressbar"]')
+    await page
+      .locator('[role="progressbar"]')
       .or(page.locator('[class*="loading"]'))
       .first()
       .waitFor({ state: 'hidden', timeout: 3000 })
@@ -421,10 +426,7 @@ export async function getKanbanSummary(
 /**
  * Check if Kanban board is empty
  */
-export async function isKanbanEmpty(
-  page: Page,
-  options?: { timeout?: number }
-): Promise<boolean> {
+export async function isKanbanEmpty(page: Page, options?: { timeout?: number }): Promise<boolean> {
   const summary = await getKanbanSummary(page, options)
   const totalCards = Object.values(summary).reduce((sum, count) => sum + count, 0)
   return totalCards === 0

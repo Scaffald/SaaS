@@ -1,6 +1,6 @@
-import { ScrollView, Text, Input, Label, Button, XStack, Separator, YStack } from 'tamagui'
-import { Search, Filter, X } from '@tamagui/lucide-icons'
 import { FilterChip } from '@app/ui'
+import { Filter, Search, X } from '@tamagui/lucide-icons'
+import { Button, Input, Label, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 import { AddOrganizationWidget } from './components/AddOrganizationWidget'
 
 interface DiscoverEmployersRightProps {

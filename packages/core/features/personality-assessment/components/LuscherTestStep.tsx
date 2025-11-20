@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
-import type { MainColor } from 'luscher-test'
-import { shuffleColors, type Color } from '../lib/luscher/utils'
 import { UIButton as Button } from '@app/ui'
+import type { MainColor } from 'luscher-test'
+import { useEffect, useState } from 'react'
+import { Text, XStack, YStack } from 'tamagui'
+import { type Color, shuffleColors } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {
   step: 'luscher1' | 'luscher2'

@@ -1,9 +1,8 @@
-import type { ReactNode } from 'react'
-import { Card, Text, XStack, YStack } from 'tamagui'
+import type { AppRouter } from '@app/supabase/client-types'
 import { Briefcase, Mail, Shield, Users } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
-
-import type { AppRouter } from '@app/supabase/client-types'
+import type { ReactNode } from 'react'
+import { Card, Text, XStack, YStack } from 'tamagui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -44,8 +43,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
   const invitationPolicyLabel =
     INVITATION_POLICY_LABELS[team.invitationPolicy ?? ''] ?? 'Invite only'
 
-  const memberCount =
-    typeof stats?.memberCount === 'number' ? stats.memberCount : undefined
+  const memberCount = typeof stats?.memberCount === 'number' ? stats.memberCount : undefined
   const jobCount = typeof stats?.jobCount === 'number' ? stats.jobCount : undefined
   const pendingInvitations =
     typeof stats?.pendingInvitations === 'number' ? stats.pendingInvitations : undefined
@@ -115,15 +113,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
   )
 }
 
-function StatItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode
-  label: string
-  value: string
-}) {
+function StatItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <XStack
       gap="$2"
@@ -172,4 +162,3 @@ function Chip({
     </XStack>
   )
 }
-

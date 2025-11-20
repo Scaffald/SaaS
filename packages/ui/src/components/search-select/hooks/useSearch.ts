@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Fuse from 'fuse.js'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type {
-  SearchSelectOption,
-  SearchSelectHighlightRange,
   SearchResultOrigin,
+  SearchSelectHighlightRange,
+  SearchSelectOption,
   UseSearchResult,
 } from '../types'
 

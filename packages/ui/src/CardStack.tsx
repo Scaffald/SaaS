@@ -1,6 +1,6 @@
-import { useState, useEffect, type ReactNode, type ComponentType } from 'react'
-import { Text, View, XStack } from 'tamagui'
 import { randomUUID } from 'expo-crypto'
+import { type ComponentType, type ReactNode, useEffect, useState } from 'react'
+import { Text, View, XStack } from 'tamagui'
 
 const axises = {
   left: {
@@ -187,6 +187,7 @@ export const StackedCards = ({
       position="relative"
       {...(typeof width === 'number' ? { width } : { flex: 1 })}
       height={200}
+      mb="$8"
     >
       {visibleCards.map((card, stackIndex) => (
         <View

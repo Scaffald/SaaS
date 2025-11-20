@@ -1,13 +1,13 @@
-import { useMemo, type JSX } from 'react'
 import { Link } from 'expo-router'
+import { type JSX, useMemo } from 'react'
 import {
-  useWindowDimensions,
   Button,
+  type ButtonProps,
   Paragraph,
   ScrollView,
+  useWindowDimensions,
   XStack,
   YStack,
-  type ButtonProps,
 } from 'tamagui'
 
 export type OfficeTabsItem = {

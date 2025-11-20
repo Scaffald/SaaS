@@ -1,9 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
-import type { ReactNode } from 'react'
-import { Animated, Easing } from 'react-native'
-import { LinearGradient } from '@tamagui/linear-gradient'
-import { Text, XStack, YStack } from 'tamagui'
-import { DashboardWidget, type BreadcrumbItem } from '@app/ui'
+import { ROUTES } from '@app/core/constants/routes'
 import {
   CertificationsWidget,
   EducationWidget,
@@ -12,9 +7,14 @@ import {
   ReviewsWidget,
   SkillsWidget,
 } from '@app/core/features/profile/widgets'
-import { api } from '@app/core/utils/api'
 import { useAuth } from '@app/core/provider/auth/useAuth'
-import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { type BreadcrumbItem, DashboardWidget } from '@app/ui'
+import { LinearGradient } from '@tamagui/linear-gradient'
+import type { ReactNode } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { Animated, Easing } from 'react-native'
+import { Text, XStack, YStack } from 'tamagui'
 
 const SHIMMER_WIDTH = 220
 
@@ -299,4 +299,3 @@ export function DiscoverWorkerProfileScreen({
     breadcrumbItems,
   }
 }
-

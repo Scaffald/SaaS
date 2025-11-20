@@ -1,6 +1,7 @@
+import { type UploadSelection, UploadSurface } from '@app/ui'
+import { AlertCircle, Check, ChevronDown, Upload, X } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Controller, FormProvider, type UseFormReturn } from 'react-hook-form'
-import { AlertCircle, Check, ChevronDown, Upload, X } from '@tamagui/lucide-icons'
 import {
   Button,
   Card,
@@ -15,9 +16,7 @@ import {
   YStack,
 } from 'tamagui'
 
-import { UploadSurface, type UploadSelection } from '@app/ui'
-
-import type { DisputeAttachment, DisputeReasonOption, DisputeFormValues } from '../hooks/useDispute'
+import type { DisputeAttachment, DisputeFormValues, DisputeReasonOption } from '../hooks/useDispute'
 
 interface DisputeFormProps {
   form: UseFormReturn<DisputeFormValues>
@@ -61,11 +60,10 @@ export function DisputeForm({
 }: DisputeFormProps) {
   const reasonValue = form.watch('reason')
 
-  const disableSubmit = useMemo(() => isSubmitting || isUploading || hasActiveDispute, [
-    hasActiveDispute,
-    isSubmitting,
-    isUploading,
-  ])
+  const disableSubmit = useMemo(
+    () => isSubmitting || isUploading || hasActiveDispute,
+    [hasActiveDispute, isSubmitting, isUploading]
+  )
 
   return (
     <FormProvider {...form}>
@@ -106,8 +104,16 @@ export function DisputeForm({
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <YStack gap="$1">
                 <Label htmlFor="dispute-reason">What needs review?</Label>
-                <Select id="dispute-reason" value={value} onValueChange={onChange} disablePreventBodyScroll>
-                  <Select.Trigger iconAfter={ChevronDown} borderColor={error ? '$red8' : '$borderColor'}>
+                <Select
+                  id="dispute-reason"
+                  value={value}
+                  onValueChange={onChange}
+                  disablePreventBodyScroll
+                >
+                  <Select.Trigger
+                    iconAfter={ChevronDown}
+                    borderColor={error ? '$red8' : '$borderColor'}
+                  >
                     <Select.Value placeholder="Select a reason" />
                   </Select.Trigger>
                   <Select.Content zIndex={100_000}>
@@ -315,5 +321,3 @@ export function DisputeForm({
     </FormProvider>
   )
 }
-
-

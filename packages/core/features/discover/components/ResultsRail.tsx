@@ -1,9 +1,9 @@
-import { YStack } from 'tamagui'
-import { memo } from 'react'
 import type { RefObject } from 'react'
-import type { TalentProfile } from '../types'
-import type { OrganizationMapPin } from '../hooks/useOrganizations'
+import { memo } from 'react'
+import { YStack } from 'tamagui'
 import type { JobMapPin } from '../hooks/useJobs'
+import type { OrganizationMapPin } from '../hooks/useOrganizations'
+import type { TalentProfile } from '../types'
 import { ResultList, type ResultListRef } from './ResultList'
 
 interface ResultsRailProps {

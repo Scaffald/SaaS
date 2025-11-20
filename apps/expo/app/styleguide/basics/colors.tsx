@@ -1,9 +1,8 @@
 // @ts-nocheck
-import React from 'react'
-import { Paragraph, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
+
 import { BRAND_COLORS } from '@app/core/assets/brand-colors'
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
+import { Paragraph, Text, YStack } from '@app/ui'
 
 const VARIANT_MAP = [
   { variant: 'primary', hex: BRAND_COLORS.primary },

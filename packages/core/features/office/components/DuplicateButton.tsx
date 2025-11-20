@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { Button, XStack, YStack, Text, Spinner } from 'tamagui'
-import { Dialog } from '@app/ui'
 import { Copy } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
+import { useState } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+// @ts-expect-error - Dialog is not exported from @app/ui to avoid circular dependency, using direct import
+import { Dialog } from '../../../../ui/src/components/dialog/Dialog'
 
 interface DuplicateButtonProps {
   /**
@@ -87,19 +88,18 @@ export function DuplicateButton({
       <Dialog modal open={isOpen} onOpenChange={setIsOpen}>
         <Dialog.Portal>
           <Dialog.Overlay key="overlay" />
-          <Dialog.Content
-            key="content"
-            width={500}
-          >
-            <Dialog.Title>Duplicate {itemType.charAt(0).toUpperCase() + itemType.slice(1)}</Dialog.Title>
+          <Dialog.Content key="content" width={500}>
+            <Dialog.Title>
+              Duplicate {itemType.charAt(0).toUpperCase() + itemType.slice(1)}
+            </Dialog.Title>
             <Dialog.Description>
               Create a copy of <Text fontWeight="600">"{itemName}"</Text>?
             </Dialog.Description>
 
             <YStack gap="$2">
               <Text color="$color11" fontSize="$3">
-                A new {itemType} will be created as a draft with "(Copy)" appended to the title.
-                All settings, requirements, and team assignments will be copied.
+                A new {itemType} will be created as a draft with "(Copy)" appended to the title. All
+                settings, requirements, and team assignments will be copied.
               </Text>
             </YStack>
 
@@ -124,4 +124,3 @@ export function DuplicateButton({
     </>
   )
 }
-

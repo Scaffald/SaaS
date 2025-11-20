@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Select, Adapt, Card, Spinner } from 'tamagui'
+import { RouteBuilder } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
 import { Sheet } from '@app/ui'
 import { Check, ChevronDown, ExternalLink } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
-import { RouteBuilder } from '@app/core/constants/routes'
+import { useEffect, useState } from 'react'
+import { Adapt, Button, Card, Select, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface OrganizationProjectPrivacySettingsProps {
   organizationId: string
@@ -14,9 +14,21 @@ type ProjectLocationVisibility = 'public' | 'authenticated' | 'organization_only
 
 const VISIBILITY_OPTIONS = [
   { value: 'public', label: 'Public', description: 'Anyone can see exact locations' },
-  { value: 'authenticated', label: 'Authenticated', description: 'Only logged-in users see exact locations' },
-  { value: 'organization_only', label: 'Organization Only', description: 'Only organization members see exact locations' },
-  { value: 'private', label: 'Private', description: 'Only project team and admins see exact locations' },
+  {
+    value: 'authenticated',
+    label: 'Authenticated',
+    description: 'Only logged-in users see exact locations',
+  },
+  {
+    value: 'organization_only',
+    label: 'Organization Only',
+    description: 'Only organization members see exact locations',
+  },
+  {
+    value: 'private',
+    label: 'Private',
+    description: 'Only project team and admins see exact locations',
+  },
 ] as const
 
 export function OrganizationProjectPrivacySettings({
@@ -33,7 +45,8 @@ export function OrganizationProjectPrivacySettings({
     { enabled: !!organizationId }
   )
 
-  const [selectedVisibility, setSelectedVisibility] = useState<ProjectLocationVisibility>('organization_only')
+  const [selectedVisibility, setSelectedVisibility] =
+    useState<ProjectLocationVisibility>('organization_only')
   const updateMutation = api.organizations.updateLocationVisibility.useMutation()
 
   useEffect(() => {
@@ -69,9 +82,12 @@ export function OrganizationProjectPrivacySettings({
   return (
     <Card p="$4" bg="$blue2" borderColor="$blue8" borderWidth={1}>
       <YStack gap="$4">
-        <Text fontSize="$6" fontWeight="600">Project Location Privacy</Text>
+        <Text fontSize="$6" fontWeight="600">
+          Project Location Privacy
+        </Text>
         <Text fontSize="$3" color="$gray11">
-          Set the default visibility level for project locations. Individual projects can override this setting.
+          Set the default visibility level for project locations. Individual projects can override
+          this setting.
         </Text>
 
         <YStack gap="$2">
@@ -100,7 +116,9 @@ export function OrganizationProjectPrivacySettings({
                     <Select.ItemText>
                       <YStack>
                         <Text fontWeight="600">{option.label}</Text>
-                        <Text fontSize="$2" color="$gray10">{option.description}</Text>
+                        <Text fontSize="$2" color="$gray10">
+                          {option.description}
+                        </Text>
                       </YStack>
                     </Select.ItemText>
                     <Select.ItemIndicator marginLeft="auto">
@@ -115,7 +133,9 @@ export function OrganizationProjectPrivacySettings({
 
         <Card p="$3" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
           <YStack gap="$2">
-            <Text fontWeight="600" fontSize="$3">Project Override Statistics</Text>
+            <Text fontWeight="600" fontSize="$3">
+              Project Override Statistics
+            </Text>
             <Text fontSize="$2" color="$gray11">
               {overrideCount} project{overrideCount !== 1 ? 's' : ''} override this default setting
             </Text>
@@ -139,7 +159,10 @@ export function OrganizationProjectPrivacySettings({
           <Button
             theme="blue"
             onPress={handleSave}
-            disabled={updateMutation.isPending || selectedVisibility === orgData?.default_project_location_visibility}
+            disabled={
+              updateMutation.isPending ||
+              selectedVisibility === orgData?.default_project_location_visibility
+            }
           >
             {updateMutation.isPending ? <Spinner /> : 'Save Setting'}
           </Button>
@@ -148,4 +171,3 @@ export function OrganizationProjectPrivacySettings({
     </Card>
   )
 }
-

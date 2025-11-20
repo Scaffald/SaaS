@@ -1,10 +1,10 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { ROUTES } from '@app/core/constants/routes'
+import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
+import { OrganizationRequestForm } from '@app/core/features/organizations/components/OrganizationRequestForm'
 import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { Building2, Info } from '@tamagui/lucide-icons'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Separator, Text, XStack, YStack } from 'tamagui'
-import { OrganizationRequestForm } from '@app/core/features/organizations/components/OrganizationRequestForm'
-import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
-import { ROUTES } from '@app/core/constants/routes'
 
 export default function DashboardOrganizationCreatePage() {
   const router = useRouter()

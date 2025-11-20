@@ -46,8 +46,7 @@ export const buildOfficeRoute = {
   organizationEdit: (orgId: string) => `/office/organizations/${orgId}/edit`,
   organizationView: (orgId: string) => `/office/organizations/${orgId}`,
   universityEdit: (universityId: string) => `/office/universities/${universityId}/edit`,
-  applicationView: (applicationId: string) =>
-    `/office/applications/${applicationId}/inquiry`,
+  applicationView: (applicationId: string) => `/office/applications/${applicationId}/inquiry`,
 }
 
 /**
@@ -114,7 +113,8 @@ export async function waitForLoadingComplete(
   try {
     // Wait for common loading indicators to disappear
     // Only target specific loading UI elements, not all text containing "loading"
-    await page.locator('[role="progressbar"]')
+    await page
+      .locator('[role="progressbar"]')
       .or(page.locator('[aria-busy="true"]'))
       .or(page.locator('[data-loading="true"]'))
       .or(page.locator('[class*="spinner"]'))
@@ -149,10 +149,7 @@ export async function waitForRootContent(
 /**
  * Navigate back to previous page
  */
-export async function navigateBack(
-  page: Page,
-  options?: { timeout?: number }
-): Promise<void> {
+export async function navigateBack(page: Page, options?: { timeout?: number }): Promise<void> {
   const timeout = options?.timeout ?? 30000
 
   await page.goBack({ waitUntil: 'domcontentloaded', timeout })
@@ -223,10 +220,7 @@ export async function clickNavLink(
   })
 
   if (waitForLoad) {
-    await Promise.all([
-      page.waitForLoadState('domcontentloaded'),
-      link.click({ timeout }),
-    ])
+    await Promise.all([page.waitForLoadState('domcontentloaded'), link.click({ timeout })])
     await waitForPageLoad(page, { timeout })
   } else {
     await link.click({ timeout })
@@ -287,7 +281,8 @@ export async function hasOfficeAccess(page: Page): Promise<boolean> {
     }
 
     // Check for access denied messages
-    const accessDenied = await page.getByText(/access denied|unauthorized|forbidden/i)
+    const accessDenied = await page
+      .getByText(/access denied|unauthorized|forbidden/i)
       .first()
       .isVisible()
       .catch(() => false)
@@ -301,10 +296,7 @@ export async function hasOfficeAccess(page: Page): Promise<boolean> {
 /**
  * Refresh the current page
  */
-export async function refreshPage(
-  page: Page,
-  options?: { timeout?: number }
-): Promise<void> {
+export async function refreshPage(page: Page, options?: { timeout?: number }): Promise<void> {
   const timeout = options?.timeout ?? 30000
 
   await page.reload({
@@ -318,10 +310,7 @@ export async function refreshPage(
 /**
  * Dismiss any modal or dialog
  */
-export async function dismissModal(
-  page: Page,
-  options?: { timeout?: number }
-): Promise<void> {
+export async function dismissModal(page: Page, options?: { timeout?: number }): Promise<void> {
   const timeout = options?.timeout ?? 5000
 
   try {
@@ -331,7 +320,8 @@ export async function dismissModal(
   } catch {
     // Try to click backdrop/overlay
     try {
-      const backdrop = page.locator('[class*="backdrop"]')
+      const backdrop = page
+        .locator('[class*="backdrop"]')
         .or(page.locator('[class*="overlay"]'))
         .first()
       await backdrop.click({ timeout })
@@ -359,10 +349,7 @@ export async function scrollToBottom(page: Page): Promise<void> {
 /**
  * Scroll element into view
  */
-export async function scrollToElement(
-  page: Page,
-  selector: string
-): Promise<void> {
+export async function scrollToElement(page: Page, selector: string): Promise<void> {
   await page.locator(selector).scrollIntoViewIfNeeded()
   await page.waitForTimeout(300)
 }

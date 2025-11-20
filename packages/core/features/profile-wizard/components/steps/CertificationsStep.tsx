@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState, useId } from 'react'
-import { Button, Input, Text, XStack, YStack, Paragraph, Card, Label } from 'tamagui'
-import { StepNavigation } from '../StepNavigation'
-import type { WizardStepComponentProps } from './types'
-import type { CertificationEntry, CertificationsStepData } from '../../hooks/useProfileWizard'
 import { MonthYearPicker } from '@app/ui'
 import { randomUUID } from 'expo-crypto'
+import { useEffect, useId, useMemo, useState } from 'react'
+import { Button, Card, Input, Label, Paragraph, Text, XStack, YStack } from 'tamagui'
+import type { CertificationEntry, CertificationsStepData } from '../../hooks/useProfileWizard'
+import { StepNavigation } from '../StepNavigation'
+import type { WizardStepComponentProps } from './types'
 
 export function CertificationsStep({
   initialData,
@@ -16,7 +16,9 @@ export function CertificationsStep({
   onSkip,
   onStepStateChange,
 }: WizardStepComponentProps<'certifications'>) {
-  const [certifications, setCertifications] = useState<CertificationEntry[]>(initialData?.certifications ?? [])
+  const [certifications, setCertifications] = useState<CertificationEntry[]>(
+    initialData?.certifications ?? []
+  )
   const [name, setName] = useState('')
   const [issuer, setIssuer] = useState('')
   const [issuedOn, setIssuedOn] = useState<Date | null>(null)
@@ -35,7 +37,7 @@ export function CertificationsStep({
 
   const baselineKey = useMemo(
     () => serializeCertifications(initialData?.certifications ?? []),
-    [initialData?.certifications],
+    [initialData?.certifications]
   )
   const currentKey = useMemo(() => serializeCertifications(certifications), [certifications])
   const isDirty = baselineKey !== currentKey
@@ -105,11 +107,7 @@ export function CertificationsStep({
 
       <YStack gap="$3">
         {certifications.map((cert) => (
-          <Card
-            key={cert.id ?? cert.name}
-            bordered
-            bg="$color2"
-          >
+          <Card key={cert.id ?? cert.name} bordered bg="$color2">
             <Card.Header padded gap="$2">
               <XStack justify="space-between" items="center">
                 <YStack gap="$1">
@@ -171,18 +169,10 @@ export function CertificationsStep({
         </YStack>
         <XStack gap="$3">
           <YStack flex={1} gap="$2">
-            <MonthYearPicker
-              label="Issued on"
-              value={issuedOn}
-              onChange={setIssuedOn}
-            />
+            <MonthYearPicker label="Issued on" value={issuedOn} onChange={setIssuedOn} />
           </YStack>
           <YStack flex={1} gap="$2">
-            <MonthYearPicker
-              label="Expires on"
-              value={expiresOn}
-              onChange={setExpiresOn}
-            />
+            <MonthYearPicker label="Expires on" value={expiresOn} onChange={setExpiresOn} />
           </YStack>
         </XStack>
         <Button onPress={addCertification} disabled={!name.trim() || !issuer.trim()}>
@@ -208,7 +198,10 @@ export function CertificationsStep({
 
 function serializeCertifications(items: CertificationEntry[]): string {
   return items
-    .map((item) => `${item.id ?? item.name}:${item.issuer}:${item.issuedOn ?? ''}:${item.expiresOn ?? ''}`)
+    .map(
+      (item) =>
+        `${item.id ?? item.name}:${item.issuer}:${item.issuedOn ?? ''}:${item.expiresOn ?? ''}`
+    )
     .sort()
     .join('|')
 }
@@ -228,5 +221,3 @@ function formatDisplayDate(value: string): string {
     year: 'numeric',
   })
 }
-
-

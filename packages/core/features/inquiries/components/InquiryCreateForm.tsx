@@ -1,25 +1,25 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
-import { Platform } from 'react-native'
-import { Controller, FormProvider } from 'react-hook-form'
+import { api } from '@app/core/utils/api'
+import type { InquiryCreateInput } from '@app/schemas'
 import {
-  YStack,
-  XStack,
-  Text,
-  Input,
   Button,
+  CustomCheckbox,
+  Input,
   ScrollView,
   Separator,
-  CustomCheckbox,
+  Sheet,
+  Text,
+  XStack,
+  YStack,
 } from '@app/ui'
-import { Adapt, Select, Switch, TextArea } from 'tamagui'
-import { Sheet } from '@app/ui'
-import { Check, Info, HelpCircle } from '@tamagui/lucide-icons'
+import { Check, HelpCircle, Info } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-import { api } from '@app/core/utils/api'
-import { useInquiryForm } from '../hooks/useInquiryForm'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, FormProvider } from 'react-hook-form'
+import { Platform } from 'react-native'
+import { Adapt, Select, Switch, TextArea } from 'tamagui'
 import { useInquiryEdit } from '../hooks/useInquiryEdit'
+import { useInquiryForm } from '../hooks/useInquiryForm'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
-import type { InquiryCreateInput } from '@app/schemas'
 
 const SMART_DEFAULT_FIELD_LABELS: Record<string, string> = {
   employmentType: 'Employment type',
@@ -131,9 +131,12 @@ export function InquiryCreateForm({
 
   // Extract form handlers - edit hook doesn't have handleSaveDraft
   const { form, handleSubmit, isSubmitting } = hookResult
-  const handleSaveDraft = 'handleSaveDraft' in hookResult ? hookResult.handleSaveDraft : async () => {
-    // No-op for edit mode - save draft not applicable
-  }
+  const handleSaveDraft =
+    'handleSaveDraft' in hookResult
+      ? hookResult.handleSaveDraft
+      : async () => {
+          // No-op for edit mode - save draft not applicable
+        }
 
   const toast = useToastController()
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
@@ -168,15 +171,13 @@ export function InquiryCreateForm({
   const applyTemplateMutation = api.inquiries.applyTemplate.useMutation()
   const deleteTemplateMutation = api.inquiries.deleteTemplate.useMutation()
 
-  const {
-    data: smartDefaultsData,
-    isLoading: isSmartDefaultsLoading,
-  } = api.inquiries.getSmartDefaults.useQuery(
-    { applicationId },
-    {
-      enabled: mode === 'create',
-    }
-  )
+  const { data: smartDefaultsData, isLoading: isSmartDefaultsLoading } =
+    api.inquiries.getSmartDefaults.useQuery(
+      { applicationId },
+      {
+        enabled: mode === 'create',
+      }
+    )
 
   const templateOptions = useMemo(
     () =>
@@ -193,10 +194,7 @@ export function InquiryCreateForm({
   const smartDefaults = smartDefaultsData?.defaults ?? null
   const smartDefaultFields = (smartDefaultsData?.fields ?? []) as string[]
   const smartDefaultsFieldLabels = useMemo<string[]>(
-    () =>
-      smartDefaultFields.map(
-        (field) => SMART_DEFAULT_FIELD_LABELS[field] ?? field
-      ),
+    () => smartDefaultFields.map((field) => SMART_DEFAULT_FIELD_LABELS[field] ?? field),
     [smartDefaultFields]
   )
   const smartDefaultsFieldCount = smartDefaultFields.length
@@ -423,124 +421,11 @@ export function InquiryCreateForm({
     <>
       <FormProvider {...form}>
         <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
-        {/* Main Form */}
-        <YStack flex={1} gap="$4">
-          <ScrollView>
-            <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
-              {/* Templates Section */}
-              <YStack
-                gap="$3"
-                p="$3"
-                borderWidth={1}
-                borderColor="$borderColor"
-                bg="$background"
-                rounded="$4"
-              >
-                <XStack
-                  justify="space-between"
-                  items="center"
-                  gap="$3"
-                  $sm={{ flexDirection: 'column' }}
-                >
-                  <YStack>
-                    <Text fontSize="$6" fontWeight="700">
-                      Templates
-                    </Text>
-                    <Text fontSize="$3" color="$color11">
-                      Reuse saved inquiry terms for this organization.
-                    </Text>
-                  </YStack>
-                  <XStack gap="$2" $sm={{ width: '100%' }}>
-                    <Button
-                      size="$3"
-                      variant="outlined"
-                      onPress={() => setSaveTemplateOpen(true)}
-                      disabled={createTemplateMutation.isLoading}
-                      $sm={{ flex: 1 }}
-                    >
-                      Save current
-                    </Button>
-                    <Button
-                      size="$3"
-                      variant="outlined"
-                      onPress={() => setManageTemplatesOpen(true)}
-                      $sm={{ flex: 1 }}
-                    >
-                      Manage
-                    </Button>
-                  </XStack>
-                </XStack>
-
-                <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                  <YStack flex={1}>
-                    <Select
-                      value={selectedTemplateId ?? undefined}
-                      onValueChange={setSelectedTemplateId}
-                    >
-                      <Select.Trigger disabled={templates.length === 0 || isTemplatesLoading}>
-                        <Select.Value
-                          placeholder={
-                            templates.length === 0
-                              ? 'No templates yet'
-                              : 'Choose a template'
-                          }
-                        />
-                      </Select.Trigger>
-                      <Adapt when="sm" platform="touch">
-                        <Sheet modal dismissOnSnapToBottom>
-                          <Sheet.Frame>
-                            <Sheet.ScrollView>
-                              <Adapt.Contents />
-                            </Sheet.ScrollView>
-                          </Sheet.Frame>
-                          <Sheet.Overlay />
-                        </Sheet>
-                      </Adapt>
-                      <Select.Content zIndex={200000}>
-                        <Select.ScrollUpButton />
-                        <Select.Viewport>
-                          {templateOptions.map((template) => (
-                            <Select.Item
-                              key={template.id}
-                              value={template.id}
-                              index={template.index}
-                            >
-                              <Select.ItemText>{template.name}</Select.ItemText>
-                              <Select.ItemIndicator marginLeft="auto">
-                                <Check size={16} />
-                              </Select.ItemIndicator>
-                            </Select.Item>
-                          ))}
-                        </Select.Viewport>
-                        <Select.ScrollDownButton />
-                      </Select.Content>
-                    </Select>
-                  </YStack>
-
-                  <Button
-                    size="$3"
-                    onPress={handleApplyTemplate}
-                    disabled={!selectedTemplateId || applyTemplateMutation.isLoading}
-                    $sm={{ width: '100%' }}
-                  >
-                    {applyTemplateMutation.isLoading ? 'Applying…' : 'Apply template'}
-                  </Button>
-                </XStack>
-
-                {isTemplatesLoading && (
-                  <Text fontSize="$3" color="$color11">
-                    Loading templates…
-                  </Text>
-                )}
-                {!isTemplatesLoading && templates.length === 0 && (
-                  <Text fontSize="$3" color="$color11">
-                    Save templates to quickly reuse standard employment terms.
-                  </Text>
-                )}
-              </YStack>
-
-              {/* Smart Defaults Banner */}
-              {mode === 'create' && (
+          {/* Main Form */}
+          <YStack flex={1} gap="$4">
+            <ScrollView>
+              <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
+                {/* Templates Section */}
                 <YStack
                   gap="$3"
                   p="$3"
@@ -555,788 +440,869 @@ export function InquiryCreateForm({
                     gap="$3"
                     $sm={{ flexDirection: 'column' }}
                   >
-                    <YStack gap="$1" flex={1}>
+                    <YStack>
                       <Text fontSize="$6" fontWeight="700">
-                        Smart defaults
+                        Templates
                       </Text>
-                      {isSmartDefaultsLoading ? (
-                        <Text fontSize="$3" color="$color11">
-                          Loading job-based recommendations…
-                        </Text>
-                      ) : smartDefaultsFieldCount > 0 ? (
-                        <Text fontSize="$3" color="$color11">
-                          {smartDefaultsApplied
-                            ? `Applied ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`
-                            : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
-                        </Text>
-                      ) : (
-                        <Text fontSize="$3" color="$color11">
-                          No defaults available for this job yet.
-                        </Text>
-                      )}
+                      <Text fontSize="$3" color="$color11">
+                        Reuse saved inquiry terms for this organization.
+                      </Text>
                     </YStack>
                     <XStack gap="$2" $sm={{ width: '100%' }}>
                       <Button
+                        size="$3"
                         variant="outlined"
-                        onPress={handleClearSmartDefaults}
-                        disabled={!smartDefaultsApplied}
+                        onPress={() => setSaveTemplateOpen(true)}
+                        disabled={createTemplateMutation.isLoading}
                         $sm={{ flex: 1 }}
                       >
-                        Clear
+                        Save current
                       </Button>
                       <Button
-                        onPress={() => handleApplySmartDefaults({ force: true })}
-                        disabled={smartDefaultsFieldCount === 0}
+                        size="$3"
+                        variant="outlined"
+                        onPress={() => setManageTemplatesOpen(true)}
                         $sm={{ flex: 1 }}
                       >
-                        {smartDefaultsApplied ? 'Reapply defaults' : 'Apply defaults'}
+                        Manage
                       </Button>
                     </XStack>
                   </XStack>
-                  {smartDefaultsFieldLabels.length > 0 && (
-                    <XStack gap="$2" flexWrap="wrap">
-                      {smartDefaultsFieldLabels.map((label) => (
-                        <YStack key={label} px="$2" py="$1" bg="$gray3" rounded="$3">
-                          <Text fontSize="$2" color="$color11">
-                            {label}
-                          </Text>
-                        </YStack>
-                      ))}
-                    </XStack>
+
+                  <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                    <YStack flex={1}>
+                      <Select
+                        value={selectedTemplateId ?? undefined}
+                        onValueChange={setSelectedTemplateId}
+                      >
+                        <Select.Trigger disabled={templates.length === 0 || isTemplatesLoading}>
+                          <Select.Value
+                            placeholder={
+                              templates.length === 0 ? 'No templates yet' : 'Choose a template'
+                            }
+                          />
+                        </Select.Trigger>
+                        <Adapt when="sm" platform="touch">
+                          <Sheet modal dismissOnSnapToBottom>
+                            <Sheet.Frame>
+                              <Sheet.ScrollView>
+                                <Adapt.Contents />
+                              </Sheet.ScrollView>
+                            </Sheet.Frame>
+                            <Sheet.Overlay />
+                          </Sheet>
+                        </Adapt>
+                        <Select.Content zIndex={200000}>
+                          <Select.ScrollUpButton />
+                          <Select.Viewport>
+                            {templateOptions.map((template) => (
+                              <Select.Item
+                                key={template.id}
+                                value={template.id}
+                                index={template.index}
+                              >
+                                <Select.ItemText>{template.name}</Select.ItemText>
+                                <Select.ItemIndicator marginLeft="auto">
+                                  <Check size={16} />
+                                </Select.ItemIndicator>
+                              </Select.Item>
+                            ))}
+                          </Select.Viewport>
+                          <Select.ScrollDownButton />
+                        </Select.Content>
+                      </Select>
+                    </YStack>
+
+                    <Button
+                      size="$3"
+                      onPress={handleApplyTemplate}
+                      disabled={!selectedTemplateId || applyTemplateMutation.isLoading}
+                      $sm={{ width: '100%' }}
+                    >
+                      {applyTemplateMutation.isLoading ? 'Applying…' : 'Apply template'}
+                    </Button>
+                  </XStack>
+
+                  {isTemplatesLoading && (
+                    <Text fontSize="$3" color="$color11">
+                      Loading templates…
+                    </Text>
+                  )}
+                  {!isTemplatesLoading && templates.length === 0 && (
+                    <Text fontSize="$3" color="$color11">
+                      Save templates to quickly reuse standard employment terms.
+                    </Text>
                   )}
                 </YStack>
-              )}
 
-              {/* Employment Section */}
-              <YStack gap="$4">
-                <XStack items="center" gap="$2">
-                  <Text fontSize="$6" fontWeight="700">
-                    Employment
-                  </Text>
-                </XStack>
-
-                {/* Employment Type */}
-                <YStack gap="$2">
-                  {renderSmartLabel('Employment type', 'employmentType')}
-                  <Controller
-                    control={control}
-                    name="employmentType"
-                    render={({ field }) => (
-                      <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                        {EMPLOYMENT_TYPE_OPTIONS.map((option) => {
-                          const isSelected = field.value === option.value
-                          return (
-                            <Button
-                              key={option.value}
-                              flex={1}
-                              theme={isSelected ? 'blue' : 'gray'}
-                              variant={isSelected ? undefined : 'outlined'}
-                              onPress={() => field.onChange(option.value)}
-                              size="$4"
-                              $sm={{ height: 48 }}
-                            >
-                              {option.label}
-                            </Button>
-                          )
-                        })}
-                      </XStack>
-                    )}
-                  />
-                  <XStack items="center" gap="$2">
-                    <Controller
-                      control={control}
-                      name="employmentTypeNegotiable"
-                      render={({ field }) => (
-                        <CustomCheckbox
-                          checked={!field.value}
-                          onCheckedChange={(checked) =>
-                            field.onChange(!checked)
-                          }
-                          size="medium"
-                        />
-                      )}
-                    />
-                    <Text fontSize="$3" color="$color11">
-                      Non-negotiable
-                    </Text>
-                  </XStack>
-                </YStack>
-
-                {/* Work Schedule */}
-                <YStack gap="$2">
-                  {renderSmartLabel('Work schedule', 'workSchedule')}
-                  <Controller
-                    control={control}
-                    name="workSchedule"
-                    render={({ field }) => (
-                      <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                        {WORK_SCHEDULE_OPTIONS.map((option) => {
-                          const isSelected = field.value === option.value
-                          return (
-                            <Button
-                              key={option.value}
-                              flex={1}
-                              theme={isSelected ? 'blue' : 'gray'}
-                              variant={isSelected ? undefined : 'outlined'}
-                              onPress={() => field.onChange(option.value)}
-                              size="$4"
-                              $sm={{ height: 48 }}
-                            >
-                              {option.label}
-                            </Button>
-                          )
-                        })}
-                      </XStack>
-                    )}
-                  />
-                  <XStack items="center" gap="$2">
-                    <Controller
-                      control={control}
-                      name="workScheduleNegotiable"
-                      render={({ field }) => (
-                        <CustomCheckbox
-                          checked={!field.value}
-                          onCheckedChange={(checked) =>
-                            field.onChange(!checked)
-                          }
-                          size="medium"
-                        />
-                      )}
-                    />
-                    <Text fontSize="$3" color="$color11">
-                      Non-negotiable
-                    </Text>
-                  </XStack>
-                </YStack>
-
-                {/* Schedule Shifts */}
-                <YStack gap="$2">
-                  <XStack justify="space-between" items="center">
-                    <Text fontWeight="600" fontSize="$4">
-                      Schedule shifts
-                    </Text>
-                    <Controller
-                      control={control}
-                      name="scheduleShifts"
-                      render={({ field }) => (
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          size="$4"
-                        />
-                      )}
-                    />
-                  </XStack>
-                </YStack>
-
-                {/* Working Hours */}
-                <YStack gap="$2">
-                  {renderSmartLabel('Working hours', [
-                    'workingHoursStart',
-                    'workingHoursEnd',
-                    'workingHoursTimezone',
-                  ])}
-                  <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                    <YStack gap="$2" flex={1}>
-                      <Controller
-                        control={control}
-                        name="workingHoursTimezone"
-                        render={({ field }) => (
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <Select.Trigger>
-                              <Select.Value placeholder="Time zone" />
-                            </Select.Trigger>
-                            <Adapt when="sm" platform="touch">
-                              <Sheet modal dismissOnSnapToBottom>
-                                <Sheet.Frame>
-                                  <Sheet.ScrollView>
-                                    <Adapt.Contents />
-                                  </Sheet.ScrollView>
-                                </Sheet.Frame>
-                                <Sheet.Overlay />
-                              </Sheet>
-                            </Adapt>
-                            <Select.Content zIndex={200000}>
-                              <Select.Viewport>
-                                {TIMEZONE_OPTIONS.map((option, index) => (
-                                  <Select.Item
-                                    key={option.value}
-                                    value={option.value}
-                                    index={index}
-                                  >
-                                    <Select.ItemText>
-                                      {option.label}
-                                    </Select.ItemText>
-                                    <Select.ItemIndicator marginLeft="auto">
-                                      <Check size={16} />
-                                    </Select.ItemIndicator>
-                                  </Select.Item>
-                                ))}
-                              </Select.Viewport>
-                            </Select.Content>
-                          </Select>
-                        )}
-                      />
-                    </YStack>
-                    <YStack gap="$2" flex={1}>
-                      <Controller
-                        control={control}
-                        name="workingHoursStart"
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="Start time (e.g., 07:00)"
-                            {...getTimeInputProps()}
-                          />
-                        )}
-                      />
-                      {errors.workingHoursStart && (
-                        <Text fontSize="$2" color="$red10">
-                          {errors.workingHoursStart.message}
+                {/* Smart Defaults Banner */}
+                {mode === 'create' && (
+                  <YStack
+                    gap="$3"
+                    p="$3"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    bg="$background"
+                    rounded="$4"
+                  >
+                    <XStack
+                      justify="space-between"
+                      items="center"
+                      gap="$3"
+                      $sm={{ flexDirection: 'column' }}
+                    >
+                      <YStack gap="$1" flex={1}>
+                        <Text fontSize="$6" fontWeight="700">
+                          Smart defaults
                         </Text>
-                      )}
-                    </YStack>
-                    <YStack gap="$2" flex={1}>
-                      <Controller
-                        control={control}
-                        name="workingHoursEnd"
-                        render={({ field }) => (
-                          <Input
-                            {...field}
-                            placeholder="End time (e.g., 16:00)"
-                            {...getTimeInputProps()}
-                          />
-                        )}
-                      />
-                      {errors.workingHoursEnd && (
-                        <Text fontSize="$2" color="$red10">
-                          {errors.workingHoursEnd.message}
-                        </Text>
-                      )}
-                    </YStack>
-                  </XStack>
-                  <XStack items="center" gap="$2">
-                    <Controller
-                      control={control}
-                      name="workingHoursNegotiable"
-                      render={({ field }) => (
-                        <CustomCheckbox
-                          checked={!field.value}
-                          onCheckedChange={(checked) =>
-                            field.onChange(!checked)
-                          }
-                          size="medium"
-                        />
-                      )}
-                    />
-                    <Text fontSize="$3" color="$color11">
-                      Non-negotiable
-                    </Text>
-                  </XStack>
-                </YStack>
-
-                {/* Workdays */}
-                <YStack gap="$2">
-                  {renderSmartLabel('Workdays', 'workdays')}
-                  <Controller
-                    control={control}
-                    name="workdays"
-                    render={({ field }) => (
-                      <XStack gap="$2" flexWrap="wrap" $sm={{ gap: '$3' }}>
-                        {WORKDAYS.map((day) => {
-                          const isSelected = field.value?.includes(day.value)
-                          return (
-                            <Button
-                              key={day.value}
-                              theme={isSelected ? 'blue' : 'gray'}
-                              variant={isSelected ? undefined : 'outlined'}
-                              onPress={() => {
-                                const current = field.value || []
-                                if (isSelected) {
-                                  field.onChange(
-                                    current.filter((d) => d !== day.value)
-                                  )
-                                } else {
-                                  field.onChange([...current, day.value])
-                                }
-                              }}
-                              size="$3"
-                              px="$3"
-                              rounded="$10"
-                              $sm={{ height: 48, px: '$4' }}
-                            >
-                              {day.label}
-                            </Button>
-                          )
-                        })}
-                      </XStack>
-                    )}
-                  />
-                  <XStack items="center" gap="$2">
-                    <Controller
-                      control={control}
-                      name="workdaysNegotiable"
-                      render={({ field }) => (
-                        <CustomCheckbox
-                          checked={!field.value}
-                          onCheckedChange={(checked) =>
-                            field.onChange(!checked)
-                          }
-                          size="medium"
-                        />
-                      )}
-                    />
-                    <Text fontSize="$3" color="$color11">
-                      Non-negotiable
-                    </Text>
-                  </XStack>
-                </YStack>
-
-                {/* Date of Employment */}
-                <YStack gap="$2">
-                  {renderSmartLabel('Date of employment', 'employmentStartDate')}
-                  <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                    <YStack gap="$2" flex={1}>
-                  <Controller
-                    control={control}
-                    name="employmentStartDate"
-                    render={({ field }) => (
-                      <>
-                        <Input
-                          value={field.value}
-                          onChangeText={field.onChange}
-                          onBlur={field.onBlur}
-                          placeholder="Start date"
-                          {...getDateInputProps()}
-                        />
-                        {errors.employmentStartDate && (
-                          <Text fontSize="$2" color="$red10">
-                            {errors.employmentStartDate.message}
+                        {isSmartDefaultsLoading ? (
+                          <Text fontSize="$3" color="$color11">
+                            Loading job-based recommendations…
+                          </Text>
+                        ) : smartDefaultsFieldCount > 0 ? (
+                          <Text fontSize="$3" color="$color11">
+                            {smartDefaultsApplied
+                              ? `Applied ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`
+                              : `Prefill ${smartDefaultsFieldCount} field${smartDefaultsFieldCount === 1 ? '' : 's'} from ${smartDefaultsSourceDescription}.`}
+                          </Text>
+                        ) : (
+                          <Text fontSize="$3" color="$color11">
+                            No defaults available for this job yet.
                           </Text>
                         )}
-                      </>
+                      </YStack>
+                      <XStack gap="$2" $sm={{ width: '100%' }}>
+                        <Button
+                          variant="outlined"
+                          onPress={handleClearSmartDefaults}
+                          disabled={!smartDefaultsApplied}
+                          $sm={{ flex: 1 }}
+                        >
+                          Clear
+                        </Button>
+                        <Button
+                          onPress={() => handleApplySmartDefaults({ force: true })}
+                          disabled={smartDefaultsFieldCount === 0}
+                          $sm={{ flex: 1 }}
+                        >
+                          {smartDefaultsApplied ? 'Reapply defaults' : 'Apply defaults'}
+                        </Button>
+                      </XStack>
+                    </XStack>
+                    {smartDefaultsFieldLabels.length > 0 && (
+                      <XStack gap="$2" flexWrap="wrap">
+                        {smartDefaultsFieldLabels.map((label) => (
+                          <YStack key={label} px="$2" py="$1" bg="$gray3" rounded="$3">
+                            <Text fontSize="$2" color="$color11">
+                              {label}
+                            </Text>
+                          </YStack>
+                        ))}
+                      </XStack>
                     )}
-                  />
-                    </YStack>
-                    <YStack gap="$2" flex={1}>
+                  </YStack>
+                )}
+
+                {/* Employment Section */}
+                <YStack gap="$4">
+                  <XStack items="center" gap="$2">
+                    <Text fontSize="$6" fontWeight="700">
+                      Employment
+                    </Text>
+                  </XStack>
+
+                  {/* Employment Type */}
+                  <YStack gap="$2">
+                    {renderSmartLabel('Employment type', 'employmentType')}
+                    <Controller
+                      control={control}
+                      name="employmentType"
+                      render={({ field }) => (
+                        <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                          {EMPLOYMENT_TYPE_OPTIONS.map((option) => {
+                            const isSelected = field.value === option.value
+                            return (
+                              <Button
+                                key={option.value}
+                                flex={1}
+                                theme={isSelected ? 'blue' : 'gray'}
+                                variant={isSelected ? undefined : 'outlined'}
+                                onPress={() => field.onChange(option.value)}
+                                size="$4"
+                                $sm={{ height: 48 }}
+                              >
+                                {option.label}
+                              </Button>
+                            )
+                          })}
+                        </XStack>
+                      )}
+                    />
+                    <XStack items="center" gap="$2">
                       <Controller
                         control={control}
-                        name="employmentEndDate"
+                        name="employmentTypeNegotiable"
                         render={({ field }) => (
-                          <>
+                          <CustomCheckbox
+                            checked={!field.value}
+                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            size="medium"
+                          />
+                        )}
+                      />
+                      <Text fontSize="$3" color="$color11">
+                        Non-negotiable
+                      </Text>
+                    </XStack>
+                  </YStack>
+
+                  {/* Work Schedule */}
+                  <YStack gap="$2">
+                    {renderSmartLabel('Work schedule', 'workSchedule')}
+                    <Controller
+                      control={control}
+                      name="workSchedule"
+                      render={({ field }) => (
+                        <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                          {WORK_SCHEDULE_OPTIONS.map((option) => {
+                            const isSelected = field.value === option.value
+                            return (
+                              <Button
+                                key={option.value}
+                                flex={1}
+                                theme={isSelected ? 'blue' : 'gray'}
+                                variant={isSelected ? undefined : 'outlined'}
+                                onPress={() => field.onChange(option.value)}
+                                size="$4"
+                                $sm={{ height: 48 }}
+                              >
+                                {option.label}
+                              </Button>
+                            )
+                          })}
+                        </XStack>
+                      )}
+                    />
+                    <XStack items="center" gap="$2">
+                      <Controller
+                        control={control}
+                        name="workScheduleNegotiable"
+                        render={({ field }) => (
+                          <CustomCheckbox
+                            checked={!field.value}
+                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            size="medium"
+                          />
+                        )}
+                      />
+                      <Text fontSize="$3" color="$color11">
+                        Non-negotiable
+                      </Text>
+                    </XStack>
+                  </YStack>
+
+                  {/* Schedule Shifts */}
+                  <YStack gap="$2">
+                    <XStack justify="space-between" items="center">
+                      <Text fontWeight="600" fontSize="$4">
+                        Schedule shifts
+                      </Text>
+                      <Controller
+                        control={control}
+                        name="scheduleShifts"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            size="$4"
+                          />
+                        )}
+                      />
+                    </XStack>
+                  </YStack>
+
+                  {/* Working Hours */}
+                  <YStack gap="$2">
+                    {renderSmartLabel('Working hours', [
+                      'workingHoursStart',
+                      'workingHoursEnd',
+                      'workingHoursTimezone',
+                    ])}
+                    <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                      <YStack gap="$2" flex={1}>
+                        <Controller
+                          control={control}
+                          name="workingHoursTimezone"
+                          render={({ field }) => (
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <Select.Trigger>
+                                <Select.Value placeholder="Time zone" />
+                              </Select.Trigger>
+                              <Adapt when="sm" platform="touch">
+                                <Sheet modal dismissOnSnapToBottom>
+                                  <Sheet.Frame>
+                                    <Sheet.ScrollView>
+                                      <Adapt.Contents />
+                                    </Sheet.ScrollView>
+                                  </Sheet.Frame>
+                                  <Sheet.Overlay />
+                                </Sheet>
+                              </Adapt>
+                              <Select.Content zIndex={200000}>
+                                <Select.Viewport>
+                                  {TIMEZONE_OPTIONS.map((option, index) => (
+                                    <Select.Item
+                                      key={option.value}
+                                      value={option.value}
+                                      index={index}
+                                    >
+                                      <Select.ItemText>{option.label}</Select.ItemText>
+                                      <Select.ItemIndicator marginLeft="auto">
+                                        <Check size={16} />
+                                      </Select.ItemIndicator>
+                                    </Select.Item>
+                                  ))}
+                                </Select.Viewport>
+                              </Select.Content>
+                            </Select>
+                          )}
+                        />
+                      </YStack>
+                      <YStack gap="$2" flex={1}>
+                        <Controller
+                          control={control}
+                          name="workingHoursStart"
+                          render={({ field }) => (
                             <Input
                               {...field}
-                              placeholder="End date (optional)"
-                              {...getDateInputProps()}
+                              placeholder="Start time (e.g., 07:00)"
+                              {...getTimeInputProps()}
                             />
-                            {errors.employmentEndDate && (
-                              <Text fontSize="$2" color="$red10">
-                                {errors.employmentEndDate.message}
-                              </Text>
-                            )}
-                          </>
-                        )}
-                      />
-                      <Text fontSize="$2" color="$color11">
-                        End date is not mandatory
-                      </Text>
-                    </YStack>
-                  </XStack>
-                  <XStack items="center" gap="$2">
-                    <Controller
-                      control={control}
-                      name="employmentDatesNegotiable"
-                      render={({ field }) => (
-                        <CustomCheckbox
-                          checked={!field.value}
-                          onCheckedChange={(checked) =>
-                            field.onChange(!checked)
-                          }
-                          size="medium"
+                          )}
                         />
-                      )}
-                    />
-                    <Text fontSize="$3" color="$color11">
-                      Non-negotiable
-                    </Text>
-                  </XStack>
-                </YStack>
-              </YStack>
-
-              <Separator />
-
-              {/* Compensation Section */}
-              <YStack gap="$4">
-                <XStack items="center" gap="$2">
-                  <Text fontSize="$6" fontWeight="700">
-                    Compensation
-                  </Text>
-                </XStack>
-
-                {/* Rate Type */}
-                <YStack gap="$2">
-                  {renderSmartLabel('Rate', ['rateType', 'rateMinCents', 'rateMaxCents'])}
-                  <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
-                    <YStack gap="$2" flex={2}>
+                        {errors.workingHoursStart && (
+                          <Text fontSize="$2" color="$red10">
+                            {errors.workingHoursStart.message}
+                          </Text>
+                        )}
+                      </YStack>
+                      <YStack gap="$2" flex={1}>
+                        <Controller
+                          control={control}
+                          name="workingHoursEnd"
+                          render={({ field }) => (
+                            <Input
+                              {...field}
+                              placeholder="End time (e.g., 16:00)"
+                              {...getTimeInputProps()}
+                            />
+                          )}
+                        />
+                        {errors.workingHoursEnd && (
+                          <Text fontSize="$2" color="$red10">
+                            {errors.workingHoursEnd.message}
+                          </Text>
+                        )}
+                      </YStack>
+                    </XStack>
+                    <XStack items="center" gap="$2">
                       <Controller
                         control={control}
-                        name="rateType"
+                        name="workingHoursNegotiable"
                         render={({ field }) => (
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <Select.Trigger>
-                              <Select.Value placeholder="Type" />
-                            </Select.Trigger>
-                            <Adapt when="sm" platform="touch">
-                              <Sheet modal dismissOnSnapToBottom>
-                                <Sheet.Frame>
-                                  <Sheet.ScrollView>
-                                    <Adapt.Contents />
-                                  </Sheet.ScrollView>
-                                </Sheet.Frame>
-                                <Sheet.Overlay />
-                              </Sheet>
-                            </Adapt>
-                            <Select.Content zIndex={200000}>
-                              <Select.Viewport>
-                                {RATE_TYPE_OPTIONS.map((option, index) => (
-                                  <Select.Item
-                                    key={option.value}
-                                    value={option.value}
-                                    index={index}
-                                  >
-                                    <Select.ItemText>
-                                      {option.label}
-                                    </Select.ItemText>
-                                    <Select.ItemIndicator marginLeft="auto">
-                                      <Check size={16} />
-                                    </Select.ItemIndicator>
-                                  </Select.Item>
-                                ))}
-                              </Select.Viewport>
-                            </Select.Content>
-                          </Select>
+                          <CustomCheckbox
+                            checked={!field.value}
+                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            size="medium"
+                          />
                         )}
                       />
-                    </YStack>
-                    <YStack gap="$2" flex={1}>
-                      <XStack items="center" gap="$1">
-                        <Text>$</Text>
-                        <Controller
-                          control={control}
-                          name="rateMinCents"
-                          render={({ field }) => (
-                            <Input
-                              flex={1}
-                              placeholder="30"
-                              value={formatCentsToDollars(field.value)}
-                              onChangeText={(text) => {
-                                const cents = parseDollarsToCents(text)
-                                field.onChange(cents)
-                              }}
-                              keyboardType="numeric"
-                            />
-                          )}
-                        />
-                      </XStack>
-                      {errors.rateMinCents && (
-                        <Text fontSize="$2" color="$red10">
-                          {errors.rateMinCents.message}
-                        </Text>
-                      )}
-                    </YStack>
-                    <YStack gap="$2" flex={1}>
                       <Text fontSize="$3" color="$color11">
-                        to
+                        Non-negotiable
                       </Text>
-                      <XStack items="center" gap="$1">
-                        <Text>$</Text>
-                        <Controller
-                          control={control}
-                          name="rateMaxCents"
-                          render={({ field }) => (
-                            <Input
-                              flex={1}
-                              placeholder="40 (optional)"
-                              value={formatCentsToDollars(field.value)}
-                              onChangeText={(text) => {
-                                const cents = parseDollarsToCents(text)
-                                field.onChange(cents)
-                              }}
-                              keyboardType="numeric"
-                            />
-                          )}
-                        />
-                      </XStack>
-                      {errors.rateMaxCents && (
-                        <Text fontSize="$2" color="$red10">
-                          {errors.rateMaxCents.message}
-                        </Text>
-                      )}
-                    </YStack>
-                  </XStack>
-                  <Text fontSize="$2" color="$color11">
-                    Add a range or a single rate
-                  </Text>
-                  <XStack items="center" gap="$2">
+                    </XStack>
+                  </YStack>
+
+                  {/* Workdays */}
+                  <YStack gap="$2">
+                    {renderSmartLabel('Workdays', 'workdays')}
                     <Controller
                       control={control}
-                      name="rateNegotiable"
+                      name="workdays"
                       render={({ field }) => (
-                        <CustomCheckbox
-                          checked={!field.value}
-                          onCheckedChange={(checked) =>
-                            field.onChange(!checked)
-                          }
-                          size="medium"
-                        />
+                        <XStack gap="$2" flexWrap="wrap" $sm={{ gap: '$3' }}>
+                          {WORKDAYS.map((day) => {
+                            const isSelected = field.value?.includes(day.value)
+                            return (
+                              <Button
+                                key={day.value}
+                                theme={isSelected ? 'blue' : 'gray'}
+                                variant={isSelected ? undefined : 'outlined'}
+                                onPress={() => {
+                                  const current = field.value || []
+                                  if (isSelected) {
+                                    field.onChange(current.filter((d) => d !== day.value))
+                                  } else {
+                                    field.onChange([...current, day.value])
+                                  }
+                                }}
+                                size="$3"
+                                px="$3"
+                                rounded="$10"
+                                $sm={{ height: 48, px: '$4' }}
+                              >
+                                {day.label}
+                              </Button>
+                            )
+                          })}
+                        </XStack>
                       )}
                     />
-                    <Text fontSize="$3" color="$color11">
-                      Non-negotiable
+                    <XStack items="center" gap="$2">
+                      <Controller
+                        control={control}
+                        name="workdaysNegotiable"
+                        render={({ field }) => (
+                          <CustomCheckbox
+                            checked={!field.value}
+                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            size="medium"
+                          />
+                        )}
+                      />
+                      <Text fontSize="$3" color="$color11">
+                        Non-negotiable
+                      </Text>
+                    </XStack>
+                  </YStack>
+
+                  {/* Date of Employment */}
+                  <YStack gap="$2">
+                    {renderSmartLabel('Date of employment', 'employmentStartDate')}
+                    <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                      <YStack gap="$2" flex={1}>
+                        <Controller
+                          control={control}
+                          name="employmentStartDate"
+                          render={({ field }) => (
+                            <>
+                              <Input
+                                value={field.value}
+                                onChangeText={field.onChange}
+                                onBlur={field.onBlur}
+                                placeholder="Start date"
+                                {...getDateInputProps()}
+                              />
+                              {errors.employmentStartDate && (
+                                <Text fontSize="$2" color="$red10">
+                                  {errors.employmentStartDate.message}
+                                </Text>
+                              )}
+                            </>
+                          )}
+                        />
+                      </YStack>
+                      <YStack gap="$2" flex={1}>
+                        <Controller
+                          control={control}
+                          name="employmentEndDate"
+                          render={({ field }) => (
+                            <>
+                              <Input
+                                {...field}
+                                placeholder="End date (optional)"
+                                {...getDateInputProps()}
+                              />
+                              {errors.employmentEndDate && (
+                                <Text fontSize="$2" color="$red10">
+                                  {errors.employmentEndDate.message}
+                                </Text>
+                              )}
+                            </>
+                          )}
+                        />
+                        <Text fontSize="$2" color="$color11">
+                          End date is not mandatory
+                        </Text>
+                      </YStack>
+                    </XStack>
+                    <XStack items="center" gap="$2">
+                      <Controller
+                        control={control}
+                        name="employmentDatesNegotiable"
+                        render={({ field }) => (
+                          <CustomCheckbox
+                            checked={!field.value}
+                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            size="medium"
+                          />
+                        )}
+                      />
+                      <Text fontSize="$3" color="$color11">
+                        Non-negotiable
+                      </Text>
+                    </XStack>
+                  </YStack>
+                </YStack>
+
+                <Separator />
+
+                {/* Compensation Section */}
+                <YStack gap="$4">
+                  <XStack items="center" gap="$2">
+                    <Text fontSize="$6" fontWeight="700">
+                      Compensation
                     </Text>
                   </XStack>
-                </YStack>
-              </YStack>
 
-              <Separator />
-
-              {/* Capabilities Section */}
-              <YStack gap="$4">
-                <XStack items="center" gap="$2">
-                  <Text fontSize="$6" fontWeight="700">
-                    Capabilities
-                  </Text>
-                </XStack>
-
-                {/* Endurance */}
-                <YStack gap="$2">
-                  <XStack justify="space-between" items="center">
+                  {/* Rate Type */}
+                  <YStack gap="$2">
+                    {renderSmartLabel('Rate', ['rateType', 'rateMinCents', 'rateMaxCents'])}
+                    <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
+                      <YStack gap="$2" flex={2}>
+                        <Controller
+                          control={control}
+                          name="rateType"
+                          render={({ field }) => (
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <Select.Trigger>
+                                <Select.Value placeholder="Type" />
+                              </Select.Trigger>
+                              <Adapt when="sm" platform="touch">
+                                <Sheet modal dismissOnSnapToBottom>
+                                  <Sheet.Frame>
+                                    <Sheet.ScrollView>
+                                      <Adapt.Contents />
+                                    </Sheet.ScrollView>
+                                  </Sheet.Frame>
+                                  <Sheet.Overlay />
+                                </Sheet>
+                              </Adapt>
+                              <Select.Content zIndex={200000}>
+                                <Select.Viewport>
+                                  {RATE_TYPE_OPTIONS.map((option, index) => (
+                                    <Select.Item
+                                      key={option.value}
+                                      value={option.value}
+                                      index={index}
+                                    >
+                                      <Select.ItemText>{option.label}</Select.ItemText>
+                                      <Select.ItemIndicator marginLeft="auto">
+                                        <Check size={16} />
+                                      </Select.ItemIndicator>
+                                    </Select.Item>
+                                  ))}
+                                </Select.Viewport>
+                              </Select.Content>
+                            </Select>
+                          )}
+                        />
+                      </YStack>
+                      <YStack gap="$2" flex={1}>
+                        <XStack items="center" gap="$1">
+                          <Text>$</Text>
+                          <Controller
+                            control={control}
+                            name="rateMinCents"
+                            render={({ field }) => (
+                              <Input
+                                flex={1}
+                                placeholder="30"
+                                value={formatCentsToDollars(field.value)}
+                                onChangeText={(text) => {
+                                  const cents = parseDollarsToCents(text)
+                                  field.onChange(cents)
+                                }}
+                                keyboardType="numeric"
+                              />
+                            )}
+                          />
+                        </XStack>
+                        {errors.rateMinCents && (
+                          <Text fontSize="$2" color="$red10">
+                            {errors.rateMinCents.message}
+                          </Text>
+                        )}
+                      </YStack>
+                      <YStack gap="$2" flex={1}>
+                        <Text fontSize="$3" color="$color11">
+                          to
+                        </Text>
+                        <XStack items="center" gap="$1">
+                          <Text>$</Text>
+                          <Controller
+                            control={control}
+                            name="rateMaxCents"
+                            render={({ field }) => (
+                              <Input
+                                flex={1}
+                                placeholder="40 (optional)"
+                                value={formatCentsToDollars(field.value)}
+                                onChangeText={(text) => {
+                                  const cents = parseDollarsToCents(text)
+                                  field.onChange(cents)
+                                }}
+                                keyboardType="numeric"
+                              />
+                            )}
+                          />
+                        </XStack>
+                        {errors.rateMaxCents && (
+                          <Text fontSize="$2" color="$red10">
+                            {errors.rateMaxCents.message}
+                          </Text>
+                        )}
+                      </YStack>
+                    </XStack>
+                    <Text fontSize="$2" color="$color11">
+                      Add a range or a single rate
+                    </Text>
                     <XStack items="center" gap="$2">
-                      <Text fontWeight="600" fontSize="$4">
-                        Endurance
+                      <Controller
+                        control={control}
+                        name="rateNegotiable"
+                        render={({ field }) => (
+                          <CustomCheckbox
+                            checked={!field.value}
+                            onCheckedChange={(checked) => field.onChange(!checked)}
+                            size="medium"
+                          />
+                        )}
+                      />
+                      <Text fontSize="$3" color="$color11">
+                        Non-negotiable
                       </Text>
-                      <Button
-                        size="$2"
-                        circular
-                        chromeless
-                        icon={Info}
-                        aria-label="Endurance info"
+                    </XStack>
+                  </YStack>
+                </YStack>
+
+                <Separator />
+
+                {/* Capabilities Section */}
+                <YStack gap="$4">
+                  <XStack items="center" gap="$2">
+                    <Text fontSize="$6" fontWeight="700">
+                      Capabilities
+                    </Text>
+                  </XStack>
+
+                  {/* Endurance */}
+                  <YStack gap="$2">
+                    <XStack justify="space-between" items="center">
+                      <XStack items="center" gap="$2">
+                        <Text fontWeight="600" fontSize="$4">
+                          Endurance
+                        </Text>
+                        <Button
+                          size="$2"
+                          circular
+                          chromeless
+                          icon={Info}
+                          aria-label="Endurance info"
+                        />
+                      </XStack>
+                      <Controller
+                        control={control}
+                        name="enduranceRequired"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            size="$4"
+                          />
+                        )}
                       />
                     </XStack>
-                    <Controller
-                      control={control}
-                      name="enduranceRequired"
-                      render={({ field }) => (
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          size="$4"
-                        />
-                      )}
-                    />
-                  </XStack>
+                  </YStack>
                 </YStack>
-              </YStack>
 
-              <Separator />
+                <Separator />
 
-              {/* Other Section */}
-              <YStack gap="$4">
-                <XStack items="center" gap="$2">
-                  <Text fontSize="$6" fontWeight="700">
-                    Other
-                  </Text>
-                </XStack>
-
-                {/* Willing to Travel */}
-                <YStack gap="$2">
-                  <XStack justify="space-between" items="center">
-                    <Text fontWeight="600" fontSize="$4">
-                      Willing to travel
+                {/* Other Section */}
+                <YStack gap="$4">
+                  <XStack items="center" gap="$2">
+                    <Text fontSize="$6" fontWeight="700">
+                      Other
                     </Text>
-                    <Controller
-                      control={control}
-                      name="willingToTravel"
-                      render={({ field }) => (
-                        <Switch
-                          checked={field.value ?? false}
-                          onCheckedChange={field.onChange}
-                          size="$4"
-                        />
-                      )}
-                    />
                   </XStack>
-                  {watchedValues.willingToTravel && (
-                    <YStack gap="$2">
-                      <XStack items="center" gap="$1">
-                        <Text>up to</Text>
-                        <Controller
-                          control={control}
-                          name="travelDistanceMiles"
-                          render={({ field }) => (
-                            <Input
-                              flex={1}
-                              placeholder="50"
-                              value={
-                                field.value
-                                  ? field.value.toString()
-                                  : undefined
-                              }
-                              onChangeText={(text) => {
-                                const num = Number.parseInt(text, 10)
-                                field.onChange(
-                                  Number.isNaN(num) ? undefined : num
-                                )
-                              }}
-                              keyboardType="numeric"
-                            />
-                          )}
-                        />
-                        <Text>miles</Text>
-                      </XStack>
-                    </YStack>
-                  )}
-                </YStack>
 
-                {/* Willing to Work Overtime */}
-                <YStack gap="$2">
-                  <XStack justify="space-between" items="center">
-                    <Text fontWeight="600" fontSize="$4">
-                      Willing to work overtime
-                    </Text>
-                    <Controller
-                      control={control}
-                      name="willingToWorkOvertime"
-                      render={({ field }) => (
-                        <Switch
-                          checked={field.value ?? false}
-                          onCheckedChange={field.onChange}
-                          size="$4"
-                        />
-                      )}
-                    />
-                  </XStack>
-                </YStack>
-
-                {/* Has Driver's License */}
-                <YStack gap="$2">
-                  <XStack justify="space-between" items="center">
-                    <Text fontWeight="600" fontSize="$4">
-                      Has driver's license
-                    </Text>
-                    <Controller
-                      control={control}
-                      name="hasDriversLicense"
-                      render={({ field }) => (
-                        <Switch
-                          checked={field.value ?? false}
-                          onCheckedChange={field.onChange}
-                          size="$4"
-                        />
-                      )}
-                    />
-                  </XStack>
-                </YStack>
-
-                {/* Additional Notes */}
-                <YStack gap="$2">
-                  <Text fontWeight="600" fontSize="$4">
-                    Additional note
-                  </Text>
-                  <Controller
-                    control={control}
-                    name="additionalNotes"
-                    render={({ field }) => (
-                      <TextArea
-                        value={field.value ?? ''}
-                        onChangeText={field.onChange}
-                        onBlur={field.onBlur}
-                        placeholder="Add any additional notes..."
-                        height={100}
-                        maxLength={2000}
+                  {/* Willing to Travel */}
+                  <YStack gap="$2">
+                    <XStack justify="space-between" items="center">
+                      <Text fontWeight="600" fontSize="$4">
+                        Willing to travel
+                      </Text>
+                      <Controller
+                        control={control}
+                        name="willingToTravel"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value ?? false}
+                            onCheckedChange={field.onChange}
+                            size="$4"
+                          />
+                        )}
                       />
+                    </XStack>
+                    {watchedValues.willingToTravel && (
+                      <YStack gap="$2">
+                        <XStack items="center" gap="$1">
+                          <Text>up to</Text>
+                          <Controller
+                            control={control}
+                            name="travelDistanceMiles"
+                            render={({ field }) => (
+                              <Input
+                                flex={1}
+                                placeholder="50"
+                                value={field.value ? field.value.toString() : undefined}
+                                onChangeText={(text) => {
+                                  const num = Number.parseInt(text, 10)
+                                  field.onChange(Number.isNaN(num) ? undefined : num)
+                                }}
+                                keyboardType="numeric"
+                              />
+                            )}
+                          />
+                          <Text>miles</Text>
+                        </XStack>
+                      </YStack>
                     )}
-                  />
-                  {errors.additionalNotes && (
-                    <Text fontSize="$2" color="$red10">
-                      {errors.additionalNotes.message}
+                  </YStack>
+
+                  {/* Willing to Work Overtime */}
+                  <YStack gap="$2">
+                    <XStack justify="space-between" items="center">
+                      <Text fontWeight="600" fontSize="$4">
+                        Willing to work overtime
+                      </Text>
+                      <Controller
+                        control={control}
+                        name="willingToWorkOvertime"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value ?? false}
+                            onCheckedChange={field.onChange}
+                            size="$4"
+                          />
+                        )}
+                      />
+                    </XStack>
+                  </YStack>
+
+                  {/* Has Driver's License */}
+                  <YStack gap="$2">
+                    <XStack justify="space-between" items="center">
+                      <Text fontWeight="600" fontSize="$4">
+                        Has driver's license
+                      </Text>
+                      <Controller
+                        control={control}
+                        name="hasDriversLicense"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value ?? false}
+                            onCheckedChange={field.onChange}
+                            size="$4"
+                          />
+                        )}
+                      />
+                    </XStack>
+                  </YStack>
+
+                  {/* Additional Notes */}
+                  <YStack gap="$2">
+                    <Text fontWeight="600" fontSize="$4">
+                      Additional note
                     </Text>
-                  )}
+                    <Controller
+                      control={control}
+                      name="additionalNotes"
+                      render={({ field }) => (
+                        <TextArea
+                          value={field.value ?? ''}
+                          onChangeText={field.onChange}
+                          onBlur={field.onBlur}
+                          placeholder="Add any additional notes..."
+                          height={100}
+                          maxLength={2000}
+                        />
+                      )}
+                    />
+                    {errors.additionalNotes && (
+                      <Text fontSize="$2" color="$red10">
+                        {errors.additionalNotes.message}
+                      </Text>
+                    )}
+                  </YStack>
                 </YStack>
               </YStack>
-            </YStack>
-          </ScrollView>
+            </ScrollView>
 
-          {/* Form Actions */}
-          <XStack
-            gap="$3"
-            p="$4"
-            bg="$background"
-            borderTopWidth={1}
-            borderTopColor="$borderColor"
-            justify="flex-end"
-            $sm={{ flexDirection: 'column-reverse' }}
-          >
-            {onCancel && (
-              <Button
-                variant="outlined"
-                onPress={onCancel}
-                disabled={isSubmitting}
-                $sm={{ height: 48, flex: 1 }}
-              >
-                Cancel
-              </Button>
-            )}
-            {mode === 'create' && (
-              <>
+            {/* Form Actions */}
+            <XStack
+              gap="$3"
+              p="$4"
+              bg="$background"
+              borderTopWidth={1}
+              borderTopColor="$borderColor"
+              justify="flex-end"
+              $sm={{ flexDirection: 'column-reverse' }}
+            >
+              {onCancel && (
                 <Button
                   variant="outlined"
-                  onPress={onSaveDraft}
+                  onPress={onCancel}
                   disabled={isSubmitting}
                   $sm={{ height: 48, flex: 1 }}
                 >
-                  Save Draft
+                  Cancel
                 </Button>
+              )}
+              {mode === 'create' && (
+                <>
+                  <Button
+                    variant="outlined"
+                    onPress={onSaveDraft}
+                    disabled={isSubmitting}
+                    $sm={{ height: 48, flex: 1 }}
+                  >
+                    Save Draft
+                  </Button>
+                  <Button
+                    onPress={onSubmit}
+                    disabled={isSubmitting}
+                    theme="blue"
+                    $sm={{ height: 48, flex: 1 }}
+                  >
+                    {isSubmitting ? 'Sending...' : 'Continue'}
+                  </Button>
+                </>
+              )}
+              {mode === 'edit' && (
                 <Button
                   onPress={onSubmit}
                   disabled={isSubmitting}
                   theme="blue"
                   $sm={{ height: 48, flex: 1 }}
                 >
-                  {isSubmitting ? 'Sending...' : 'Continue'}
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </Button>
-              </>
-            )}
-            {mode === 'edit' && (
-              <Button
-                onPress={onSubmit}
-                disabled={isSubmitting}
-                theme="blue"
-                $sm={{ height: 48, flex: 1 }}
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </Button>
-            )}
-          </XStack>
-        </YStack>
+              )}
+            </XStack>
+          </YStack>
 
-        {/* Help Sidebar */}
-        <YStack
-          width={300}
-          p="$4"
-          bg="$color2"
-          borderLeftWidth={1}
-          borderLeftColor="$borderColor"
-          $sm={{ display: 'none' }}
-        >
-          <InquiryHelpSidebar />
-        </YStack>
+          {/* Help Sidebar */}
+          <YStack
+            width={300}
+            p="$4"
+            bg="$color2"
+            borderLeftWidth={1}
+            borderLeftColor="$borderColor"
+            $sm={{ display: 'none' }}
+          >
+            <InquiryHelpSidebar />
+          </YStack>
         </XStack>
       </FormProvider>
 
@@ -1443,9 +1409,7 @@ export function InquiryCreateForm({
                           )}
                           <Text fontSize="$2" color="$color11">
                             {usageCount} use{usageCount === 1 ? '' : 's'} ·{' '}
-                            {lastUsedAt
-                              ? new Date(lastUsedAt).toLocaleDateString()
-                              : 'Never used'}
+                            {lastUsedAt ? new Date(lastUsedAt).toLocaleDateString() : 'Never used'}
                           </Text>
                         </YStack>
                         <Button
@@ -1472,4 +1436,3 @@ export function InquiryCreateForm({
     </>
   )
 }
-

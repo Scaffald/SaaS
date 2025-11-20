@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo } from 'react'
-import { XStack, YStack, Text, Button } from 'tamagui'
-import { RotateCcw, List } from '@tamagui/lucide-icons'
-import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
+import { AddressAutocomplete } from '@app/ui'
+import { List, RotateCcw } from '@tamagui/lucide-icons'
+import { useCallback, useMemo, useState } from 'react'
+import { Button, Text, XStack, YStack } from 'tamagui'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {

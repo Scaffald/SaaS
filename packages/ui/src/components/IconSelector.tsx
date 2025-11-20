@@ -1,7 +1,7 @@
-import { useState, useMemo, type ComponentType } from 'react'
-import { Input, YStack, Text, ScrollView, XStack, Button } from 'tamagui'
-import { Search, X, ChevronDown } from '@tamagui/lucide-icons'
 import * as LucideIcons from '@tamagui/lucide-icons'
+import { ChevronDown, Search, X } from '@tamagui/lucide-icons'
+import { type ComponentType, useMemo, useState } from 'react'
+import { Button, Input, ScrollView, Text, XStack, YStack } from 'tamagui'
 
 // Icon names that can be used (subset of Lucide icons)
 const ICON_NAMES = [

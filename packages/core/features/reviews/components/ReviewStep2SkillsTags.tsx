@@ -1,5 +1,5 @@
-import { YStack, XStack, Text } from 'tamagui'
 import { CheckCircle2, Circle } from '@tamagui/lucide-icons'
+import { Text, XStack, YStack } from 'tamagui'
 
 // Mock soft skills - will be replaced with real data from API
 const MOCK_SOFT_SKILLS = [

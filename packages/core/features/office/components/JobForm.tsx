@@ -1,39 +1,37 @@
-import { useState, useEffect, useCallback } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Input,
-  Button,
-  Spinner,
-  ScrollView,
-  AddressForm,
-  CustomCheckbox,
-} from '@app/ui'
-import { Adapt, Select, Card } from 'tamagui'
-import { Sheet } from '@app/ui'
-import type { AddressResult } from '@app/ui'
-import type { JSONContent } from '@tiptap/core'
-import { RichTextEditor } from '@app/ui/components/rich-text'
-import { plainTextToTipTap, extractPlainText } from '@app/ui/components/rich-text'
 import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
-import { useRouter } from 'expo-router'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { Check, ChevronDown, X, Eye, Calendar } from '@tamagui/lucide-icons'
-import { Switch } from 'tamagui'
+import type { AddressResult } from '@app/ui'
+import {
+  AddressForm,
+  Button,
+  CustomCheckbox,
+  Input,
+  ScrollView,
+  Sheet,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from '@app/ui'
+import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@app/ui/components/rich-text'
+import { Calendar, Check, ChevronDown, Eye, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { JSONContent } from '@tiptap/core'
+import { useRouter } from 'expo-router'
+import { useCallback, useEffect, useState } from 'react'
+import { Adapt, Card, Select, Switch } from 'tamagui'
 import { JobPreviewModal } from './JobPreviewModal'
 import {
+  ApplicationProcessSection,
   ApplicationScreeningSection,
   AutoRejectionSection,
-  ScoreThresholdSection,
-  JobMetadataSection,
-  EnhancedRequirementsSection,
   CompensationBenefitsSection,
-  ApplicationProcessSection,
-  LocationSchedulingSection,
-  DistributionVisibilitySection,
   ComplianceAnalyticsSection,
+  DistributionVisibilitySection,
+  EnhancedRequirementsSection,
+  JobMetadataSection,
+  LocationSchedulingSection,
+  ScoreThresholdSection,
 } from './job-form-sections'
 
 type JobFormData = {

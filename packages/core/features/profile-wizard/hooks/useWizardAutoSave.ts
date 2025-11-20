@@ -60,5 +60,3 @@ export function useWizardAutoSave({
     }
   }, [enabled, isDirty, debounceMs, onSave, step, onSavingStateChange, payload])
 }
-
-

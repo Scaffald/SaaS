@@ -1,6 +1,6 @@
+import { Table } from '@app/ui'
 import { useMemo } from 'react'
 import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import { Table } from '@app/ui'
 import {
   useCommitDocumentVersion,
   useDocumentDownloadUrl,
@@ -20,7 +20,13 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
   const { data: folders } = useOrganizationFolders(organizationId)
   const downloadMutation = useDocumentDownloadUrl()
   const uploadSession = useDocumentUploadSession()
-  const folderLookup = useMemo(() => new Map((folders ?? []).map((folder: { id: string; name: string }) => [folder.id, folder.name])), [folders])
+  const folderLookup = useMemo(
+    () =>
+      new Map(
+        (folders ?? []).map((folder: { id: string; name: string }) => [folder.id, folder.name])
+      ),
+    [folders]
+  )
 
   const handleDownload = async (documentId: string) => {
     const result = await downloadMutation.mutateAsync({ organizationId, documentId })
@@ -36,7 +42,13 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
         <Button
           size="$3"
           onPress={() => {
-            uploadSession.mutate({ organizationId, name: 'New Document', fileName: 'placeholder.pdf', mimeType: 'application/pdf', fileSize: 10 })
+            uploadSession.mutate({
+              organizationId,
+              name: 'New Document',
+              fileName: 'placeholder.pdf',
+              mimeType: 'application/pdf',
+              fileSize: 10,
+            })
           }}
         >
           Upload Placeholder
@@ -58,25 +70,38 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {documents.map((document: { id: string; name: string; category: string; folder_id: string | null; updated_at: string }) => (
-              <Table.Row key={document.id}>
-                <Table.Cell>
-                  <Text fontWeight="600">{document.name}</Text>
-                  <Paragraph color="$color10">{document.category}</Paragraph>
-                </Table.Cell>
-                <Table.Cell>{document.folder_id ? folderLookup.get(document.folder_id) ?? '—' : '—'}</Table.Cell>
-                <Table.Cell>{new Date(document.updated_at).toLocaleDateString()}</Table.Cell>
-                <Table.Cell>
-                  <Button size="$2" onPress={() => handleDownload(document.id)} disabled={downloadMutation.isLoading}>
-                    Download
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
+            {documents.map(
+              (document: {
+                id: string
+                name: string
+                category: string
+                folder_id: string | null
+                updated_at: string
+              }) => (
+                <Table.Row key={document.id}>
+                  <Table.Cell>
+                    <Text fontWeight="600">{document.name}</Text>
+                    <Paragraph color="$color10">{document.category}</Paragraph>
+                  </Table.Cell>
+                  <Table.Cell>
+                    {document.folder_id ? (folderLookup.get(document.folder_id) ?? '—') : '—'}
+                  </Table.Cell>
+                  <Table.Cell>{new Date(document.updated_at).toLocaleDateString()}</Table.Cell>
+                  <Table.Cell>
+                    <Button
+                      size="$2"
+                      onPress={() => handleDownload(document.id)}
+                      disabled={downloadMutation.isLoading}
+                    >
+                      Download
+                    </Button>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            )}
           </Table.Body>
         </Table>
       )}
     </Card>
   )
 }
-

@@ -1,11 +1,8 @@
 // @ts-nocheck
-import React from 'react'
-import { Link } from 'expo-router'
+
+import { AnchorHeading, NAV_SECTIONS, StyleguidePage, TodoCallout } from '@app/styleguide'
 import { Paragraph, Text, View, XStack, YStack } from '@app/ui'
-import { NAV_SECTIONS } from '@app/styleguide'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { TodoCallout } from '@app/styleguide'
+import { Link } from 'expo-router'
 
 export default function StyleguideWelcomePage() {
   return (

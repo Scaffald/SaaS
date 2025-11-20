@@ -7,7 +7,7 @@
  * Task 2: Set up Monitoring and Observability Infrastructure
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Monitoring Infrastructure Testing', () => {
   test('monitoring tools integration', async ({ page }) => {
@@ -49,16 +49,23 @@ test.describe('Monitoring Infrastructure Testing', () => {
 
     // Measure performance metrics
     const metrics = await page.evaluate(() => {
-      const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+      const navigationEntry = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming
       return {
         loadTime: navigationEntry ? navigationEntry.loadEventEnd - navigationEntry.fetchStart : 0,
-        domContentLoaded: navigationEntry ? navigationEntry.domContentLoadedEventEnd - navigationEntry.fetchStart : 0,
+        domContentLoaded: navigationEntry
+          ? navigationEntry.domContentLoadedEventEnd - navigationEntry.fetchStart
+          : 0,
       }
     })
 
     // Performance metrics should be measurable
     expect(metrics.loadTime, 'Load time should be measurable').toBeGreaterThan(0)
-    expect(metrics.domContentLoaded, 'DOM content loaded time should be measurable').toBeGreaterThan(0)
+    expect(
+      metrics.domContentLoaded,
+      'DOM content loaded time should be measurable'
+    ).toBeGreaterThan(0)
   })
 
   test('logging infrastructure', async ({ page }) => {
@@ -84,4 +91,3 @@ test.describe('Monitoring Infrastructure Testing', () => {
  * These tests validate basic infrastructure availability.
  * Full monitoring validation should be done via monitoring tools directly.
  */
-

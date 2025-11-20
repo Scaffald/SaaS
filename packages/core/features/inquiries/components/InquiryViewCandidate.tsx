@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
-import { YStack, XStack, Text, Button, ScrollView, Separator, Input } from '@app/ui'
-import { ChevronDown, ChevronUp, Check, MessageSquare } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
-import { InquiryCommentThread } from './InquiryCommentThread'
-import { CapabilityQuestionInput } from './CapabilityQuestionInput'
-import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 import type { InquirySectionName } from '@app/schemas'
+import { Button, Input, ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
+import { Check, ChevronDown, ChevronUp, MessageSquare } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useState } from 'react'
+import { CapabilityQuestionInput } from './CapabilityQuestionInput'
+import { InquiryCommentThread } from './InquiryCommentThread'
+import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 
 interface InquirySectionStatus {
   section_name: InquirySectionName
@@ -28,17 +28,21 @@ interface InquiryViewCandidateProps {
   inquiryId: string
 }
 
-export function InquiryViewCandidate({
-  applicationId,
-  inquiryId,
-}: InquiryViewCandidateProps) {
+export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCandidateProps) {
   const toast = useToastController()
 
   // Subscribe to real-time updates for this inquiry
   useInquirySubscription(inquiryId)
 
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['employment', 'compensation', 'capabilities', 'other', 'job_details', 'application_data'])
+    new Set([
+      'employment',
+      'compensation',
+      'capabilities',
+      'other',
+      'job_details',
+      'application_data',
+    ])
   )
   const [capabilityResponseState, setCapabilityResponseState] = useState<
     Record<string, { responseValue?: boolean; responseText?: string }>
@@ -75,19 +79,18 @@ export function InquiryViewCandidate({
     },
   })
 
-  const submitCapabilityResponseMutation =
-    api.inquiries.submitCapabilityResponse.useMutation({
-      onSuccess: () => {
-        toast.show('Response saved', {
-          message: 'Your capability response has been saved.',
-        })
-      },
-      onError: (error: { message?: string }) => {
-        toast.show('Failed to save response', {
-          message: error.message ?? 'Please try again.',
-        })
-      },
-    })
+  const submitCapabilityResponseMutation = api.inquiries.submitCapabilityResponse.useMutation({
+    onSuccess: () => {
+      toast.show('Response saved', {
+        message: 'Your capability response has been saved.',
+      })
+    },
+    onError: (error: { message?: string }) => {
+      toast.show('Failed to save response', {
+        message: error.message ?? 'Please try again.',
+      })
+    },
+  })
 
   const toggleSection = (sectionName: string) => {
     setExpandedSections((prev) => {
@@ -153,9 +156,7 @@ export function InquiryViewCandidate({
   const formatRate = () => {
     if (!inquiry.rate_min_cents) return 'Not specified'
     const min = (inquiry.rate_min_cents / 100).toFixed(2)
-    const max = inquiry.rate_max_cents
-      ? (inquiry.rate_max_cents / 100).toFixed(2)
-      : null
+    const max = inquiry.rate_max_cents ? (inquiry.rate_max_cents / 100).toFixed(2) : null
     return max ? `$${min} - $${max}` : `$${min}`
   }
 
@@ -300,9 +301,7 @@ export function InquiryViewCandidate({
     jobInfo?.remoteOption ?? applicationInfo?.job?.remoteOption ?? null
   )
   const jobPayRange =
-    formatJobPayRange(jobInfo) ??
-    formatJobPayRange(applicationInfo?.job ?? null) ??
-    null
+    formatJobPayRange(jobInfo) ?? formatJobPayRange(applicationInfo?.job ?? null) ?? null
   const applicationStatus = formatStatus(applicationInfo?.status)
   const submittedAtDisplay = formatDateTime(applicationInfo?.createdAt)
   const updatedAtDisplay = formatDateTime(applicationInfo?.updatedAt)
@@ -409,12 +408,7 @@ export function InquiryViewCandidate({
             </Text>
           </XStack>
           <YStack height={8} bg="$color3" rounded="$10" overflow="hidden">
-            <YStack
-              height="100%"
-              bg="$blue9"
-              width={`${progress}%`}
-              animation="quick"
-            />
+            <YStack height="100%" bg="$blue9" width={`${progress}%`} animation="quick" />
           </YStack>
         </YStack>
 
@@ -427,7 +421,14 @@ export function InquiryViewCandidate({
             commentCount={0}
           />
           {expandedSections.has('job_details') && (
-            <YStack gap="$2" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$2"
+              p="$3"
+              bg="$background"
+              rounded="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               <DetailRow label="Role" value={jobTitleDisplay} />
               <DetailRow label="Organization" value={jobOrganizationName} />
               <DetailRow label="Location" value={jobLocation} />
@@ -447,7 +448,14 @@ export function InquiryViewCandidate({
             commentCount={0}
           />
           {expandedSections.has('application_data') && (
-            <YStack gap="$2" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$2"
+              p="$3"
+              bg="$background"
+              rounded="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               {applicationInfo ? (
                 <YStack gap="$2">
                   <DetailRow label="Status" value={applicationStatus} />
@@ -477,11 +485,23 @@ export function InquiryViewCandidate({
           <SectionHeader
             title="Employment"
             sectionName="employment"
-            isAccepted={sections.find((s: { section_name: string; accepted_by: string | null }) => s.section_name === 'employment')?.accepted_by !== null}
+            isAccepted={
+              sections.find(
+                (s: { section_name: string; accepted_by: string | null }) =>
+                  s.section_name === 'employment'
+              )?.accepted_by !== null
+            }
             commentCount={commentsBySection.employment?.length || 0}
           />
           {expandedSections.has('employment') && (
-            <YStack gap="$3" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$3"
+              p="$3"
+              bg="$background"
+              rounded="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               {/* Employment Terms */}
               <YStack gap="$2">
                 {inquiry.employment_type && (
@@ -583,9 +603,7 @@ export function InquiryViewCandidate({
                 <YStack p="$3" bg="$green2" rounded="$3" borderWidth={1} borderColor="$green9">
                   <Text fontSize="$3" color="$green11" fontWeight="600">
                     ✓ You accepted the employment terms on{' '}
-                    {formatDate(
-                      sections.find((s) => s.section_name === 'employment')?.accepted_at
-                    )}
+                    {formatDate(sections.find((s) => s.section_name === 'employment')?.accepted_at)}
                   </Text>
                 </YStack>
               )}
@@ -598,11 +616,20 @@ export function InquiryViewCandidate({
           <SectionHeader
             title="Compensation"
             sectionName="compensation"
-            isAccepted={sections.find((s) => s.section_name === 'compensation')?.accepted_by !== null}
+            isAccepted={
+              sections.find((s) => s.section_name === 'compensation')?.accepted_by !== null
+            }
             commentCount={commentsBySection.compensation?.length || 0}
           />
           {expandedSections.has('compensation') && (
-            <YStack gap="$3" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$3"
+              p="$3"
+              bg="$background"
+              rounded="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               {/* Rate Display */}
               <XStack justify="space-between" items="center">
                 <Text fontSize="$3">Rate</Text>
@@ -655,11 +682,20 @@ export function InquiryViewCandidate({
           <SectionHeader
             title="Capabilities"
             sectionName="capabilities"
-            isAccepted={sections.find((s) => s.section_name === 'capabilities')?.accepted_by !== null}
+            isAccepted={
+              sections.find((s) => s.section_name === 'capabilities')?.accepted_by !== null
+            }
             commentCount={commentsBySection.capabilities?.length || 0}
           />
           {expandedSections.has('capabilities') && (
-            <YStack gap="$3" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$3"
+              p="$3"
+              bg="$background"
+              rounded="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               {/* Endurance Requirement */}
               {inquiry.endurance_required && (
                 <YStack gap="$2">
@@ -669,9 +705,7 @@ export function InquiryViewCandidate({
                   <CapabilityQuestionInput
                     question="Can you meet the endurance requirements for this role?"
                     value={capabilityResponseState.endurance?.responseValue}
-                    onChange={(value) =>
-                      handleCapabilityResponse('endurance', value, undefined)
-                    }
+                    onChange={(value) => handleCapabilityResponse('endurance', value, undefined)}
                   />
                 </YStack>
               )}
@@ -776,7 +810,14 @@ export function InquiryViewCandidate({
             commentCount={commentsBySection.other?.length || 0}
           />
           {expandedSections.has('other') && (
-            <YStack gap="$3" p="$3" bg="$background" rounded="$3" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$3"
+              p="$3"
+              bg="$background"
+              rounded="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               {/* Other Terms */}
               <YStack gap="$2">
                 {inquiry.willing_to_travel !== null && (
@@ -856,4 +897,3 @@ export function InquiryViewCandidate({
     </ScrollView>
   )
 }
-

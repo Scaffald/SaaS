@@ -1,9 +1,9 @@
-import { useRoleProtectedRoute } from '@app/core/utils/auth/useRoleProtectedRoute'
-import { useOfficeRouteProtection } from '@app/core/utils/auth/useOfficeRouteProtection'
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
 import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
+import { useOfficeRouteProtection } from '@app/core/utils/auth/useOfficeRouteProtection'
+import { useRoleProtectedRoute } from '@app/core/utils/auth/useRoleProtectedRoute'
 import { Drawer } from 'expo-router/drawer'
-import { YStack, Text, Spinner } from 'tamagui'
+import { Spinner, Text, YStack } from 'tamagui'
 
 export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])

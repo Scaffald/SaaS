@@ -1,7 +1,7 @@
-import { Button, Theme } from 'tamagui'
-import { supabase } from '@app/core/utils/supabase/client'
 import { captureEvent } from '@app/core/utils/analytics/client'
+import { supabase } from '@app/core/utils/supabase/client'
 import { useTranslation } from '@app/core/utils/useTranslation'
+import { Button, Theme } from 'tamagui'
 
 import { IconGoogle } from './IconGoogle'
 

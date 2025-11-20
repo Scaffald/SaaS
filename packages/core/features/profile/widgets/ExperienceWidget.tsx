@@ -1,10 +1,10 @@
-import { YStack, XStack, Text, Separator } from 'tamagui'
-import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { Briefcase } from '@tamagui/lucide-icons'
-import type { ProfileWidgetProps } from './types'
+import { useRouter } from 'expo-router'
+import { Separator, Text, XStack, YStack } from 'tamagui'
 import { formatDate } from '../utils/date-formatting'
+import type { ProfileWidgetProps } from './types'
 
 interface UserExperience {
   id: string
@@ -33,18 +33,13 @@ export function ExperienceWidget({
   variant = 'full',
 }: ProfileWidgetProps) {
   const router = useRouter()
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-    isFetching,
-  } = api.profile.widgets.getExperience.useQuery(
-    { userId },
-    {
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    }
-  )
+  const { data, isLoading, error, refetch, isFetching } =
+    api.profile.widgets.getExperience.useQuery(
+      { userId },
+      {
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+      }
+    )
 
   if (isLoading) {
     return (

@@ -1,11 +1,10 @@
-import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
-import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import type { AppRouter } from '@app/supabase/client-types'
+import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]

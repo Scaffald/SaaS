@@ -1,9 +1,13 @@
-import { memo, useState } from 'react'
-import { Button, Text, XStack, YStack, Progress } from 'tamagui'
+import type {
+  IPIPDomain,
+  IPIPResult,
+  IPIPScore,
+} from '@app/core/features/personality-assessment/lib/ipip'
 import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import { FacetList } from './FacetList'
+import { memo, useState } from 'react'
+import { Button, Progress, Text, XStack, YStack } from 'tamagui'
 import { DOMAIN_NAMES } from '../utils/domainGrouping'
-import type { IPIPDomain, IPIPScore, IPIPResult } from '@app/core/features/personality-assessment/lib/ipip'
+import { FacetList } from './FacetList'
 
 export interface DomainCardProps {
   domain: IPIPDomain
@@ -58,14 +62,7 @@ export const DomainCard = memo(function DomainCard({
   const domainResult = narrative?.results?.[classification as 'low' | 'neutral' | 'high']
 
   return (
-    <YStack
-      gap="$3"
-      p="$4"
-      bg="$color2"
-      rounded="$4"
-      borderWidth={1}
-      borderColor="$borderColor"
-    >
+    <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
       {/* Domain Header */}
       <XStack justify="space-between" items="center">
         <YStack gap="$1" flex={1}>
@@ -127,4 +124,3 @@ export const DomainCard = memo(function DomainCard({
     </YStack>
   )
 })
-

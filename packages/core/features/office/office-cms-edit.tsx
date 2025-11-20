@@ -1,10 +1,10 @@
-import { useRouter, useLocalSearchParams } from 'expo-router'
-import { YStack, Text, Spinner } from 'tamagui'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { CMSSlideForm } from './cms-slide-form'
+import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Spinner, Text, YStack } from 'tamagui'
+import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSEdit() {
   const router = useRouter()

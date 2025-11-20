@@ -74,7 +74,9 @@ export function getNextNudgeMessage({
   userType,
   incompleteSections,
 }: GetNextNudgeMessageParams): NudgeMessage | null {
-  const messagesForUser = BASE_MESSAGES.filter((message) => !message.userType || message.userType === userType)
+  const messagesForUser = BASE_MESSAGES.filter(
+    (message) => !message.userType || message.userType === userType
+  )
 
   if (messagesForUser.length === 0) {
     return null
@@ -85,14 +87,14 @@ export function getNextNudgeMessage({
       (message) =>
         message.type === 'personalized_benefit' &&
         message.incompleteSection &&
-        incompleteSections.includes(message.incompleteSection),
+        incompleteSections.includes(message.incompleteSection)
     ),
     ...messagesForUser.filter((message) => message.type === 'social_proof'),
     ...messagesForUser.filter((message) => message.type === 'loss_aversion'),
   ]
 
   const uniquePrioritized = prioritized.filter(
-    (message, index, self) => self.findIndex((item) => item.id === message.id) === index,
+    (message, index, self) => self.findIndex((item) => item.id === message.id) === index
   )
 
   if (uniquePrioritized.length === 0) {
@@ -111,5 +113,3 @@ export function getNextNudgeMessage({
   const nextIndex = (currentIndex + 1) % uniquePrioritized.length
   return uniquePrioritized[nextIndex]
 }
-
-

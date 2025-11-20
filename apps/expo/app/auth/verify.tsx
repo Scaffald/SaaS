@@ -1,7 +1,7 @@
 import { MagicLinkPending } from '@app/core/features/auth/components/MagicLinkPending'
+import { useTranslation } from '@app/core/utils/useTranslation'
 import { Stack, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useTranslation } from '@app/core/utils/useTranslation'
 
 export default function Screen() {
   const params = useLocalSearchParams<{ email?: string }>()

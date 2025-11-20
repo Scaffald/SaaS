@@ -1,17 +1,15 @@
 // @ts-nocheck
-import React from 'react'
-import { YStack } from '@app/ui'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import {
   BarChart,
-  LineChart,
-  PieChart,
   type BarChartData,
+  LineChart,
   type LineChartData,
+  PieChart,
   type PieChartData,
+  YStack,
 } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
 
 const barData: BarChartData[] = [
   { value: 50, label: 'Jan', frontColor: '#1B6B93' },

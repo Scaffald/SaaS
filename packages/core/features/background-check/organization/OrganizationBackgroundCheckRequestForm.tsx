@@ -1,16 +1,15 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
+import { api } from '@app/core/utils/api'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
+import type { AppRouter } from '@app/supabase/client-types'
+import { Check, ChevronDown, CircleAlert } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Input, Label, Select, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown, CircleAlert } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-
-import type { AppRouter } from '@app/supabase/client-types'
-import { ROUTES } from '@app/core/constants/routes'
-import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
-import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -190,7 +189,8 @@ export function OrganizationBackgroundCheckRequestForm() {
     try {
       const response = await requestPaymentMutation.mutateAsync({
         package_id: selectedPackage.id,
-        tier: getPackageTier(selectedPackage) ??
+        tier:
+          getPackageTier(selectedPackage) ??
           (selectedPackage.slug as string | undefined) ??
           (selectedPackage.display_name as string | undefined) ??
           'custom',

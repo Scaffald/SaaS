@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react'
 import {
   CookieConsentBanner,
-  CookieConsentProvider as UICookieConsentProvider,
   CookiePreferencesDialog,
+  CookieConsentProvider as UICookieConsentProvider,
 } from '@app/ui'
+import type { ReactNode } from 'react'
 
 const STORAGE_KEY = 'scf-cookie-consent'
 const POLICY_VERSION = '1'

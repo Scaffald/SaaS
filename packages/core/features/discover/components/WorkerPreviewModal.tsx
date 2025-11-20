@@ -1,22 +1,22 @@
-import { YStack, XStack, Text, Button, Separator, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { ResponsiveModal } from '@app/ui'
-import {
-  MapPin,
-  Star,
-  Award,
-  BadgeCheck,
-  ExternalLink,
-  User,
-  DollarSign,
-  Briefcase,
-  GraduationCap,
-} from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { api } from '@app/core/utils/api'
-import { useAdaptiveLoading } from '@app/core/utils/useAdaptiveLoading'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { formatDateRange } from '@app/core/features/profile/utils/date-formatting'
+import { api } from '@app/core/utils/api'
+import { useAdaptiveLoading } from '@app/core/utils/useAdaptiveLoading'
+import { ResponsiveModal } from '@app/ui'
+import {
+  Award,
+  BadgeCheck,
+  Briefcase,
+  DollarSign,
+  ExternalLink,
+  GraduationCap,
+  MapPin,
+  Star,
+  User,
+} from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface WorkerPreviewModalProps {
   userId: string | null
@@ -212,7 +212,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             {resolveYearsOfExperience(
               typeof profile?.calculatedYearsOfExperience === 'number'
                 ? profile.calculatedYearsOfExperience
-                : profile.years_of_experience ?? null
+                : (profile.years_of_experience ?? null)
             ) !== null && (
               <XStack gap="$2" items="center">
                 <Award size={18} color="$color10" />
@@ -220,7 +220,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   {resolveYearsOfExperience(
                     typeof profile?.calculatedYearsOfExperience === 'number'
                       ? profile.calculatedYearsOfExperience
-                      : profile.years_of_experience ?? null
+                      : (profile.years_of_experience ?? null)
                   )}{' '}
                   years experience
                 </Text>
@@ -284,7 +284,13 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           {label}
                         </Text>
                         <XStack gap="$2" items="center">
-                          <YStack width={100} height={8} bg="$color4" rounded="$2" overflow="hidden">
+                          <YStack
+                            width={100}
+                            height={8}
+                            bg="$color4"
+                            rounded="$2"
+                            overflow="hidden"
+                          >
                             <YStack width={`${skill.proficiency}%`} height="100%" bg="$blue10" />
                           </YStack>
                           <YStack minW={30}>

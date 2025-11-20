@@ -1,20 +1,20 @@
 import {
-  YStack,
-  XStack,
-  DataTable,
-  Input,
   Button,
+  DataTable,
   H2,
+  Input,
   TableActionBar,
-  TableAddRecordModal,
-  TableColumnVisibilityModal,
   type TableActionBarProps,
+  TableAddRecordModal,
   type TableAddRecordModalProps,
+  TableColumnVisibilityModal,
   type TableColumnVisibilityModalProps,
+  XStack,
+  YStack,
 } from '@app/ui'
+import { Plus } from '@tamagui/lucide-icons'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, SetStateAction } from 'react'
-import { Plus } from '@tamagui/lucide-icons'
 
 interface OfficeActionBarConfig {
   bar: TableActionBarProps

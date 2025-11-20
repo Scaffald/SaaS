@@ -1,9 +1,8 @@
-import { useMemo, type Dispatch, type SetStateAction } from 'react'
+import { OfficePageLayout } from '@app/core/features/office/components/OfficePageLayout'
+import type { AppRouter } from '@app/supabase/client-types'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
-
-import type { AppRouter } from '@app/supabase/client-types'
-import { OfficePageLayout } from '@app/core/features/office/components/OfficePageLayout'
+import { type Dispatch, type SetStateAction, useMemo } from 'react'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type AuditLogEntry = RouterOutputs['backgroundChecks']['adminGetAccessLog'][number]
@@ -131,5 +130,3 @@ export function AdminAuditLogPanel({
     />
   )
 }
-
-

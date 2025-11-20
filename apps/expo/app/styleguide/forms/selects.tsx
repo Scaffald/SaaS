@@ -1,10 +1,9 @@
 // @ts-nocheck
-import React, { useState } from 'react'
-import { Adapt, Select, Text, YStack } from 'tamagui'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import { Sheet } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
+import { useState } from 'react'
+import { Adapt, Select, Text, YStack } from 'tamagui'
 
 const TEAMS = [
   { label: 'Engineering', value: 'engineering' },

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Debug test to discover the correct Supabase localStorage key
@@ -25,8 +25,8 @@ test('should discover Supabase localStorage key', async ({ page }) => {
   console.log('\nAll localStorage keys:', allKeys)
 
   // Filter for Supabase-related keys
-  const supabaseKeys = allKeys.filter(key =>
-    key.includes('sb-') || key.includes('supabase') || key.includes('auth')
+  const supabaseKeys = allKeys.filter(
+    (key) => key.includes('sb-') || key.includes('supabase') || key.includes('auth')
   )
 
   console.log('\nSupabase auth keys found:', supabaseKeys)

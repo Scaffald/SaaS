@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useAddressDebounce, useAddressDebouncedCallback } from './useDebounce'
-import { useGeocodingProvider } from './useGeocodingProvider'
 import type {
   AddressResult,
   GeocodingProvider,
@@ -8,6 +6,8 @@ import type {
   SearchOptions,
   UseAddressAutocompleteReturn,
 } from '../types'
+import { useAddressDebounce, useAddressDebouncedCallback } from './useDebounce'
+import { useGeocodingProvider } from './useGeocodingProvider'
 
 interface UseAddressAutocompleteOptions {
   /** Provider configuration */

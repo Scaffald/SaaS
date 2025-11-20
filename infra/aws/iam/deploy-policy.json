@@ -11,10 +11,7 @@
         "s3:DeleteObject",
         "s3:ListBucket"
       ],
-      "Resource": [
-        "arn:aws:s3:::scaffald-app-prod",
-        "arn:aws:s3:::scaffald-app-prod/*"
-      ]
+      "Resource": ["arn:aws:s3:::scaffald-app-prod", "arn:aws:s3:::scaffald-app-prod/*"]
     },
     {
       "Sid": "AllowCloudFrontInvalidation",
@@ -29,10 +26,7 @@
     {
       "Sid": "AllowCloudFrontRead",
       "Effect": "Allow",
-      "Action": [
-        "cloudfront:GetDistribution",
-        "cloudfront:ListDistributions"
-      ],
+      "Action": ["cloudfront:GetDistribution", "cloudfront:ListDistributions"],
       "Resource": "*"
     },
     {
@@ -48,20 +42,14 @@
     {
       "Sid": "AllowRoute53Update",
       "Effect": "Allow",
-      "Action": [
-        "route53:ChangeResourceRecordSets"
-      ],
+      "Action": ["route53:ChangeResourceRecordSets"],
       "Resource": "arn:aws:route53:::hostedzone/Z0610739109YR6SDKL45L"
     },
     {
       "Sid": "AllowACMRead",
       "Effect": "Allow",
-      "Action": [
-        "acm:ListCertificates",
-        "acm:DescribeCertificate"
-      ],
+      "Action": ["acm:ListCertificates", "acm:DescribeCertificate"],
       "Resource": "*"
     }
   ]
 }
-

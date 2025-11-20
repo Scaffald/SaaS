@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const chipPropsStore = vi.hoisted(() => ({ current: {} as Record<string, unknown> }))
 
@@ -25,7 +25,10 @@ vi.mock('tamagui', () => {
     children,
     onPress,
     ...rest
-  }: { children?: ReactNode; onPress?: () => void }) => (
+  }: {
+    children?: ReactNode
+    onPress?: () => void
+  }) => (
     <button type="button" onClick={onPress} data-testid="remove-button" {...rest}>
       {children}
     </button>

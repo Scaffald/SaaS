@@ -1,40 +1,39 @@
-import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
-import { YStack, XStack, Tabs, Text, Button, useWindowDimensions, ScrollView } from 'tamagui'
-import { Sheet } from '@app/ui'
 import {
+  AddressAutocomplete,
+  type AddressResult,
   MapContainer,
   type MapContainerRef,
   type MapPinType,
-  type ViewportBounds,
-  AddressAutocomplete,
-  type AddressResult,
+  Sheet,
   ToggleSwitch,
+  type ViewportBounds,
 } from '@app/ui'
-
-import { MapFilterBar } from './components/MapFilterBar'
-import { ResultsRail } from './components/ResultsRail'
-import { WorkerPreviewModal } from './components/WorkerPreviewModal'
-import { JobPreviewModal } from './components/JobPreviewModal'
-import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
-import { UserProfilePanel } from './components/UserProfilePanel'
-import { ProfileHoverCard } from './components/ProfileHoverCard'
-import { Platform } from 'react-native'
-import { ResultList, type ResultListRef } from './components/ResultList'
-import { defaultCenter } from './data/mockProfiles'
-import { useTalentProfiles } from './hooks/useTalentProfiles'
-import { useOrganizations } from './hooks/useOrganizations'
-import { useJobs } from './hooks/useJobs'
-import { useUserLocation } from './hooks/useUserLocation'
-import { useMapState } from './providers/MapStateProvider'
-import { useMapPinState, type ClusterInfo } from './hooks/useMapPinState'
 import {
   List as ListIcon,
   Map as MapIcon,
+  RotateCcw,
   Search,
   SlidersHorizontal,
-  RotateCcw,
   X,
 } from '@tamagui/lucide-icons'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Platform } from 'react-native'
+import { Button, ScrollView, Tabs, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { JobPreviewModal } from './components/JobPreviewModal'
+import { MapFilterBar } from './components/MapFilterBar'
+import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
+import { ProfileHoverCard } from './components/ProfileHoverCard'
+import { ResultList, type ResultListRef } from './components/ResultList'
+import { ResultsRail } from './components/ResultsRail'
+import { UserProfilePanel } from './components/UserProfilePanel'
+import { WorkerPreviewModal } from './components/WorkerPreviewModal'
+import { defaultCenter } from './data/mockProfiles'
+import { useJobs } from './hooks/useJobs'
+import { type ClusterInfo, useMapPinState } from './hooks/useMapPinState'
+import { useOrganizations } from './hooks/useOrganizations'
+import { useTalentProfiles } from './hooks/useTalentProfiles'
+import { useUserLocation } from './hooks/useUserLocation'
+import { useMapState } from './providers/MapStateProvider'
 
 export const DiscoverMapScreen = () => {
   // Use window dimensions for conditional rendering

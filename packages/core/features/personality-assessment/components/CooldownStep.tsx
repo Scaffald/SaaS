@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
-import { Button, Text, XStack, YStack, Progress } from 'tamagui'
+import { useEffect, useState } from 'react'
+import { Button, Progress, Text, XStack, YStack } from 'tamagui'
 import {
-  getQuestions,
   getChoices,
-  type IPIPQuestion,
+  getQuestions,
   type IPIPAnswer,
   type IPIPChoice,
+  type IPIPQuestion,
 } from '../lib/ipip'
 
 export interface CooldownStepProps {
@@ -109,12 +109,7 @@ export function CooldownStep({
       {/* Cooldown Timer */}
       <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
         <YStack gap="$2" items="center">
-          <Text
-            fontSize="$6"
-            fontWeight="600"
-            color="$color12"
-            style={{ textAlign: 'center' }}
-          >
+          <Text fontSize="$6" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             Cooldown Period
           </Text>
           <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
@@ -132,12 +127,7 @@ export function CooldownStep({
       {/* IPIP Questions Section */}
       <YStack gap="$4">
         <YStack gap="$2" items="center">
-          <Text
-            fontSize="$5"
-            fontWeight="600"
-            color="$color12"
-            style={{ textAlign: 'center' }}
-          >
+          <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             While you wait, answer some personality questions
           </Text>
           <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>

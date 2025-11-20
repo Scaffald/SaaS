@@ -29,7 +29,7 @@ export type AllowedNode = (typeof ALLOWED_NODES)[number]
  * Database enforces 5000 char limit, but UI can be more restrictive
  */
 export const RICH_TEXT_LIMITS = {
-  PROFILE_ABOUT: 500,
+  PROFILE_ABOUT: 1500,
   EXPERIENCE_DESCRIPTION: 1000,
   EDUCATION_DESCRIPTION: 500,
   JOB_DESCRIPTION: 3000,

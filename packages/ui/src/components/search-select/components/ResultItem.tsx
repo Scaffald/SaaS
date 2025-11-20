@@ -1,8 +1,8 @@
-import { memo, useMemo } from 'react'
-import type { ReactNode } from 'react'
-import { Button, SizableText, XStack, YStack } from 'tamagui'
 import { Check } from '@tamagui/lucide-icons'
-import type { SearchSelectOption, SearchSelectHighlightRange } from '../types'
+import type { ReactNode } from 'react'
+import { memo, useMemo } from 'react'
+import { Button, SizableText, XStack, YStack } from 'tamagui'
+import type { SearchSelectHighlightRange, SearchSelectOption } from '../types'
 
 export interface ResultItemProps<T> {
   option: SearchSelectOption<T>

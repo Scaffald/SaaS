@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo } from 'react'
-import { XStack, AnimatePresence, YStack, Text } from 'tamagui'
-import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
+import { AddressAutocomplete } from '@app/ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
+import { useCallback, useMemo, useState } from 'react'
+import { AnimatePresence, Text, XStack, YStack } from 'tamagui'
 
 type MapSearchInputProps = {
   isVisible: boolean

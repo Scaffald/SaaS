@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
+import { ChevronRight } from '@tamagui/lucide-icons'
+import { Link, useRouter } from 'expo-router'
+import { useCallback, useMemo, useState } from 'react'
 import {
+  Adapt,
+  Popover,
+  ScrollView,
+  Sheet,
   Text,
+  useWindowDimensions,
   XStack,
   YStack,
-  Popover,
-  Sheet,
-  Adapt,
-  ScrollView,
-  useWindowDimensions,
 } from 'tamagui'
-import { Link, useRouter } from 'expo-router'
 import { Button as UIButton } from './buttons/Button'
 
 export interface BreadcrumbSibling {

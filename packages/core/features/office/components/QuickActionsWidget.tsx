@@ -1,7 +1,7 @@
+import { DashboardWidget, Text } from '@app/ui'
+import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { Button, YStack } from 'tamagui'
-import { ArrowRightCircle, RefreshCw, Save, X, Trash2, Pencil, Eye } from '@tamagui/lucide-icons'
-import { DashboardWidget, Text } from '@app/ui'
 
 export interface QuickActionsWidgetProps {
   /** Context of the page (determines which actions to show) */
@@ -30,9 +30,9 @@ export interface QuickActionsWidgetProps {
 
 /**
  * QuickActionsWidget - Context-aware quick actions widget for Office pages
- * 
+ *
  * Provides consistent quick actions in the right sidebar based on page context.
- * 
+ *
  * @example
  * ```tsx
  * <QuickActionsWidget
@@ -65,12 +65,7 @@ export function QuickActionsWidget({
         </Button>
       )}
       {onRefresh && (
-        <Button
-          variant="outlined"
-          icon={RefreshCw}
-          onPress={onRefresh}
-          disabled={isLoading}
-        >
+        <Button variant="outlined" icon={RefreshCw} onPress={onRefresh} disabled={isLoading}>
           Refresh
         </Button>
       )}
@@ -107,12 +102,7 @@ export function QuickActionsWidget({
         </Button>
       )}
       {onDelete && (
-        <Button
-          theme="error"
-          icon={Trash2}
-          onPress={onDelete}
-          disabled={isLoading}
-        >
+        <Button theme="error" icon={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}
@@ -133,12 +123,7 @@ export function QuickActionsWidget({
         </Button>
       )}
       {onDelete && (
-        <Button
-          theme="error"
-          icon={Trash2}
-          onPress={onDelete}
-          disabled={isLoading}
-        >
+        <Button theme="error" icon={Trash2} onPress={onDelete} disabled={isLoading}>
           Delete {resourceName}
         </Button>
       )}
@@ -170,4 +155,3 @@ export function QuickActionsWidget({
     </DashboardWidget>
   )
 }
-

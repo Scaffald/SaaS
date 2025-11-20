@@ -1,10 +1,10 @@
+import { api } from '@app/core/utils/api'
+import { FileUpload, ResponsiveModal, spacing } from '@app/ui'
+import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
-import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from '@tamagui/lucide-icons'
-import { ResponsiveModal, FileUpload, spacing } from '@app/ui'
-import { useToastController } from '@tamagui/toast'
-import { api } from '@app/core/utils/api'
 
 const ACCEPTED_MIME_TYPES = [
   'application/pdf',

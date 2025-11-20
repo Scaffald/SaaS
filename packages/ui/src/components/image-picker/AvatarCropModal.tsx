@@ -1,37 +1,37 @@
 import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo,
-  type ComponentRef,
-  type CSSProperties,
-} from 'react'
-import { Platform, Image as RNImage, type ImageStyle } from 'react-native'
-import { GestureDetector, Gesture } from 'react-native-gesture-handler'
-import {
-  XStack,
-  YStack,
-  Text,
-  Button,
-  Image as TamaguiImage,
-  View,
-  Circle,
-  useWindowDimensions,
-} from 'tamagui'
-import {
-  X,
   Check,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
   FlipHorizontal,
   FlipVertical,
+  RotateCcw,
+  X,
+  ZoomIn,
+  ZoomOut,
 } from '@tamagui/lucide-icons'
-import { Dialog, Sheet } from '@app/ui'
-
-import { processCroppedImage } from './utils/imageProcessing'
+import {
+  type ComponentRef,
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { type ImageStyle, Platform, Image as RNImage } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import {
+  Button,
+  Circle,
+  Image as TamaguiImage,
+  Text,
+  useWindowDimensions,
+  View,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { Dialog } from '../dialog/Dialog'
+import { Sheet } from '../sheets/Sheet'
 import { detectMimeTypeFromSrc, getNativeTransform, getWebTransform } from './utils/helpers'
+import { processCroppedImage } from './utils/imageProcessing'
 
 import type { CropRect } from './utils/imageProcessing.types'
 

@@ -1,10 +1,9 @@
 // Brand Assets
-export { ScaffaldLogo } from './ScaffaldLogo'
-export type { ScaffaldLogoProps } from './ScaffaldLogo'
 
-export { ScaffaldIcon } from './ScaffaldIcon'
-export type { ScaffaldIconProps } from './ScaffaldIcon'
-
+export type { BrandColors } from './brand-colors'
 // Brand Colors
 export { BRAND_COLORS } from './brand-colors'
-export type { BrandColors } from './brand-colors'
+export type { ScaffaldIconProps } from './ScaffaldIcon'
+export { ScaffaldIcon } from './ScaffaldIcon'
+export type { ScaffaldLogoProps } from './ScaffaldLogo'
+export { ScaffaldLogo } from './ScaffaldLogo'

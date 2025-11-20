@@ -1,3 +1,5 @@
+import type { AddressResult, ProviderConfig, SearchOptions } from '../types'
+import { GeocodingError } from '../types'
 import {
   BaseGeocodingProvider,
   generateId,
@@ -5,8 +7,6 @@ import {
   isValidCoordinates,
   normalizeComponent,
 } from './base'
-import type { AddressResult, ProviderConfig, SearchOptions } from '../types'
-import { GeocodingError } from '../types'
 
 // Mapbox API response interfaces
 interface MapboxGeometry {

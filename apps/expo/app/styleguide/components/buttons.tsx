@@ -1,11 +1,13 @@
 // @ts-nocheck
-import React from 'react'
-import { Button, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
-import { PropsTable } from '@app/styleguide'
-import { TodoCallout } from '@app/styleguide'
+
+import {
+  AnchorHeading,
+  ExampleCard,
+  PropsTable,
+  StyleguidePage,
+  TodoCallout,
+} from '@app/styleguide'
+import { Button, XStack, YStack } from '@app/ui'
 
 export default function ButtonsPage() {
   return (

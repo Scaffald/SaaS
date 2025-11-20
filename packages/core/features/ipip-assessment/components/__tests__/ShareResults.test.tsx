@@ -1,9 +1,8 @@
+import { copyToClipboard } from '@app/core/utils/clipboard'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { act } from 'react-dom/test-utils'
-import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest'
-
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import { ShareResults } from '../ShareResults'
-import { copyToClipboard } from '@app/core/utils/clipboard'
 
 const toastShow = vi.fn()
 const invalidateAssessment = vi.fn()
@@ -89,7 +88,9 @@ describe('ShareResults', () => {
     })
 
     expect(screen.getByText(/Your Share Link/i)).toBeVisible()
-    expect(screen.getByText(/http:\/\/localhost\/dashboard\/assessments\/ipip\/shared\/1111-2222/i)).toBeVisible()
+    expect(
+      screen.getByText(/http:\/\/localhost\/dashboard\/assessments\/ipip\/shared\/1111-2222/i)
+    ).toBeVisible()
     expect(toastShow).toHaveBeenCalledWith('Share link created!', expect.any(Object))
   })
 
@@ -102,7 +103,9 @@ describe('ShareResults', () => {
     })
 
     fireEvent.click(await screen.findByRole('button', { name: /Copy/i }))
-    expect(copyToClipboard).toHaveBeenCalledWith('http://localhost/dashboard/assessments/ipip/shared/abcd')
+    expect(copyToClipboard).toHaveBeenCalledWith(
+      'http://localhost/dashboard/assessments/ipip/shared/abcd'
+    )
     expect(toastShow).toHaveBeenCalledWith('Copied!', expect.any(Object))
 
     fireEvent.click(screen.getByRole('button', { name: /Revoke/i }))
@@ -124,5 +127,3 @@ describe('ShareResults', () => {
     expect(screen.getByText(/This cooldown period ensures accurate results/i)).toBeVisible()
   })
 })
-
-

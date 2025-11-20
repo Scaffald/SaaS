@@ -1,6 +1,6 @@
+import { ExternalLink, Link as LinkIcon, Upload, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, YStack, XStack, Text, Button, Input } from 'tamagui'
-import { Upload, Link as LinkIcon, X, ExternalLink } from '@tamagui/lucide-icons'
+import { Button, Card, Input, Text, XStack, YStack } from 'tamagui'
 
 interface CertificationProofCardProps {
   certificationTitle: string

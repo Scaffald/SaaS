@@ -1,9 +1,4 @@
-import type { JSX } from "react";
-import {
-  DASHBOARD_ROUTES,
-  OFFICE_ROUTES,
-  ROUTES,
-} from "@app/core/constants/routes";
+import { DASHBOARD_ROUTES, OFFICE_ROUTES, ROUTES } from '@app/core/constants/routes'
 import {
   BarChart3,
   Briefcase,
@@ -12,20 +7,21 @@ import {
   Map as MapIcon,
   User,
   Users,
-} from "@tamagui/lucide-icons";
-import type { DrawerItemConfig, DrawerSectionConfig } from "./types";
+} from '@tamagui/lucide-icons'
+import type { JSX } from 'react'
+import type { DrawerItemConfig, DrawerSectionConfig } from './types'
 
 export interface AssessmentStatus {
   luscher1: {
-    isCompleted: boolean;
-    isLoading: boolean;
-    isOnCooldown?: boolean;
-    nextAvailableAt?: string | null;
-  };
-  ipip: { isCompleted: boolean; isLoading: boolean };
-  luscher2: { isCompleted: boolean; isLoading: boolean };
-  riasec: { isCompleted: boolean; isLoading: boolean };
-  occupation: { isCompleted: boolean; isLoading: boolean };
+    isCompleted: boolean
+    isLoading: boolean
+    isOnCooldown?: boolean
+    nextAvailableAt?: string | null
+  }
+  ipip: { isCompleted: boolean; isLoading: boolean }
+  luscher2: { isCompleted: boolean; isLoading: boolean }
+  riasec: { isCompleted: boolean; isLoading: boolean }
+  occupation: { isCompleted: boolean; isLoading: boolean }
 }
 
 /**
@@ -35,150 +31,150 @@ export interface AssessmentStatus {
  * @returns Array of drawer item configurations
  */
 export const generateDashboardDrawerItems = (options?: {
-  assessmentStatus?: AssessmentStatus;
+  assessmentStatus?: AssessmentStatus
 }): DrawerItemConfig[] => {
-  const items: DrawerItemConfig[] = [];
+  const items: DrawerItemConfig[] = []
 
   // Main dashboard item
   items.push({
-    key: "dashboard",
-    titleKey: "navigation.dashboard",
+    key: 'dashboard',
+    titleKey: 'navigation.dashboard',
     href: ROUTES.DASHBOARD.path,
-    routeKey: "DASHBOARD",
+    routeKey: 'DASHBOARD',
     icon: BarChart3,
-  });
+  })
 
   // Map - top-level item
   items.push({
-    key: "map",
-    titleKey: "navigation.discoverMap",
+    key: 'map',
+    titleKey: 'navigation.discoverMap',
     href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
-    routeKey: "DASHBOARD_DISCOVER_MAP",
+    routeKey: 'DASHBOARD_DISCOVER_MAP',
     icon: MapIcon,
-  });
+  })
 
   // Workers - top-level item
   items.push({
-    key: "workers",
-    titleKey: "navigation.discoverWorkers",
+    key: 'workers',
+    titleKey: 'navigation.discoverWorkers',
     href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path,
-    routeKey: "DASHBOARD_DISCOVER_WORKERS",
+    routeKey: 'DASHBOARD_DISCOVER_WORKERS',
     icon: Users,
-  });
+  })
 
   // Employers - top-level item
   items.push({
-    key: "employers",
-    titleKey: "navigation.discoverEmployers",
+    key: 'employers',
+    titleKey: 'navigation.discoverEmployers',
     href: ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.path,
-    routeKey: "DASHBOARD_DISCOVER_EMPLOYERS",
+    routeKey: 'DASHBOARD_DISCOVER_EMPLOYERS',
     icon: Building2,
-  });
+  })
 
   // Jobs - top-level item
   items.push({
-    key: "jobs",
-    titleKey: "navigation.discoverJobs",
+    key: 'jobs',
+    titleKey: 'navigation.discoverJobs',
     href: ROUTES.DASHBOARD_DISCOVER_JOBS.path,
-    routeKey: "DASHBOARD_DISCOVER_JOBS",
+    routeKey: 'DASHBOARD_DISCOVER_JOBS',
     icon: Briefcase,
-  });
+  })
 
   // Profile route - Always show subItems, parent is clickable
   items.push({
-    key: "profile",
-    titleKey: "navigation.profile",
+    key: 'profile',
+    titleKey: 'navigation.profile',
     href: ROUTES.DASHBOARD_PROFILE.path,
-    routeKey: "DASHBOARD_PROFILE",
+    routeKey: 'DASHBOARD_PROFILE',
     icon: User,
     isExpandable: true,
     expandOnActive: true,
     subItems: [
       {
-        key: "profile-general",
-        titleKey: "navigation.profileGeneral",
+        key: 'profile-general',
+        titleKey: 'navigation.profileGeneral',
         href: ROUTES.DASHBOARD_PROFILE_GENERAL.path,
-        routeKey: "DASHBOARD_PROFILE_GENERAL",
+        routeKey: 'DASHBOARD_PROFILE_GENERAL',
       },
       {
-        key: "profile-employment",
-        titleKey: "navigation.profileEmployment",
+        key: 'profile-employment',
+        titleKey: 'navigation.profileEmployment',
         href: ROUTES.DASHBOARD_PROFILE_EMPLOYMENT.path,
-        routeKey: "DASHBOARD_PROFILE_EMPLOYMENT",
+        routeKey: 'DASHBOARD_PROFILE_EMPLOYMENT',
       },
       {
-        key: "profile-skills",
-        titleKey: "navigation.profileSkills",
+        key: 'profile-skills',
+        titleKey: 'navigation.profileSkills',
         href: ROUTES.DASHBOARD_PROFILE_SKILLS.path,
-        routeKey: "DASHBOARD_PROFILE_SKILLS",
+        routeKey: 'DASHBOARD_PROFILE_SKILLS',
       },
       {
-        key: "profile-certifications",
-        titleKey: "navigation.profileCertifications",
+        key: 'profile-certifications',
+        titleKey: 'navigation.profileCertifications',
         href: ROUTES.DASHBOARD_PROFILE_CERTIFICATIONS.path,
-        routeKey: "DASHBOARD_PROFILE_CERTIFICATIONS",
+        routeKey: 'DASHBOARD_PROFILE_CERTIFICATIONS',
       },
       {
-        key: "profile-education",
-        titleKey: "navigation.profileEducation",
+        key: 'profile-education',
+        titleKey: 'navigation.profileEducation',
         href: ROUTES.DASHBOARD_PROFILE_EDUCATION.path,
-        routeKey: "DASHBOARD_PROFILE_EDUCATION",
+        routeKey: 'DASHBOARD_PROFILE_EDUCATION',
       },
       {
-        key: "profile-experience",
-        titleKey: "navigation.profileExperience",
+        key: 'profile-experience',
+        titleKey: 'navigation.profileExperience',
         href: ROUTES.DASHBOARD_PROFILE_EXPERIENCE.path,
-        routeKey: "DASHBOARD_PROFILE_EXPERIENCE",
+        routeKey: 'DASHBOARD_PROFILE_EXPERIENCE',
       },
     ],
-  });
+  })
 
   // Assessments route - Always show sub-items for each assessment
   const assessmentSubItems: DrawerItemConfig[] = [
     {
-      key: "assessment-pulse",
-      titleKey: "navigation.assessmentsPulse",
+      key: 'assessment-pulse',
+      titleKey: 'navigation.assessmentsPulse',
       href: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER.path,
-      routeKey: "DASHBOARD_ASSESSMENT_LUSCHER",
+      routeKey: 'DASHBOARD_ASSESSMENT_LUSCHER',
       isCompleted: options?.assessmentStatus?.luscher1.isCompleted,
       isOnCooldown: options?.assessmentStatus?.luscher1.isOnCooldown,
     },
     {
-      key: "assessment-ipip",
-      titleKey: "navigation.assessmentsPersonality",
+      key: 'assessment-ipip',
+      titleKey: 'navigation.assessmentsPersonality',
       href: ROUTES.DASHBOARD_ASSESSMENT_IPIP.path,
-      routeKey: "DASHBOARD_ASSESSMENT_IPIP",
+      routeKey: 'DASHBOARD_ASSESSMENT_IPIP',
       isCompleted: options?.assessmentStatus?.ipip.isCompleted,
     },
     {
-      key: "assessment-riasec",
-      titleKey: "navigation.assessmentsRiasec",
+      key: 'assessment-riasec',
+      titleKey: 'navigation.assessmentsRiasec',
       href: ROUTES.DASHBOARD_ASSESSMENT_RIASEC.path,
-      routeKey: "DASHBOARD_ASSESSMENT_RIASEC",
+      routeKey: 'DASHBOARD_ASSESSMENT_RIASEC',
       isCompleted: options?.assessmentStatus?.riasec.isCompleted,
     },
     {
-      key: "assessment-occupation",
-      titleKey: "navigation.assessmentsOccupation",
+      key: 'assessment-occupation',
+      titleKey: 'navigation.assessmentsOccupation',
       href: ROUTES.DASHBOARD_ASSESSMENT_OCCUPATION.path,
-      routeKey: "DASHBOARD_ASSESSMENT_OCCUPATION",
+      routeKey: 'DASHBOARD_ASSESSMENT_OCCUPATION',
       isCompleted: options?.assessmentStatus?.occupation.isCompleted,
     },
-  ];
+  ]
 
   items.push({
-    key: "assessments",
-    titleKey: "navigation.assessments",
+    key: 'assessments',
+    titleKey: 'navigation.assessments',
     href: ROUTES.DASHBOARD_ASSESSMENTS.path,
-    routeKey: "DASHBOARD_ASSESSMENTS",
+    routeKey: 'DASHBOARD_ASSESSMENTS',
     icon: ClipboardCheck,
     isExpandable: true,
     expandOnActive: true,
     subItems: assessmentSubItems,
-  });
+  })
 
-  return items;
-};
+  return items
+}
 
 /**
  * Get drawer items for the drawer menu
@@ -187,7 +183,7 @@ export const generateDashboardDrawerItems = (options?: {
  * @returns Array of drawer item configurations
  */
 export const getDrawerItems = (options?: {
-  assessmentStatus?: AssessmentStatus;
+  assessmentStatus?: AssessmentStatus
 }): DrawerItemConfig[] => {
-  return generateDashboardDrawerItems(options);
-};
+  return generateDashboardDrawerItems(options)
+}

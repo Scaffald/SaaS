@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('REQ-71: Employer Industry Filtering', () => {
@@ -9,20 +9,28 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
   })
 
   // Test 1: Selecting industries filters employer list immediately
-  test('should filter employer list when industries are selected', async ({ page }: { page: Page }) => {
+  test('should filter employer list when industries are selected', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Get initial employer count
-    const initialCount = await page.locator('text=/\\d+ Employer/').textContent().catch(() => null)
+    const initialCount = await page
+      .locator('text=/\\d+ Employer/')
+      .textContent()
+      .catch(() => null)
 
     // Find and click an industry filter button
-    const industryButtons = page.locator('button:has-text("Construction"), button:has-text("Manufacturing"), button:has-text("Technology")')
+    const industryButtons = page.locator(
+      'button:has-text("Construction"), button:has-text("Manufacturing"), button:has-text("Technology")'
+    )
     const buttonCount = await industryButtons.count()
 
     if (buttonCount > 0) {
@@ -30,27 +38,32 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
       await page.waitForTimeout(2000)
 
       // Verify filter was applied (count may change or stay same)
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     } else {
       // If no industry buttons, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
 
   // Test 2: Multiple industry selections work with OR logic
-  test('should support multiple industry selections with OR logic', async ({ page }: { page: Page }) => {
+  test('should support multiple industry selections with OR logic', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Try to select multiple industries
-    const industryButtons = page.locator('button:has-text("Construction"), button:has-text("Manufacturing"), button:has-text("Technology")')
+    const industryButtons = page.locator(
+      'button:has-text("Construction"), button:has-text("Manufacturing"), button:has-text("Technology")'
+    )
     const buttonCount = await industryButtons.count()
 
     if (buttonCount >= 2) {
@@ -63,30 +76,35 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
       await page.waitForTimeout(2000)
 
       // Verify both selections are active (should show employers from either industry)
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     } else {
       // If not enough buttons, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
 
   // Test 3: Clearing filters restores full employer list
-  test('should restore full employer list when filters are cleared', async ({ page }: { page: Page }) => {
+  test('should restore full employer list when filters are cleared', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Get initial count
-    const initialContent = await page.locator('body').textContent() || ''
+    const initialContent = (await page.locator('body').textContent()) || ''
 
     // Try to find and click a clear button
-    const clearButton = page.locator('button:has-text("Clear"), button[aria-label*="clear" i]').first()
+    const clearButton = page
+      .locator('button:has-text("Clear"), button[aria-label*="clear" i]')
+      .first()
     const clearVisible = await clearButton.isVisible().catch(() => false)
 
     if (clearVisible) {
@@ -103,7 +121,7 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
         await page.waitForTimeout(2000)
 
         // Should restore full list
-        const afterClearContent = await page.locator('body').textContent() || ''
+        const afterClearContent = (await page.locator('body').textContent()) || ''
         expect(afterClearContent.length).toBeGreaterThan(0)
       }
     } else {
@@ -117,10 +135,9 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Select an industry
     const industryButton = page.locator('button:has-text("Construction")').first()
@@ -137,11 +154,11 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
       await page.waitForTimeout(2000)
 
       // Filter may or may not persist (implementation dependent)
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     } else {
       // If no button, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
@@ -151,10 +168,9 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Click an industry filter
     const industryButton = page.locator('button:has-text("Construction")').first()
@@ -166,38 +182,40 @@ test.describe('REQ-71: Employer Industry Filtering', () => {
       // Loading state may be very brief, so we just verify the action completed
       await page.waitForTimeout(2000)
 
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     } else {
       // If no button, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
 
   // Test 6: Empty state message when no matches
-  test('should show empty state when no employers match filters', async ({ page }: { page: Page }) => {
+  test('should show empty state when no employers match filters', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Try to select a filter that might not match any employers
     // This is hard to test without knowing available data, so we just verify the page handles it
-    const pageContent = await page.locator('body').textContent() || ''
-    
+    const pageContent = (await page.locator('body').textContent()) || ''
+
     // Page should either show employers or empty state, but not crash
     expect(pageContent.length).toBeGreaterThan(0)
-    
+
     // Check for potential empty state messages
     const hasEmptyState = pageContent.includes('No employers') || pageContent.includes('not found')
     const hasEmployers = pageContent.includes('Employer')
-    
+
     // One of these should be true
     expect(hasEmptyState || hasEmployers).toBe(true)
   })
 })
-

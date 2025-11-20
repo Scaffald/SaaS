@@ -1,6 +1,6 @@
-import { YStack, ScrollView, Text, Spinner, type YStackProps } from 'tamagui'
 import { DashboardWidget } from '@app/ui'
 import type React from 'react'
+import { ScrollView, Spinner, Text, YStack, type YStackProps } from 'tamagui'
 
 interface ProfileResultsPanelProps extends YStackProps {
   /** Child content for results */

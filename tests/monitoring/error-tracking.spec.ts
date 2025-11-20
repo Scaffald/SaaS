@@ -7,7 +7,7 @@
  * Task 22: Configure Error Tracking, Alerting, and Incident Response
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Error Tracking Testing', () => {
   test('error tracking captures errors', async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe('Error Tracking Testing', () => {
       // Try to access a non-existent property to trigger error
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).nonexistent.property
+        ;(window as any).nonexistent.property
       } catch (e) {
         console.error('Test error:', e)
       }
@@ -81,7 +81,7 @@ test.describe('Error Tracking Testing', () => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Basic check: page should be able to handle errors gracefully
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Page should handle errors gracefully').toBeGreaterThan(0)
   })
 })
@@ -97,4 +97,3 @@ test.describe('Error Tracking Testing', () => {
  * These tests validate basic infrastructure.
  * Full error tracking validation should be done via error tracking services.
  */
-

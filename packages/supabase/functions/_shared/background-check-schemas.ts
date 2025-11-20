@@ -1,10 +1,10 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const BACKGROUND_CHECK_ALLOWED_MIME_TYPES = [
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-] as const;
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+] as const
 
 /**
  * Shared background check schemas for Edge Functions (Deno runtime)
@@ -12,35 +12,31 @@ export const BACKGROUND_CHECK_ALLOWED_MIME_TYPES = [
  */
 
 export const backgroundCheckStatusEnum = z.enum([
-  "pending",
-  "invited",
-  "submitted",
-  "in_progress",
-  "under_review",
-  "completed_clear",
-  "completed_consider",
-  "completed_not_clear",
-  "partially_completed",
-  "failed",
-  "cancelled",
-  "disputed",
-  "expired",
-  "refunded",
-]);
+  'pending',
+  'invited',
+  'submitted',
+  'in_progress',
+  'under_review',
+  'completed_clear',
+  'completed_consider',
+  'completed_not_clear',
+  'partially_completed',
+  'failed',
+  'cancelled',
+  'disputed',
+  'expired',
+  'refunded',
+])
 
-export const backgroundCheckPaidByEnum = z.enum([
-  "worker",
-  "organization",
-  "platform",
-]);
+export const backgroundCheckPaidByEnum = z.enum(['worker', 'organization', 'platform'])
 
 export const backgroundCheckDisputeStatusEnum = z.enum([
-  "pending",
-  "under_review",
-  "resolved",
-  "upheld",
-  "cancelled",
-]);
+  'pending',
+  'under_review',
+  'resolved',
+  'upheld',
+  'cancelled',
+])
 
 export const backgroundCheckTypeSchema = z.object({
   id: z.string().uuid(),
@@ -52,16 +48,15 @@ export const backgroundCheckTypeSchema = z.object({
   validity_days: z.number().int().positive().nullable().optional(),
   platform_cost_cents: z.number().int().nonnegative(),
   retail_cost_cents: z.number().int().nonnegative().nullable().optional(),
-  estimated_completion_days: z.number().int().nonnegative().nullable()
-    .optional(),
+  estimated_completion_days: z.number().int().nonnegative().nullable().optional(),
   required_documents: z.array(z.string()).default([]),
   provider_configuration: z.record(z.unknown()).default({}),
   metadata: z.record(z.unknown()).default({}),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
-});
+})
 
-export type BackgroundCheckType = z.infer<typeof backgroundCheckTypeSchema>;
+export type BackgroundCheckType = z.infer<typeof backgroundCheckTypeSchema>
 
 export const backgroundCheckPackageSchema = z.object({
   id: z.string().uuid(),
@@ -73,17 +68,14 @@ export const backgroundCheckPackageSchema = z.object({
   component_overrides: z.array(z.record(z.unknown())).default([]),
   platform_cost_cents: z.number().int().nonnegative(),
   retail_cost_cents: z.number().int().nonnegative(),
-  estimated_completion_days: z.number().int().nonnegative().nullable()
-    .optional(),
+  estimated_completion_days: z.number().int().nonnegative().nullable().optional(),
   is_active: z.boolean().default(true),
   metadata: z.record(z.unknown()).default({}),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
-});
+})
 
-export type BackgroundCheckPackage = z.infer<
-  typeof backgroundCheckPackageSchema
->;
+export type BackgroundCheckPackage = z.infer<typeof backgroundCheckPackageSchema>
 
 export const consentMetadataSchema = z.object({
   consent_given_at: z.string().datetime(),
@@ -92,7 +84,7 @@ export const consentMetadataSchema = z.object({
   consent_signature: z.string().optional(),
   disclosure_provided_at: z.string().datetime().optional(),
   summary_of_rights_provided_at: z.string().datetime().optional(),
-});
+})
 
 export const backgroundCheckInitiationSchema = z.object({
   package_id: z.string().uuid(),
@@ -104,11 +96,9 @@ export const backgroundCheckInitiationSchema = z.object({
   check_type_overrides: z.array(z.string().uuid()).optional(),
   consent: consentMetadataSchema.optional(),
   metadata: z.record(z.unknown()).optional(),
-});
+})
 
-export type BackgroundCheckInitiationInput = z.infer<
-  typeof backgroundCheckInitiationSchema
->;
+export type BackgroundCheckInitiationInput = z.infer<typeof backgroundCheckInitiationSchema>
 
 export const backgroundCheckDocumentUploadSchema = z.object({
   background_check_id: z.string().uuid(),
@@ -116,38 +106,36 @@ export const backgroundCheckDocumentUploadSchema = z.object({
   storage_path: z.string().min(1),
   file_name: z.string().min(1),
   mime_type: z.enum(BACKGROUND_CHECK_ALLOWED_MIME_TYPES),
-  file_size: z.number().int().positive().max(
-    10 * 1024 * 1024,
-    "File must be <= 10MB",
-  ),
+  file_size: z
+    .number()
+    .int()
+    .positive()
+    .max(10 * 1024 * 1024, 'File must be <= 10MB'),
   metadata: z.record(z.unknown()).optional(),
-});
+})
 
-export type BackgroundCheckDocumentUploadInput = z.infer<
-  typeof backgroundCheckDocumentUploadSchema
->;
+export type BackgroundCheckDocumentUploadInput = z.infer<typeof backgroundCheckDocumentUploadSchema>
 
 export const backgroundCheckUploadRequestSchema = z.object({
   background_check_id: z.string().uuid(),
   document_type: z.string().min(1),
   file_name: z.string().min(1),
   mime_type: z.enum(BACKGROUND_CHECK_ALLOWED_MIME_TYPES),
-  file_size: z.number().int().positive().max(
-    10 * 1024 * 1024,
-    "File must be <= 10MB",
-  ),
-});
+  file_size: z
+    .number()
+    .int()
+    .positive()
+    .max(10 * 1024 * 1024, 'File must be <= 10MB'),
+})
 
-export type BackgroundCheckUploadRequestInput = z.infer<
-  typeof backgroundCheckUploadRequestSchema
->;
+export type BackgroundCheckUploadRequestInput = z.infer<typeof backgroundCheckUploadRequestSchema>
 
 export const componentStatusSchema = z.object({
   check_type_id: z.string().uuid(),
   status: backgroundCheckStatusEnum,
   completed_at: z.string().datetime().nullable().optional(),
   findings: z.record(z.unknown()).nullable().optional(),
-});
+})
 
 export const backgroundCheckStatusUpdateSchema = z.object({
   background_check_id: z.string().uuid(),
@@ -160,11 +148,9 @@ export const backgroundCheckStatusUpdateSchema = z.object({
   component_statuses: z.array(componentStatusSchema).optional(),
   expires_at: z.string().datetime().nullable().optional(),
   estimated_completion_date: z.string().nullable().optional(),
-});
+})
 
-export type BackgroundCheckStatusUpdateInput = z.infer<
-  typeof backgroundCheckStatusUpdateSchema
->;
+export type BackgroundCheckStatusUpdateInput = z.infer<typeof backgroundCheckStatusUpdateSchema>
 
 export const backgroundCheckDisputeSchema = z.object({
   background_check_id: z.string().uuid(),
@@ -175,14 +161,12 @@ export const backgroundCheckDisputeSchema = z.object({
       z.object({
         document_type: z.string(),
         file_path: z.string(),
-      }),
+      })
     )
     .optional(),
-});
+})
 
-export type BackgroundCheckDisputeInput = z.infer<
-  typeof backgroundCheckDisputeSchema
->;
+export type BackgroundCheckDisputeInput = z.infer<typeof backgroundCheckDisputeSchema>
 
 export const backgroundCheckDisputeResolutionSchema = z.object({
   dispute_id: z.string().uuid(),
@@ -190,8 +174,8 @@ export const backgroundCheckDisputeResolutionSchema = z.object({
   resolution: z.string().nullable().optional(),
   resolution_notes: z.string().nullable().optional(),
   resolved_at: z.string().datetime().optional(),
-});
+})
 
 export type BackgroundCheckDisputeResolutionInput = z.infer<
   typeof backgroundCheckDisputeResolutionSchema
->;
+>

@@ -1,9 +1,9 @@
+import { useAuth } from '@app/core/provider/auth/useAuth'
 import { useMemo } from 'react'
 import { YStack } from 'tamagui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
-import { useAuth } from '@app/core/provider/auth/useAuth'
 
 interface DiscoverWorkersLeftProps {
   searchQuery: string
@@ -78,14 +78,7 @@ export function DiscoverWorkersLeft({
 
       return true
     })
-  }, [
-    talentProfiles,
-    searchQuery,
-    minScore,
-    selectedSkills,
-    selectedCertifications,
-    currentUserId,
-  ])
+  }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications, currentUserId])
 
   return (
     <YStack flex={1} overflow="hidden">

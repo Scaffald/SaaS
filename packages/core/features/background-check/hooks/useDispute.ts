@@ -1,16 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Platform } from 'react-native'
-import { Buffer } from 'buffer'
-import { zodResolver } from '@hookform/resolvers/zod'
-import type { inferRouterOutputs } from '@trpc/server'
-import { useForm } from 'react-hook-form'
-import { useToastController } from '@tamagui/toast'
-import { z } from 'zod'
-
-import type { UploadSelection } from '@app/ui'
-import type { AppRouter } from '@app/supabase/client-types'
 import { api } from '@app/core/utils/api'
 import { supabase } from '@app/core/utils/supabase/client'
+import type { AppRouter } from '@app/supabase/client-types'
+import type { UploadSelection } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { Buffer } from 'buffer'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Platform } from 'react-native'
+import { z } from 'zod'
 
 const MAX_ATTACHMENTS = 5
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
@@ -166,7 +165,7 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
     {
       enabled: Boolean(checkId) && enabled,
       staleTime: 30_000,
-    },
+    }
   )
 
   const createUploadUrlMutation = api.backgroundChecks.createUploadUrl.useMutation()
@@ -195,9 +194,9 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
     () =>
       disputes.some(
         (dispute: BackgroundCheckDispute) =>
-          dispute.status === 'pending' || dispute.status === 'under_review',
+          dispute.status === 'pending' || dispute.status === 'under_review'
       ),
-    [disputes],
+    [disputes]
   )
 
   const addAttachment = useCallback(
@@ -255,7 +254,7 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
         typeof (info as { size?: number }).size === 'number'
           ? (info as { size: number }).size
           : undefined
-      const size = typeof asset.size === 'number' ? asset.size : infoSize ?? 0
+      const size = typeof asset.size === 'number' ? asset.size : (infoSize ?? 0)
 
       if (size === 0) {
         setAttachmentError('We could not read that file. Try selecting it again.')
@@ -297,7 +296,7 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
         },
       ])
     },
-    [attachments.length, checkId],
+    [attachments.length, checkId]
   )
 
   const removeAttachment = useCallback((attachmentId: string) => {
@@ -352,7 +351,7 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
         file_path: uploadRequest.storagePath,
       }
     },
-    [checkId, convertAttachmentToBytes, createUploadUrlMutation],
+    [checkId, convertAttachmentToBytes, createUploadUrlMutation]
   )
 
   const submitDispute = useCallback(async () => {
@@ -370,9 +369,9 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
       await form.handleSubmit(async (values) => {
         const resolvedReason =
           values.reason === 'other'
-            ? values.otherReason?.trim() ?? 'Other'
-            : DISPUTE_REASON_OPTIONS.find((option) => option.value === values.reason)?.label ??
-              values.reason
+            ? (values.otherReason?.trim() ?? 'Other')
+            : (DISPUTE_REASON_OPTIONS.find((option) => option.value === values.reason)?.label ??
+              values.reason)
 
         setIsUploading(true)
         const supportingDocuments = []
@@ -461,5 +460,3 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
     refetchDisputes,
   }
 }
-
-

@@ -1,8 +1,7 @@
 // @ts-nocheck
-import React from 'react'
+
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
 import { Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
 
 const utilities = [
   {

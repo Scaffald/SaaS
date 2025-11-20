@@ -1,6 +1,6 @@
-import { H1, Paragraph, View } from 'tamagui'
-import { Mail } from '@tamagui/lucide-icons'
 import { useTranslation } from '@app/core/utils/useTranslation'
+import { Mail } from '@tamagui/lucide-icons'
+import { H1, Paragraph, View } from 'tamagui'
 
 interface EmailHeaderProps {
   email: string

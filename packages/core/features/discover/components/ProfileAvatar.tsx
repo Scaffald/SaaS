@@ -1,5 +1,5 @@
-import { type GetThemeValueForKey, Image, Text, XStack, YStack } from 'tamagui'
 import { Building } from '@tamagui/lucide-icons'
+import { type GetThemeValueForKey, Image, Text, XStack, YStack } from 'tamagui'
 import { getInitials } from '../utils/getInitials'
 
 type ProfileAvatarProps = {

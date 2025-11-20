@@ -5,42 +5,42 @@
 
 export interface ReviewDraft {
   // Step 1: Skills ratings
-  skillsRatings: Record<string, number>;
+  skillsRatings: Record<string, number>
 
   // Step 2: Skills tags
-  skillsStrengths: string[];
-  skillsImprovements: string[];
+  skillsStrengths: string[]
+  skillsImprovements: string[]
 
   // Step 3: Reliability rating
-  reliabilityRating: number;
+  reliabilityRating: number
 
   // Step 4: Reliability tags
-  reliabilityStrengths: string[];
-  reliabilityImprovements: string[];
+  reliabilityStrengths: string[]
+  reliabilityImprovements: string[]
 
   // Step 5: Collaboration rating
-  collaborationRating: number;
+  collaborationRating: number
 
   // Step 6: Collaboration tags
-  collaborationStrengths: string[];
-  collaborationImprovements: string[];
+  collaborationStrengths: string[]
+  collaborationImprovements: string[]
 
   // Step 7: Summary
-  summary: string;
+  summary: string
 
   // Step 8: Recommendation
-  recommendation: boolean | null;
+  recommendation: boolean | null
 
   // Metadata
-  subjectId: string;
-  lastSaved: string | null;
-  currentStep: number;
+  subjectId: string
+  lastSaved: string | null
+  currentStep: number
 }
 
 export interface ReviewDraftState extends ReviewDraft {
-  isLoading: boolean;
-  isSaving: boolean;
-  hasUnsavedChanges: boolean;
+  isLoading: boolean
+  isSaving: boolean
+  hasUnsavedChanges: boolean
 }
 
 export const createEmptyReviewDraft = (subjectId: string): ReviewDraft => ({
@@ -53,9 +53,9 @@ export const createEmptyReviewDraft = (subjectId: string): ReviewDraft => ({
   collaborationRating: 0,
   collaborationStrengths: [],
   collaborationImprovements: [],
-  summary: "",
+  summary: '',
   recommendation: null,
   subjectId,
   lastSaved: null,
   currentStep: 1,
-});
+})

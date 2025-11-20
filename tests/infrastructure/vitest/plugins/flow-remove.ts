@@ -62,4 +62,3 @@ function shouldTransform(path: string, include: Matcher[], exclude: Matcher[]): 
 function matches(matcher: Matcher, path: string): boolean {
   return typeof matcher === 'function' ? matcher(path) : matcher.test(path)
 }
-

@@ -34,10 +34,10 @@ export interface JobForFlowSelection {
 
 /**
  * Determines which application flow to use based on job requirements
- * 
+ *
  * @param job - Job object with custom_application_questions and required_attachments
  * @returns 'quick' for QuickApplyModal or 'full' for ApplicationWizard
- * 
+ *
  * @example
  * ```tsx
  * const flowType = getApplicationFlow(job)
@@ -51,8 +51,7 @@ export interface JobForFlowSelection {
 export function getApplicationFlow(job: JobForFlowSelection): 'quick' | 'full' {
   // Check if job has custom questions
   const hasCustomQuestions =
-    job.custom_application_questions &&
-    job.custom_application_questions.length > 0
+    job.custom_application_questions && job.custom_application_questions.length > 0
 
   // Check if job requires documents
   const requiresDocuments =
@@ -69,4 +68,3 @@ export function getApplicationFlow(job: JobForFlowSelection): 'quick' | 'full' {
   // Default to quick apply for simple jobs (screening questions only)
   return 'quick'
 }
-

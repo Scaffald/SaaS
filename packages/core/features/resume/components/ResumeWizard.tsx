@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { Checkbox, Input, Paragraph, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { api } from '@app/core/utils/api'
+import { UIButton as Button, spacing } from '@app/ui'
 import {
   AlertCircle,
   CheckCircle2,
@@ -8,15 +7,26 @@ import {
   SkipForward,
   UploadCloud,
 } from '@tamagui/lucide-icons'
-import { UIButton as Button, spacing } from '@app/ui'
-import { api } from '@app/core/utils/api'
+import { useRouter } from 'expo-router'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  useResumeWizard,
+  Checkbox,
+  Input,
+  Paragraph,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { useResumeWizardContext } from '../context/ResumeWizardProvider'
+import {
   type ResumeMergeStrategy,
   type ResumeWizardSection,
+  useResumeWizard,
 } from '../hooks/useResumeWizard'
 import { MergeComparisonView } from './MergeComparisonView'
-import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 
 interface ResumeWizardProps {
   resumeId: string

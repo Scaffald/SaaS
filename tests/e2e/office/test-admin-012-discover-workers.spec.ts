@@ -7,13 +7,13 @@
  * and interaction patterns.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin: Discover Workers Interface Exploration', () => {
   test.beforeEach(async ({ page }) => {
     // Sign in as admin - auto-handles profile completion
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
   })
 
   test('should load worker discovery page and capture UI layout', async ({ page }) => {
@@ -27,7 +27,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
     // Capture full page screenshot
     await page.screenshot({
       path: '.playwright-mcp/admin-012-discover-workers-full.png',
-      fullPage: true
+      fullPage: true,
     })
 
     console.log('✅ Full page screenshot captured')
@@ -37,7 +37,9 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
     console.log(`Page Title: ${pageTitle}`)
   })
 
-  test('should identify and document all right panel (search/filter) elements', async ({ page }) => {
+  test('should identify and document all right panel (search/filter) elements', async ({
+    page,
+  }) => {
     await page.goto('/dashboard/discover/workers')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
@@ -46,7 +48,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
 
     // Search input
     const searchInput = page.locator('input[placeholder*="Search" i], input[type="search"]').first()
-    if (await searchInput.count() > 0) {
+    if ((await searchInput.count()) > 0) {
       const placeholder = await searchInput.getAttribute('placeholder')
       const isVisible = await searchInput.isVisible()
       console.log(`✓ Search Input: visible=${isVisible}, placeholder="${placeholder}"`)
@@ -54,33 +56,33 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
 
     // Industry filters
     const industryElements = page.locator('text=/industry/i').first()
-    if (await industryElements.count() > 0) {
+    if ((await industryElements.count()) > 0) {
       console.log('✓ Industry Filter Section: present')
     }
 
     // Score slider/filter
     const scoreElements = page.locator('text=/score/i, text=/rating/i').first()
-    if (await scoreElements.count() > 0) {
+    if ((await scoreElements.count()) > 0) {
       console.log('✓ Score/Rating Filter: present')
     }
 
     // Skills filter
     const skillsElements = page.locator('text=/skill/i').first()
-    if (await skillsElements.count() > 0) {
+    if ((await skillsElements.count()) > 0) {
       console.log('✓ Skills Filter Section: present')
     }
 
     // Certifications filter
     const certsElements = page.locator('text=/certification/i, text=/cert/i').first()
-    if (await certsElements.count() > 0) {
+    if ((await certsElements.count()) > 0) {
       console.log('✓ Certifications Filter Section: present')
     }
 
     // Capture right panel screenshot
     const rightPanel = page.locator('[data-testid="right-panel"], [class*="right"]').first()
-    if (await rightPanel.count() > 0) {
+    if ((await rightPanel.count()) > 0) {
       await rightPanel.screenshot({
-        path: '.playwright-mcp/admin-012-discover-workers-filters.png'
+        path: '.playwright-mcp/admin-012-discover-workers-filters.png',
       })
       console.log('\n✅ Right panel (filters) screenshot captured')
     }
@@ -94,7 +96,9 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
     console.log('\n=== LEFT PANEL (WORKER CARDS/LIST) ELEMENTS ===\n')
 
     // Look for worker cards or list items
-    const workerCards = page.locator('[data-testid*="worker"], [class*="worker-card"], [class*="profile-card"]')
+    const workerCards = page.locator(
+      '[data-testid*="worker"], [class*="worker-card"], [class*="profile-card"]'
+    )
     const cardCount = await workerCards.count()
     console.log(`Worker Cards Found: ${cardCount}`)
 
@@ -103,11 +107,13 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
       const firstCard = workerCards.first()
 
       // Check for common card elements
-      const hasName = await firstCard.locator('text=/[A-Z][a-z]+ [A-Z][a-z]+/').count() > 0
-      const hasTitle = await firstCard.locator('[class*="title"], [class*="occupation"]').count() > 0
-      const hasSkills = await firstCard.locator('text=/skill/i').count() > 0
-      const hasLocation = await firstCard.locator('text=/location/i, [class*="location"]').count() > 0
-      const hasRating = await firstCard.locator('[class*="rating"], [class*="score"]').count() > 0
+      const hasName = (await firstCard.locator('text=/[A-Z][a-z]+ [A-Z][a-z]+/').count()) > 0
+      const hasTitle =
+        (await firstCard.locator('[class*="title"], [class*="occupation"]').count()) > 0
+      const hasSkills = (await firstCard.locator('text=/skill/i').count()) > 0
+      const hasLocation =
+        (await firstCard.locator('text=/location/i, [class*="location"]').count()) > 0
+      const hasRating = (await firstCard.locator('[class*="rating"], [class*="score"]').count()) > 0
 
       console.log(`\nFirst Card Elements:`)
       console.log(`  - Name: ${hasName ? '✓' : '✗'}`)
@@ -118,7 +124,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
 
       // Capture first card
       await firstCard.screenshot({
-        path: '.playwright-mcp/admin-012-worker-card-sample.png'
+        path: '.playwright-mcp/admin-012-worker-card-sample.png',
       })
       console.log('\n✅ Sample worker card screenshot captured')
     } else {
@@ -126,16 +132,16 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
 
       // Look for empty state
       const emptyState = page.locator('text=/no workers/i, text=/no results/i, text=/empty/i')
-      if (await emptyState.count() > 0) {
+      if ((await emptyState.count()) > 0) {
         console.log('✓ Empty state message detected')
       }
     }
 
     // Capture left panel
     const leftPanel = page.locator('[data-testid="left-panel"], [class*="left"]').first()
-    if (await leftPanel.count() > 0) {
+    if ((await leftPanel.count()) > 0) {
       await leftPanel.screenshot({
-        path: '.playwright-mcp/admin-012-discover-workers-list.png'
+        path: '.playwright-mcp/admin-012-discover-workers-list.png',
       })
       console.log('✅ Left panel (worker list) screenshot captured')
     }
@@ -151,7 +157,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
     // Find search input
     const searchInput = page.locator('input[placeholder*="Search" i], input[type="search"]').first()
 
-    if (await searchInput.count() > 0) {
+    if ((await searchInput.count()) > 0) {
       // Enter search query
       await searchInput.fill('carpenter')
       console.log('✓ Entered search query: "carpenter"')
@@ -161,7 +167,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
       // Capture search results
       await page.screenshot({
         path: '.playwright-mcp/admin-012-search-carpenter.png',
-        fullPage: true
+        fullPage: true,
       })
       console.log('✅ Search results screenshot captured')
 
@@ -182,7 +188,9 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
     console.log('\n=== WORKER CARD INTERACTION TEST ===\n')
 
     // Find first clickable worker card
-    const workerCards = page.locator('[data-testid*="worker"], [class*="worker-card"], [class*="profile-card"]')
+    const workerCards = page.locator(
+      '[data-testid*="worker"], [class*="worker-card"], [class*="profile-card"]'
+    )
     const cardCount = await workerCards.count()
 
     if (cardCount > 0) {
@@ -197,7 +205,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
 
       // Check for modal/detail view
       const modal = page.locator('[role="dialog"], [class*="modal"]')
-      const modalVisible = await modal.count() > 0
+      const modalVisible = (await modal.count()) > 0
 
       if (modalVisible) {
         console.log('✓ Modal/detail view opened')
@@ -205,7 +213,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
         // Capture modal
         await page.screenshot({
           path: '.playwright-mcp/admin-012-worker-detail-modal.png',
-          fullPage: true
+          fullPage: true,
         })
         console.log('✅ Worker detail modal screenshot captured')
 
@@ -215,7 +223,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
 
         // Close modal
         const closeButton = page.locator('[aria-label*="close" i], [class*="close"]').first()
-        if (await closeButton.count() > 0) {
+        if ((await closeButton.count()) > 0) {
           await closeButton.click()
           console.log('✓ Closed modal')
         }
@@ -223,7 +231,7 @@ test.describe('Admin: Discover Workers Interface Exploration', () => {
         console.log('⚠ No modal detected - may navigate to detail page')
         await page.screenshot({
           path: '.playwright-mcp/admin-012-worker-detail-page.png',
-          fullPage: true
+          fullPage: true,
         })
       }
     } else {

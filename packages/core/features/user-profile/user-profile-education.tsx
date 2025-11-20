@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Card } from 'tamagui'
-import { GraduationCap, Calendar } from '@tamagui/lucide-icons'
+import { Calendar, GraduationCap } from '@tamagui/lucide-icons'
+import { Card, Text, XStack, YStack } from 'tamagui'
 
 interface Education {
   id: string

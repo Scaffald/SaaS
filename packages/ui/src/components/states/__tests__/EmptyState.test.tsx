@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CSSProperties, ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { spacing } from '../../../config/spacing'
 import { typography } from '../../../config/typography'

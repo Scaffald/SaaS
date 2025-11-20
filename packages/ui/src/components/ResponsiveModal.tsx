@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react'
-import { XStack, YStack, Text, Button, ScrollView, useWindowDimensions } from 'tamagui'
-import { Sheet, Dialog } from '@app/ui'
 import { X } from '@tamagui/lucide-icons'
+import type { ReactNode } from 'react'
+import { Button, ScrollView, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { Dialog } from './dialog/Dialog'
+import { Sheet } from './sheets/Sheet'
 
 /**
  * Size presets for ResponsiveModal

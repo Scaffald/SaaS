@@ -78,12 +78,7 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
         )}
       </YStack>
 
-      <Button
-        size="$4"
-        theme="blue"
-        disabled={!allDocumentsProvided}
-        onPress={onContinue}
-      >
+      <Button size="$4" theme="blue" disabled={!allDocumentsProvided} onPress={onContinue}>
         Continue
       </Button>
     </YStack>

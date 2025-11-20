@@ -7,7 +7,7 @@
  * Task 15: Implement Offline Support and Network Resilience
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Offline Support and Network Resilience Testing', () => {
   test('offline mode functionality', async ({ page, context }) => {
@@ -18,7 +18,7 @@ test.describe('Offline Support and Network Resilience Testing', () => {
 
     // Page should handle offline gracefully
     // Note: Actual offline functionality validation requires checking service worker
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Page should handle offline mode').toBeGreaterThan(0)
 
     // Go back online
@@ -33,7 +33,7 @@ test.describe('Offline Support and Network Resilience Testing', () => {
     await context.setOffline(true)
 
     // Should be able to access cached data
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Cached data should be accessible offline').toBeGreaterThan(0)
 
     // Go back online
@@ -84,4 +84,3 @@ test.describe('Offline Support and Network Resilience Testing', () => {
  * These tests validate basic offline behavior.
  * Full offline testing should be done via service worker DevTools.
  */
-

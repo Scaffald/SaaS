@@ -1,9 +1,16 @@
-import { useState } from 'react'
-import { YStack, Text, H4, Card, XStack, Input, ScrollView } from 'tamagui'
-import { Award, ChevronDown, ChevronRight, ExternalLink, Trash2, Upload } from '@tamagui/lucide-icons'
-import { UIButton as Button, DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import { UIButton as Button, DashboardWidget } from '@app/ui'
+import {
+  Award,
+  ChevronDown,
+  ChevronRight,
+  ExternalLink,
+  Trash2,
+  Upload,
+} from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Card, H4, Input, ScrollView, Text, XStack, YStack } from 'tamagui'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
 interface UserCertification {
@@ -339,11 +346,11 @@ export function ProfileCertificationsRight() {
                         cursor="pointer"
                         onPress={() => toggleExpand(cert.id)}
                       >
-                    {isExpanded ? (
-                      <ChevronDown size={20} color="$color11" />
-                    ) : (
-                      <ChevronRight size={20} color="$color11" />
-                    )}
+                        {isExpanded ? (
+                          <ChevronDown size={20} color="$color11" />
+                        ) : (
+                          <ChevronRight size={20} color="$color11" />
+                        )}
 
                         <YStack flex={1} gap="$1">
                           <XStack gap="$2" items="center" flexWrap="wrap">
@@ -376,116 +383,124 @@ export function ProfileCertificationsRight() {
                           )}
                         </YStack>
 
-                    <XStack gap="$2">
-                      {hasProof && (
-                        <Button
-                          size="$2"
-                          chromeless
-                          icon={<ExternalLink size={16} />}
-                          onPress={(e) => {
-                            e.stopPropagation()
-                            const url =
-                              cert.credential_url ||
-                              getStorageUrl('certifications', cert.certificate_file_path)
-                            if (url) window.open(url, '_blank')
-                          }}
-                        >
-                          View
-                        </Button>
-                      )}
-                        <Button
-                          size="$2"
-                          chromeless
-                          icon={<Trash2 size={16} />}
-                          onPress={(e) => {
-                            e.stopPropagation()
-                            handleRemove(cert)
-                          }}
-                          theme="error"
-                        >
-                          Remove
-                        </Button>
-                      </XStack>
-                    </XStack>
-
-                    {/* Expanded Content - File Upload & URL */}
-                    {isExpanded && (
-                    <YStack p="$3" pt="$0" gap="$4" borderTopWidth={1} borderColor="$borderColor">
-                      {/* File Upload */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$3">
-                          Upload Certificate
-                        </Text>
-                        <XStack gap="$2" style={{ alignItems: 'center' }}>
-                          <Button
-                            flex={1}
-                            icon={<Upload size={16} />}
-                            onPress={() => {
-                              // Trigger file input
-                              const input = document.createElement('input')
-                              input.type = 'file'
-                              input.accept = '.pdf,.jpg,.jpeg,.png'
-                              input.onchange = (e) => {
-                                const file = (e.target as HTMLInputElement).files?.[0]
-                                handleFileSelect(cert.id, file || null)
-                              }
-                              input.click()
-                            }}
-                            bg={selectedFiles[cert.id] ? '$blue9' : undefined}
-                          >
-                            {selectedFiles[cert.id] ? selectedFiles[cert.id]?.name : 'Choose File'}
-                          </Button>
-                          {selectedFiles[cert.id] && (
+                        <XStack gap="$2">
+                          {hasProof && (
                             <Button
-                              icon={<Upload size={16} />}
-                              onPress={() => handleSaveFile(cert.id)}
-                              disabled={updateProof.isLoading}
+                              size="$2"
+                              chromeless
+                              icon={<ExternalLink size={16} />}
+                              onPress={(e) => {
+                                e.stopPropagation()
+                                const url =
+                                  cert.credential_url ||
+                                  getStorageUrl('certifications', cert.certificate_file_path)
+                                if (url) window.open(url, '_blank')
+                              }}
                             >
-                              Upload
+                              View
                             </Button>
                           )}
-                        </XStack>
-                        {cert.certificate_file_path && (
-                          <Text fontSize="$2" color="$color11">
-                            Current: {cert.certificate_file_path.split('/').pop()}
-                          </Text>
-                        )}
-                      </YStack>
-
-                      {/* URL Input */}
-                      <YStack gap="$2">
-                        <Text fontWeight="600" fontSize="$3">
-                          Or Add URL
-                        </Text>
-                        <XStack gap="$2">
-                          <Input
-                            flex={1}
-                            placeholder="https://..."
-                            value={urlInputs[cert.id] || ''}
-                            onChangeText={(text) =>
-                              setUrlInputs((prev) => ({ ...prev, [cert.id]: text }))
-                            }
-                          />
                           <Button
-                            variant="primary"
-                            icon={<ExternalLink size={16} />}
-                            onPress={() => handleSaveUrl(cert.id)}
-                            disabled={!urlInputs[cert.id] || updateProof.isLoading}
+                            size="$2"
+                            chromeless
+                            icon={<Trash2 size={16} />}
+                            onPress={(e) => {
+                              e.stopPropagation()
+                              handleRemove(cert)
+                            }}
+                            theme="error"
                           >
-                            Save
+                            Remove
                           </Button>
                         </XStack>
-                        {cert.credential_url && (
-                          <Text fontSize="$2" color="$color11">
-                            Current: {cert.credential_url}
-                          </Text>
-                        )}
-                      </YStack>
-                    </YStack>
-                    )}
-                  </Card>
-                )
-              })}
+                      </XStack>
+
+                      {/* Expanded Content - File Upload & URL */}
+                      {isExpanded && (
+                        <YStack
+                          p="$3"
+                          pt="$0"
+                          gap="$4"
+                          borderTopWidth={1}
+                          borderColor="$borderColor"
+                        >
+                          {/* File Upload */}
+                          <YStack gap="$2">
+                            <Text fontWeight="600" fontSize="$3">
+                              Upload Certificate
+                            </Text>
+                            <XStack gap="$2" style={{ alignItems: 'center' }}>
+                              <Button
+                                flex={1}
+                                icon={<Upload size={16} />}
+                                onPress={() => {
+                                  // Trigger file input
+                                  const input = document.createElement('input')
+                                  input.type = 'file'
+                                  input.accept = '.pdf,.jpg,.jpeg,.png'
+                                  input.onchange = (e) => {
+                                    const file = (e.target as HTMLInputElement).files?.[0]
+                                    handleFileSelect(cert.id, file || null)
+                                  }
+                                  input.click()
+                                }}
+                                bg={selectedFiles[cert.id] ? '$blue9' : undefined}
+                              >
+                                {selectedFiles[cert.id]
+                                  ? selectedFiles[cert.id]?.name
+                                  : 'Choose File'}
+                              </Button>
+                              {selectedFiles[cert.id] && (
+                                <Button
+                                  icon={<Upload size={16} />}
+                                  onPress={() => handleSaveFile(cert.id)}
+                                  disabled={updateProof.isLoading}
+                                >
+                                  Upload
+                                </Button>
+                              )}
+                            </XStack>
+                            {cert.certificate_file_path && (
+                              <Text fontSize="$2" color="$color11">
+                                Current: {cert.certificate_file_path.split('/').pop()}
+                              </Text>
+                            )}
+                          </YStack>
+
+                          {/* URL Input */}
+                          <YStack gap="$2">
+                            <Text fontWeight="600" fontSize="$3">
+                              Or Add URL
+                            </Text>
+                            <XStack gap="$2">
+                              <Input
+                                flex={1}
+                                placeholder="https://..."
+                                value={urlInputs[cert.id] || ''}
+                                onChangeText={(text) =>
+                                  setUrlInputs((prev) => ({ ...prev, [cert.id]: text }))
+                                }
+                              />
+                              <Button
+                                variant="primary"
+                                icon={<ExternalLink size={16} />}
+                                onPress={() => handleSaveUrl(cert.id)}
+                                disabled={!urlInputs[cert.id] || updateProof.isLoading}
+                              >
+                                Save
+                              </Button>
+                            </XStack>
+                            {cert.credential_url && (
+                              <Text fontSize="$2" color="$color11">
+                                Current: {cert.credential_url}
+                              </Text>
+                            )}
+                          </YStack>
+                        </YStack>
+                      )}
+                    </Card>
+                  )
+                })}
               </YStack>
             )}
           </YStack>

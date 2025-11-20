@@ -1,9 +1,7 @@
 // @ts-nocheck
-import React from 'react'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import { Text, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
 
 const PROGRESS = [
   { label: 'Primary', percent: 65, color: '$color9' },

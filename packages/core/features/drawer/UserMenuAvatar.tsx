@@ -1,15 +1,15 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Button, Separator, type TamaguiElement } from 'tamagui'
-import { Popover } from '@app/ui'
-import { Image } from 'expo-image'
-import { User, Settings, Sun, Moon, LogOut, Eye, Pencil } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { useUser } from '@app/core/utils/useUser'
-import { api } from '@app/core/utils/api'
-import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
+import { api } from '@app/core/utils/api'
 import { supabase } from '@app/core/utils/supabase/client'
+import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import { useUser } from '@app/core/utils/useUser'
+import { Popover } from '@app/ui'
+import { Eye, LogOut, Moon, Pencil, Settings, Sun, User } from '@tamagui/lucide-icons'
+import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Button, Separator, type TamaguiElement, Text, XStack, YStack } from 'tamagui'
 
 /**
  * Extract initials from a name
@@ -129,11 +129,7 @@ export function UserMenuAvatar() {
   const avatarSize = 30
 
   return (
-    <Popover
-      placement="bottom-end"
-      open={open}
-      onOpenChange={handleOpenChange}
-    >
+    <Popover placement="bottom-end" open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
         <Button
           ref={triggerRef}
@@ -198,13 +194,7 @@ export function UserMenuAvatar() {
         $md={{ width: 240 }}
       >
         {/* Header */}
-        <YStack
-          px={0}
-          py="$4"
-          borderBottomWidth={1}
-          borderBottomColor="$borderColor"
-          gap="$2"
-        >
+        <YStack px={0} py="$4" borderBottomWidth={1} borderBottomColor="$borderColor" gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             {displayName}
           </Text>

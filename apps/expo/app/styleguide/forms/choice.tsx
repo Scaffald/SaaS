@@ -1,10 +1,11 @@
 // @ts-nocheck
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
+import { CustomCheckbox, CustomRadio, ToggleCard, ToggleSwitch } from '@app/ui'
+import { Check } from '@tamagui/lucide-icons'
 import type React from 'react'
 import { useState } from 'react'
 import { Checkbox, Label, Paragraph, RadioGroup, Switch, Text, XStack, YStack } from 'tamagui'
-import { Check } from '@tamagui/lucide-icons'
-import { StyleguidePage, AnchorHeading, ExampleCard } from '@app/styleguide'
-import { CustomCheckbox, CustomRadio, ToggleCard, ToggleSwitch } from '@app/ui'
 
 const RADIO_OPTIONS = [
   { value: 'standard', label: 'Standard', description: 'Core coverage' },

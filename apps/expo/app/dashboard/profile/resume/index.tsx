@@ -1,13 +1,13 @@
-import { useState, useCallback } from 'react'
-import { useRouter } from 'expo-router'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { YStack, Text, Paragraph, Button, Spinner, XStack } from 'tamagui'
 import {
   ResumeImportWidget,
   ResumeUploadButton,
   ResumeUploadModal,
 } from '@app/core/features/resume'
 import { api } from '@app/core/utils/api'
+import { ProfileLayout, QuickLinksSidebar } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { useCallback, useState } from 'react'
+import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
 
 function ResumeImportContent() {
   const router = useRouter()
@@ -86,6 +86,6 @@ function ResumeImportContent() {
 
 export default function ResumeImportPage() {
   return (
-    <DashboardLayout leftContent={<ResumeImportContent />} rightContent={<QuickLinksSidebar />} />
+    <ProfileLayout leftContent={<ResumeImportContent />} rightContent={<QuickLinksSidebar />} />
   )
 }

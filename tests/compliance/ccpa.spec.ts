@@ -7,7 +7,7 @@
  * Task 26: Validate Regulatory Compliance (GDPR, CCPA, Employment Laws)
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('CCPA Compliance Testing', () => {
   test('opt-out mechanisms', async ({ page }) => {
@@ -34,4 +34,3 @@ test.describe('CCPA Compliance Testing', () => {
     }
   })
 })
-

@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const signInWithOAuthMock = vi.hoisted(() => vi.fn())
@@ -7,13 +7,7 @@ const captureEventMock = vi.hoisted(() => vi.fn())
 
 vi.mock('tamagui', () => ({
   Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-  Button: ({
-    children,
-    onPress,
-  }: {
-    children: ReactNode
-    onPress?: () => void
-  }) => (
+  Button: ({ children, onPress }: { children: ReactNode; onPress?: () => void }) => (
     <button type="button" onClick={onPress}>
       {children}
     </button>
@@ -74,4 +68,3 @@ describe('GoogleSignIn', () => {
     })
   })
 })
-

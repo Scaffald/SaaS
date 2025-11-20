@@ -1,16 +1,16 @@
-import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { YStack, XStack, Text, Spinner, Separator } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import { OccupationSearch } from './components/OccupationSearch'
+import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
 import {
-  careerAssessmentSchema,
-  careerAssessmentDefaults,
   type CareerAssessmentFormData,
+  careerAssessmentDefaults,
+  careerAssessmentSchema,
 } from './config/career-assessment-schema'
 
 /**

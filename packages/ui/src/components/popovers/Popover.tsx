@@ -1,4 +1,4 @@
-import { Popover as TamaguiPopover, styled, withStaticProperties } from 'tamagui'
+import { styled, Popover as TamaguiPopover, withStaticProperties } from 'tamagui'
 
 /**
  * Custom Popover.Content with default background color

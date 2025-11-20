@@ -1,10 +1,9 @@
 // @ts-nocheck
-import React, { useMemo } from 'react'
-import { Paragraph, Text, View, XStack, YStack } from '@app/ui'
-import { config } from '@app/ui'
+
 import { BRAND_COLORS } from '@app/core/assets/brand-colors'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
+import { config, Paragraph, Text, View, XStack, YStack } from '@app/ui'
+import { useMemo } from 'react'
 
 export default function DesignTokensPage() {
   const colorTokens = useMemo(() => Object.entries(config.tokens.color ?? {}), [])

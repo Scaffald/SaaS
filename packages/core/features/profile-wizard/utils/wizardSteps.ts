@@ -85,5 +85,3 @@ export const DEFAULT_WIZARD_PROGRESS: ProfileWizardProgress = {
   lastSavedAt: null,
   requiredSteps: PROFILE_WIZARD_STEPS.filter((step) => !PROFILE_WIZARD_STEP_META[step].optional),
 }
-
-

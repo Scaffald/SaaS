@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { YStack, Text } from 'tamagui'
+import { Text, YStack } from 'tamagui'
 import { AvatarImagePicker } from './AvatarImagePicker'
 
 /**

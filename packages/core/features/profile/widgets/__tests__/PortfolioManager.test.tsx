@@ -163,7 +163,10 @@ vi.mock('@app/ui', () => ({
     if (typeof content === 'string') return content
     return 'Rich text description'
   },
-  plainTextToTipTap: (text: string) => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] }),
+  plainTextToTipTap: (text: string) => ({
+    type: 'doc',
+    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+  }),
 }))
 
 // Mock profile components
@@ -316,7 +319,7 @@ describe('PortfolioManager', () => {
       render(<PortfolioManager userId="user-123" />)
 
       expect(
-        screen.getByText('No portfolio items yet. Add your first item to showcase your work.'),
+        screen.getByText('No portfolio items yet. Add your first item to showcase your work.')
       ).toBeInTheDocument()
     })
 
@@ -497,7 +500,9 @@ describe('PortfolioManager', () => {
       const cancelButtons = screen.getAllByText('Cancel')
       fireEvent.click(cancelButtons[0])
 
-      expect(screen.queryByPlaceholderText('e.g., Project Name, Work Sample...')).not.toBeInTheDocument()
+      expect(
+        screen.queryByPlaceholderText('e.g., Project Name, Work Sample...')
+      ).not.toBeInTheDocument()
     })
 
     it('cancels edit form', () => {
@@ -523,7 +528,7 @@ describe('PortfolioManager', () => {
       const images = screen.getAllByTestId('portfolio-image')
       expect(images[1]).toHaveAttribute(
         'src',
-        'https://storage.example.com/portfolio/portfolio/user-123/item-2.jpg',
+        'https://storage.example.com/portfolio/portfolio/user-123/item-2.jpg'
       )
     })
 
@@ -535,4 +540,3 @@ describe('PortfolioManager', () => {
     })
   })
 })
-

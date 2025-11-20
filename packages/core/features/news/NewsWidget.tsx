@@ -1,17 +1,16 @@
-import { useMemo, useState, useEffect } from 'react'
-import { Platform, Pressable } from 'react-native'
-import { Text, YStack, XStack, Spinner, Switch, Paragraph } from 'tamagui'
-import { Sheet } from '@app/ui'
-import { Settings2, RefreshCw, AlertCircle, ExternalLink } from '@tamagui/lucide-icons'
-import { UIButton as StyledButton, spacing } from '@app/ui'
+import { api } from '@app/core/utils/api'
+import { redirect } from '@app/core/utils/redirect'
+import { supabase } from '@app/core/utils/supabase/client'
+import { Sheet, UIButton as StyledButton, spacing } from '@app/ui'
+import { AlertCircle, ExternalLink, RefreshCw, Settings2 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
-import { api } from '@app/core/utils/api'
+import { useEffect, useMemo, useState } from 'react'
+import { Platform, Pressable } from 'react-native'
+import { Paragraph, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
+import { findFeedById, getDefaultFeeds } from './config/news-feeds'
+import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
-import { supabase } from '@app/core/utils/supabase/client'
-import { getDefaultFeeds, findFeedById } from './config/news-feeds'
-import type { NewsWidgetProps, NewsItem } from './config/types'
-import { redirect } from '@app/core/utils/redirect'
 
 const HEADLINE_LIMIT_DEFAULT = 10
 const FETCH_MULTIPLIER = 4
@@ -215,10 +214,7 @@ export function NewsWidget({
   // Fallback query for global ENR news when no matching news is found
   // Only fetch fallback if main query is done, no error, and construction industry ID is available
   // We'll check enrichedNews length after it's computed to determine if we need fallback
-  const {
-    data: fallbackNewsItems = [],
-    isLoading: isFallbackLoading,
-  } = useAggregatedNews({
+  const { data: fallbackNewsItems = [], isLoading: isFallbackLoading } = useAggregatedNews({
     industryId: constructionIndustryId || '', // Construction industry for global ENR news
     maxTotalItems: headlineLimit,
     enabled: !isLoading && !isError && !!constructionIndustryId, // Fetch fallback when main query is done
@@ -438,7 +434,7 @@ export function NewsWidget({
 
   return (
     <YStack gap={spacing.md}>
-      <XStack justify="space-between" items="center" px={spacing.lg} pt={spacing.sm}>
+      <XStack justify="space-between" items="center" pt={spacing.sm}>
         <Text fontSize="$6" fontWeight="600" color="$color12">
           News
         </Text>
@@ -464,7 +460,7 @@ export function NewsWidget({
       </XStack>
 
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
-        <YStack items="center" p={spacing.xl} gap={spacing.sm}>
+        <YStack items="center" gap={spacing.sm}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11" fontSize="$4">
             Loading personalised news...
@@ -473,7 +469,7 @@ export function NewsWidget({
       ) : null}
 
       {isError && displayNews.length === 0 ? (
-        <YStack items="center" p={spacing.xl} gap={spacing.sm}>
+        <YStack items="center" gap={spacing.sm}>
           <AlertCircle size={24} color="$red10" />
           <Text color="$red11" fontSize="$4" style={{ textAlign: 'center' }}>
             Failed to load news feed
@@ -494,7 +490,7 @@ export function NewsWidget({
       ) : null}
 
       {displayNews.length > 0 && (
-        <YStack gap="$3" px={spacing.lg} pb={spacing.sm}>
+        <YStack gap="$3">
           {displayNews.map((item: EnrichedNewsItem) => (
             <Pressable key={item.id} onPress={() => handleNewsClick(item)}>
               {({ pressed }) => (

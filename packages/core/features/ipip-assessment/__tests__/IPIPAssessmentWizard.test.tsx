@@ -1,7 +1,7 @@
+import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
-import { describe, beforeEach, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { IPIPAssessmentWizard } from '../IPIPAssessmentWizard'
 
 const mockRouterPush = vi.fn()
@@ -11,8 +11,10 @@ const invalidateAssessment = vi.fn()
 const getIPIPStatusMock = vi.fn()
 const getAssessmentStatusMock = vi.fn()
 const saveMutationSpy = vi.fn()
-let mutationOptions: { onSuccess?: (result: unknown) => void; onError?: (error: Error) => void } | null =
-  null
+let mutationOptions: {
+  onSuccess?: (result: unknown) => void
+  onError?: (error: Error) => void
+} | null = null
 
 vi.mock('expo-router', () => ({
   useRouter: () => ({
@@ -105,7 +107,7 @@ describe('IPIPAssessmentWizard', () => {
       'Domain Complete!',
       expect.objectContaining({
         message: '+5 XP - Agreeableness complete!',
-      }),
+      })
     )
     expect(screen.getByText('✓ Agreeableness Complete!')).toBeVisible()
     expect(screen.getByText("You've completed 1 of 5 domains")).toBeVisible()
@@ -119,7 +121,7 @@ describe('IPIPAssessmentWizard', () => {
     await user.click(screen.getByRole('button', { name: /Continue to Next Domain/i }))
 
     await waitFor(() =>
-      expect(screen.queryByText('✓ Agreeableness Complete!')).not.toBeInTheDocument(),
+      expect(screen.queryByText('✓ Agreeableness Complete!')).not.toBeInTheDocument()
     )
     expect(screen.getByRole('button', { name: /Complete Mock Domain/i })).toBeVisible()
   })
@@ -138,5 +140,3 @@ describe('IPIPAssessmentWizard', () => {
     expect(mutationOptions?.onSuccess).toBeDefined()
   })
 })
-
-

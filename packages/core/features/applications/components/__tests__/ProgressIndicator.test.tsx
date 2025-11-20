@@ -1,8 +1,8 @@
+import type { ApplicationStepType } from '@app/schemas'
+import { ApplicationStep } from '@app/schemas'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { ProgressIndicator } from '../ProgressIndicator'
-import type { ApplicationStepType } from '@app/schemas'
-import { ApplicationStep } from '@app/schemas'
 
 describe('ProgressIndicator', () => {
   const allSteps: Array<{ id: ApplicationStepType; label: string }> = [
@@ -18,7 +18,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.SCREENING}
         completedSteps={[]}
         steps={allSteps}
-      />,
+      />
     )
 
     expect(screen.getByText('Screening')).toBeInTheDocument()
@@ -33,7 +33,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.SCREENING}
         completedSteps={[]}
         steps={allSteps}
-      />,
+      />
     )
 
     expect(screen.getByText('1')).toBeInTheDocument()
@@ -48,7 +48,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.CUSTOM_QUESTIONS}
         completedSteps={[ApplicationStep.SCREENING]}
         steps={allSteps}
-      />,
+      />
     )
 
     // Current step should have step number 2 visible
@@ -63,7 +63,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.ATTACHMENTS}
         completedSteps={[ApplicationStep.SCREENING, ApplicationStep.CUSTOM_QUESTIONS]}
         steps={allSteps}
-      />,
+      />
     )
 
     // Checkmarks are rendered as CheckCircle2 icons
@@ -79,7 +79,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.SCREENING}
         completedSteps={[]}
         steps={allSteps}
-      />,
+      />
     )
 
     const progressbar = screen.getByRole('progressbar')
@@ -95,7 +95,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.SCREENING}
         completedSteps={[]}
         steps={allSteps}
-      />,
+      />
     )
 
     let progressbar = screen.getByRole('progressbar')
@@ -104,9 +104,13 @@ describe('ProgressIndicator', () => {
     rerender(
       <ProgressIndicator
         currentStep={ApplicationStep.REVIEW}
-        completedSteps={[ApplicationStep.SCREENING, ApplicationStep.CUSTOM_QUESTIONS, ApplicationStep.ATTACHMENTS]}
+        completedSteps={[
+          ApplicationStep.SCREENING,
+          ApplicationStep.CUSTOM_QUESTIONS,
+          ApplicationStep.ATTACHMENTS,
+        ]}
         steps={allSteps}
-      />,
+      />
     )
 
     progressbar = screen.getByRole('progressbar')
@@ -125,7 +129,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.SCREENING}
         completedSteps={[]}
         steps={stepsWithoutCustom}
-      />,
+      />
     )
 
     expect(screen.getByText('Screening')).toBeInTheDocument()
@@ -140,7 +144,7 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.SCREENING}
         completedSteps={[]}
         steps={allSteps}
-      />,
+      />
     )
 
     // Connector lines are rendered as YStack elements with height={2}
@@ -153,9 +157,13 @@ describe('ProgressIndicator', () => {
     render(
       <ProgressIndicator
         currentStep={ApplicationStep.REVIEW}
-        completedSteps={[ApplicationStep.SCREENING, ApplicationStep.CUSTOM_QUESTIONS, ApplicationStep.ATTACHMENTS]}
+        completedSteps={[
+          ApplicationStep.SCREENING,
+          ApplicationStep.CUSTOM_QUESTIONS,
+          ApplicationStep.ATTACHMENTS,
+        ]}
         steps={allSteps}
-      />,
+      />
     )
 
     // All previous steps should show checkmarks
@@ -172,11 +180,10 @@ describe('ProgressIndicator', () => {
         currentStep={ApplicationStep.SCREENING}
         completedSteps={[]}
         steps={singleStep}
-      />,
+      />
     )
 
     expect(screen.getByText('Screening')).toBeInTheDocument()
     expect(screen.getByText('1')).toBeInTheDocument()
   })
 })
-

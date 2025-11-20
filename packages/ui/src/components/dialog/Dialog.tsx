@@ -1,4 +1,4 @@
-import { Dialog as TamaguiDialog, styled, withStaticProperties } from 'tamagui'
+import { styled, Dialog as TamaguiDialog, withStaticProperties } from 'tamagui'
 
 /**
  * Custom Dialog.Overlay with default styling

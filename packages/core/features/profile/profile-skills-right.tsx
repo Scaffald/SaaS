@@ -1,10 +1,10 @@
-import { useCallback, useState, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Button, Progress } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { Award, Sparkles } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
-import { ProfileResultsPanel, ProfileResultCard } from './components'
-import { DashboardWidget, ConfirmationDialog } from '@app/ui'
+import { ConfirmationDialog, DashboardWidget } from '@app/ui'
+import { Award, Sparkles } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Button, Progress, Text, XStack, YStack } from 'tamagui'
+import { ProfileResultCard, ProfileResultsPanel } from './components'
 import { useProfileSkillsContext } from './profile-skills-context'
 
 /**
@@ -42,10 +42,8 @@ export function ProfileSkillsRight() {
   const previousSkillsRef = useRef<string[]>([])
 
   // Fetch user's skills
-  const {
-    data: userSkillsData,
-    isLoading: isLoadingSkills,
-  } = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
+  const { data: userSkillsData, isLoading: isLoadingSkills } =
+    api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
 
   // React Query utils for cache invalidation
   const utils = api.useUtils()
@@ -54,9 +52,7 @@ export function ProfileSkillsRight() {
   const removeSkillMutation = api.profile.skillsMultiTaxonomy.removeSkill.useMutation({
     onSuccess: async () => {
       // Invalidate cache to trigger automatic refetch
-      await Promise.all([
-        utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate(),
-      ])
+      await Promise.all([utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()])
       // Clear removing state after cache invalidation
       setRemovingSkillId(null)
       toast.show('Skill Removed', {
@@ -82,8 +78,7 @@ export function ProfileSkillsRight() {
         error.code === 'ECONNREFUSED' ||
         error.code === 'ETIMEDOUT'
       ) {
-        errorMessage =
-          'Unable to remove skill. Check your connection and try again.'
+        errorMessage = 'Unable to remove skill. Check your connection and try again.'
       }
       // Server errors (5xx, internal server errors)
       else if (
@@ -101,12 +96,9 @@ export function ProfileSkillsRight() {
   })
 
   // Handle remove skill - opens confirmation modal
-  const handleRemoveSkill = useCallback(
-    (userSkillId: string) => {
-      setConfirmRemoveSkillId(userSkillId)
-    },
-    []
-  )
+  const handleRemoveSkill = useCallback((userSkillId: string) => {
+    setConfirmRemoveSkillId(userSkillId)
+  }, [])
 
   // Handle confirmed removal
   const handleConfirmRemove = useCallback(async () => {
@@ -142,9 +134,7 @@ export function ProfileSkillsRight() {
     const previousSkillIds = previousSkillsRef.current
 
     // Find skills that are new (in current but not in previous)
-    const newSkills = currentSkillIds.filter(
-      (id: string) => !previousSkillIds.includes(id)
-    )
+    const newSkills = currentSkillIds.filter((id: string) => !previousSkillIds.includes(id))
 
     if (newSkills.length > 0) {
       // Highlight the most recently added skill (first in array if sorted by created_at)
@@ -196,14 +186,7 @@ export function ProfileSkillsRight() {
       />
       <DashboardWidget>
         <YStack gap="$3">
-          <YStack
-            p="$4"
-            gap="$3"
-            bg="$blue2"
-            borderWidth={1}
-            borderColor="$blue5"
-            rounded="$4"
-          >
+          <YStack p="$4" gap="$3" bg="$blue2" borderWidth={1} borderColor="$blue5" rounded="$4">
             <XStack gap="$3" items="center">
               <Sparkles size={20} color="$blue10" />
               <YStack gap="$1" flex={1}>
@@ -228,9 +211,7 @@ export function ProfileSkillsRight() {
                 </Text>
               </XStack>
               <Progress value={completionPercent} max={100} bg="$blue3" size="$2">
-                <Progress.Indicator
-                  bg={completionPercent >= 100 ? '$green10' : '$blue9'}
-                />
+                <Progress.Indicator bg={completionPercent >= 100 ? '$green10' : '$blue9'} />
               </Progress>
             </YStack>
           </YStack>
@@ -311,9 +292,7 @@ export function ProfileSkillsRight() {
                   onRemove={() => handleRemoveSkill(skill.id)}
                   removeDisabled={removeSkillMutation.isPending || removingSkillId === skill.id}
                   isRemoving={removingSkillId === skill.id}
-                  isLoading={
-                    removingSkillId === skill.id || removeSkillMutation.isPending
-                  }
+                  isLoading={removingSkillId === skill.id || removeSkillMutation.isPending}
                   isNew={newSkillId === skill.id}
                 >
                   {/* Skill Name and Code */}

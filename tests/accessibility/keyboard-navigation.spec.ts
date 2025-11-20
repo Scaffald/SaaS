@@ -7,8 +7,11 @@
  * Task 20: Execute Manual Screen Reader and Keyboard Testing
  */
 
-import { test, expect } from '@playwright/test'
-import { testKeyboardNavigation, assertModalFocusTrap } from '../infrastructure/playwright/helpers/accessibility'
+import { expect, test } from '@playwright/test'
+import {
+  assertModalFocusTrap,
+  testKeyboardNavigation,
+} from '../infrastructure/playwright/helpers/accessibility'
 
 /**
  * Key pages to test for keyboard navigation
@@ -57,7 +60,9 @@ test.describe('Keyboard Navigation Testing', () => {
         }
 
         // Should have focused at least some elements
-        expect(focusedElements.length, 'Should be able to focus elements via Tab').toBeGreaterThan(0)
+        expect(focusedElements.length, 'Should be able to focus elements via Tab').toBeGreaterThan(
+          0
+        )
       })
 
       test('Enter and Space activate buttons', async ({ page }) => {
@@ -90,7 +95,9 @@ test.describe('Keyboard Navigation Testing', () => {
         await page.goto(path, { waitUntil: 'networkidle' })
 
         // Look for modals/dialogs
-        const modal = page.locator('[role="dialog"], [role="alertdialog"], .modal, [data-modal]').first()
+        const modal = page
+          .locator('[role="dialog"], [role="alertdialog"], .modal, [data-modal]')
+          .first()
         const modalCount = await modal.count()
 
         if (modalCount > 0) {
@@ -98,7 +105,10 @@ test.describe('Keyboard Navigation Testing', () => {
           await page.waitForTimeout(500)
 
           // Test focus trap
-          await assertModalFocusTrap(page, '[role="dialog"], [role="alertdialog"], .modal, [data-modal]')
+          await assertModalFocusTrap(
+            page,
+            '[role="dialog"], [role="alertdialog"], .modal, [data-modal]'
+          )
         }
       })
 
@@ -124,4 +134,3 @@ test.describe('Keyboard Navigation Testing', () => {
     })
   }
 })
-

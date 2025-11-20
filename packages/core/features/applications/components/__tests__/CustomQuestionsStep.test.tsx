@@ -1,7 +1,7 @@
+import type { CustomQuestionAnswer } from '@app/schemas'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { CustomQuestionsStep, type CustomQuestion } from '../CustomQuestionsStep'
-import type { CustomQuestionAnswer } from '@app/schemas'
+import { type CustomQuestion, CustomQuestionsStep } from '../CustomQuestionsStep'
 
 const mockOnAnswersChange = vi.fn()
 const mockOnPrevious = vi.fn()
@@ -58,7 +58,9 @@ describe('CustomQuestionsStep', () => {
     render(<CustomQuestionsStep {...defaultProps} />)
 
     const textarea = screen.getByPlaceholderText('Type your answer here...')
-    fireEvent.change(textarea, { target: { value: 'This is a test answer with enough characters' } })
+    fireEvent.change(textarea, {
+      target: { value: 'This is a test answer with enough characters' },
+    })
 
     expect(screen.getByText(/\/ 500 characters/)).toBeInTheDocument()
   })
@@ -121,7 +123,9 @@ describe('CustomQuestionsStep', () => {
       options: ['JavaScript', 'TypeScript', 'Python'],
     }
 
-    render(<CustomQuestionsStep {...defaultProps} questions={[...questions, multiChoiceQuestion]} />)
+    render(
+      <CustomQuestionsStep {...defaultProps} questions={[...questions, multiChoiceQuestion]} />
+    )
 
     const jsOption = screen.getByText('JavaScript').closest('div')
     if (jsOption) {
@@ -137,7 +141,8 @@ describe('CustomQuestionsStep', () => {
         question_id: 'q1',
         question: 'Why are you interested?',
         type: 'long_text',
-        answer: 'This is a detailed answer that meets the minimum length requirement of 50 characters.',
+        answer:
+          'This is a detailed answer that meets the minimum length requirement of 50 characters.',
       },
       {
         question_id: 'q3',
@@ -190,4 +195,3 @@ describe('CustomQuestionsStep', () => {
     expect(continueButton).toBeInTheDocument()
   })
 })
-

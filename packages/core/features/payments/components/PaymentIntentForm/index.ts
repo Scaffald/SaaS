@@ -1,3 +1,1 @@
-export { PaymentIntentForm } from "./PaymentIntentForm";
-
-
+export { PaymentIntentForm } from './PaymentIntentForm'

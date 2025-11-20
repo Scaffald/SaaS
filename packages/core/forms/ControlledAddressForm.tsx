@@ -1,14 +1,14 @@
+import { AddressForm, type AddressResult } from '@app/ui'
 import { useMemo } from 'react'
 import {
-  useWatch,
-  type FieldValues,
   type FieldPath,
+  type FieldValues,
+  type PathValue,
   type UseFormSetValue,
   type UseFormTrigger,
-  type PathValue,
+  useWatch,
 } from 'react-hook-form'
-import { YStack, Text } from 'tamagui'
-import { AddressForm, type AddressResult } from '@app/ui'
+import { Text, YStack } from 'tamagui'
 import type { ControlledAddressFormProps, CustomAddressFieldMapping } from './types'
 
 /**
@@ -211,8 +211,7 @@ export function ControlledAddressForm<TFieldValues extends FieldValues = FieldVa
   // Get API key from environment if not provided
   const resolvedProvider = provider === 'google' ? 'mapbox' : provider
   const effectiveApiKey =
-    apiKey ||
-    (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
+    apiKey || (resolvedProvider === 'mapbox' ? process.env.EXPO_PUBLIC_MAPBOX_TOKEN : undefined)
 
   return (
     <YStack gap="$2" position="relative" z={1000}>

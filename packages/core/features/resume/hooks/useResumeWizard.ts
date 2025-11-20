@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
 import { api } from '@app/core/utils/api'
+import { useEffect, useMemo, useState } from 'react'
 
 export type ResumeWizardSection =
   | 'general'
@@ -27,10 +27,13 @@ const BASE_STEPS: ResumeWizardStep[] = [
 ]
 
 export function useResumeWizard(resumeId: string) {
-  const wizardQuery = api.resume.getWizardState.useQuery({ resumeId }, {
-    refetchInterval: false,
-    refetchOnWindowFocus: false,
-  })
+  const wizardQuery = api.resume.getWizardState.useQuery(
+    { resumeId },
+    {
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+    }
+  )
 
   const saveSectionMutation = api.resume.saveSection.useMutation()
   const updateProgressMutation = api.resume.updateProgress.useMutation()
@@ -68,7 +71,7 @@ export function useResumeWizard(resumeId: string) {
   const handleSaveSection = async (
     section: ResumeWizardSection,
     data: unknown,
-    mergeStrategy: ResumeMergeStrategy = 'replace',
+    mergeStrategy: ResumeMergeStrategy = 'replace'
   ) => {
     await saveSectionMutation.mutateAsync({
       section,
@@ -123,4 +126,3 @@ export function useResumeWizard(resumeId: string) {
 }
 
 export type ResumeWizardController = ReturnType<typeof useResumeWizard>
-

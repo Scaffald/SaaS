@@ -1,10 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   auth: {
@@ -39,7 +33,7 @@ export type Database = {
           auth_code_issued_at: string | null
           authentication_method: string
           code_challenge: string
-          code_challenge_method: Database["auth"]["Enums"]["code_challenge_method"]
+          code_challenge_method: Database['auth']['Enums']['code_challenge_method']
           created_at: string | null
           id: string
           provider_access_token: string | null
@@ -53,7 +47,7 @@ export type Database = {
           auth_code_issued_at?: string | null
           authentication_method: string
           code_challenge: string
-          code_challenge_method: Database["auth"]["Enums"]["code_challenge_method"]
+          code_challenge_method: Database['auth']['Enums']['code_challenge_method']
           created_at?: string | null
           id: string
           provider_access_token?: string | null
@@ -67,7 +61,7 @@ export type Database = {
           auth_code_issued_at?: string | null
           authentication_method?: string
           code_challenge?: string
-          code_challenge_method?: Database["auth"]["Enums"]["code_challenge_method"]
+          code_challenge_method?: Database['auth']['Enums']['code_challenge_method']
           created_at?: string | null
           id?: string
           provider_access_token?: string | null
@@ -114,11 +108,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "identities_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'identities_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -170,11 +164,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "mfa_amr_claims_session_id_fkey"
-            columns: ["session_id"]
+            foreignKeyName: 'mfa_amr_claims_session_id_fkey'
+            columns: ['session_id']
             isOneToOne: false
-            referencedRelation: "sessions"
-            referencedColumns: ["id"]
+            referencedRelation: 'sessions'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -208,25 +202,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "mfa_challenges_auth_factor_id_fkey"
-            columns: ["factor_id"]
+            foreignKeyName: 'mfa_challenges_auth_factor_id_fkey'
+            columns: ['factor_id']
             isOneToOne: false
-            referencedRelation: "mfa_factors"
-            referencedColumns: ["id"]
+            referencedRelation: 'mfa_factors'
+            referencedColumns: ['id']
           },
         ]
       }
       mfa_factors: {
         Row: {
           created_at: string
-          factor_type: Database["auth"]["Enums"]["factor_type"]
+          factor_type: Database['auth']['Enums']['factor_type']
           friendly_name: string | null
           id: string
           last_challenged_at: string | null
           last_webauthn_challenge_data: Json | null
           phone: string | null
           secret: string | null
-          status: Database["auth"]["Enums"]["factor_status"]
+          status: Database['auth']['Enums']['factor_status']
           updated_at: string
           user_id: string
           web_authn_aaguid: string | null
@@ -234,14 +228,14 @@ export type Database = {
         }
         Insert: {
           created_at: string
-          factor_type: Database["auth"]["Enums"]["factor_type"]
+          factor_type: Database['auth']['Enums']['factor_type']
           friendly_name?: string | null
           id: string
           last_challenged_at?: string | null
           last_webauthn_challenge_data?: Json | null
           phone?: string | null
           secret?: string | null
-          status: Database["auth"]["Enums"]["factor_status"]
+          status: Database['auth']['Enums']['factor_status']
           updated_at: string
           user_id: string
           web_authn_aaguid?: string | null
@@ -249,14 +243,14 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          factor_type?: Database["auth"]["Enums"]["factor_type"]
+          factor_type?: Database['auth']['Enums']['factor_type']
           friendly_name?: string | null
           id?: string
           last_challenged_at?: string | null
           last_webauthn_challenge_data?: Json | null
           phone?: string | null
           secret?: string | null
-          status?: Database["auth"]["Enums"]["factor_status"]
+          status?: Database['auth']['Enums']['factor_status']
           updated_at?: string
           user_id?: string
           web_authn_aaguid?: string | null
@@ -264,11 +258,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "mfa_factors_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'mfa_factors_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -279,18 +273,16 @@ export type Database = {
           authorization_id: string
           client_id: string
           code_challenge: string | null
-          code_challenge_method:
-            | Database["auth"]["Enums"]["code_challenge_method"]
-            | null
+          code_challenge_method: Database['auth']['Enums']['code_challenge_method'] | null
           created_at: string
           expires_at: string
           id: string
           redirect_uri: string
           resource: string | null
-          response_type: Database["auth"]["Enums"]["oauth_response_type"]
+          response_type: Database['auth']['Enums']['oauth_response_type']
           scope: string
           state: string | null
-          status: Database["auth"]["Enums"]["oauth_authorization_status"]
+          status: Database['auth']['Enums']['oauth_authorization_status']
           user_id: string | null
         }
         Insert: {
@@ -299,18 +291,16 @@ export type Database = {
           authorization_id: string
           client_id: string
           code_challenge?: string | null
-          code_challenge_method?:
-            | Database["auth"]["Enums"]["code_challenge_method"]
-            | null
+          code_challenge_method?: Database['auth']['Enums']['code_challenge_method'] | null
           created_at?: string
           expires_at?: string
           id: string
           redirect_uri: string
           resource?: string | null
-          response_type?: Database["auth"]["Enums"]["oauth_response_type"]
+          response_type?: Database['auth']['Enums']['oauth_response_type']
           scope: string
           state?: string | null
-          status?: Database["auth"]["Enums"]["oauth_authorization_status"]
+          status?: Database['auth']['Enums']['oauth_authorization_status']
           user_id?: string | null
         }
         Update: {
@@ -319,34 +309,32 @@ export type Database = {
           authorization_id?: string
           client_id?: string
           code_challenge?: string | null
-          code_challenge_method?:
-            | Database["auth"]["Enums"]["code_challenge_method"]
-            | null
+          code_challenge_method?: Database['auth']['Enums']['code_challenge_method'] | null
           created_at?: string
           expires_at?: string
           id?: string
           redirect_uri?: string
           resource?: string | null
-          response_type?: Database["auth"]["Enums"]["oauth_response_type"]
+          response_type?: Database['auth']['Enums']['oauth_response_type']
           scope?: string
           state?: string | null
-          status?: Database["auth"]["Enums"]["oauth_authorization_status"]
+          status?: Database['auth']['Enums']['oauth_authorization_status']
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "oauth_authorizations_client_id_fkey"
-            columns: ["client_id"]
+            foreignKeyName: 'oauth_authorizations_client_id_fkey'
+            columns: ['client_id']
             isOneToOne: false
-            referencedRelation: "oauth_clients"
-            referencedColumns: ["id"]
+            referencedRelation: 'oauth_clients'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "oauth_authorizations_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'oauth_authorizations_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -354,7 +342,7 @@ export type Database = {
         Row: {
           client_name: string | null
           client_secret_hash: string | null
-          client_type: Database["auth"]["Enums"]["oauth_client_type"]
+          client_type: Database['auth']['Enums']['oauth_client_type']
           client_uri: string | null
           created_at: string
           deleted_at: string | null
@@ -362,13 +350,13 @@ export type Database = {
           id: string
           logo_uri: string | null
           redirect_uris: string
-          registration_type: Database["auth"]["Enums"]["oauth_registration_type"]
+          registration_type: Database['auth']['Enums']['oauth_registration_type']
           updated_at: string
         }
         Insert: {
           client_name?: string | null
           client_secret_hash?: string | null
-          client_type?: Database["auth"]["Enums"]["oauth_client_type"]
+          client_type?: Database['auth']['Enums']['oauth_client_type']
           client_uri?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -376,13 +364,13 @@ export type Database = {
           id: string
           logo_uri?: string | null
           redirect_uris: string
-          registration_type: Database["auth"]["Enums"]["oauth_registration_type"]
+          registration_type: Database['auth']['Enums']['oauth_registration_type']
           updated_at?: string
         }
         Update: {
           client_name?: string | null
           client_secret_hash?: string | null
-          client_type?: Database["auth"]["Enums"]["oauth_client_type"]
+          client_type?: Database['auth']['Enums']['oauth_client_type']
           client_uri?: string | null
           created_at?: string
           deleted_at?: string | null
@@ -390,7 +378,7 @@ export type Database = {
           id?: string
           logo_uri?: string | null
           redirect_uris?: string
-          registration_type?: Database["auth"]["Enums"]["oauth_registration_type"]
+          registration_type?: Database['auth']['Enums']['oauth_registration_type']
           updated_at?: string
         }
         Relationships: []
@@ -422,18 +410,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "oauth_consents_client_id_fkey"
-            columns: ["client_id"]
+            foreignKeyName: 'oauth_consents_client_id_fkey'
+            columns: ['client_id']
             isOneToOne: false
-            referencedRelation: "oauth_clients"
-            referencedColumns: ["id"]
+            referencedRelation: 'oauth_clients'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "oauth_consents_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'oauth_consents_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -443,7 +431,7 @@ export type Database = {
           id: string
           relates_to: string
           token_hash: string
-          token_type: Database["auth"]["Enums"]["one_time_token_type"]
+          token_type: Database['auth']['Enums']['one_time_token_type']
           updated_at: string
           user_id: string
         }
@@ -452,7 +440,7 @@ export type Database = {
           id: string
           relates_to: string
           token_hash: string
-          token_type: Database["auth"]["Enums"]["one_time_token_type"]
+          token_type: Database['auth']['Enums']['one_time_token_type']
           updated_at?: string
           user_id: string
         }
@@ -461,17 +449,17 @@ export type Database = {
           id?: string
           relates_to?: string
           token_hash?: string
-          token_type?: Database["auth"]["Enums"]["one_time_token_type"]
+          token_type?: Database['auth']['Enums']['one_time_token_type']
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "one_time_tokens_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'one_time_tokens_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -511,11 +499,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "refresh_tokens_session_id_fkey"
-            columns: ["session_id"]
+            foreignKeyName: 'refresh_tokens_session_id_fkey'
+            columns: ['session_id']
             isOneToOne: false
-            referencedRelation: "sessions"
-            referencedColumns: ["id"]
+            referencedRelation: 'sessions'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -555,11 +543,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "saml_providers_sso_provider_id_fkey"
-            columns: ["sso_provider_id"]
+            foreignKeyName: 'saml_providers_sso_provider_id_fkey'
+            columns: ['sso_provider_id']
             isOneToOne: false
-            referencedRelation: "sso_providers"
-            referencedColumns: ["id"]
+            referencedRelation: 'sso_providers'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -596,18 +584,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "saml_relay_states_flow_state_id_fkey"
-            columns: ["flow_state_id"]
+            foreignKeyName: 'saml_relay_states_flow_state_id_fkey'
+            columns: ['flow_state_id']
             isOneToOne: false
-            referencedRelation: "flow_state"
-            referencedColumns: ["id"]
+            referencedRelation: 'flow_state'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "saml_relay_states_sso_provider_id_fkey"
-            columns: ["sso_provider_id"]
+            foreignKeyName: 'saml_relay_states_sso_provider_id_fkey'
+            columns: ['sso_provider_id']
             isOneToOne: false
-            referencedRelation: "sso_providers"
-            referencedColumns: ["id"]
+            referencedRelation: 'sso_providers'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -625,7 +613,7 @@ export type Database = {
       }
       sessions: {
         Row: {
-          aal: Database["auth"]["Enums"]["aal_level"] | null
+          aal: Database['auth']['Enums']['aal_level'] | null
           created_at: string | null
           factor_id: string | null
           id: string
@@ -641,7 +629,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          aal?: Database["auth"]["Enums"]["aal_level"] | null
+          aal?: Database['auth']['Enums']['aal_level'] | null
           created_at?: string | null
           factor_id?: string | null
           id: string
@@ -657,7 +645,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          aal?: Database["auth"]["Enums"]["aal_level"] | null
+          aal?: Database['auth']['Enums']['aal_level'] | null
           created_at?: string | null
           factor_id?: string | null
           id?: string
@@ -674,18 +662,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sessions_oauth_client_id_fkey"
-            columns: ["oauth_client_id"]
+            foreignKeyName: 'sessions_oauth_client_id_fkey'
+            columns: ['oauth_client_id']
             isOneToOne: false
-            referencedRelation: "oauth_clients"
-            referencedColumns: ["id"]
+            referencedRelation: 'oauth_clients'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "sessions_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'sessions_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -713,11 +701,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sso_domains_sso_provider_id_fkey"
-            columns: ["sso_provider_id"]
+            foreignKeyName: 'sso_domains_sso_provider_id_fkey'
+            columns: ['sso_provider_id']
             isOneToOne: false
-            referencedRelation: "sso_providers"
-            referencedColumns: ["id"]
+            referencedRelation: 'sso_providers'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -870,21 +858,21 @@ export type Database = {
       uid: { Args: never; Returns: string }
     }
     Enums: {
-      aal_level: "aal1" | "aal2" | "aal3"
-      code_challenge_method: "s256" | "plain"
-      factor_status: "unverified" | "verified"
-      factor_type: "totp" | "webauthn" | "phone"
-      oauth_authorization_status: "pending" | "approved" | "denied" | "expired"
-      oauth_client_type: "public" | "confidential"
-      oauth_registration_type: "dynamic" | "manual"
-      oauth_response_type: "code"
+      aal_level: 'aal1' | 'aal2' | 'aal3'
+      code_challenge_method: 's256' | 'plain'
+      factor_status: 'unverified' | 'verified'
+      factor_type: 'totp' | 'webauthn' | 'phone'
+      oauth_authorization_status: 'pending' | 'approved' | 'denied' | 'expired'
+      oauth_client_type: 'public' | 'confidential'
+      oauth_registration_type: 'dynamic' | 'manual'
+      oauth_response_type: 'code'
       one_time_token_type:
-        | "confirmation_token"
-        | "reauthentication_token"
-        | "recovery_token"
-        | "email_change_token_new"
-        | "email_change_token_current"
-        | "phone_change_token"
+        | 'confirmation_token'
+        | 'reauthentication_token'
+        | 'recovery_token'
+        | 'email_change_token_new'
+        | 'email_change_token_current'
+        | 'phone_change_token'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -951,7 +939,7 @@ export type Database = {
           geo: unknown
           id: string
           metadata: Json | null
-          property_type: Database["core"]["Enums"]["property_type"] | null
+          property_type: Database['core']['Enums']['property_type'] | null
           site_id: string | null
           updated_at: string | null
         }
@@ -961,7 +949,7 @@ export type Database = {
           geo?: unknown
           id?: string
           metadata?: Json | null
-          property_type?: Database["core"]["Enums"]["property_type"] | null
+          property_type?: Database['core']['Enums']['property_type'] | null
           site_id?: string | null
           updated_at?: string | null
         }
@@ -971,17 +959,17 @@ export type Database = {
           geo?: unknown
           id?: string
           metadata?: Json | null
-          property_type?: Database["core"]["Enums"]["property_type"] | null
+          property_type?: Database['core']['Enums']['property_type'] | null
           site_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "addresses_site_id_fkey"
-            columns: ["site_id"]
+            foreignKeyName: 'addresses_site_id_fkey'
+            columns: ['site_id']
             isOneToOne: false
-            referencedRelation: "sites"
-            referencedColumns: ["id"]
+            referencedRelation: 'sites'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1018,46 +1006,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "application_assignment_history_application_id_fkey"
-            columns: ["application_id"]
+            foreignKeyName: 'application_assignment_history_application_id_fkey'
+            columns: ['application_id']
             isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
+            referencedRelation: 'applications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "application_assignment_history_assigned_by_fkey"
-            columns: ["assigned_by"]
+            foreignKeyName: 'application_assignment_history_assigned_by_fkey'
+            columns: ['assigned_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "application_assignment_history_assigned_by_fkey"
-            columns: ["assigned_by"]
+            foreignKeyName: 'application_assignment_history_assigned_by_fkey'
+            columns: ['assigned_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "application_assignment_history_assigned_to_fkey"
-            columns: ["assigned_to"]
+            foreignKeyName: 'application_assignment_history_assigned_to_fkey'
+            columns: ['assigned_to']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "application_assignment_history_assigned_to_fkey"
-            columns: ["assigned_to"]
+            foreignKeyName: 'application_assignment_history_assigned_to_fkey'
+            columns: ['assigned_to']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "application_assignment_history_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'application_assignment_history_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1166,11 +1154,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "application_inquiries_application_id_fkey"
-            columns: ["application_id"]
+            foreignKeyName: 'application_inquiries_application_id_fkey'
+            columns: ['application_id']
             isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
+            referencedRelation: 'applications'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1198,25 +1186,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "application_messages_application_id_fkey"
-            columns: ["application_id"]
+            foreignKeyName: 'application_messages_application_id_fkey'
+            columns: ['application_id']
             isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
+            referencedRelation: 'applications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "application_messages_author_user_id_fkey"
-            columns: ["author_user_id"]
+            foreignKeyName: 'application_messages_author_user_id_fkey'
+            columns: ['author_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "application_messages_author_user_id_fkey"
-            columns: ["author_user_id"]
+            foreignKeyName: 'application_messages_author_user_id_fkey'
+            columns: ['author_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1283,53 +1271,53 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "applications_assigned_by_fkey"
-            columns: ["assigned_by"]
+            foreignKeyName: 'applications_assigned_by_fkey'
+            columns: ['assigned_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "applications_assigned_by_fkey"
-            columns: ["assigned_by"]
+            foreignKeyName: 'applications_assigned_by_fkey'
+            columns: ['assigned_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "applications_assigned_to_fkey"
-            columns: ["assigned_to"]
+            foreignKeyName: 'applications_assigned_to_fkey'
+            columns: ['assigned_to']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "applications_assigned_to_fkey"
-            columns: ["assigned_to"]
+            foreignKeyName: 'applications_assigned_to_fkey'
+            columns: ['assigned_to']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "applications_job_id_fkey"
-            columns: ["job_id"]
+            foreignKeyName: 'applications_job_id_fkey'
+            columns: ['job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "applications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'applications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "applications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'applications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1453,18 +1441,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "assessment_sessions_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'assessment_sessions_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "assessment_sessions_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'assessment_sessions_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1504,32 +1492,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "background_check_access_accessed_by_user_id_fkey"
-            columns: ["accessed_by_user_id"]
+            foreignKeyName: 'background_check_access_accessed_by_user_id_fkey'
+            columns: ['accessed_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_access_accessed_by_user_id_fkey"
-            columns: ["accessed_by_user_id"]
+            foreignKeyName: 'background_check_access_accessed_by_user_id_fkey'
+            columns: ['accessed_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_access_background_check_id_fkey"
-            columns: ["background_check_id"]
+            foreignKeyName: 'background_check_access_background_check_id_fkey'
+            columns: ['background_check_id']
             isOneToOne: false
-            referencedRelation: "background_checks"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_checks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_access_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'background_check_access_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1569,25 +1557,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "background_check_access_log_accessed_by_user_id_fkey"
-            columns: ["accessed_by_user_id"]
+            foreignKeyName: 'background_check_access_log_accessed_by_user_id_fkey'
+            columns: ['accessed_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_access_log_accessed_by_user_id_fkey"
-            columns: ["accessed_by_user_id"]
+            foreignKeyName: 'background_check_access_log_accessed_by_user_id_fkey'
+            columns: ['accessed_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_access_log_background_check_id_fkey"
-            columns: ["background_check_id"]
+            foreignKeyName: 'background_check_access_log_background_check_id_fkey'
+            columns: ['background_check_id']
             isOneToOne: false
-            referencedRelation: "background_checks"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_checks'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1663,25 +1651,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "background_check_consent_background_check_id_fkey"
-            columns: ["background_check_id"]
+            foreignKeyName: 'background_check_consent_background_check_id_fkey'
+            columns: ['background_check_id']
             isOneToOne: false
-            referencedRelation: "background_checks"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_checks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_consent_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'background_check_consent_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_consent_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'background_check_consent_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1715,11 +1703,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "background_check_disclosures_background_check_id_fkey"
-            columns: ["background_check_id"]
+            foreignKeyName: 'background_check_disclosures_background_check_id_fkey'
+            columns: ['background_check_id']
             isOneToOne: false
-            referencedRelation: "background_checks"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_checks'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1734,7 +1722,7 @@ export type Database = {
           resolution_notes: string | null
           resolved_at: string | null
           resolved_by_user_id: string | null
-          status: Database["core"]["Enums"]["background_check_dispute_status"]
+          status: Database['core']['Enums']['background_check_dispute_status']
           supporting_documents: Json
           updated_at: string
           user_id: string
@@ -1749,7 +1737,7 @@ export type Database = {
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by_user_id?: string | null
-          status?: Database["core"]["Enums"]["background_check_dispute_status"]
+          status?: Database['core']['Enums']['background_check_dispute_status']
           supporting_documents?: Json
           updated_at?: string
           user_id: string
@@ -1764,46 +1752,46 @@ export type Database = {
           resolution_notes?: string | null
           resolved_at?: string | null
           resolved_by_user_id?: string | null
-          status?: Database["core"]["Enums"]["background_check_dispute_status"]
+          status?: Database['core']['Enums']['background_check_dispute_status']
           supporting_documents?: Json
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "background_check_disputes_background_check_id_fkey"
-            columns: ["background_check_id"]
+            foreignKeyName: 'background_check_disputes_background_check_id_fkey'
+            columns: ['background_check_id']
             isOneToOne: false
-            referencedRelation: "background_checks"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_checks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_disputes_resolved_by_user_id_fkey"
-            columns: ["resolved_by_user_id"]
+            foreignKeyName: 'background_check_disputes_resolved_by_user_id_fkey'
+            columns: ['resolved_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_disputes_resolved_by_user_id_fkey"
-            columns: ["resolved_by_user_id"]
+            foreignKeyName: 'background_check_disputes_resolved_by_user_id_fkey'
+            columns: ['resolved_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_disputes_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'background_check_disputes_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_disputes_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'background_check_disputes_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -1867,39 +1855,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "background_check_documents_background_check_id_fkey"
-            columns: ["background_check_id"]
+            foreignKeyName: 'background_check_documents_background_check_id_fkey'
+            columns: ['background_check_id']
             isOneToOne: false
-            referencedRelation: "background_checks"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_checks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_documents_uploaded_by_user_id_fkey"
-            columns: ["uploaded_by_user_id"]
+            foreignKeyName: 'background_check_documents_uploaded_by_user_id_fkey'
+            columns: ['uploaded_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_documents_uploaded_by_user_id_fkey"
-            columns: ["uploaded_by_user_id"]
+            foreignKeyName: 'background_check_documents_uploaded_by_user_id_fkey'
+            columns: ['uploaded_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_documents_verified_by_user_id_fkey"
-            columns: ["verified_by_user_id"]
+            foreignKeyName: 'background_check_documents_verified_by_user_id_fkey'
+            columns: ['verified_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_check_documents_verified_by_user_id_fkey"
-            columns: ["verified_by_user_id"]
+            foreignKeyName: 'background_check_documents_verified_by_user_id_fkey'
+            columns: ['verified_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2042,7 +2030,7 @@ export type Database = {
           organization_id: string | null
           package_id: string | null
           paid_at: string | null
-          paid_by: Database["core"]["Enums"]["background_check_paid_by"] | null
+          paid_by: Database['core']['Enums']['background_check_paid_by'] | null
           payment_id: string | null
           payment_intent_id: string | null
           pre_adverse_action_sent_at: string | null
@@ -2055,7 +2043,7 @@ export type Database = {
           results_data_encryption_version: number | null
           results_received_at: string | null
           shared_with_org_ids: string[] | null
-          status: Database["core"]["Enums"]["background_check_status"]
+          status: Database['core']['Enums']['background_check_status']
           status_history: Json
           submitted_at: string | null
           summary: string | null
@@ -2099,7 +2087,7 @@ export type Database = {
           organization_id?: string | null
           package_id?: string | null
           paid_at?: string | null
-          paid_by?: Database["core"]["Enums"]["background_check_paid_by"] | null
+          paid_by?: Database['core']['Enums']['background_check_paid_by'] | null
           payment_id?: string | null
           payment_intent_id?: string | null
           pre_adverse_action_sent_at?: string | null
@@ -2112,7 +2100,7 @@ export type Database = {
           results_data_encryption_version?: number | null
           results_received_at?: string | null
           shared_with_org_ids?: string[] | null
-          status?: Database["core"]["Enums"]["background_check_status"]
+          status?: Database['core']['Enums']['background_check_status']
           status_history?: Json
           submitted_at?: string | null
           summary?: string | null
@@ -2156,7 +2144,7 @@ export type Database = {
           organization_id?: string | null
           package_id?: string | null
           paid_at?: string | null
-          paid_by?: Database["core"]["Enums"]["background_check_paid_by"] | null
+          paid_by?: Database['core']['Enums']['background_check_paid_by'] | null
           payment_id?: string | null
           payment_intent_id?: string | null
           pre_adverse_action_sent_at?: string | null
@@ -2169,7 +2157,7 @@ export type Database = {
           results_data_encryption_version?: number | null
           results_received_at?: string | null
           shared_with_org_ids?: string[] | null
-          status?: Database["core"]["Enums"]["background_check_status"]
+          status?: Database['core']['Enums']['background_check_status']
           status_history?: Json
           submitted_at?: string | null
           summary?: string | null
@@ -2182,53 +2170,53 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "background_checks_job_id_fkey"
-            columns: ["job_id"]
+            foreignKeyName: 'background_checks_job_id_fkey'
+            columns: ['job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_checks_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'background_checks_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_checks_package_id_fkey"
-            columns: ["package_id"]
+            foreignKeyName: 'background_checks_package_id_fkey'
+            columns: ['package_id']
             isOneToOne: false
-            referencedRelation: "background_check_packages"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_check_packages'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_checks_requested_by_user_id_fkey"
-            columns: ["requested_by_user_id"]
+            foreignKeyName: 'background_checks_requested_by_user_id_fkey'
+            columns: ['requested_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_checks_requested_by_user_id_fkey"
-            columns: ["requested_by_user_id"]
+            foreignKeyName: 'background_checks_requested_by_user_id_fkey'
+            columns: ['requested_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_checks_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'background_checks_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "background_checks_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'background_checks_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2274,25 +2262,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "cached_news_articles_feed_id_fkey"
-            columns: ["feed_id"]
+            foreignKeyName: 'cached_news_articles_feed_id_fkey'
+            columns: ['feed_id']
             isOneToOne: false
-            referencedRelation: "news_feeds"
-            referencedColumns: ["id"]
+            referencedRelation: 'news_feeds'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "cached_news_articles_feed_id_fkey"
-            columns: ["feed_id"]
+            foreignKeyName: 'cached_news_articles_feed_id_fkey'
+            columns: ['feed_id']
             isOneToOne: false
-            referencedRelation: "v_news_feed_health"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_news_feed_health'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "cached_news_articles_industry_id_fkey"
-            columns: ["industry_id"]
+            foreignKeyName: 'cached_news_articles_industry_id_fkey'
+            columns: ['industry_id']
             isOneToOne: false
-            referencedRelation: "industries"
-            referencedColumns: ["id"]
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2377,32 +2365,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "connections_addressee_user_id_fkey"
-            columns: ["addressee_user_id"]
+            foreignKeyName: 'connections_addressee_user_id_fkey'
+            columns: ['addressee_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "connections_addressee_user_id_fkey"
-            columns: ["addressee_user_id"]
+            foreignKeyName: 'connections_addressee_user_id_fkey'
+            columns: ['addressee_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "connections_requester_user_id_fkey"
-            columns: ["requester_user_id"]
+            foreignKeyName: 'connections_requester_user_id_fkey'
+            columns: ['requester_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "connections_requester_user_id_fkey"
-            columns: ["requester_user_id"]
+            foreignKeyName: 'connections_requester_user_id_fkey'
+            columns: ['requester_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2463,11 +2451,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "construction_projects_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'construction_projects_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2549,18 +2537,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "external_job_industries_external_job_id_fkey"
-            columns: ["external_job_id"]
+            foreignKeyName: 'external_job_industries_external_job_id_fkey'
+            columns: ['external_job_id']
             isOneToOne: false
-            referencedRelation: "external_jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'external_jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "external_job_industries_industry_id_fkey"
-            columns: ["industry_id"]
+            foreignKeyName: 'external_job_industries_industry_id_fkey'
+            columns: ['industry_id']
             isOneToOne: false
-            referencedRelation: "industries"
-            referencedColumns: ["id"]
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2591,18 +2579,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "external_job_skills_external_job_id_fkey"
-            columns: ["external_job_id"]
+            foreignKeyName: 'external_job_skills_external_job_id_fkey'
+            columns: ['external_job_id']
             isOneToOne: false
-            referencedRelation: "external_jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'external_jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "external_job_skills_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: 'external_job_skills_skill_id_fkey'
+            columns: ['skill_id']
             isOneToOne: false
-            referencedRelation: "skills"
-            referencedColumns: ["id"]
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2711,11 +2699,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "external_jobs_feed_id_fkey"
-            columns: ["feed_id"]
+            foreignKeyName: 'external_jobs_feed_id_fkey'
+            columns: ['feed_id']
             isOneToOne: false
-            referencedRelation: "external_job_feeds"
-            referencedColumns: ["id"]
+            referencedRelation: 'external_job_feeds'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2815,53 +2803,53 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "id_verifications_initiated_by_org_id_fkey"
-            columns: ["initiated_by_org_id"]
+            foreignKeyName: 'id_verifications_initiated_by_org_id_fkey'
+            columns: ['initiated_by_org_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "id_verifications_initiated_by_user_id_fkey"
-            columns: ["initiated_by_user_id"]
+            foreignKeyName: 'id_verifications_initiated_by_user_id_fkey'
+            columns: ['initiated_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "id_verifications_initiated_by_user_id_fkey"
-            columns: ["initiated_by_user_id"]
+            foreignKeyName: 'id_verifications_initiated_by_user_id_fkey'
+            columns: ['initiated_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "id_verifications_revoked_by_user_id_fkey"
-            columns: ["revoked_by_user_id"]
+            foreignKeyName: 'id_verifications_revoked_by_user_id_fkey'
+            columns: ['revoked_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "id_verifications_revoked_by_user_id_fkey"
-            columns: ["revoked_by_user_id"]
+            foreignKeyName: 'id_verifications_revoked_by_user_id_fkey'
+            columns: ['revoked_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "id_verifications_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'id_verifications_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "id_verifications_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'id_verifications_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2928,11 +2916,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "inquiry_audit_log_inquiry_id_fkey"
-            columns: ["inquiry_id"]
+            foreignKeyName: 'inquiry_audit_log_inquiry_id_fkey'
+            columns: ['inquiry_id']
             isOneToOne: false
-            referencedRelation: "application_inquiries"
-            referencedColumns: ["id"]
+            referencedRelation: 'application_inquiries'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -2966,11 +2954,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "inquiry_capability_responses_inquiry_id_fkey"
-            columns: ["inquiry_id"]
+            foreignKeyName: 'inquiry_capability_responses_inquiry_id_fkey'
+            columns: ['inquiry_id']
             isOneToOne: false
-            referencedRelation: "application_inquiries"
-            referencedColumns: ["id"]
+            referencedRelation: 'application_inquiries'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3004,11 +2992,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "inquiry_comments_inquiry_id_fkey"
-            columns: ["inquiry_id"]
+            foreignKeyName: 'inquiry_comments_inquiry_id_fkey'
+            columns: ['inquiry_id']
             isOneToOne: false
-            referencedRelation: "application_inquiries"
-            referencedColumns: ["id"]
+            referencedRelation: 'application_inquiries'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3039,11 +3027,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "inquiry_sections_inquiry_id_fkey"
-            columns: ["inquiry_id"]
+            foreignKeyName: 'inquiry_sections_inquiry_id_fkey'
+            columns: ['inquiry_id']
             isOneToOne: false
-            referencedRelation: "application_inquiries"
-            referencedColumns: ["id"]
+            referencedRelation: 'application_inquiries'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3089,11 +3077,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "inquiry_templates_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'inquiry_templates_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3160,25 +3148,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "invites_issuer_user_id_fkey"
-            columns: ["issuer_user_id"]
+            foreignKeyName: 'invites_issuer_user_id_fkey'
+            columns: ['issuer_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "invites_issuer_user_id_fkey"
-            columns: ["issuer_user_id"]
+            foreignKeyName: 'invites_issuer_user_id_fkey'
+            columns: ['issuer_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "invites_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'invites_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3236,18 +3224,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "job_certifications_certification_id_fkey"
-            columns: ["certification_id"]
+            foreignKeyName: 'job_certifications_certification_id_fkey'
+            columns: ['certification_id']
             isOneToOne: false
-            referencedRelation: "certifications"
-            referencedColumns: ["id"]
+            referencedRelation: 'certifications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "job_certifications_job_id_fkey"
-            columns: ["job_id"]
+            foreignKeyName: 'job_certifications_job_id_fkey'
+            columns: ['job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3293,11 +3281,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "job_skills_job_id_fkey"
-            columns: ["job_id"]
+            foreignKeyName: 'job_skills_job_id_fkey'
+            columns: ['job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3337,39 +3325,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "job_team_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
+            foreignKeyName: 'job_team_assignments_assigned_by_fkey'
+            columns: ['assigned_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "job_team_assignments_assigned_by_fkey"
-            columns: ["assigned_by"]
+            foreignKeyName: 'job_team_assignments_assigned_by_fkey'
+            columns: ['assigned_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "job_team_assignments_job_id_fkey"
-            columns: ["job_id"]
+            foreignKeyName: 'job_team_assignments_job_id_fkey'
+            columns: ['job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "job_team_assignments_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'job_team_assignments_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "job_team_assignments_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'job_team_assignments_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3463,32 +3451,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "jobs_created_by_user_id_fkey"
-            columns: ["created_by_user_id"]
+            foreignKeyName: 'jobs_created_by_user_id_fkey'
+            columns: ['created_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "jobs_created_by_user_id_fkey"
-            columns: ["created_by_user_id"]
+            foreignKeyName: 'jobs_created_by_user_id_fkey'
+            columns: ['created_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "jobs_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'jobs_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "jobs_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'jobs_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3540,18 +3528,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "news_feeds_industry_id_fkey"
-            columns: ["industry_id"]
+            foreignKeyName: 'news_feeds_industry_id_fkey'
+            columns: ['industry_id']
             isOneToOne: false
-            referencedRelation: "industries"
-            referencedColumns: ["id"]
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
           },
         ]
       }
       notification_deliveries: {
         Row: {
           attempts: number
-          channel: Database["core"]["Enums"]["notification_channel"]
+          channel: Database['core']['Enums']['notification_channel']
           created_at: string
           id: number
           last_error: string | null
@@ -3560,12 +3548,12 @@ export type Database = {
           notification_id: string
           provider: string | null
           provider_msg_id: string | null
-          status: Database["core"]["Enums"]["notification_delivery_status"]
+          status: Database['core']['Enums']['notification_delivery_status']
           updated_at: string
         }
         Insert: {
           attempts?: number
-          channel: Database["core"]["Enums"]["notification_channel"]
+          channel: Database['core']['Enums']['notification_channel']
           created_at?: string
           id?: number
           last_error?: string | null
@@ -3574,12 +3562,12 @@ export type Database = {
           notification_id: string
           provider?: string | null
           provider_msg_id?: string | null
-          status?: Database["core"]["Enums"]["notification_delivery_status"]
+          status?: Database['core']['Enums']['notification_delivery_status']
           updated_at?: string
         }
         Update: {
           attempts?: number
-          channel?: Database["core"]["Enums"]["notification_channel"]
+          channel?: Database['core']['Enums']['notification_channel']
           created_at?: string
           id?: number
           last_error?: string | null
@@ -3588,16 +3576,16 @@ export type Database = {
           notification_id?: string
           provider?: string | null
           provider_msg_id?: string | null
-          status?: Database["core"]["Enums"]["notification_delivery_status"]
+          status?: Database['core']['Enums']['notification_delivery_status']
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notification_deliveries_notification_id_fkey"
-            columns: ["notification_id"]
+            foreignKeyName: 'notification_deliveries_notification_id_fkey'
+            columns: ['notification_id']
             isOneToOne: false
-            referencedRelation: "notifications"
-            referencedColumns: ["id"]
+            referencedRelation: 'notifications'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3634,101 +3622,101 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "notification_devices_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notification_devices_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "notification_devices_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notification_devices_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
       notification_digest_queue: {
         Row: {
           bucket: string
-          channels: Database["core"]["Enums"]["notification_channel"][]
+          channels: Database['core']['Enums']['notification_channel'][]
           count: number
           created_at: string
           examples: Json
           id: number
           last_event_at: string
           processed_at: string | null
-          type: Database["core"]["Enums"]["notification_type"]
+          type: Database['core']['Enums']['notification_type']
           updated_at: string
           user_id: string
         }
         Insert: {
           bucket: string
-          channels?: Database["core"]["Enums"]["notification_channel"][]
+          channels?: Database['core']['Enums']['notification_channel'][]
           count?: number
           created_at?: string
           examples?: Json
           id?: number
           last_event_at?: string
           processed_at?: string | null
-          type: Database["core"]["Enums"]["notification_type"]
+          type: Database['core']['Enums']['notification_type']
           updated_at?: string
           user_id: string
         }
         Update: {
           bucket?: string
-          channels?: Database["core"]["Enums"]["notification_channel"][]
+          channels?: Database['core']['Enums']['notification_channel'][]
           count?: number
           created_at?: string
           examples?: Json
           id?: number
           last_event_at?: string
           processed_at?: string | null
-          type?: Database["core"]["Enums"]["notification_type"]
+          type?: Database['core']['Enums']['notification_type']
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notification_digest_queue_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notification_digest_queue_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "notification_digest_queue_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notification_digest_queue_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
       notification_events: {
         Row: {
-          channel: Database["core"]["Enums"]["notification_channel"] | null
+          channel: Database['core']['Enums']['notification_channel'] | null
           delivery_id: number | null
-          event: Database["core"]["Enums"]["notification_event_kind"]
+          event: Database['core']['Enums']['notification_event_kind']
           id: number
           meta: Json | null
           notification_id: string | null
           occurred_at: string
         }
         Insert: {
-          channel?: Database["core"]["Enums"]["notification_channel"] | null
+          channel?: Database['core']['Enums']['notification_channel'] | null
           delivery_id?: number | null
-          event: Database["core"]["Enums"]["notification_event_kind"]
+          event: Database['core']['Enums']['notification_event_kind']
           id?: number
           meta?: Json | null
           notification_id?: string | null
           occurred_at?: string
         }
         Update: {
-          channel?: Database["core"]["Enums"]["notification_channel"] | null
+          channel?: Database['core']['Enums']['notification_channel'] | null
           delivery_id?: number | null
-          event?: Database["core"]["Enums"]["notification_event_kind"]
+          event?: Database['core']['Enums']['notification_event_kind']
           id?: number
           meta?: Json | null
           notification_id?: string | null
@@ -3736,18 +3724,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "notification_events_delivery_id_fkey"
-            columns: ["delivery_id"]
+            foreignKeyName: 'notification_events_delivery_id_fkey'
+            columns: ['delivery_id']
             isOneToOne: false
-            referencedRelation: "notification_deliveries"
-            referencedColumns: ["id"]
+            referencedRelation: 'notification_deliveries'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "notification_events_notification_id_fkey"
-            columns: ["notification_id"]
+            foreignKeyName: 'notification_events_notification_id_fkey'
+            columns: ['notification_id']
             isOneToOne: false
-            referencedRelation: "notifications"
-            referencedColumns: ["id"]
+            referencedRelation: 'notifications'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3755,7 +3743,7 @@ export type Database = {
         Row: {
           channel_enabled: Json
           created_at: string
-          digest_frequency: Database["core"]["Enums"]["notification_frequency"]
+          digest_frequency: Database['core']['Enums']['notification_frequency']
           global_enabled: boolean
           quiet_hours: Json | null
           type_overrides: Json
@@ -3765,7 +3753,7 @@ export type Database = {
         Insert: {
           channel_enabled?: Json
           created_at?: string
-          digest_frequency?: Database["core"]["Enums"]["notification_frequency"]
+          digest_frequency?: Database['core']['Enums']['notification_frequency']
           global_enabled?: boolean
           quiet_hours?: Json | null
           type_overrides?: Json
@@ -3775,7 +3763,7 @@ export type Database = {
         Update: {
           channel_enabled?: Json
           created_at?: string
-          digest_frequency?: Database["core"]["Enums"]["notification_frequency"]
+          digest_frequency?: Database['core']['Enums']['notification_frequency']
           global_enabled?: boolean
           quiet_hours?: Json | null
           type_overrides?: Json
@@ -3784,18 +3772,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "notification_preferences_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notification_preferences_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "notification_preferences_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notification_preferences_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3813,10 +3801,10 @@ export type Database = {
           preview: string | null
           read: boolean | null
           read_at: string | null
-          routed_channels: Database["core"]["Enums"]["notification_channel"][]
-          severity: Database["core"]["Enums"]["notification_severity"]
+          routed_channels: Database['core']['Enums']['notification_channel'][]
+          severity: Database['core']['Enums']['notification_severity']
           title: string
-          type: Database["core"]["Enums"]["notification_type"]
+          type: Database['core']['Enums']['notification_type']
           updated_at: string | null
           user_id: string
         }
@@ -3833,10 +3821,10 @@ export type Database = {
           preview?: string | null
           read?: boolean | null
           read_at?: string | null
-          routed_channels?: Database["core"]["Enums"]["notification_channel"][]
-          severity?: Database["core"]["Enums"]["notification_severity"]
+          routed_channels?: Database['core']['Enums']['notification_channel'][]
+          severity?: Database['core']['Enums']['notification_severity']
           title: string
-          type?: Database["core"]["Enums"]["notification_type"]
+          type?: Database['core']['Enums']['notification_type']
           updated_at?: string | null
           user_id: string
         }
@@ -3853,27 +3841,27 @@ export type Database = {
           preview?: string | null
           read?: boolean | null
           read_at?: string | null
-          routed_channels?: Database["core"]["Enums"]["notification_channel"][]
-          severity?: Database["core"]["Enums"]["notification_severity"]
+          routed_channels?: Database['core']['Enums']['notification_channel'][]
+          severity?: Database['core']['Enums']['notification_severity']
           title?: string
-          type?: Database["core"]["Enums"]["notification_type"]
+          type?: Database['core']['Enums']['notification_type']
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3931,25 +3919,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_audit_log_actor_user_id_fkey"
-            columns: ["actor_user_id"]
+            foreignKeyName: 'organization_audit_log_actor_user_id_fkey'
+            columns: ['actor_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_audit_log_actor_user_id_fkey"
-            columns: ["actor_user_id"]
+            foreignKeyName: 'organization_audit_log_actor_user_id_fkey'
+            columns: ['actor_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_audit_log_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_audit_log_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -3964,9 +3952,9 @@ export type Database = {
           id: string
           metadata: Json
           organization_id: string
-          permission: Database["core"]["Enums"]["organization_document_permission"]
+          permission: Database['core']['Enums']['organization_document_permission']
           revoked_at: string | null
-          share_type: Database["core"]["Enums"]["organization_document_share_type"]
+          share_type: Database['core']['Enums']['organization_document_share_type']
           target_user_id: string | null
           updated_at: string
           updated_by: string | null
@@ -3981,9 +3969,9 @@ export type Database = {
           id?: string
           metadata?: Json
           organization_id: string
-          permission?: Database["core"]["Enums"]["organization_document_permission"]
+          permission?: Database['core']['Enums']['organization_document_permission']
           revoked_at?: string | null
-          share_type?: Database["core"]["Enums"]["organization_document_share_type"]
+          share_type?: Database['core']['Enums']['organization_document_share_type']
           target_user_id?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -3998,69 +3986,69 @@ export type Database = {
           id?: string
           metadata?: Json
           organization_id?: string
-          permission?: Database["core"]["Enums"]["organization_document_permission"]
+          permission?: Database['core']['Enums']['organization_document_permission']
           revoked_at?: string | null
-          share_type?: Database["core"]["Enums"]["organization_document_share_type"]
+          share_type?: Database['core']['Enums']['organization_document_share_type']
           target_user_id?: string | null
           updated_at?: string
           updated_by?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "organization_document_shares_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_document_shares_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_shares_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_document_shares_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_shares_document_id_fkey"
-            columns: ["document_id"]
+            foreignKeyName: 'organization_document_shares_document_id_fkey'
+            columns: ['document_id']
             isOneToOne: false
-            referencedRelation: "organization_documents"
-            referencedColumns: ["id"]
+            referencedRelation: 'organization_documents'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_shares_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_document_shares_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_shares_target_user_id_fkey"
-            columns: ["target_user_id"]
+            foreignKeyName: 'organization_document_shares_target_user_id_fkey'
+            columns: ['target_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_shares_target_user_id_fkey"
-            columns: ["target_user_id"]
+            foreignKeyName: 'organization_document_shares_target_user_id_fkey'
+            columns: ['target_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_shares_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_document_shares_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_shares_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_document_shares_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4106,31 +4094,31 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_document_versions_document_id_fkey"
-            columns: ["document_id"]
+            foreignKeyName: 'organization_document_versions_document_id_fkey'
+            columns: ['document_id']
             isOneToOne: false
-            referencedRelation: "organization_documents"
-            referencedColumns: ["id"]
+            referencedRelation: 'organization_documents'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_versions_uploaded_by_fkey"
-            columns: ["uploaded_by"]
+            foreignKeyName: 'organization_document_versions_uploaded_by_fkey'
+            columns: ['uploaded_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_document_versions_uploaded_by_fkey"
-            columns: ["uploaded_by"]
+            foreignKeyName: 'organization_document_versions_uploaded_by_fkey'
+            columns: ['uploaded_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
       organization_documents: {
         Row: {
-          category: Database["core"]["Enums"]["organization_document_category"]
+          category: Database['core']['Enums']['organization_document_category']
           created_at: string
           created_by: string
           deleted_at: string | null
@@ -4157,7 +4145,7 @@ export type Database = {
           version_count: number
         }
         Insert: {
-          category?: Database["core"]["Enums"]["organization_document_category"]
+          category?: Database['core']['Enums']['organization_document_category']
           created_at?: string
           created_by: string
           deleted_at?: string | null
@@ -4184,7 +4172,7 @@ export type Database = {
           version_count?: number
         }
         Update: {
-          category?: Database["core"]["Enums"]["organization_document_category"]
+          category?: Database['core']['Enums']['organization_document_category']
           created_at?: string
           created_by?: string
           deleted_at?: string | null
@@ -4212,53 +4200,53 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_documents_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_documents_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_documents_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_documents_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_documents_folder_id_fkey"
-            columns: ["folder_id"]
+            foreignKeyName: 'organization_documents_folder_id_fkey'
+            columns: ['folder_id']
             isOneToOne: false
-            referencedRelation: "organization_folders"
-            referencedColumns: ["id"]
+            referencedRelation: 'organization_folders'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_documents_latest_version_id_fkey"
-            columns: ["latest_version_id"]
+            foreignKeyName: 'organization_documents_latest_version_id_fkey'
+            columns: ['latest_version_id']
             isOneToOne: false
-            referencedRelation: "organization_document_versions"
-            referencedColumns: ["id"]
+            referencedRelation: 'organization_document_versions'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_documents_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_documents_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_documents_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_documents_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_documents_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_documents_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4313,46 +4301,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_folders_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_folders_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_folders_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_folders_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_folders_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_folders_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_folders_parent_folder_id_fkey"
-            columns: ["parent_folder_id"]
+            foreignKeyName: 'organization_folders_parent_folder_id_fkey'
+            columns: ['parent_folder_id']
             isOneToOne: false
-            referencedRelation: "organization_folders"
-            referencedColumns: ["id"]
+            referencedRelation: 'organization_folders'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_folders_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_folders_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_folders_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_folders_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4398,25 +4386,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_limit_overrides_granted_by_user_id_fkey"
-            columns: ["granted_by_user_id"]
+            foreignKeyName: 'organization_limit_overrides_granted_by_user_id_fkey'
+            columns: ['granted_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_limit_overrides_granted_by_user_id_fkey"
-            columns: ["granted_by_user_id"]
+            foreignKeyName: 'organization_limit_overrides_granted_by_user_id_fkey'
+            columns: ['granted_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_limit_overrides_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_limit_overrides_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4429,7 +4417,7 @@ export type Database = {
           id: string
           is_active: boolean
           latitude: number | null
-          location_type: Database["core"]["Enums"]["organization_location_type"]
+          location_type: Database['core']['Enums']['organization_location_type']
           longitude: number | null
           metadata: Json
           name: string
@@ -4447,7 +4435,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           latitude?: number | null
-          location_type?: Database["core"]["Enums"]["organization_location_type"]
+          location_type?: Database['core']['Enums']['organization_location_type']
           longitude?: number | null
           metadata?: Json
           name: string
@@ -4465,7 +4453,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           latitude?: number | null
-          location_type?: Database["core"]["Enums"]["organization_location_type"]
+          location_type?: Database['core']['Enums']['organization_location_type']
           longitude?: number | null
           metadata?: Json
           name?: string
@@ -4477,39 +4465,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_locations_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_locations_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_locations_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_locations_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_locations_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_locations_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_locations_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_locations_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_locations_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_locations_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4526,7 +4514,7 @@ export type Database = {
           reviewed_at: string | null
           reviewed_by_user_id: string | null
           slug: string
-          status: Database["core"]["Enums"]["organization_request_status"]
+          status: Database['core']['Enums']['organization_request_status']
           updated_at: string
           website: string | null
         }
@@ -4542,7 +4530,7 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by_user_id?: string | null
           slug: string
-          status?: Database["core"]["Enums"]["organization_request_status"]
+          status?: Database['core']['Enums']['organization_request_status']
           updated_at?: string
           website?: string | null
         }
@@ -4558,45 +4546,45 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by_user_id?: string | null
           slug?: string
-          status?: Database["core"]["Enums"]["organization_request_status"]
+          status?: Database['core']['Enums']['organization_request_status']
           updated_at?: string
           website?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "organization_requests_created_by_user_id_fkey"
-            columns: ["created_by_user_id"]
+            foreignKeyName: 'organization_requests_created_by_user_id_fkey'
+            columns: ['created_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_requests_created_by_user_id_fkey"
-            columns: ["created_by_user_id"]
+            foreignKeyName: 'organization_requests_created_by_user_id_fkey'
+            columns: ['created_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_requests_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_requests_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_requests_reviewed_by_user_id_fkey"
-            columns: ["reviewed_by_user_id"]
+            foreignKeyName: 'organization_requests_reviewed_by_user_id_fkey'
+            columns: ['reviewed_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_requests_reviewed_by_user_id_fkey"
-            columns: ["reviewed_by_user_id"]
+            foreignKeyName: 'organization_requests_reviewed_by_user_id_fkey'
+            columns: ['reviewed_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4660,39 +4648,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_settings_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_settings_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_settings_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'organization_settings_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_settings_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_settings_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: true
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_settings_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_settings_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organization_settings_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'organization_settings_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4735,11 +4723,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_skills_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_skills_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4767,11 +4755,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organization_storage_usage_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'organization_storage_usage_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: true
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4780,7 +4768,7 @@ export type Database = {
           address: Json | null
           created_at: string
           default_project_location_visibility:
-            | Database["core"]["Enums"]["location_visibility"]
+            | Database['core']['Enums']['location_visibility']
             | null
           description: Json | null
           geo: unknown
@@ -4803,7 +4791,7 @@ export type Database = {
           address?: Json | null
           created_at?: string
           default_project_location_visibility?:
-            | Database["core"]["Enums"]["location_visibility"]
+            | Database['core']['Enums']['location_visibility']
             | null
           description?: Json | null
           geo?: unknown
@@ -4826,7 +4814,7 @@ export type Database = {
           address?: Json | null
           created_at?: string
           default_project_location_visibility?:
-            | Database["core"]["Enums"]["location_visibility"]
+            | Database['core']['Enums']['location_visibility']
             | null
           description?: Json | null
           geo?: unknown
@@ -4847,25 +4835,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "organizations_industry_id_fkey"
-            columns: ["industry_id"]
+            foreignKeyName: 'organizations_industry_id_fkey'
+            columns: ['industry_id']
             isOneToOne: false
-            referencedRelation: "industries"
-            referencedColumns: ["id"]
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organizations_owner_user_id_fkey"
-            columns: ["owner_user_id"]
+            foreignKeyName: 'organizations_owner_user_id_fkey'
+            columns: ['owner_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "organizations_owner_user_id_fkey"
-            columns: ["owner_user_id"]
+            foreignKeyName: 'organizations_owner_user_id_fkey'
+            columns: ['owner_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -4932,60 +4920,60 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "payment_transactions_background_check_access_id_fkey"
-            columns: ["background_check_access_id"]
+            foreignKeyName: 'payment_transactions_background_check_access_id_fkey'
+            columns: ['background_check_access_id']
             isOneToOne: false
-            referencedRelation: "background_check_access"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_check_access'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "payment_transactions_background_check_id_fkey"
-            columns: ["background_check_id"]
+            foreignKeyName: 'payment_transactions_background_check_id_fkey'
+            columns: ['background_check_id']
             isOneToOne: false
-            referencedRelation: "background_checks"
-            referencedColumns: ["id"]
+            referencedRelation: 'background_checks'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "payment_transactions_id_verification_id_fkey"
-            columns: ["id_verification_id"]
+            foreignKeyName: 'payment_transactions_id_verification_id_fkey'
+            columns: ['id_verification_id']
             isOneToOne: false
-            referencedRelation: "id_verifications"
-            referencedColumns: ["id"]
+            referencedRelation: 'id_verifications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "payment_transactions_id_verification_id_fkey"
-            columns: ["id_verification_id"]
+            foreignKeyName: 'payment_transactions_id_verification_id_fkey'
+            columns: ['id_verification_id']
             isOneToOne: false
-            referencedRelation: "v_id_verification_latest"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_id_verification_latest'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "payment_transactions_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'payment_transactions_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "payment_transactions_success_fee_id_fkey"
-            columns: ["success_fee_id"]
+            foreignKeyName: 'payment_transactions_success_fee_id_fkey'
+            columns: ['success_fee_id']
             isOneToOne: false
-            referencedRelation: "success_fees"
-            referencedColumns: ["id"]
+            referencedRelation: 'success_fees'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "payment_transactions_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'payment_transactions_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "payment_transactions_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'payment_transactions_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5082,18 +5070,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "personality_assessments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'personality_assessments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "personality_assessments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'personality_assessments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5133,18 +5121,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "portfolio_items_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'portfolio_items_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "portfolio_items_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'portfolio_items_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5217,18 +5205,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "preferences_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'preferences_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "preferences_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'preferences_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5319,18 +5307,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "profile_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'profile_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "profile_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'profile_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5358,18 +5346,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_addresses_address_id_fkey"
-            columns: ["address_id"]
+            foreignKeyName: 'project_addresses_address_id_fkey'
+            columns: ['address_id']
             isOneToOne: false
-            referencedRelation: "addresses"
-            referencedColumns: ["id"]
+            referencedRelation: 'addresses'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_addresses_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_addresses_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5397,18 +5385,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_sites_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_sites_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_sites_site_id_fkey"
-            columns: ["site_id"]
+            foreignKeyName: 'project_sites_site_id_fkey'
+            columns: ['site_id']
             isOneToOne: false
-            referencedRelation: "sites"
-            referencedColumns: ["id"]
+            referencedRelation: 'sites'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5426,7 +5414,7 @@ export type Database = {
           project_id: string
           role_on_project: string | null
           start_date: string | null
-          status: Database["core"]["Enums"]["project_worker_status"]
+          status: Database['core']['Enums']['project_worker_status']
           updated_at: string | null
           user_id: string
         }
@@ -5443,7 +5431,7 @@ export type Database = {
           project_id: string
           role_on_project?: string | null
           start_date?: string | null
-          status?: Database["core"]["Enums"]["project_worker_status"]
+          status?: Database['core']['Enums']['project_worker_status']
           updated_at?: string | null
           user_id: string
         }
@@ -5460,24 +5448,24 @@ export type Database = {
           project_id?: string
           role_on_project?: string | null
           start_date?: string | null
-          status?: Database["core"]["Enums"]["project_worker_status"]
+          status?: Database['core']['Enums']['project_worker_status']
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "project_workers_job_id_fkey"
-            columns: ["job_id"]
+            foreignKeyName: 'project_workers_job_id_fkey'
+            columns: ['job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_workers_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_workers_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5488,12 +5476,12 @@ export type Database = {
           description: string | null
           end_date: string | null
           id: string
-          location_visibility: Database["core"]["Enums"]["location_visibility"]
+          location_visibility: Database['core']['Enums']['location_visibility']
           location_visibility_override: boolean | null
           name: string
           organization_id: string
           start_date: string | null
-          status: Database["core"]["Enums"]["project_status"]
+          status: Database['core']['Enums']['project_status']
           updated_at: string | null
         }
         Insert: {
@@ -5502,12 +5490,12 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
-          location_visibility?: Database["core"]["Enums"]["location_visibility"]
+          location_visibility?: Database['core']['Enums']['location_visibility']
           location_visibility_override?: boolean | null
           name: string
           organization_id: string
           start_date?: string | null
-          status?: Database["core"]["Enums"]["project_status"]
+          status?: Database['core']['Enums']['project_status']
           updated_at?: string | null
         }
         Update: {
@@ -5516,21 +5504,21 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
-          location_visibility?: Database["core"]["Enums"]["location_visibility"]
+          location_visibility?: Database['core']['Enums']['location_visibility']
           location_visibility_override?: boolean | null
           name?: string
           organization_id?: string
           start_date?: string | null
-          status?: Database["core"]["Enums"]["project_status"]
+          status?: Database['core']['Enums']['project_status']
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "projects_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'projects_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5618,11 +5606,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "resume_wizard_state_resume_id_fkey"
-            columns: ["resume_id"]
+            foreignKeyName: 'resume_wizard_state_resume_id_fkey'
+            columns: ['resume_id']
             isOneToOne: false
-            referencedRelation: "resume_uploads"
-            referencedColumns: ["id"]
+            referencedRelation: 'resume_uploads'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5647,11 +5635,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "review_aspects_review_id_fkey"
-            columns: ["review_id"]
+            foreignKeyName: 'review_aspects_review_id_fkey'
+            columns: ['review_id']
             isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5676,11 +5664,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "review_category_ratings_review_id_fkey"
-            columns: ["review_id"]
+            foreignKeyName: 'review_category_ratings_review_id_fkey'
+            columns: ['review_id']
             isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5705,18 +5693,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "review_skill_ratings_review_id_fkey"
-            columns: ["review_id"]
+            foreignKeyName: 'review_skill_ratings_review_id_fkey'
+            columns: ['review_id']
             isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "review_skill_ratings_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: 'review_skill_ratings_skill_id_fkey'
+            columns: ['skill_id']
             isOneToOne: false
-            referencedRelation: "skills"
-            referencedColumns: ["id"]
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5750,18 +5738,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "review_soft_skill_votes_review_id_fkey"
-            columns: ["review_id"]
+            foreignKeyName: 'review_soft_skill_votes_review_id_fkey'
+            columns: ['review_id']
             isOneToOne: false
-            referencedRelation: "reviews"
-            referencedColumns: ["id"]
+            referencedRelation: 'reviews'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "review_soft_skill_votes_skill_id_fkey"
-            columns: ["skill_id"]
+            foreignKeyName: 'review_soft_skill_votes_skill_id_fkey'
+            columns: ['skill_id']
             isOneToOne: false
-            referencedRelation: "soft_skills"
-            referencedColumns: ["id"]
+            referencedRelation: 'soft_skills'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5807,18 +5795,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "reviews_author_user_id_fkey"
-            columns: ["author_user_id"]
+            foreignKeyName: 'reviews_author_user_id_fkey'
+            columns: ['author_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "reviews_author_user_id_fkey"
-            columns: ["author_user_id"]
+            foreignKeyName: 'reviews_author_user_id_fkey'
+            columns: ['author_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -5849,39 +5837,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "role_assignments_role_id_fkey"
-            columns: ["role_id"]
+            foreignKeyName: 'role_assignments_role_id_fkey'
+            columns: ['role_id']
             isOneToOne: false
-            referencedRelation: "roles"
-            referencedColumns: ["id"]
+            referencedRelation: 'roles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "role_assignments_scope_org_id_fkey"
-            columns: ["scope_org_id"]
+            foreignKeyName: 'role_assignments_scope_org_id_fkey'
+            columns: ['scope_org_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "role_assignments_scope_team_id_fkey"
-            columns: ["scope_team_id"]
+            foreignKeyName: 'role_assignments_scope_team_id_fkey'
+            columns: ['scope_team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "role_assignments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'role_assignments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "role_assignments_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'role_assignments_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6017,18 +6005,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "skills_industry_id_fkey"
-            columns: ["industry_id"]
+            foreignKeyName: 'skills_industry_id_fkey'
+            columns: ['industry_id']
             isOneToOne: false
-            referencedRelation: "industries"
-            referencedColumns: ["id"]
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "skills_parent_id_fkey"
-            columns: ["parent_id"]
+            foreignKeyName: 'skills_parent_id_fkey'
+            columns: ['parent_id']
             isOneToOne: false
-            referencedRelation: "skills"
-            referencedColumns: ["id"]
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6056,18 +6044,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "slug_change_history_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'slug_change_history_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "slug_change_history_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'slug_change_history_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6152,18 +6140,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "stripe_settings_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'stripe_settings_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "stripe_settings_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'stripe_settings_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6233,25 +6221,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "success_fee_jobs_processed_by_fkey"
-            columns: ["processed_by"]
+            foreignKeyName: 'success_fee_jobs_processed_by_fkey'
+            columns: ['processed_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "success_fee_jobs_processed_by_fkey"
-            columns: ["processed_by"]
+            foreignKeyName: 'success_fee_jobs_processed_by_fkey'
+            columns: ['processed_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "success_fee_jobs_success_fee_id_fkey"
-            columns: ["success_fee_id"]
+            foreignKeyName: 'success_fee_jobs_success_fee_id_fkey'
+            columns: ['success_fee_id']
             isOneToOne: false
-            referencedRelation: "success_fees"
-            referencedColumns: ["id"]
+            referencedRelation: 'success_fees'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6345,39 +6333,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "success_fees_application_id_fkey"
-            columns: ["application_id"]
+            foreignKeyName: 'success_fees_application_id_fkey'
+            columns: ['application_id']
             isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
+            referencedRelation: 'applications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "success_fees_job_id_fkey"
-            columns: ["job_id"]
+            foreignKeyName: 'success_fees_job_id_fkey'
+            columns: ['job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "success_fees_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'success_fees_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "success_fees_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'success_fees_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "success_fees_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'success_fees_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6406,7 +6394,7 @@ export type Database = {
         Row: {
           actor_user_id: string | null
           created_at: string
-          event_type: Database["core"]["Enums"]["team_activity_event_type"]
+          event_type: Database['core']['Enums']['team_activity_event_type']
           id: string
           occurred_at: string
           organization_id: string
@@ -6420,7 +6408,7 @@ export type Database = {
         Insert: {
           actor_user_id?: string | null
           created_at?: string
-          event_type: Database["core"]["Enums"]["team_activity_event_type"]
+          event_type: Database['core']['Enums']['team_activity_event_type']
           id?: string
           occurred_at?: string
           organization_id: string
@@ -6434,7 +6422,7 @@ export type Database = {
         Update: {
           actor_user_id?: string | null
           created_at?: string
-          event_type?: Database["core"]["Enums"]["team_activity_event_type"]
+          event_type?: Database['core']['Enums']['team_activity_event_type']
           id?: string
           occurred_at?: string
           organization_id?: string
@@ -6447,67 +6435,67 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_activity_events_actor_user_id_fkey"
-            columns: ["actor_user_id"]
+            foreignKeyName: 'team_activity_events_actor_user_id_fkey'
+            columns: ['actor_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_actor_user_id_fkey"
-            columns: ["actor_user_id"]
+            foreignKeyName: 'team_activity_events_actor_user_id_fkey'
+            columns: ['actor_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'team_activity_events_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_related_application_id_fkey"
-            columns: ["related_application_id"]
+            foreignKeyName: 'team_activity_events_related_application_id_fkey'
+            columns: ['related_application_id']
             isOneToOne: false
-            referencedRelation: "applications"
-            referencedColumns: ["id"]
+            referencedRelation: 'applications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_related_job_id_fkey"
-            columns: ["related_job_id"]
+            foreignKeyName: 'team_activity_events_related_job_id_fkey'
+            columns: ['related_job_id']
             isOneToOne: false
-            referencedRelation: "jobs"
-            referencedColumns: ["id"]
+            referencedRelation: 'jobs'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_related_member_id_fkey"
-            columns: ["related_member_id"]
+            foreignKeyName: 'team_activity_events_related_member_id_fkey'
+            columns: ['related_member_id']
             isOneToOne: false
-            referencedRelation: "team_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_subject_user_id_fkey"
-            columns: ["subject_user_id"]
+            foreignKeyName: 'team_activity_events_subject_user_id_fkey'
+            columns: ['subject_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_subject_user_id_fkey"
-            columns: ["subject_user_id"]
+            foreignKeyName: 'team_activity_events_subject_user_id_fkey'
+            columns: ['subject_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_activity_events_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_activity_events_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6574,18 +6562,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_daily_metrics_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'team_daily_metrics_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_daily_metrics_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_daily_metrics_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6682,130 +6670,130 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_invitations_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'team_invitations_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'team_invitations_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_invited_by_fkey"
-            columns: ["invited_by"]
+            foreignKeyName: 'team_invitations_invited_by_fkey'
+            columns: ['invited_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_invited_by_fkey"
-            columns: ["invited_by"]
+            foreignKeyName: 'team_invitations_invited_by_fkey'
+            columns: ['invited_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_invited_user_id_fkey"
-            columns: ["invited_user_id"]
+            foreignKeyName: 'team_invitations_invited_user_id_fkey'
+            columns: ['invited_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_invited_user_id_fkey"
-            columns: ["invited_user_id"]
+            foreignKeyName: 'team_invitations_invited_user_id_fkey'
+            columns: ['invited_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_invitee_user_id_fkey"
-            columns: ["invitee_user_id"]
+            foreignKeyName: 'team_invitations_invitee_user_id_fkey'
+            columns: ['invitee_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_invitee_user_id_fkey"
-            columns: ["invitee_user_id"]
+            foreignKeyName: 'team_invitations_invitee_user_id_fkey'
+            columns: ['invitee_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_inviter_user_id_fkey"
-            columns: ["inviter_user_id"]
+            foreignKeyName: 'team_invitations_inviter_user_id_fkey'
+            columns: ['inviter_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_inviter_user_id_fkey"
-            columns: ["inviter_user_id"]
+            foreignKeyName: 'team_invitations_inviter_user_id_fkey'
+            columns: ['inviter_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_notification_id_fkey"
-            columns: ["notification_id"]
+            foreignKeyName: 'team_invitations_notification_id_fkey'
+            columns: ['notification_id']
             isOneToOne: false
-            referencedRelation: "notifications"
-            referencedColumns: ["id"]
+            referencedRelation: 'notifications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'team_invitations_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_responded_by_fkey"
-            columns: ["responded_by"]
+            foreignKeyName: 'team_invitations_responded_by_fkey'
+            columns: ['responded_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_responded_by_fkey"
-            columns: ["responded_by"]
+            foreignKeyName: 'team_invitations_responded_by_fkey'
+            columns: ['responded_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_role_id_fkey"
-            columns: ["role_id"]
+            foreignKeyName: 'team_invitations_role_id_fkey'
+            columns: ['role_id']
             isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_roles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_invitations_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'team_invitations_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_invitations_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'team_invitations_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6857,39 +6845,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_member_workloads_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'team_member_workloads_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_member_workloads_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_team_member_id_fkey"
-            columns: ["team_member_id"]
+            foreignKeyName: 'team_member_workloads_team_member_id_fkey'
+            columns: ['team_member_id']
             isOneToOne: false
-            referencedRelation: "team_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'team_member_workloads_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'team_member_workloads_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -6950,81 +6938,81 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_members_added_by_fkey"
-            columns: ["added_by"]
+            foreignKeyName: 'team_members_added_by_fkey'
+            columns: ['added_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_added_by_fkey"
-            columns: ["added_by"]
+            foreignKeyName: 'team_members_added_by_fkey'
+            columns: ['added_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_invitation_id_fkey"
-            columns: ["invitation_id"]
+            foreignKeyName: 'team_members_invitation_id_fkey'
+            columns: ['invitation_id']
             isOneToOne: false
-            referencedRelation: "team_invitations"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_invitations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_invited_by_fkey"
-            columns: ["invited_by"]
+            foreignKeyName: 'team_members_invited_by_fkey'
+            columns: ['invited_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_invited_by_fkey"
-            columns: ["invited_by"]
+            foreignKeyName: 'team_members_invited_by_fkey'
+            columns: ['invited_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_removed_by_fkey"
-            columns: ["removed_by"]
+            foreignKeyName: 'team_members_removed_by_fkey'
+            columns: ['removed_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_removed_by_fkey"
-            columns: ["removed_by"]
+            foreignKeyName: 'team_members_removed_by_fkey'
+            columns: ['removed_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_role_id_fkey"
-            columns: ["role_id"]
+            foreignKeyName: 'team_members_role_id_fkey'
+            columns: ['role_id']
             isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_roles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_members_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'team_members_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_members_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'team_members_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7034,7 +7022,7 @@ export type Database = {
           created_by: string | null
           id: string
           is_allowed: boolean
-          permission: Database["core"]["Enums"]["team_permission"]
+          permission: Database['core']['Enums']['team_permission']
           role_id: string
           updated_at: string
           updated_by: string | null
@@ -7044,7 +7032,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_allowed?: boolean
-          permission: Database["core"]["Enums"]["team_permission"]
+          permission: Database['core']['Enums']['team_permission']
           role_id: string
           updated_at?: string
           updated_by?: string | null
@@ -7054,46 +7042,46 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_allowed?: boolean
-          permission?: Database["core"]["Enums"]["team_permission"]
+          permission?: Database['core']['Enums']['team_permission']
           role_id?: string
           updated_at?: string
           updated_by?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "team_role_permissions_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'team_role_permissions_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_role_permissions_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'team_role_permissions_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_role_permissions_role_id_fkey"
-            columns: ["role_id"]
+            foreignKeyName: 'team_role_permissions_role_id_fkey'
+            columns: ['role_id']
             isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_roles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_role_permissions_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'team_role_permissions_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_role_permissions_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'team_role_permissions_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7148,39 +7136,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_roles_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'team_roles_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_roles_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'team_roles_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_roles_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'team_roles_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_roles_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'team_roles_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_roles_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'team_roles_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7283,67 +7271,67 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "teams_archived_by_fkey"
-            columns: ["archived_by"]
+            foreignKeyName: 'teams_archived_by_fkey'
+            columns: ['archived_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_archived_by_fkey"
-            columns: ["archived_by"]
+            foreignKeyName: 'teams_archived_by_fkey'
+            columns: ['archived_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'teams_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_created_by_fkey"
-            columns: ["created_by"]
+            foreignKeyName: 'teams_created_by_fkey'
+            columns: ['created_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_default_role_id_fkey"
-            columns: ["default_role_id"]
+            foreignKeyName: 'teams_default_role_id_fkey'
+            columns: ['default_role_id']
             isOneToOne: false
-            referencedRelation: "team_roles"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_roles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'teams_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_parent_team_id_fkey"
-            columns: ["parent_team_id"]
+            foreignKeyName: 'teams_parent_team_id_fkey'
+            columns: ['parent_team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'teams_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "teams_updated_by_fkey"
-            columns: ["updated_by"]
+            foreignKeyName: 'teams_updated_by_fkey'
+            columns: ['updated_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7380,11 +7368,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_archetypes_archetype_id_fkey"
-            columns: ["archetype_id"]
+            foreignKeyName: 'user_archetypes_archetype_id_fkey'
+            columns: ['archetype_id']
             isOneToOne: false
-            referencedRelation: "archetypes"
-            referencedColumns: ["id"]
+            referencedRelation: 'archetypes'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7463,18 +7451,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_certifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_certifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_certifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_certifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7535,18 +7523,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_education_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_education_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_education_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_education_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7610,25 +7598,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_experience_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'user_experience_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_experience_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_experience_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_experience_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_experience_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7686,32 +7674,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_skills_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_skills_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_skills_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_skills_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_skills_verified_by_fkey"
-            columns: ["verified_by"]
+            foreignKeyName: 'user_skills_verified_by_fkey'
+            columns: ['verified_by']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_skills_verified_by_fkey"
-            columns: ["verified_by"]
+            foreignKeyName: 'user_skills_verified_by_fkey'
+            columns: ['verified_by']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7745,18 +7733,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_storage_usage_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_storage_usage_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "user_storage_usage_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'user_storage_usage_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7826,11 +7814,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "users_industry_id_fkey"
-            columns: ["industry_id"]
+            foreignKeyName: 'users_industry_id_fkey'
+            columns: ['industry_id']
             isOneToOne: false
-            referencedRelation: "industries"
-            referencedColumns: ["id"]
+            referencedRelation: 'industries'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7906,25 +7894,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_log_audit_log_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'work_log_audit_log_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_log_audit_log_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'work_log_audit_log_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_log_audit_log_work_log_id_fkey"
-            columns: ["work_log_id"]
+            foreignKeyName: 'work_log_audit_log_work_log_id_fkey'
+            columns: ['work_log_id']
             isOneToOne: false
-            referencedRelation: "work_logs"
-            referencedColumns: ["id"]
+            referencedRelation: 'work_logs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -7955,25 +7943,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_log_collaborators_collaborator_user_id_fkey"
-            columns: ["collaborator_user_id"]
+            foreignKeyName: 'work_log_collaborators_collaborator_user_id_fkey'
+            columns: ['collaborator_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_log_collaborators_collaborator_user_id_fkey"
-            columns: ["collaborator_user_id"]
+            foreignKeyName: 'work_log_collaborators_collaborator_user_id_fkey'
+            columns: ['collaborator_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_log_collaborators_work_log_id_fkey"
-            columns: ["work_log_id"]
+            foreignKeyName: 'work_log_collaborators_work_log_id_fkey'
+            columns: ['work_log_id']
             isOneToOne: false
-            referencedRelation: "work_logs"
-            referencedColumns: ["id"]
+            referencedRelation: 'work_logs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8007,25 +7995,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_log_conversations_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'work_log_conversations_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_log_conversations_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'work_log_conversations_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_log_conversations_work_log_id_fkey"
-            columns: ["work_log_id"]
+            foreignKeyName: 'work_log_conversations_work_log_id_fkey'
+            columns: ['work_log_id']
             isOneToOne: false
-            referencedRelation: "work_logs"
-            referencedColumns: ["id"]
+            referencedRelation: 'work_logs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8080,11 +8068,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_log_photos_work_log_id_fkey"
-            columns: ["work_log_id"]
+            foreignKeyName: 'work_log_photos_work_log_id_fkey'
+            columns: ['work_log_id']
             isOneToOne: false
-            referencedRelation: "work_logs"
-            referencedColumns: ["id"]
+            referencedRelation: 'work_logs'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8187,39 +8175,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_logs_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'work_logs_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "construction_projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'construction_projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_logs_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'work_logs_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_logs_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'work_logs_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_logs_verified_by_user_id_fkey"
-            columns: ["verified_by_user_id"]
+            foreignKeyName: 'work_logs_verified_by_user_id_fkey'
+            columns: ['verified_by_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "work_logs_verified_by_user_id_fkey"
-            columns: ["verified_by_user_id"]
+            foreignKeyName: 'work_logs_verified_by_user_id_fkey'
+            columns: ['verified_by_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8239,18 +8227,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "id_verifications_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'id_verifications_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "id_verifications_worker_user_id_fkey"
-            columns: ["worker_user_id"]
+            foreignKeyName: 'id_verifications_worker_user_id_fkey'
+            columns: ['worker_user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8281,18 +8269,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "profile_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'profile_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "profile_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'profile_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: true
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8345,18 +8333,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_daily_metrics_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'team_daily_metrics_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_daily_metrics_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_daily_metrics_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8378,39 +8366,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "team_member_workloads_organization_id_fkey"
-            columns: ["organization_id"]
+            foreignKeyName: 'team_member_workloads_organization_id_fkey'
+            columns: ['organization_id']
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: 'organizations'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_team_id_fkey"
-            columns: ["team_id"]
+            foreignKeyName: 'team_member_workloads_team_id_fkey'
+            columns: ['team_id']
             isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
+            referencedRelation: 'teams'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_team_member_id_fkey"
-            columns: ["team_member_id"]
+            foreignKeyName: 'team_member_workloads_team_member_id_fkey'
+            columns: ['team_member_id']
             isOneToOne: false
-            referencedRelation: "team_members"
-            referencedColumns: ["id"]
+            referencedRelation: 'team_members'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'team_member_workloads_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "team_member_workloads_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'team_member_workloads_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "v_profile_search"
-            referencedColumns: ["id"]
+            referencedRelation: 'v_profile_search'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8488,7 +8476,7 @@ export type Database = {
       get_secret_value: { Args: { p_secret_id: string }; Returns: string }
       has_team_permission: {
         Args: {
-          required_permission: Database["core"]["Enums"]["team_permission"]
+          required_permission: Database['core']['Enums']['team_permission']
           target_team_id: string
         }
         Returns: boolean
@@ -8572,8 +8560,8 @@ export type Database = {
           workload_pressure_score: number | null
         }
         SetofOptions: {
-          from: "*"
-          to: "team_daily_metrics"
+          from: '*'
+          to: 'team_daily_metrics'
           isOneToOne: true
           isSetofReturn: false
         }
@@ -8609,163 +8597,145 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "user" | "moderator" | "admin" | "super_admin"
+      app_role: 'user' | 'moderator' | 'admin' | 'super_admin'
       application_status:
-        | "draft"
-        | "submitted"
-        | "under_review"
-        | "interviewing"
-        | "offer_extended"
-        | "hired"
-        | "rejected"
-        | "withdrawn"
+        | 'draft'
+        | 'submitted'
+        | 'under_review'
+        | 'interviewing'
+        | 'offer_extended'
+        | 'hired'
+        | 'rejected'
+        | 'withdrawn'
       background_check_dispute_status:
-        | "pending"
-        | "under_review"
-        | "resolved"
-        | "upheld"
-        | "cancelled"
-      background_check_paid_by: "worker" | "organization" | "platform"
+        | 'pending'
+        | 'under_review'
+        | 'resolved'
+        | 'upheld'
+        | 'cancelled'
+      background_check_paid_by: 'worker' | 'organization' | 'platform'
       background_check_status:
-        | "pending"
-        | "invited"
-        | "submitted"
-        | "in_progress"
-        | "under_review"
-        | "completed_clear"
-        | "completed_consider"
-        | "completed_not_clear"
-        | "partially_completed"
-        | "failed"
-        | "cancelled"
-        | "disputed"
-        | "expired"
-        | "refunded"
-      location_visibility:
-        | "public"
-        | "authenticated"
-        | "organization_only"
-        | "private"
-      notification_channel: "in_app" | "email" | "push" | "sms"
+        | 'pending'
+        | 'invited'
+        | 'submitted'
+        | 'in_progress'
+        | 'under_review'
+        | 'completed_clear'
+        | 'completed_consider'
+        | 'completed_not_clear'
+        | 'partially_completed'
+        | 'failed'
+        | 'cancelled'
+        | 'disputed'
+        | 'expired'
+        | 'refunded'
+      location_visibility: 'public' | 'authenticated' | 'organization_only' | 'private'
+      notification_channel: 'in_app' | 'email' | 'push' | 'sms'
       notification_delivery_status:
-        | "queued"
-        | "sending"
-        | "sent"
-        | "delivered"
-        | "failed"
-        | "bounce"
-        | "blocked"
+        | 'queued'
+        | 'sending'
+        | 'sent'
+        | 'delivered'
+        | 'failed'
+        | 'bounce'
+        | 'blocked'
       notification_event_kind:
-        | "accepted"
-        | "delivered"
-        | "opened"
-        | "clicked"
-        | "failed"
-        | "bounce"
-        | "complaint"
-      notification_frequency:
-        | "immediate"
-        | "digest_daily"
-        | "digest_weekly"
-        | "mute"
-      notification_severity: "info" | "important" | "critical"
+        | 'accepted'
+        | 'delivered'
+        | 'opened'
+        | 'clicked'
+        | 'failed'
+        | 'bounce'
+        | 'complaint'
+      notification_frequency: 'immediate' | 'digest_daily' | 'digest_weekly' | 'mute'
+      notification_severity: 'info' | 'important' | 'critical'
       notification_type:
-        | "success"
-        | "warning"
-        | "info"
-        | "job.match"
-        | "app.submitted"
-        | "app.status_changed"
-        | "interview.scheduled"
-        | "offer.extended"
-        | "hiring.decision"
-        | "team.invite"
-        | "team.assigned"
-        | "team.commented"
-        | "team.role_changed"
-        | "profile.viewed"
-        | "profile.unlocked"
-        | "review.new"
-        | "review.reply"
-        | "skill.endorse"
-        | "acct.verify"
-        | "acct.password_reset"
-        | "payment.success"
-        | "payment.failed"
-        | "sub.renewal"
-        | "bgcheck.completed"
-        | "profile.reminder"
-        | "reengage"
-        | "feature.announcement"
-        | "platform.update"
-        | "message.received"
-        | "system.cron_failure"
-        | "profile.completion_reminder"
-        | "application.status_stale"
-        | "system.digest_daily"
-        | "system.digest_weekly"
-        | "inquiry.created"
-        | "inquiry.sent"
-        | "inquiry.comment_added"
-        | "inquiry.section_accepted"
-        | "inquiry.fully_accepted"
-        | "inquiry.capability_answered"
+        | 'success'
+        | 'warning'
+        | 'info'
+        | 'job.match'
+        | 'app.submitted'
+        | 'app.status_changed'
+        | 'interview.scheduled'
+        | 'offer.extended'
+        | 'hiring.decision'
+        | 'team.invite'
+        | 'team.assigned'
+        | 'team.commented'
+        | 'team.role_changed'
+        | 'profile.viewed'
+        | 'profile.unlocked'
+        | 'review.new'
+        | 'review.reply'
+        | 'skill.endorse'
+        | 'acct.verify'
+        | 'acct.password_reset'
+        | 'payment.success'
+        | 'payment.failed'
+        | 'sub.renewal'
+        | 'bgcheck.completed'
+        | 'profile.reminder'
+        | 'reengage'
+        | 'feature.announcement'
+        | 'platform.update'
+        | 'message.received'
+        | 'system.cron_failure'
+        | 'profile.completion_reminder'
+        | 'application.status_stale'
+        | 'system.digest_daily'
+        | 'system.digest_weekly'
+        | 'inquiry.created'
+        | 'inquiry.sent'
+        | 'inquiry.comment_added'
+        | 'inquiry.section_accepted'
+        | 'inquiry.fully_accepted'
+        | 'inquiry.capability_answered'
       organization_document_category:
-        | "contracts"
-        | "templates"
-        | "compliance"
-        | "certifications"
-        | "onboarding"
-        | "general"
-        | "other"
-      organization_document_permission: "view" | "edit" | "manage"
-      organization_document_share_type: "organization_member" | "external"
-      organization_location_type:
-        | "headquarters"
-        | "branch"
-        | "job_site"
-        | "remote"
-        | "other"
-      organization_request_status: "pending" | "approved" | "rejected"
-      project_status: "planning" | "active" | "completed" | "on_hold"
-      project_worker_status: "pending" | "approved" | "rejected"
-      property_type:
-        | "residential"
-        | "commercial"
-        | "industrial"
-        | "mixed_use"
-        | "other"
-      review_status: "pending" | "approved" | "rejected" | "flagged"
+        | 'contracts'
+        | 'templates'
+        | 'compliance'
+        | 'certifications'
+        | 'onboarding'
+        | 'general'
+        | 'other'
+      organization_document_permission: 'view' | 'edit' | 'manage'
+      organization_document_share_type: 'organization_member' | 'external'
+      organization_location_type: 'headquarters' | 'branch' | 'job_site' | 'remote' | 'other'
+      organization_request_status: 'pending' | 'approved' | 'rejected'
+      project_status: 'planning' | 'active' | 'completed' | 'on_hold'
+      project_worker_status: 'pending' | 'approved' | 'rejected'
+      property_type: 'residential' | 'commercial' | 'industrial' | 'mixed_use' | 'other'
+      review_status: 'pending' | 'approved' | 'rejected' | 'flagged'
       team_activity_event_type:
-        | "team.created"
-        | "team.updated"
-        | "team.archived"
-        | "member.invited"
-        | "member.joined"
-        | "member.removed"
-        | "member.role_changed"
-        | "job.assigned"
-        | "job.unassigned"
-        | "application.assigned"
-        | "application.reassigned"
-        | "application.review_submitted"
-        | "workload.rebalanced"
+        | 'team.created'
+        | 'team.updated'
+        | 'team.archived'
+        | 'member.invited'
+        | 'member.joined'
+        | 'member.removed'
+        | 'member.role_changed'
+        | 'job.assigned'
+        | 'job.unassigned'
+        | 'application.assigned'
+        | 'application.reassigned'
+        | 'application.review_submitted'
+        | 'workload.rebalanced'
       team_permission:
-        | "team.view"
-        | "team.manage"
-        | "team.settings"
-        | "team.invite"
-        | "team.remove_member"
-        | "team.assign_role"
-        | "job.manage"
-        | "application.review"
-        | "application.manage"
-        | "application.comment"
-        | "interview.schedule"
-        | "offer.manage"
-        | "analytics.view"
-        | "document.manage"
-        | "invitation.manage"
+        | 'team.view'
+        | 'team.manage'
+        | 'team.settings'
+        | 'team.invite'
+        | 'team.remove_member'
+        | 'team.assign_role'
+        | 'job.manage'
+        | 'application.review'
+        | 'application.manage'
+        | 'application.comment'
+        | 'interview.schedule'
+        | 'offer.manage'
+        | 'analytics.view'
+        | 'document.manage'
+        | 'invitation.manage'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -8860,11 +8830,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "masterformat_parent_id_fkey"
-            columns: ["parent_id"]
+            foreignKeyName: 'masterformat_parent_id_fkey'
+            columns: ['parent_id']
             isOneToOne: false
-            referencedRelation: "masterformat"
-            referencedColumns: ["id"]
+            referencedRelation: 'masterformat'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -8981,8 +8951,8 @@ export type Database = {
           web_pages: string[] | null
         }[]
         SetofOptions: {
-          from: "*"
-          to: "universities"
+          from: '*'
+          to: 'universities'
           isOneToOne: false
           isSetofReturn: true
         }
@@ -9042,25 +9012,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "abilities_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'abilities_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "abilities_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'abilities_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "abilities_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'abilities_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -9079,18 +9049,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "abilities_to_work_activities_abilities_element_id_fkey"
-            columns: ["abilities_element_id"]
+            foreignKeyName: 'abilities_to_work_activities_abilities_element_id_fkey'
+            columns: ['abilities_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "abilities_to_work_activities_work_activities_element_id_fkey"
-            columns: ["work_activities_element_id"]
+            foreignKeyName: 'abilities_to_work_activities_work_activities_element_id_fkey'
+            columns: ['work_activities_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9109,18 +9079,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "abilities_to_work_context_abilities_element_id_fkey"
-            columns: ["abilities_element_id"]
+            foreignKeyName: 'abilities_to_work_context_abilities_element_id_fkey'
+            columns: ['abilities_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "abilities_to_work_context_work_context_element_id_fkey"
-            columns: ["work_context_element_id"]
+            foreignKeyName: 'abilities_to_work_context_work_context_element_id_fkey'
+            columns: ['work_context_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9145,11 +9115,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "alternate_titles_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'alternate_titles_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -9168,18 +9138,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "basic_interests_to_riasec_basic_interests_element_id_fkey"
-            columns: ["basic_interests_element_id"]
+            foreignKeyName: 'basic_interests_to_riasec_basic_interests_element_id_fkey'
+            columns: ['basic_interests_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "basic_interests_to_riasec_riasec_element_id_fkey"
-            columns: ["riasec_element_id"]
+            foreignKeyName: 'basic_interests_to_riasec_riasec_element_id_fkey'
+            columns: ['riasec_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9222,18 +9192,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "dwa_reference_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'dwa_reference_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "dwa_reference_iwa_id_fkey"
-            columns: ["iwa_id"]
+            foreignKeyName: 'dwa_reference_iwa_id_fkey'
+            columns: ['iwa_id']
             isOneToOne: false
-            referencedRelation: "iwa_reference"
-            referencedColumns: ["iwa_id"]
+            referencedRelation: 'iwa_reference'
+            referencedColumns: ['iwa_id']
           },
         ]
       }
@@ -9282,32 +9252,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "education_training_experience_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'education_training_experience_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "education_training_experience_element_id_scale_id_category_fkey"
-            columns: ["element_id", "scale_id", "category"]
+            foreignKeyName: 'education_training_experience_element_id_scale_id_category_fkey'
+            columns: ['element_id', 'scale_id', 'category']
             isOneToOne: false
-            referencedRelation: "ete_categories"
-            referencedColumns: ["element_id", "scale_id", "category"]
+            referencedRelation: 'ete_categories'
+            referencedColumns: ['element_id', 'scale_id', 'category']
           },
           {
-            foreignKeyName: "education_training_experience_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'education_training_experience_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "education_training_experience_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'education_training_experience_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -9338,18 +9308,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "emerging_tasks_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'emerging_tasks_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "emerging_tasks_original_task_id_fkey"
-            columns: ["original_task_id"]
+            foreignKeyName: 'emerging_tasks_original_task_id_fkey'
+            columns: ['original_task_id']
             isOneToOne: false
-            referencedRelation: "task_statements"
-            referencedColumns: ["task_id"]
+            referencedRelation: 'task_statements'
+            referencedColumns: ['task_id']
           },
         ]
       }
@@ -9374,18 +9344,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "ete_categories_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'ete_categories_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "ete_categories_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'ete_categories_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -9416,25 +9386,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "interests_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'interests_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "interests_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'interests_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "interests_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'interests_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -9456,11 +9426,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "interests_illus_activities_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'interests_illus_activities_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9482,18 +9452,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "interests_illus_occupations_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'interests_illus_occupations_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "interests_illus_occupations_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'interests_illus_occupations_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -9515,11 +9485,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "iwa_reference_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'iwa_reference_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9574,18 +9544,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "job_zones_job_zone_fkey"
-            columns: ["job_zone"]
+            foreignKeyName: 'job_zones_job_zone_fkey'
+            columns: ['job_zone']
             isOneToOne: false
-            referencedRelation: "job_zone_reference"
-            referencedColumns: ["job_zone"]
+            referencedRelation: 'job_zone_reference'
+            referencedColumns: ['job_zone']
           },
           {
-            foreignKeyName: "job_zones_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'job_zones_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -9634,25 +9604,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "knowledge_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'knowledge_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "knowledge_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'knowledge_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "knowledge_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'knowledge_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -9677,18 +9647,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "level_scale_anchors_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'level_scale_anchors_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "level_scale_anchors_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'level_scale_anchors_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -9737,11 +9707,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "occupation_level_metadata_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'occupation_level_metadata_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -9766,18 +9736,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "related_occupations_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'related_occupations_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "related_occupations_related_onetsoc_code_fkey"
-            columns: ["related_onetsoc_code"]
+            foreignKeyName: 'related_occupations_related_onetsoc_code_fkey'
+            columns: ['related_onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -9799,11 +9769,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "riasec_keywords_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'riasec_keywords_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9825,11 +9795,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "sample_of_reported_titles_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'sample_of_reported_titles_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -9899,25 +9869,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "skills_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'skills_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "skills_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'skills_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "skills_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'skills_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -9936,18 +9906,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "skills_to_work_activities_skills_element_id_fkey"
-            columns: ["skills_element_id"]
+            foreignKeyName: 'skills_to_work_activities_skills_element_id_fkey'
+            columns: ['skills_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "skills_to_work_activities_work_activities_element_id_fkey"
-            columns: ["work_activities_element_id"]
+            foreignKeyName: 'skills_to_work_activities_work_activities_element_id_fkey'
+            columns: ['work_activities_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9966,18 +9936,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "skills_to_work_context_skills_element_id_fkey"
-            columns: ["skills_element_id"]
+            foreignKeyName: 'skills_to_work_context_skills_element_id_fkey'
+            columns: ['skills_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "skills_to_work_context_work_context_element_id_fkey"
-            columns: ["work_context_element_id"]
+            foreignKeyName: 'skills_to_work_context_work_context_element_id_fkey'
+            columns: ['work_context_element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
         ]
       }
@@ -9999,18 +9969,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "survey_booklet_locations_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'survey_booklet_locations_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "survey_booklet_locations_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'survey_booklet_locations_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -10032,11 +10002,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_categories_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'task_categories_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -10085,32 +10055,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_ratings_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'task_ratings_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "task_ratings_scale_id_category_fkey"
-            columns: ["scale_id", "category"]
+            foreignKeyName: 'task_ratings_scale_id_category_fkey'
+            columns: ['scale_id', 'category']
             isOneToOne: false
-            referencedRelation: "task_categories"
-            referencedColumns: ["scale_id", "category"]
+            referencedRelation: 'task_categories'
+            referencedColumns: ['scale_id', 'category']
           },
           {
-            foreignKeyName: "task_ratings_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'task_ratings_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
           {
-            foreignKeyName: "task_ratings_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'task_ratings_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "task_statements"
-            referencedColumns: ["task_id"]
+            referencedRelation: 'task_statements'
+            referencedColumns: ['task_id']
           },
         ]
       }
@@ -10144,11 +10114,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "task_statements_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'task_statements_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -10176,25 +10146,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tasks_to_dwas_dwa_id_fkey"
-            columns: ["dwa_id"]
+            foreignKeyName: 'tasks_to_dwas_dwa_id_fkey'
+            columns: ['dwa_id']
             isOneToOne: false
-            referencedRelation: "dwa_reference"
-            referencedColumns: ["dwa_id"]
+            referencedRelation: 'dwa_reference'
+            referencedColumns: ['dwa_id']
           },
           {
-            foreignKeyName: "tasks_to_dwas_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'tasks_to_dwas_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "tasks_to_dwas_task_id_fkey"
-            columns: ["task_id"]
+            foreignKeyName: 'tasks_to_dwas_task_id_fkey'
+            columns: ['task_id']
             isOneToOne: false
-            referencedRelation: "task_statements"
-            referencedColumns: ["task_id"]
+            referencedRelation: 'task_statements'
+            referencedColumns: ['task_id']
           },
         ]
       }
@@ -10222,18 +10192,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "technology_skills_commodity_code_fkey"
-            columns: ["commodity_code"]
+            foreignKeyName: 'technology_skills_commodity_code_fkey'
+            columns: ['commodity_code']
             isOneToOne: false
-            referencedRelation: "unspsc_reference"
-            referencedColumns: ["commodity_code"]
+            referencedRelation: 'unspsc_reference'
+            referencedColumns: ['commodity_code']
           },
           {
-            foreignKeyName: "technology_skills_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'technology_skills_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -10255,18 +10225,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tools_used_commodity_code_fkey"
-            columns: ["commodity_code"]
+            foreignKeyName: 'tools_used_commodity_code_fkey'
+            columns: ['commodity_code']
             isOneToOne: false
-            referencedRelation: "unspsc_reference"
-            referencedColumns: ["commodity_code"]
+            referencedRelation: 'unspsc_reference'
+            referencedColumns: ['commodity_code']
           },
           {
-            foreignKeyName: "tools_used_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'tools_used_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
         ]
       }
@@ -10348,25 +10318,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_activities_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'work_activities_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "work_activities_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'work_activities_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "work_activities_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'work_activities_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -10418,32 +10388,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_context_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'work_context_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "work_context_element_id_scale_id_category_fkey"
-            columns: ["element_id", "scale_id", "category"]
+            foreignKeyName: 'work_context_element_id_scale_id_category_fkey'
+            columns: ['element_id', 'scale_id', 'category']
             isOneToOne: false
-            referencedRelation: "work_context_categories"
-            referencedColumns: ["element_id", "scale_id", "category"]
+            referencedRelation: 'work_context_categories'
+            referencedColumns: ['element_id', 'scale_id', 'category']
           },
           {
-            foreignKeyName: "work_context_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'work_context_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "work_context_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'work_context_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -10468,18 +10438,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_context_categories_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'work_context_categories_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "work_context_categories_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'work_context_categories_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -10525,25 +10495,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_styles_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'work_styles_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "work_styles_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'work_styles_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "work_styles_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'work_styles_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -10574,25 +10544,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "work_values_element_id_fkey"
-            columns: ["element_id"]
+            foreignKeyName: 'work_values_element_id_fkey'
+            columns: ['element_id']
             isOneToOne: false
-            referencedRelation: "content_model_reference"
-            referencedColumns: ["element_id"]
+            referencedRelation: 'content_model_reference'
+            referencedColumns: ['element_id']
           },
           {
-            foreignKeyName: "work_values_onetsoc_code_fkey"
-            columns: ["onetsoc_code"]
+            foreignKeyName: 'work_values_onetsoc_code_fkey'
+            columns: ['onetsoc_code']
             isOneToOne: false
-            referencedRelation: "occupation_data"
-            referencedColumns: ["onetsoc_code"]
+            referencedRelation: 'occupation_data'
+            referencedColumns: ['onetsoc_code']
           },
           {
-            foreignKeyName: "work_values_scale_id_fkey"
-            columns: ["scale_id"]
+            foreignKeyName: 'work_values_scale_id_fkey'
+            columns: ['scale_id']
             isOneToOne: false
-            referencedRelation: "scales_reference"
-            referencedColumns: ["scale_id"]
+            referencedRelation: 'scales_reference'
+            referencedColumns: ['scale_id']
           },
         ]
       }
@@ -10741,7 +10711,7 @@ export type Database = {
         Returns: number
       }
       _postgis_stats: {
-        Args: { ""?: string; att_name: string; tbl: unknown }
+        Args: { ''?: string; att_name: string; tbl: unknown }
         Returns: string
       }
       _st_3dintersects: {
@@ -10815,7 +10785,7 @@ export type Database = {
         Returns: unknown
       }
       _st_within: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
-      addauth: { Args: { "": string }; Returns: boolean }
+      addauth: { Args: { '': string }; Returns: boolean }
       addgeometrycolumn:
         | {
             Args: {
@@ -10857,7 +10827,7 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: number
       }
-      dearmor: { Args: { "": string }; Returns: string }
+      dearmor: { Args: { '': string }; Returns: string }
       disablelongtransactions: { Args: never; Returns: string }
       dropgeometrycolumn:
         | {
@@ -10892,8 +10862,8 @@ export type Database = {
       enablelongtransactions: { Args: never; Returns: string }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       gen_random_uuid: { Args: never; Returns: string }
-      gen_salt: { Args: { "": string }; Returns: string }
-      geometry: { Args: { "": string }; Returns: unknown }
+      gen_salt: { Args: { '': string }; Returns: string }
+      geometry: { Args: { '': string }; Returns: unknown }
       geometry_above: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
@@ -10990,11 +10960,11 @@ export type Database = {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
-      geomfromewkt: { Args: { "": string }; Returns: unknown }
+      geomfromewkt: { Args: { '': string }; Returns: unknown }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
       pgp_armor_headers: {
-        Args: { "": string }
+        Args: { '': string }
         Returns: Record<string, unknown>[]
       }
       populate_geometry_columns:
@@ -11038,7 +11008,7 @@ export type Database = {
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
       show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
+      show_trgm: { Args: { '': string }; Returns: string[] }
       st_3dclosestpoint: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
@@ -11079,12 +11049,12 @@ export type Database = {
           }
       st_area:
         | { Args: { geog: unknown; use_spheroid?: boolean }; Returns: number }
-        | { Args: { "": string }; Returns: number }
+        | { Args: { '': string }; Returns: number }
       st_asencodedpolyline: {
         Args: { geom: unknown; nprecision?: number }
         Returns: string
       }
-      st_asewkt: { Args: { "": string }; Returns: string }
+      st_asewkt: { Args: { '': string }; Returns: string }
       st_asgeojson:
         | {
             Args: {
@@ -11103,7 +11073,7 @@ export type Database = {
             Args: { geog: unknown; maxdecimaldigits?: number; options?: number }
             Returns: string
           }
-        | { Args: { "": string }; Returns: string }
+        | { Args: { '': string }; Returns: string }
       st_asgml:
         | {
             Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
@@ -11141,7 +11111,7 @@ export type Database = {
             }
             Returns: string
           }
-        | { Args: { "": string }; Returns: string }
+        | { Args: { '': string }; Returns: string }
       st_askml:
         | {
             Args: { geom: unknown; maxdecimaldigits?: number; nprefix?: string }
@@ -11151,7 +11121,7 @@ export type Database = {
             Args: { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
             Returns: string
           }
-        | { Args: { "": string }; Returns: string }
+        | { Args: { '': string }; Returns: string }
       st_aslatlontext: {
         Args: { geom: unknown; tmpl?: string }
         Returns: string
@@ -11176,8 +11146,8 @@ export type Database = {
             Args: { geog: unknown; maxdecimaldigits?: number; rel?: number }
             Returns: string
           }
-        | { Args: { "": string }; Returns: string }
-      st_astext: { Args: { "": string }; Returns: string }
+        | { Args: { '': string }; Returns: string }
+      st_astext: { Args: { '': string }; Returns: string }
       st_astwkb:
         | {
             Args: {
@@ -11222,7 +11192,7 @@ export type Database = {
             Args: { geom: unknown; quadsegs: number; radius: number }
             Returns: unknown
           }
-      st_centroid: { Args: { "": string }; Returns: unknown }
+      st_centroid: { Args: { '': string }; Returns: unknown }
       st_clipbybox2d: {
         Args: { box: unknown; geom: unknown }
         Returns: unknown
@@ -11333,12 +11303,12 @@ export type Database = {
             Args: { area: unknown; npoints: number; seed: number }
             Returns: unknown
           }
-      st_geogfromtext: { Args: { "": string }; Returns: unknown }
-      st_geographyfromtext: { Args: { "": string }; Returns: unknown }
+      st_geogfromtext: { Args: { '': string }; Returns: unknown }
+      st_geographyfromtext: { Args: { '': string }; Returns: unknown }
       st_geohash:
         | { Args: { geom: unknown; maxchars?: number }; Returns: string }
         | { Args: { geog: unknown; maxchars?: number }; Returns: string }
-      st_geomcollfromtext: { Args: { "": string }; Returns: unknown }
+      st_geomcollfromtext: { Args: { '': string }; Returns: unknown }
       st_geometricmedian: {
         Args: {
           fail_if_not_converged?: boolean
@@ -11348,17 +11318,17 @@ export type Database = {
         }
         Returns: unknown
       }
-      st_geometryfromtext: { Args: { "": string }; Returns: unknown }
-      st_geomfromewkt: { Args: { "": string }; Returns: unknown }
+      st_geometryfromtext: { Args: { '': string }; Returns: unknown }
+      st_geomfromewkt: { Args: { '': string }; Returns: unknown }
       st_geomfromgeojson:
-        | { Args: { "": Json }; Returns: unknown }
-        | { Args: { "": Json }; Returns: unknown }
-        | { Args: { "": string }; Returns: unknown }
-      st_geomfromgml: { Args: { "": string }; Returns: unknown }
-      st_geomfromkml: { Args: { "": string }; Returns: unknown }
+        | { Args: { '': Json }; Returns: unknown }
+        | { Args: { '': Json }; Returns: unknown }
+        | { Args: { '': string }; Returns: unknown }
+      st_geomfromgml: { Args: { '': string }; Returns: unknown }
+      st_geomfromkml: { Args: { '': string }; Returns: unknown }
       st_geomfrommarc21: { Args: { marc21xml: string }; Returns: unknown }
-      st_geomfromtext: { Args: { "": string }; Returns: unknown }
-      st_gmltosql: { Args: { "": string }; Returns: unknown }
+      st_geomfromtext: { Args: { '': string }; Returns: unknown }
+      st_gmltosql: { Args: { '': string }; Returns: unknown }
       st_hasarc: { Args: { geometry: unknown }; Returns: boolean }
       st_hausdorffdistance: {
         Args: { geom1: unknown; geom2: unknown }
@@ -11385,17 +11355,17 @@ export type Database = {
         | { Args: { geog1: unknown; geog2: unknown }; Returns: boolean }
       st_isvaliddetail: {
         Args: { flags?: number; geom: unknown }
-        Returns: Database["public"]["CompositeTypes"]["valid_detail"]
+        Returns: Database['public']['CompositeTypes']['valid_detail']
         SetofOptions: {
-          from: "*"
-          to: "valid_detail"
+          from: '*'
+          to: 'valid_detail'
           isOneToOne: true
           isSetofReturn: false
         }
       }
       st_length:
         | { Args: { geog: unknown; use_spheroid?: boolean }; Returns: number }
-        | { Args: { "": string }; Returns: number }
+        | { Args: { '': string }; Returns: number }
       st_letters: { Args: { font?: Json; letters: string }; Returns: unknown }
       st_linecrossingdirection: {
         Args: { line1: unknown; line2: unknown }
@@ -11405,7 +11375,7 @@ export type Database = {
         Args: { nprecision?: number; txtin: string }
         Returns: unknown
       }
-      st_linefromtext: { Args: { "": string }; Returns: unknown }
+      st_linefromtext: { Args: { '': string }; Returns: unknown }
       st_linelocatepoint: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: number
@@ -11452,12 +11422,12 @@ export type Database = {
         Args: { inputgeom: unknown; segs_per_quarter?: number }
         Returns: unknown
       }
-      st_mlinefromtext: { Args: { "": string }; Returns: unknown }
-      st_mpointfromtext: { Args: { "": string }; Returns: unknown }
-      st_mpolyfromtext: { Args: { "": string }; Returns: unknown }
-      st_multilinestringfromtext: { Args: { "": string }; Returns: unknown }
-      st_multipointfromtext: { Args: { "": string }; Returns: unknown }
-      st_multipolygonfromtext: { Args: { "": string }; Returns: unknown }
+      st_mlinefromtext: { Args: { '': string }; Returns: unknown }
+      st_mpointfromtext: { Args: { '': string }; Returns: unknown }
+      st_mpolyfromtext: { Args: { '': string }; Returns: unknown }
+      st_multilinestringfromtext: { Args: { '': string }; Returns: unknown }
+      st_multipointfromtext: { Args: { '': string }; Returns: unknown }
+      st_multipolygonfromtext: { Args: { '': string }; Returns: unknown }
       st_node: { Args: { g: unknown }; Returns: unknown }
       st_normalize: { Args: { geom: unknown }; Returns: unknown }
       st_offsetcurve: {
@@ -11476,7 +11446,7 @@ export type Database = {
         Args: { geog: unknown; use_spheroid?: boolean }
         Returns: number
       }
-      st_pointfromtext: { Args: { "": string }; Returns: unknown }
+      st_pointfromtext: { Args: { '': string }; Returns: unknown }
       st_pointm: {
         Args: {
           mcoordinate: number
@@ -11505,8 +11475,8 @@ export type Database = {
         }
         Returns: unknown
       }
-      st_polyfromtext: { Args: { "": string }; Returns: unknown }
-      st_polygonfromtext: { Args: { "": string }; Returns: unknown }
+      st_polyfromtext: { Args: { '': string }; Returns: unknown }
+      st_polygonfromtext: { Args: { '': string }; Returns: unknown }
       st_project: {
         Args: { azimuth: number; distance: number; geog: unknown }
         Returns: unknown
@@ -11615,12 +11585,12 @@ export type Database = {
       }
       st_within: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
       st_wkbtosql: { Args: { wkb: string }; Returns: unknown }
-      st_wkttosql: { Args: { "": string }; Returns: unknown }
+      st_wkttosql: { Args: { '': string }; Returns: unknown }
       st_wrapx: {
         Args: { geom: unknown; move: number; wrap: number }
         Returns: unknown
       }
-      unlockrows: { Args: { "": string }; Returns: number }
+      unlockrows: { Args: { '': string }; Returns: number }
       updategeometrysrid: {
         Args: {
           catalogn_name: string
@@ -11676,7 +11646,7 @@ export type Database = {
           owner: string | null
           owner_id: string | null
           public: boolean | null
-          type: Database["storage"]["Enums"]["buckettype"]
+          type: Database['storage']['Enums']['buckettype']
           updated_at: string | null
         }
         Insert: {
@@ -11689,7 +11659,7 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
-          type?: Database["storage"]["Enums"]["buckettype"]
+          type?: Database['storage']['Enums']['buckettype']
           updated_at?: string | null
         }
         Update: {
@@ -11702,7 +11672,7 @@ export type Database = {
           owner?: string | null
           owner_id?: string | null
           public?: boolean | null
-          type?: Database["storage"]["Enums"]["buckettype"]
+          type?: Database['storage']['Enums']['buckettype']
           updated_at?: string | null
         }
         Relationships: []
@@ -11712,21 +11682,21 @@ export type Database = {
           created_at: string
           format: string
           id: string
-          type: Database["storage"]["Enums"]["buckettype"]
+          type: Database['storage']['Enums']['buckettype']
           updated_at: string
         }
         Insert: {
           created_at?: string
           format?: string
           id: string
-          type?: Database["storage"]["Enums"]["buckettype"]
+          type?: Database['storage']['Enums']['buckettype']
           updated_at?: string
         }
         Update: {
           created_at?: string
           format?: string
           id?: string
-          type?: Database["storage"]["Enums"]["buckettype"]
+          type?: Database['storage']['Enums']['buckettype']
           updated_at?: string
         }
         Relationships: []
@@ -11735,19 +11705,19 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          type: Database["storage"]["Enums"]["buckettype"]
+          type: Database['storage']['Enums']['buckettype']
           updated_at: string
         }
         Insert: {
           created_at?: string
           id: string
-          type?: Database["storage"]["Enums"]["buckettype"]
+          type?: Database['storage']['Enums']['buckettype']
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
-          type?: Database["storage"]["Enums"]["buckettype"]
+          type?: Database['storage']['Enums']['buckettype']
           updated_at?: string
         }
         Relationships: []
@@ -11776,11 +11746,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "iceberg_namespaces_bucket_id_fkey"
-            columns: ["bucket_id"]
+            foreignKeyName: 'iceberg_namespaces_bucket_id_fkey'
+            columns: ['bucket_id']
             isOneToOne: false
-            referencedRelation: "buckets_analytics"
-            referencedColumns: ["id"]
+            referencedRelation: 'buckets_analytics'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -11814,18 +11784,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "iceberg_tables_bucket_id_fkey"
-            columns: ["bucket_id"]
+            foreignKeyName: 'iceberg_tables_bucket_id_fkey'
+            columns: ['bucket_id']
             isOneToOne: false
-            referencedRelation: "buckets_analytics"
-            referencedColumns: ["id"]
+            referencedRelation: 'buckets_analytics'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "iceberg_tables_namespace_id_fkey"
-            columns: ["namespace_id"]
+            foreignKeyName: 'iceberg_tables_namespace_id_fkey'
+            columns: ['namespace_id']
             isOneToOne: false
-            referencedRelation: "iceberg_namespaces"
-            referencedColumns: ["id"]
+            referencedRelation: 'iceberg_namespaces'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -11898,11 +11868,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "objects_bucketId_fkey"
-            columns: ["bucket_id"]
+            foreignKeyName: 'objects_bucketId_fkey'
+            columns: ['bucket_id']
             isOneToOne: false
-            referencedRelation: "buckets"
-            referencedColumns: ["id"]
+            referencedRelation: 'buckets'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -11930,11 +11900,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "prefixes_bucketId_fkey"
-            columns: ["bucket_id"]
+            foreignKeyName: 'prefixes_bucketId_fkey'
+            columns: ['bucket_id']
             isOneToOne: false
-            referencedRelation: "buckets"
-            referencedColumns: ["id"]
+            referencedRelation: 'buckets'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -11974,11 +11944,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "s3_multipart_uploads_bucket_id_fkey"
-            columns: ["bucket_id"]
+            foreignKeyName: 's3_multipart_uploads_bucket_id_fkey'
+            columns: ['bucket_id']
             isOneToOne: false
-            referencedRelation: "buckets"
-            referencedColumns: ["id"]
+            referencedRelation: 'buckets'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -12021,18 +11991,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "s3_multipart_uploads_parts_bucket_id_fkey"
-            columns: ["bucket_id"]
+            foreignKeyName: 's3_multipart_uploads_parts_bucket_id_fkey'
+            columns: ['bucket_id']
             isOneToOne: false
-            referencedRelation: "buckets"
-            referencedColumns: ["id"]
+            referencedRelation: 'buckets'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "s3_multipart_uploads_parts_upload_id_fkey"
-            columns: ["upload_id"]
+            foreignKeyName: 's3_multipart_uploads_parts_upload_id_fkey'
+            columns: ['upload_id']
             isOneToOne: false
-            referencedRelation: "s3_multipart_uploads"
-            referencedColumns: ["id"]
+            referencedRelation: 's3_multipart_uploads'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -12072,11 +12042,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "vector_indexes_bucket_id_fkey"
-            columns: ["bucket_id"]
+            foreignKeyName: 'vector_indexes_bucket_id_fkey'
+            columns: ['bucket_id']
             isOneToOne: false
-            referencedRelation: "buckets_vectors"
-            referencedColumns: ["id"]
+            referencedRelation: 'buckets_vectors'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -12233,7 +12203,7 @@ export type Database = {
       }
     }
     Enums: {
-      buckettype: "STANDARD" | "ANALYTICS" | "VECTOR"
+      buckettype: 'STANDARD' | 'ANALYTICS' | 'VECTOR'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -12241,33 +12211,31 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -12276,23 +12244,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -12301,23 +12269,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -12326,56 +12294,56 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
   auth: {
     Enums: {
-      aal_level: ["aal1", "aal2", "aal3"],
-      code_challenge_method: ["s256", "plain"],
-      factor_status: ["unverified", "verified"],
-      factor_type: ["totp", "webauthn", "phone"],
-      oauth_authorization_status: ["pending", "approved", "denied", "expired"],
-      oauth_client_type: ["public", "confidential"],
-      oauth_registration_type: ["dynamic", "manual"],
-      oauth_response_type: ["code"],
+      aal_level: ['aal1', 'aal2', 'aal3'],
+      code_challenge_method: ['s256', 'plain'],
+      factor_status: ['unverified', 'verified'],
+      factor_type: ['totp', 'webauthn', 'phone'],
+      oauth_authorization_status: ['pending', 'approved', 'denied', 'expired'],
+      oauth_client_type: ['public', 'confidential'],
+      oauth_registration_type: ['dynamic', 'manual'],
+      oauth_response_type: ['code'],
       one_time_token_type: [
-        "confirmation_token",
-        "reauthentication_token",
-        "recovery_token",
-        "email_change_token_new",
-        "email_change_token_current",
-        "phone_change_token",
+        'confirmation_token',
+        'reauthentication_token',
+        'recovery_token',
+        'email_change_token_new',
+        'email_change_token_current',
+        'phone_change_token',
       ],
     },
   },
@@ -12384,175 +12352,153 @@ export const Constants = {
   },
   core: {
     Enums: {
-      app_role: ["user", "moderator", "admin", "super_admin"],
+      app_role: ['user', 'moderator', 'admin', 'super_admin'],
       application_status: [
-        "draft",
-        "submitted",
-        "under_review",
-        "interviewing",
-        "offer_extended",
-        "hired",
-        "rejected",
-        "withdrawn",
+        'draft',
+        'submitted',
+        'under_review',
+        'interviewing',
+        'offer_extended',
+        'hired',
+        'rejected',
+        'withdrawn',
       ],
       background_check_dispute_status: [
-        "pending",
-        "under_review",
-        "resolved",
-        "upheld",
-        "cancelled",
+        'pending',
+        'under_review',
+        'resolved',
+        'upheld',
+        'cancelled',
       ],
-      background_check_paid_by: ["worker", "organization", "platform"],
+      background_check_paid_by: ['worker', 'organization', 'platform'],
       background_check_status: [
-        "pending",
-        "invited",
-        "submitted",
-        "in_progress",
-        "under_review",
-        "completed_clear",
-        "completed_consider",
-        "completed_not_clear",
-        "partially_completed",
-        "failed",
-        "cancelled",
-        "disputed",
-        "expired",
-        "refunded",
+        'pending',
+        'invited',
+        'submitted',
+        'in_progress',
+        'under_review',
+        'completed_clear',
+        'completed_consider',
+        'completed_not_clear',
+        'partially_completed',
+        'failed',
+        'cancelled',
+        'disputed',
+        'expired',
+        'refunded',
       ],
-      location_visibility: [
-        "public",
-        "authenticated",
-        "organization_only",
-        "private",
-      ],
-      notification_channel: ["in_app", "email", "push", "sms"],
+      location_visibility: ['public', 'authenticated', 'organization_only', 'private'],
+      notification_channel: ['in_app', 'email', 'push', 'sms'],
       notification_delivery_status: [
-        "queued",
-        "sending",
-        "sent",
-        "delivered",
-        "failed",
-        "bounce",
-        "blocked",
+        'queued',
+        'sending',
+        'sent',
+        'delivered',
+        'failed',
+        'bounce',
+        'blocked',
       ],
       notification_event_kind: [
-        "accepted",
-        "delivered",
-        "opened",
-        "clicked",
-        "failed",
-        "bounce",
-        "complaint",
+        'accepted',
+        'delivered',
+        'opened',
+        'clicked',
+        'failed',
+        'bounce',
+        'complaint',
       ],
-      notification_frequency: [
-        "immediate",
-        "digest_daily",
-        "digest_weekly",
-        "mute",
-      ],
-      notification_severity: ["info", "important", "critical"],
+      notification_frequency: ['immediate', 'digest_daily', 'digest_weekly', 'mute'],
+      notification_severity: ['info', 'important', 'critical'],
       notification_type: [
-        "success",
-        "warning",
-        "info",
-        "job.match",
-        "app.submitted",
-        "app.status_changed",
-        "interview.scheduled",
-        "offer.extended",
-        "hiring.decision",
-        "team.invite",
-        "team.assigned",
-        "team.commented",
-        "team.role_changed",
-        "profile.viewed",
-        "profile.unlocked",
-        "review.new",
-        "review.reply",
-        "skill.endorse",
-        "acct.verify",
-        "acct.password_reset",
-        "payment.success",
-        "payment.failed",
-        "sub.renewal",
-        "bgcheck.completed",
-        "profile.reminder",
-        "reengage",
-        "feature.announcement",
-        "platform.update",
-        "message.received",
-        "system.cron_failure",
-        "profile.completion_reminder",
-        "application.status_stale",
-        "system.digest_daily",
-        "system.digest_weekly",
-        "inquiry.created",
-        "inquiry.sent",
-        "inquiry.comment_added",
-        "inquiry.section_accepted",
-        "inquiry.fully_accepted",
-        "inquiry.capability_answered",
+        'success',
+        'warning',
+        'info',
+        'job.match',
+        'app.submitted',
+        'app.status_changed',
+        'interview.scheduled',
+        'offer.extended',
+        'hiring.decision',
+        'team.invite',
+        'team.assigned',
+        'team.commented',
+        'team.role_changed',
+        'profile.viewed',
+        'profile.unlocked',
+        'review.new',
+        'review.reply',
+        'skill.endorse',
+        'acct.verify',
+        'acct.password_reset',
+        'payment.success',
+        'payment.failed',
+        'sub.renewal',
+        'bgcheck.completed',
+        'profile.reminder',
+        'reengage',
+        'feature.announcement',
+        'platform.update',
+        'message.received',
+        'system.cron_failure',
+        'profile.completion_reminder',
+        'application.status_stale',
+        'system.digest_daily',
+        'system.digest_weekly',
+        'inquiry.created',
+        'inquiry.sent',
+        'inquiry.comment_added',
+        'inquiry.section_accepted',
+        'inquiry.fully_accepted',
+        'inquiry.capability_answered',
       ],
       organization_document_category: [
-        "contracts",
-        "templates",
-        "compliance",
-        "certifications",
-        "onboarding",
-        "general",
-        "other",
+        'contracts',
+        'templates',
+        'compliance',
+        'certifications',
+        'onboarding',
+        'general',
+        'other',
       ],
-      organization_document_permission: ["view", "edit", "manage"],
-      organization_document_share_type: ["organization_member", "external"],
-      organization_location_type: [
-        "headquarters",
-        "branch",
-        "job_site",
-        "remote",
-        "other",
-      ],
-      organization_request_status: ["pending", "approved", "rejected"],
-      project_status: ["planning", "active", "completed", "on_hold"],
-      project_worker_status: ["pending", "approved", "rejected"],
-      property_type: [
-        "residential",
-        "commercial",
-        "industrial",
-        "mixed_use",
-        "other",
-      ],
-      review_status: ["pending", "approved", "rejected", "flagged"],
+      organization_document_permission: ['view', 'edit', 'manage'],
+      organization_document_share_type: ['organization_member', 'external'],
+      organization_location_type: ['headquarters', 'branch', 'job_site', 'remote', 'other'],
+      organization_request_status: ['pending', 'approved', 'rejected'],
+      project_status: ['planning', 'active', 'completed', 'on_hold'],
+      project_worker_status: ['pending', 'approved', 'rejected'],
+      property_type: ['residential', 'commercial', 'industrial', 'mixed_use', 'other'],
+      review_status: ['pending', 'approved', 'rejected', 'flagged'],
       team_activity_event_type: [
-        "team.created",
-        "team.updated",
-        "team.archived",
-        "member.invited",
-        "member.joined",
-        "member.removed",
-        "member.role_changed",
-        "job.assigned",
-        "job.unassigned",
-        "application.assigned",
-        "application.reassigned",
-        "application.review_submitted",
-        "workload.rebalanced",
+        'team.created',
+        'team.updated',
+        'team.archived',
+        'member.invited',
+        'member.joined',
+        'member.removed',
+        'member.role_changed',
+        'job.assigned',
+        'job.unassigned',
+        'application.assigned',
+        'application.reassigned',
+        'application.review_submitted',
+        'workload.rebalanced',
       ],
       team_permission: [
-        "team.view",
-        "team.manage",
-        "team.settings",
-        "team.invite",
-        "team.remove_member",
-        "team.assign_role",
-        "job.manage",
-        "application.review",
-        "application.manage",
-        "application.comment",
-        "interview.schedule",
-        "offer.manage",
-        "analytics.view",
-        "document.manage",
-        "invitation.manage",
+        'team.view',
+        'team.manage',
+        'team.settings',
+        'team.invite',
+        'team.remove_member',
+        'team.assign_role',
+        'job.manage',
+        'application.review',
+        'application.manage',
+        'application.comment',
+        'interview.schedule',
+        'offer.manage',
+        'analytics.view',
+        'document.manage',
+        'invitation.manage',
       ],
     },
   },
@@ -12567,8 +12513,7 @@ export const Constants = {
   },
   storage: {
     Enums: {
-      buckettype: ["STANDARD", "ANALYTICS", "VECTOR"],
+      buckettype: ['STANDARD', 'ANALYTICS', 'VECTOR'],
     },
   },
 } as const
-

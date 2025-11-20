@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock dependencies before importing the hook
 const mockProvider = {
@@ -23,8 +23,8 @@ vi.mock('../useDebounce', () => ({
   useAddressDebouncedCallback: vi.fn(),
 }))
 
-import { useAddressAutocomplete } from '../useAddressAutocomplete'
 import type { AddressResult } from '../../types'
+import { useAddressAutocomplete } from '../useAddressAutocomplete'
 
 describe('useAddressAutocomplete', () => {
   beforeEach(() => {
@@ -115,12 +115,15 @@ describe('useAddressAutocomplete', () => {
     result.current.search('Boston')
 
     // Wait for debounced query to trigger search
-    await waitFor(() => {
-      expect(result.current.loading).toBe(true)
-    }, { timeout: 2000 })
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(true)
+      },
+      { timeout: 2000 }
+    )
 
     // Resolve the search
-    resolveSearch!([])
+    resolveSearch?.([])
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -166,9 +169,12 @@ describe('useAddressAutocomplete', () => {
 
     result.current.search('Boston')
 
-    await waitFor(() => {
-      expect(result.current.results).toEqual(mockResults)
-    }, { timeout: 2000 })
+    await waitFor(
+      () => {
+        expect(result.current.results).toEqual(mockResults)
+      },
+      { timeout: 2000 }
+    )
 
     result.current.clearResults()
 
@@ -197,16 +203,19 @@ describe('useAddressAutocomplete', () => {
     const { result } = renderHook(() => useAddressAutocomplete())
 
     result.current.search('Boston')
-    
+
     // Wait a bit for the search to start
     await new Promise((resolve) => setTimeout(resolve, 50))
-    
+
     result.current.clearResults()
 
     // Abort should be called when clearing
-    await waitFor(() => {
-      expect(abortSpy).toHaveBeenCalled()
-    }, { timeout: 1000 })
+    await waitFor(
+      () => {
+        expect(abortSpy).toHaveBeenCalled()
+      },
+      { timeout: 1000 }
+    )
 
     // Restore original
     global.AbortController = originalAbortController
@@ -255,7 +264,10 @@ describe('useAddressAutocomplete', () => {
     result.current.search('City')
 
     await waitFor(() => {
-      expect(mockProvider.search).toHaveBeenCalledWith('City', expect.objectContaining({ limit: 5 }))
+      expect(mockProvider.search).toHaveBeenCalledWith(
+        'City',
+        expect.objectContaining({ limit: 5 })
+      )
     })
   })
 
@@ -274,4 +286,3 @@ describe('useAddressAutocomplete', () => {
     mockIsReady = true
   })
 })
-

@@ -1,22 +1,29 @@
-import { YStack, XStack, Text, Spinner, H4, Button } from 'tamagui'
-import { Briefcase, Calendar, MapPin, Pencil, AlertCircle } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
-import { ProfileEmptyState } from './components'
-import { formatDateRange } from './utils/date-formatting'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget } from '@app/ui'
+import { AlertCircle, Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
+import { Button, H4, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ProfileEmptyState } from './components'
 import { useExperienceEdit } from './contexts/experience-edit-context'
+import { formatDateRange } from './utils/date-formatting'
 
 /**
  * Location formatting helper
  */
-function formatLocationForDisplay(location: string | object | null | undefined, isRemote: boolean): string {
-  if (!location) return '';
-  const locationStr = typeof location === 'string' 
-    ? location 
-    : (typeof location === 'object' && 'formattedAddress' in location)
-      ? (location.formattedAddress as string) || (('city' in location && 'state' in location) ? `${(location.city as string) || ''}, ${(location.state as string) || ''}`.trim() : '')
-      : '';
-  return isRemote ? `${locationStr} (Remote)` : locationStr;
+function formatLocationForDisplay(
+  location: string | object | null | undefined,
+  isRemote: boolean
+): string {
+  if (!location) return ''
+  const locationStr =
+    typeof location === 'string'
+      ? location
+      : typeof location === 'object' && 'formattedAddress' in location
+        ? (location.formattedAddress as string) ||
+          ('city' in location && 'state' in location
+            ? `${(location.city as string) || ''}, ${(location.state as string) || ''}`.trim()
+            : '')
+        : ''
+  return isRemote ? `${locationStr} (Remote)` : locationStr
 }
 
 /**
@@ -25,12 +32,12 @@ function formatLocationForDisplay(location: string | object | null | undefined, 
  */
 export function ProfileExperienceRight() {
   const { startEditing } = useExperienceEdit()
-  
+
   // Query saved experience data
   const experienceQuery = api.profile.getExperience.useQuery()
   const experienceSummaryQuery = api.profile.getExperienceSummary.useQuery()
   const experienceEntries = experienceQuery.data || []
-  
+
   // Show loading state
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
@@ -63,7 +70,15 @@ export function ProfileExperienceRight() {
       </Text>
 
       {/* Experience Summary Section */}
-      <YStack gap="$3" mb="$4" p="$3" bg="$background" borderWidth={1} borderColor="$borderColor" rounded="$4">
+      <YStack
+        gap="$3"
+        mb="$4"
+        p="$3"
+        bg="$background"
+        borderWidth={1}
+        borderColor="$borderColor"
+        rounded="$4"
+      >
         <H4 fontSize="$5">Experience Summary</H4>
         {experienceSummaryQuery.data?.career_level ? (
           <Text fontSize="$3" color="$color11">
@@ -86,7 +101,7 @@ export function ProfileExperienceRight() {
           {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
           {experienceEntries.map((exp: any) => {
             const locationDisplay = formatLocationForDisplay(exp.location, exp.is_remote || false)
-            
+
             return (
               <YStack
                 key={exp.id}
@@ -106,7 +121,7 @@ export function ProfileExperienceRight() {
                   <Text fontSize="$6" fontWeight="700" color="$color12">
                     {exp.job_title}
                   </Text>
-                  
+
                   {/* Company Name */}
                   <XStack gap="$2" items="center" flexWrap="wrap">
                     <Text fontSize="$4" fontWeight="600" color="$color11">
@@ -123,7 +138,7 @@ export function ProfileExperienceRight() {
                       </>
                     )}
                   </XStack>
-                  
+
                   {/* Current Position Badge */}
                   {exp.is_current && (
                     <XStack gap="$1" items="center">
@@ -163,7 +178,7 @@ export function ProfileExperienceRight() {
                         Description:
                       </Text>
                       <Text fontSize="$2" color="$color11">
-                        {exp.description.length > 200 
+                        {exp.description.length > 200
                           ? `${exp.description.substring(0, 200)}...`
                           : exp.description}
                       </Text>

@@ -1,9 +1,16 @@
-import { useMemo } from 'react'
-import { useToastController } from '@tamagui/toast'
-import { BellPlus, Briefcase, CheckCircle2, Loader2, Network, UserPlus } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { Separator, Text, XStack, YStack, Button } from 'tamagui'
+import { DashboardWidget } from '@app/ui'
+import {
+  BellPlus,
+  Briefcase,
+  CheckCircle2,
+  Loader2,
+  Network,
+  UserPlus,
+} from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useMemo } from 'react'
+import { Button, Separator, Text, XStack, YStack } from 'tamagui'
 
 type OrganizationIdentifier = { organizationId: string }
 
@@ -66,21 +73,17 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     { enabled: Boolean(employerId) }
   )
 
-  const {
-    data: followStatus,
-    isLoading: followStatusLoading,
-  } = api.employers.getOrganizationFollowStatus.useQuery(
-    { organizationId: employerId },
-    { enabled: Boolean(employerId) }
-  )
+  const { data: followStatus, isLoading: followStatusLoading } =
+    api.employers.getOrganizationFollowStatus.useQuery(
+      { organizationId: employerId },
+      { enabled: Boolean(employerId) }
+    )
 
-  const {
-    data: employmentStatus,
-    isLoading: employmentStatusLoading,
-  } = api.employers.getOrganizationEmploymentStatus.useQuery(
-    { organizationId: employerId },
-    { enabled: Boolean(employerId) }
-  )
+  const { data: employmentStatus, isLoading: employmentStatusLoading } =
+    api.employers.getOrganizationEmploymentStatus.useQuery(
+      { organizationId: employerId },
+      { enabled: Boolean(employerId) }
+    )
 
   const followMutation = api.employers.followOrganization.useMutation({
     onMutate: async (variables: OrganizationIdentifier) => {
@@ -99,7 +102,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     onError: (
       error: MutationError,
       variables: OrganizationIdentifier,
-      context?: FollowMutationContext,
+      context?: FollowMutationContext
     ) => {
       if (context?.previous) {
         utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
@@ -115,14 +118,11 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: data.follow.created_at ?? new Date().toISOString(),
       })
 
-      toast.show(
-        data.alreadyFollowing ? 'Already following' : 'Following organization',
-        {
-          message: data.alreadyFollowing
-            ? 'You were already following this organization.'
-            : 'We will keep you updated as new activity rolls in.',
-        }
-      )
+      toast.show(data.alreadyFollowing ? 'Already following' : 'Following organization', {
+        message: data.alreadyFollowing
+          ? 'You were already following this organization.'
+          : 'We will keep you updated as new activity rolls in.',
+      })
     },
   })
 
@@ -143,7 +143,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     onError: (
       error: MutationError,
       variables: OrganizationIdentifier,
-      context?: FollowMutationContext,
+      context?: FollowMutationContext
     ) => {
       if (context?.previous) {
         utils.employers.getOrganizationFollowStatus.setData(variables, context.previous)
@@ -168,11 +168,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
   const isFollowing = Boolean(followStatus?.isFollowing)
   const isFollowMutating = followMutation.isLoading || unfollowMutation.isLoading
   const isFollowButtonDisabled = isFollowMutating || followStatusLoading
-  const followButtonIcon = isFollowButtonDisabled
-    ? Loader2
-    : isFollowing
-      ? CheckCircle2
-      : UserPlus
+  const followButtonIcon = isFollowButtonDisabled ? Loader2 : isFollowing ? CheckCircle2 : UserPlus
   const followButtonLabel = followStatusLoading
     ? 'Checking status...'
     : isFollowMutating
@@ -201,7 +197,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     onError: (
       error: MutationError,
       variables: OrganizationIdentifier,
-      context?: EmploymentMutationContext,
+      context?: EmploymentMutationContext
     ) => {
       if (context?.previous) {
         utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
@@ -221,19 +217,16 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
         createdAt: experience?.created_at ?? new Date().toISOString(),
       })
 
-      toast.show(
-        data.alreadyLinked ? 'Already linked' : 'Employment linked',
-        {
-          message: data.alreadyLinked
-            ? 'Your profile is already connected to this organization.'
-            : 'We created a connection to this organization on your profile.',
-        }
-      )
+      toast.show(data.alreadyLinked ? 'Already linked' : 'Employment linked', {
+        message: data.alreadyLinked
+          ? 'Your profile is already connected to this organization.'
+          : 'We created a connection to this organization on your profile.',
+      })
     },
     onSettled: async (
       _data: ClaimMutationResult | undefined,
       _error: MutationError | null,
-      variables: OrganizationIdentifier,
+      variables: OrganizationIdentifier
     ) => {
       await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
     },
@@ -259,7 +252,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     onError: (
       error: MutationError,
       variables: OrganizationIdentifier,
-      context?: EmploymentMutationContext,
+      context?: EmploymentMutationContext
     ) => {
       if (context?.previous) {
         utils.employers.getOrganizationEmploymentStatus.setData(variables, context.previous)
@@ -288,7 +281,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
     onSettled: async (
       _data: { removed: boolean } | undefined,
       _error: MutationError | null,
-      variables: OrganizationIdentifier,
+      variables: OrganizationIdentifier
     ) => {
       await utils.employers.getOrganizationEmploymentStatus.invalidate(variables)
     },
@@ -369,7 +362,12 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Separator />
 
       <YStack gap="$2">
-        <Button size="$4" icon={followButtonIcon} onPress={handleFollow} disabled={isFollowButtonDisabled}>
+        <Button
+          size="$4"
+          icon={followButtonIcon}
+          onPress={handleFollow}
+          disabled={isFollowButtonDisabled}
+        >
           {followButtonLabel}
         </Button>
         <Button
@@ -409,7 +407,12 @@ type OrganizationSnapshotProps = {
   jobsLoading: boolean
 }
 
-function OrganizationSnapshot({ name, createdAt, openJobs, jobsLoading }: OrganizationSnapshotProps) {
+function OrganizationSnapshot({
+  name,
+  createdAt,
+  openJobs,
+  jobsLoading,
+}: OrganizationSnapshotProps) {
   return (
     <YStack gap="$2">
       <XStack gap="$2" items="center">
@@ -433,4 +436,3 @@ function OrganizationSnapshot({ name, createdAt, openJobs, jobsLoading }: Organi
     </YStack>
   )
 }
-

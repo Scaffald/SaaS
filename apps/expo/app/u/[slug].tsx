@@ -1,19 +1,19 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useEffect } from 'react'
-import { YStack, Spinner, Text } from 'tamagui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import {
-  GeneralInfoWidget,
-  ExperienceWidget,
-  EducationWidget,
-  SkillsWidget,
   CertificationsWidget,
+  EducationWidget,
+  ExperienceWidget,
+  GeneralInfoWidget,
   ReviewsWidget,
+  SkillsWidget,
   WorkLogPortfolioWidget,
 } from '@app/core/features/profile/widgets'
-import { api } from '@app/core/utils/api'
 import { useAuth } from '@app/core/provider/auth/useAuth'
+import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useEffect } from 'react'
+import { Spinner, Text, YStack } from 'tamagui'
 
 /**
  * Public User Profile Route (Vanity URL)

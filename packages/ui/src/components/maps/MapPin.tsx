@@ -1,6 +1,6 @@
+import { Building, User } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { View, YStack, Circle, useTheme, type GetThemeValueForKey } from 'tamagui'
-import { User, Building } from '@tamagui/lucide-icons'
+import { Circle, type GetThemeValueForKey, useTheme, View, YStack } from 'tamagui'
 import type { MapPin as MapPinType } from './types'
 
 interface MapPinProps {

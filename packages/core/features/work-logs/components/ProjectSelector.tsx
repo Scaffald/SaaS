@@ -1,36 +1,36 @@
-import { memo, useMemo } from "react";
-import { Select, Spinner, YStack, Text, XStack, Button } from "tamagui";
-import { AlertCircle, ChevronDown, RefreshCw } from "@tamagui/lucide-icons";
+import { AlertCircle, ChevronDown, RefreshCw } from '@tamagui/lucide-icons'
+import { memo, useMemo } from 'react'
+import { Button, Select, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export interface ProjectSelectorOrganization {
-  id: string;
-  name: string;
-  isAdmin: boolean;
-  isOwner: boolean;
+  id: string
+  name: string
+  isAdmin: boolean
+  isOwner: boolean
 }
 
 export interface ProjectSelectorProject {
-  id: string;
-  name: string;
-  organizationId: string;
-  status: string | null;
-  isArchived: boolean;
-  startsAt: string | null;
-  endsAt: string | null;
+  id: string
+  name: string
+  organizationId: string
+  status: string | null
+  isArchived: boolean
+  startsAt: string | null
+  endsAt: string | null
 }
 
 export interface ProjectSelectorProps {
-  value: string;
-  onChange: (projectId: string) => void;
-  organizations: ProjectSelectorOrganization[];
-  projects: ProjectSelectorProject[];
-  isLoading?: boolean;
-  error?: string | null;
-  onRetry?: () => void;
-  organizationFilter: string | null;
-  onOrganizationFilterChange: (organizationId: string | null) => void;
-  disabled?: boolean;
-  helperText?: string;
+  value: string
+  onChange: (projectId: string) => void
+  organizations: ProjectSelectorOrganization[]
+  projects: ProjectSelectorProject[]
+  isLoading?: boolean
+  error?: string | null
+  onRetry?: () => void
+  organizationFilter: string | null
+  onOrganizationFilterChange: (organizationId: string | null) => void
+  disabled?: boolean
+  helperText?: string
 }
 
 export const ProjectSelector = memo(function ProjectSelector({
@@ -48,12 +48,12 @@ export const ProjectSelector = memo(function ProjectSelector({
 }: ProjectSelectorProps) {
   const filteredProjects = useMemo(() => {
     if (!organizationFilter) {
-      return projects;
+      return projects
     }
-    return projects.filter((project) => project.organizationId === organizationFilter);
-  }, [organizationFilter, projects]);
+    return projects.filter((project) => project.organizationId === organizationFilter)
+  }, [organizationFilter, projects])
 
-  const hasMultipleOrganizations = organizations.length > 1;
+  const hasMultipleOrganizations = organizations.length > 1
 
   return (
     <YStack gap="$2">
@@ -67,12 +67,12 @@ export const ProjectSelector = memo(function ProjectSelector({
             Organization
           </Text>
           <Select
-            value={organizationFilter ?? "all"}
+            value={organizationFilter ?? 'all'}
             onValueChange={(nextValue) => {
-              if (nextValue === "all") {
-                onOrganizationFilterChange(null);
+              if (nextValue === 'all') {
+                onOrganizationFilterChange(null)
               } else {
-                onOrganizationFilterChange(nextValue);
+                onOrganizationFilterChange(nextValue)
               }
             }}
             disablePreventBodyScroll
@@ -90,11 +90,7 @@ export const ProjectSelector = memo(function ProjectSelector({
                     <Select.ItemText>All organizations</Select.ItemText>
                   </Select.Item>
                   {organizations.map((organization, index) => (
-                    <Select.Item
-                      key={organization.id}
-                      index={index + 1}
-                      value={organization.id}
-                    >
+                    <Select.Item key={organization.id} index={index + 1} value={organization.id}>
                       <Select.ItemText>{organization.name}</Select.ItemText>
                       <Select.ItemIndicator />
                     </Select.Item>
@@ -117,7 +113,7 @@ export const ProjectSelector = memo(function ProjectSelector({
             iconAfter={ChevronDown}
             disabled={disabled || isLoading || filteredProjects.length === 0}
           >
-            <Select.Value placeholder={isLoading ? "Loading projects..." : "Select a project"} />
+            <Select.Value placeholder={isLoading ? 'Loading projects...' : 'Select a project'} />
           </Select.Trigger>
 
           <Select.Content zIndex={1_000_000}>
@@ -129,7 +125,7 @@ export const ProjectSelector = memo(function ProjectSelector({
                   <Select.Item key={project.id} index={index} value={project.id}>
                     <Select.ItemText>
                       {project.name}
-                      {project.isArchived ? " (Archived)" : ""}
+                      {project.isArchived ? ' (Archived)' : ''}
                     </Select.ItemText>
                     <Select.ItemIndicator />
                   </Select.Item>
@@ -187,6 +183,5 @@ export const ProjectSelector = memo(function ProjectSelector({
         </Text>
       )}
     </YStack>
-  );
-});
-
+  )
+})

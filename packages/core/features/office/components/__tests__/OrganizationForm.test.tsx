@@ -1,13 +1,25 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const createOrganizationMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
 const updateOrganizationMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
-const getOrganizationQueryMock = vi.hoisted(() => ({ data: undefined, isLoading: false, useQuery: vi.fn() }))
-const getProjectsWithOverridesQueryMock = vi.hoisted(() => ({ data: undefined, isLoading: false, useQuery: vi.fn() }))
-const updateLocationVisibilityMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), isPending: false, useMutation: vi.fn() }))
+const getOrganizationQueryMock = vi.hoisted(() => ({
+  data: undefined,
+  isLoading: false,
+  useQuery: vi.fn(),
+}))
+const getProjectsWithOverridesQueryMock = vi.hoisted(() => ({
+  data: undefined,
+  isLoading: false,
+  useQuery: vi.fn(),
+}))
+const updateLocationVisibilityMock = vi.hoisted(() => ({
+  mutateAsync: vi.fn(),
+  isPending: false,
+  useMutation: vi.fn(),
+}))
 const toastMock = vi.hoisted(() => ({ show: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ push: vi.fn() }))
 
@@ -34,7 +46,8 @@ vi.mock('@app/core/utils/supabase/client', () => ({
     schema: () => ({
       from: () => ({
         select: () => ({
-          order: () => Promise.resolve({ data: [{ id: 'ind-1', name: 'Construction' }], error: null }),
+          order: () =>
+            Promise.resolve({ data: [{ id: 'ind-1', name: 'Construction' }], error: null }),
         }),
       }),
     }),
@@ -43,7 +56,10 @@ vi.mock('@app/core/utils/supabase/client', () => ({
 
 vi.mock('./OrganizationLocationsInput', () => ({
   OrganizationLocationsInput: ({ onChange }: { onChange: (value: unknown) => void }) => (
-    <button type="button" onClick={() => onChange([{ name: 'HQ', address: { city: 'Charlotte' } }])}>
+    <button
+      type="button"
+      onClick={() => onChange([{ name: 'HQ', address: { city: 'Charlotte' } }])}
+    >
       add-location
     </button>
   ),
@@ -56,9 +72,10 @@ vi.mock('react-hook-form', () => {
       const store = { values }
       return {
         control: store,
-        handleSubmit: (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) => async () => {
-          await onSubmit({ ...store.values })
-        },
+        handleSubmit:
+          (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) => async () => {
+            await onSubmit({ ...store.values })
+          },
         formState: { errors: {}, isDirty: true },
         setValue: (name: string, value: unknown) => {
           store.values[name] = value
@@ -76,7 +93,15 @@ vi.mock('react-hook-form', () => {
     }: {
       control: { values: Record<string, unknown> }
       name: string
-      render: (props: { field: { name: string; value: unknown; onChange: (value: unknown) => void; onBlur: () => void }; fieldState: { error: null } }) => ReactNode
+      render: (props: {
+        field: {
+          name: string
+          value: unknown
+          onChange: (value: unknown) => void
+          onBlur: () => void
+        }
+        fieldState: { error: null }
+      }) => ReactNode
     }) => {
       const store = control
       const field = {
@@ -93,13 +118,31 @@ vi.mock('react-hook-form', () => {
 })
 
 vi.mock('@app/ui', () => ({
-  Button: ({ children, onPress, disabled, testID }: { children: ReactNode; onPress?: () => void; disabled?: boolean; testID?: string }) => (
+  Button: ({
+    children,
+    onPress,
+    disabled,
+    testID,
+  }: {
+    children: ReactNode
+    onPress?: () => void
+    disabled?: boolean
+    testID?: string
+  }) => (
     <button type="button" data-testid={testID} disabled={disabled} onClick={onPress}>
       {children}
     </button>
   ),
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
-  AddressAutocomplete: ({ value, onChange, onAddressSelect }: { value?: string; onChange: (value: string) => void; onAddressSelect: (result: Record<string, unknown>) => void }) => (
+  AddressAutocomplete: ({
+    value,
+    onChange,
+    onAddressSelect,
+  }: {
+    value?: string
+    onChange: (value: string) => void
+    onAddressSelect: (result: Record<string, unknown>) => void
+  }) => (
     <div>
       <input
         data-testid="address-autocomplete"
@@ -129,7 +172,15 @@ const selectState = { onChange: (_value: string) => {} }
 vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
 
-  const Select = ({ value, onValueChange, children }: { value: string; onValueChange: (value: string) => void; children: ReactNode }) => (
+  const Select = ({
+    value,
+    onValueChange,
+    children,
+  }: {
+    value: string
+    onValueChange: (value: string) => void
+    children: ReactNode
+  }) => (
     <div data-testid="select" data-value={value}>
       {(() => {
         selectState.onChange = onValueChange
@@ -161,7 +212,19 @@ vi.mock('tamagui', async () => {
   Select.ItemText = ({ children }: { children: ReactNode }) => <span>{children}</span>
   Select.ItemIndicator = ({ children }: { children: ReactNode }) => <span>{children}</span>
 
-  const Input = ({ value, onChangeText, placeholder, id, testID }: { value?: string; onChangeText?: (value: string) => void; placeholder?: string; id?: string; testID?: string }) => (
+  const Input = ({
+    value,
+    onChangeText,
+    placeholder,
+    id,
+    testID,
+  }: {
+    value?: string
+    onChangeText?: (value: string) => void
+    placeholder?: string
+    id?: string
+    testID?: string
+  }) => (
     <input
       id={id}
       data-testid={testID}
@@ -171,11 +234,23 @@ vi.mock('tamagui', async () => {
     />
   )
 
-  const Label = ({ children, htmlFor }: { children: ReactNode; htmlFor?: string }) => <label htmlFor={htmlFor}>{children}</label>
+  const Label = ({ children, htmlFor }: { children: ReactNode; htmlFor?: string }) => (
+    <label htmlFor={htmlFor}>{children}</label>
+  )
 
   const YStack = ({ children }: { children: ReactNode }) => <div>{children}</div>
   const XStack = ({ children }: { children: ReactNode }) => <div>{children}</div>
-  const ButtonBase = ({ children, onPress, disabled, testID }: { children: ReactNode; onPress?: () => void; disabled?: boolean; testID?: string }) => (
+  const ButtonBase = ({
+    children,
+    onPress,
+    disabled,
+    testID,
+  }: {
+    children: ReactNode
+    onPress?: () => void
+    disabled?: boolean
+    testID?: string
+  }) => (
     <button type="button" data-testid={testID} disabled={disabled} onClick={onPress}>
       {children}
     </button>
@@ -221,11 +296,23 @@ describe('OrganizationForm', () => {
   beforeEach(() => {
     createOrganizationMock.mutateAsync.mockReset()
     updateOrganizationMock.mutateAsync.mockReset()
-    createOrganizationMock.useMutation.mockReturnValue({ mutateAsync: createOrganizationMock.mutateAsync, isPending: false })
-    updateOrganizationMock.useMutation.mockReturnValue({ mutateAsync: updateOrganizationMock.mutateAsync, isPending: false })
+    createOrganizationMock.useMutation.mockReturnValue({
+      mutateAsync: createOrganizationMock.mutateAsync,
+      isPending: false,
+    })
+    updateOrganizationMock.useMutation.mockReturnValue({
+      mutateAsync: updateOrganizationMock.mutateAsync,
+      isPending: false,
+    })
     getOrganizationQueryMock.useQuery.mockReturnValue({ data: undefined, isLoading: false })
-    getProjectsWithOverridesQueryMock.useQuery.mockReturnValue({ data: undefined, isLoading: false })
-    updateLocationVisibilityMock.useMutation.mockReturnValue({ mutateAsync: updateLocationVisibilityMock.mutateAsync, isPending: false })
+    getProjectsWithOverridesQueryMock.useQuery.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+    })
+    updateLocationVisibilityMock.useMutation.mockReturnValue({
+      mutateAsync: updateLocationVisibilityMock.mutateAsync,
+      isPending: false,
+    })
     toastMock.show.mockReset()
     routerMock.push.mockReset()
   })

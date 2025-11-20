@@ -1,6 +1,6 @@
-import { XStack, YStack, Text } from 'tamagui'
-import { Dialog } from './Dialog'
+import { Text, XStack, YStack } from 'tamagui'
 import { Button, type ButtonProps } from '../buttons/Button'
+import { Dialog } from './Dialog'
 
 interface ConfirmationDialogProps {
   open: boolean

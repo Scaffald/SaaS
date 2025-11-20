@@ -1,31 +1,31 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { View } from 'tamagui'
-import type {
-  MapContainerProps,
-  MapContainerRef,
-  ViewportBounds,
-  ClusterInfo,
-  MapPinCategory,
-  MapPin,
-} from './types'
-import type { CustomMarker } from './CustomMarker'
-import { validateGeoJSONFeatureCollection, extractViewportBounds } from './utils'
 import { useThemeSetting } from '../../../../core/provider/theme/UniversalThemeProvider'
-import { createPulsingDot } from './PulsingDot'
 import {
-  tealLight,
-  tealDark,
   purpleDark,
   purpleLight,
+  tealDark,
+  tealLight,
   yellowDark,
   yellowLight,
 } from '../../themes/scaffald-theme'
+import type { CustomMarker } from './CustomMarker'
 import {
   getMapStyleUrl,
+  getStandardStyleConfig,
   getStandardStyleConfigIfNeeded,
   shouldApplyStandardConfig,
-  getStandardStyleConfig,
 } from './mapboxStyleConfig'
+import { createPulsingDot } from './PulsingDot'
+import type {
+  ClusterInfo,
+  MapContainerProps,
+  MapContainerRef,
+  MapPin,
+  MapPinCategory,
+  ViewportBounds,
+} from './types'
+import { extractViewportBounds, validateGeoJSONFeatureCollection } from './utils'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 

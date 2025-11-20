@@ -1,7 +1,7 @@
-import { useIsomorphicLayoutEffect } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
+import { useIsomorphicLayoutEffect } from 'tamagui'
 
 /**
  * Map state interface for persisting search location, filters, and UI preferences
@@ -81,7 +81,7 @@ const getStoredState = async (): Promise<MapState | null> => {
       if (!stored) return null
 
       const parsed = JSON.parse(stored) as PersistedMapState
-      
+
       // Check expiry (24 hours)
       const now = Date.now()
       if (now - parsed.timestamp > EXPIRY_MS) {
@@ -100,7 +100,7 @@ const getStoredState = async (): Promise<MapState | null> => {
       if (!stored) return null
 
       const parsed = JSON.parse(stored) as PersistedMapState
-      
+
       // Check expiry (24 hours)
       const now = Date.now()
       if (now - parsed.timestamp > EXPIRY_MS) {
@@ -146,13 +146,13 @@ loadMapStatePromise.then((val) => {
 
 /**
  * MapStateProvider - Manages map state persistence across page reloads
- * 
+ *
  * Features:
  * - Persists search location, filters, and UI preferences
  * - Auto-restores state on page load (within 24 hours)
  * - Platform-agnostic storage (localStorage for web, AsyncStorage for native)
  * - Automatic state persistence on changes
- * 
+ *
  * @example
  * ```tsx
  * <MapStateProvider>
@@ -257,11 +257,11 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
 
 /**
  * Hook to access map state and update functions
- * 
+ *
  * @example
  * ```tsx
  * const { state, updateSearchLocation, updateFilters } = useMapState()
- * 
+ *
  * // Update search location
  * updateSearchLocation({
  *   coordinates: [-71.0589, 42.3601],
@@ -269,7 +269,7 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
  *   zoomLevel: 12,
  *   timestamp: Date.now(),
  * })
- * 
+ *
  * // Update filters
  * updateFilters({ showWorkers: false })
  * ```
@@ -281,4 +281,3 @@ export function useMapState(): MapStateContextValue {
   }
   return context
 }
-

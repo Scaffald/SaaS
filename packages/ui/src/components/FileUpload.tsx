@@ -1,9 +1,8 @@
+import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
 import { useId, useMemo, useState } from 'react'
-import { YStack, XStack, Text, Button, Spinner } from 'tamagui'
-import { Upload, X, AlertCircle } from '@tamagui/lucide-icons'
-
-import { UploadSurface } from './upload/UploadSurface'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 import type { UploadSelection } from './upload/UploadSurface'
+import { UploadSurface } from './upload/UploadSurface'
 
 export interface FileUploadProps {
   onFileSelect: (file: File) => void

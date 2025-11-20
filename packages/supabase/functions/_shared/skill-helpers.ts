@@ -7,44 +7,48 @@
  * Returns just IDs and taxonomy - names can be looked up separately if needed
  */
 interface JobSkillRecord {
-  skill_taxonomy?: string;
-  csi_skill_id?: string | null;
-  onet_occupation_id?: string | null;
+  skill_taxonomy?: string
+  csi_skill_id?: string | null
+  onet_occupation_id?: string | null
 }
 
 export function transformJobSkills(jobSkills: unknown[]): Array<{
-  id: string;
-  taxonomy: "csi" | "onet";
+  id: string
+  taxonomy: 'csi' | 'onet'
 }> {
   if (!Array.isArray(jobSkills)) {
-    return [];
+    return []
   }
 
   return jobSkills
     .map((js: unknown) => {
-      const skill = js as JobSkillRecord;
-      if (!skill.skill_taxonomy) return null;
+      const skill = js as JobSkillRecord
+      if (!skill.skill_taxonomy) return null
 
-      if (skill.skill_taxonomy === "csi" && skill.csi_skill_id) {
+      if (skill.skill_taxonomy === 'csi' && skill.csi_skill_id) {
         return {
           id: skill.csi_skill_id,
-          taxonomy: "csi" as const,
-        };
+          taxonomy: 'csi' as const,
+        }
       }
 
-      if (skill.skill_taxonomy === "onet" && skill.onet_occupation_id) {
+      if (skill.skill_taxonomy === 'onet' && skill.onet_occupation_id) {
         return {
           id: skill.onet_occupation_id,
-          taxonomy: "onet" as const,
-        };
+          taxonomy: 'onet' as const,
+        }
       }
 
-      return null;
+      return null
     })
-    .filter((skill): skill is {
-      id: string;
-      taxonomy: "csi" | "onet";
-    } => skill !== null && skill.id !== "");
+    .filter(
+      (
+        skill
+      ): skill is {
+        id: string
+        taxonomy: 'csi' | 'onet'
+      } => skill !== null && skill.id !== ''
+    )
 }
 
 /**
@@ -55,4 +59,4 @@ export const JOB_SKILLS_SELECT = `job_skills(
   skill_taxonomy,
   csi_skill_id,
   onet_occupation_id
-)`;
+)`

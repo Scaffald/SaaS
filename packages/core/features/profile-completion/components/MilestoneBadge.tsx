@@ -1,6 +1,6 @@
-import { memo } from 'react'
-import { XStack, YStack, Text } from 'tamagui'
 import { Trophy } from '@tamagui/lucide-icons'
+import { memo } from 'react'
+import { Text, XStack, YStack } from 'tamagui'
 import type { CompletionMilestone } from '../hooks/useCompletionStatus'
 
 interface MilestoneBadgeProps {
@@ -32,5 +32,3 @@ export const MilestoneBadge = memo(function MilestoneBadge({ milestone }: Milest
     </XStack>
   )
 })
-
-

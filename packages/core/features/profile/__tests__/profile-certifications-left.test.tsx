@@ -55,7 +55,11 @@ vi.mock('@app/ui', () => {
     return (
       <div>
         <span>CertificationSearch</span>
-        <button type="button" data-testid="mock-search-select" onClick={() => props.onSelect(selectableCertStore.cert)}>
+        <button
+          type="button"
+          data-testid="mock-search-select"
+          onClick={() => props.onSelect(selectableCertStore.cert)}
+        >
           Select {selectableCertStore.cert.title}
         </button>
       </div>
@@ -71,9 +75,7 @@ vi.mock('@app/ui', () => {
     DashboardWidget: passthrough(),
     MonthYearPicker: () => null,
     CertificationSearch,
-    CertificationChip: ({ certification }) => (
-      <span>{certification.title}</span>
-    ),
+    CertificationChip: ({ certification }) => <span>{certification.title}</span>,
     CertificationCheckbox: ({ certification, checked, onCheckedChange }) => (
       <label>
         <input
@@ -310,4 +312,3 @@ describe.skip('ProfileCertificationsLeft', () => {
     expect(refetchTree).toHaveBeenCalled()
   })
 })
-

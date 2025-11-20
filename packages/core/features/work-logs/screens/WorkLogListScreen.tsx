@@ -1,36 +1,29 @@
-import { useCallback, useMemo } from "react";
-import { RefreshControl, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import {
-  Button,
-  Card,
-  Paragraph,
-  Separator,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-} from "tamagui";
-import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from "@tamagui/lucide-icons";
+import { RouteBuilder } from '@app/core/constants/routes'
+import { formatDate } from '@app/core/features/profile/utils/date-formatting'
+import { api } from '@app/core/utils/api'
+import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { useCallback, useMemo } from 'react'
+import { RefreshControl, ScrollView } from 'react-native'
+import { Button, Card, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
-import { RouteBuilder } from "@app/core/constants/routes";
-import { formatDate } from "@app/core/features/profile/utils/date-formatting";
-import { api } from "@app/core/utils/api";
+import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
+import { useWorkLogSync } from '../hooks/useWorkLogSync'
+import type { WorkLogListItem } from '../schemas'
+import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 
-import { useOfflineWorkLogs } from "../hooks/useOfflineWorkLogs";
-import { useWorkLogSync } from "../hooks/useWorkLogSync";
-import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
-import type { WorkLogListItem } from "../schemas";
-
-type IconRenderer = typeof Activity;
+type IconRenderer = typeof Activity
 
 export function WorkLogListScreen() {
-  const router = useRouter();
+  const router = useRouter()
 
-  const listQuery = api.workLogs.list.useQuery({}, {
-    staleTime: 30_000,
-    refetchOnMount: "always",
-  });
+  const listQuery = api.workLogs.list.useQuery(
+    {},
+    {
+      staleTime: 30_000,
+      refetchOnMount: 'always',
+    }
+  )
 
   const {
     offlineWorkLogs,
@@ -38,35 +31,29 @@ export function WorkLogListScreen() {
     markWorkLogForSync,
     mutateOfflineWorkLog,
     removeOfflineWorkLog,
-  } = useOfflineWorkLogs();
+  } = useOfflineWorkLogs()
 
   const syncManager = useWorkLogSync({
     offlineWorkLogs,
     markWorkLogForSync,
     mutateOfflineWorkLog,
     removeOfflineWorkLog,
-  });
+  })
 
-  const hasOfflineQueue = offlineWorkLogs.length > 0;
+  const hasOfflineQueue = offlineWorkLogs.length > 0
 
   const handleRefresh = useCallback(() => {
-    void listQuery.refetch();
-  }, [listQuery]);
+    void listQuery.refetch()
+  }, [listQuery])
 
-  const aggregates = useMemo(
-    () => listQuery.data?.aggregates ?? null,
-    [listQuery.data],
-  );
-  const items: WorkLogListItem[] = listQuery.data?.items ?? [];
+  const aggregates = useMemo(() => listQuery.data?.aggregates ?? null, [listQuery.data])
+  const items: WorkLogListItem[] = listQuery.data?.items ?? []
 
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       refreshControl={
-        <RefreshControl
-          refreshing={listQuery.isFetching}
-          onRefresh={handleRefresh}
-        />
+        <RefreshControl refreshing={listQuery.isFetching} onRefresh={handleRefresh} />
       }
     >
       <YStack gap="$4" p="$4" flex={1}>
@@ -76,7 +63,8 @@ export function WorkLogListScreen() {
               Work Logs
             </Text>
             <Paragraph color="$color10">
-              Track and review your daily work history, collaborate with teammates, and manage verification.
+              Track and review your daily work history, collaborate with teammates, and manage
+              verification.
             </Paragraph>
           </YStack>
           <Button
@@ -98,7 +86,8 @@ export function WorkLogListScreen() {
                     Offline drafts ready to sync
                   </Text>
                   <Paragraph color="$yellow11">
-                    {offlineWorkLogs.length} draft{offlineWorkLogs.length === 1 ? "" : "s"} will sync once you are back online.
+                    {offlineWorkLogs.length} draft{offlineWorkLogs.length === 1 ? '' : 's'} will
+                    sync once you are back online.
                   </Paragraph>
                 </YStack>
               </XStack>
@@ -109,7 +98,7 @@ export function WorkLogListScreen() {
                   disabled={syncManager.isSyncing || isOfflineLoading}
                   onPress={() => syncManager.syncNow()}
                 >
-                  {syncManager.isSyncing ? "Syncing…" : "Sync Now"}
+                  {syncManager.isSyncing ? 'Syncing…' : 'Sync Now'}
                 </Button>
               </XStack>
             </YStack>
@@ -137,29 +126,23 @@ export function WorkLogListScreen() {
             {items.map((item) => (
               <Card
                 key={item.id}
-                hoverStyle={{ borderColor: "$color10" }}
-                pressStyle={{ borderColor: "$color8" }}
+                hoverStyle={{ borderColor: '$color10' }}
+                pressStyle={{ borderColor: '$color8' }}
                 borderColor="$color6"
                 borderWidth={1}
-                onPress={() =>
-                  router.push(
-                    RouteBuilder.dashboardWorkLogDetail(item.id),
-                  )}
+                onPress={() => router.push(RouteBuilder.dashboardWorkLogDetail(item.id))}
               >
                 <YStack gap="$3" p="$3">
                   <XStack justify="space-between" items="center">
                     <YStack gap="$1">
                       <Text fontWeight="700" fontSize="$6">
-                        {item.project?.name ?? "Unknown Project"}
+                        {item.project?.name ?? 'Unknown Project'}
                       </Text>
                       <Text color="$color10">
-                        {item.logDate ? formatDate(item.logDate) : "No date recorded"}
+                        {item.logDate ? formatDate(item.logDate) : 'No date recorded'}
                       </Text>
                     </YStack>
-                    <Text
-                      fontWeight="600"
-                      color={getStatusColor(item.status) as never}
-                    >
+                    <Text fontWeight="600" color={getStatusColor(item.status) as never}>
                       {getStatusLabel(item.status)}
                     </Text>
                   </XStack>
@@ -169,14 +152,14 @@ export function WorkLogListScreen() {
                       px="$2"
                       py="$1"
                       rounded="$3"
-                      bg={item.visibility === "public" ? "$green4" : "$gray4"}
+                      bg={item.visibility === 'public' ? '$green4' : '$gray4'}
                     >
                       <Text
                         fontSize="$2"
-                        color={item.visibility === "public" ? "$green11" : "$gray11"}
+                        color={item.visibility === 'public' ? '$green11' : '$gray11'}
                         fontWeight="600"
                       >
-                        {item.visibility === "public" ? "Public" : "Private"}
+                        {item.visibility === 'public' ? 'Public' : 'Private'}
                       </Text>
                     </YStack>
                     {item.showOnProfile && (
@@ -214,15 +197,12 @@ export function WorkLogListScreen() {
 
                   <XStack justify="space-between" items="center">
                     <Text color="$color10" fontSize="$3">
-                      Updated {item.updatedAt ? formatDate(item.updatedAt) : "recently"}
+                      Updated {item.updatedAt ? formatDate(item.updatedAt) : 'recently'}
                     </Text>
                     <Button
                       size="$3"
                       variant="outlined"
-                      onPress={() =>
-                        router.push(
-                          RouteBuilder.dashboardWorkLogDetail(item.id),
-                        )}
+                      onPress={() => router.push(RouteBuilder.dashboardWorkLogDetail(item.id))}
                     >
                       View Details
                     </Button>
@@ -234,19 +214,19 @@ export function WorkLogListScreen() {
         )}
       </YStack>
     </ScrollView>
-  );
+  )
 }
 
 interface AnalyticsBannerProps {
-  isLoading: boolean;
-  totalLogs: number;
-  totalHours: number;
+  isLoading: boolean
+  totalLogs: number
+  totalHours: number
   statusSummary?: {
-    draft: { count: number; hours: number };
-    pending_verification: { count: number; hours: number };
-    verified: { count: number; hours: number };
-    disputed: { count: number; hours: number };
-  };
+    draft: { count: number; hours: number }
+    pending_verification: { count: number; hours: number }
+    verified: { count: number; hours: number }
+    disputed: { count: number; hours: number }
+  }
 }
 
 function AnalyticsBanner({
@@ -270,10 +250,7 @@ function AnalyticsBanner({
           <YStack gap="$3">
             <XStack gap="$4" flexWrap="wrap">
               <SummaryTile label="Total Logs" value={String(totalLogs)} />
-              <SummaryTile
-                label="Total Hours"
-                value={`${totalHours.toFixed(2)}h`}
-              />
+              <SummaryTile label="Total Hours" value={`${totalHours.toFixed(2)}h`} />
               <SummaryTile
                 label="Verified"
                 value={String(statusSummary?.verified.count ?? 0)}
@@ -284,11 +261,11 @@ function AnalyticsBanner({
                 label="Needs Attention"
                 value={String(
                   (statusSummary?.pending_verification.count ?? 0) +
-                    (statusSummary?.disputed.count ?? 0),
+                    (statusSummary?.disputed.count ?? 0)
                 )}
                 subtitle={`${(
                   (statusSummary?.pending_verification.hours ?? 0) +
-                  (statusSummary?.disputed.hours ?? 0)
+                    (statusSummary?.disputed.hours ?? 0)
                 ).toFixed(1)}h`}
                 color="$orange10"
               />
@@ -297,26 +274,19 @@ function AnalyticsBanner({
         )}
       </YStack>
     </Card>
-  );
+  )
 }
 
 interface SummaryTileProps {
-  label: string;
-  value: string;
-  subtitle?: string;
-  color?: string;
+  label: string
+  value: string
+  subtitle?: string
+  color?: string
 }
 
-function SummaryTile({ label, value, subtitle, color = "$color12" }: SummaryTileProps) {
+function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTileProps) {
   return (
-    <YStack
-      bg="$color2"
-      rounded="$4"
-      px="$4"
-      py="$3"
-      gap="$1"
-      shrink={0}
-    >
+    <YStack bg="$color2" rounded="$4" px="$4" py="$3" gap="$1" shrink={0}>
       <Text fontWeight="600" color="$color10">
         {label}
       </Text>
@@ -329,36 +299,29 @@ function SummaryTile({ label, value, subtitle, color = "$color12" }: SummaryTile
         </Text>
       )}
     </YStack>
-  );
+  )
 }
 
 interface MetricPillProps {
-  icon: IconRenderer;
-  label: string;
-  value: string;
+  icon: IconRenderer
+  label: string
+  value: string
 }
 
 function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
   return (
-    <XStack
-      bg="$color3"
-      px="$3"
-      py="$2"
-      rounded="$4"
-      gap="$2"
-      items="center"
-    >
+    <XStack bg="$color3" px="$3" py="$2" rounded="$4" gap="$2" items="center">
       <IconComponent size={16} color="$color10" />
       <Text fontWeight="600">{value}</Text>
       <Text fontSize="$3" color="$color10">
         {label}
       </Text>
     </XStack>
-  );
+  )
 }
 
 interface EmptyStateProps {
-  onCreate: () => void;
+  onCreate: () => void
 }
 
 function EmptyState({ onCreate }: EmptyStateProps) {
@@ -368,14 +331,14 @@ function EmptyState({ onCreate }: EmptyStateProps) {
         <Text fontSize="$6" fontWeight="700">
           No work logs yet
         </Text>
-        <Paragraph color="$color10" px="$6" style={{ textAlign: "center" }}>
-          Create your first work log to start tracking hours, documenting tasks, and collaborating with your team.
+        <Paragraph color="$color10" px="$6" style={{ textAlign: 'center' }}>
+          Create your first work log to start tracking hours, documenting tasks, and collaborating
+          with your team.
         </Paragraph>
         <Button size="$4" icon={DownloadCloud} onPress={onCreate}>
           Record Work Log
         </Button>
       </YStack>
     </Card>
-  );
+  )
 }
-

@@ -1,6 +1,6 @@
-import { Svg, Path, Defs, LinearGradient, Stop } from 'react-native-svg'
-import type { ViewStyle } from 'react-native'
 import { useMemo } from 'react'
+import type { ViewStyle } from 'react-native'
+import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 
 export interface ScaffaldLogoProps {
   width?: number

@@ -32,12 +32,16 @@ export async function assertSecurityHeaders(page: Page): Promise<void> {
   const headers = response.headers()
 
   // Check X-Content-Type-Options
-  expect(headers['x-content-type-options'], 'Should have X-Content-Type-Options header').toBeTruthy()
+  expect(
+    headers['x-content-type-options'],
+    'Should have X-Content-Type-Options header'
+  ).toBeTruthy()
 
   // Check X-Frame-Options or Content-Security-Policy frame-ancestors
   const hasFrameProtection =
     headers['x-frame-options'] ||
-    (headers['content-security-policy'] && headers['content-security-policy'].includes('frame-ancestors'))
+    (headers['content-security-policy'] &&
+      headers['content-security-policy'].includes('frame-ancestors'))
   expect(hasFrameProtection, 'Should have frame protection (X-Frame-Options or CSP)').toBeTruthy()
 
   // Check X-XSS-Protection (legacy, but still useful)
@@ -70,7 +74,7 @@ export async function testSQLInjectionPrevention(
     await page.waitForTimeout(1000)
 
     // Verify no SQL error messages are exposed
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     const sqlErrorIndicators = [
       'sql syntax',
       'mysql error',
@@ -130,10 +134,7 @@ export async function testXSSPrevention(
  * Test CSRF (Cross-Site Request Forgery) protection
  * Verifies that forms include CSRF tokens
  */
-export async function testCSRFProtection(
-  page: Page,
-  formSelector: string
-): Promise<void> {
+export async function testCSRFProtection(page: Page, formSelector: string): Promise<void> {
   const form = page.locator(formSelector)
   const formHTML = await form.innerHTML()
 
@@ -167,10 +168,7 @@ export async function testCSRFProtection(
  * Test authentication bypass attempts
  * Verifies that unauthorized access is prevented
  */
-export async function testAuthenticationBypass(
-  page: Page,
-  protectedUrl: string
-): Promise<void> {
+export async function testAuthenticationBypass(page: Page, protectedUrl: string): Promise<void> {
   // Try to access protected route without authentication
   const response = await page.goto(protectedUrl, { waitUntil: 'networkidle' })
 
@@ -191,14 +189,11 @@ export async function testAuthenticationBypass(
  * Test authorization bypass attempts
  * Verifies that users can't access resources they don't have permission for
  */
-export async function testAuthorizationBypass(
-  page: Page,
-  unauthorizedUrl: string
-): Promise<void> {
+export async function testAuthorizationBypass(page: Page, unauthorizedUrl: string): Promise<void> {
   const response = await page.goto(unauthorizedUrl, { waitUntil: 'networkidle' })
 
   const status = response?.status() || 0
-  const bodyText = await page.textContent('body') || ''
+  const bodyText = (await page.textContent('body')) || ''
 
   // Should return 403 or show unauthorized message
   const isForbidden = status === 403
@@ -207,10 +202,7 @@ export async function testAuthorizationBypass(
     bodyText.toLowerCase().includes('forbidden') ||
     bodyText.toLowerCase().includes('permission denied')
 
-  expect(
-    isForbidden || showsUnauthorized,
-    'Unauthorized access should be prevented'
-  ).toBeTruthy()
+  expect(isForbidden || showsUnauthorized, 'Unauthorized access should be prevented').toBeTruthy()
 }
 
 /**
@@ -219,7 +211,7 @@ export async function testAuthorizationBypass(
  */
 export async function testSensitiveDataExposure(page: Page): Promise<void> {
   // Get page content and check for sensitive data patterns
-  const bodyText = await page.textContent('body') || ''
+  const bodyText = (await page.textContent('body')) || ''
   const pageHTML = await page.content()
 
   // Check for common sensitive data patterns
@@ -236,7 +228,8 @@ export async function testSensitiveDataExposure(page: Page): Promise<void> {
     const matches = bodyText.match(pattern) || pageHTML.match(pattern)
     if (matches) {
       // Allow patterns in commented code or test data, but not in actual values
-      const isInComment = pageHTML.includes(`<!-- ${matches[0]}`) || pageHTML.includes(`/* ${matches[0]}`)
+      const isInComment =
+        pageHTML.includes(`<!-- ${matches[0]}`) || pageHTML.includes(`/* ${matches[0]}`)
       expect(isInComment, `Sensitive data should not be exposed: ${matches[0]}`).toBeTruthy()
     }
   }
@@ -267,15 +260,12 @@ export async function testInputValidation(
     // Input should be rejected or sanitized
     // Check if error message is shown or input is cleared
     const inputValue = await page.inputValue(inputSelector)
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
 
     const isRejected = inputValue === '' || bodyText.toLowerCase().includes('invalid')
     const isSanitized = inputValue !== invalid.value
 
-    expect(
-      isRejected || isSanitized,
-      `Input validation should handle ${invalid.type}`
-    ).toBeTruthy()
+    expect(isRejected || isSanitized, `Input validation should handle ${invalid.type}`).toBeTruthy()
   }
 }
 
@@ -307,10 +297,15 @@ export async function testRateLimiting(
     await action()
     await page.waitForTimeout(100)
 
-    const response = await page.evaluate(() => {
-      // Get last response status from performance entries
-      return (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.responseStatus || 200
-    }).catch(() => 200)
+    const response = await page
+      .evaluate(() => {
+        // Get last response status from performance entries
+        return (
+          (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)
+            ?.responseStatus || 200
+        )
+      })
+      .catch(() => 200)
 
     responses.push(response)
   }
@@ -324,4 +319,3 @@ export async function testRateLimiting(
     expect(hasRateLimit, 'Rate limiting should be enabled in production').toBeTruthy()
   }
 }
-

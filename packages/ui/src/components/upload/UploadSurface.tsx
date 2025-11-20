@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Platform } from 'react-native'
 import type { DropzoneOptions } from 'react-dropzone'
+import { Platform } from 'react-native'
 
 import { useFilePicker } from '../image-picker/hooks/useFilePicker'
 import type {

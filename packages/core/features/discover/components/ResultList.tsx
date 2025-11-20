@@ -1,14 +1,13 @@
-import { ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
-import { forwardRef, useImperativeHandle, useRef, useMemo, memo } from 'react'
-import { Platform } from 'react-native'
-
-import type { TalentProfile } from '../types'
-import type { OrganizationMapPin } from '../hooks/useOrganizations'
-import type { JobMapPin } from '../hooks/useJobs'
-import { ResultCard } from './ResultCard'
-import { OrganizationCard } from './OrganizationCard'
-import { JobCard } from './JobCard'
 import { SkeletonList } from '@app/ui'
+import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
+import { Platform } from 'react-native'
+import { ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
+import type { JobMapPin } from '../hooks/useJobs'
+import type { OrganizationMapPin } from '../hooks/useOrganizations'
+import type { TalentProfile } from '../types'
+import { JobCard } from './JobCard'
+import { OrganizationCard } from './OrganizationCard'
+import { ResultCard } from './ResultCard'
 
 type ResultItem =
   | ({ type: 'profile' } & TalentProfile)
@@ -155,31 +154,31 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
               </YStack>
             ) : (
               allResults.map((result, index) => (
-              <YStack key={result.id} gap="$2">
-                {result.type === 'profile' ? (
-                  <ResultCard
-                    ref={(ref) => registerCardRef(result.id, ref)}
-                    profile={result}
-                    isSelected={result.id === selectedId}
-                    onSelect={onSelect}
-                  />
-                ) : result.type === 'organization' ? (
-                  <OrganizationCard
-                    ref={(ref) => registerCardRef(result.id, ref)}
-                    organization={result}
-                    isSelected={result.id === selectedId}
-                    onSelect={onSelect}
-                  />
-                ) : (
-                  <JobCard
-                    job={result}
-                    isSelected={result.id === selectedId}
-                    onPress={() => onSelect(result.id)}
-                  />
-                )}
-                {index < allResults.length - 1 ? <Separator /> : null}
-              </YStack>
-            ))
+                <YStack key={result.id} gap="$2">
+                  {result.type === 'profile' ? (
+                    <ResultCard
+                      ref={(ref) => registerCardRef(result.id, ref)}
+                      profile={result}
+                      isSelected={result.id === selectedId}
+                      onSelect={onSelect}
+                    />
+                  ) : result.type === 'organization' ? (
+                    <OrganizationCard
+                      ref={(ref) => registerCardRef(result.id, ref)}
+                      organization={result}
+                      isSelected={result.id === selectedId}
+                      onSelect={onSelect}
+                    />
+                  ) : (
+                    <JobCard
+                      job={result}
+                      isSelected={result.id === selectedId}
+                      onPress={() => onSelect(result.id)}
+                    />
+                  )}
+                  {index < allResults.length - 1 ? <Separator /> : null}
+                </YStack>
+              ))
             )}
           </YStack>
         </ScrollView>

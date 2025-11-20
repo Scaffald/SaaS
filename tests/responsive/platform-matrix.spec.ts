@@ -10,7 +10,7 @@
  * Web-based tests validate cross-platform compatibility.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Platform-specific viewports
@@ -60,13 +60,16 @@ test.describe('Platform-Specific Testing Matrix', () => {
             await page.waitForTimeout(2000)
 
             // Verify page loads
-            const bodyText = await page.textContent('body') || ''
+            const bodyText = (await page.textContent('body')) || ''
             expect(bodyText.length, 'Page should load on iOS').toBeGreaterThan(0)
 
             // Verify no horizontal scroll
             const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
             const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
-            expect(scrollWidth, 'Page should not have horizontal scroll on iOS').toBeLessThanOrEqual(clientWidth)
+            expect(
+              scrollWidth,
+              'Page should not have horizontal scroll on iOS'
+            ).toBeLessThanOrEqual(clientWidth)
           })
         }
       })
@@ -88,13 +91,16 @@ test.describe('Platform-Specific Testing Matrix', () => {
             await page.waitForTimeout(2000)
 
             // Verify page loads
-            const bodyText = await page.textContent('body') || ''
+            const bodyText = (await page.textContent('body')) || ''
             expect(bodyText.length, 'Page should load on Android').toBeGreaterThan(0)
 
             // Verify no horizontal scroll
             const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
             const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
-            expect(scrollWidth, 'Page should not have horizontal scroll on Android').toBeLessThanOrEqual(clientWidth)
+            expect(
+              scrollWidth,
+              'Page should not have horizontal scroll on Android'
+            ).toBeLessThanOrEqual(clientWidth)
           })
         }
       })
@@ -113,7 +119,7 @@ test.describe('Platform-Specific Testing Matrix', () => {
             await page.waitForTimeout(2000)
 
             // Verify page loads
-            const bodyText = await page.textContent('body') || ''
+            const bodyText = (await page.textContent('body')) || ''
             expect(bodyText.length, `Page should load on ${browser}`).toBeGreaterThan(0)
 
             // Verify JavaScript works
@@ -131,7 +137,9 @@ test.describe('Platform-Specific Testing Matrix', () => {
       await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
       // Tab through elements
-      const focusable = page.locator('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])')
+      const focusable = page.locator(
+        'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
       const focusableCount = await focusable.count()
 
       expect(focusableCount, 'Should have focusable elements on all platforms').toBeGreaterThan(0)
@@ -176,4 +184,3 @@ test.describe('Platform-Specific Testing Matrix', () => {
  * These tests provide web-based validation of cross-platform compatibility.
  * Full platform testing should be done on actual devices.
  */
-

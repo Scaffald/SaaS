@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Button, Separator, Spinner, ScrollView } from 'tamagui'
-import { ResponsiveModal } from '@app/ui'
-import {
-  MapPin,
-  Building2,
-  DollarSign,
-  Briefcase,
-  Clock,
-  Calendar,
-  Users,
-  Award,
-} from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
+import { ResponsiveModal } from '@app/ui'
 import { extractPlainText } from '@app/ui/components/rich-text'
+import {
+  Award,
+  Briefcase,
+  Building2,
+  Calendar,
+  Clock,
+  DollarSign,
+  MapPin,
+  Users,
+} from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface JobPreviewModalProps {
   jobId: string | null
@@ -75,12 +75,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   }
 
   return (
-    <ResponsiveModal
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Job Preview"
-      size="large"
-    >
+    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Job Preview" size="large">
       {isLoading ? (
         <YStack py="$8" items="center" justify="center">
           <Spinner size="large" color="$blue10" />
@@ -127,14 +122,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               {/* Job Type Badge */}
               <XStack gap="$2" flexWrap="wrap" justify="center">
                 {formatEmploymentType(job.employment_type) && (
-                  <XStack
-                    bg="$blue3"
-                    px="$3"
-                    py="$1"
-                    rounded="$3"
-                    gap="$2"
-                    items="center"
-                  >
+                  <XStack bg="$blue3" px="$3" py="$1" rounded="$3" gap="$2" items="center">
                     <Briefcase size={14} color="$blue10" />
                     <Text fontSize="$2" color="$blue11" fontWeight="600">
                       {formatEmploymentType(job.employment_type)}
@@ -142,14 +130,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   </XStack>
                 )}
                 {formatRemoteOption(job.remote_option) && (
-                  <XStack
-                    bg="$green3"
-                    px="$3"
-                    py="$1"
-                    rounded="$3"
-                    gap="$2"
-                    items="center"
-                  >
+                  <XStack bg="$green3" px="$3" py="$1" rounded="$3" gap="$2" items="center">
                     <MapPin size={14} color="$green10" />
                     <Text fontSize="$2" color="$green11" fontWeight="600">
                       {formatRemoteOption(job.remote_option)}
@@ -227,21 +208,13 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 <XStack gap="$2" flexWrap="wrap">
                   {job.job_skills.map((jobSkill: (typeof job.job_skills)[number], idx: number) => {
                     const skillName =
-                      jobSkill.csi_skill?.name ||
-                      jobSkill.onet_occupation?.title ||
-                      'Unknown Skill'
+                      jobSkill.csi_skill?.name || jobSkill.onet_occupation?.title || 'Unknown Skill'
                     const skillKey =
                       jobSkill.csi_skill?.id?.toString() ||
                       jobSkill.onet_occupation?.code?.toString() ||
                       `skill-${idx}-${skillName}`
                     return (
-                      <XStack
-                        key={skillKey}
-                        bg="$blue3"
-                        px="$2"
-                        py="$1"
-                        rounded="$3"
-                      >
+                      <XStack key={skillKey} bg="$blue3" px="$2" py="$1" rounded="$3">
                         <Text fontSize="$2" color="$blue11">
                           {skillName}
                         </Text>
@@ -262,24 +235,26 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   </Text>
                 </XStack>
                 <YStack gap="$2">
-                  {job.job_certifications.map((jobCert: (typeof job.job_certifications)[number], idx: number) => {
-                    const certKey =
-                      jobCert.certification?.id?.toString() ||
-                      jobCert.id?.toString() ||
-                      `cert-${idx}-${jobCert.certification?.name || 'unknown'}`
-                    return (
-                      <XStack key={certKey} gap="$2" items="center">
-                        <Text fontSize="$3" color="$color11">
-                          {jobCert.certification?.name || 'Unknown Certification'}
-                        </Text>
-                        {jobCert.is_required && (
-                          <Text fontSize="$2" color="$red10">
-                            (Required)
+                  {job.job_certifications.map(
+                    (jobCert: (typeof job.job_certifications)[number], idx: number) => {
+                      const certKey =
+                        jobCert.certification?.id?.toString() ||
+                        jobCert.id?.toString() ||
+                        `cert-${idx}-${jobCert.certification?.name || 'unknown'}`
+                      return (
+                        <XStack key={certKey} gap="$2" items="center">
+                          <Text fontSize="$3" color="$color11">
+                            {jobCert.certification?.name || 'Unknown Certification'}
                           </Text>
-                        )}
-                      </XStack>
-                    )
-                  })}
+                          {jobCert.is_required && (
+                            <Text fontSize="$2" color="$red10">
+                              (Required)
+                            </Text>
+                          )}
+                        </XStack>
+                      )
+                    }
+                  )}
                 </YStack>
               </YStack>
             )}
@@ -323,4 +298,3 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     </ResponsiveModal>
   )
 }
-

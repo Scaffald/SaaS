@@ -1,6 +1,5 @@
-import React from 'react'
-import { Button, XStack, YStack, Text, View } from 'tamagui'
-import type { ChecklistItem as ChecklistItemType, ChecklistItemProps } from './types'
+import { Button, Text, View, XStack, YStack } from 'tamagui'
+import type { ChecklistItemProps } from './types'
 
 /**
  * ChecklistItem - Individual checklist item component

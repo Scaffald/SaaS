@@ -1,8 +1,7 @@
 // @ts-nocheck
-import React from 'react'
+
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
 import { Paragraph, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
 
 export default function AccessibilityPage() {
   return (

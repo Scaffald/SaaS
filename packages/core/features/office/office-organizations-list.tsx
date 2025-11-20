@@ -1,9 +1,6 @@
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
-import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Button, Label, Paragraph, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
-import { Dialog } from '@app/ui'
-import { useToastController } from '@tamagui/toast'
+import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { DashboardLayout, DashboardWidget, Dialog, QuickLinksSidebar } from '@app/ui'
 import {
   ArrowRightCircle,
   Check,
@@ -12,11 +9,23 @@ import {
   RefreshCw,
   X as XIcon,
 } from '@tamagui/lucide-icons'
-import { DashboardLayout, DashboardWidget, QuickLinksSidebar } from '@app/ui'
-import { QuickActionsWidget } from './components/QuickActionsWidget'
-import { ROUTES } from '@app/core/constants/routes'
-import { api } from '@app/core/utils/api'
+import { useToastController } from '@tamagui/toast'
+import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import {
+  Button,
+  Label,
+  Paragraph,
+  Separator,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
 import { OfficePageLayout } from './components/OfficePageLayout'
+import { QuickActionsWidget } from './components/QuickActionsWidget'
 
 type Organization = {
   id: string
@@ -208,15 +217,15 @@ export function OfficeOrganizationsList() {
   )
 
   const columns = createColumns(router)
-  
+
   const handleRowEdit = (org: Organization) => {
     router.push(`/office/organizations/${org.id}/edit`)
   }
-  
+
   const handleRowDelete = async (org: Organization) => {
     await handleDelete(org.id)
   }
-  
+
   const getItemName = (org: Organization) => org.name
 
   const refreshRequests = () => {

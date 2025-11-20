@@ -95,4 +95,3 @@ export const KanbanColumnHeader = memo(
 )
 
 KanbanColumnHeader.displayName = 'KanbanColumnHeader'
-

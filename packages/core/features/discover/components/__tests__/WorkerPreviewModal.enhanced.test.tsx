@@ -83,7 +83,15 @@ vi.mock('@app/core/utils/api', () => ({
 }))
 
 vi.mock('@app/ui', () => ({
-  ResponsiveModal: ({ children, open, title }: { children: React.ReactNode; open: boolean; title: string }) =>
+  ResponsiveModal: ({
+    children,
+    open,
+    title,
+  }: {
+    children: React.ReactNode
+    open: boolean
+    title: string
+  }) =>
     open ? (
       <div data-testid="worker-preview-modal">
         <h2>{title}</h2>
@@ -141,4 +149,3 @@ describe('WorkerPreviewModal Enhanced Content', () => {
     expect(modalContent.length).toBeGreaterThan(0)
   })
 })
-

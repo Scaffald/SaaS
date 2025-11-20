@@ -13,7 +13,12 @@ interface DraggableCardProps {
   kanbanCardProps?: Omit<KanbanCardProps, 'id' | 'isDragging'>
 }
 
-export const DraggableCard = ({ id, children, disabled = false, kanbanCardProps }: DraggableCardProps) => {
+export const DraggableCard = ({
+  id,
+  children,
+  disabled = false,
+  kanbanCardProps,
+}: DraggableCardProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
     disabled,

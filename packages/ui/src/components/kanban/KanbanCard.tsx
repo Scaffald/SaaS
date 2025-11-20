@@ -271,4 +271,3 @@ export const KanbanCard = memo(
 )
 
 KanbanCard.displayName = 'KanbanCard'
-

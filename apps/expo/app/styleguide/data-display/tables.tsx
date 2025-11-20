@@ -1,10 +1,8 @@
 // @ts-nocheck
-import React from 'react'
-import { Paragraph, YStack } from '@app/ui'
-import { DataTable } from '@app/ui'
+
+import { AnchorHeading, StyleguidePage } from '@app/styleguide'
 import type { DataTableColumn } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
+import { DataTable, Paragraph, YStack } from '@app/ui'
 
 const rows = [
   { id: 1, name: 'Safety Training', status: 'Complete', owner: 'Morgan' },

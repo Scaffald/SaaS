@@ -1,9 +1,3 @@
-import { useMemo } from 'react'
-import { ScrollView } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { ArrowLeft, BarChart3 } from '@tamagui/lucide-icons'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
-
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import {
   TeamActivityFeed,
@@ -12,7 +6,12 @@ import {
 } from '@app/core/features/office/teams'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { ArrowLeft, BarChart3 } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { ScrollView } from 'react-native'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
 type MemberRecord = NonNullable<MembersListOutput['members']>[number]

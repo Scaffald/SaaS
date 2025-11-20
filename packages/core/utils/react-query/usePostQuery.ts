@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query'
 
-import { supabase } from "../supabase/client";
+import { supabase } from '../supabase/client'
 
 function usePostQuery() {
   // Using supabase directly from import
@@ -9,21 +9,21 @@ function usePostQuery() {
     // Type instantiation is excessively deep - posts table may not exist in database types yet
     // biome-ignore lint/suspicious/noExplicitAny: Type instantiation is excessively deep, requires any cast
     const result = await (supabase as any)
-      .schema("core")
-      .from("posts")
-      .select("*")
-      .order("created_at", {
+      .schema('core')
+      .from('posts')
+      .select('*')
+      .order('created_at', {
         ascending: false,
       })
-      .limit(4);
-    
-    return result.data || [];
-  };
+      .limit(4)
+
+    return result.data || []
+  }
 
   return useQuery({
-    queryKey: ["posts"],
+    queryKey: ['posts'],
     queryFn,
-  });
+  })
 }
 
-export default usePostQuery;
+export default usePostQuery

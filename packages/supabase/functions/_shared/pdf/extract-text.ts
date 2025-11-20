@@ -1,19 +1,19 @@
-import { extractText as extractTextWithUnpdf } from "unpdf";
+import { extractText as extractTextWithUnpdf } from 'unpdf'
 
-type ExtractSource = "unpdf" | "fallback";
+type ExtractSource = 'unpdf' | 'fallback'
 
 export interface PdfExtractionResult {
-  text: string;
-  pageTexts: string[];
-  totalPages: number;
-  source: ExtractSource;
+  text: string
+  pageTexts: string[]
+  totalPages: number
+  source: ExtractSource
 }
 
 export interface ExtractTextFromPdfOptions {
-  namespace?: string;
+  namespace?: string
 }
 
-const textDecoder = new TextDecoder("utf-8", { fatal: false });
+const textDecoder = new TextDecoder('utf-8', { fatal: false })
 
 /**
  * Extracts textual content from a PDF using the unpdf library, with a
@@ -21,62 +21,61 @@ const textDecoder = new TextDecoder("utf-8", { fatal: false });
  */
 export async function extractTextFromPdf(
   fileBytes: Uint8Array,
-  options: ExtractTextFromPdfOptions = {},
+  options: ExtractTextFromPdfOptions = {}
 ): Promise<PdfExtractionResult> {
-  const namespace = options.namespace ?? "pdf";
+  const namespace = options.namespace ?? 'pdf'
 
   try {
     const { text: pageTexts, totalPages } = await extractTextWithUnpdf(fileBytes, {
       mergePages: false,
-    });
+    })
 
-    const normalizedPages = pageTexts.map((page) => page?.trim() ?? "");
-    const combinedText = normalizedPages.join("\n").trim();
+    const normalizedPages = pageTexts.map((page) => page?.trim() ?? '')
+    const combinedText = normalizedPages.join('\n').trim()
 
     if (combinedText.length > 0) {
       return {
         text: combinedText,
         pageTexts: normalizedPages,
         totalPages,
-        source: "unpdf",
-      };
+        source: 'unpdf',
+      }
     }
 
-    logWarning(namespace, "unpdf returned empty text", {
+    logWarning(namespace, 'unpdf returned empty text', {
       fileSize: fileBytes.length,
       totalPages,
-    });
+    })
   } catch (error) {
-    logWarning(namespace, "unpdf extraction failed", {
+    logWarning(namespace, 'unpdf extraction failed', {
       errorType: error instanceof Error ? error.name : typeof error,
       message: error instanceof Error ? error.message : String(error),
       fileSize: fileBytes.length,
-    });
+    })
   }
 
-  const fallbackText = decodeWithTextDecoder(fileBytes);
+  const fallbackText = decodeWithTextDecoder(fileBytes)
   return {
     text: fallbackText,
     pageTexts: fallbackText.length > 0 ? [fallbackText] : [],
     totalPages: 1,
-    source: "fallback",
-  };
+    source: 'fallback',
+  }
 }
 
 function decodeWithTextDecoder(bytes: Uint8Array): string {
   try {
-    return textDecoder.decode(bytes).trim();
+    return textDecoder.decode(bytes).trim()
   } catch (error) {
-    logWarning("pdf", "TextDecoder fallback failed", {
+    logWarning('pdf', 'TextDecoder fallback failed', {
       errorType: error instanceof Error ? error.name : typeof error,
       message: error instanceof Error ? error.message : String(error),
       fileSize: bytes.length,
-    });
-    return "";
+    })
+    return ''
   }
 }
 
 function logWarning(namespace: string, message: string, details: Record<string, unknown>) {
-  console.warn(`[${namespace}] ${message}`, details);
+  console.warn(`[${namespace}] ${message}`, details)
 }
-

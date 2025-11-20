@@ -1,6 +1,6 @@
+import type { ColorTokens, SpaceTokens } from '@tamagui/core'
 import type { ReactNode } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import type { ColorTokens, SpaceTokens } from '@tamagui/core'
 
 /**
  * Base card props shared across all card variants

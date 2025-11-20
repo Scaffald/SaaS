@@ -1,7 +1,7 @@
-import { memo } from 'react'
-import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { ResponsiveModal } from '@app/ui'
 import { PartyPopper, UploadCloud } from '@tamagui/lucide-icons'
+import { memo } from 'react'
+import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
 
 type ModalMode = 'first-login' | 'progress-reminder'
 
@@ -66,5 +66,3 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
     </ResponsiveModal>
   )
 })
-
-

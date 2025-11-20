@@ -1,6 +1,5 @@
-export { useOfficeFlyoutMenu } from './useOfficeFlyoutMenu'
 export type {
-  OfficeFlyoutMenuState,
   OfficeFlyoutMenuActions,
+  OfficeFlyoutMenuState,
 } from './useOfficeFlyoutMenu'
-
+export { useOfficeFlyoutMenu } from './useOfficeFlyoutMenu'

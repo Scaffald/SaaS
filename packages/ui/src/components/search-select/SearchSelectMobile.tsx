@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { Button, Text, XStack, YStack } from 'tamagui'
-import { Sheet } from '@app/ui'
 import { FilterChip } from '../chips/FilterChip'
 import { FieldError } from '../FieldError'
-import type { SearchSelectProps, SearchSelectOption } from './types'
-import { SearchInput } from './components/SearchInput'
+import { Sheet } from '../sheets/Sheet'
 import { ResultsList } from './components/ResultsList'
-import { useSearchSelect } from './hooks/useSearchSelect'
+import { SearchInput } from './components/SearchInput'
 import { DEFAULT_STRINGS } from './constants'
+import { useSearchSelect } from './hooks/useSearchSelect'
+import type { SearchSelectOption, SearchSelectProps } from './types'
 
 export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
   const [open, setOpen] = useState(false)

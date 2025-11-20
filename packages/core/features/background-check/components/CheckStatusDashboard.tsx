@@ -1,20 +1,15 @@
+import { RouteBuilder } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
 import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import { useRouter } from 'expo-router'
-
-import { api } from '@app/core/utils/api'
-import { RouteBuilder } from '@app/core/constants/routes'
 
 import { CheckStatusCard } from './CheckStatusCard'
-import { ResultsViewer } from './ResultsViewer'
-import {
-  canDisputeStatus,
-  getStatusCategory,
-  type BackgroundCheckSummary,
-} from './status.utils'
 import { DisputeBackgroundCheckDialog } from './DisputeBackgroundCheckDialog'
+import { ResultsViewer } from './ResultsViewer'
+import { type BackgroundCheckSummary, canDisputeStatus, getStatusCategory } from './status.utils'
 
 type FilterValue = 'all' | 'active' | 'completed' | 'expired'
 
@@ -40,11 +35,10 @@ export function CheckStatusDashboard() {
   const selectedCheck = useMemo(
     () =>
       selectedCheckId && checksQuery.data
-        ? checksQuery.data.find(
-            (check: BackgroundCheckSummary) => check.id === selectedCheckId,
-          ) ?? null
+        ? (checksQuery.data.find((check: BackgroundCheckSummary) => check.id === selectedCheckId) ??
+          null)
         : null,
-    [selectedCheckId, checksQuery.data],
+    [selectedCheckId, checksQuery.data]
   )
 
   const counts = useMemo(() => {
@@ -64,7 +58,7 @@ export function CheckStatusDashboard() {
     if (!checksQuery.data) return []
     if (activeFilter === 'all') return checksQuery.data
     return checksQuery.data.filter(
-      (check: BackgroundCheckSummary) => getStatusCategory(check.status) === activeFilter,
+      (check: BackgroundCheckSummary) => getStatusCategory(check.status) === activeFilter
     )
   }, [checksQuery.data, activeFilter])
 
@@ -94,7 +88,13 @@ export function CheckStatusDashboard() {
     <YStack flex={1} bg="$background">
       <ScrollView flex={1}>
         <YStack gap="$4" px="$4" pb="$6">
-          <YStack gap="$3" p="$4" bg="$background" borderBottomWidth={1} borderBottomColor="$borderColor">
+          <YStack
+            gap="$3"
+            p="$4"
+            bg="$background"
+            borderBottomWidth={1}
+            borderBottomColor="$borderColor"
+          >
             <XStack gap="$3" items="center">
               <ShieldCheck size={28} color="$blue10" />
               <YStack gap="$1">
@@ -138,7 +138,14 @@ export function CheckStatusDashboard() {
           )}
 
           {checksQuery.isError && (
-            <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$3"
+              p="$4"
+              bg="$color2"
+              rounded="$4"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               <Text fontSize="$3" color="$color11">
                 We couldn’t load your background checks. Please try again.
               </Text>
@@ -154,7 +161,14 @@ export function CheckStatusDashboard() {
           )}
 
           {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
-            <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+            <YStack
+              gap="$3"
+              p="$4"
+              bg="$color2"
+              rounded="$4"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
               <Text fontSize="$3" color="$color11">
                 No background checks found for this filter.
               </Text>
@@ -180,7 +194,14 @@ export function CheckStatusDashboard() {
             />
           ))}
 
-          <YStack gap="$2" p="$3" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+          <YStack
+            gap="$2"
+            p="$3"
+            bg="$color2"
+            rounded="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
             <Text fontSize="$3" fontWeight="600" color="$color12">
               Need a new screening?
             </Text>
@@ -201,9 +222,7 @@ export function CheckStatusDashboard() {
                 onClose={() => setSelectedCheckId(null)}
                 onRequestDispute={(id) => {
                   const candidate =
-                    checksQuery.data?.find(
-                      (item: BackgroundCheckSummary) => item.id === id,
-                    ) ?? null
+                    checksQuery.data?.find((item: BackgroundCheckSummary) => item.id === id) ?? null
                   if (candidate) {
                     handleDisputeNavigation(candidate)
                   }

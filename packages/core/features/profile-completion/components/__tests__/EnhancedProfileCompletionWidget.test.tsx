@@ -228,7 +228,7 @@ describe('EnhancedProfileCompletionWidget', () => {
     expect(screen.getByText('1 sections remaining')).toBeInTheDocument()
     expect(screen.getByTestId('milestone')).toHaveTextContent('25% Complete')
     expect(
-      screen.getByText(/Suggested section: Skills • Unlock 3 new opportunities/i),
+      screen.getByText(/Suggested section: Skills • Unlock 3 new opportunities/i)
     ).toBeInTheDocument()
   })
 
@@ -258,5 +258,3 @@ describe('EnhancedProfileCompletionWidget', () => {
     expect(screen.getByText('Gathering personalized suggestions…')).toBeInTheDocument()
   })
 })
-
-

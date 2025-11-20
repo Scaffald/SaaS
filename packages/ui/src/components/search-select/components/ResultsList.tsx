@@ -1,12 +1,12 @@
-import { memo, useMemo } from 'react'
 import type { ComponentType, CSSProperties, ReactNode } from 'react'
+import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView, SizableText, YStack } from 'tamagui'
+import type { SearchSelectOption } from '../types'
 import { EmptyState } from './EmptyState'
 import { ErrorState } from './ErrorState'
 import { ResultItem } from './ResultItem'
 import { ResultsSkeletonLoader } from './SkeletonLoader'
-import type { SearchSelectOption } from '../types'
 
 const isWeb = Platform.OS === 'web'
 type FixedSizeListComponent = ComponentType<{

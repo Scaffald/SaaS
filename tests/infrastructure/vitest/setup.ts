@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest'
 
-import React from 'react'
-import { afterEach, vi } from 'vitest'
 import { cleanup as cleanupReact } from '@testing-library/react'
 import { cleanup as cleanupReactNative } from '@testing-library/react-native'
+import React from 'react'
+import { afterEach, vi } from 'vitest'
 
 process.env.EXPO_PUBLIC_SUPABASE_URL ??= 'http://127.0.0.1:54321'
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??= 'test-anon-key'
@@ -15,13 +15,13 @@ const createComponent =
 
 const createPrimitive = (tag: string) =>
   React.forwardRef((props: Record<string, unknown>, ref: React.Ref<HTMLElement>) =>
-    React.createElement(tag, { ref, ...props }, props.children),
+    React.createElement(tag, { ref, ...props }, props.children)
   )
 
 const ButtonMock = React.forwardRef(
   (
     { onPress, children, ...props }: Record<string, unknown> & { onPress?: () => void },
-    ref: React.Ref<HTMLButtonElement>,
+    ref: React.Ref<HTMLButtonElement>
   ) =>
     React.createElement(
       'button',
@@ -30,8 +30,8 @@ const ButtonMock = React.forwardRef(
         ...props,
         onClick: typeof onPress === 'function' ? onPress : props.onClick,
       },
-      children,
-    ),
+      children
+    )
 )
 
 const SelectMock = Object.assign(createPrimitive('select'), {
@@ -51,7 +51,8 @@ const SheetMock = Object.assign(createPrimitive('div'), {
 })
 
 const DialogMock = Object.assign(createPrimitive('div'), {
-  Portal: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+  Portal: ({ children }: { children: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children),
   Overlay: createPrimitive('div'),
   Content: createPrimitive('div'),
   Close: createPrimitive('button'),
@@ -107,7 +108,7 @@ vi.mock('@tamagui/lucide-icons', () => {
         }
         return IconMock('icon')
       },
-    },
+    }
   )
 })
 

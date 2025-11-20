@@ -1,7 +1,15 @@
-import { Card, XStack, YStack, Text, type GetThemeValueForKey } from 'tamagui'
-import { Briefcase, MapPin, DollarSign, Building2, Users, Calendar, User } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
 import type { AppRouter } from '@app/supabase/client-types'
+import {
+  Briefcase,
+  Building2,
+  Calendar,
+  DollarSign,
+  MapPin,
+  User,
+  Users,
+} from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { Card, type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -48,7 +56,9 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const createdDate = formatDate(job.created_at)
 
   // Get primary team name
-  const primaryTeam = job.teamAssignments?.find((assignment: typeof job.teamAssignments[0]) => assignment.isPrimary)?.team
+  const primaryTeam = job.teamAssignments?.find(
+    (assignment: (typeof job.teamAssignments)[0]) => assignment.isPrimary
+  )?.team
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
@@ -100,7 +110,11 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           borderWidth={1}
           borderColor={statusColors.border as GetThemeValueForKey<'borderColor'>}
         >
-          <Text fontSize="$2" fontWeight="600" color={statusColors.text as GetThemeValueForKey<'color'>}>
+          <Text
+            fontSize="$2"
+            fontWeight="600"
+            color={statusColors.text as GetThemeValueForKey<'color'>}
+          >
             {getStatusLabel(job.status)}
           </Text>
         </XStack>
@@ -115,19 +129,9 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             value={applicationCount.toString()}
           />
         )}
-        {teamName && (
-          <MetricItem
-            icon={<Briefcase size={14} />}
-            label="Team"
-            value={teamName}
-          />
-        )}
+        {teamName && <MetricItem icon={<Briefcase size={14} />} label="Team" value={teamName} />}
         {postedDate && (
-          <MetricItem
-            icon={<Calendar size={14} />}
-            label="Posted"
-            value={postedDate}
-          />
+          <MetricItem icon={<Calendar size={14} />} label="Posted" value={postedDate} />
         )}
         {job.created_by && (
           <MetricItem
@@ -215,4 +219,3 @@ function MetricItem({
     </XStack>
   )
 }
-

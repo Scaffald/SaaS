@@ -1,29 +1,38 @@
-import type React from 'react'
-import { useState, useEffect, useRef } from 'react'
-import { useWindowDimensions } from 'react-native'
-import { YStack, XStack, Text, Input, H4, AnimatePresence, Label, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller, useController, type Control } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  api,
-  type EmploymentProfileFormData,
-  DRIVERS_LICENSE_OPTIONS,
-  MILITARY_STATUS_OPTIONS,
   AVAILABILITY_OPTIONS,
+  api,
+  DRIVERS_LICENSE_OPTIONS,
+  type EmploymentProfileFormData,
+  MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
+import {
+  UIButton as Button,
+  ConfirmationDialog,
+  CustomCheckbox,
+  DashboardWidget,
+  LocationListInput,
+  RangeSliderCard,
+  SkeletonForm,
+  ToggleCard,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Calendar, Car, DollarSign, Flag, MapPin, Plane, Shield } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type React from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { type Control, Controller, useController, useForm } from 'react-hook-form'
+import { useWindowDimensions } from 'react-native'
+import { AnimatePresence, H4, Input, Label, Spinner, Text, XStack, YStack } from 'tamagui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, RangeSliderCard, ConfirmationDialog, SkeletonForm } from '@app/ui'
-import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 
 type MultiSelectFieldName = 'drivers_license_classes' | 'military_status' | 'availability'
 
@@ -151,10 +160,13 @@ export function ProfileEmploymentLeft() {
       startProfileSync()
       await utils.profile.getEmployment.cancel()
       const previousEmployment = utils.profile.getEmployment.getData()
-      utils.profile.getEmployment.setData(undefined, (current: EmploymentProfileFormData | undefined) => ({
-        ...(current ?? profileEmploymentDefaults),
-        ...input,
-      }))
+      utils.profile.getEmployment.setData(
+        undefined,
+        (current: EmploymentProfileFormData | undefined) => ({
+          ...(current ?? profileEmploymentDefaults),
+          ...input,
+        })
+      )
       return { previousEmployment }
     },
     onError: (error: unknown, _input: UpdateEmploymentInput, context?: UpdateEmploymentContext) => {
@@ -220,7 +232,9 @@ export function ProfileEmploymentLeft() {
       return
     }
 
-    const previousSerialized = originalDataRef.current ? JSON.stringify(originalDataRef.current) : null
+    const previousSerialized = originalDataRef.current
+      ? JSON.stringify(originalDataRef.current)
+      : null
     const nextSerialized = JSON.stringify(employmentData)
 
     if (previousSerialized === nextSerialized) {
@@ -267,7 +281,7 @@ export function ProfileEmploymentLeft() {
       })
       return
     }
-    
+
     // Always set open_to_travel to true
     data.open_to_travel = true
 

@@ -1,8 +1,7 @@
+import type { User } from '@supabase/auth-js'
 import { act, cleanup, render } from '@testing-library/react-native'
 import { useEffect } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
-import type { User } from '@supabase/auth-js'
 import { useProtectedRoute } from '../useProtectedRoute'
 
 const mockReplace = vi.hoisted(() => vi.fn())

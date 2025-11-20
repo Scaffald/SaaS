@@ -1,10 +1,9 @@
 // @ts-nocheck
-import React, { useState } from 'react'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import { Button, Text, YStack } from '@app/ui'
 import { ChevronDown } from '@tamagui/lucide-icons'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
+import { useState } from 'react'
 
 const menuItems = ['Edit profile', 'Duplicate', 'Archive', 'Delete']
 

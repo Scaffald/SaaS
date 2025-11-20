@@ -1,14 +1,14 @@
-import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip';
+import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 
 /**
  * Normalized domain scores (0-100 scale)
  */
 export type NormalizedScores = {
   [K in IPIPDomain]: {
-    percentage: number;
-    average: number;
-    result: 'low' | 'neutral' | 'high';
-  };
+    percentage: number
+    average: number
+    result: 'low' | 'neutral' | 'high'
+  }
 }
 
 /**
@@ -22,12 +22,12 @@ export type NormalizedScores = {
  * @returns NormalizedScores with percentage values
  */
 export function normalizeScores(scores: IPIPScores): NormalizedScores {
-  const normalized: Partial<NormalizedScores> = {};
+  const normalized: Partial<NormalizedScores> = {}
 
-  const domains: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O'];
+  const domains: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
 
   for (const domain of domains) {
-    const domainScore = scores[domain];
+    const domainScore = scores[domain]
 
     if (!domainScore || domainScore.count === 0) {
       // Handle edge case: no answers for this domain
@@ -35,34 +35,33 @@ export function normalizeScores(scores: IPIPScores): NormalizedScores {
         percentage: 50, // Default to neutral (50%)
         average: 3.0,
         result: 'neutral',
-      };
-      continue;
+      }
+      continue
     }
 
-    const average = domainScore.score / domainScore.count;
+    const average = domainScore.score / domainScore.count
 
     // Validate average is in expected range (1-5)
     if (average < 1 || average > 5) {
       // Clamp to valid range
-      const clampedAverage = Math.max(1, Math.min(5, average));
+      const clampedAverage = Math.max(1, Math.min(5, average))
       normalized[domain] = {
         percentage: ((clampedAverage - 1) / 4) * 100,
         average: clampedAverage,
         result: domainScore.result as 'low' | 'neutral' | 'high',
-      };
-      continue;
+      }
+      continue
     }
 
     // Normalize: (average - 1) / 4 * 100
-    const percentage = ((average - 1) / 4) * 100;
+    const percentage = ((average - 1) / 4) * 100
 
     normalized[domain] = {
       percentage: Math.round(percentage * 100) / 100, // Round to 2 decimal places
       average: Math.round(average * 100) / 100,
       result: domainScore.result as 'low' | 'neutral' | 'high',
-    };
+    }
   }
 
-  return normalized as NormalizedScores;
+  return normalized as NormalizedScores
 }
-

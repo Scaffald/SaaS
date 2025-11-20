@@ -1,32 +1,32 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Input,
-  TextArea,
-  Select,
-  Adapt,
-  Sheet,
-  useWindowDimensions,
-  Label,
-  Spinner,
-} from 'tamagui'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronDown } from '@tamagui/lucide-icons'
-import { singleEducationEntrySchema, DEGREE_TYPE_OPTIONS } from '../config'
+import { api } from '@app/core/utils/api'
 import {
   UIButton as Button,
+  ConfirmationDialog,
   CustomCheckbox,
+  FieldError,
+  MonthYearPicker,
   ResponsiveModal,
   UniversityAutocomplete,
-  ConfirmationDialog,
-  MonthYearPicker,
-  FieldError,
 } from '@app/ui'
-import { api } from '@app/core/utils/api'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import {
+  Adapt,
+  Input,
+  Label,
+  Select,
+  Sheet,
+  Spinner,
+  Text,
+  TextArea,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { DEGREE_TYPE_OPTIONS, singleEducationEntrySchema } from '../config'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
 import { normalizeEducationEntry } from '../utils/education-entry'
 

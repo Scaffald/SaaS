@@ -57,16 +57,18 @@ vi.mock('@app/ui', () => ({
         <label htmlFor={inputId}>{label}</label>
         <input
           id={inputId}
-        type="month"
-        value={value ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}` : ''}
-        onChange={(e) => {
-          if (e.target.value) {
-            const [year, month] = e.target.value.split('-')
-            onChange(new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, 1))
-          } else {
-            onChange(null)
+          type="month"
+          value={
+            value ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}` : ''
           }
-        }}
+          onChange={(e) => {
+            if (e.target.value) {
+              const [year, month] = e.target.value.split('-')
+              onChange(new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, 1))
+            } else {
+              onChange(null)
+            }
+          }}
           data-testid={inputId}
         />
       </div>
@@ -84,11 +86,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Input = ({
     value = '',
@@ -226,7 +224,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText('OSHA 30-Hour Construction Safety')).toBeInTheDocument()
@@ -244,7 +242,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nameInput = screen.getByPlaceholderText('OSHA 30-Hour Construction Safety')
@@ -279,7 +277,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nameInput = screen.getByPlaceholderText('OSHA 30-Hour Construction Safety')
@@ -318,7 +316,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const removeButton = screen.getByRole('button', { name: /remove osha 30-hour/i })
@@ -351,7 +349,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const continueButton = screen.getByRole('button', { name: /next: preferences/i })
@@ -385,7 +383,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const saveButton = screen.getByText('Save & Continue Later')
@@ -409,7 +407,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const skipButton = screen.getByRole('button', { name: /skip/i })
@@ -431,7 +429,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nameInput = screen.getByPlaceholderText('OSHA 30-Hour Construction Safety')
@@ -464,7 +462,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nameInput = screen.getByPlaceholderText('OSHA 30-Hour Construction Safety')
@@ -494,7 +492,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText(/Optional but recommended/i)).toBeInTheDocument()
@@ -517,7 +515,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText(/Looking great! Keep adding/i)).toBeInTheDocument()
@@ -534,7 +532,7 @@ describe('CertificationsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nameInput = screen.getByPlaceholderText('OSHA 30-Hour Construction Safety')
@@ -552,4 +550,3 @@ describe('CertificationsStep', () => {
     })
   })
 })
-

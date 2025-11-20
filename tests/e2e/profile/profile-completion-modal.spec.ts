@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test'
 import * as fs from 'node:fs'
+import { expect, test } from '@playwright/test'
 
 const userAuthFile = 'tests/.auth/user.json'
 
@@ -44,7 +44,7 @@ test.describe('Profile Completion Modal - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -81,14 +81,17 @@ test.describe('Profile Completion Modal - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(2000)
 
     // Should show progress reminder
-    const progressText = await page.getByText(/30%|keep going|you're close/i).isVisible().catch(() => false)
+    const progressText = await page
+      .getByText(/30%|keep going|you're close/i)
+      .isVisible()
+      .catch(() => false)
     expect(progressText || true).toBeTruthy()
   })
 
@@ -115,7 +118,7 @@ test.describe('Profile Completion Modal - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -147,13 +150,13 @@ test.describe('Profile Completion Modal - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.route(/\/trpc\/profile\.dismissNudge/, (route) =>
       fulfillJson(route, {
         success: true,
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -206,7 +209,7 @@ test.describe('Profile Completion Modal - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -230,11 +233,28 @@ test.describe('Profile Completion Modal - E2E', () => {
       fulfillJson(route, {
         completionPercentage,
         sectionProgress: [
-          { id: 'general', title: 'General', completed: completionPercentage >= 20, weight: 20, missingFields: [] },
-          { id: 'skills', title: 'Skills', completed: completionPercentage >= 40, weight: 20, missingFields: [] },
+          {
+            id: 'general',
+            title: 'General',
+            completed: completionPercentage >= 20,
+            weight: 20,
+            missingFields: [],
+          },
+          {
+            id: 'skills',
+            title: 'Skills',
+            completed: completionPercentage >= 40,
+            weight: 20,
+            missingFields: [],
+          },
         ],
         milestoneBadges: [
-          { id: '25', threshold: 25, achieved: completionPercentage >= 25, reachedAt: completionPercentage >= 25 ? new Date().toISOString() : null },
+          {
+            id: '25',
+            threshold: 25,
+            achieved: completionPercentage >= 25,
+            reachedAt: completionPercentage >= 25 ? new Date().toISOString() : null,
+          },
         ],
         incompleteSections: completionPercentage < 40 ? ['skills'] : [],
         nudgeStatus: {
@@ -243,14 +263,17 @@ test.describe('Profile Completion Modal - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
     // Check initial percentage
-    const initialPercentage = await page.getByText(/20%/).isVisible().catch(() => false)
+    const initialPercentage = await page
+      .getByText(/20%/)
+      .isVisible()
+      .catch(() => false)
 
     // Simulate completion increase
     completionPercentage = 45
@@ -258,10 +281,12 @@ test.describe('Profile Completion Modal - E2E', () => {
     await page.waitForTimeout(1000)
 
     // Check updated percentage
-    const updatedPercentage = await page.getByText(/45%/).isVisible().catch(() => false)
+    const updatedPercentage = await page
+      .getByText(/45%/)
+      .isVisible()
+      .catch(() => false)
 
     // At least one should be visible
     expect(initialPercentage || updatedPercentage || true).toBeTruthy()
   })
 })
-

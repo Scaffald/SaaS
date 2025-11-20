@@ -1,11 +1,10 @@
-import { useLocalSearchParams } from 'expo-router'
-import { useEffect } from 'react'
-import { YStack, Spinner, Text } from 'tamagui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { ROUTES } from '@app/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
 import { api } from '@app/core/utils/api'
-import { ROUTES } from '@app/core/constants/routes'
 import type { BreadcrumbItem } from '@app/ui'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { useLocalSearchParams } from 'expo-router'
+import { Spinner, Text, YStack } from 'tamagui'
 
 /**
  * Public Job Detail Route (Vanity URL)

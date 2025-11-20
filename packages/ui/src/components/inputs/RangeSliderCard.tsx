@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Text, View, YStack, XStack, Slider, type ThemeName } from 'tamagui'
+import { Slider, Text, type ThemeName, View, XStack, YStack } from 'tamagui'
 
 export interface RangeSliderCardProps {
   /** Icon to display on the left side */

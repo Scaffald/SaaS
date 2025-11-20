@@ -1,9 +1,9 @@
-import { useEffect, type FC } from 'react'
-import { useWindowDimensions } from 'react-native'
-import { View, Text, type GetThemeValueForKey } from 'tamagui'
-import { Svg, G, Defs, LinearGradient, Stop, Rect, Circle, Polygon } from 'react-native-svg'
-import Animated, { useSharedValue, useAnimatedProps, withSpring } from 'react-native-reanimated'
 import { randomUUID } from 'expo-crypto'
+import { type FC, useEffect } from 'react'
+import { useWindowDimensions } from 'react-native'
+import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated'
+import { Circle, Defs, G, LinearGradient, Polygon, Rect, Stop, Svg } from 'react-native-svg'
+import { type GetThemeValueForKey, Text, View } from 'tamagui'
 
 // Data interfaces
 export interface SkillsChartDataItem {

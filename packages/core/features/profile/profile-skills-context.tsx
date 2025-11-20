@@ -1,15 +1,15 @@
+import { api } from '@app/core/utils/api'
+import { useToastController } from '@tamagui/toast'
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from 'react'
-import { useToastController } from '@tamagui/toast'
-import { api } from '@app/core/utils/api'
 import type { ParentSkill } from './components/InlineSkillSearch'
 import { getSkillGuidanceForIndustry, type SkillSuggestion } from './constants/skill-guidance'
 import { invalidateProfileQueries } from './utils/profile-sync'
@@ -87,7 +87,11 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   })
 
   const addSkillMutation = api.profile.skillsMultiTaxonomy.addSkill.useMutation({
-    async onMutate(variables: { taxonomy: 'csi' | 'onet'; skillId: string; proficiencyLevel: number }) {
+    async onMutate(variables: {
+      taxonomy: 'csi' | 'onet'
+      skillId: string
+      proficiencyLevel: number
+    }) {
       resetProfileSyncError()
       startProfileSync()
 
@@ -95,8 +99,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
       await utils.profile.skillsMultiTaxonomy.getUserSkills.cancel()
 
       // Snapshot previous value for rollback
-      const previousSkills =
-        utils.profile.skillsMultiTaxonomy.getUserSkills.getData()
+      const previousSkills = utils.profile.skillsMultiTaxonomy.getUserSkills.getData()
 
       // Get skill details from ref (set by selectSkill before mutation)
       const skillDetails = pendingSkillDetailsRef.current
@@ -117,8 +120,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
               },
               proficiency_level: variables.proficiencyLevel,
               csi_skill_id: variables.taxonomy === 'csi' ? variables.skillId : null,
-              onet_occupation_id:
-                variables.taxonomy === 'onet' ? variables.skillId : null,
+              onet_occupation_id: variables.taxonomy === 'onet' ? variables.skillId : null,
               created_at: new Date().toISOString(),
             }
             return {
@@ -133,13 +135,14 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
 
       return { previousSkills }
     },
-    onError: (error: Error, _variables: unknown, context: { previousSkills?: unknown } | undefined) => {
+    onError: (
+      error: Error,
+      _variables: unknown,
+      context: { previousSkills?: unknown } | undefined
+    ) => {
       // Rollback optimistic update
       if (context?.previousSkills !== undefined) {
-        utils.profile.skillsMultiTaxonomy.getUserSkills.setData(
-          undefined,
-          context.previousSkills
-        )
+        utils.profile.skillsMultiTaxonomy.getUserSkills.setData(undefined, context.previousSkills)
       }
       // Clear ref on error
       pendingSkillDetailsRef.current = null
@@ -163,8 +166,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     },
   })
 
-  const updateIndustryMutation =
-    api.profile.skillsMultiTaxonomy.updatePrimaryIndustry.useMutation({
+  const updateIndustryMutation = api.profile.skillsMultiTaxonomy.updatePrimaryIndustry.useMutation({
     onMutate: () => {
       resetProfileSyncError()
       startProfileSync()
@@ -321,12 +323,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   )
 
   const selectSkill = useCallback(
-    async (
-      skillId: string,
-      proficiency: number,
-      taxonomy: string,
-      skillDetails?: ParentSkill
-    ) => {
+    async (skillId: string, proficiency: number, taxonomy: string, skillDetails?: ParentSkill) => {
       // Store skill details in ref for optimistic update
       if (skillDetails) {
         pendingSkillDetailsRef.current = skillDetails
@@ -342,8 +339,9 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
 
   const existingSkillIds = useMemo(
     () =>
-      userSkillsQuery.data?.skills.map((skill: { id: string; csi_skill_id: string | null; onet_occupation_id: string | null }) =>
-        skill.csi_skill_id || skill.onet_occupation_id || skill.id
+      userSkillsQuery.data?.skills.map(
+        (skill: { id: string; csi_skill_id: string | null; onet_occupation_id: string | null }) =>
+          skill.csi_skill_id || skill.onet_occupation_id || skill.id
       ) || [],
     [userSkillsQuery.data?.skills]
   )
@@ -404,4 +402,3 @@ export function useProfileSkillsContext(): ProfileSkillsContextValue {
 
   return context
 }
-

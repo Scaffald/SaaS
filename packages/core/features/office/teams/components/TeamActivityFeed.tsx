@@ -1,21 +1,11 @@
-import { useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
-import {
-  Button,
-  Select,
-  Separator,
-  Spinner,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
 import { Check, ChevronDown, MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
-
-import { api } from '@app/core/utils/api'
-import type { AppRouter } from '@app/supabase/client-types'
+import type { ReactNode } from 'react'
+import { useMemo, useState } from 'react'
+import { Button, Select, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type MentionOption = {
   id: string
@@ -55,9 +45,10 @@ export function TeamActivityFeed({
       pageSize: PAGE_SIZE,
     },
     {
-      getNextPageParam: (lastPage: TeamActivityOutput | undefined) => lastPage?.nextCursor ?? undefined,
+      getNextPageParam: (lastPage: TeamActivityOutput | undefined) =>
+        lastPage?.nextCursor ?? undefined,
       staleTime: 30_000,
-    },
+    }
   )
 
   const postCommentMutation = api.teams.analytics.postComment.useMutation({
@@ -79,16 +70,15 @@ export function TeamActivityFeed({
     return pages
       .flatMap((page: TeamActivityOutput | undefined) => page?.events ?? [])
       .map((event: TeamActivityEvent) => ({
-          ...event,
-          // Ensure payload is an object to simplify downstream use
-          payload:
-            typeof event.payload === 'object' && event.payload !== null ? event.payload : {},
+        ...event,
+        // Ensure payload is an object to simplify downstream use
+        payload: typeof event.payload === 'object' && event.payload !== null ? event.payload : {},
       })) as TeamActivityEvent[]
   }, [activityQuery.data])
 
   const availableMentionOptions = useMemo(
     () => mentionOptions.filter((option) => !mentions.some((item) => item.id === option.id)),
-    [mentionOptions, mentions],
+    [mentionOptions, mentions]
   )
 
   const resolveUserName = (userId?: string | null) => {
@@ -103,7 +93,7 @@ export function TeamActivityFeed({
   }
 
   const renderEventDetails = (
-    event: TeamActivityEvent,
+    event: TeamActivityEvent
   ): { content: ReactNode; accessibilityLabel: string } => {
     const actor = resolveUserName(event.actorUserId)
     const occurredAt = new Date(event.occurredAt).toLocaleString()
@@ -113,9 +103,7 @@ export function TeamActivityFeed({
     switch (event.eventType) {
       case 'discussion.comment': {
         const body = typeof payload.body === 'string' ? payload.body : ''
-        const mentionIds = Array.isArray(payload.mentions)
-          ? (payload.mentions as string[])
-          : []
+        const mentionIds = Array.isArray(payload.mentions) ? (payload.mentions as string[]) : []
         const mentionNames = mentionIds
           .map((id) => resolveUserName(id))
           .filter((name) => Boolean(name))
@@ -133,9 +121,7 @@ export function TeamActivityFeed({
           accessibilityLabel,
           content: (
             <YStack gap="$2">
-              <Text fontWeight="600">
-                {actor} commented
-              </Text>
+              <Text fontWeight="600">{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
                 <Text fontSize="$3" color="$color10">
@@ -223,9 +209,7 @@ export function TeamActivityFeed({
           accessibilityLabel,
           content: (
             <YStack gap="$1">
-              <Text fontWeight="600">
-                {actor} left the team
-              </Text>
+              <Text fontWeight="600">{actor} left the team</Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
@@ -471,11 +455,7 @@ export function TeamActivityFeed({
                 accessibilityLabel="Load more activity"
                 accessibilityHint="Loads older team activity events"
               >
-                {activityQuery.isFetchingNextPage ? (
-                  <Spinner size="small" />
-                ) : (
-                  'Load more'
-                )}
+                {activityQuery.isFetchingNextPage ? <Spinner size="small" /> : 'Load more'}
               </Button>
             </XStack>
           ) : null}
@@ -484,5 +464,3 @@ export function TeamActivityFeed({
     </YStack>
   )
 }
-
-

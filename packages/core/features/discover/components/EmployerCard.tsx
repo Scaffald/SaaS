@@ -1,7 +1,7 @@
-import { Card, XStack, YStack, Text, Button } from 'tamagui'
-import { Building2, MapPin, Users, ExternalLink } from '@tamagui/lucide-icons'
-import type { JSONContent } from '@tiptap/core'
 import { extractPlainText } from '@app/ui'
+import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
+import type { JSONContent } from '@tiptap/core'
+import { Button, Card, Text, XStack, YStack } from 'tamagui'
 
 export interface Employer {
   id: string

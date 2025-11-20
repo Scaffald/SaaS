@@ -118,13 +118,7 @@ vi.mock('tamagui', () => {
     )
   }
 
-  Popover.Trigger = ({
-    children,
-    asChild,
-  }: {
-    children?: ReactNode
-    asChild?: boolean
-  }) => {
+  Popover.Trigger = ({ children, asChild }: { children?: ReactNode; asChild?: boolean }) => {
     const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
       // Forward click to button inside
       const button = (e.currentTarget as HTMLElement).querySelector('button')

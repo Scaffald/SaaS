@@ -1,5 +1,4 @@
-import { memo } from 'react'
-import { Button, Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui'
+import type { IconProps } from '@tamagui/helpers-icon'
 import {
   Award,
   Briefcase,
@@ -12,7 +11,8 @@ import {
   UserRound,
   Zap,
 } from '@tamagui/lucide-icons'
-import type { IconProps } from '@tamagui/helpers-icon'
+import { memo } from 'react'
+import { Button, Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
 export interface WizardStartScreenProps {
@@ -36,7 +36,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
     totalEstimatedMinutes ??
     PROFILE_WIZARD_STEPS.reduce(
       (total, step) => total + PROFILE_WIZARD_STEP_META[step].estimatedTimeMinutes,
-      0,
+      0
     )
 
   const STEP_ICONS: Record<string, React.ComponentType<IconProps>> = {
@@ -53,8 +53,8 @@ export const WizardStartScreen = memo(function WizardStartScreen({
       <YStack gap="$3">
         <H3>Complete Your Profile in Minutes</H3>
         <Paragraph color="$color11">
-          Unlock better job matches and visibility by finishing six quick steps. We&apos;ll guide you
-          through the essentials and save your progress automatically.
+          Unlock better job matches and visibility by finishing six quick steps. We&apos;ll guide
+          you through the essentials and save your progress automatically.
         </Paragraph>
       </YStack>
 
@@ -68,8 +68,8 @@ export const WizardStartScreen = memo(function WizardStartScreen({
               </Text>
             </XStack>
             <Paragraph color="$color11">
-              You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile visibility,
-              milestone badges, and curated job recommendations.
+              You&apos;re {completionPercentage}% complete. Finish the wizard to unlock profile
+              visibility, milestone badges, and curated job recommendations.
             </Paragraph>
           </YStack>
 
@@ -144,5 +144,3 @@ export const WizardStartScreen = memo(function WizardStartScreen({
     </YStack>
   )
 })
-
-

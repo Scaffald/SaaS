@@ -1,17 +1,17 @@
-import { YStack } from 'tamagui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import {
-  GeneralInfoWidget,
-  ExperienceWidget,
-  EducationWidget,
-  SkillsWidget,
-  PreferencesWidget,
-} from '@app/core/features/profile/widgets'
-import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
-import { ProfileCertificationsHighlightProvider } from '@app/core/features/profile/profile-certifications-highlight-context'
-import { useUser } from '@app/core/utils/useUser'
 import { IdVerificationWidget } from '@app/core/features/id-verification'
 import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
+import { ProfileCertificationsHighlightProvider } from '@app/core/features/profile/profile-certifications-highlight-context'
+import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
+import {
+  EducationWidget,
+  ExperienceWidget,
+  GeneralInfoWidget,
+  PreferencesWidget,
+  SkillsWidget,
+} from '@app/core/features/profile/widgets'
+import { useUser } from '@app/core/utils/useUser'
+import { ProfileLayout, QuickLinksSidebar } from '@app/ui'
+import { YStack } from 'tamagui'
 
 /**
  * Profile Index - Own profile view
@@ -26,7 +26,7 @@ export default function ProfileIndexScreen() {
 
   return (
     <ProfileCertificationsHighlightProvider>
-      <DashboardLayout
+      <ProfileLayout
         leftContent={
           <YStack gap="$4">
             <GeneralInfoWidget userId={user.id} showEdit />

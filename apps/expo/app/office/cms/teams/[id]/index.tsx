@@ -1,6 +1,14 @@
-import type { ComponentType } from 'react'
-import { useMemo, useState } from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import {
+  TeamInvitationsList,
+  TeamInviteModal,
+  TeamJobsList,
+  TeamMembersList,
+  TeamOverviewCard,
+} from '@app/core/features/office/teams'
+import { api } from '@app/core/utils/api'
+import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
+import type { AppRouter } from '@app/supabase/client-types'
 import {
   ArrowLeft,
   BarChart3,
@@ -10,19 +18,10 @@ import {
   UserPlus,
 } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import type { ComponentType } from 'react'
+import { useMemo, useState } from 'react'
 import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
-
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
-import {
-  TeamInviteModal,
-  TeamInvitationsList,
-  TeamJobsList,
-  TeamMembersList,
-  TeamOverviewCard,
-} from '@app/core/features/office/teams'
-import { api } from '@app/core/utils/api'
-import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@app/supabase/client-types'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']

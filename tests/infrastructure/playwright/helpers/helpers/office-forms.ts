@@ -4,7 +4,7 @@
  * Provides utilities for interacting with office admin forms
  */
 
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 
 /**
  * Fill a text field by label
@@ -92,7 +92,9 @@ export async function fillAddressAutocomplete(
     // Try to find and click the first suggestion
     try {
       // Look for various autocomplete suggestion patterns
-      const suggestion = page.locator('[role="option"]').first()
+      const suggestion = page
+        .locator('[role="option"]')
+        .first()
         .or(page.locator('.mapbox-gl-geocoder--suggestion').first())
         .or(page.locator('[class*="suggestion"]').first())
 
@@ -179,7 +181,8 @@ export async function waitForValidationErrors(
 
   try {
     // Look for common error patterns
-    await page.locator('[role="alert"]')
+    await page
+      .locator('[role="alert"]')
       .or(page.locator('[class*="error"]'))
       .or(page.locator('[class*="invalid"]'))
       .first()
@@ -198,7 +201,8 @@ export async function getValidationErrors(page: Page): Promise<string[]> {
   const errors: string[] = []
 
   // Find all error elements
-  const errorElements = page.locator('[role="alert"]')
+  const errorElements = page
+    .locator('[role="alert"]')
     .or(page.locator('[class*="error"]'))
     .or(page.locator('[class*="invalid"]'))
 
@@ -246,13 +250,18 @@ export async function submitForm(
  */
 export async function clearForm(page: Page): Promise<void> {
   // Find all input elements
-  const inputs = page.locator('input[type="text"], input[type="email"], input[type="tel"], textarea')
+  const inputs = page.locator(
+    'input[type="text"], input[type="email"], input[type="tel"], textarea'
+  )
   const count = await inputs.count()
 
   for (let i = 0; i < count; i++) {
-    await inputs.nth(i).clear().catch(() => {
-      // Ignore errors for read-only or disabled fields
-    })
+    await inputs
+      .nth(i)
+      .clear()
+      .catch(() => {
+        // Ignore errors for read-only or disabled fields
+      })
   }
 }
 
@@ -267,7 +276,8 @@ export async function expandFormSection(
   const timeout = options?.timeout ?? 5000
 
   // Find the section header (usually a button or clickable element)
-  const header = page.getByRole('button', { name: new RegExp(sectionName, 'i') })
+  const header = page
+    .getByRole('button', { name: new RegExp(sectionName, 'i') })
     .or(page.getByText(new RegExp(sectionName, 'i')).filter({ has: page.locator('svg') }))
 
   // Check if already expanded (look for aria-expanded attribute)

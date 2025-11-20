@@ -2,9 +2,9 @@ import { forwardRef } from 'react'
 import {
   ScrollView,
   type TamaguiElement,
+  withStaticProperties,
   YStack,
   type YStackProps,
-  withStaticProperties,
 } from 'tamagui'
 
 /**

@@ -1,5 +1,2 @@
-export { FeedbackWidget } from "./FeedbackWidget";
-export * from "./hooks";
-
-
-
+export { FeedbackWidget } from './FeedbackWidget'
+export * from './hooks'

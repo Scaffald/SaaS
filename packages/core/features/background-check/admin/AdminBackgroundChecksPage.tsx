@@ -1,26 +1,25 @@
-import { useMemo, useState } from 'react'
-import { useRouter } from 'expo-router'
-import type { ColumnDef } from '@tanstack/react-table'
-import { Button, Card, Select, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
-import { AlertTriangle, Check, ChevronDown, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { ROUTES } from '@app/core/constants/routes'
+import { OfficePageLayout } from '@app/core/features/office/components/OfficePageLayout'
 import { api } from '@app/core/utils/api'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
 import type { AppRouter } from '@app/supabase/client-types'
-import { OfficePageLayout } from '@app/core/features/office/components/OfficePageLayout'
+import { AlertTriangle, Check, ChevronDown, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Button, Card, Select, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
 
 import {
   BACKGROUND_CHECK_STATUSES,
-  getStatusMetadata,
   type BackgroundCheckStatus,
+  getStatusMetadata,
 } from '../components/status.utils'
+import { AdminAuditLogPanel } from './AdminAuditLogPanel'
+import { AdminCatalogManager } from './AdminCatalogManager'
 import { AdminCheckReviewDialog } from './AdminCheckReviewDialog'
 import { AdminDisputeResolutionDialog } from './AdminDisputeResolutionDialog'
 import { AdminMetricsPanel } from './AdminMetricsPanel'
-import { AdminAuditLogPanel } from './AdminAuditLogPanel'
-import { AdminCatalogManager } from './AdminCatalogManager'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 

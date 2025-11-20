@@ -1,21 +1,21 @@
 export { MapContainer } from './MapContainer'
+export { MapFallback } from './MapFallback'
 export { MapPin } from './MapPin'
 export { MapTooltip } from './MapTooltip'
-export { MapFallback } from './MapFallback'
+export {
+  getMapStyleUrl,
+  getStandardStyleConfig,
+  getStandardStyleConfigIfNeeded,
+  MAP_STYLE_CONFIG,
+  MAPBOX_API_BASE_URL,
+  shouldApplyStandardConfig,
+} from './mapboxStyleConfig'
 export {
   defaultMapCenter,
   defaultMapZoom,
   defaultRadius,
   mockMapPins,
 } from './mockData'
-export {
-  MAP_STYLE_CONFIG,
-  MAPBOX_API_BASE_URL,
-  getMapStyleUrl,
-  shouldApplyStandardConfig,
-  getStandardStyleConfig,
-  getStandardStyleConfigIfNeeded,
-} from './mapboxStyleConfig'
 export type {
   MapContainerProps,
   MapContainerRef,

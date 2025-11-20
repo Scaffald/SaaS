@@ -1,9 +1,9 @@
-import { YStack, XStack, Text, Avatar } from 'tamagui'
-import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
-import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
-import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { IdVerificationBadge } from '@app/core/features/id-verification'
+import { api } from '@app/core/utils/api'
+import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { Avatar, Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -101,14 +101,14 @@ export function GeneralInfoWidget({ userId, variant = 'full' }: ProfileWidgetPro
                 @{data.username}
               </Text>
             )}
-          {badge && (
-            <IdVerificationBadge
-              status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
-              badgeExpiresAt={badge.badge_expires_at ?? undefined}
-              size="sm"
-              muted={false}
-            />
-          )}
+            {badge && (
+              <IdVerificationBadge
+                status={badge.badge_status as 'active' | 'expired' | 'revoked' | null}
+                badgeExpiresAt={badge.badge_expires_at ?? undefined}
+                size="sm"
+                muted={false}
+              />
+            )}
           </YStack>
 
           {/* Status Badges */}

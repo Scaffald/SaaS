@@ -5,10 +5,10 @@
  * User: Admin (ewongagent@gmail.com)
  */
 
-import { test, expect } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, test } from '@playwright/test'
 import { promises as fs } from 'fs'
 import path from 'path'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin Map Discovery UI Exploration', () => {
   test('explore /dashboard/discover/map interface', async ({ page }) => {
@@ -27,10 +27,9 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     await page.goto('/dashboard/discover/map', { waitUntil: 'domcontentloaded' })
 
     // Wait for loading to finish
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     await page.waitForTimeout(3000)
     console.log('✓ Page loaded\n')
@@ -39,7 +38,10 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     expect(page.url()).toContain('/dashboard/discover/map')
 
     // Capture full page screenshot
-    await page.screenshot({ path: '.playwright-mcp/admin-011-dashboard-discover-map.png', fullPage: true })
+    await page.screenshot({
+      path: '.playwright-mcp/admin-011-dashboard-discover-map.png',
+      fullPage: true,
+    })
     console.log('📸 Full page screenshot saved\n')
 
     // === PAGE METADATA ===
@@ -68,19 +70,19 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     const h2s = await page.locator('h2').allTextContents()
     const h3s = await page.locator('h3').allTextContents()
 
-    if (h1s.filter(h => h.trim()).length > 0) {
+    if (h1s.filter((h) => h.trim()).length > 0) {
       console.log('H1 Headings:')
       h1s.forEach((h, i) => h.trim() && console.log(`  ${i + 1}. ${h.trim()}`))
       console.log('')
     }
 
-    if (h2s.filter(h => h.trim()).length > 0) {
+    if (h2s.filter((h) => h.trim()).length > 0) {
       console.log('H2 Headings:')
       h2s.slice(0, 10).forEach((h, i) => h.trim() && console.log(`  ${i + 1}. ${h.trim()}`))
       console.log('')
     }
 
-    if (h3s.filter(h => h.trim()).length > 0) {
+    if (h3s.filter((h) => h.trim()).length > 0) {
       console.log('H3 Headings:')
       h3s.slice(0, 10).forEach((h, i) => h.trim() && console.log(`  ${i + 1}. ${h.trim()}`))
       console.log('')
@@ -142,7 +144,9 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     if (selects > 0) {
       for (let i = 0; i < selects; i++) {
         const options = await page.locator('select').nth(i).locator('option').allTextContents()
-        console.log(`  Select ${i + 1}: ${options.slice(0, 5).join(', ')}${options.length > 5 ? '...' : ''}`)
+        console.log(
+          `  Select ${i + 1}: ${options.slice(0, 5).join(', ')}${options.length > 5 ? '...' : ''}`
+        )
       }
       console.log('')
     }
@@ -151,7 +155,7 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     console.log('=== BUTTONS & ACTIONS ===\n')
 
     const buttons = await page.locator('button').allTextContents()
-    const uniqueButtons = [...new Set(buttons.filter(b => b.trim()))]
+    const uniqueButtons = [...new Set(buttons.filter((b) => b.trim()))]
     console.log(`Total unique buttons: ${uniqueButtons.length}`)
     uniqueButtons.slice(0, 25).forEach((b, i) => console.log(`  ${i + 1}. ${b.trim()}`))
     console.log('')
@@ -160,7 +164,7 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     console.log('=== LABELS & FORM ELEMENTS ===\n')
 
     const labels = await page.locator('label').allTextContents()
-    const uniqueLabels = [...new Set(labels.filter(l => l.trim() && l.trim().length < 60))]
+    const uniqueLabels = [...new Set(labels.filter((l) => l.trim() && l.trim().length < 60))]
     console.log(`Form labels: ${uniqueLabels.length}`)
     uniqueLabels.slice(0, 15).forEach((l, i) => console.log(`  ${i + 1}. ${l.trim()}`))
     console.log('')
@@ -181,7 +185,9 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     // === MAP-SPECIFIC CONTROLS ===
     console.log('=== MAP-SPECIFIC CONTROLS ===\n')
 
-    const zoomControls = await page.locator('[aria-label*="zoom" i], button:has-text("Zoom")').count()
+    const zoomControls = await page
+      .locator('[aria-label*="zoom" i], button:has-text("Zoom")')
+      .count()
     const markers = await page.locator('[class*="marker"], svg[class*="marker"]').count()
     const legend = await page.locator('[class*="legend"]').count()
     const locationBtn = await page.locator('[aria-label*="location" i]').count()
@@ -198,7 +204,11 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     console.log(`Sections: ${sections.length}`)
 
     for (let i = 0; i < Math.min(sections.length, 8); i++) {
-      const heading = await sections[i].locator('h1, h2, h3').first().textContent().catch(() => '')
+      const heading = await sections[i]
+        .locator('h1, h2, h3')
+        .first()
+        .textContent()
+        .catch(() => '')
       const aria = (await sections[i].getAttribute('aria-label')) || ''
       if (heading.trim() || aria) {
         console.log(`  Section ${i + 1}: ${heading.trim() || aria}`)
@@ -220,7 +230,10 @@ test.describe('Admin Map Discovery UI Exploration', () => {
     // Additional screenshot of main content
     const mainEl = await page.locator('main').count()
     if (mainEl > 0) {
-      await page.locator('main').first().screenshot({ path: '.playwright-mcp/admin-011-main-content.png' })
+      await page
+        .locator('main')
+        .first()
+        .screenshot({ path: '.playwright-mcp/admin-011-main-content.png' })
       console.log('📸 Main content screenshot saved\n')
     }
 

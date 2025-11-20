@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Card } from 'tamagui'
-import { Briefcase, MapPin, Calendar } from '@tamagui/lucide-icons'
+import { Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
+import { Card, Text, XStack, YStack } from 'tamagui'
 
 interface Experience {
   id: string

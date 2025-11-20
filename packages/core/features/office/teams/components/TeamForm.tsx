@@ -1,7 +1,18 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import {
+  TEAM_INVITATION_POLICIES,
+  TEAM_VISIBILITIES,
+  teamCreateBaseSchema,
+  teamCreateSchema,
+  teamRoleKeySchema,
+} from '@app/schemas'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'expo-router'
 import {
   Button,
   Input,
@@ -14,19 +25,7 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
 import type { z } from 'zod'
-
-import {
-  teamCreateBaseSchema,
-  teamCreateSchema,
-  teamRoleKeySchema,
-  TEAM_INVITATION_POLICIES,
-  TEAM_VISIBILITIES,
-} from '@app/schemas'
-import { ROUTES } from '@app/core/constants/routes'
-import { api } from '@app/core/utils/api'
 
 import { useTeamFormOptions } from '../hooks/useTeamFormOptions'
 

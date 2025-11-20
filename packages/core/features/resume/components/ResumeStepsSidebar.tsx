@@ -1,7 +1,6 @@
+import { AssessmentProgress } from '@app/core/features/assessments'
 import { useMemo } from 'react'
 import { Text, YStack } from 'tamagui'
-
-import { AssessmentProgress } from '@app/core/features/assessments'
 
 import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 
@@ -65,5 +64,3 @@ export function ResumeStepsSidebar() {
     </YStack>
   )
 }
-
-

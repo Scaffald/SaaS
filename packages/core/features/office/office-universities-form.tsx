@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Input, H4, TextArea, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { Plus, Save, X } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, Save, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Button, H4, Input, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { z } from 'zod'
 
 const universitySchema = z.object({
   name: z.string().min(1, 'Name is required'),

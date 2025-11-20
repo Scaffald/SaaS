@@ -1,6 +1,6 @@
-import { Text, XStack, YStack } from 'tamagui'
-import { CheckCircle2 } from '@tamagui/lucide-icons'
 import type { ApplicationStepType } from '@app/schemas'
+import { CheckCircle2 } from '@tamagui/lucide-icons'
+import { Text, XStack, YStack } from 'tamagui'
 
 export interface ProgressIndicatorProps {
   /**
@@ -122,11 +122,7 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 fontSize="$3"
                 fontWeight={status === 'current' ? '600' : '400'}
                 color={
-                  status === 'current'
-                    ? '$blue10'
-                    : status === 'completed'
-                      ? '$gray11'
-                      : '$gray10'
+                  status === 'current' ? '$blue10' : status === 'completed' ? '$gray11' : '$gray10'
                 }
                 text="center"
                 maxW={100}

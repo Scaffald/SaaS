@@ -92,7 +92,10 @@ vi.mock('../components/steps/GeneralStep', () => ({
     onSkip?: () => void
   }) => (
     <div data-testid="mock-step-general">
-      <button type="button" onClick={() => onContinue?.({ step: 'general', payload: 'general-payload' })}>
+      <button
+        type="button"
+        onClick={() => onContinue?.({ step: 'general', payload: 'general-payload' })}
+      >
         Continue general
       </button>
       {onSaveForLater ? (
@@ -120,7 +123,10 @@ vi.mock('../components/steps/SkillsStep', () => ({
     onSkip?: () => void
   }) => (
     <div data-testid="mock-step-skills">
-      <button type="button" onClick={() => onContinue?.({ step: 'skills', payload: 'skills-payload' })}>
+      <button
+        type="button"
+        onClick={() => onContinue?.({ step: 'skills', payload: 'skills-payload' })}
+      >
         Continue skills
       </button>
       {onSaveForLater ? (
@@ -148,7 +154,10 @@ vi.mock('../components/steps/ExperienceStep', () => ({
     onSkip?: () => void
   }) => (
     <div data-testid="mock-step-experience">
-      <button type="button" onClick={() => onContinue?.({ step: 'experience', payload: 'experience-payload' })}>
+      <button
+        type="button"
+        onClick={() => onContinue?.({ step: 'experience', payload: 'experience-payload' })}
+      >
         Continue experience
       </button>
       {onSaveForLater ? (
@@ -176,7 +185,10 @@ vi.mock('../components/steps/CertificationsStep', () => ({
     onSkip?: () => void
   }) => (
     <div data-testid="mock-step-certifications">
-      <button type="button" onClick={() => onContinue?.({ step: 'certifications', payload: 'certifications-payload' })}>
+      <button
+        type="button"
+        onClick={() => onContinue?.({ step: 'certifications', payload: 'certifications-payload' })}
+      >
         Continue certifications
       </button>
       {onSaveForLater ? (
@@ -204,7 +216,10 @@ vi.mock('../components/steps/EmploymentPrefsStep', () => ({
     onSkip?: () => void
   }) => (
     <div data-testid="mock-step-preferences">
-      <button type="button" onClick={() => onContinue?.({ step: 'preferences', payload: 'preferences-payload' })}>
+      <button
+        type="button"
+        onClick={() => onContinue?.({ step: 'preferences', payload: 'preferences-payload' })}
+      >
         Continue preferences
       </button>
       {onSaveForLater ? (
@@ -232,7 +247,10 @@ vi.mock('../components/steps/EducationStep', () => ({
     onSkip?: () => void
   }) => (
     <div data-testid="mock-step-education">
-      <button type="button" onClick={() => onContinue?.({ step: 'education', payload: 'education-payload' })}>
+      <button
+        type="button"
+        onClick={() => onContinue?.({ step: 'education', payload: 'education-payload' })}
+      >
         Continue education
       </button>
       {onSaveForLater ? (
@@ -414,7 +432,7 @@ describe('ProfileWizard', () => {
 
     await waitFor(
       () => expect(screen.queryByTestId('wizard-start-screen')).not.toBeInTheDocument(),
-      { timeout: 1500 },
+      { timeout: 1500 }
     )
 
     expect(screen.getByTestId('mock-step-general')).toBeInTheDocument()
@@ -435,7 +453,7 @@ describe('ProfileWizard', () => {
           step: 'general',
           data: { step: 'general', payload: 'general-payload' },
         }),
-      { timeout: 1500 },
+      { timeout: 1500 }
     )
 
     expect(goNext).toHaveBeenCalledTimes(1)
@@ -471,5 +489,3 @@ describe('ProfileWizard', () => {
     expect(screen.getByTestId('wizard-success-modal')).toBeInTheDocument()
   })
 })
-
-

@@ -58,7 +58,11 @@ vi.mock('@app/core/forms', () => ({
   }: {
     label?: string
     placeholder?: string
-    onAddressSelect?: (address: { locality?: string; administrativeAreaLevel1?: string; stateAbbreviation?: string }) => void
+    onAddressSelect?: (address: {
+      locality?: string
+      administrativeAreaLevel1?: string
+      stateAbbreviation?: string
+    }) => void
   }) => {
     const inputId = 'address-input'
     return (
@@ -66,18 +70,18 @@ vi.mock('@app/core/forms', () => ({
         {label && <label htmlFor={inputId}>{label}</label>}
         <input
           id={inputId}
-        type="text"
-        placeholder={placeholder}
-        data-testid="address-input"
-        onChange={(e) => {
-          if (e.target.value === 'Seattle, WA' && onAddressSelect) {
-            onAddressSelect({
-              locality: 'Seattle',
-              administrativeAreaLevel1: 'Washington',
-              stateAbbreviation: 'WA',
-            })
-          }
-        }}
+          type="text"
+          placeholder={placeholder}
+          data-testid="address-input"
+          onChange={(e) => {
+            if (e.target.value === 'Seattle, WA' && onAddressSelect) {
+              onAddressSelect({
+                locality: 'Seattle',
+                administrativeAreaLevel1: 'Washington',
+                stateAbbreviation: 'WA',
+              })
+            }
+          }}
         />
       </div>
     )
@@ -90,11 +94,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Input = ({
     value = '',
@@ -106,7 +106,12 @@ vi.mock('tamagui', () => {
     onChangeText?: (value: string) => void
     placeholder?: string
   } & Record<string, unknown>) => (
-    <input value={value} onChange={(event) => onChangeText?.(event.target.value)} placeholder={placeholder} {...rest} />
+    <input
+      value={value}
+      onChange={(event) => onChangeText?.(event.target.value)}
+      placeholder={placeholder}
+      {...rest}
+    />
   )
 
   const Text = ({
@@ -129,7 +134,7 @@ vi.mock('tamagui', () => {
   )
 
   const isSelectItemElement = (
-    element: ReactNode,
+    element: ReactNode
   ): element is ReactElement<{ value: string; children?: ReactNode }> => {
     return isValidElement(element) && element.type === SelectItem
   }
@@ -255,10 +260,12 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
-    expect(screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101')).toHaveValue('Seattle, WA')
+    expect(
+      screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101')
+    ).toHaveValue('Seattle, WA')
     expect(screen.getByPlaceholderText('$35 / hour')).toHaveValue('$35')
   })
 
@@ -273,7 +280,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nextButton = screen.getByRole('button', { name: /next: education/i })
@@ -291,7 +298,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101'), {
@@ -331,7 +338,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101'), {
@@ -358,7 +365,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -381,14 +388,16 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const addressInput = screen.getByTestId('address-input')
     fireEvent.change(addressInput, { target: { value: 'Seattle, WA' } })
 
     await waitFor(() => {
-      const locationInput = screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101')
+      const locationInput = screen.getByPlaceholderText(
+        'e.g., Seattle, WA or Within 25 miles of 98101'
+      )
       expect(locationInput).toHaveValue('Seattle, Washington')
     })
   })
@@ -404,7 +413,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const remoteSelects = screen.getAllByTestId('select-wrapper')
@@ -421,7 +430,7 @@ describe('EmploymentPrefsStep', () => {
       expect(onContinue).toHaveBeenCalledWith(
         expect.objectContaining({
           remotePreference: 'hybrid',
-        }),
+        })
       )
     })
   })
@@ -437,7 +446,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101'), {
@@ -463,7 +472,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -491,7 +500,7 @@ describe('EmploymentPrefsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('e.g., Seattle, WA or Within 25 miles of 98101'), {
@@ -506,9 +515,8 @@ describe('EmploymentPrefsStep', () => {
       expect(onContinue).toHaveBeenCalledWith(
         expect.objectContaining({
           locationPreference: null,
-        }),
+        })
       )
     })
   })
 })
-

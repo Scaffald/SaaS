@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Debug test to isolate authentication timeout issue
@@ -39,7 +39,7 @@ test.describe('Debug Authentication Flow', () => {
     console.log('\n=== Step 2: Navigate to Root (/) ===')
     await page.goto('http://localhost:8081/', {
       waitUntil: 'domcontentloaded',
-      timeout: 30000
+      timeout: 30000,
     })
     console.log('Root page loaded successfully')
     await page.screenshot({ path: '.playwright-mcp/debug-01-root-page.png', fullPage: true })
@@ -55,10 +55,7 @@ test.describe('Debug Authentication Flow', () => {
           expires_at: expiresAt,
           user: user,
         }
-        localStorage.setItem(
-          'sb-localhost-auth-token',
-          JSON.stringify(authState)
-        )
+        localStorage.setItem('sb-localhost-auth-token', JSON.stringify(authState))
         console.log('[BROWSER] Auth state set in localStorage')
       },
       {
@@ -77,13 +74,16 @@ test.describe('Debug Authentication Flow', () => {
     try {
       await page.goto('http://localhost:8081/dashboard', {
         waitUntil: 'domcontentloaded',
-        timeout: 60000
+        timeout: 60000,
       })
       console.log('✅ Dashboard page loaded successfully!')
       await page.screenshot({ path: '.playwright-mcp/debug-02-dashboard.png', fullPage: true })
     } catch (error) {
       console.error('❌ Dashboard navigation failed:', error)
-      await page.screenshot({ path: '.playwright-mcp/debug-02-dashboard-ERROR.png', fullPage: true })
+      await page.screenshot({
+        path: '.playwright-mcp/debug-02-dashboard-ERROR.png',
+        fullPage: true,
+      })
 
       // Try to get more info about the page state
       console.log('\n=== Page State at Failure ===')
@@ -114,7 +114,7 @@ test.describe('Debug Authentication Flow', () => {
     try {
       await page.goto('http://localhost:8081/dashboard', {
         waitUntil: 'domcontentloaded',
-        timeout: 30000
+        timeout: 30000,
       })
       console.log('✅ Dashboard loaded (should redirect to login)')
       console.log('Final URL:', page.url())
@@ -136,7 +136,7 @@ test.describe('Debug Authentication Flow', () => {
     const startTime = Date.now()
     await page.goto('http://localhost:8081/', {
       waitUntil: 'domcontentloaded',
-      timeout: 30000
+      timeout: 30000,
     })
     const loadTime = Date.now() - startTime
 

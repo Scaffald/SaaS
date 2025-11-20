@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Card, Button } from 'tamagui'
 import { Download } from '@tamagui/lucide-icons'
+import { Button, Card, Text, XStack, YStack } from 'tamagui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface ApplicationDetailsTabProps {

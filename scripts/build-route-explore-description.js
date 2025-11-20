@@ -4,14 +4,14 @@
  */
 
 function buildRouteExploreDescription(title, routePath, userType, userEmail, ticketNumber) {
-  const userLevel = userType === 'super-admin' ? 'super-admin' : userType;
-  const testPrefix = userType === 'super-admin' ? 'sa' : userType === 'admin' ? 'a' : 'r';
-  const testTicketFormat = `test-${userType}-${routePath.replace(/\//g, '-').replace(/:/g, '')}`;
-  const testFileName = `test-${testPrefix}${String(ticketNumber).padStart(3, '0')}-${routePath.replace(/\//g, '-').replace(/:/g, '').replace(/^\-/, '')}.spec.ts`;
-  
+  const userLevel = userType === 'super-admin' ? 'super-admin' : userType
+  const testPrefix = userType === 'super-admin' ? 'sa' : userType === 'admin' ? 'a' : 'r'
+  const testTicketFormat = `test-${userType}-${routePath.replace(/\//g, '-').replace(/:/g, '')}`
+  const testFileName = `test-${testPrefix}${String(ticketNumber).padStart(3, '0')}-${routePath.replace(/\//g, '-').replace(/:/g, '').replace(/^-/, '')}.spec.ts`
+
   // Normalize route path for display
-  const normalizedRoute = routePath.startsWith('/') ? routePath : `/${routePath}`;
-  
+  const normalizedRoute = routePath.startsWith('/') ? routePath : `/${routePath}`
+
   return `## Context
 - **Route**: \`${normalizedRoute}\` (normalized)
 - **User Level**: \`${userLevel}\`
@@ -177,7 +177,7 @@ Create test file following the existing pattern from \`tests/test-r*.spec.ts\`:
 // @ts-nocheck
 import { test, expect, type Page } from '@playwright/test'
 import { ${userType === 'super-admin' ? 'signInAsSuperAdmin' : userType === 'admin' ? 'signInAsAdmin' : 'signInAsTestUser'} } from './playwright-helpers/auth'
-${userType === 'regular' ? 'import { ensureProfileComplete } from \'./playwright-helpers/profile\'\n' : ''}
+${userType === 'regular' ? "import { ensureProfileComplete } from './playwright-helpers/profile'\n" : ''}
 test.describe('${userLevel === 'super-admin' ? 'Super Admin' : userLevel === 'admin' ? 'Admin' : 'Regular'} • ${normalizedRoute}', () => {
   test('navigates and shows ${routePath.replace(/^\//, '').replace(/\//g, ' ')} UI', async ({ page }: { page: Page }) => {
     await ${userType === 'super-admin' ? 'signInAsSuperAdmin' : userType === 'admin' ? 'signInAsAdmin' : 'signInAsTestUser'}(page)
@@ -236,7 +236,7 @@ npx playwright test tests/${testFileName} --headed
 - [ ] Test file created at correct location following naming convention
 - [ ] Test imports correct helpers from \`tests/playwright-helpers/\`
 - [ ] Test uses appropriate sign-in helper (\`${userType === 'super-admin' ? 'signInAsSuperAdmin' : userType === 'admin' ? 'signInAsAdmin' : 'signInAsTestUser'}\`)
-${userType === 'regular' ? '- [ ] Test calls \`ensureProfileComplete(page)\` if regular user\n' : ''}- [ ] Test runs successfully: \`npx playwright test tests/${testFileName}\`
+${userType === 'regular' ? '- [ ] Test calls `ensureProfileComplete(page)` if regular user\n' : ''}- [ ] Test runs successfully: \`npx playwright test tests/${testFileName}\`
 - [ ] All test cases pass
 - [ ] Test is deterministic (runs reliably multiple times)
 - [ ] Test uses proper selectors (prefer roles, labels, testIds)
@@ -257,7 +257,7 @@ Use these as reference when writing the test, but convert to standard Playwright
 
 ## Blocking Dependencies
 - [ ] Authentication helpers available (\`tests/playwright-helpers/auth.ts\`)
-${userType === 'regular' ? '- [ ] Profile completion helper available (\`tests/playwright-helpers/profile.ts\`) - for regular users\n' : ''}- [ ] Any BUG tickets (list below)
+${userType === 'regular' ? '- [ ] Profile completion helper available (`tests/playwright-helpers/profile.ts`) - for regular users\n' : ''}- [ ] Any BUG tickets (list below)
 
 ## Related Tickets
 - Exploration: \`${userType}-route-explore-${String(ticketNumber).padStart(3, '0')}\`
@@ -329,9 +329,8 @@ If ANY bugs are discovered during exploration:
 - Main plan: \`docs/testing/generalized-ui-testing-plan.md\`
 - Route task review: \`docs/testing/route-task-review.md\`
 - Audit guidance: \`tests/AUDIT-TASKS-GUIDANCE.md\`
-- Vibe-Kanban rules: \`.cursor/rules/vibe-kanban.mdc\``;
+- Vibe-Kanban rules: \`.cursor/rules/vibe-kanban.mdc\``
 }
 
 // Example usage:
 // buildRouteExploreDescription('admin-route-explore-042: /styleguide/forms', '/styleguide/forms', 'admin', 'ewongagent@gmail.com', 42)
-

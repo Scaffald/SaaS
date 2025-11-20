@@ -36,4 +36,3 @@ export function toConfidenceLevel(score?: number | null): ConfidenceLevel {
   if (score >= 0.6) return 'medium'
   return 'low'
 }
-

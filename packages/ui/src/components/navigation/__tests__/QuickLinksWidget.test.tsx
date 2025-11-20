@@ -1,9 +1,8 @@
-import React from 'react'
-import type { JSX } from 'react'
+import { buildRoute, ROUTES } from '@app/core/constants/routes'
 import { render, screen } from '@testing-library/react'
+import type { JSX } from 'react'
+import React from 'react'
 import { describe, expect, it, vi } from 'vitest'
-
-import { ROUTES, buildRoute } from '@app/core/constants/routes'
 
 vi.mock('expo-router', () => ({
   Link: ({

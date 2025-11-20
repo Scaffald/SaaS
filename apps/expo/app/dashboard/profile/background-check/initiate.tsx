@@ -1,9 +1,7 @@
-import { Stack } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { YStack } from 'tamagui'
-
 import { BackgroundCheckWizard } from '@app/core/features/background-check'
+import { Stack } from 'expo-router'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { YStack } from 'tamagui'
 
 export default function BackgroundCheckInitiateScreen() {
   const insets = useSafeAreaInsets()

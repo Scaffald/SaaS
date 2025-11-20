@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import { Button, Input, Label, Text, XStack, YStack, Select, Adapt } from 'tamagui'
-import { Sheet } from '@app/ui'
-import { Check } from '@tamagui/lucide-icons'
 import type { ScreeningAnswers } from '@app/schemas'
-import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
+import { AddressAutocomplete, Sheet } from '@app/ui'
+import { Check } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Adapt, Button, Input, Label, Select, Text, XStack, YStack } from 'tamagui'
 
 const EARLIEST_START_DATE_OPTIONS = [
   { label: 'Immediately', value: 'Immediately' },
@@ -211,10 +210,7 @@ export function ScreeningStep({
         <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
           Years of experience <Text color="$red10">*</Text>
         </Label>
-        <Select
-          value={getYearsExperienceValue()}
-          onValueChange={handleYearsExperienceChange}
-        >
+        <Select value={getYearsExperienceValue()} onValueChange={handleYearsExperienceChange}>
           <Select.Trigger
             id="years_experience"
             borderColor={errors.years_experience ? '$red9' : '$borderColor'}
@@ -260,13 +256,7 @@ export function ScreeningStep({
           <Label fontSize="$4" fontWeight="600">
             Required skills
           </Label>
-          <YStack
-            p="$3"
-            bg="$gray3"
-            rounded="$3"
-            borderWidth={1}
-            borderColor="$borderColor"
-          >
+          <YStack p="$3" bg="$gray3" rounded="$3" borderWidth={1} borderColor="$borderColor">
             <Text fontSize="$3" color="$color11">
               {requiredSkills.join(', ')}
             </Text>
@@ -280,13 +270,7 @@ export function ScreeningStep({
           <Label fontSize="$4" fontWeight="600">
             Optional skills
           </Label>
-          <YStack
-            p="$3"
-            bg="$gray3"
-            rounded="$3"
-            borderWidth={1}
-            borderColor="$borderColor"
-          >
+          <YStack p="$3" bg="$gray3" rounded="$3" borderWidth={1} borderColor="$borderColor">
             <Text fontSize="$3" color="$color11">
               {optionalSkills.join(', ')}
             </Text>

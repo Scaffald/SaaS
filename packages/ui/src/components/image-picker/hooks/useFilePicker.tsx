@@ -37,7 +37,7 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
       onDrop: _onDrop,
       // this is native only
       onOpen,
-      // @ts-ignore
+      // @ts-expect-error
       mediaTypes,
       noClick: true,
       ...rest,

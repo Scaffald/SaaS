@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
 import { usePathname } from 'expo-router'
+import { useMemo } from 'react'
 
 import {
   QuickLinksWidget,

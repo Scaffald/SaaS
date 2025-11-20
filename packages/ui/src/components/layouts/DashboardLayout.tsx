@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { ScrollView, XStack, YStack } from 'tamagui'
-import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
+import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 
 type DashboardLayoutProps = {
   rightContent?: ReactNode
@@ -45,7 +45,6 @@ export const DashboardLayout = ({
         {/* Content Area - Responsive two-column or single-column layout */}
         <XStack
           gap="$3"
-          p="$3"
           flexDirection="column"
           $md={{
             gap: '$8',

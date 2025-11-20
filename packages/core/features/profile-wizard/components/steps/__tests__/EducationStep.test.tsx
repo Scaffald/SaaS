@@ -68,19 +68,21 @@ vi.mock('@app/ui', () => ({
         <label htmlFor={inputId}>{label}</label>
         <input
           id={inputId}
-        type="month"
-        value={value ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}` : ''}
-        onChange={(e) => {
-          if (e.target.value) {
-            const [year, month] = e.target.value.split('-')
-            onChange(new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, 1))
-          } else {
-            onChange(null)
+          type="month"
+          value={
+            value ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}` : ''
           }
-        }}
-        disabled={disabled}
-        data-testid={inputId}
-      />
+          onChange={(e) => {
+            if (e.target.value) {
+              const [year, month] = e.target.value.split('-')
+              onChange(new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, 1))
+            } else {
+              onChange(null)
+            }
+          }}
+          disabled={disabled}
+          data-testid={inputId}
+        />
       </div>
     )
   },
@@ -109,11 +111,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Input = ({
     value = '',
@@ -206,7 +204,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByDisplayValue('Associate of Applied Science')).toBeInTheDocument()
@@ -224,7 +222,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const finishButton = screen.getByRole('button', { name: /finish/i })
@@ -242,7 +240,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Associate of Applied Science, Carpentry'), {
@@ -281,7 +279,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Associate of Applied Science, Carpentry'), {
@@ -308,7 +306,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -331,7 +329,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -364,7 +362,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -379,7 +377,7 @@ describe('EducationStep', () => {
         expect.objectContaining({
           endDate: null,
           isCurrent: true,
-        }),
+        })
       )
     })
   })
@@ -395,7 +393,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Associate of Applied Science, Carpentry'), {
@@ -421,7 +419,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Associate of Applied Science, Carpentry'), {
@@ -439,7 +437,7 @@ describe('EducationStep', () => {
       expect(onContinue).toHaveBeenCalledWith(
         expect.objectContaining({
           startDate: '2018-06-01',
-        }),
+        })
       )
     })
   })
@@ -455,7 +453,7 @@ describe('EducationStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -473,4 +471,3 @@ describe('EducationStep', () => {
     })
   })
 })
-

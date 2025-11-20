@@ -1,18 +1,17 @@
-import { type ReactNode, useState, type ElementRef } from 'react'
+import * as Linking from 'expo-linking'
+import { type ElementRef, type ReactNode, useState } from 'react'
 import {
-  Card,
-  Image,
-  View,
-  Text,
-  YStack,
-  XStack,
   Button,
-  Anchor,
+  Card,
   type CardProps,
+  Image,
+  Text,
   useTheme,
   useWindowDimensions,
+  View,
+  XStack,
+  YStack,
 } from 'tamagui'
-import * as Linking from 'expo-linking'
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 

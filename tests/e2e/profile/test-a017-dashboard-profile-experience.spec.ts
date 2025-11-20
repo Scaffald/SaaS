@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/profile/experience', () => {
@@ -8,45 +8,42 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('navigates to experience page and loads correctly', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
     expect(page.url()).toContain('/dashboard/profile/experience')
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
   test('displays work experience content after loading', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(work experience|experience|career|position|employment)/i)
   })
 
   test('displays right panel help text', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     // Right panel should have helpful information
     expect(pageContent).toMatch(/(work experience|career|professional|history)/i)
   })
@@ -56,58 +53,54 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('displays job title input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(job title|position title|title)/i)
   })
 
   test('displays company name input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(company|company name|employer)/i)
   })
 
   test('displays employment type selector', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(employment type|full-time|part-time|contract)/i)
   })
 
   test('shows employment type options', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     // Should have employment type options: Full-time, Part-time, Contract, Temporary, Internship, Apprenticeship, Freelance
     const hasEmploymentTypes =
       pageContent.includes('Full-time') ||
@@ -119,72 +112,67 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays start date input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(start date|from|began|started)/i)
   })
 
   test('displays end date input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(end date|to|present|current)/i)
   })
 
   test('displays "currently working here" checkbox', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(currently work|current position|i currently)/i)
   })
 
   test('displays career level selector', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(career level|level|entry|mid|senior)/i)
   })
 
   test('shows career level options', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     // Career levels: Entry Level, Mid Level, Senior Level, Executive, Specialist
     const hasCareerLevels =
       pageContent.includes('Entry') ||
@@ -196,72 +184,67 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays location input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(location|city|remote|where)/i)
   })
 
   test('displays remote work checkbox', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(remote work|remote|work from home)/i)
   })
 
   test('displays job description textarea', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(description|responsibilities|duties|describe)/i)
   })
 
   test('displays add experience button', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toMatch(/(add experience|add|new experience)/i)
   })
 
   test('shows total years experience field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     // Total years is a computed field (disabled, read-only)
     expect(pageContent).toMatch(/(total|years|experience)/i)
   })
@@ -271,33 +254,30 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('displays save button', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
     const buttons = await page.locator('button').all()
-    const buttonTexts = await Promise.all(buttons.map(b => b.textContent()))
-    const hasSaveButton = buttonTexts.some(text =>
-      text?.toLowerCase().includes('save') ||
-      text?.toLowerCase().includes('update')
+    const buttonTexts = await Promise.all(buttons.map((b) => b.textContent()))
+    const hasSaveButton = buttonTexts.some(
+      (text) => text?.toLowerCase().includes('save') || text?.toLowerCase().includes('update')
     )
 
     expect(buttons.length).toBeGreaterThan(0)
   })
 
   test('save button exists in form', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     const buttons = await page.locator('button').all()
@@ -305,13 +285,12 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('can interact with form fields', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     const inputs = await page.locator('input[type="text"], textarea').all()
@@ -331,28 +310,26 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows validation for required fields', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     // Required fields: job_title, company_name
     expect(pageContent).toMatch(/(required|job title|company)/i)
   })
 
   test('has checkboxes for boolean fields', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
     const checkboxes = await page.locator('input[type="checkbox"], [role="checkbox"]').all()
@@ -362,21 +339,19 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('can click add experience button', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Try to find Add Experience button
     const buttons = await page.locator('button').all()
-    const buttonTexts = await Promise.all(buttons.map(b => b.textContent()))
-    const hasAddButton = buttonTexts.some(text =>
-      text?.toLowerCase().includes('add') &&
-      text?.toLowerCase().includes('experience')
+    const buttonTexts = await Promise.all(buttons.map((b) => b.textContent()))
+    const hasAddButton = buttonTexts.some(
+      (text) => text?.toLowerCase().includes('add') && text?.toLowerCase().includes('experience')
     )
 
     // Should have some interactive buttons
@@ -384,13 +359,12 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows remove button for experience entries', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     const buttons = await page.locator('button').all()
@@ -404,36 +378,33 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('displays saved experience entries if they exist', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Either shows saved entries or empty state
     const hasSavedEntries =
-      pageContent.match(/position \d+/i) ||
-      pageContent.includes('No work experience')
+      pageContent.match(/position \d+/i) || pageContent.includes('No work experience')
 
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
   test('shows date range formatting for saved entries', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Check for date formatting (MMM yyyy format) or Present
     const hasDateFormat =
@@ -445,32 +416,30 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays location with remote indicator', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Should show location field and remote indicator
     expect(pageContent).toMatch(/(location|remote)/i)
   })
 
   test('shows current position badge when applicable', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Check for current position indicator
     const hasCurrentIndicator =
@@ -482,16 +451,15 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('displays employment type in saved entries', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Should have employment type field visible
     expect(pageContent).toMatch(/(employment|full-time|part-time|contract|type)/i)
@@ -502,20 +470,19 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('maintains responsive layout with form sections', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Should have multiple sections visible
     const sections = ['title', 'company', 'date', 'location']
-    const visibleSections = sections.filter(section =>
+    const visibleSections = sections.filter((section) =>
       pageContent.toLowerCase().includes(section)
     )
 
@@ -523,32 +490,30 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('shows form fields in organized card layout', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1500)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Should have organized form structure
     expect(pageContent).toMatch(/(position|experience|work)/i)
   })
 
   test('displays page with proper two-column layout', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(1000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Two-column layout: left (form) + right (help panel)
     expect(pageContent).toMatch(/(experience|work|career|professional)/i)
@@ -559,16 +524,15 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   // =============================================================================
 
   test('shows empty state when no experience entries exist', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
 
     // Either shows entries or empty state message
     const hasContent =
@@ -580,13 +544,12 @@ test.describe('Admin • /dashboard/profile/experience', () => {
   })
 
   test('loads page without errors', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/profile/experience', { waitUntil: 'domcontentloaded' })
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Check that page loaded successfully

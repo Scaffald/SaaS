@@ -45,5 +45,3 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
     </Tabs>
   )
 })
-
-

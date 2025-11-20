@@ -1,6 +1,6 @@
+import { Award, BadgeCheck, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { YStack, ScrollView, Text, Button, XStack, Separator, Slider, Input, Label } from 'tamagui'
-import { Search, X, Award, BadgeCheck } from '@tamagui/lucide-icons'
+import { Button, Input, Label, ScrollView, Separator, Slider, Text, XStack, YStack } from 'tamagui'
 
 interface DiscoverWorkersRightProps {
   onSearchChange: (query: string) => void

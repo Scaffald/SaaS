@@ -1,7 +1,7 @@
 import { X } from '@tamagui/lucide-icons'
-import { Button, XStack, Text } from 'tamagui'
-import type { GetThemeValueForKey, SizeTokens, ThemeName } from 'tamagui'
 import type { ReactNode } from 'react'
+import type { GetThemeValueForKey, SizeTokens, ThemeName } from 'tamagui'
+import { Button, Text, XStack } from 'tamagui'
 
 type FilterChipProps = {
   label: string

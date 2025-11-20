@@ -1,8 +1,7 @@
-import { useState, useMemo } from 'react'
-import { YStack, XStack, Text, Button, Label } from 'tamagui'
-import { Popover } from '@app/ui'
-import { SlidersHorizontal, ChevronDown } from '@tamagui/lucide-icons'
-import { ToggleSwitch } from '@app/ui'
+import { Popover, ToggleSwitch } from '@app/ui'
+import { ChevronDown, SlidersHorizontal } from '@tamagui/lucide-icons'
+import { useMemo, useState } from 'react'
+import { Button, Label, Text, XStack, YStack } from 'tamagui'
 
 type FilterDropdownProps = {
   showWorkers?: boolean
@@ -145,4 +144,3 @@ export const FilterDropdown = ({
     </Popover>
   )
 }
-

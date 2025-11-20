@@ -1,9 +1,7 @@
 // @ts-nocheck
-import React from 'react'
+
+import { AnchorHeading, StyleguidePage, TodoCallout } from '@app/styleguide'
 import { Paragraph, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { TodoCallout } from '@app/styleguide'
 
 export default function SearchUtilityPage() {
   return (

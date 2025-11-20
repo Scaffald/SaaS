@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { YStack, Text, Input, Button, Separator, XStack, ScrollView, Spinner } from 'tamagui'
-import { Search, Filter, X } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget } from '@app/ui'
+import { Filter, Search, X } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Button, Input, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void

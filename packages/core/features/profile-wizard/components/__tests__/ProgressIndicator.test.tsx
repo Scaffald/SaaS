@@ -10,11 +10,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Text = ({
     children,
@@ -52,9 +48,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     vertical?: boolean
-  } & Record<string, unknown>) => (
-    <div data-testid="separator" data-vertical={vertical} {...rest} />
-  )
+  } & Record<string, unknown>) => <div data-testid="separator" data-vertical={vertical} {...rest} />
 
   return {
     YStack: Stack,
@@ -72,7 +66,7 @@ describe('ProgressIndicator', () => {
         currentStep="skills"
         completedSteps={['general']}
         completionPercentage={25}
-      />,
+      />
     )
 
     expect(screen.getByText('Step 2 of 6')).toBeInTheDocument()
@@ -80,11 +74,7 @@ describe('ProgressIndicator', () => {
 
   it('displays completion percentage', () => {
     render(
-      <ProgressIndicator
-        currentStep="general"
-        completedSteps={[]}
-        completionPercentage={42}
-      />,
+      <ProgressIndicator currentStep="general" completedSteps={[]} completionPercentage={42} />
     )
 
     expect(screen.getByText('42%')).toBeInTheDocument()
@@ -92,11 +82,7 @@ describe('ProgressIndicator', () => {
 
   it('shows progress bar with correct value', () => {
     render(
-      <ProgressIndicator
-        currentStep="general"
-        completedSteps={[]}
-        completionPercentage={75}
-      />,
+      <ProgressIndicator currentStep="general" completedSteps={[]} completionPercentage={75} />
     )
 
     const progress = screen.getByTestId('progress')
@@ -111,7 +97,7 @@ describe('ProgressIndicator', () => {
         completedSteps={[]}
         completionPercentage={0}
         showStepLabels={true}
-      />,
+      />
     )
 
     expect(screen.getByText('General Info')).toBeInTheDocument()
@@ -129,7 +115,7 @@ describe('ProgressIndicator', () => {
         completedSteps={[]}
         completionPercentage={0}
         showStepLabels={false}
-      />,
+      />
     )
 
     expect(screen.queryByText('General Info')).not.toBeInTheDocument()
@@ -142,7 +128,7 @@ describe('ProgressIndicator', () => {
         completedSteps={['general']}
         completionPercentage={25}
         showStepLabels={true}
-      />,
+      />
     )
 
     const stepElements = screen.getAllByRole('img')
@@ -159,13 +145,14 @@ describe('ProgressIndicator', () => {
         completedSteps={['general']}
         completionPercentage={25}
         showStepLabels={true}
-      />,
+      />
     )
 
     const stepElements = screen.getAllByRole('img')
-    const completedStep = stepElements.find((el) =>
-      el.getAttribute('aria-label')?.includes('General Info') &&
-      el.getAttribute('aria-label')?.includes('completed'),
+    const completedStep = stepElements.find(
+      (el) =>
+        el.getAttribute('aria-label')?.includes('General Info') &&
+        el.getAttribute('aria-label')?.includes('completed')
     )
     expect(completedStep).toBeInTheDocument()
   })
@@ -177,7 +164,7 @@ describe('ProgressIndicator', () => {
         completedSteps={[]}
         completionPercentage={0}
         showStepLabels={true}
-      />,
+      />
     )
 
     expect(screen.getAllByText('2 min').length).toBeGreaterThan(0)
@@ -191,7 +178,7 @@ describe('ProgressIndicator', () => {
         completedSteps={[]}
         completionPercentage={0}
         showStepLabels={true}
-      />,
+      />
     )
 
     const separators = screen.getAllByTestId('separator')
@@ -201,4 +188,3 @@ describe('ProgressIndicator', () => {
     }
   })
 })
-

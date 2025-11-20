@@ -1,14 +1,14 @@
+import type { ProfileWizardStepId } from '@app/supabase/client-types'
+import { DashboardWidget } from '@app/ui'
+import { LinearGradient } from '@tamagui/linear-gradient'
+import { ChevronLeft, ChevronRight, Sparkles, UploadCloud } from '@tamagui/lucide-icons'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewStyle } from 'react-native'
-import { AnimatePresence, Button, Card, Progress, Text, XStack, YStack, styled } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
-import { Sparkles, UploadCloud, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
-import { LinearGradient } from '@tamagui/linear-gradient'
-import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
+import { AnimatePresence, Button, Card, Progress, styled, Text, XStack, YStack } from 'tamagui'
 import { resolveSectionMetadata } from '../constants/sectionMetadata'
-import type { ProfileWizardStepId } from '@app/supabase/client-types'
-import { MilestoneBadge } from './MilestoneBadge'
+import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import type { CompletionStatus } from '../hooks/useCompletionStatus'
+import { MilestoneBadge } from './MilestoneBadge'
 
 export interface EnhancedProfileCompletionWidgetProps {
   onStartWizard: () => void

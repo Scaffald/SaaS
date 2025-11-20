@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
 import { api } from '@app/core/utils/api'
 import type { ProfileWizardStepId } from '@app/supabase/client-types'
+import { useMemo } from 'react'
 import { resolveSectionMetadata } from '../../profile-completion/constants/sectionMetadata'
 
 type SectionProgressSummary = {
@@ -45,11 +45,11 @@ export const useProfileCompletion = () => {
           complete: section.completed,
           actionRoute: metadata.route,
         }
-      },
+      }
     )
 
     const totalComplete = status.sectionProgress.filter(
-      (section: SectionProgressSummary) => section.completed,
+      (section: SectionProgressSummary) => section.completed
     ).length
     const totalItems = status.sectionProgress.length
 

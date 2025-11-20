@@ -1,6 +1,9 @@
+import { type UploadSelection, UploadSurface } from '@app/ui'
+import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { randomUUID } from 'expo-crypto'
 import { useCallback, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { randomUUID } from 'expo-crypto'
 import {
   Button,
   Checkbox,
@@ -13,14 +16,9 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
-import { UploadSurface, type UploadSelection } from '@app/ui'
-
+import { type UploadCandidate, usePhotoUpload } from '../hooks/usePhotoUpload'
 import type { WorkLogPhotoType } from '../types/photos'
 import { PhotoGallery } from './PhotoGallery'
-import { usePhotoUpload, type UploadCandidate } from '../hooks/usePhotoUpload'
 
 type PhotoCategory = Exclude<WorkLogPhotoType, null>
 

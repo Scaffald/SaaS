@@ -1,4 +1,4 @@
-import { Sheet as TamaguiSheet, styled, withStaticProperties } from 'tamagui'
+import { styled, Sheet as TamaguiSheet, withStaticProperties } from 'tamagui'
 
 /**
  * Custom Sheet.Frame with default background color

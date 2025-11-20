@@ -1,20 +1,21 @@
-import { useState, useCallback, useMemo } from 'react'
+import { ArrowLeft, ChevronRight, Search, X } from '@tamagui/lucide-icons'
+import { useCallback, useMemo, useState } from 'react'
 import {
-  YStack,
-  XStack,
-  Text,
   Button,
+  Card,
+  type GetThemeValueForKey,
   Input,
   ScrollView,
-  Spinner,
-  Slider,
-  Card,
   Separator,
+  Slider,
+  Spinner,
+  Text,
   useWindowDimensions,
-  type GetThemeValueForKey,
+  XStack,
+  YStack,
 } from 'tamagui'
-import { Sheet, Dialog } from '@app/ui'
-import { Search, X, ChevronRight, ArrowLeft } from '@tamagui/lucide-icons'
+import { Dialog } from '../dialog/Dialog'
+import { Sheet } from '../sheets/Sheet'
 
 /**
  * Parent skill from search (multi-taxonomy format)

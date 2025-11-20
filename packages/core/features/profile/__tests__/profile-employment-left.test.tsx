@@ -1,9 +1,9 @@
-import * as React from 'react'
-import { render, fireEvent, waitFor, cleanup } from '@testing-library/react-native'
-import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest'
-import type { Mock } from 'vitest'
 import type { EmploymentProfileFormData } from '@app/core/utils/api'
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native'
 import type { ReactElement, ReactNode } from 'react'
+import * as React from 'react'
+import type { Mock } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseQuery: Mock<
   [],
@@ -139,34 +139,47 @@ vi.mock('@app/ui', () => {
         cardPressDisabled?: boolean
         testID?: string
       }
-    >(({ title, description, checked, onCheckedChange, expandedContent, cardPressDisabled = false, testID }, ref) => (
-      <View ref={ref}>
-        <button
-          type="button"
-          aria-label={`${title} card`}
-          data-testid={testID ? `${testID}-card` : undefined}
-          onClick={() => {
-            if (!cardPressDisabled) {
-              onCheckedChange(!checked)
-            }
-          }}
-        >
-          <Text>{title}</Text>
-        </button>
-        <button
-          type="button"
-          role="switch"
-          aria-label={title}
-          aria-checked={checked}
-          data-testid={testID}
-          onClick={() => onCheckedChange(!checked)}
-        >
-          <Text>{checked ? 'On' : 'Off'}</Text>
-        </button>
-        {description ? <Text>{description}</Text> : null}
-        {checked ? expandedContent : null}
-      </View>
-    )),
+    >(
+      (
+        {
+          title,
+          description,
+          checked,
+          onCheckedChange,
+          expandedContent,
+          cardPressDisabled = false,
+          testID,
+        },
+        ref
+      ) => (
+        <View ref={ref}>
+          <button
+            type="button"
+            aria-label={`${title} card`}
+            data-testid={testID ? `${testID}-card` : undefined}
+            onClick={() => {
+              if (!cardPressDisabled) {
+                onCheckedChange(!checked)
+              }
+            }}
+          >
+            <Text>{title}</Text>
+          </button>
+          <button
+            type="button"
+            role="switch"
+            aria-label={title}
+            aria-checked={checked}
+            data-testid={testID}
+            onClick={() => onCheckedChange(!checked)}
+          >
+            <Text>{checked ? 'On' : 'Off'}</Text>
+          </button>
+          {description ? <Text>{description}</Text> : null}
+          {checked ? expandedContent : null}
+        </View>
+      )
+    ),
     LocationListInput: ({
       value = [],
       onChange,
@@ -451,7 +464,12 @@ vi.mock('@app/core/utils/api', async () => {
   }
 })
 
-import { profileEmploymentDefaults, DRIVERS_LICENSE_OPTIONS, MILITARY_STATUS_OPTIONS, AVAILABILITY_OPTIONS } from '@app/core/utils/api'
+import {
+  AVAILABILITY_OPTIONS,
+  DRIVERS_LICENSE_OPTIONS,
+  MILITARY_STATUS_OPTIONS,
+  profileEmploymentDefaults,
+} from '@app/core/utils/api'
 import { ProfileEmploymentLeft } from '../profile-employment-left'
 
 const renderEmploymentForm = () => render(<ProfileEmploymentLeft />)
@@ -514,7 +532,7 @@ describe('ProfileEmploymentLeft', () => {
 
     const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
     expect(slider).toBeInstanceOf(HTMLElement)
-    
+
     // Slider should be visible (travel is always enabled)
     press(slider)
     // Value should change
@@ -615,7 +633,7 @@ describe('ProfileEmploymentLeft', () => {
     // Enable driver's license toggle
     const driversSwitch = getByRole('switch', { name: /driver/i }) as HTMLElement
     press(driversSwitch)
-    
+
     // Note: With mocks, form dirty state detection is limited
     // This test verifies the component structure and that validation logic exists
     // Full validation flow is tested in E2E tests
@@ -830,7 +848,7 @@ describe('ProfileEmploymentLeft', () => {
     // Enable toggle but don't select any classes
     const driversSwitch = getByRole('switch', { name: /driver/i }) as HTMLElement
     press(driversSwitch)
-    
+
     // Note: Full validation flow with form submission is tested in E2E tests
     // This unit test verifies component structure and validation logic exists
     expect(mockMutateAsync).not.toHaveBeenCalled()
@@ -885,7 +903,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     // Test max value (200)
     fireEvent(hourlyRateInput, 'changeText', '200')
     expect(hourlyRateInput.value).toBe('200')
@@ -904,7 +922,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     fireEvent(hourlyRateInput, 'changeText', '45.50')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/)
@@ -940,7 +958,7 @@ describe('ProfileEmploymentLeft', () => {
     // Make form dirty by toggling a switch
     const residentSwitch = getByRole('switch', { name: /us resident/i }) as HTMLElement
     press(residentSwitch)
-    
+
     // Note: Full submission flow is tested in E2E tests
     // This unit test verifies component structure
     // The actual submission test is in the "shows saved values after a successful save" test
@@ -1100,7 +1118,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     fireEvent(hourlyRateInput, 'changeText', '25.50')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/25/)
@@ -1113,7 +1131,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     fireEvent(hourlyRateInput, 'changeText', '45.75')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/)

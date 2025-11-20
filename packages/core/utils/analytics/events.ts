@@ -39,13 +39,12 @@ export const eventSchemas = {
 
 export type AnalyticsEventName = keyof typeof eventSchemas
 
-export type AnalyticsEventProperties<TName extends AnalyticsEventName = AnalyticsEventName> = z.infer<
-  (typeof eventSchemas)[TName]
->
+export type AnalyticsEventProperties<TName extends AnalyticsEventName = AnalyticsEventName> =
+  z.infer<(typeof eventSchemas)[TName]>
 
 export const validateEventProperties = <TName extends AnalyticsEventName>(
   name: TName,
-  properties: unknown,
+  properties: unknown
 ) => {
   const schema = eventSchemas[name]
   return schema.safeParse(properties)
@@ -53,8 +52,7 @@ export const validateEventProperties = <TName extends AnalyticsEventName>(
 
 export const assertValidEventProperties = <TName extends AnalyticsEventName>(
   name: TName,
-  properties: unknown,
+  properties: unknown
 ) => {
   return eventSchemas[name].parse(properties)
 }
-

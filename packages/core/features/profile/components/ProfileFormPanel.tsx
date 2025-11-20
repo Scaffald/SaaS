@@ -1,5 +1,5 @@
-import { YStack, ScrollView, type YStackProps } from 'tamagui'
 import { DashboardWidget } from '@app/ui'
+import { ScrollView, YStack, type YStackProps } from 'tamagui'
 
 interface ProfileFormPanelProps extends YStackProps {
   /** Child content for the form panel */

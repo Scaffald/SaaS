@@ -1,8 +1,7 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
-import { Adapt, Select, Label } from 'tamagui'
-import { Sheet } from '@app/ui'
+import { Input, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Adapt, Label, Select } from 'tamagui'
 
 interface ApplicationScreeningSectionProps {
   requireCurrentLocation: boolean
@@ -49,12 +48,12 @@ export function ApplicationScreeningSection({
   const handleChange = (key: keyof typeof localState, value: boolean | number | undefined) => {
     const newState = { ...localState, [key]: value }
     setLocalState(newState)
-    
+
     // If disabling experience requirement, clear the value
     if (key === 'minimum_years_experience_enabled' && value === false) {
       newState.minimum_years_experience = undefined
     }
-    
+
     onUpdate({
       require_current_location: newState.require_current_location,
       require_relocation_willingness: newState.require_relocation_willingness,
@@ -68,7 +67,6 @@ export function ApplicationScreeningSection({
 
   return (
     <YStack gap="$4">
-
       {/* Current Location */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>

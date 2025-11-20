@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Select, Adapt, Separator, Button, Spinner } from 'tamagui'
-import { Sheet } from '@app/ui'
-import { ChevronDown, Check } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { ProfileFormPanel, InlineSkillSearch } from './components'
-import { SaveStatusIndicator, SavingModal, SkeletonForm, type SaveStatus } from '@app/ui'
-import { useProfileSkillsContext } from './profile-skills-context'
 import { api } from '@app/core/utils/api'
+import { type SaveStatus, SaveStatusIndicator, SavingModal, Sheet, SkeletonForm } from '@app/ui'
+import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Adapt, Button, Select, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { InlineSkillSearch, ProfileFormPanel } from './components'
+import { useProfileSkillsContext } from './profile-skills-context'
 
 /**
  * Profile Skills Left Component
@@ -73,7 +72,7 @@ export function ProfileSkillsLeft() {
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [hasUnsavedChanges])
-  
+
   // Handle forced save before navigation
   const handleForcedSave = async (): Promise<boolean> => {
     if (!hasUnsavedChanges) return true
@@ -100,9 +99,7 @@ export function ProfileSkillsLeft() {
       return true
     } catch (error) {
       setIsSaving(false)
-      setSaveModalError(
-        error instanceof Error ? error.message : 'Failed to save changes'
-      )
+      setSaveModalError(error instanceof Error ? error.message : 'Failed to save changes')
       return false
     }
   }
@@ -127,12 +124,12 @@ export function ProfileSkillsLeft() {
       setSaveStatus('saved')
       setSaveButtonState('saved')
       setLastSavedAt(new Date())
-      
+
       // Reset button state after 2 seconds
       setTimeout(() => {
         setSaveButtonState('idle')
       }, 2000)
-      
+
       // Reset save status after 3 seconds
       setTimeout(() => {
         setSaveStatus('idle')
@@ -159,11 +156,7 @@ export function ProfileSkillsLeft() {
       {/* Header with Save Status Indicator */}
       <XStack justify="space-between" items="center" mb="$2">
         <YStack flex={1} />
-        <SaveStatusIndicator
-          status={saveStatus}
-          lastSavedAt={lastSavedAt}
-          error={saveError}
-        />
+        <SaveStatusIndicator status={saveStatus} lastSavedAt={lastSavedAt} error={saveError} />
       </XStack>
 
       {/* Industry Selector */}

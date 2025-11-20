@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, TextArea, Spinner, AnimatePresence } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  generalProfileSchema,
-  type GeneralProfileFormData,
-  generalProfileDefaults,
-} from '../config/general-schema'
-import {
-  UIButton as Button,
-  PhoneNumberInput,
-  AddressForm,
-  DashboardWidget,
-  AvatarImagePicker,
-} from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import {
+  AddressForm,
+  AvatarImagePicker,
+  UIButton as Button,
+  DashboardWidget,
+  PhoneNumberInput,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { AnimatePresence, Input, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  type GeneralProfileFormData,
+  generalProfileDefaults,
+  generalProfileSchema,
+} from '../config/general-schema'
 
 interface GeneralProfileSectionProps {
   /**

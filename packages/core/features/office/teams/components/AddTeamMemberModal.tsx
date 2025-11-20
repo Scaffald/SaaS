@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Select, Spinner, Text, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
 import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
 import { UserSearch } from '@app/ui/components/user/UserSearch'
+import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Select, Spinner, Text, XStack, YStack } from 'tamagui'
 
-import { useTeamFormOptions, type TeamRoleOption } from '../hooks/useTeamFormOptions'
+import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 interface AddTeamMemberModalProps {
   open: boolean
@@ -157,5 +156,3 @@ export function AddTeamMemberModal({
     </ResponsiveModal>
   )
 }
-
-

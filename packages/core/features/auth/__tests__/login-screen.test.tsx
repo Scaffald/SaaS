@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest'
-import type { ReactNode } from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { TRPCClientError } from '@trpc/client'
+import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockReplace = vi.hoisted(() => vi.fn())
@@ -42,16 +42,12 @@ vi.mock('@app/ui', () => ({
       data-testid="email-input"
     />
   ),
-  Paragraph: ({
-    children,
-    text,
-  }: { children?: ReactNode; text?: string }) => <p>{children ?? text}</p>,
+  Paragraph: ({ children, text }: { children?: ReactNode; text?: string }) => (
+    <p>{children ?? text}</p>
+  ),
   Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
   YStack: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
-  Form: ({
-    children,
-    onSubmit,
-  }: { children?: ReactNode; onSubmit?: () => void }) => (
+  Form: ({ children, onSubmit }: { children?: ReactNode; onSubmit?: () => void }) => (
     <form
       onSubmit={(event) => {
         event.preventDefault()
@@ -207,4 +203,3 @@ describe('LoginScreen', () => {
     expect(await screen.findByText('Network down')).toBeInTheDocument()
   })
 })
-

@@ -114,12 +114,7 @@ export const ConsentStep = memo(function ConsentStep({
         </YStack>
       </ScrollView>
 
-      <Button
-        size="$4"
-        theme="blue"
-        disabled={!canContinue}
-        onPress={onContinue}
-      >
+      <Button size="$4" theme="blue" disabled={!canContinue} onPress={onContinue}>
         Continue
       </Button>
     </YStack>

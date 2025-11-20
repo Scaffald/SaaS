@@ -6,10 +6,10 @@
  * - Comments on in-progress issues with status updates
  */
 
-import { execSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { execSync } from 'child_process'
+import { readFileSync } from 'fs'
 
-const PROJECT_ID = '0f70d273-f528-4cc4-a1fa-8daab9111973';
+const PROJECT_ID = '0f70d273-f528-4cc4-a1fa-8daab9111973'
 
 // Mapping of BrainGrid REQs to GitHub issue numbers
 // Based on documentation and commit history
@@ -27,39 +27,39 @@ const REQ_TO_ISSUE_MAP = {
   'REQ-221': null, // Job Inquiry and Negotiation Flow (in progress)
   'REQ-227': null, // IPIP Personality Assessment (in progress)
   'REQ-202': null, // Offline Database Caching (in progress)
-};
+}
 
 // Issues that should be checked based on ATS roadmap
-const ATS_ISSUES_TO_CHECK = [75, 76, 79, 77, 81, 83];
+const ATS_ISSUES_TO_CHECK = [75, 76, 79, 77, 81, 83]
 
 function runCommand(command) {
   try {
-    return execSync(command, { encoding: 'utf-8', stdio: 'pipe' }).trim();
+    return execSync(command, { encoding: 'utf-8', stdio: 'pipe' }).trim()
   } catch (error) {
-    console.error(`Error running command: ${command}`);
-    console.error(error.message);
-    return null;
+    console.error(`Error running command: ${command}`)
+    console.error(error.message)
+    return null
   }
 }
 
 function getIssueDetails(issueNumber) {
-  const json = runCommand(`gh issue view ${issueNumber} --json number,title,state,body,labels`);
-  if (!json) return null;
-  return JSON.parse(json);
+  const json = runCommand(`gh issue view ${issueNumber} --json number,title,state,body,labels`)
+  if (!json) return null
+  return JSON.parse(json)
 }
 
 function commentOnIssue(issueNumber, comment) {
-  console.log(`\n📝 Commenting on issue #${issueNumber}...`);
-  const escapedComment = comment.replace(/"/g, '\\"').replace(/\$/g, '\\$');
-  runCommand(`gh issue comment ${issueNumber} --body "${escapedComment}"`);
+  console.log(`\n📝 Commenting on issue #${issueNumber}...`)
+  const escapedComment = comment.replace(/"/g, '\\"').replace(/\$/g, '\\$')
+  runCommand(`gh issue comment ${issueNumber} --body "${escapedComment}"`)
 }
 
 function closeIssue(issueNumber, comment) {
-  console.log(`\n✅ Closing issue #${issueNumber}...`);
+  console.log(`\n✅ Closing issue #${issueNumber}...`)
   if (comment) {
-    commentOnIssue(issueNumber, comment);
+    commentOnIssue(issueNumber, comment)
   }
-  runCommand(`gh issue close ${issueNumber}`);
+  runCommand(`gh issue close ${issueNumber}`)
 }
 
 function getCompletedREQs() {
@@ -75,39 +75,45 @@ function getCompletedREQs() {
     { id: 'REQ-76', name: 'Planning Milestone Definition and Roadmap Structure' },
     { id: 'REQ-13', name: 'Map Search by City' },
     { id: 'REQ-83', name: 'Profile Completion Wizard with Behavioral Nudges and Data Import' },
-  ];
+  ]
 }
 
 function getInProgressREQs() {
   return [
     { id: 'REQ-227', name: 'IPIP Personality Assessment with Archetype Classification System' },
-    { id: 'REQ-217', name: 'Job Application Flow with Screening Questions, Document Uploads, and Progress Indicators' },
+    {
+      id: 'REQ-217',
+      name: 'Job Application Flow with Screening Questions, Document Uploads, and Progress Indicators',
+    },
     { id: 'REQ-221', name: 'Job Inquiry and Negotiation Flow' },
-    { id: 'REQ-202', name: 'Offline Database Caching and Offline-First Data Synchronization Strategy' },
-  ];
+    {
+      id: 'REQ-202',
+      name: 'Offline Database Caching and Offline-First Data Synchronization Strategy',
+    },
+  ]
 }
 
 function checkATSIssues() {
-  console.log('\n🔍 Checking ATS-related issues from roadmap...\n');
-  
+  console.log('\n🔍 Checking ATS-related issues from roadmap...\n')
+
   // According to docs/features/ats-roadmap.md, these should be complete:
-  const shouldBeComplete = [75, 76, 79];
-  
+  const shouldBeComplete = [75, 76, 79]
+
   for (const issueNum of shouldBeComplete) {
-    const issue = getIssueDetails(issueNum);
+    const issue = getIssueDetails(issueNum)
     if (!issue) {
-      console.log(`⚠️  Could not fetch issue #${issueNum}`);
-      continue;
+      console.log(`⚠️  Could not fetch issue #${issueNum}`)
+      continue
     }
-    
+
     if (issue.state === 'CLOSED') {
-      console.log(`✅ Issue #${issueNum} (${issue.title}) is already closed`);
-      continue;
+      console.log(`✅ Issue #${issueNum} (${issue.title}) is already closed`)
+      continue
     }
-    
-    console.log(`\n📋 Issue #${issueNum}: ${issue.title}`);
-    console.log(`   Current state: ${issue.state}`);
-    
+
+    console.log(`\n📋 Issue #${issueNum}: ${issue.title}`)
+    console.log(`   Current state: ${issue.state}`)
+
     // Check if this aligns with completed work
     if (issueNum === 75) {
       // Design ATS Schema - according to roadmap, this is complete
@@ -125,8 +131,8 @@ According to the ATS roadmap documentation, this issue is marked as complete. Th
 - Review with team if needed
 - Proceed with implementation (#76)
 
-Closing this issue as the design phase is complete.`;
-      closeIssue(issueNum, comment);
+Closing this issue as the design phase is complete.`
+      closeIssue(issueNum, comment)
     } else if (issueNum === 76) {
       // Implement Migrations & Models
       const comment = `## 🚧 Status Update
@@ -143,8 +149,8 @@ This issue is in progress. Recent commits show work on job management and applic
 - More work needed for complete ATS system
 - Backend integration still in progress
 
-This issue remains open as implementation continues.`;
-      commentOnIssue(issueNum, comment);
+This issue remains open as implementation continues.`
+      commentOnIssue(issueNum, comment)
     } else if (issueNum === 79) {
       // Job Distribution (Internal)
       const comment = `## 🚧 Status Update
@@ -160,24 +166,24 @@ According to the roadmap, this should be complete, but let's verify current stat
 - Job discovery interface exists
 - Need to verify full distribution functionality
 
-Please verify if this is fully complete or if additional work is needed.`;
-      commentOnIssue(issueNum, comment);
+Please verify if this is fully complete or if additional work is needed.`
+      commentOnIssue(issueNum, comment)
     }
   }
-  
+
   // Check in-progress issues
-  const inProgressIssues = [77, 81, 83];
+  const inProgressIssues = [77, 81, 83]
   for (const issueNum of inProgressIssues) {
-    const issue = getIssueDetails(issueNum);
-    if (!issue) continue;
-    
+    const issue = getIssueDetails(issueNum)
+    if (!issue) continue
+
     if (issue.state === 'CLOSED') {
-      console.log(`✅ Issue #${issueNum} is already closed`);
-      continue;
+      console.log(`✅ Issue #${issueNum} is already closed`)
+      continue
     }
-    
-    console.log(`\n📋 Issue #${issueNum}: ${issue.title}`);
-    
+
+    console.log(`\n📋 Issue #${issueNum}: ${issue.title}`)
+
     if (issueNum === 77) {
       // Seed Demo Data
       const comment = `## 🚧 Status Update
@@ -193,8 +199,8 @@ Please verify if this is fully complete or if additional work is needed.`;
 - Create more realistic demo job postings
 - Set up sample pipelines with different stages
 - Generate candidate applications for testing
-- Include various job types (construction, trades, etc.)`;
-      commentOnIssue(issueNum, comment);
+- Include various job types (construction, trades, etc.)`
+      commentOnIssue(issueNum, comment)
     } else if (issueNum === 81) {
       // Pipeline Stages/Kanban
       const comment = `## 🚧 Status Update
@@ -218,8 +224,8 @@ Please verify if this is fully complete or if additional work is needed.`;
 **Next Steps:**
 - Complete backend API for pipeline management
 - Wire up Kanban UI to real data
-- Test full workflow end-to-end`;
-      commentOnIssue(issueNum, comment);
+- Test full workflow end-to-end`
+      commentOnIssue(issueNum, comment)
     } else if (issueNum === 83) {
       // Candidate Profile View
       const comment = `## 🚧 Status Update
@@ -242,43 +248,42 @@ Please verify if this is fully complete or if additional work is needed.`;
 **Next Steps:**
 - Complete backend endpoints for candidate data
 - Wire up UI to real API
-- Test profile display in ATS context`;
-      commentOnIssue(issueNum, comment);
+- Test profile display in ATS context`
+      commentOnIssue(issueNum, comment)
     }
   }
 }
 
 function main() {
-  console.log('🚀 Starting GitHub issues update...\n');
-  
+  console.log('🚀 Starting GitHub issues update...\n')
+
   // Check authentication
-  const authStatus = runCommand('gh auth status');
+  const authStatus = runCommand('gh auth status')
   if (!authStatus || authStatus.includes('not logged in')) {
-    console.error('❌ Not authenticated with GitHub CLI. Please run: gh auth login');
-    process.exit(1);
+    console.error('❌ Not authenticated with GitHub CLI. Please run: gh auth login')
+    process.exit(1)
   }
-  
-  console.log('✅ GitHub CLI authenticated\n');
-  
+
+  console.log('✅ GitHub CLI authenticated\n')
+
   // Check ATS issues
-  checkATSIssues();
-  
+  checkATSIssues()
+
   // Check for any issues that should be closed based on completed REQs
-  const completedREQs = getCompletedREQs();
-  console.log('\n\n📊 Summary of Completed Requirements:');
-  completedREQs.forEach(req => {
-    console.log(`  ✅ ${req.id}: ${req.name}`);
-  });
-  
-  const inProgressREQs = getInProgressREQs();
-  console.log('\n\n🚧 Summary of In-Progress Requirements:');
-  inProgressREQs.forEach(req => {
-    console.log(`  🚧 ${req.id}: ${req.name}`);
-  });
-  
-  console.log('\n\n✅ GitHub issues update complete!');
-  console.log('\n💡 Tip: Review the comments and closed issues to ensure accuracy.');
+  const completedREQs = getCompletedREQs()
+  console.log('\n\n📊 Summary of Completed Requirements:')
+  completedREQs.forEach((req) => {
+    console.log(`  ✅ ${req.id}: ${req.name}`)
+  })
+
+  const inProgressREQs = getInProgressREQs()
+  console.log('\n\n🚧 Summary of In-Progress Requirements:')
+  inProgressREQs.forEach((req) => {
+    console.log(`  🚧 ${req.id}: ${req.name}`)
+  })
+
+  console.log('\n\n✅ GitHub issues update complete!')
+  console.log('\n💡 Tip: Review the comments and closed issues to ensure accuracy.')
 }
 
-main();
-
+main()

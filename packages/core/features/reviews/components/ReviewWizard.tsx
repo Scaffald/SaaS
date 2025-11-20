@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Button, Text, Card } from 'tamagui'
+import { api } from '@app/core/utils/api'
 import { ChevronLeft, ChevronRight, X } from '@tamagui/lucide-icons'
+import { useEffect, useState } from 'react'
+import { Button, Card, Text, XStack, YStack } from 'tamagui'
+import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
+import { useReviewDraft } from '../hooks/useReviewDraft'
 import { ReviewProgress } from './ReviewProgress'
 import { ReviewStep1Skills } from './ReviewStep1Skills'
 import { ReviewStep2SkillsTags } from './ReviewStep2SkillsTags'
-import { ReviewStepCategoryRating } from './ReviewStepCategoryRating'
-import { ReviewStepCategoryTags } from './ReviewStepCategoryTags'
 import { ReviewStep7Summary } from './ReviewStep7Summary'
 import { ReviewStep8Recommendation } from './ReviewStep8Recommendation'
-import { useReviewDraft } from '../hooks/useReviewDraft'
-import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
-import { api } from '@app/core/utils/api'
+import { ReviewStepCategoryRating } from './ReviewStepCategoryRating'
+import { ReviewStepCategoryTags } from './ReviewStepCategoryTags'
 
 interface Review {
   id: string

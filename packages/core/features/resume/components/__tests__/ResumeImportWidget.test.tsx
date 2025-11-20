@@ -77,9 +77,7 @@ vi.mock('@app/core/utils/api', () => ({
 
 vi.mock('@app/ui', () => ({
   // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
-  DashboardWidget: ({ children }: any) => (
-    <div data-testid="dashboard-widget">{children}</div>
-  ),
+  DashboardWidget: ({ children }: any) => <div data-testid="dashboard-widget">{children}</div>,
   spacing: {
     md: 16,
   },
@@ -123,9 +121,8 @@ describe('ResumeImportWidget', () => {
     fireEvent.click(screen.getByTestId('resume-modal'))
 
     expect(pushMock).toHaveBeenCalledWith(
-      '/dashboard/profile/resume/review?resumeId=resume-generated',
+      '/dashboard/profile/resume/review?resumeId=resume-generated'
     )
     expect(screen.queryByTestId('resume-modal')).not.toBeInTheDocument()
   })
 })
-

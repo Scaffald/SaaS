@@ -1,10 +1,10 @@
+import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
+import { BarChart, RadarChart } from '@app/ui'
+import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { useMemo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'
-import { VisuallyHidden } from '@tamagui/visually-hidden'
-import { RadarChart, BarChart } from '@app/ui'
-import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
-import type { NormalizedScores } from '../utils/scoreNormalizer'
 import { DOMAIN_NAMES, DOMAIN_ORDER } from '../utils/domainGrouping'
+import type { NormalizedScores } from '../utils/scoreNormalizer'
 
 export interface ArchetypeResult {
   archetype: string
@@ -73,10 +73,10 @@ export function ChartView({
           (data) =>
             `${data.domainName}: ${data.value}% (${
               data.result === 'neutral' ? 'balanced' : data.result
-            }).`,
+            }).`
         )
         .join(' '),
-    [radarData],
+    [radarData]
   )
 
   const topTraits = useMemo(() => {
@@ -153,7 +153,14 @@ export function ChartView({
               trait.result === 'high' ? '$green10' : trait.result === 'low' ? '$blue10' : '$gray10'
 
             return (
-              <XStack key={trait.domainName} justify="space-between" items="center" p="$2" bg="$color1" rounded="$2">
+              <XStack
+                key={trait.domainName}
+                justify="space-between"
+                items="center"
+                p="$2"
+                bg="$color1"
+                rounded="$2"
+              >
                 <Text fontSize="$4" fontWeight="500" color="$color12">
                   {trait.domainName}
                 </Text>
@@ -307,4 +314,3 @@ export function ChartView({
     </YStack>
   )
 }
-

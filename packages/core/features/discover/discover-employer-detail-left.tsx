@@ -1,8 +1,8 @@
-import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import type { JSONContent } from '@tiptap/core'
-import { DashboardWidget, extractPlainText } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget, extractPlainText } from '@app/ui'
+import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
+import type { JSONContent } from '@tiptap/core'
+import { useRouter } from 'expo-router'
 import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type DiscoverEmployerDetailLeftProps = {
@@ -20,10 +20,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     data: employer,
     isLoading,
     isFetching,
-  } = api.employers.getEmployerById.useQuery(
-    { id: employerId },
-    { enabled: Boolean(employerId) }
-  )
+  } = api.employers.getEmployerById.useQuery({ id: employerId }, { enabled: Boolean(employerId) })
 
   if (!employerId) {
     return (
@@ -156,4 +153,3 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     </DashboardWidget>
   )
 }
-

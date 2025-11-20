@@ -1,4 +1,4 @@
-import { View, styled } from 'tamagui'
+import { styled, View } from 'tamagui'
 
 export interface SkeletonBoxProps {
   /** Width of the skeleton box */

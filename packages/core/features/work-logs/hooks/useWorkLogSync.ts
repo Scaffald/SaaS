@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Platform } from "react-native";
-import { Buffer } from "buffer";
-import { useNetInfo, NetInfoStateType } from "@react-native-community/netinfo";
-
-import { api } from "@app/core/utils/api";
-import { supabase } from "@app/core/utils/supabase/client";
+import { api } from '@app/core/utils/api'
+import { supabase } from '@app/core/utils/supabase/client'
+import { NetInfoStateType, useNetInfo } from '@react-native-community/netinfo'
+import { Buffer } from 'buffer'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Platform } from 'react-native'
 
 import type {
   OfflineWorkLog,
@@ -12,62 +11,56 @@ import type {
   OfflineWorkLogPhoto,
   SyncSettings,
   SyncStatus,
-} from "../types/offline";
-import { DEFAULT_SYNC_SETTINGS } from "../types/offline";
-import {
-  loadSyncSettings,
-  saveSyncSettings,
-} from "../utils/offline-storage";
+} from '../types/offline'
+import { DEFAULT_SYNC_SETTINGS } from '../types/offline'
+import { loadSyncSettings, saveSyncSettings } from '../utils/offline-storage'
 
-const WORK_LOG_PHOTO_BUCKET = "work-log-photos";
-const BASE_RETRY_DELAY_MS = 5000;
-const MAX_RETRY_DELAY_MS = 5 * 60 * 1000;
+const WORK_LOG_PHOTO_BUCKET = 'work-log-photos'
+const BASE_RETRY_DELAY_MS = 5000
+const MAX_RETRY_DELAY_MS = 5 * 60 * 1000
 
-type FileSystemModule = typeof import("expo-file-system/legacy");
+type FileSystemModule = typeof import('expo-file-system/legacy')
 
 const ensureFileSystem = async (): Promise<FileSystemModule | null> => {
-  if (Platform.OS === "web") {
-    return null;
+  if (Platform.OS === 'web') {
+    return null
   }
 
   try {
-    const FileSystem = await import("expo-file-system/legacy");
-    return FileSystem;
+    const FileSystem = await import('expo-file-system/legacy')
+    return FileSystem
   } catch (error) {
-    console.warn(
-      "[work-logs/useWorkLogSync] Unable to load expo-file-system",
-      error,
-    );
-    return null;
+    console.warn('[work-logs/useWorkLogSync] Unable to load expo-file-system', error)
+    return null
   }
-};
+}
 
 const computeBackoffDelay = (retryCount: number) => {
-  const delay = BASE_RETRY_DELAY_MS * 2 ** Math.max(retryCount - 1, 0);
-  return Math.min(delay, MAX_RETRY_DELAY_MS);
-};
+  const delay = BASE_RETRY_DELAY_MS * 2 ** Math.max(retryCount - 1, 0)
+  return Math.min(delay, MAX_RETRY_DELAY_MS)
+}
 
 const createSyncError = (error: unknown): Error =>
-  error instanceof Error ? error : new Error(String(error));
+  error instanceof Error ? error : new Error(String(error))
 
 interface UseWorkLogSyncOptions {
-  offlineWorkLogs: OfflineWorkLog[];
-  markWorkLogForSync: (id: string, nextStatus?: SyncStatus) => Promise<void>;
-  mutateOfflineWorkLog: OfflineWorkLogMutator;
-  removeOfflineWorkLog: (id: string) => Promise<void>;
+  offlineWorkLogs: OfflineWorkLog[]
+  markWorkLogForSync: (id: string, nextStatus?: SyncStatus) => Promise<void>
+  mutateOfflineWorkLog: OfflineWorkLogMutator
+  removeOfflineWorkLog: (id: string) => Promise<void>
 }
 
 interface UseWorkLogSyncResult {
-  isSyncing: boolean;
-  lastSyncError: string | null;
-  syncSettings: SyncSettings;
-  settingsLoaded: boolean;
-  pendingSyncCount: number;
-  isOnline: boolean;
-  isWifiConnection: boolean;
-  syncNow: () => Promise<void>;
-  queueWorkLogForSync: (id: string) => Promise<void>;
-  updateSyncSettings: (updates: Partial<SyncSettings>) => Promise<void>;
+  isSyncing: boolean
+  lastSyncError: string | null
+  syncSettings: SyncSettings
+  settingsLoaded: boolean
+  pendingSyncCount: number
+  isOnline: boolean
+  isWifiConnection: boolean
+  syncNow: () => Promise<void>
+  queueWorkLogForSync: (id: string) => Promise<void>
+  updateSyncSettings: (updates: Partial<SyncSettings>) => Promise<void>
 }
 
 export const useWorkLogSync = ({
@@ -76,107 +69,98 @@ export const useWorkLogSync = ({
   mutateOfflineWorkLog,
   removeOfflineWorkLog,
 }: UseWorkLogSyncOptions): UseWorkLogSyncResult => {
-  const netInfo = useNetInfo();
-  const [syncSettings, setSyncSettings] =
-    useState<SyncSettings>(DEFAULT_SYNC_SETTINGS);
-  const [settingsLoaded, setSettingsLoaded] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [lastSyncError, setLastSyncError] = useState<string | null>(null);
-  const syncInProgressRef = useRef(false);
-  const fileSystemPromiseRef = useRef<Promise<FileSystemModule | null> | null>(
-    null,
-  );
+  const netInfo = useNetInfo()
+  const [syncSettings, setSyncSettings] = useState<SyncSettings>(DEFAULT_SYNC_SETTINGS)
+  const [settingsLoaded, setSettingsLoaded] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
+  const [lastSyncError, setLastSyncError] = useState<string | null>(null)
+  const syncInProgressRef = useRef(false)
+  const fileSystemPromiseRef = useRef<Promise<FileSystemModule | null> | null>(null)
 
-  const createWorkLogMutation = api.workLogs.create.useMutation();
-  const updateWorkLogMutation = api.workLogs.update.useMutation();
-  const uploadPhotoMutation = api.workLogs.uploadPhoto.useMutation();
+  const createWorkLogMutation = api.workLogs.create.useMutation()
+  const updateWorkLogMutation = api.workLogs.update.useMutation()
+  const uploadPhotoMutation = api.workLogs.uploadPhoto.useMutation()
 
   useEffect(() => {
     loadSyncSettings()
       .then((settings) => {
-        setSyncSettings(settings);
-        setSettingsLoaded(true);
+        setSyncSettings(settings)
+        setSettingsLoaded(true)
       })
       .catch((error) => {
-        console.error(
-          "[work-logs/useWorkLogSync] Failed to load sync settings",
-          error,
-        );
-        setSettingsLoaded(true);
-      });
-  }, []);
+        console.error('[work-logs/useWorkLogSync] Failed to load sync settings', error)
+        setSettingsLoaded(true)
+      })
+  }, [])
 
   const ensureFileSystemModule = useCallback(() => {
     if (!fileSystemPromiseRef.current) {
-      fileSystemPromiseRef.current = ensureFileSystem();
+      fileSystemPromiseRef.current = ensureFileSystem()
     }
-    return fileSystemPromiseRef.current;
-  }, []);
+    return fileSystemPromiseRef.current
+  }, [])
 
   const isOnline =
     Boolean(netInfo.isConnected) &&
     netInfo.isInternetReachable !== false &&
-    netInfo.isInternetReachable !== null;
+    netInfo.isInternetReachable !== null
   const isWifiConnection =
-    netInfo.type === NetInfoStateType.wifi ||
-    netInfo.type === NetInfoStateType.ethernet;
+    netInfo.type === NetInfoStateType.wifi || netInfo.type === NetInfoStateType.ethernet
 
   const pendingSyncCount = useMemo(
     () =>
-      offlineWorkLogs.filter((log) =>
-        ["pending", "queued", "syncing"].includes(log.syncStatus),
-      ).length,
-    [offlineWorkLogs],
-  );
+      offlineWorkLogs.filter((log) => ['pending', 'queued', 'syncing'].includes(log.syncStatus))
+        .length,
+    [offlineWorkLogs]
+  )
 
   const updateSyncSettings = useCallback(
     async (updates: Partial<SyncSettings>) => {
-      const next = { ...syncSettings, ...updates };
-      setSyncSettings(next);
-      await saveSyncSettings(next);
+      const next = { ...syncSettings, ...updates }
+      setSyncSettings(next)
+      await saveSyncSettings(next)
     },
-    [syncSettings],
-  );
+    [syncSettings]
+  )
 
   const queueWorkLogForSync = useCallback(
     async (id: string) => {
-      await markWorkLogForSync(id, "queued");
+      await markWorkLogForSync(id, 'queued')
     },
-    [markWorkLogForSync],
-  );
+    [markWorkLogForSync]
+  )
 
   const syncOfflineWorkLog = useCallback(
     async (entry: OfflineWorkLog) => {
-      const FileSystem = await ensureFileSystemModule();
-      const payload = entry.payload;
-      let remoteWorkLogId: string;
+      const FileSystem = await ensureFileSystemModule()
+      const payload = entry.payload
+      let remoteWorkLogId: string
 
-      if (payload.kind === "create") {
-        const created = await createWorkLogMutation.mutateAsync(payload.input);
-        remoteWorkLogId = created.id;
+      if (payload.kind === 'create') {
+        const created = await createWorkLogMutation.mutateAsync(payload.input)
+        remoteWorkLogId = created.id
       } else {
-        const updated = await updateWorkLogMutation.mutateAsync(payload.input);
-        remoteWorkLogId =
-          payload.input.workLogId ?? updated.workLog?.id ?? updated.id;
+        const updated = await updateWorkLogMutation.mutateAsync(payload.input)
+        remoteWorkLogId = payload.input.workLogId ?? updated.workLog?.id ?? updated.id
       }
 
       if (!entry.photos.length) {
-        return;
+        return
       }
 
       if (!FileSystem) {
-        throw new Error("File system unavailable for photo upload.");
+        throw new Error('File system unavailable for photo upload.')
       }
 
       for (const photo of entry.photos) {
-        if (photo.status === "uploaded") {
-          continue;
+        if (photo.status === 'uploaded') {
+          continue
         }
 
         const base64 = await FileSystem.readAsStringAsync(photo.localUri, {
           encoding: FileSystem.EncodingType.Base64,
-        });
-        const fileBuffer = Uint8Array.from(Buffer.from(base64, "base64"));
+        })
+        const fileBuffer = Uint8Array.from(Buffer.from(base64, 'base64'))
 
         const uploadRequest = await uploadPhotoMutation.mutateAsync({
           workLogId: remoteWorkLogId,
@@ -189,34 +173,32 @@ export const useWorkLogSync = ({
           showOnProfile: photo.showOnProfile ?? undefined,
           takenAt: photo.takenAt ?? undefined,
           gpsCapture: photo.gpsCapture ?? undefined,
-        });
+        })
 
         const uploadPath =
           uploadRequest.filePath ??
           uploadRequest.photo?.file_path ??
-          `${remoteWorkLogId}/${photo.fileName}`;
+          `${remoteWorkLogId}/${photo.fileName}`
 
         const { error: uploadError } = await supabase.storage
           .from(WORK_LOG_PHOTO_BUCKET)
           .uploadToSignedUrl(uploadPath, uploadRequest.token, fileBuffer, {
             contentType: photo.mimeType,
             upsert: false,
-          });
+          })
 
         if (uploadError) {
-          throw new Error(
-            uploadError.message ?? "Unable to upload work log photo.",
-          );
+          throw new Error(uploadError.message ?? 'Unable to upload work log photo.')
         }
 
         await mutateOfflineWorkLog(entry.id, (current) => {
           const photos = current.photos.map<OfflineWorkLogPhoto>((candidate) =>
             candidate.id === photo.id
-              ? { ...candidate, status: "uploaded" as const, lastError: null }
-              : candidate,
-          );
-          return { ...current, photos };
-        });
+              ? { ...candidate, status: 'uploaded' as const, lastError: null }
+              : candidate
+          )
+          return { ...current, photos }
+        })
       }
     },
     [
@@ -225,105 +207,91 @@ export const useWorkLogSync = ({
       mutateOfflineWorkLog,
       updateWorkLogMutation,
       uploadPhotoMutation,
-    ],
-  );
+    ]
+  )
 
   const processQueue = useCallback(
     async (force = false) => {
       if (syncInProgressRef.current) {
-        return;
+        return
       }
 
       if (!isOnline && !force) {
-        return;
+        return
       }
 
-      if (
-        syncSettings.syncOverWifiOnly &&
-        !isWifiConnection &&
-        !force
-      ) {
-        return;
+      if (syncSettings.syncOverWifiOnly && !isWifiConnection && !force) {
+        return
       }
 
-      syncInProgressRef.current = true;
-      setIsSyncing(true);
-      setLastSyncError(null);
+      syncInProgressRef.current = true
+      setIsSyncing(true)
+      setLastSyncError(null)
 
       try {
-        const now = Date.now();
-        const items = [...offlineWorkLogs].sort((a, b) =>
-          a.createdAt.localeCompare(b.createdAt),
-        );
+        const now = Date.now()
+        const items = [...offlineWorkLogs].sort((a, b) => a.createdAt.localeCompare(b.createdAt))
 
         for (const entry of items) {
           const shouldSkipDueToRetry =
-            entry.nextRetryAt &&
-            new Date(entry.nextRetryAt).getTime() > now &&
-            !force;
+            entry.nextRetryAt && new Date(entry.nextRetryAt).getTime() > now && !force
 
           if (shouldSkipDueToRetry) {
-            continue;
+            continue
           }
 
-          if (
-            entry.syncStatus === "pending" ||
-            entry.syncStatus === "failed"
-          ) {
+          if (entry.syncStatus === 'pending' || entry.syncStatus === 'failed') {
             if (entry.retryCount >= syncSettings.maxRetries && !force) {
-              continue;
+              continue
             }
 
-            await markWorkLogForSync(entry.id, "queued");
+            await markWorkLogForSync(entry.id, 'queued')
           }
 
-          if (entry.syncStatus !== "queued") {
-            continue;
+          if (entry.syncStatus !== 'queued') {
+            continue
           }
 
           await mutateOfflineWorkLog(entry.id, (current) => ({
             ...current,
-            syncStatus: "syncing",
+            syncStatus: 'syncing',
             lastError: null,
-          }));
+          }))
 
           try {
-            await syncOfflineWorkLog(entry);
-            await removeOfflineWorkLog(entry.id);
-            const timestamp = new Date().toISOString();
+            await syncOfflineWorkLog(entry)
+            await removeOfflineWorkLog(entry.id)
+            const timestamp = new Date().toISOString()
             setSyncSettings((previous) => {
               const next = {
                 ...previous,
                 lastSyncedAt: timestamp,
-              };
-              void saveSyncSettings(next);
-              return next;
-            });
+              }
+              void saveSyncSettings(next)
+              return next
+            })
           } catch (error) {
-            const syncError = createSyncError(error);
-            setLastSyncError(syncError.message);
+            const syncError = createSyncError(error)
+            setLastSyncError(syncError.message)
 
             await mutateOfflineWorkLog(entry.id, (current) => {
-              const retryCount = current.retryCount + 1;
-              const reachedLimit =
-                retryCount >= syncSettings.maxRetries && !force;
-              const delayMs = computeBackoffDelay(retryCount);
-              const nextRetryAt = reachedLimit
-                ? null
-                : new Date(Date.now() + delayMs).toISOString();
+              const retryCount = current.retryCount + 1
+              const reachedLimit = retryCount >= syncSettings.maxRetries && !force
+              const delayMs = computeBackoffDelay(retryCount)
+              const nextRetryAt = reachedLimit ? null : new Date(Date.now() + delayMs).toISOString()
               return {
                 ...current,
                 retryCount,
-                syncStatus: reachedLimit ? "failed" : "queued",
+                syncStatus: reachedLimit ? 'failed' : 'queued',
                 nextRetryAt,
                 lastError: syncError.message,
-              };
-            });
+              }
+            })
           }
         }
       } finally {
-        syncInProgressRef.current = false;
-        setIsSyncing(false);
+        syncInProgressRef.current = false
+        setIsSyncing(false)
       }
     },
     [
@@ -336,34 +304,30 @@ export const useWorkLogSync = ({
       syncOfflineWorkLog,
       syncSettings.maxRetries,
       syncSettings.syncOverWifiOnly,
-    ],
-  );
+    ]
+  )
 
   useEffect(() => {
     if (!settingsLoaded) {
-      return;
+      return
     }
 
     if (!syncSettings.autoSync) {
-      return;
+      return
     }
 
     if (!isOnline) {
-      return;
+      return
     }
 
     if (syncSettings.syncOverWifiOnly && !isWifiConnection) {
-      return;
+      return
     }
 
-    const pendingEntries = offlineWorkLogs.filter(
-      (entry) => entry.syncStatus === "pending",
-    );
+    const pendingEntries = offlineWorkLogs.filter((entry) => entry.syncStatus === 'pending')
 
     if (pendingEntries.length > 0) {
-      void Promise.all(
-        pendingEntries.map((entry) => markWorkLogForSync(entry.id, "queued")),
-      );
+      void Promise.all(pendingEntries.map((entry) => markWorkLogForSync(entry.id, 'queued')))
     }
   }, [
     isOnline,
@@ -373,31 +337,29 @@ export const useWorkLogSync = ({
     settingsLoaded,
     syncSettings.autoSync,
     syncSettings.syncOverWifiOnly,
-  ]);
+  ])
 
   useEffect(() => {
     if (!settingsLoaded) {
-      return;
+      return
     }
 
     if (!syncSettings.autoSync) {
-      return;
+      return
     }
 
     if (!isOnline) {
-      return;
+      return
     }
 
     if (syncSettings.syncOverWifiOnly && !isWifiConnection) {
-      return;
+      return
     }
 
-    const hasQueued = offlineWorkLogs.some(
-      (entry) => entry.syncStatus === "queued",
-    );
+    const hasQueued = offlineWorkLogs.some((entry) => entry.syncStatus === 'queued')
 
     if (hasQueued && !syncInProgressRef.current) {
-      void processQueue();
+      void processQueue()
     }
   }, [
     isOnline,
@@ -407,20 +369,16 @@ export const useWorkLogSync = ({
     settingsLoaded,
     syncSettings.autoSync,
     syncSettings.syncOverWifiOnly,
-  ]);
+  ])
 
   const syncNow = useCallback(async () => {
     if (!offlineWorkLogs.length) {
-      return;
+      return
     }
 
-    await Promise.all(
-      offlineWorkLogs.map((entry) =>
-        markWorkLogForSync(entry.id, "queued"),
-      ),
-    );
-    await processQueue(true);
-  }, [offlineWorkLogs, markWorkLogForSync, processQueue]);
+    await Promise.all(offlineWorkLogs.map((entry) => markWorkLogForSync(entry.id, 'queued')))
+    await processQueue(true)
+  }, [offlineWorkLogs, markWorkLogForSync, processQueue])
 
   return {
     isSyncing,
@@ -433,6 +391,5 @@ export const useWorkLogSync = ({
     syncNow,
     queueWorkLogForSync,
     updateSyncSettings,
-  };
-};
-
+  }
+}

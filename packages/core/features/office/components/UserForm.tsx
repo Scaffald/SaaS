@@ -1,8 +1,8 @@
-import { YStack, XStack, Text, Input, Button, ScrollView } from '@app/ui'
-import { Card } from 'tamagui'
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
 import { api } from '@app/core/utils/api'
+import { Button, Input, ScrollView, Text, XStack, YStack } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import { Card } from 'tamagui'
 
 interface UserFormProps {
   userId: string
@@ -104,7 +104,12 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
             <Button data-testid="cancel-button" onPress={() => router.back()} variant="outlined">
               Cancel
             </Button>
-            <Button data-testid="save-button" onPress={handleSubmit} disabled={updateUserMutation.isPending} themeInverse>
+            <Button
+              data-testid="save-button"
+              onPress={handleSubmit}
+              disabled={updateUserMutation.isPending}
+              themeInverse
+            >
               {updateUserMutation.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </XStack>
@@ -119,17 +124,32 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
             <YStack gap="$2">
               <Text fontWeight="600">First Name</Text>
-              <Input data-testid="user-first-name-input" value={firstName} onChangeText={setFirstName} placeholder="First name" />
+              <Input
+                data-testid="user-first-name-input"
+                value={firstName}
+                onChangeText={setFirstName}
+                placeholder="First name"
+              />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Last Name</Text>
-              <Input data-testid="user-last-name-input" value={lastName} onChangeText={setLastName} placeholder="Last name" />
+              <Input
+                data-testid="user-last-name-input"
+                value={lastName}
+                onChangeText={setLastName}
+                placeholder="Last name"
+              />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Display Name</Text>
-              <Input data-testid="user-display-name-input" value={displayName} onChangeText={setDisplayName} placeholder="Display name" />
+              <Input
+                data-testid="user-display-name-input"
+                value={displayName}
+                onChangeText={setDisplayName}
+                placeholder="Display name"
+              />
             </YStack>
 
             <YStack gap="$2">
@@ -178,12 +198,22 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
             <YStack gap="$2">
               <Text fontWeight="600">Birth Date</Text>
-              <Input data-testid="user-birth-date-input" value={birthDate} onChangeText={setBirthDate} placeholder="YYYY-MM-DD" />
+              <Input
+                data-testid="user-birth-date-input"
+                value={birthDate}
+                onChangeText={setBirthDate}
+                placeholder="YYYY-MM-DD"
+              />
             </YStack>
 
             <YStack gap="$2">
               <Text fontWeight="600">Location</Text>
-              <Input data-testid="user-location-input" value={location} onChangeText={setLocation} placeholder="City, State" />
+              <Input
+                data-testid="user-location-input"
+                value={location}
+                onChangeText={setLocation}
+                placeholder="City, State"
+              />
             </YStack>
           </YStack>
         </Card>
@@ -228,7 +258,12 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
             <YStack gap="$2">
               <Text fontWeight="600">Current Title</Text>
-              <Input data-testid="user-current-title-input" value={currentTitle} onChangeText={setCurrentTitle} placeholder="Job title" />
+              <Input
+                data-testid="user-current-title-input"
+                value={currentTitle}
+                onChangeText={setCurrentTitle}
+                placeholder="Job title"
+              />
             </YStack>
 
             <YStack gap="$2">
@@ -245,7 +280,12 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
 
         {/* Submit Button (mobile-friendly placement) */}
         <XStack gap="$2" pb="$4">
-          <Button data-testid="cancel-button" flex={1} onPress={() => router.back()} variant="outlined">
+          <Button
+            data-testid="cancel-button"
+            flex={1}
+            onPress={() => router.back()}
+            variant="outlined"
+          >
             Cancel
           </Button>
           <Button

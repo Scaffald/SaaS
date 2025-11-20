@@ -1,10 +1,10 @@
-import { memo, forwardRef, Ref } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Button, Paragraph, SizableText, Text, XStack, YStack } from 'tamagui'
-import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { Award, BadgeCheck, Clock3, DollarSign, ExternalLink, Star } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { forwardRef, memo, Ref } from 'react'
+import type { TamaguiElement } from 'tamagui'
+import { Button, Paragraph, SizableText, Text, XStack, YStack } from 'tamagui'
 
 import type { TalentProfile } from '../types'
 

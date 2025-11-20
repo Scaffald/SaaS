@@ -1,17 +1,19 @@
-import type { ComponentType } from 'react'
-import type { IconProps } from '@tamagui/helpers-icon'
-import { Onboarding, type OnboardingStepInfo, StepContent, Spinner, YStack } from '@app/ui'
-import * as LucideIcons from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
-import type { WelcomeSlide } from '@app/schemas'
 import { useTranslation } from '@app/core/utils/useTranslation'
+import type { WelcomeSlide } from '@app/schemas'
+import { Onboarding, type OnboardingStepInfo, Spinner, StepContent, YStack } from '@app/ui'
+import type { IconProps } from '@tamagui/helpers-icon'
+import * as LucideIcons from '@tamagui/lucide-icons'
+import type { ComponentType } from 'react'
 
 interface WelcomeScreenProps {
   onOnboarded?: () => void
 }
 
 // Default fallback slides in case API fails or returns empty
-const createDefaultSlides = (t: (key: string, params?: Record<string, unknown>) => string): OnboardingStepInfo[] => [
+const createDefaultSlides = (
+  t: (key: string, params?: Record<string, unknown>) => string
+): OnboardingStepInfo[] => [
   {
     backgroundImage: 'https://images.pexels.com/photos/271667/pexels-photo-271667.jpeg',
     Content: () => (

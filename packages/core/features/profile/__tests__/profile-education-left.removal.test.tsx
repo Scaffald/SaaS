@@ -70,10 +70,9 @@ vi.mock('@tamagui/lucide-icons', () => ({
 vi.mock('@app/ui', () => {
   const React = require('react') as typeof import('react')
 
-  const createView =
-    (element = 'div') =>
+  const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
+      React.createElement(element, { ref, ...rest }, children)
     )
 
   const Button = React.forwardRef<
@@ -83,13 +82,7 @@ vi.mock('@app/ui', () => {
       'data-testid'?: string
     }
   >(({ children, onPress, 'data-testid': dataTestId, ...rest }, ref) => (
-    <button
-      ref={ref}
-      type="button"
-      onClick={onPress}
-      data-testid={dataTestId}
-      {...rest}
-    >
+    <button ref={ref} type="button" onClick={onPress} data-testid={dataTestId} {...rest}>
       {children}
     </button>
   ))
@@ -98,22 +91,14 @@ vi.mock('@app/ui', () => {
     HTMLInputElement,
     React.ComponentPropsWithoutRef<'input'> & { onChangeText?: (value: string) => void }
   >(({ onChangeText, ...rest }, ref) => (
-    <input
-      ref={ref}
-      {...rest}
-      onChange={(event) => onChangeText?.(event.target.value)}
-    />
+    <input ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
   ))
 
   const TextArea = React.forwardRef<
     HTMLTextAreaElement,
     React.ComponentPropsWithoutRef<'textarea'> & { onChangeText?: (value: string) => void }
   >(({ onChangeText, ...rest }, ref) => (
-    <textarea
-      ref={ref}
-      {...rest}
-      onChange={(event) => onChangeText?.(event.target.value)}
-    />
+    <textarea ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
   ))
 
   const CustomCheckbox = ({
@@ -216,10 +201,9 @@ vi.mock('@app/ui', () => {
 vi.mock('tamagui', () => {
   const React = require('react') as typeof import('react')
 
-  const createView =
-    (element = 'div') =>
+  const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
+      React.createElement(element, { ref, ...rest }, children)
     )
 
   const Button = React.forwardRef<
@@ -233,11 +217,7 @@ vi.mock('tamagui', () => {
 
   const PopoverRoot = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>
   const PopoverTrigger = ({ children }: { children: React.ReactNode }) => <>{children}</>
-  const PopoverContent = ({
-    children,
-  }: {
-    children: React.ReactNode
-  }) => <div>{children}</div>
+  const PopoverContent = ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 
   const ScrollView = createView()
 
@@ -251,21 +231,13 @@ vi.mock('tamagui', () => {
       HTMLInputElement,
       React.ComponentPropsWithoutRef<'input'> & { onChangeText?: (value: string) => void }
     >(({ onChangeText, ...rest }, ref) => (
-      <input
-        ref={ref}
-        {...rest}
-        onChange={(event) => onChangeText?.(event.target.value)}
-      />
+      <input ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
     )),
     TextArea: React.forwardRef<
       HTMLTextAreaElement,
       React.ComponentPropsWithoutRef<'textarea'> & { onChangeText?: (value: string) => void }
     >(({ onChangeText, ...rest }, ref) => (
-      <textarea
-        ref={ref}
-        {...rest}
-        onChange={(event) => onChangeText?.(event.target.value)}
-      />
+      <textarea ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
     )),
     Button,
     Spinner: () => <div>spinner</div>,
@@ -305,12 +277,12 @@ vi.mock('@app/core/utils/api', () => {
             onSuccess?: (
               result: { success: boolean; education_entries: unknown[] },
               input: Record<string, unknown>,
-              context: unknown,
+              context: unknown
             ) => Promise<void> | void
             onSettled?: (
               result: { success: boolean; education_entries: unknown[] } | undefined,
               error: unknown,
-              context: unknown,
+              context: unknown
             ) => Promise<void> | void
           }) => ({
             mutateAsync: async (input: Record<string, unknown>) => {
@@ -359,13 +331,16 @@ describe('ProfileEducationLeft - Removal', () => {
       () => {
         expect(screen.getByText('Test University')).toBeInTheDocument()
       },
-      { timeout: 1500 },
+      { timeout: 1500 }
     )
 
     // Find remove button (X button) for first entry
-    const removeButtons = screen.getAllByRole('button').filter((btn) =>
-      btn.textContent?.includes('Remove') || btn.getAttribute('aria-label')?.includes('remove'),
-    )
+    const removeButtons = screen
+      .getAllByRole('button')
+      .filter(
+        (btn) =>
+          btn.textContent?.includes('Remove') || btn.getAttribute('aria-label')?.includes('remove')
+      )
 
     if (removeButtons.length > 0) {
       fireEvent.click(removeButtons[0])
@@ -375,7 +350,7 @@ describe('ProfileEducationLeft - Removal', () => {
         () => {
           expect(screen.queryByText('Test University')).not.toBeInTheDocument()
         },
-        { timeout: 1500 },
+        { timeout: 1500 }
       )
     }
   })
@@ -387,13 +362,16 @@ describe('ProfileEducationLeft - Removal', () => {
       () => {
         expect(screen.getByText('Test University')).toBeInTheDocument()
       },
-      { timeout: 1500 },
+      { timeout: 1500 }
     )
 
     // Remove first entry
-    const removeButtons = screen.getAllByRole('button').filter((btn) =>
-      btn.textContent?.includes('Remove') || btn.getAttribute('aria-label')?.includes('remove'),
-    )
+    const removeButtons = screen
+      .getAllByRole('button')
+      .filter(
+        (btn) =>
+          btn.textContent?.includes('Remove') || btn.getAttribute('aria-label')?.includes('remove')
+      )
 
     if (removeButtons.length > 0) {
       fireEvent.click(removeButtons[0])
@@ -401,7 +379,7 @@ describe('ProfileEducationLeft - Removal', () => {
         () => {
           expect(screen.queryByText('Test University')).not.toBeInTheDocument()
         },
-        { timeout: 1500 },
+        { timeout: 1500 }
       )
 
       // Save changes
@@ -416,8 +394,9 @@ describe('ProfileEducationLeft - Removal', () => {
 
       // Should only contain remaining entries
       expect(payload.education_entries.length).toBeLessThan(2)
-      expect(payload.education_entries.find((e) => e.institution_name === 'Test University')).toBeUndefined()
+      expect(
+        payload.education_entries.find((e) => e.institution_name === 'Test University')
+      ).toBeUndefined()
     }
   })
 })
-

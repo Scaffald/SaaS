@@ -2,7 +2,7 @@
  * Simplified Admin Discover Workers exploration test
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin Discover Workers', () => {
@@ -10,7 +10,7 @@ test.describe('Admin Discover Workers', () => {
     test.setTimeout(60000) // 60 second timeout
 
     // Use the working auth helper
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     console.log('✓ Authenticated as admin and profile complete')
 
     // Navigate to worker discovery
@@ -22,7 +22,7 @@ test.describe('Admin Discover Workers', () => {
     // Capture screenshot
     await page.screenshot({
       path: '.playwright-mcp/admin-012-dashboard-profile-skills.png',
-      fullPage: true
+      fullPage: true,
     })
 
     console.log('✅ Screenshot captured')
@@ -62,7 +62,7 @@ test.describe('Admin Discover Workers', () => {
       '[data-testid*="worker"]',
       '[class*="worker-card"]',
       '[class*="profile-card"]',
-      '[class*="card"]'
+      '[class*="card"]',
     ]
 
     for (const selector of cardSelectors) {
@@ -73,7 +73,9 @@ test.describe('Admin Discover Workers', () => {
     }
 
     // Look for search/filter elements
-    const searchInput = await page.locator('input[type="search"], input[placeholder*="search" i]').count()
+    const searchInput = await page
+      .locator('input[type="search"], input[placeholder*="search" i]')
+      .count()
     console.log(`Search inputs: ${searchInput}`)
 
     // Check for panels

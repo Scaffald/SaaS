@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 
 test.describe('Regular • /auth', () => {
   test('renders email input and submit button', async ({ page }: { page: Page }) => {
@@ -13,16 +13,17 @@ test.describe('Regular • /auth', () => {
     await page.goto('/auth')
     await page.waitForLoadState('networkidle')
     // Find input by placeholder or role
-    const emailInput = page.getByPlaceholder(/your@email|email/i).or(page.getByRole('textbox')).first()
+    const emailInput = page
+      .getByPlaceholder(/your@email|email/i)
+      .or(page.getByRole('textbox'))
+      .first()
     await emailInput.waitFor({ state: 'visible', timeout: 10000 })
     await emailInput.fill('not-an-email')
     const submitButton = page.getByRole('button', { name: /send magic link|sending/i })
     await submitButton.click()
     // Wait for validation error - check page content
     await page.waitForTimeout(1500)
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.toLowerCase()).toMatch(/invalid|valid email|please enter/i)
   })
 })
-
-

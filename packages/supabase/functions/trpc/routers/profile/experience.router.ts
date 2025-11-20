@@ -1,59 +1,66 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { protectedProcedure, t } from "../../middleware.ts";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Location formatting helper
  */
 function formatLocation(location: string | object | null | undefined, isRemote: boolean): string {
-  if (!location) return '';
-  const locationStr = typeof location === 'string' 
-    ? location 
-    : (typeof location === 'object' && 'formattedAddress' in location)
-      ? location.formattedAddress || `${location.city || ''}, ${location.state || ''}`.trim()
-      : '';
-  return isRemote ? `${locationStr} (Remote)` : locationStr;
+  if (!location) return ''
+  const locationStr =
+    typeof location === 'string'
+      ? location
+      : typeof location === 'object' && 'formattedAddress' in location
+        ? location.formattedAddress || `${location.city || ''}, ${location.state || ''}`.trim()
+        : ''
+  return isRemote ? `${locationStr} (Remote)` : locationStr
 }
 
 /**
  * Convert location to structured format for storage
  */
 function getStructuredLocation(location: string | object | null | undefined): object | null {
-  if (!location) return null;
-  if (typeof location === 'object') return location;
+  if (!location) return null
+  if (typeof location === 'object') return location
   // If it's a string, we can't convert it reliably - return null and keep using text column
-  return null;
+  return null
 }
 
 /**
  * Get formatted location string for display/storage in TEXT column
  */
-function getFormattedLocationString(location: string | object | null | undefined, isRemote: boolean): string | null {
-  const formatted = formatLocation(location, isRemote);
-  return formatted || null;
+function getFormattedLocationString(
+  location: string | object | null | undefined,
+  isRemote: boolean
+): string | null {
+  const formatted = formatLocation(location, isRemote)
+  return formatted || null
 }
 
 /**
  * Experience Input/Output Schemas
  */
-const locationSchema = z.union([
-  z.string(), // Backward compatibility
-  z.object({
-    street: z.string().optional(),
-    city: z.string(),
-    state: z.string(),
-    zip: z.string().optional(),
-    country: z.string(),
-    formattedAddress: z.string(),
-  })
-]).optional().nullable();
+const locationSchema = z
+  .union([
+    z.string(), // Backward compatibility
+    z.object({
+      street: z.string().optional(),
+      city: z.string(),
+      state: z.string(),
+      zip: z.string().optional(),
+      country: z.string(),
+      formattedAddress: z.string(),
+    }),
+  ])
+  .optional()
+  .nullable()
 
 const experienceEntrySchema = z.object({
   id: z.string().uuid().optional(),
   user_id: z.string().uuid().optional(),
   organization_id: z.string().uuid().optional().nullable(),
-  job_title: z.string().min(1, "Job title is required"),
-  company_name: z.string().min(1, "Company name is required"),
+  job_title: z.string().min(1, 'Job title is required'),
+  company_name: z.string().min(1, 'Company name is required'),
   employment_type: z.string().optional().nullable(),
   location: locationSchema,
   is_remote: z.boolean().default(false),
@@ -63,27 +70,27 @@ const experienceEntrySchema = z.object({
   description: z.string().optional().nullable(),
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
-});
+})
 
-const getExperienceOutputSchema = z.array(experienceEntrySchema);
+const getExperienceOutputSchema = z.array(experienceEntrySchema)
 
 const saveExperienceInputSchema = z.object({
   career_level: z.string().optional().nullable(),
   experience_entries: z.array(experienceEntrySchema),
-});
+})
 
 const saveExperienceOutputSchema = z.object({
   success: z.boolean(),
   experience_entries: z.array(experienceEntrySchema),
-});
+})
 
 const deleteExperienceInputSchema = z.object({
   experienceId: z.string().uuid(),
-});
+})
 
 const deleteExperienceOutputSchema = z.object({
   success: z.boolean(),
-});
+})
 
 /**
  * Profile Experience router - handles work experience CRUD operations
@@ -92,31 +99,29 @@ export const profileExperienceRouter = t.router({
   /**
    * Get user's experience entries
    */
-  getExperience: protectedProcedure
-    .output(getExperienceOutputSchema)
-    .query(async ({ ctx }) => {
-      const { supabase, user } = ctx;
+  getExperience: protectedProcedure.output(getExperienceOutputSchema).query(async ({ ctx }) => {
+    const { supabase, user } = ctx
 
-      const { data, error } = await supabase
-        .schema("core")
-        .from("user_experience")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("start_date", { ascending: false });
+    const { data, error } = await supabase
+      .schema('core')
+      .from('user_experience')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('start_date', { ascending: false })
 
-      if (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to fetch experience: ${error.message}`,
-        });
-      }
+    if (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to fetch experience: ${error.message}`,
+      })
+    }
 
-      // Transform data to prefer location_structured, fallback to location TEXT
-      return (data || []).map((exp) => ({
-        ...exp,
-        location: exp.location_structured || exp.location || null,
-      }));
-    }),
+    // Transform data to prefer location_structured, fallback to location TEXT
+    return (data || []).map((exp) => ({
+      ...exp,
+      location: exp.location_structured || exp.location || null,
+    }))
+  }),
 
   /**
    * Get experience summary from private.profile
@@ -125,28 +130,28 @@ export const profileExperienceRouter = t.router({
     .output(
       z.object({
         career_level: z.string().nullable(),
-      }),
+      })
     )
     .query(async ({ ctx }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       const { data, error } = await supabase
-        .schema("core")
-        .from("profile")
-        .select("career_level")
-        .eq("user_id", user.id)
-        .single();
+        .schema('core')
+        .from('profile')
+        .select('career_level')
+        .eq('user_id', user.id)
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch experience summary: ${error.message}`,
-        });
+        })
       }
 
       return {
         career_level: data?.career_level || null,
-      };
+      }
     }),
 
   /**
@@ -156,7 +161,7 @@ export const profileExperienceRouter = t.router({
     .input(saveExperienceInputSchema)
     .output(saveExperienceOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       try {
         // Update experience summary in private.profile if provided
@@ -164,29 +169,28 @@ export const profileExperienceRouter = t.router({
           const updateData: Record<string, unknown> = {
             updated_at: new Date().toISOString(),
             career_level: input.career_level,
-          };
+          }
 
           const { error: summaryError } = await supabase
-            .schema("core")
-            .from("profile")
+            .schema('core')
+            .from('profile')
             .update(updateData)
-            .eq("user_id", user.id);
+            .eq('user_id', user.id)
 
           if (summaryError) {
             throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message:
-                `Failed to update experience summary: ${summaryError.message}`,
-            });
+              code: 'INTERNAL_SERVER_ERROR',
+              message: `Failed to update experience summary: ${summaryError.message}`,
+            })
           }
         }
 
-        const savedExperience = [];
+        const savedExperience = []
 
         for (const exp of input.experience_entries) {
           // Prepare location data - write to both columns for backward compatibility
-          const structuredLocation = getStructuredLocation(exp.location);
-          const formattedLocationString = getFormattedLocationString(exp.location, exp.is_remote);
+          const structuredLocation = getStructuredLocation(exp.location)
+          const formattedLocationString = getFormattedLocationString(exp.location, exp.is_remote)
 
           const updateData: Record<string, unknown> = {
             organization_id: exp.organization_id || null,
@@ -200,73 +204,71 @@ export const profileExperienceRouter = t.router({
             end_date: exp.end_date || null,
             is_current: exp.is_current,
             description: exp.description || null,
-          };
+          }
 
           if (exp.id) {
             // Update existing experience
-            updateData.updated_at = new Date().toISOString();
+            updateData.updated_at = new Date().toISOString()
 
             const { data, error } = await supabase
-              .schema("core")
-              .from("user_experience")
+              .schema('core')
+              .from('user_experience')
               .update(updateData)
-              .eq("id", exp.id)
-              .eq("user_id", user.id)
+              .eq('id', exp.id)
+              .eq('user_id', user.id)
               .select()
-              .single();
+              .single()
 
             if (error) {
               throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
+                code: 'INTERNAL_SERVER_ERROR',
                 message: `Failed to update experience: ${error.message}`,
-              });
+              })
             }
 
             // Transform response to prefer location_structured
             savedExperience.push({
               ...data,
               location: data.location_structured || data.location || null,
-            });
+            })
           } else {
             // Create new experience
             const { data, error } = await supabase
-              .schema("core")
-              .from("user_experience")
+              .schema('core')
+              .from('user_experience')
               .insert({
                 user_id: user.id,
                 ...updateData,
               })
               .select()
-              .single();
+              .single()
 
             if (error) {
               throw new TRPCError({
-                code: "INTERNAL_SERVER_ERROR",
+                code: 'INTERNAL_SERVER_ERROR',
                 message: `Failed to create experience: ${error.message}`,
-              });
+              })
             }
 
             // Transform response to prefer location_structured
             savedExperience.push({
               ...data,
               location: data.location_structured || data.location || null,
-            });
+            })
           }
         }
 
         return {
           success: true,
           experience_entries: savedExperience,
-        };
+        }
       } catch (error) {
-        const errorMessage = error instanceof Error
-          ? error.message
-          : String(error);
-        console.error("Save experience error:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.error('Save experience error:', error)
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to save experience: ${errorMessage}`,
-        });
+        })
       }
     }),
 
@@ -277,33 +279,31 @@ export const profileExperienceRouter = t.router({
     .input(deleteExperienceInputSchema)
     .output(deleteExperienceOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       try {
         const { error } = await supabase
-          .schema("core")
-          .from("user_experience")
+          .schema('core')
+          .from('user_experience')
           .delete()
-          .eq("id", input.experienceId)
-          .eq("user_id", user.id);
+          .eq('id', input.experienceId)
+          .eq('user_id', user.id)
 
         if (error) {
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
+            code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to delete experience: ${error.message}`,
-          });
+          })
         }
 
-        return { success: true };
+        return { success: true }
       } catch (error) {
-        const errorMessage = error instanceof Error
-          ? error.message
-          : String(error);
-        console.error("Delete experience error:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        console.error('Delete experience error:', error)
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to delete experience: ${errorMessage}`,
-        });
+        })
       }
     }),
-});
+})

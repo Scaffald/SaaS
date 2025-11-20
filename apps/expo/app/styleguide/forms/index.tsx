@@ -1,10 +1,15 @@
 // @ts-nocheck
-import React, { useState } from 'react'
-import { Paragraph, Text, YStack } from '@app/ui'
-import { AddressAutocomplete, AvatarImagePicker, PhoneNumberInput } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
+import {
+  AddressAutocomplete,
+  AvatarImagePicker,
+  Paragraph,
+  PhoneNumberInput,
+  Text,
+  YStack,
+} from '@app/ui'
+import { useState } from 'react'
 
 export default function FormsShowcasePage() {
   const [phone, setPhone] = useState('')

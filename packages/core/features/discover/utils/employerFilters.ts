@@ -1,5 +1,5 @@
-import type { JSONContent } from '@tiptap/core'
 import { extractPlainText } from '@app/ui'
+import type { JSONContent } from '@tiptap/core'
 
 import type { Employer } from '../components/EmployerCard'
 
@@ -24,7 +24,7 @@ const getEmployerDescription = (employer: Employer): string => {
 
 export const filterEmployers = (
   employers: Employer[],
-  { searchQuery, selectedIndustries }: EmployerFilters,
+  { searchQuery, selectedIndustries }: EmployerFilters
 ): Employer[] => {
   const normalizedQuery = searchQuery.trim().toLowerCase()
   const hasQuery = normalizedQuery.length > 0
@@ -71,7 +71,7 @@ export const getAvailableIndustries = (employers: Employer[]): string[] => {
 
 export const getSelectedIndustryCounts = (
   employers: Employer[],
-  selectedIndustries: string[],
+  selectedIndustries: string[]
 ): Record<string, number> => {
   if (selectedIndustries.length === 0) {
     return {}
@@ -98,4 +98,3 @@ export const getSelectedIndustryCounts = (
 
   return counts
 }
-

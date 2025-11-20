@@ -33,7 +33,7 @@ export default class QuietPlaywrightReporter implements Reporter {
     }
     const plannedTests = tests.length
     process.stdout.write(
-      `${pc.dim('[playwright]')} planning ${plannedTests} tests across ${files.size} files\n`,
+      `${pc.dim('[playwright]')} planning ${plannedTests} tests across ${files.size} files\n`
     )
   }
 
@@ -48,7 +48,11 @@ export default class QuietPlaywrightReporter implements Reporter {
       this.totals[result.status] += 1
     }
 
-    if (result.status === 'failed' || result.status === 'timedOut' || result.status === 'interrupted') {
+    if (
+      result.status === 'failed' ||
+      result.status === 'timedOut' ||
+      result.status === 'interrupted'
+    ) {
       this.logFailure(test, result)
       return
     }
@@ -120,4 +124,3 @@ export default class QuietPlaywrightReporter implements Reporter {
     return `${lines.join('\n')}\n`
   }
 }
-

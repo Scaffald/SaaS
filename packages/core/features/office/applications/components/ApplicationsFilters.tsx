@@ -1,4 +1,4 @@
-import { XStack, YStack, Text, Button } from '@app/ui'
+import { Button, Text, XStack, YStack } from '@app/ui'
 import { Select } from 'tamagui'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
 

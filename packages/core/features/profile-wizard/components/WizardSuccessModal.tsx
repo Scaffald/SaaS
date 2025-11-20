@@ -1,6 +1,6 @@
+import { ArrowRight, Star, Trophy } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Button, Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui'
-import { Trophy, Star, ArrowRight } from '@tamagui/lucide-icons'
 
 export interface WizardSuccessModalProps {
   completionPercentage: number
@@ -63,5 +63,3 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
     </YStack>
   )
 })
-
-

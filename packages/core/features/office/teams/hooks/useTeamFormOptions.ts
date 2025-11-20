@@ -1,15 +1,14 @@
-import { useMemo } from 'react'
-import { useToastController } from '@tamagui/toast'
-import type { AppRouter } from '@app/supabase/client-types'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { api } from '@app/core/utils/api'
 import { teamRoleKeySchema } from '@app/schemas'
+import type { AppRouter } from '@app/supabase/client-types'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useMemo } from 'react'
 
 type TeamRolesOutput = inferRouterOutputs<AppRouter>['teams']['members']['roles']
 type RoleRecord = NonNullable<TeamRolesOutput['roles']>[number]
 
-type TeamRoleKey = ReturnType<typeof teamRoleKeySchema['parse']>
+type TeamRoleKey = ReturnType<(typeof teamRoleKeySchema)['parse']>
 
 export interface TeamRoleOption {
   id: string
@@ -34,17 +33,19 @@ export function useTeamFormOptions({ organizationId }: UseTeamFormOptionsParams)
           message: error.message ?? 'Failed to load team roles',
         })
       },
-    },
+    }
   )
 
   const roles: TeamRoleOption[] = useMemo(() => {
     return (
-      rolesQuery.data?.roles?.map((role: RoleRecord): TeamRoleOption => ({
-        id: role.id,
-        key: teamRoleKeySchema.parse(role.key),
-        name: role.name,
-        description: role.description ?? null,
-      })) ?? []
+      rolesQuery.data?.roles?.map(
+        (role: RoleRecord): TeamRoleOption => ({
+          id: role.id,
+          key: teamRoleKeySchema.parse(role.key),
+          name: role.name,
+          description: role.description ?? null,
+        })
+      ) ?? []
     )
   }, [rolesQuery.data])
 
@@ -55,4 +56,3 @@ export function useTeamFormOptions({ organizationId }: UseTeamFormOptionsParams)
     refetchRoles: rolesQuery.refetch,
   }
 }
-

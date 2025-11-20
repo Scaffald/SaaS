@@ -1,7 +1,7 @@
 import {
+  cleanup as domCleanup,
   fireEvent as domFireEvent,
   render as domRender,
-  cleanup as domCleanup,
 } from '@testing-library/react'
 
 export * from '@testing-library/react'
@@ -9,7 +9,7 @@ export * from '@testing-library/react'
 type FireEventType = typeof domFireEvent & {
   press: (
     element: Parameters<typeof domFireEvent.click>[0],
-    options?: Parameters<typeof domFireEvent.click>[1],
+    options?: Parameters<typeof domFireEvent.click>[1]
   ) => boolean
   changeText: (element: Element, value: string) => boolean
 }
@@ -34,7 +34,7 @@ const fireEventFn = ((element: Element, eventName?: string, ...data: unknown[]) 
 
 fireEventFn.press = (
   element: Parameters<typeof domFireEvent.click>[0],
-  options?: Parameters<typeof domFireEvent.click>[1],
+  options?: Parameters<typeof domFireEvent.click>[1]
 ) => domFireEvent.click(element, options)
 
 fireEventFn.changeText = (element: Element, value: string) =>
@@ -44,5 +44,3 @@ export const fireEvent = fireEventFn
 
 export const render = domRender
 export const cleanup = domCleanup
-
-

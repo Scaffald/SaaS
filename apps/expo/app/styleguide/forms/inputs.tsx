@@ -1,10 +1,8 @@
 // @ts-nocheck
-import React, { useState } from 'react'
+
+import { AnchorHeading, ExampleCard, StyleguidePage, TodoCallout } from '@app/styleguide'
 import { Input, Paragraph, Text, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
-import { TodoCallout } from '@app/styleguide'
+import { useState } from 'react'
 
 export default function FormInputsPage() {
   const [value, setValue] = useState('')

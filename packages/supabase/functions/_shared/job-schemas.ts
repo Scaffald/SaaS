@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 /**
  * Job validation schemas for Supabase Edge Functions
  * Shared between tRPC routers
- * 
+ *
  * IMPORTANT: Keep in sync with packages/schemas/src/jobs/job-create.schema.ts
  */
 
@@ -12,23 +12,21 @@ import { z } from "zod";
  */
 const baseJobSchema = z.object({
   // Organization (required)
-  organization_id: z.string().uuid("Invalid organization ID"),
+  organization_id: z.string().uuid('Invalid organization ID'),
 
   // Basic info
   title: z
     .string()
-    .min(3, "Title must be at least 3 characters")
-    .max(100, "Title must be less than 100 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
+    .min(3, 'Title must be at least 3 characters')
+    .max(100, 'Title must be less than 100 characters'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
 
   // Status
-  status: z.enum(["draft", "open", "paused", "closed"]).default("draft"),
+  status: z.enum(['draft', 'open', 'paused', 'closed']).default('draft'),
 
   // Employment details
-  employment_type: z
-    .enum(["full_time", "part_time", "contract", "temp", "intern"])
-    .optional(),
-  remote_option: z.enum(["on_site", "hybrid", "remote"]).optional(),
+  employment_type: z.enum(['full_time', 'part_time', 'contract', 'temp', 'intern']).optional(),
+  remote_option: z.enum(['on_site', 'hybrid', 'remote']).optional(),
   position_level: z.string().optional(),
 
   // Location
@@ -48,9 +46,7 @@ const baseJobSchema = z.object({
   // Pay range
   pay_range_min_cents: z.number().int().positive().optional(),
   pay_range_max_cents: z.number().int().positive().optional(),
-  pay_range_type: z
-    .enum(["hourly", "salary", "contract", "project"])
-    .optional(),
+  pay_range_type: z.enum(['hourly', 'salary', 'contract', 'project']).optional(),
 
   // Certifications and skills
   certification_ids: z.array(z.string().uuid()).optional(),
@@ -68,12 +64,14 @@ const baseJobSchema = z.object({
 
   // Auto-rejection configuration
   enable_auto_reject: z.boolean().optional(),
-  auto_reject_criteria: z.object({
-    score_minimum: z.number().min(0).max(100).optional(),
-    require_work_authorization: z.boolean().optional(),
-    require_all_skills: z.boolean().optional(),
-    require_all_certifications: z.boolean().optional(),
-  }).optional(),
+  auto_reject_criteria: z
+    .object({
+      score_minimum: z.number().min(0).max(100).optional(),
+      require_work_authorization: z.boolean().optional(),
+      require_all_skills: z.boolean().optional(),
+      require_all_certifications: z.boolean().optional(),
+    })
+    .optional(),
 
   // Team management and visibility
   assigned_team_id: z.string().uuid().optional(),
@@ -103,7 +101,9 @@ const baseJobSchema = z.object({
   scheduled_publish_at: z.string().datetime().optional(),
 
   // Enhanced requirements (Migration 069)
-  minimum_education_level: z.enum(['none', 'high_school', 'associate', 'bachelor', 'master', 'phd']).optional(),
+  minimum_education_level: z
+    .enum(['none', 'high_school', 'associate', 'bachelor', 'master', 'phd'])
+    .optional(),
   require_background_check: z.boolean().optional(),
   background_check_type: z.string().optional(),
   require_drug_test: z.boolean().optional(),
@@ -112,10 +112,14 @@ const baseJobSchema = z.object({
 
   // Work-specific requirements
   security_clearance_required: z.string().optional(),
-  language_requirements: z.array(z.object({
-    language: z.string(),
-    proficiency: z.enum(['basic', 'conversational', 'fluent', 'native']),
-  })).optional(),
+  language_requirements: z
+    .array(
+      z.object({
+        language: z.string(),
+        proficiency: z.enum(['basic', 'conversational', 'fluent', 'native']),
+      })
+    )
+    .optional(),
   physical_requirements: z.record(z.string()).optional(),
   travel_percentage: z.number().int().min(0).max(100).optional(),
   shift_requirements: z.string().optional(),
@@ -133,17 +137,25 @@ const baseJobSchema = z.object({
   pay_frequency: z.enum(['hourly', 'weekly', 'biweekly', 'semimonthly', 'monthly']).optional(),
 
   // Application process configuration (Migration 071)
-  custom_application_questions: z.array(z.object({
-    id: z.string(),
-    question: z.string(),
-    type: z.enum(['short_text', 'long_text', 'single_choice', 'multiple_choice', 'yes_no']),
-    required: z.boolean(),
-    options: z.array(z.string()).optional(),
-  })).optional(),
-  required_attachments: z.record(z.object({
-    required: z.boolean(),
-    max_size_mb: z.number().positive().optional(),
-  })).optional(),
+  custom_application_questions: z
+    .array(
+      z.object({
+        id: z.string(),
+        question: z.string(),
+        type: z.enum(['short_text', 'long_text', 'single_choice', 'multiple_choice', 'yes_no']),
+        required: z.boolean(),
+        options: z.array(z.string()).optional(),
+      })
+    )
+    .optional(),
+  required_attachments: z
+    .record(
+      z.object({
+        required: z.boolean(),
+        max_size_mb: z.number().positive().optional(),
+      })
+    )
+    .optional(),
   requires_assessment: z.boolean().optional(),
   assessment_details: z.string().optional(),
   requires_video_interview: z.boolean().optional(),
@@ -151,31 +163,37 @@ const baseJobSchema = z.object({
   application_expiry_days: z.number().int().positive().optional(),
 
   // Multi-location and scheduling (Migration 072)
-  work_locations: z.array(z.object({
-    address: z.object({
-      street: z.string().optional(),
-      city: z.string().optional(),
-      state: z.string().optional(),
-      zip: z.string().optional(),
-      country: z.string().optional(),
-      latitude: z.number().optional(),
-      longitude: z.number().optional(),
-    }),
-    is_primary: z.boolean(),
-    percentage_time: z.number().int().min(0).max(100),
-  })).optional(),
+  work_locations: z
+    .array(
+      z.object({
+        address: z.object({
+          street: z.string().optional(),
+          city: z.string().optional(),
+          state: z.string().optional(),
+          zip: z.string().optional(),
+          country: z.string().optional(),
+          latitude: z.number().optional(),
+          longitude: z.number().optional(),
+        }),
+        is_primary: z.boolean(),
+        percentage_time: z.number().int().min(0).max(100),
+      })
+    )
+    .optional(),
   relocation_assistance_offered: z.boolean().optional(),
   relocation_assistance_details: z.string().optional(),
   work_schedule_details: z.string().optional(),
   timezone: z.string().optional(),
 
   // Distribution and visibility (Migration 073)
-  posting_channels: z.object({
-    internal_only: z.boolean(),
-    external_boards: z.array(z.string()).optional(),
-    referral_bonus_enabled: z.boolean().optional(),
-    referral_bonus_cents: z.number().int().nonnegative().optional(),
-  }).optional(),
+  posting_channels: z
+    .object({
+      internal_only: z.boolean(),
+      external_boards: z.array(z.string()).optional(),
+      referral_bonus_enabled: z.boolean().optional(),
+      referral_bonus_cents: z.number().int().nonnegative().optional(),
+    })
+    .optional(),
   is_featured: z.boolean().optional(),
   featured_until: z.string().datetime().optional(),
   seo_keywords: z.array(z.string()).optional(),
@@ -187,14 +205,16 @@ const baseJobSchema = z.object({
   is_disability_friendly: z.boolean().optional(),
   affirmative_action_plan: z.boolean().optional(),
   source_tracking_enabled: z.boolean().optional(),
-  utm_parameters: z.object({
-    utm_source: z.string().optional(),
-    utm_medium: z.string().optional(),
-    utm_campaign: z.string().optional(),
-    utm_term: z.string().optional(),
-    utm_content: z.string().optional(),
-  }).optional(),
-});
+  utm_parameters: z
+    .object({
+      utm_source: z.string().optional(),
+      utm_medium: z.string().optional(),
+      utm_campaign: z.string().optional(),
+      utm_term: z.string().optional(),
+      utm_content: z.string().optional(),
+    })
+    .optional(),
+})
 
 /**
  * Schema for creating a job (draft mode - minimal requirements)
@@ -203,39 +223,34 @@ export const jobCreateSchema = baseJobSchema
   .refine(
     (data) => {
       if (data.pay_range_min_cents || data.pay_range_max_cents) {
-        return (
-          data.pay_range_min_cents &&
-          data.pay_range_max_cents &&
-          data.pay_range_type
-        );
+        return data.pay_range_min_cents && data.pay_range_max_cents && data.pay_range_type
       }
-      return true;
+      return true
     },
     {
-      message:
-        "Pay range must include min, max, and type (hourly/salary/contract/project)",
-      path: ["pay_range_min_cents"],
-    },
+      message: 'Pay range must include min, max, and type (hourly/salary/contract/project)',
+      path: ['pay_range_min_cents'],
+    }
   )
   .refine(
     (data) => {
       if (data.pay_range_min_cents && data.pay_range_max_cents) {
-        return data.pay_range_min_cents <= data.pay_range_max_cents;
+        return data.pay_range_min_cents <= data.pay_range_max_cents
       }
-      return true;
+      return true
     },
     {
-      message: "Minimum pay must be less than or equal to maximum pay",
-      path: ["pay_range_min_cents"],
-    },
-  );
+      message: 'Minimum pay must be less than or equal to maximum pay',
+      path: ['pay_range_min_cents'],
+    }
+  )
 
 /**
  * Schema for updating a job
  */
 export const jobUpdateSchema = baseJobSchema
   .extend({
-    id: z.string().uuid("Invalid job ID"),
+    id: z.string().uuid('Invalid job ID'),
   })
   .partial()
   .required({
@@ -244,39 +259,34 @@ export const jobUpdateSchema = baseJobSchema
   .refine(
     (data) => {
       if (data.pay_range_min_cents || data.pay_range_max_cents) {
-        return (
-          data.pay_range_min_cents &&
-          data.pay_range_max_cents &&
-          data.pay_range_type
-        );
+        return data.pay_range_min_cents && data.pay_range_max_cents && data.pay_range_type
       }
-      return true;
+      return true
     },
     {
-      message:
-        "Pay range must include min, max, and type (hourly/salary/contract/project)",
-      path: ["pay_range_min_cents"],
-    },
+      message: 'Pay range must include min, max, and type (hourly/salary/contract/project)',
+      path: ['pay_range_min_cents'],
+    }
   )
   .refine(
     (data) => {
       if (data.pay_range_min_cents && data.pay_range_max_cents) {
-        return data.pay_range_min_cents <= data.pay_range_max_cents;
+        return data.pay_range_min_cents <= data.pay_range_max_cents
       }
-      return true;
+      return true
     },
     {
-      message: "Minimum pay must be less than or equal to maximum pay",
-      path: ["pay_range_min_cents"],
-    },
-  );
+      message: 'Minimum pay must be less than or equal to maximum pay',
+      path: ['pay_range_min_cents'],
+    }
+  )
 
 /**
  * Schema for publishing a job (stricter validation)
  */
 export const jobPublishSchema = baseJobSchema
   .extend({
-    status: z.literal("open"),
+    status: z.literal('open'),
   })
   .required({
     title: true,
@@ -285,39 +295,34 @@ export const jobPublishSchema = baseJobSchema
   })
   .refine(
     (data) => {
-      return data.location || data.remote_option === "remote";
+      return data.location || data.remote_option === 'remote'
     },
     {
-      message: "Published jobs must have a location or be marked as remote",
-      path: ["location"],
-    },
+      message: 'Published jobs must have a location or be marked as remote',
+      path: ['location'],
+    }
   )
   .refine(
     (data) => {
       if (data.pay_range_min_cents || data.pay_range_max_cents) {
-        return (
-          data.pay_range_min_cents &&
-          data.pay_range_max_cents &&
-          data.pay_range_type
-        );
+        return data.pay_range_min_cents && data.pay_range_max_cents && data.pay_range_type
       }
-      return true;
+      return true
     },
     {
-      message:
-        "Pay range must include min, max, and type (hourly/salary/contract/project)",
-      path: ["pay_range_min_cents"],
-    },
+      message: 'Pay range must include min, max, and type (hourly/salary/contract/project)',
+      path: ['pay_range_min_cents'],
+    }
   )
   .refine(
     (data) => {
       if (data.pay_range_min_cents && data.pay_range_max_cents) {
-        return data.pay_range_min_cents <= data.pay_range_max_cents;
+        return data.pay_range_min_cents <= data.pay_range_max_cents
       }
-      return true;
+      return true
     },
     {
-      message: "Minimum pay must be less than or equal to maximum pay",
-      path: ["pay_range_min_cents"],
-    },
-  );
+      message: 'Minimum pay must be less than or equal to maximum pay',
+      path: ['pay_range_min_cents'],
+    }
+  )

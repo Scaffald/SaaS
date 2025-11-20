@@ -1,6 +1,6 @@
+import { Text, XStack, YStack } from '@app/ui'
 import { useState } from 'react'
-import { YStack, XStack, Text } from '@app/ui'
-import { Slider, Label } from 'tamagui'
+import { Label, Slider } from 'tamagui'
 
 interface ScoreThresholdSectionProps {
   minimumScore?: number

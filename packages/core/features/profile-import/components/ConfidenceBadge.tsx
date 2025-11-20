@@ -1,6 +1,6 @@
+import { ShieldAlert, ShieldCheck, ShieldQuestion } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'
-import { ShieldAlert, ShieldCheck, ShieldQuestion } from '@tamagui/lucide-icons'
 import { CONFIDENCE_BADGES, type ConfidenceLevel } from '../utils/importConfidence'
 
 interface ConfidenceBadgeProps {
@@ -14,7 +14,10 @@ const ICON_MAP: Record<ConfidenceLevel, typeof ShieldCheck> = {
   low: ShieldAlert,
 }
 
-export const ConfidenceBadge = memo(function ConfidenceBadge({ level, showDescription = false }: ConfidenceBadgeProps) {
+export const ConfidenceBadge = memo(function ConfidenceBadge({
+  level,
+  showDescription = false,
+}: ConfidenceBadgeProps) {
   const config = CONFIDENCE_BADGES[level]
   const Icon = ICON_MAP[level]
 
@@ -34,5 +37,3 @@ export const ConfidenceBadge = memo(function ConfidenceBadge({ level, showDescri
     </XStack>
   )
 })
-
-

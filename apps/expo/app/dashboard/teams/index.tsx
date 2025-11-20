@@ -1,13 +1,12 @@
-import { useMemo } from 'react'
-import { useRouter } from 'expo-router'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { Users } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
-
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { api } from '@app/core/utils/api'
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type TeamsListOutput = inferRouterOutputs<AppRouter>['teams']['list']
 type TeamRecord = NonNullable<TeamsListOutput['teams']>[number]

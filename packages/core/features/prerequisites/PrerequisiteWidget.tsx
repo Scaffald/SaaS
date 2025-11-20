@@ -1,30 +1,30 @@
-import { useState, useEffect, useRef } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { useRouter } from 'expo-router'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Pressable } from 'react-native'
-import {
-  YStack,
-  XStack,
-  Text,
-  Button,
-  Input,
-  Spinner,
-  Select,
-  Adapt,
-  Sheet,
-  Separator,
-} from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { DashboardWidget, CustomCheckbox, UIButton as StyledButton, spacing } from '@app/ui'
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
+import { CustomCheckbox, DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { useEffect, useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Pressable } from 'react-native'
 import {
-  prerequisitesSchema,
-  prerequisitesDefaults,
-  USER_TYPE_OPTIONS,
+  Adapt,
+  Button,
+  Input,
+  Select,
+  Separator,
+  Sheet,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from 'tamagui'
+import {
   type PrerequisitesFormData,
+  prerequisitesDefaults,
+  prerequisitesSchema,
+  USER_TYPE_OPTIONS,
   type UserType,
 } from './config/prerequisites-schema'
 

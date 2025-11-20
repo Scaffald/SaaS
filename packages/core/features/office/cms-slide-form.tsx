@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { Button, Form, Input, Label, TextArea, XStack, YStack, Text, H4 } from 'tamagui'
-import { Save } from '@tamagui/lucide-icons'
-import { IconSelector, ImageUpload, ToggleSwitch } from '@app/ui'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
+import { IconSelector, ImageUpload, ToggleSwitch } from '@app/ui'
+import { Save } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Button, Form, H4, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
 
 interface CMSSlideFormProps {
   initialData?: WelcomeSlideUpdate

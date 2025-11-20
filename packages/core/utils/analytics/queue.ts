@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import type { AnalyticsEventName, AnalyticsEventProperties } from './events'
 import { captureEvent } from './client'
+import type { AnalyticsEventName, AnalyticsEventProperties } from './events'
 
 const QUEUE_STORAGE_KEY = 'analytics:event_queue'
 const MAX_QUEUE_SIZE_BYTES = 100 * 1024 * 1024
@@ -31,7 +31,7 @@ const parseQueue = (raw: string | null): QueuedEvent[] => {
             event &&
             typeof event === 'object' &&
             typeof event.name === 'string' &&
-            typeof event.id === 'string',
+            typeof event.id === 'string'
         )
         .map((event) => ({
           ...event,
@@ -73,7 +73,7 @@ const enforceQueueSizeLimit = async (queue: QueuedEvent[]) => {
 
 export const queueEvent = async <TName extends AnalyticsEventName>(
   name: TName,
-  properties: AnalyticsEventProperties<TName>,
+  properties: AnalyticsEventProperties<TName>
 ) => {
   const queue = await loadQueue()
   queue.push({
@@ -124,7 +124,7 @@ export const getQueueStats = async () => {
 
 export const captureEventWithQueue = async <TName extends AnalyticsEventName>(
   name: TName,
-  properties: AnalyticsEventProperties<TName>,
+  properties: AnalyticsEventProperties<TName>
 ) => {
   const success = captureEvent(name, properties)
   if (success) return true
@@ -135,4 +135,3 @@ export const captureEventWithQueue = async <TName extends AnalyticsEventName>(
 
   return false
 }
-

@@ -32,4 +32,3 @@ export function useAdaptiveLoading(isLoading: boolean, delayMs = 300): boolean {
 
   return showLoading
 }
-

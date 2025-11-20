@@ -1,7 +1,7 @@
-import { useRouter } from 'expo-router'
 import type { RouteConfig } from '@app/core/constants/routes'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardWidget, Text, YStack, UIButton as StyledButton, spacing } from '@app/ui'
+import { DashboardWidget, UIButton as StyledButton, spacing, Text, YStack } from '@app/ui'
+import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {
   readonly key: string

@@ -1,10 +1,10 @@
-import { YStack, XStack, Text, Button, Separator, Spinner } from 'tamagui'
-import { ResponsiveModal, extractPlainText } from '@app/ui'
-import { MapPin, Building2, Users, Briefcase, ExternalLink } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { extractPlainText, ResponsiveModal } from '@app/ui'
+import { Briefcase, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
+import { useRouter } from 'expo-router'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface OrganizationPreviewModalProps {
   organizationId: string | null

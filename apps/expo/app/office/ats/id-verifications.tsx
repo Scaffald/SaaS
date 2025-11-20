@@ -1,10 +1,9 @@
-import { useState } from 'react'
-
 import {
   IdVerificationAdminPage,
   IdVerificationRequestPanel,
 } from '@app/core/features/id-verification'
 import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { useState } from 'react'
 
 export default function OfficeIdVerificationsScreen() {
   const [organizationId, setOrganizationId] = useState<string | null>(null)

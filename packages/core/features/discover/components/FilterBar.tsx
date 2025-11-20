@@ -1,6 +1,6 @@
+import { List, RotateCcw, Search, SlidersHorizontal } from '@tamagui/lucide-icons'
 import type { CSSProperties } from 'react'
-import { XStack, Button } from 'tamagui'
-import { Search, SlidersHorizontal, RotateCcw, List } from '@tamagui/lucide-icons'
+import { Button, XStack } from 'tamagui'
 
 type FilterBarProps = {
   onSearchPress?: () => void

@@ -1,9 +1,9 @@
-import { Card, Text, XStack, YStack, Button } from 'tamagui'
-import { Building2, MapPin, DollarSign, Briefcase, Clock } from '@tamagui/lucide-icons'
-import { Chip, extractPlainText } from '@app/ui'
-import { useRouter } from 'expo-router'
 import { RouteBuilder } from '@app/core/constants/routes'
+import { Chip, extractPlainText } from '@app/ui'
+import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
+import { useRouter } from 'expo-router'
+import { Button, Card, Text, XStack, YStack } from 'tamagui'
 
 /**
  * Internal job type definition with all enhanced fields

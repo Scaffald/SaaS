@@ -1,7 +1,7 @@
-import { memo, forwardRef, type Ref } from 'react'
+import { Building, MapPin, Users } from '@tamagui/lucide-icons'
+import { forwardRef, memo, type Ref } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Button, Paragraph, SizableText, Text, XStack, YStack } from 'tamagui'
-import { Building, MapPin, Users } from '@tamagui/lucide-icons'
 
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 

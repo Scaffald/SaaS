@@ -1,9 +1,9 @@
-import { Button, Text, YStack } from '@app/ui'
-import type { inferRouterOutputs } from '@trpc/server'
+import { InquiryHistoryTimeline } from '@app/core/features/inquiries/components/InquiryHistoryTimeline'
+import { InquiryViewOrganization } from '@app/core/features/inquiries/components/InquiryViewOrganization'
 
 import type { AppRouter } from '@app/supabase/client-types'
-import { InquiryViewOrganization } from '@app/core/features/inquiries/components/InquiryViewOrganization'
-import { InquiryHistoryTimeline } from '@app/core/features/inquiries/components/InquiryHistoryTimeline'
+import { Button, Text, YStack } from '@app/ui'
+import type { inferRouterOutputs } from '@trpc/server'
 
 type InquiryQueryOutput = NonNullable<
   inferRouterOutputs<AppRouter>['inquiries']['getByApplication']
@@ -49,4 +49,3 @@ export function InquiryTab({
     </YStack>
   )
 }
-

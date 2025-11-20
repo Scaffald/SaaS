@@ -1,11 +1,11 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Input, Paragraph, Text, TextArea, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Input, TextArea, XStack, YStack, Text, Paragraph } from 'tamagui'
+import type { GeneralInfoStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
-import type { GeneralInfoStepData } from '../../hooks/useProfileWizard'
 
 const generalInfoSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -95,8 +95,8 @@ export function GeneralInfoStep({
           Tell us about yourself
         </Text>
         <Paragraph color="$color11">
-          Add a friendly introduction. This helps employers quickly understand who you are and what you
-          bring to the table.
+          Add a friendly introduction. This helps employers quickly understand who you are and what
+          you bring to the table.
         </Paragraph>
       </YStack>
 
@@ -202,5 +202,3 @@ export function GeneralInfoStep({
     </YStack>
   )
 }
-
-

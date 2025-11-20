@@ -1,5 +1,5 @@
-import { Separator, SizableText, YStack, XStack, isWeb } from 'tamagui'
 import { useTranslation } from '@app/core/utils/useTranslation'
+import { isWeb, Separator, SizableText, XStack, YStack } from 'tamagui'
 
 import { AppleSignIn } from './AppleSignIn'
 import { GoogleSignIn } from './GoogleSignIn'

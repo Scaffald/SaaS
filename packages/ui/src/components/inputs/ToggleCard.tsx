@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Text, View, YStack, AnimatePresence, styled, type ThemeName, XStack } from 'tamagui'
+import { AnimatePresence, styled, Text, type ThemeName, View, XStack, YStack } from 'tamagui'
 import { ToggleSwitch } from './ToggleSwitch'
 
 export interface ToggleCardProps {

@@ -1,30 +1,49 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
-import { YStack, XStack, Text, Input, H4, TextArea, ScrollView, Spinner, Label, Separator } from 'tamagui'
-import { Popover } from '@app/ui'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X, ChevronDown } from '@tamagui/lucide-icons'
+import { api } from '@app/core/utils/api'
 import {
-  educationProfileSchema,
+  UIButton as Button,
+  ConfirmationDialog,
+  CustomCheckbox,
+  DashboardWidget,
+  FieldError,
+  MonthYearPicker,
+  Popover,
+  UniversityAutocomplete,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ChevronDown, Plus, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import {
+  H4,
+  Input,
+  Label,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
+import {
+  createNewEducationEntry,
+  DEGREE_TYPE_OPTIONS,
+  EDUCATION_LEVEL_OPTIONS,
   type EducationProfileFormData,
   educationProfileDefaults,
-  EDUCATION_LEVEL_OPTIONS,
-  DEGREE_TYPE_OPTIONS,
-  createNewEducationEntry,
+  educationProfileSchema,
 } from './config'
 import type { EducationEntry, EducationEntryFormValues } from './types/education'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker, FieldError } from '@app/ui'
-import { api } from '@app/core/utils/api'
+import { normalizeEducationEntry } from './utils/education-entry'
 import { invalidateProfileQueries } from './utils/profile-sync'
-import { useToastController } from '@tamagui/toast'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
-import { normalizeEducationEntry } from './utils/education-entry'
 
 interface SaveEducationInput {
   education_level?: string | null

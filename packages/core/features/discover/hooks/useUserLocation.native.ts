@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'
 import {
-  requestForegroundPermissionsAsync,
   getCurrentPositionAsync,
   getForegroundPermissionsAsync,
+  requestForegroundPermissionsAsync,
 } from 'expo-location'
+import { useCallback, useEffect, useState } from 'react'
 
 export interface UserLocation {
   latitude: number

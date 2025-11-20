@@ -1,5 +1,5 @@
-import { Card, XStack, YStack, Text, Button } from 'tamagui'
-import { Briefcase, MapPin, DollarSign, Building2 } from '@tamagui/lucide-icons'
+import { Briefcase, Building2, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Button, Card, Text, XStack, YStack } from 'tamagui'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type JobCardProps = {

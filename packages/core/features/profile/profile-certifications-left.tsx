@@ -1,31 +1,38 @@
-import { useState, useEffect, useCallback } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  H4,
-  Spinner,
-  ScrollView,
-  Input,
-  Separator,
-  Card,
-  TextArea,
-} from 'tamagui'
-import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
-import { UIButton as Button, DashboardWidget, MonthYearPicker } from '@app/ui'
-import { CertificationSearch, CertificationChip, CertificationCheckbox, ToggleCard } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { ProfileEmptyState } from './components'
+import {
+  UIButton as Button,
+  CertificationCheckbox,
+  CertificationChip,
+  CertificationSearch,
+  DashboardWidget,
+  MonthYearPicker,
+  ToggleCard,
+} from '@app/ui'
+import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
+import { useCallback, useEffect, useState } from 'react'
+import {
+  Card,
+  H4,
+  Input,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { ProfileEmptyState } from './components'
+import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
-import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
 interface Certification {
   id: string

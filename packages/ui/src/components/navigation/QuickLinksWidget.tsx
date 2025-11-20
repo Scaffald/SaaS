@@ -1,16 +1,15 @@
-import { useMemo } from 'react'
-import { Link } from 'expo-router'
-import { ChevronRight } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack, type GetThemeValueForKey } from 'tamagui'
-
-import { ROUTES, matchesRoute, type RouteConfig, type RouteKey } from '@app/core/constants/routes'
+import { matchesRoute, ROUTES, type RouteConfig, type RouteKey } from '@app/core/constants/routes'
 import {
-  MIN_QUICK_LINK_DEPTH,
   getHierarchyInfo,
   getHierarchyInfoForPath,
   getRouteKeyForPath,
+  MIN_QUICK_LINK_DEPTH,
   type RouteHierarchyInfo,
 } from '@app/core/utils/navigation/routeHierarchy'
+import { ChevronRight } from '@tamagui/lucide-icons'
+import { Link } from 'expo-router'
+import { useMemo } from 'react'
+import { type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
 
 type RouteMap = typeof ROUTES
 

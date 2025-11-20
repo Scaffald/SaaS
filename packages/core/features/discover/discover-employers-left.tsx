@@ -1,7 +1,7 @@
-import { YStack, ScrollView, Text, Spinner } from 'tamagui'
-import { useRouter } from 'expo-router'
-import { EmployerCard, type Employer } from './components/EmployerCard'
 import { RouteBuilder } from '@app/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { ScrollView, Spinner, Text, YStack } from 'tamagui'
+import { type Employer, EmployerCard } from './components/EmployerCard'
 
 interface DiscoverEmployersLeftProps {
   employers: Employer[]
@@ -12,10 +12,7 @@ interface DiscoverEmployersLeftProps {
  * Discover Employers Left Component
  * Left panel content for the employers discovery page - displays employer listings
  */
-export function DiscoverEmployersLeft({
-  employers,
-  isLoading,
-}: DiscoverEmployersLeftProps) {
+export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployersLeftProps) {
   const router = useRouter()
 
   const handleViewDetails = (employer: Employer) => {

@@ -123,9 +123,7 @@ vi.mock('tamagui', () => {
     children?: ReactNode
   } & Record<string, unknown>) => <h4 {...rest}>{children}</h4>
 
-  const Spinner = (props: Record<string, unknown>) => (
-    <div data-testid="spinner" {...props} />
-  )
+  const Spinner = (props: Record<string, unknown>) => <div data-testid="spinner" {...props} />
 
   return {
     YStack: Stack,
@@ -215,7 +213,7 @@ describe('PortfolioGallery', () => {
       const images = screen.getAllByTestId('portfolio-image')
       expect(images[1]).toHaveAttribute(
         'src',
-        'https://storage.example.com/portfolio/portfolio/user-123/item-2.jpg',
+        'https://storage.example.com/portfolio/portfolio/user-123/item-2.jpg'
       )
     })
 
@@ -390,4 +388,3 @@ describe('PortfolioGallery', () => {
     })
   })
 })
-

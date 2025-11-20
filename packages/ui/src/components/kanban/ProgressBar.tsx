@@ -25,15 +25,16 @@ export interface ProgressBarProps {
  * <ProgressBar value={50} color="$blue9" size={6} />
  * ```
  */
-export const ProgressBar = memo(({ value, color = '$blue9', size = 4, bg = '$color4' }: ProgressBarProps) => {
-  const clampedValue = Math.max(0, Math.min(100, value))
+export const ProgressBar = memo(
+  ({ value, color = '$blue9', size = 4, bg = '$color4' }: ProgressBarProps) => {
+    const clampedValue = Math.max(0, Math.min(100, value))
 
-  return (
-    <Progress value={clampedValue} max={100} bg={bg} rounded="$1" height={size}>
-      <Progress.Indicator bg={color} rounded="$1" animation="quick" />
-    </Progress>
-  )
-})
+    return (
+      <Progress value={clampedValue} max={100} bg={bg} rounded="$1" height={size}>
+        <Progress.Indicator bg={color} rounded="$1" animation="quick" />
+      </Progress>
+    )
+  }
+)
 
 ProgressBar.displayName = 'ProgressBar'
-

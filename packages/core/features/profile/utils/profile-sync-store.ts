@@ -98,4 +98,3 @@ export const useAdaptiveProfileSync = (delayMs = 300): ProfileSyncStatus => {
 
   return displayStatus
 }
-

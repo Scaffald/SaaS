@@ -17,4 +17,4 @@
 // This allows the client code to compile without importing Deno-specific files
 // The actual router implementation provides proper types at runtime
 // biome-ignore lint/suspicious/noExplicitAny: Generic router type for cross-environment compatibility
-export type AppRouter = any;
+export type AppRouter = any

@@ -1,6 +1,6 @@
-import type { CSSProperties, ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { CSSProperties, ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const selectHandler = vi.fn()
@@ -74,11 +74,7 @@ vi.mock('@app/ui', () => ({
     value: string
   }) => (
     <div>
-      <input
-        aria-label="search"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
+      <input aria-label="search" value={value} onChange={(event) => onChange(event.target.value)} />
       <button
         type="button"
         onClick={() =>
@@ -110,13 +106,7 @@ describe('MapSearchInput', () => {
   it('renders error state when token missing', () => {
     process.env.EXPO_PUBLIC_MAPBOX_TOKEN = undefined
 
-    render(
-      <MapSearchInput
-        isVisible
-        onClose={closeHandler}
-        onLocationSelect={selectHandler}
-      />
-    )
+    render(<MapSearchInput isVisible onClose={closeHandler} onLocationSelect={selectHandler} />)
 
     expect(screen.getByTestId('alert-icon')).toBeInTheDocument()
     expect(screen.getByText('Map Search Unavailable')).toBeInTheDocument()
@@ -126,13 +116,7 @@ describe('MapSearchInput', () => {
     process.env.EXPO_PUBLIC_MAPBOX_TOKEN = 'pk.valid-token'
     const user = userEvent.setup()
 
-    render(
-      <MapSearchInput
-        isVisible
-        onClose={closeHandler}
-        onLocationSelect={selectHandler}
-      />
-    )
+    render(<MapSearchInput isVisible onClose={closeHandler} onLocationSelect={selectHandler} />)
 
     const input = screen.getByLabelText('search')
     await user.type(input, 'Charlotte')
@@ -150,13 +134,7 @@ describe('MapSearchInput', () => {
     it('returns invalid for undefined token', () => {
       process.env.EXPO_PUBLIC_MAPBOX_TOKEN = undefined
 
-      render(
-        <MapSearchInput
-          isVisible
-          onClose={closeHandler}
-          onLocationSelect={selectHandler}
-        />
-      )
+      render(<MapSearchInput isVisible onClose={closeHandler} onLocationSelect={selectHandler} />)
 
       expect(screen.getByText('Map Search Unavailable')).toBeInTheDocument()
     })
@@ -164,13 +142,7 @@ describe('MapSearchInput', () => {
     it('returns invalid for empty string token', () => {
       process.env.EXPO_PUBLIC_MAPBOX_TOKEN = ''
 
-      render(
-        <MapSearchInput
-          isVisible
-          onClose={closeHandler}
-          onLocationSelect={selectHandler}
-        />
-      )
+      render(<MapSearchInput isVisible onClose={closeHandler} onLocationSelect={selectHandler} />)
 
       expect(screen.getByText('Map Search Unavailable')).toBeInTheDocument()
     })
@@ -178,27 +150,17 @@ describe('MapSearchInput', () => {
     it('returns invalid for token not starting with "pk."', () => {
       process.env.EXPO_PUBLIC_MAPBOX_TOKEN = 'invalid-token'
 
-      render(
-        <MapSearchInput
-          isVisible
-          onClose={closeHandler}
-          onLocationSelect={selectHandler}
-        />
-      )
+      render(<MapSearchInput isVisible onClose={closeHandler} onLocationSelect={selectHandler} />)
 
-      expect(screen.getByText('Map search configuration error. Please contact support.')).toBeInTheDocument()
+      expect(
+        screen.getByText('Map search configuration error. Please contact support.')
+      ).toBeInTheDocument()
     })
 
     it('returns valid for token starting with "pk."', () => {
       process.env.EXPO_PUBLIC_MAPBOX_TOKEN = 'pk.valid-token-123'
 
-      render(
-        <MapSearchInput
-          isVisible
-          onClose={closeHandler}
-          onLocationSelect={selectHandler}
-        />
-      )
+      render(<MapSearchInput isVisible onClose={closeHandler} onLocationSelect={selectHandler} />)
 
       // Should render the search input, not error message
       expect(screen.queryByText('Map Search Unavailable')).not.toBeInTheDocument()
@@ -209,13 +171,7 @@ describe('MapSearchInput', () => {
     it('displays user-friendly error messages', () => {
       process.env.EXPO_PUBLIC_MAPBOX_TOKEN = undefined
 
-      render(
-        <MapSearchInput
-          isVisible
-          onClose={closeHandler}
-          onLocationSelect={selectHandler}
-        />
-      )
+      render(<MapSearchInput isVisible onClose={closeHandler} onLocationSelect={selectHandler} />)
 
       // Error message should be user-friendly (check for the displayed text)
       expect(screen.getByText('Map Search Unavailable')).toBeInTheDocument()

@@ -1,280 +1,266 @@
 // @ts-nocheck
-import { useMemo, useState, type ComponentType } from "react";
-import { Alert, Linking, ScrollView } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+
+import { RouteBuilder } from '@app/core/constants/routes'
+import { formatDate } from '@app/core/features/profile/utils/date-formatting'
+import { api } from '@app/core/utils/api'
+import { ToggleSwitch } from '@app/ui'
 import {
-  Button,
-  Card,
-  Input,
-  Paragraph,
-  Separator,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-} from "tamagui";
-import { Activity, DownloadCloud, Edit, FileText, MessageSquare, ShieldCheck, Users } from "@tamagui/lucide-icons";
-import { useToastController } from "@tamagui/toast";
+  Activity,
+  DownloadCloud,
+  Edit,
+  FileText,
+  MessageSquare,
+  ShieldCheck,
+  Users,
+} from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { type ComponentType, useMemo, useState } from 'react'
+import { Alert, Linking, ScrollView } from 'react-native'
+import { Button, Card, Input, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
-import { RouteBuilder } from "@app/core/constants/routes";
-import { formatDate } from "@app/core/features/profile/utils/date-formatting";
-import { api } from "@app/core/utils/api";
-import { ToggleSwitch } from "@app/ui";
-
-import { PhotoGallery } from "../components/PhotoGallery";
-import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
+import { PhotoGallery } from '../components/PhotoGallery'
+import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 
 const isUuid = (value: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value,
-  );
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
 
 interface ExplicitSkillRecord {
-  id?: string | null;
-  name?: string | null;
-  display_name?: string | null;
+  id?: string | null
+  name?: string | null
+  display_name?: string | null
 }
 
 interface CollaboratorRecord {
-  id?: string;
-  collaborator_user_id?: string | null;
-  permission_level?: "view" | "edit" | null;
+  id?: string
+  collaborator_user_id?: string | null
+  permission_level?: 'view' | 'edit' | null
   user?: {
-    display_name?: string | null;
-    username?: string | null;
-  } | null;
+    display_name?: string | null
+    username?: string | null
+  } | null
 }
 
 interface ConversationEntryRecord {
-  id?: string;
-  user_id?: string | null;
-  message?: string | null;
-  created_at?: string | null;
-  is_system_message?: boolean | null;
+  id?: string
+  user_id?: string | null
+  message?: string | null
+  created_at?: string | null
+  is_system_message?: boolean | null
   user?: {
-    display_name?: string | null;
-    username?: string | null;
-  } | null;
+    display_name?: string | null
+    username?: string | null
+  } | null
 }
 
 export function WorkLogDetailScreen() {
-  const { workLogId } = useLocalSearchParams<{ workLogId: string }>();
-  const router = useRouter();
-  const toast = useToastController();
-  const trpcUtils = api.useContext();
+  const { workLogId } = useLocalSearchParams<{ workLogId: string }>()
+  const router = useRouter()
+  const toast = useToastController()
+  const trpcUtils = api.useContext()
 
   const workLogQuery = api.workLogs.getById.useQuery(
     { workLogId: String(workLogId) },
-    { enabled: Boolean(workLogId) },
-  );
+    { enabled: Boolean(workLogId) }
+  )
 
   const conversationQuery = api.workLogs.getConversation.useQuery(
     { workLogId: String(workLogId) },
-    { enabled: Boolean(workLogId) },
-  );
+    { enabled: Boolean(workLogId) }
+  )
 
   const collaboratorsQuery = api.workLogs.getCollaborators.useQuery(
     { workLogId: String(workLogId) },
-    { enabled: Boolean(workLogId) },
-  );
+    { enabled: Boolean(workLogId) }
+  )
 
   const projectOptionsQuery = api.workLogs.getProjectOptions.useQuery(undefined, {
     staleTime: 120_000,
-  });
+  })
 
   const skillsQuery = api.profile.skills.getUserSkills.useQuery(undefined, {
     staleTime: 120_000,
-  });
+  })
 
   const addCommentMutation = api.workLogs.addComment.useMutation({
     onSuccess: () => {
-      void conversationQuery.refetch();
-      setCommentDraft("");
+      void conversationQuery.refetch()
+      setCommentDraft('')
     },
     onError: (error) => {
-      toast.show("Unable to add comment", {
-        message: error?.message ?? "Please try again.",
-      });
+      toast.show('Unable to add comment', {
+        message: error?.message ?? 'Please try again.',
+      })
     },
-  });
+  })
 
   const exportMutation = api.workLogs.exportWorkLog.useMutation({
     onSuccess: async (data, variables) => {
-      toast.show("Export ready", {
+      toast.show('Export ready', {
         message: `Download ${variables.format.toUpperCase()} export.`,
-      });
+      })
       if (data.downloadUrl) {
         try {
-          await Linking.openURL(data.downloadUrl);
+          await Linking.openURL(data.downloadUrl)
         } catch (error) {
-          console.warn("[WorkLogDetail] Unable to open download URL", error);
+          console.warn('[WorkLogDetail] Unable to open download URL', error)
         }
       }
     },
     onError: (error) => {
-      toast.show("Export failed", {
-        message: error?.message ?? "Unable to export work log.",
-      });
+      toast.show('Export failed', {
+        message: error?.message ?? 'Unable to export work log.',
+      })
     },
-  });
+  })
 
   const addCollaboratorMutation = api.workLogs.addCollaborator.useMutation({
     onSuccess: () => {
-      setCollaboratorIdInput("");
-      void collaboratorsQuery.refetch();
-      toast.show("Collaborator added", {
-        message: "They now have access to this work log.",
-      });
+      setCollaboratorIdInput('')
+      void collaboratorsQuery.refetch()
+      toast.show('Collaborator added', {
+        message: 'They now have access to this work log.',
+      })
     },
     onError: (error) => {
-      toast.show("Unable to add collaborator", {
-        message: error?.message ?? "Check the user ID and try again.",
-      });
+      toast.show('Unable to add collaborator', {
+        message: error?.message ?? 'Check the user ID and try again.',
+      })
     },
-  });
+  })
 
   const updateCollaboratorMutation = api.workLogs.updateCollaborator.useMutation({
     onSuccess: () => {
-      void collaboratorsQuery.refetch();
+      void collaboratorsQuery.refetch()
     },
     onError: (error) => {
-      toast.show("Unable to update collaborator", {
-        message: error?.message ?? "Please try again.",
-      });
+      toast.show('Unable to update collaborator', {
+        message: error?.message ?? 'Please try again.',
+      })
     },
-  });
+  })
 
   const removeCollaboratorMutation = api.workLogs.removeCollaborator.useMutation({
     onSuccess: () => {
-      void collaboratorsQuery.refetch();
-      toast.show("Collaborator removed", {
-        message: "They no longer have access to this work log.",
-      });
+      void collaboratorsQuery.refetch()
+      toast.show('Collaborator removed', {
+        message: 'They no longer have access to this work log.',
+      })
     },
     onError: (error) => {
-      toast.show("Unable to remove collaborator", {
-        message: error?.message ?? "Please try again.",
-      });
+      toast.show('Unable to remove collaborator', {
+        message: error?.message ?? 'Please try again.',
+      })
     },
-  });
+  })
 
-  const updateProfileVisibilityMutation =
-    api.workLogs.updateProfileVisibility.useMutation({
-      onSuccess: async () => {
-        toast.show("Profile visibility updated");
-        await Promise.all([
-          workLogQuery.refetch(),
-          trpcUtils.workLogs.list.invalidate(),
-        ]);
-      },
-      onError: (error) => {
-        toast.show("Unable to update visibility", {
-          message: error?.message ?? "Please try again.",
-        });
-      },
-    });
+  const updateProfileVisibilityMutation = api.workLogs.updateProfileVisibility.useMutation({
+    onSuccess: async () => {
+      toast.show('Profile visibility updated')
+      await Promise.all([workLogQuery.refetch(), trpcUtils.workLogs.list.invalidate()])
+    },
+    onError: (error) => {
+      toast.show('Unable to update visibility', {
+        message: error?.message ?? 'Please try again.',
+      })
+    },
+  })
 
-  const updatePhotoVisibilityMutation =
-    api.workLogs.updatePhotoVisibility.useMutation({
-      onSuccess: async () => {
-        toast.show("Photo visibility updated");
-        await workLogQuery.refetch();
-      },
-      onError: (error) => {
-        toast.show("Unable to update photo", {
-          message: error?.message ?? "Please try again.",
-        });
-      },
-    });
+  const updatePhotoVisibilityMutation = api.workLogs.updatePhotoVisibility.useMutation({
+    onSuccess: async () => {
+      toast.show('Photo visibility updated')
+      await workLogQuery.refetch()
+    },
+    onError: (error) => {
+      toast.show('Unable to update photo', {
+        message: error?.message ?? 'Please try again.',
+      })
+    },
+  })
 
-  const [commentDraft, setCommentDraft] = useState("");
-  const [collaboratorIdInput, setCollaboratorIdInput] = useState("");
-  const [collaboratorPermission, setCollaboratorPermission] = useState<"view" | "edit">(
-    "view",
-  );
+  const [commentDraft, setCommentDraft] = useState('')
+  const [collaboratorIdInput, setCollaboratorIdInput] = useState('')
+  const [collaboratorPermission, setCollaboratorPermission] = useState<'view' | 'edit'>('view')
 
-  const workLog = workLogQuery.data;
+  const workLog = workLogQuery.data
 
   const project = useMemo(() => {
-    if (!workLog?.project_id) return null;
-    return projectOptionsQuery.data?.projects?.find(
-      (candidate) => candidate.id === workLog.project_id,
-    ) ?? null;
-  }, [projectOptionsQuery.data?.projects, workLog?.project_id]);
+    if (!workLog?.project_id) return null
+    return (
+      projectOptionsQuery.data?.projects?.find(
+        (candidate) => candidate.id === workLog.project_id
+      ) ?? null
+    )
+  }, [projectOptionsQuery.data?.projects, workLog?.project_id])
 
   const totalHours = useMemo(() => {
-    const raw = workLog?.total_hours;
-    if (typeof raw === "number") return raw;
-    if (typeof raw === "string") {
-      const parsed = Number(raw);
-      return Number.isFinite(parsed) ? parsed : 0;
+    const raw = workLog?.total_hours
+    if (typeof raw === 'number') return raw
+    if (typeof raw === 'string') {
+      const parsed = Number(raw)
+      return Number.isFinite(parsed) ? parsed : 0
     }
-    return 0;
-  }, [workLog?.total_hours]);
+    return 0
+  }, [workLog?.total_hours])
 
   const timeEntries = useMemo(() => {
     if (!workLog?.time_entries || !Array.isArray(workLog.time_entries)) {
-      return [];
+      return []
     }
-    return workLog.time_entries as Array<{ start: string; end: string }>;
-  }, [workLog?.time_entries]);
+    return workLog.time_entries as Array<{ start: string; end: string }>
+  }, [workLog?.time_entries])
 
   const timeEntryItems = useMemo(
     () =>
       timeEntries.map((entry, index) => ({
-        key: `${workLog?.id ?? workLogId ?? "work-log"}-entry-${index}`,
+        key: `${workLog?.id ?? workLogId ?? 'work-log'}-entry-${index}`,
         start: entry.start,
         end: entry.end,
       })),
-    [timeEntries, workLog?.id, workLogId],
-  );
+    [timeEntries, workLog?.id, workLogId]
+  )
 
   const tasksCompleted = Array.isArray(workLog?.tasks_completed)
     ? (workLog?.tasks_completed as string[])
-    : [];
+    : []
 
   const taskItems = useMemo(
     () =>
       tasksCompleted.map((task, index) => ({
-        key: `${workLog?.id ?? workLogId ?? "work-log"}-task-${index}`,
+        key: `${workLog?.id ?? workLogId ?? 'work-log'}-task-${index}`,
         task,
       })),
-    [tasksCompleted, workLog?.id, workLogId],
-  );
+    [tasksCompleted, workLog?.id, workLogId]
+  )
 
-  const photos =
-    (workLog?.photos as Array<Record<string, unknown>> | undefined) ?? [];
+  const photos = (workLog?.photos as Array<Record<string, unknown>> | undefined) ?? []
 
   const skillsLookup = useMemo(() => {
-    const map = new Map<string, string>();
-    const explicitSkills = skillsQuery.data?.explicitSkills as
-      | ExplicitSkillRecord[]
-      | undefined;
+    const map = new Map<string, string>()
+    const explicitSkills = skillsQuery.data?.explicitSkills as ExplicitSkillRecord[] | undefined
     if (Array.isArray(explicitSkills)) {
       for (const skill of explicitSkills) {
-        const id = typeof skill.id === "string" ? skill.id : null;
+        const id = typeof skill.id === 'string' ? skill.id : null
         const name =
-          typeof skill.name === "string"
+          typeof skill.name === 'string'
             ? skill.name
-            : typeof skill.display_name === "string"
-            ? skill.display_name
-            : null;
+            : typeof skill.display_name === 'string'
+              ? skill.display_name
+              : null
         if (id && name) {
-          map.set(id, name);
+          map.set(id, name)
         }
       }
     }
-    return map;
-  }, [skillsQuery.data?.explicitSkills]);
+    return map
+  }, [skillsQuery.data?.explicitSkills])
 
   const skillNames = useMemo(() => {
     if (!Array.isArray(workLog?.skills_used)) {
-      return [];
+      return []
     }
-    return (workLog.skills_used as string[])
-      .map((id) => skillsLookup.get(id) ?? id)
-      .filter(Boolean);
-  }, [skillsLookup, workLog?.skills_used]);
+    return (workLog.skills_used as string[]).map((id) => skillsLookup.get(id) ?? id).filter(Boolean)
+  }, [skillsLookup, workLog?.skills_used])
 
   if (workLogQuery.isLoading) {
     return (
@@ -282,7 +268,7 @@ export function WorkLogDetailScreen() {
         <Spinner size="large" />
         <Text color="$color10">Loading work log…</Text>
       </YStack>
-    );
+    )
   }
 
   if (!workLog) {
@@ -291,114 +277,108 @@ export function WorkLogDetailScreen() {
         <Text fontSize="$6" fontWeight="700">
           Work log not found
         </Text>
-        <Paragraph color="$color10" style={{ textAlign: "center" }}>
+        <Paragraph color="$color10" style={{ textAlign: 'center' }}>
           This work log may have been deleted or you no longer have access.
         </Paragraph>
-        <Button
-          size="$4"
-          onPress={() => router.replace(RouteBuilder.dashboardWorkLogs())}
-        >
+        <Button size="$4" onPress={() => router.replace(RouteBuilder.dashboardWorkLogs())}>
           Back to work logs
         </Button>
       </YStack>
-    );
+    )
   }
 
   const handleAddComment = () => {
     if (!commentDraft.trim()) {
-      return;
+      return
     }
     addCommentMutation.mutate({
       workLogId: String(workLogId),
       message: commentDraft.trim(),
-    });
-  };
+    })
+  }
 
   const handleAddCollaborator = () => {
     if (!collaboratorIdInput.trim()) {
-      toast.show("Enter a collaborator ID", {
-        message: "Provide a valid user ID to grant access.",
-      });
-      return;
+      toast.show('Enter a collaborator ID', {
+        message: 'Provide a valid user ID to grant access.',
+      })
+      return
     }
 
     if (!isUuid(collaboratorIdInput.trim())) {
-      Alert.alert(
-        "Invalid ID format",
-        "Collaborator user IDs must be valid UUID values.",
-      );
-      return;
+      Alert.alert('Invalid ID format', 'Collaborator user IDs must be valid UUID values.')
+      return
     }
 
     addCollaboratorMutation.mutate({
       workLogId: String(workLogId),
       collaboratorUserId: collaboratorIdInput.trim(),
       permissionLevel: collaboratorPermission,
-    });
-  };
+    })
+  }
 
   const handleTogglePermission = (collaborator: CollaboratorRecord) => {
-    const collaboratorUserId = collaborator.collaborator_user_id;
+    const collaboratorUserId = collaborator.collaborator_user_id
     if (!collaboratorUserId) {
-      return;
+      return
     }
-    const nextLevel = collaborator.permission_level === "edit" ? "view" : "edit";
+    const nextLevel = collaborator.permission_level === 'edit' ? 'view' : 'edit'
     updateCollaboratorMutation.mutate({
       workLogId: String(workLogId),
       collaboratorUserId,
       permissionLevel: nextLevel,
-    });
-  };
+    })
+  }
 
   const handleRemoveCollaborator = (collaborator: CollaboratorRecord) => {
-    const collaboratorUserId = collaborator.collaborator_user_id;
+    const collaboratorUserId = collaborator.collaborator_user_id
     if (!collaboratorUserId) {
-      return;
+      return
     }
     removeCollaboratorMutation.mutate({
       workLogId: String(workLogId),
       collaboratorUserId,
-    });
-  };
+    })
+  }
 
-  const conversation = (conversationQuery.data ?? []) as ConversationEntryRecord[];
-  const collaborators = (collaboratorsQuery.data ?? []) as CollaboratorRecord[];
-  const isVerified = workLog?.status === "verified";
-  const includeOnProfile = Boolean(workLog?.show_on_profile);
-  const showDateRange = Boolean(workLog?.show_date_range_on_profile);
-  const isPublicVisibility = workLog?.visibility === "public";
-  const visibilityMutationPending = updateProfileVisibilityMutation.isLoading;
-  const photoVisibilityMutationPending = updatePhotoVisibilityMutation.isLoading;
+  const conversation = (conversationQuery.data ?? []) as ConversationEntryRecord[]
+  const collaborators = (collaboratorsQuery.data ?? []) as CollaboratorRecord[]
+  const isVerified = workLog?.status === 'verified'
+  const includeOnProfile = Boolean(workLog?.show_on_profile)
+  const showDateRange = Boolean(workLog?.show_date_range_on_profile)
+  const isPublicVisibility = workLog?.visibility === 'public'
+  const visibilityMutationPending = updateProfileVisibilityMutation.isLoading
+  const photoVisibilityMutationPending = updatePhotoVisibilityMutation.isLoading
 
   const handleShowOnProfileToggle = (next: boolean) => {
-    if (!workLogId) return;
+    if (!workLogId) return
     if (next && !isVerified) {
-      toast.show("Pending verification", {
-        message: "Work logs must be verified before they can appear on your profile.",
-      });
-      return;
+      toast.show('Pending verification', {
+        message: 'Work logs must be verified before they can appear on your profile.',
+      })
+      return
     }
     updateProfileVisibilityMutation.mutate({
       workLogId: String(workLogId),
       showOnProfile: next,
-      visibility: next ? "public" : "private",
-    });
-  };
+      visibility: next ? 'public' : 'private',
+    })
+  }
 
   const handleShowDateRangeToggle = (next: boolean) => {
-    if (!workLogId) return;
+    if (!workLogId) return
     updateProfileVisibilityMutation.mutate({
       workLogId: String(workLogId),
       showDateRangeOnProfile: next,
-    });
-  };
+    })
+  }
 
   const handlePhotoVisibilityToggle = (photoId: string, showOnProfileValue: boolean) => {
     updatePhotoVisibilityMutation.mutate({
       photoId,
       showOnProfile: showOnProfileValue,
-    });
-  };
+    })
+  }
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -407,18 +387,13 @@ export function WorkLogDetailScreen() {
           <XStack justify="space-between" items="center">
             <YStack gap="$1" flex={1}>
               <Text fontSize="$7" fontWeight="700">
-                {project?.name ?? "Work Log"}
+                {project?.name ?? 'Work Log'}
               </Text>
               <Text color="$color10">
-                Logged {workLog.log_date ? formatDate(workLog.log_date) : "Date unknown"}
+                Logged {workLog.log_date ? formatDate(workLog.log_date) : 'Date unknown'}
               </Text>
             </YStack>
-            <Button
-              size="$3"
-              variant="outlined"
-              icon={Edit}
-              onPress={() => workLogQuery.refetch()}
-            >
+            <Button size="$3" variant="outlined" icon={Edit} onPress={() => workLogQuery.refetch()}>
               Refresh
             </Button>
           </XStack>
@@ -433,19 +408,27 @@ export function WorkLogDetailScreen() {
               Summary
             </Text>
             <XStack gap="$4" flexWrap="wrap">
-              <SummaryMetric icon={Activity} label="Total hours" value={`${totalHours.toFixed(2)}h`} />
-              <SummaryMetric icon={FileText} label="Entry type" value={workLog.entry_type ?? "Daily"} />
+              <SummaryMetric
+                icon={Activity}
+                label="Total hours"
+                value={`${totalHours.toFixed(2)}h`}
+              />
+              <SummaryMetric
+                icon={FileText}
+                label="Entry type"
+                value={workLog.entry_type ?? 'Daily'}
+              />
               <SummaryMetric
                 icon={ShieldCheck}
                 label="Visibility"
-                value={workLog.visibility === "public" ? "Public" : "Private"}
+                value={workLog.visibility === 'public' ? 'Public' : 'Private'}
               />
             </XStack>
             <Separator />
             <YStack gap="$2">
               <Text fontWeight="600">Description</Text>
               <Paragraph color="$color10">
-                {workLog.work_description || "No description provided."}
+                {workLog.work_description || 'No description provided.'}
               </Paragraph>
             </YStack>
           </YStack>
@@ -500,19 +483,19 @@ export function WorkLogDetailScreen() {
                   <Text fontWeight="600">Verification status</Text>
                   <Paragraph color="$color10">
                     {isVerified
-                      ? "Verified entries display a “Verified by Scaffald” badge on your public profile."
-                      : "Awaiting verification. Visibility controls unlock once this log is verified."}
+                      ? 'Verified entries display a “Verified by Scaffald” badge on your public profile.'
+                      : 'Awaiting verification. Visibility controls unlock once this log is verified.'}
                   </Paragraph>
                 </YStack>
                 <Text
-                  bg={isVerified ? "$green4" : "$yellow4"}
-                  color={isVerified ? "$green11" : "$yellow11"}
+                  bg={isVerified ? '$green4' : '$yellow4'}
+                  color={isVerified ? '$green11' : '$yellow11'}
                   px="$3"
                   py="$1"
                   rounded="$4"
                   fontWeight="600"
                 >
-                  {isVerified ? "Verified" : "Pending"}
+                  {isVerified ? 'Verified' : 'Pending'}
                 </Text>
               </XStack>
 
@@ -521,8 +504,8 @@ export function WorkLogDetailScreen() {
                   <Text fontWeight="600">Current visibility</Text>
                   <Paragraph color="$color10">
                     {isPublicVisibility
-                      ? "This work log is set to public visibility."
-                      : "This work log is currently private."}
+                      ? 'This work log is set to public visibility.'
+                      : 'This work log is currently private.'}
                   </Paragraph>
                 </YStack>
               </XStack>
@@ -551,9 +534,7 @@ export function WorkLogDetailScreen() {
                     <Text fontWeight="600">
                       {entry.start}–{entry.end}
                     </Text>
-                    <Text color="$color10">
-                      {computeEntryHours(entry.start, entry.end)}h
-                    </Text>
+                    <Text color="$color10">{computeEntryHours(entry.start, entry.end)}h</Text>
                   </XStack>
                 ))
               )}
@@ -571,13 +552,7 @@ export function WorkLogDetailScreen() {
             ) : (
               <YStack gap="$2">
                 {taskItems.map((task) => (
-                  <XStack
-                    key={task.key}
-                    bg="$color3"
-                    px="$3"
-                    py="$2"
-                    rounded="$4"
-                  >
+                  <XStack key={task.key} bg="$color3" px="$3" py="$2" rounded="$4">
                     <Text>{task.task}</Text>
                   </XStack>
                 ))}
@@ -588,9 +563,7 @@ export function WorkLogDetailScreen() {
               Skills used
             </Text>
             {skillNames.length === 0 ? (
-              <Paragraph color="$color10">
-                No skills associated with this log.
-              </Paragraph>
+              <Paragraph color="$color10">No skills associated with this log.</Paragraph>
             ) : (
               <XStack gap="$2" flexWrap="wrap">
                 {skillNames.map((skill) => (
@@ -609,33 +582,28 @@ export function WorkLogDetailScreen() {
               <Text fontSize="$6" fontWeight="700">
                 Photos
               </Text>
-          <PhotoGallery
-            disabled={photoVisibilityMutationPending}
-            onToggleVisibility={handlePhotoVisibilityToggle}
-            photos={photos.map((photo) => ({
-              id: String(photo.id),
-              workLogId: String(workLogId),
-              filePath: String(photo.file_path ?? ""),
-              mediumPath: (photo.medium_path as string) ?? null,
-              thumbnailPath: (photo.thumbnail_path as string) ?? null,
-              caption: (photo.caption as string) ?? null,
-              photoType: (photo.photo_type as string | null) ?? null,
-              displayOrder:
-                typeof photo.display_order === "number"
-                  ? photo.display_order
-                  : 0,
-              showOnProfile: Boolean(photo.show_on_profile),
-              fileSizeBytes:
-                typeof photo.file_size_bytes === "number"
-                  ? photo.file_size_bytes
-                  : 0,
-              takenAt: (photo.taken_at as string) ?? null,
-              createdAt: (photo.created_at as string) ?? null,
-              updatedAt: (photo.updated_at as string) ?? null,
-              signedUrl: null,
-              isRefreshingUrl: false,
-            }))}
-          />
+              <PhotoGallery
+                disabled={photoVisibilityMutationPending}
+                onToggleVisibility={handlePhotoVisibilityToggle}
+                photos={photos.map((photo) => ({
+                  id: String(photo.id),
+                  workLogId: String(workLogId),
+                  filePath: String(photo.file_path ?? ''),
+                  mediumPath: (photo.medium_path as string) ?? null,
+                  thumbnailPath: (photo.thumbnail_path as string) ?? null,
+                  caption: (photo.caption as string) ?? null,
+                  photoType: (photo.photo_type as string | null) ?? null,
+                  displayOrder: typeof photo.display_order === 'number' ? photo.display_order : 0,
+                  showOnProfile: Boolean(photo.show_on_profile),
+                  fileSizeBytes:
+                    typeof photo.file_size_bytes === 'number' ? photo.file_size_bytes : 0,
+                  takenAt: (photo.taken_at as string) ?? null,
+                  createdAt: (photo.created_at as string) ?? null,
+                  updatedAt: (photo.updated_at as string) ?? null,
+                  signedUrl: null,
+                  isRefreshingUrl: false,
+                }))}
+              />
             </YStack>
           </Card>
         )}
@@ -667,8 +635,7 @@ export function WorkLogDetailScreen() {
                     key={collaborator.id}
                     collaborator={collaborator}
                     isUpdating={
-                      updateCollaboratorMutation.isLoading ||
-                      removeCollaboratorMutation.isLoading
+                      updateCollaboratorMutation.isLoading || removeCollaboratorMutation.isLoading
                     }
                     onTogglePermission={() => handleTogglePermission(collaborator)}
                     onRemove={() => handleRemoveCollaborator(collaborator)}
@@ -688,16 +655,16 @@ export function WorkLogDetailScreen() {
                 <Button
                   flex={1}
                   size="$3"
-                  variant={collaboratorPermission === "view" ? "default" : "outlined"}
-                  onPress={() => setCollaboratorPermission("view")}
+                  variant={collaboratorPermission === 'view' ? 'default' : 'outlined'}
+                  onPress={() => setCollaboratorPermission('view')}
                 >
                   View
                 </Button>
                 <Button
                   flex={1}
                   size="$3"
-                  variant={collaboratorPermission === "edit" ? "default" : "outlined"}
-                  onPress={() => setCollaboratorPermission("edit")}
+                  variant={collaboratorPermission === 'edit' ? 'default' : 'outlined'}
+                  onPress={() => setCollaboratorPermission('edit')}
                 >
                   Edit
                 </Button>
@@ -736,11 +703,7 @@ export function WorkLogDetailScreen() {
                 </Paragraph>
               ) : (
                 conversation.map((entry) => (
-                  <ConversationEntry
-                    key={entry.id}
-                    entry={entry}
-                    currentUserId={workLog.user_id}
-                  />
+                  <ConversationEntry key={entry.id} entry={entry} currentUserId={workLog.user_id} />
                 ))
               )}
             </YStack>
@@ -772,21 +735,20 @@ export function WorkLogDetailScreen() {
               Exports
             </Text>
             <Paragraph color="$color10">
-              Generate a shareable export for reporting or offline records. Links expire after ten minutes.
+              Generate a shareable export for reporting or offline records. Links expire after ten
+              minutes.
             </Paragraph>
             <XStack gap="$3" flexWrap="wrap">
               <Button
                 size="$4"
                 icon={DownloadCloud}
-                loading={
-                  exportMutation.isLoading &&
-                  exportMutation.variables?.format === "pdf"
-                }
+                loading={exportMutation.isLoading && exportMutation.variables?.format === 'pdf'}
                 onPress={() =>
                   exportMutation.mutate({
                     workLogId: String(workLogId),
-                    format: "pdf",
-                  })}
+                    format: 'pdf',
+                  })
+                }
               >
                 Export PDF
               </Button>
@@ -794,15 +756,13 @@ export function WorkLogDetailScreen() {
                 size="$4"
                 icon={DownloadCloud}
                 variant="outlined"
-                loading={
-                  exportMutation.isLoading &&
-                  exportMutation.variables?.format === "csv"
-                }
+                loading={exportMutation.isLoading && exportMutation.variables?.format === 'csv'}
                 onPress={() =>
                   exportMutation.mutate({
                     workLogId: String(workLogId),
-                    format: "csv",
-                  })}
+                    format: 'csv',
+                  })
+                }
               >
                 Export CSV
               </Button>
@@ -811,25 +771,18 @@ export function WorkLogDetailScreen() {
         </Card>
       </YStack>
     </ScrollView>
-  );
+  )
 }
 
 interface SummaryMetricProps {
-  icon: IconRenderer;
-  label: string;
-  value: string;
+  icon: IconRenderer
+  label: string
+  value: string
 }
 
 function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps) {
   return (
-    <XStack
-      bg="$color3"
-      px="$3"
-      py="$2"
-      rounded="$4"
-      gap="$2"
-      items="center"
-    >
+    <XStack bg="$color3" px="$3" py="$2" rounded="$4" gap="$2" items="center">
       <IconComponent size={16} color="currentColor" />
       <YStack gap="$1">
         <Text fontWeight="600">{value}</Text>
@@ -838,14 +791,14 @@ function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps
         </Text>
       </YStack>
     </XStack>
-  );
+  )
 }
 
 interface CollaboratorRowProps {
-  collaborator: CollaboratorRecord;
-  isUpdating: boolean;
-  onTogglePermission: () => void;
-  onRemove: () => void;
+  collaborator: CollaboratorRecord
+  isUpdating: boolean
+  onTogglePermission: () => void
+  onRemove: () => void
 }
 
 function CollaboratorRow({
@@ -858,23 +811,16 @@ function CollaboratorRow({
     (collaborator?.user?.display_name as string) ??
     (collaborator?.user?.username as string) ??
     collaborator.collaborator_user_id ??
-    "Team member";
-  const permission = collaborator.permission_level ?? "view";
+    'Team member'
+  const permission = collaborator.permission_level ?? 'view'
 
   return (
     <Card borderWidth={1} borderColor="$color6">
       <YStack gap="$2" p="$3">
         <Text fontWeight="600">{displayName}</Text>
-        <Text color="$color10">
-          Permission: {permission === "edit" ? "Can edit" : "View only"}
-        </Text>
+        <Text color="$color10">Permission: {permission === 'edit' ? 'Can edit' : 'View only'}</Text>
         <XStack gap="$2">
-          <Button
-            size="$3"
-            variant="outlined"
-            disabled={isUpdating}
-            onPress={onTogglePermission}
-          >
+          <Button size="$3" variant="outlined" disabled={isUpdating} onPress={onTogglePermission}>
             Toggle permission
           </Button>
           <Button
@@ -889,31 +835,23 @@ function CollaboratorRow({
         </XStack>
       </YStack>
     </Card>
-  );
+  )
 }
 
 interface ConversationEntryProps {
-  entry: ConversationEntryRecord;
-  currentUserId: string;
+  entry: ConversationEntryRecord
+  currentUserId: string
 }
 
 function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
   const authorName =
-    (entry.user?.display_name as string) ??
-    (entry.user?.username as string) ??
-    "Collaborator";
-  const isOwner = entry.user_id === currentUserId;
-  const isSystemMessage = entry.is_system_message === true;
+    (entry.user?.display_name as string) ?? (entry.user?.username as string) ?? 'Collaborator'
+  const isOwner = entry.user_id === currentUserId
+  const isSystemMessage = entry.is_system_message === true
 
   return (
     <YStack
-      bg={
-        isSystemMessage
-          ? "$color4"
-          : isOwner
-          ? "$color3"
-          : "$color2"
-      }
+      bg={isSystemMessage ? '$color4' : isOwner ? '$color3' : '$color2'}
       px="$3"
       py="$2"
       rounded="$4"
@@ -921,18 +859,16 @@ function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
     >
       <XStack justify="space-between">
         <Text fontWeight="600">{authorName}</Text>
-        <Text color="$color10">
-          {entry.created_at ? formatDate(entry.created_at) : ""}
-        </Text>
+        <Text color="$color10">{entry.created_at ? formatDate(entry.created_at) : ''}</Text>
       </XStack>
       <Paragraph>{entry.message}</Paragraph>
     </YStack>
-  );
+  )
 }
 
 const computeEntryHours = (start: string, end: string): number => {
-  const [startHour, startMinute] = start.split(":").map(Number);
-  const [endHour, endMinute] = end.split(":").map(Number);
+  const [startHour, startMinute] = start.split(':').map(Number)
+  const [endHour, endMinute] = end.split(':').map(Number)
 
   if (
     Number.isNaN(startHour) ||
@@ -940,15 +876,14 @@ const computeEntryHours = (start: string, end: string): number => {
     Number.isNaN(endHour) ||
     Number.isNaN(endMinute)
   ) {
-    return 0;
+    return 0
   }
 
-  const startMinutes = startHour * 60 + startMinute;
-  const endMinutes = endHour * 60 + endMinute;
+  const startMinutes = startHour * 60 + startMinute
+  const endMinutes = endHour * 60 + endMinute
   if (endMinutes <= startMinutes) {
-    return 0;
+    return 0
   }
 
-  return (endMinutes - startMinutes) / 60;
-};
-
+  return (endMinutes - startMinutes) / 60
+}

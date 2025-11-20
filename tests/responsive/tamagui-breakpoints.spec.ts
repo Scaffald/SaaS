@@ -7,10 +7,10 @@
  * Task 9: Validate Tamagui Responsive Layouts Across All Breakpoints
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
-  assertNoHorizontalScroll,
   assertFormResponsive,
+  assertNoHorizontalScroll,
   getViewportCategory,
 } from '../infrastructure/playwright/helpers/helpers/responsive'
 
@@ -63,7 +63,9 @@ test.describe('Tamagui Responsive Layout Testing', () => {
           const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
           const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
 
-          expect(scrollWidth, 'Page should fit within viewport width').toBeLessThanOrEqual(clientWidth)
+          expect(scrollWidth, 'Page should fit within viewport width').toBeLessThanOrEqual(
+            clientWidth
+          )
         })
 
         test(`${name} - forms are responsive`, async ({ page }) => {
@@ -86,7 +88,9 @@ test.describe('Tamagui Responsive Layout Testing', () => {
           const expectedCategory =
             viewport.width <= 800 ? 'mobile' : viewport.width <= 1024 ? 'tablet' : 'desktop'
 
-          expect(category, `Viewport category should match expected: ${expectedCategory}`).toBe(expectedCategory)
+          expect(category, `Viewport category should match expected: ${expectedCategory}`).toBe(
+            expectedCategory
+          )
         })
       }
     })
@@ -141,39 +145,44 @@ test.describe('Tamagui Responsive Layout Testing', () => {
       // Test mobile modal (Sheet)
       await page.setViewportSize({ width: 375, height: 667 })
       // Trigger modal if available
-      const modalTrigger = page.locator('button[aria-label*="open" i], button[aria-label*="menu" i]').first()
-      if (await modalTrigger.count() > 0) {
+      const modalTrigger = page
+        .locator('button[aria-label*="open" i], button[aria-label*="menu" i]')
+        .first()
+      if ((await modalTrigger.count()) > 0) {
         await modalTrigger.click()
         await page.waitForTimeout(500)
 
         const modal = page.locator('[role="dialog"], [data-modal]').first()
-        if (await modal.count() > 0) {
+        if ((await modal.count()) > 0) {
           const modalBox = await modal.boundingBox()
           const viewportSize = page.viewportSize()
           if (modalBox && viewportSize) {
             // On mobile, modal should be full-screen
-            expect(modalBox.width, 'Mobile modal should be full-width').toBeGreaterThan(viewportSize.width - 20)
+            expect(modalBox.width, 'Mobile modal should be full-width').toBeGreaterThan(
+              viewportSize.width - 20
+            )
           }
         }
       }
 
       // Test desktop modal (Dialog)
       await page.setViewportSize({ width: 1920, height: 1080 })
-      if (await modalTrigger.count() > 0) {
+      if ((await modalTrigger.count()) > 0) {
         await modalTrigger.click()
         await page.waitForTimeout(500)
 
         const modal = page.locator('[role="dialog"], [data-modal]').first()
-        if (await modal.count() > 0) {
+        if ((await modal.count()) > 0) {
           const modalBox = await modal.boundingBox()
           const viewportSize = page.viewportSize()
           if (modalBox && viewportSize) {
             // On desktop, modal should be centered
-            expect(modalBox.width, 'Desktop modal should not be full-width').toBeLessThan(viewportSize.width - 100)
+            expect(modalBox.width, 'Desktop modal should not be full-width').toBeLessThan(
+              viewportSize.width - 100
+            )
           }
         }
       }
     })
   })
 })
-

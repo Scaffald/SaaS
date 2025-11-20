@@ -1,29 +1,29 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { Database, Json } from "./database.types.ts";
+import type { Database, Json } from './database.types.ts'
 
-type ServiceSupabaseClient = SupabaseClient<Database>;
+type ServiceSupabaseClient = SupabaseClient<Database>
 
 export type TeamAuditAction =
-  | "invited"
-  | "joined"
-  | "role_changed"
-  | "removed"
-  | "reinstated"
-  | "left"
-  | "invitation_rescinded"
-  | "job_assigned"
-  | "job_unassigned"
-  | "ownership_transferred"
-  | "workload_rebalanced";
+  | 'invited'
+  | 'joined'
+  | 'role_changed'
+  | 'removed'
+  | 'reinstated'
+  | 'left'
+  | 'invitation_rescinded'
+  | 'job_assigned'
+  | 'job_unassigned'
+  | 'ownership_transferred'
+  | 'workload_rebalanced'
 
 interface RecordTeamAuditLogOptions {
-  supabaseAdmin: ServiceSupabaseClient;
-  teamId: string;
-  action: TeamAuditAction;
-  actorUserId?: string | null;
-  memberUserId?: string | null;
-  metadata?: Json;
+  supabaseAdmin: ServiceSupabaseClient
+  teamId: string
+  action: TeamAuditAction
+  actorUserId?: string | null
+  memberUserId?: string | null
+  metadata?: Json
 }
 
 export async function recordTeamAuditLog({
@@ -34,28 +34,26 @@ export async function recordTeamAuditLog({
   memberUserId,
   metadata,
 }: RecordTeamAuditLogOptions): Promise<void> {
-  const adminClient = supabaseAdmin as SupabaseClient<any>;
+  const adminClient = supabaseAdmin as SupabaseClient<any>
 
   const { error } = await adminClient
-    .schema("core")
-    .from("team_member_audit_log")
+    .schema('core')
+    .from('team_member_audit_log')
     .insert({
       team_id: teamId,
       action,
       actor_user_id: actorUserId ?? null,
       member_user_id: memberUserId ?? null,
       metadata: metadata ?? {},
-    });
+    })
 
   if (error) {
-    console.error("[team-audit-log] Failed to record audit event", {
+    console.error('[team-audit-log] Failed to record audit event', {
       teamId,
       action,
       actorUserId,
       memberUserId,
       message: error.message,
-    });
+    })
   }
 }
-
-

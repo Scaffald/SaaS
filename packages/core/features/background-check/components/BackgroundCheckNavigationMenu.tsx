@@ -1,7 +1,7 @@
-import { Link, usePathname } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import { DashboardWidget, Text, XStack, YStack } from '@app/ui'
 import { ArrowRight } from '@tamagui/lucide-icons'
-import { DashboardWidget, Text, YStack, XStack } from '@app/ui'
+import { Link, usePathname } from 'expo-router'
 
 type BackgroundCheckNavItem = {
   key: string

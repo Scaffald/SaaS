@@ -1,9 +1,8 @@
-import { ScrollView, Spinner } from 'tamagui'
-import { useLocalSearchParams } from 'expo-router'
-import { Text, YStack } from '@app/ui'
-
-import { api } from '@app/core/utils/api'
 import { InquiryViewCandidate } from '@app/core/features/inquiries/components/InquiryViewCandidate'
+import { api } from '@app/core/utils/api'
+import { Text, YStack } from '@app/ui'
+import { useLocalSearchParams } from 'expo-router'
+import { ScrollView, Spinner } from 'tamagui'
 
 export default function DashboardApplicationInquiryRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()

@@ -1,5 +1,5 @@
-import { YStack, XStack, Text } from 'tamagui'
 import { CheckCircle2, Circle } from '@tamagui/lucide-icons'
+import { Text, XStack, YStack } from 'tamagui'
 
 interface Skill {
   id: string

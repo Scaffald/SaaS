@@ -71,19 +71,21 @@ vi.mock('@app/ui', () => ({
         {error && <span data-testid="error">{error}</span>}
         <input
           id={inputId}
-        type="month"
-        value={value ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}` : ''}
-        onChange={(e) => {
-          if (e.target.value) {
-            const [year, month] = e.target.value.split('-')
-            onChange(new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, 1))
-          } else {
-            onChange(null)
+          type="month"
+          value={
+            value ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}` : ''
           }
-        }}
-        disabled={disabled}
-        data-testid={inputId}
-      />
+          onChange={(e) => {
+            if (e.target.value) {
+              const [year, month] = e.target.value.split('-')
+              onChange(new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, 1))
+            } else {
+              onChange(null)
+            }
+          }}
+          disabled={disabled}
+          data-testid={inputId}
+        />
       </div>
     )
   },
@@ -112,11 +114,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Input = ({
     value = '',
@@ -210,7 +208,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByDisplayValue('Lead Carpenter')).toBeInTheDocument()
@@ -229,7 +227,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nextButton = screen.getByRole('button', { name: /next: certifications/i })
@@ -247,7 +245,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Lead Carpenter'), {
@@ -278,7 +276,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const jobTitleInput = screen.getByPlaceholderText('Lead Carpenter')
@@ -311,7 +309,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Lead Carpenter'), {
@@ -320,9 +318,12 @@ describe('ExperienceStep', () => {
     fireEvent.change(screen.getByPlaceholderText('Summit Builders'), {
       target: { value: '  City Power  ' },
     })
-    fireEvent.change(screen.getByPlaceholderText('Installed custom millwork across four high-rise projects...'), {
-      target: { value: '  Led electrical installations  ' },
-    })
+    fireEvent.change(
+      screen.getByPlaceholderText('Installed custom millwork across four high-rise projects...'),
+      {
+        target: { value: '  Led electrical installations  ' },
+      }
+    )
 
     const startDateInput = screen.getByTestId('input-start-date-*')
     fireEvent.change(startDateInput, { target: { value: '2020-01' } })
@@ -355,7 +356,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Lead Carpenter'), {
@@ -389,7 +390,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -412,7 +413,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -445,7 +446,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const user = userEvent.setup()
@@ -464,7 +465,7 @@ describe('ExperienceStep', () => {
         expect.objectContaining({
           endDate: null,
           isCurrent: true,
-        }),
+        })
       )
     })
   })
@@ -480,7 +481,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Lead Carpenter'), {
@@ -506,7 +507,7 @@ describe('ExperienceStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('Lead Carpenter'), {
@@ -528,9 +529,8 @@ describe('ExperienceStep', () => {
       expect(onContinue).toHaveBeenCalledWith(
         expect.objectContaining({
           startDate: '2020-06-01',
-        }),
+        })
       )
     })
   })
 })
-

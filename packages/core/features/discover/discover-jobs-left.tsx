@@ -1,9 +1,9 @@
-import { YStack, ScrollView, Text, XStack } from 'tamagui'
-import { ExternalJobCard, type ExternalJob } from './components/ExternalJobCard'
-import { InternalJobCard, type InternalJob } from './components/InternalJobCard'
 import { api } from '@app/core/utils/api'
-import { SkeletonList, extractPlainText } from '@app/ui'
+import { extractPlainText, SkeletonList } from '@app/ui'
 import type { JSONContent } from '@tiptap/core'
+import { ScrollView, Text, XStack, YStack } from 'tamagui'
+import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
+import { type InternalJob, InternalJobCard } from './components/InternalJobCard'
 
 interface DiscoverJobsLeftProps {
   searchQuery: string

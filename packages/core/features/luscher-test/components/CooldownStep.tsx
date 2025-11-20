@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { Text, XStack, YStack, Progress, TextArea } from 'tamagui'
 import { Clock } from '@tamagui/lucide-icons'
+import { useEffect, useState } from 'react'
+import { Progress, Text, TextArea, XStack, YStack } from 'tamagui'
 
 export interface CooldownStepProps {
   cooldownEndTime: string // ISO timestamp when cooldown ends

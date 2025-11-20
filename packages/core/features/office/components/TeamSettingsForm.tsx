@@ -1,7 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Controller, type Control, useForm } from 'react-hook-form'
+import { api } from '@app/core/utils/api'
+import { useDebounce } from '@app/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { Check, ChevronDown, Info } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { type Control, Controller, useForm } from 'react-hook-form'
 import {
   Adapt,
   Button,
@@ -15,11 +18,7 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { Check, ChevronDown, Info } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
-import { api } from '@app/core/utils/api'
-import { useDebounce } from '@app/core/utils/useDebounce'
+import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
 
 const DEFAULT_SETTINGS = {
@@ -75,7 +74,7 @@ export function TeamSettingsForm({
   const utils = api.useUtils()
 
   const [metadataState, setMetadataState] = useState<Record<string, unknown>>(
-    () => (metadata ?? {}) as Record<string, unknown>,
+    () => (metadata ?? {}) as Record<string, unknown>
   )
   const [status, setStatus] = useState<SaveStatus>('idle')
 
@@ -88,7 +87,7 @@ export function TeamSettingsForm({
 
   const initialValues = useMemo(
     () => resolveSettings(metadataState, fallbackRoleId),
-    [metadataState, fallbackRoleId],
+    [metadataState, fallbackRoleId]
   )
 
   const {
@@ -165,14 +164,7 @@ export function TeamSettingsForm({
       teamId,
       metadata: nextMetadata,
     })
-  }, [
-    canEdit,
-    debouncedValues,
-    isDirty,
-    metadataState,
-    teamId,
-    updateMutation,
-  ])
+  }, [canEdit, debouncedValues, isDirty, metadataState, teamId, updateMutation])
 
   const handleReset = () => {
     if (!canEdit) {
@@ -225,8 +217,7 @@ export function TeamSettingsForm({
     }
   })()
 
-  const statusColor =
-    status === 'error' ? '$red10' : status === 'saved' ? '$green10' : '$color11'
+  const statusColor = status === 'error' ? '$red10' : status === 'saved' ? '$green10' : '$color11'
 
   return (
     <Card p="$4" borderWidth={1} borderColor="$borderColor" gap="$4" bg="$color2">
@@ -240,9 +231,7 @@ export function TeamSettingsForm({
         </Text>
       </YStack>
 
-      {!canEdit ? (
-        <PermissionBanner />
-      ) : null}
+      {!canEdit ? <PermissionBanner /> : null}
 
       <Separator />
 
@@ -385,35 +374,36 @@ export function TeamSettingsForm({
 
 function resolveSettings(
   metadata: Record<string, unknown>,
-  fallbackRoleId: string | null | undefined,
+  fallbackRoleId: string | null | undefined
 ): TeamSettingsFormValues {
   const settings = (metadata.settings as Partial<TeamSettingsFormValues> | undefined) ?? {}
   return {
     defaultRoleId:
       typeof settings.defaultRoleId === 'string'
         ? settings.defaultRoleId
-        : fallbackRoleId ?? DEFAULT_SETTINGS.defaultRoleId,
+        : (fallbackRoleId ?? DEFAULT_SETTINGS.defaultRoleId),
     notifications: {
-      newMember: Boolean(settings.notifications?.newMember ?? DEFAULT_SETTINGS.notifications.newMember),
+      newMember: Boolean(
+        settings.notifications?.newMember ?? DEFAULT_SETTINGS.notifications.newMember
+      ),
       memberRemoved: Boolean(
-        settings.notifications?.memberRemoved ?? DEFAULT_SETTINGS.notifications.memberRemoved,
+        settings.notifications?.memberRemoved ?? DEFAULT_SETTINGS.notifications.memberRemoved
       ),
       jobAssigned: Boolean(
-        settings.notifications?.jobAssigned ?? DEFAULT_SETTINGS.notifications.jobAssigned,
+        settings.notifications?.jobAssigned ?? DEFAULT_SETTINGS.notifications.jobAssigned
       ),
       applicationAssigned: Boolean(
         settings.notifications?.applicationAssigned ??
-          DEFAULT_SETTINGS.notifications.applicationAssigned,
+          DEFAULT_SETTINGS.notifications.applicationAssigned
       ),
     },
     jobAssignment: {
       autoAssignApplications: Boolean(
         settings.jobAssignment?.autoAssignApplications ??
-          DEFAULT_SETTINGS.jobAssignment.autoAssignApplications,
+          DEFAULT_SETTINGS.jobAssignment.autoAssignApplications
       ),
       requireApproval: Boolean(
-        settings.jobAssignment?.requireApproval ??
-          DEFAULT_SETTINGS.jobAssignment.requireApproval,
+        settings.jobAssignment?.requireApproval ?? DEFAULT_SETTINGS.jobAssignment.requireApproval
       ),
     },
   }
@@ -488,4 +478,3 @@ function PermissionBanner() {
     </XStack>
   )
 }
-

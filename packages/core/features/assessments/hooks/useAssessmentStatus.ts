@@ -1,4 +1,4 @@
-import { api } from "@app/core/utils/api";
+import { api } from '@app/core/utils/api'
 
 /**
  * Hook to fetch completion status for all isolated assessments
@@ -6,21 +6,17 @@ import { api } from "@app/core/utils/api";
  */
 export function useAssessmentStatus() {
   // Personality assessment queries
-  const luscher1Query = api.personalityAssessment.getLuscherTest1Status
-    .useQuery();
-  const luscherAvailabilityQuery = api.personalityAssessment
-    .getLuscherTestAvailability.useQuery();
-  const ipipQuery = api.personalityAssessment.getIPIPStatus.useQuery();
-  const luscher2Query = api.personalityAssessment.getLuscherTest2Status
-    .useQuery();
+  const luscher1Query = api.personalityAssessment.getLuscherTest1Status.useQuery()
+  const luscherAvailabilityQuery = api.personalityAssessment.getLuscherTestAvailability.useQuery()
+  const ipipQuery = api.personalityAssessment.getIPIPStatus.useQuery()
+  const luscher2Query = api.personalityAssessment.getLuscherTest2Status.useQuery()
 
   // Career assessment queries
-  const riasecQuery = api.onet.getRIASECStatus.useQuery();
-  const occupationQuery = api.onet.getOccupationStatus.useQuery();
+  const riasecQuery = api.onet.getRIASECStatus.useQuery()
+  const occupationQuery = api.onet.getOccupationStatus.useQuery()
 
-  const luscher1Completed = luscher1Query.data?.isCompleted ?? false;
-  const luscher1OnCooldown = luscherAvailabilityQuery.data?.isOnCooldown ??
-    false;
+  const luscher1Completed = luscher1Query.data?.isCompleted ?? false
+  const luscher1OnCooldown = luscherAvailabilityQuery.data?.isOnCooldown ?? false
 
   return {
     luscher1: {
@@ -45,5 +41,5 @@ export function useAssessmentStatus() {
       isCompleted: occupationQuery.data?.isCompleted ?? false,
       isLoading: occupationQuery.isLoading,
     },
-  };
+  }
 }

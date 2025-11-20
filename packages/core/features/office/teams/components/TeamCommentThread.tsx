@@ -1,11 +1,10 @@
-import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
-import { MessageCircle, Send } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { MessageCircle, Send } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
+import { useMemo, useState } from 'react'
+import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type CommentsOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['comments']
 type CommentRecord = NonNullable<CommentsOutput['comments']>[number]
@@ -44,7 +43,7 @@ export function TeamCommentThread({
     {
       enabled: Boolean(teamId),
       staleTime: 30_000,
-    },
+    }
   )
 
   const postCommentMutation = api.teams.analytics.postComment.useMutation({
@@ -187,7 +186,7 @@ export function TeamCommentThread({
               comment.actorDisplayName ?? comment.actorUserId?.slice(0, 6) ?? 'Team member'
             const occurredAt = new Date(comment.occurredAt).toLocaleString()
             const mentionNames = (comment.mentions ?? []).map(
-              (mentionId: string) => mentionLookup.get(mentionId) ?? mentionId.slice(0, 6),
+              (mentionId: string) => mentionLookup.get(mentionId) ?? mentionId.slice(0, 6)
             )
             const commentAccessibilityLabel = [
               `${actorName} commented`,
@@ -210,9 +209,7 @@ export function TeamCommentThread({
                 accessibilityLabel={commentAccessibilityLabel}
                 width="100%"
               >
-                <Text fontWeight="600">
-                  {actorName}
-                </Text>
+                <Text fontWeight="600">{actorName}</Text>
                 <Text color="$color10" fontSize="$2">
                   {occurredAt}
                 </Text>
@@ -230,5 +227,3 @@ export function TeamCommentThread({
     </Card>
   )
 }
-
-

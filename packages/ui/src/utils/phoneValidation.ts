@@ -1,9 +1,9 @@
 export {
-  phoneNumberSchema,
-  requiredPhoneNumberSchema,
   formatPhoneNumber,
   getE164Format,
-  isValidPhoneNumber,
-  getPhoneRegionCode,
   getPhoneNumberType,
+  getPhoneRegionCode,
+  isValidPhoneNumber,
+  phoneNumberSchema,
+  requiredPhoneNumberSchema,
 } from '@app/schemas/common/phone'

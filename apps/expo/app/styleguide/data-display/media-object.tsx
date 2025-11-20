@@ -1,9 +1,7 @@
 // @ts-nocheck
-import React from 'react'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import { Paragraph, Text, XStack, YStack } from '@app/ui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
 
 export default function MediaObjectPage() {
   return (

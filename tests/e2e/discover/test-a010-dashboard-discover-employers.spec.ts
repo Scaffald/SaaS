@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/discover/employers', () => {
@@ -9,8 +9,12 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 1: Route navigation and loading
-  test('navigates to employers discovery page and page loads correctly', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('navigates to employers discovery page and page loads correctly', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to employers discovery route
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
@@ -20,17 +24,17 @@ test.describe('Admin • /dashboard/discover/employers', () => {
     expect(page.url()).toContain('/dashboard/discover/employers')
 
     // Verify page content loaded
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
   // Test 2: Page header
   test('displays "Search & Filter" section header', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify Search & Filter header (exploration found this as main right panel header)
     expect(pageText).toContain('Search')
@@ -38,11 +42,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 3: Search input
   test('displays search input with correct placeholder', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify search input exists (exploration found "Search employers..." placeholder)
     expect(pageText).toContain('Search')
@@ -50,23 +54,24 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 4: Search subtitle
   test('displays search subtitle with helpful text', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify subtitle exists (exploration found "Find employers that match your interests")
-    expect(pageText).toContain('Find employers') || expect(pageText).toContain('match your interests')
+    expect(pageText).toContain('Find employers') ||
+      expect(pageText).toContain('match your interests')
   })
 
   // Test 5: Industry filter section
   test('displays Industries filter section header', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify Industries section exists (exploration found "Industries" header with filter icon)
     expect(pageText).toContain('Industries')
@@ -74,11 +79,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 6: Industry filter buttons
   test('displays industry filter buttons', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Exploration found 6 industries: Construction, Manufacturing, Engineering, Technology, Healthcare, Education
     const hasConstruction = pageText.includes('Construction')
@@ -91,11 +96,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 7: Clear filters button
   test('displays Clear button when filters are available', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Clear button may be visible (exploration found red Clear button with X icon when filters active)
     const hasClearText = pageText.includes('Clear')
@@ -106,11 +111,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 8: Empty state
   test('displays empty state when no employers found', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify empty state or employer results (exploration found "No employers found")
     const hasEmptyState = pageText.includes('No employers found')
@@ -121,12 +126,16 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 9: Empty state instruction text
-  test('displays empty state instruction text when no results', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('displays empty state instruction text when no results', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If empty state is shown, verify instruction text
     if (pageText.includes('No employers found')) {
@@ -140,11 +149,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 10: Loading state
   test('displays loading state during employer fetch', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify loading state text exists (exploration found "Loading employers..." with spinner)
     const hasLoadingContent = pageText.includes('Loading') || pageText.includes('loading')
@@ -154,11 +163,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 11: Result count display
   test('displays employer count when results are shown', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Exploration documented result count format: "{count} Employer" or "{count} Employers"
     const hasEmployerText = pageText.includes('Employer')
@@ -168,18 +177,19 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 12: Employer card components
   test('displays employer cards with company information', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employers are shown, verify card elements
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
       // Exploration documented cards should have company name, industry badge, description
-      const hasIndustryBadge = pageText.includes('Construction') ||
-                               pageText.includes('Manufacturing') ||
-                               pageText.includes('Technology')
+      const hasIndustryBadge =
+        pageText.includes('Construction') ||
+        pageText.includes('Manufacturing') ||
+        pageText.includes('Technology')
 
       expect(typeof hasIndustryBadge).toBe('boolean')
     } else {
@@ -190,11 +200,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 13: View Details button
   test('displays View Details buttons on employer cards', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employer cards exist, verify View Details button
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
@@ -210,7 +220,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 14: Search input is interactive
   test('search input is interactive and accepts text', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -223,7 +233,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 15: Industry filter buttons are clickable
   test('industry filter buttons are clickable', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -233,12 +243,16 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 16: Active Filters section
-  test('displays Active Filters section when filters are applied', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('displays Active Filters section when filters are applied', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Active Filters section may be visible (exploration documented conditional display)
     const hasActiveFilters = pageText.includes('Active Filters')
@@ -249,11 +263,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 17: Employer card location information
   test('displays location information on employer cards', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employer cards exist, verify location info
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
@@ -269,11 +283,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 18: Employer card employee count
   test('displays employee count information when available', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employer cards exist, check for employee count
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
@@ -289,18 +303,17 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 19: Employer card website information
   test('displays website information when available', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employer cards exist, check for website info
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
       // Exploration documented ExternalLink icon with website URL (protocol stripped)
-      const hasWebsiteInfo = pageText.includes('.com') ||
-                             pageText.includes('.org') ||
-                             pageText.includes('www')
+      const hasWebsiteInfo =
+        pageText.includes('.com') || pageText.includes('.org') || pageText.includes('www')
 
       expect(typeof hasWebsiteInfo).toBe('boolean')
     } else {
@@ -311,11 +324,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 20: Page contains expected employer discovery keywords
   test('page contains expected employer discovery keywords', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify key content areas identified in exploration
     expect(pageText.toLowerCase()).toContain('employer')
@@ -324,11 +337,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 21: Navigation drawer with Discover submenu
   test('displays navigation drawer with Discover submenu', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify Discover navigation is present
     expect(pageText).toContain('Discover')
@@ -336,11 +349,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 22: Current route highlighted in navigation
   test('highlights Employers route in navigation', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify Employers route is accessible
     expect(pageText).toContain('Employers')
@@ -348,11 +361,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 23: Related Discover routes
   test('navigation includes other Discover routes', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify other Discover routes are accessible (exploration documented Map, Workers, Jobs)
     const hasMap = pageText.includes('Map')
@@ -365,16 +378,17 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 24: Two-panel layout structure
   test('verifies two-panel layout structure exists', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify both panel sections exist (exploration documented left: listings, right: search/filters)
-    const hasListingsSection = pageText.includes('No employers found') ||
-                                pageText.includes('Employer') ||
-                                pageText.includes('Loading')
+    const hasListingsSection =
+      pageText.includes('No employers found') ||
+      pageText.includes('Employer') ||
+      pageText.includes('Loading')
     const hasFiltersSection = pageText.includes('Industries') || pageText.includes('Search')
 
     expect(hasListingsSection || hasFiltersSection).toBe(true)
@@ -382,7 +396,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 25: Responsive layout dimensions
   test('verifies responsive layout structure', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -396,7 +410,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 26: UI element inventory
   test('UI element inventory matches expected structure', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -411,7 +425,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 27: Layout stability during loading
   test('page maintains layout stability during loading', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
@@ -430,7 +444,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 28: No critical JavaScript errors
-  test('verifies page loads without critical JavaScript errors', async ({ page }: { page: Page }) => {
+  test('verifies page loads without critical JavaScript errors', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     const consoleErrors: string[] = []
 
     page.on('console', (msg) => {
@@ -439,19 +457,20 @@ test.describe('Admin • /dashboard/discover/employers', () => {
       }
     })
 
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
     // Filter out known acceptable errors
-    const criticalErrors = consoleErrors.filter(err =>
-      !err.includes('500') &&
-      !err.includes('Internal Server Error') &&
-      !err.includes('cookie') &&
-      !err.includes('Cookie') &&
-      !err.includes('consent') &&
-      !err.includes('Failed to load resource') &&
-      !err.includes('404')
+    const criticalErrors = consoleErrors.filter(
+      (err) =>
+        !err.includes('500') &&
+        !err.includes('Internal Server Error') &&
+        !err.includes('cookie') &&
+        !err.includes('Cookie') &&
+        !err.includes('consent') &&
+        !err.includes('Failed to load resource') &&
+        !err.includes('404')
     )
 
     // Should have minimal critical JavaScript errors
@@ -459,8 +478,12 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 29: Navigation from dashboard
-  test('can access employers discovery from dashboard navigation', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('can access employers discovery from dashboard navigation', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     // Already on /dashboard after signInAsAdmin
 
     // Navigate to employers discovery
@@ -471,17 +494,17 @@ test.describe('Admin • /dashboard/discover/employers', () => {
     expect(page.url()).toContain('/dashboard/discover/employers')
 
     // Verify page loaded with content
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
     expect(pageText.length).toBeGreaterThan(100)
   })
 
   // Test 30: Search icon present
   test('displays search icon with search label', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify Search label with icon (exploration documented "Search" label with Search icon)
     expect(pageText).toContain('Search')
@@ -489,23 +512,27 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 31: Filter icon present
   test('displays filter icon with Industries section', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify Industries header with filter icon (exploration documented "Industries" with Filter icon)
     expect(pageText).toContain('Industries')
   })
 
   // Test 32: Scrollable employer list
-  test('employer list is scrollable when results exceed viewport', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('employer list is scrollable when results exceed viewport', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If multiple employers shown, verify scrollable area exists
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
@@ -520,11 +547,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 33: Employer card hover states
   test('employer cards support hover interactions', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employer cards exist, they should be interactive
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
@@ -538,22 +565,27 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 34: Industry badge styling
-  test('employer cards display industry badges with proper styling', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('employer cards display industry badges with proper styling', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employer cards exist, verify industry badge content
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
       // Exploration documented blue industry badges
-      const hasIndustry = pageText.includes('Construction') ||
-                         pageText.includes('Manufacturing') ||
-                         pageText.includes('Engineering') ||
-                         pageText.includes('Technology') ||
-                         pageText.includes('Healthcare') ||
-                         pageText.includes('Education')
+      const hasIndustry =
+        pageText.includes('Construction') ||
+        pageText.includes('Manufacturing') ||
+        pageText.includes('Engineering') ||
+        pageText.includes('Technology') ||
+        pageText.includes('Healthcare') ||
+        pageText.includes('Education')
 
       expect(typeof hasIndustry).toBe('boolean')
     } else {
@@ -563,8 +595,12 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 35: Real-time search filtering
-  test('search input provides real-time filtering functionality', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('search input provides real-time filtering functionality', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -575,11 +611,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 36: Multiple industry selection
   test('supports multiple industry selection with OR logic', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify multiple industries can be shown (exploration documented toggle selection)
     const industryCount = [
@@ -588,7 +624,7 @@ test.describe('Admin • /dashboard/discover/employers', () => {
       pageText.includes('Engineering'),
       pageText.includes('Technology'),
       pageText.includes('Healthcare'),
-      pageText.includes('Education')
+      pageText.includes('Education'),
     ].filter(Boolean).length
 
     // Should have multiple industry options
@@ -597,11 +633,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 37: Separators between sections
   test('displays visual separators between major sections', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Exploration documented horizontal separators for visual hierarchy
     // Verify sections exist that would be separated
@@ -613,11 +649,11 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 38: Company description truncation
   test('employer cards truncate long descriptions properly', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // If employer cards exist with descriptions, verify truncation
     if (pageText.includes('Employer') && !pageText.includes('No employers')) {
@@ -631,12 +667,16 @@ test.describe('Admin • /dashboard/discover/employers', () => {
   })
 
   // Test 39: Combined search and industry filters
-  test('supports combined search and industry filters with AND logic', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('supports combined search and industry filters with AND logic', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify both search and filter components exist (exploration documented AND logic)
     const hasSearchInput = pageText.includes('Search')
@@ -647,14 +687,15 @@ test.describe('Admin • /dashboard/discover/employers', () => {
 
   // Test 40: Profile update banner in navigation
   test('verifies profile update banner in navigation drawer', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify profile banner may be present
-    const hasProfileBanner = pageText.includes('Update Profile') || pageText.includes('Edit Profile')
+    const hasProfileBanner =
+      pageText.includes('Update Profile') || pageText.includes('Edit Profile')
 
     expect(typeof hasProfileBanner).toBe('boolean')
   })

@@ -1,5 +1,5 @@
+import { Input, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
 import { Label } from 'tamagui'
 
 interface DistributionVisibilitySectionProps {

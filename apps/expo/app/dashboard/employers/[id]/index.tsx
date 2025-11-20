@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from 'expo-router'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { DiscoverEmployerDetailScreen } from '@app/core/features/discover/discover-employer-detail-screen'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { useLocalSearchParams } from 'expo-router'
 
 export default function EmployerDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()

@@ -1,132 +1,129 @@
-import { useEffect, useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
-import { AlertCircle } from "@tamagui/lucide-icons";
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from "tamagui";
-import { useToastController } from "@tamagui/toast";
-
-import { PaymentIntentForm } from "@app/core/features/payments/components/PaymentIntentForm";
-import { api } from "@app/core/utils/api";
-import { useUser } from "@app/core/utils/useUser";
-import { IdVerificationBadge } from "./IdVerificationBadge";
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
+import { api } from '@app/core/utils/api'
+import { useUser } from '@app/core/utils/useUser'
+import { AlertCircle } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { formatDistanceToNow } from 'date-fns'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { IdVerificationBadge } from './IdVerificationBadge'
 
 type PricingRow = {
-  id: string;
-  name: string;
-  description?: string | null;
-  priceCents: number;
-  metadata?: Record<string, unknown>;
-};
+  id: string
+  name: string
+  description?: string | null
+  priceCents: number
+  metadata?: Record<string, unknown>
+}
 
 type PaymentSession = {
-  paymentIntentId: string;
-  clientSecret: string;
-  amountCents: number;
-};
+  paymentIntentId: string
+  clientSecret: string
+  amountCents: number
+}
 
 const formatCurrency = (cents?: number | null) => {
-  if (typeof cents !== "number") return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  if (typeof cents !== 'number') return '—'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 0,
-  }).format(cents / 100);
-};
+  }).format(cents / 100)
+}
 
 const formatDate = (value?: string | null) => {
-  if (!value) return "—";
-  return new Date(value).toLocaleDateString();
-};
+  if (!value) return '—'
+  return new Date(value).toLocaleDateString()
+}
 
 const formatDuration = (value?: string | null) => {
-  if (!value) return null;
-  return formatDistanceToNow(new Date(value), { addSuffix: true });
-};
+  if (!value) return null
+  return formatDistanceToNow(new Date(value), { addSuffix: true })
+}
 
 export function IdVerificationFlow() {
-  const { user } = useUser();
-  const toast = useToastController();
+  const { user } = useUser()
+  const toast = useToastController()
 
   const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
-  });
-  const currentVerificationQuery =
-    api.idVerification.getCurrentVerification.useQuery(undefined, {
-      staleTime: 60 * 1000,
-    });
+  })
+  const currentVerificationQuery = api.idVerification.getCurrentVerification.useQuery(undefined, {
+    staleTime: 60 * 1000,
+  })
 
-  const requestVerification = api.idVerification.requestVerification.useMutation();
-  const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation();
+  const requestVerification = api.idVerification.requestVerification.useMutation()
+  const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation()
 
-  const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null);
-  const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null);
-  const [requestError, setRequestError] = useState<string | null>(null);
+  const [selectedPricingId, setSelectedPricingId] = useState<string | null>(null)
+  const [paymentSession, setPaymentSession] = useState<PaymentSession | null>(null)
+  const [requestError, setRequestError] = useState<string | null>(null)
 
-  const pricingOptions: PricingRow[] = useMemo(() => pricingQuery.data ?? [], [pricingQuery.data]);
+  const pricingOptions: PricingRow[] = useMemo(() => pricingQuery.data ?? [], [pricingQuery.data])
 
   useEffect(() => {
     if (!selectedPricingId && pricingOptions.length > 0) {
-      setSelectedPricingId(pricingOptions[0]?.id ?? null);
+      setSelectedPricingId(pricingOptions[0]?.id ?? null)
     }
-  }, [pricingOptions, selectedPricingId]);
+  }, [pricingOptions, selectedPricingId])
 
   useEffect(() => {
-    setPaymentSession(null);
-    setRequestError(null);
-  }, [selectedPricingId]);
+    setPaymentSession(null)
+    setRequestError(null)
+  }, [selectedPricingId])
 
-  const selectedPricing = pricingOptions.find((row) => row.id === selectedPricingId) ?? null;
+  const selectedPricing = pricingOptions.find((row) => row.id === selectedPricingId) ?? null
 
-  const statusCard = renderStatusCard(currentVerificationQuery);
+  const statusCard = renderStatusCard(currentVerificationQuery)
 
   const handleCreatePaymentSession = async () => {
     if (!user) {
-      toast.show("Sign in required", {
-        message: "Please sign in again before starting verification.",
-        type: "error",
-      });
-      return;
+      toast.show('Sign in required', {
+        message: 'Please sign in again before starting verification.',
+        type: 'error',
+      })
+      return
     }
 
     if (!selectedPricing) {
-      toast.show("Select a plan", {
-        message: "Choose a verification option to continue.",
-      });
-      return;
+      toast.show('Select a plan', {
+        message: 'Choose a verification option to continue.',
+      })
+      return
     }
 
-    setRequestError(null);
+    setRequestError(null)
 
     try {
       const response = await requestVerification.mutateAsync({
         workerUserId: user.id,
         pricingId: selectedPricing.id,
-      });
-      setPaymentSession(response);
-      toast.show("Secure payment ready", {
-        message: "Enter your card details below to continue.",
-      });
+      })
+      setPaymentSession(response)
+      toast.show('Secure payment ready', {
+        message: 'Enter your card details below to continue.',
+      })
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unable to start payment. Try again.";
-      setRequestError(message);
-      toast.show("Payment setup failed", { message, type: "error" });
+      const message = error instanceof Error ? error.message : 'Unable to start payment. Try again.'
+      setRequestError(message)
+      toast.show('Payment setup failed', { message, type: 'error' })
     }
-  };
+  }
 
   const handlePaymentSuccess = async (paymentIntentId: string) => {
     try {
-      await confirmVerification.mutateAsync({ paymentIntentId });
-      toast.show("Verification scheduled", {
-        message: "We’re creating your Persona inquiry now.",
-      });
-      setPaymentSession(null);
-      void currentVerificationQuery.refetch();
+      await confirmVerification.mutateAsync({ paymentIntentId })
+      toast.show('Verification scheduled', {
+        message: 'We’re creating your Persona inquiry now.',
+      })
+      setPaymentSession(null)
+      void currentVerificationQuery.refetch()
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Unable to confirm payment with Stripe.";
-      toast.show("Payment confirmation failed", { message, type: "error" });
+        error instanceof Error ? error.message : 'Unable to confirm payment with Stripe.'
+      toast.show('Payment confirmation failed', { message, type: 'error' })
     }
-  };
+  }
 
   return (
     <YStack flex={1} bg="$background">
@@ -167,8 +164,8 @@ export function IdVerificationFlow() {
             onCreateSession={handleCreatePaymentSession}
             onResetSession={() => {
               if (!confirmVerification.isPending) {
-                setPaymentSession(null);
-                setRequestError(null);
+                setPaymentSession(null)
+                setRequestError(null)
               }
             }}
             onPaymentSuccess={handlePaymentSuccess}
@@ -206,11 +203,11 @@ export function IdVerificationFlow() {
         </YStack>
       </ScrollView>
     </YStack>
-  );
+  )
 }
 
 function renderStatusCard(
-  queryReturn: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>,
+  queryReturn: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>
 ) {
   if (queryReturn.isLoading) {
     return (
@@ -220,7 +217,7 @@ function renderStatusCard(
           <Text color="$color11">Loading your verification badge…</Text>
         </YStack>
       </Card>
-    );
+    )
   }
 
   if (queryReturn.isError) {
@@ -231,14 +228,14 @@ function renderStatusCard(
             Unable to load badge
           </Text>
           <Text color="$red11">
-            {queryReturn.error?.message ?? "Please refresh to try loading your verification badge."}
+            {queryReturn.error?.message ?? 'Please refresh to try loading your verification badge.'}
           </Text>
         </YStack>
       </Card>
-    );
+    )
   }
 
-  const badge = queryReturn.data;
+  const badge = queryReturn.data
   if (!badge) {
     return (
       <Card p="$4" bordered>
@@ -249,39 +246,39 @@ function renderStatusCard(
           </Text>
         </YStack>
       </Card>
-    );
+    )
   }
 
   return (
     <Card p="$4" bordered>
       <YStack gap="$2">
         <IdVerificationBadge
-          status={badge.badgeStatus as "active" | "expired" | "revoked"}
+          status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
           badgeExpiresAt={badge.badgeExpiresAt}
         />
         <Text color="$color11">
-          {badge.badgeStatus === "active"
+          {badge.badgeStatus === 'active'
             ? `Valid until ${formatDate(badge.badgeExpiresAt)} (${formatDuration(
-                badge.badgeExpiresAt,
+                badge.badgeExpiresAt
               )})`
-            : badge.badgeStatus === "expired"
+            : badge.badgeStatus === 'expired'
               ? `Expired on ${formatDate(badge.badgeExpiresAt)}`
-              : "Contact support to resolve revocation."}
+              : 'Contact support to resolve revocation.'}
         </Text>
         <Text color="$color10">
-          Verified on {formatDate(badge.verifiedAt)} • Level: {badge.verificationLevel ?? "N/A"}
+          Verified on {formatDate(badge.verifiedAt)} • Level: {badge.verificationLevel ?? 'N/A'}
         </Text>
       </YStack>
     </Card>
-  );
+  )
 }
 
 type PricingSectionProps = {
-  pricingOptions: PricingRow[];
-  selectedPricingId: string | null;
-  onSelectPlan: (id: string) => void;
-  isLoading: boolean;
-};
+  pricingOptions: PricingRow[]
+  selectedPricingId: string | null
+  onSelectPlan: (id: string) => void
+  isLoading: boolean
+}
 
 function PricingSection({
   pricingOptions,
@@ -297,7 +294,7 @@ function PricingSection({
           <Text color="$color11">Loading verification options…</Text>
         </YStack>
       </Card>
-    );
+    )
   }
 
   if (pricingOptions.length === 0) {
@@ -312,7 +309,7 @@ function PricingSection({
           </Text>
         </YStack>
       </Card>
-    );
+    )
   }
 
   return (
@@ -322,15 +319,15 @@ function PricingSection({
       </Text>
       <YStack gap="$3">
         {pricingOptions.map((plan) => {
-          const isActive = plan.id === selectedPricingId;
+          const isActive = plan.id === selectedPricingId
           return (
             <Card
               key={plan.id}
               p="$4"
               bordered
               animation="quick"
-              bg={isActive ? "$blue2" : "$color1"}
-              borderColor={isActive ? "$blue8" : "$borderColor"}
+              bg={isActive ? '$blue2' : '$color1'}
+              borderColor={isActive ? '$blue8' : '$borderColor'}
               onPress={() => onSelectPlan(plan.id)}
             >
               <YStack gap="$2">
@@ -349,31 +346,31 @@ function PricingSection({
                 )}
                 <Button
                   size="$3"
-                  theme={isActive ? "blue" : undefined}
-                  variant={isActive ? undefined : "outlined"}
+                  theme={isActive ? 'blue' : undefined}
+                  variant={isActive ? undefined : 'outlined'}
                   onPress={() => onSelectPlan(plan.id)}
                 >
-                  {isActive ? "Selected" : "Select this option"}
+                  {isActive ? 'Selected' : 'Select this option'}
                 </Button>
               </YStack>
             </Card>
-          );
+          )
         })}
       </YStack>
     </YStack>
-  );
+  )
 }
 
 type PaymentSectionProps = {
-  selectedPricing: PricingRow | null;
-  paymentSession: PaymentSession | null;
-  isRequesting: boolean;
-  isConfirming: boolean;
-  requestError: string | null;
-  onCreateSession: () => void;
-  onResetSession: () => void;
-  onPaymentSuccess: (paymentIntentId: string) => void;
-};
+  selectedPricing: PricingRow | null
+  paymentSession: PaymentSession | null
+  isRequesting: boolean
+  isConfirming: boolean
+  requestError: string | null
+  onCreateSession: () => void
+  onResetSession: () => void
+  onPaymentSuccess: (paymentIntentId: string) => void
+}
 
 function PaymentSection({
   selectedPricing,
@@ -413,7 +410,7 @@ function PaymentSection({
           disabled={!selectedPricing || isRequesting || isConfirming}
           onPress={onCreateSession}
         >
-          {isRequesting ? "Preparing secure checkout…" : "Continue to payment"}
+          {isRequesting ? 'Preparing secure checkout…' : 'Continue to payment'}
         </Button>
       )}
 
@@ -422,23 +419,16 @@ function PaymentSection({
           <PaymentIntentForm
             clientSecret={paymentSession.clientSecret}
             amountCents={paymentSession.amountCents}
-            description={selectedPricing?.name ?? "Identity verification"}
-            submitLabel={isConfirming ? "Processing…" : "Pay & verify"}
+            description={selectedPricing?.name ?? 'Identity verification'}
+            submitLabel={isConfirming ? 'Processing…' : 'Pay & verify'}
             disabled={isConfirming}
             onSuccess={onPaymentSuccess}
           />
-          <Button
-            size="$3"
-            variant="outlined"
-            disabled={isConfirming}
-            onPress={onResetSession}
-          >
+          <Button size="$3" variant="outlined" disabled={isConfirming} onPress={onResetSession}>
             Start over
           </Button>
         </YStack>
       )}
     </YStack>
-  );
+  )
 }
-
-

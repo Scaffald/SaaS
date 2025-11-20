@@ -2,9 +2,9 @@ import type { MapMouseEvent } from 'mapbox-gl'
 import mapboxgl from 'mapbox-gl'
 import React from 'react'
 import { renderToString } from 'react-dom/server'
-import type { MapPin } from './types'
-import { getPinColor } from './pinColors'
 import { PinMarker } from './PinMarker'
+import { getPinColor } from './pinColors'
+import type { MapPin } from './types'
 
 interface CustomMarkerOptions {
   pin: MapPin

@@ -33,19 +33,29 @@ vi.mock('tamagui', () => {
       </div>
     ),
     {
-      Indicator: ({ children, ...props }: { children?: React.ReactNode } & Record<string, unknown>) => (
+      Indicator: ({
+        children,
+        ...props
+      }: { children?: React.ReactNode } & Record<string, unknown>) => (
         <div data-testid="progress-indicator" {...props}>
           {children}
         </div>
       ),
-    },
+    }
   )
 
   return {
     YStack: create(),
     XStack: create(),
     Text: ({ children }: { children?: React.ReactNode }) => <span>{children}</span>,
-    Button: ({ children, onPress, ...props }: { children?: React.ReactNode; onPress?: () => void }) => (
+    Button: ({
+      children,
+      onPress,
+      ...props
+    }: {
+      children?: React.ReactNode
+      onPress?: () => void
+    }) => (
       <button type="button" onClick={onPress} {...props}>
         {children}
       </button>
@@ -54,9 +64,11 @@ vi.mock('tamagui', () => {
   }
 })
 
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import type { ReactNode } from 'react'
+import {
+  DOMAIN_NAMES,
+  DOMAIN_ORDER,
+  QUESTIONS_PER_DOMAIN,
+} from '@app/core/features/ipip-assessment/utils/domainGrouping'
 import type {
   IPIPChoice,
   IPIPChoices,
@@ -64,7 +76,9 @@ import type {
   IPIPFacet,
   IPIPQuestion,
 } from '@app/core/features/personality-assessment/lib/ipip'
-import { DOMAIN_NAMES, DOMAIN_ORDER, QUESTIONS_PER_DOMAIN } from '@app/core/features/ipip-assessment/utils/domainGrouping'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 
 const hoistedData = vi.hoisted(() => {
   const domainOrder: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
@@ -78,7 +92,7 @@ const hoistedData = vi.hoisted(() => {
       domain,
       facet: numberToFacet((index % 6) + 1),
       keyed: index % 2 === 0 ? 'plus' : 'minus',
-    })),
+    }))
   )
 
   const choiceLabels: Array<[IPIPChoice['score'], string]> = [
@@ -151,7 +165,7 @@ describe('IPIPTestStep', () => {
         onSave={vi.fn()}
         onDomainComplete={vi.fn()}
         isLoading={false}
-      />,
+      />
     )
 
     expect(screen.getByText(DOMAIN_NAMES[DOMAIN_ORDER[0]])).toBeVisible()
@@ -172,7 +186,7 @@ describe('IPIPTestStep', () => {
         onSave={onSave}
         onDomainComplete={onDomainComplete}
         isLoading={false}
-      />,
+      />
     )
 
     const choiceButtons = screen.getAllByRole('button', { name: /Very Accurate/i })
@@ -189,5 +203,3 @@ describe('IPIPTestStep', () => {
     expect(lastSave?.[1]).toBe(QUESTIONS_PER_DOMAIN)
   })
 })
-
-

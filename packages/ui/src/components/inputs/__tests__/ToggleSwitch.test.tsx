@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
 const styledCalls = vi.hoisted(() => [] as Array<{ config: Record<string, unknown> }>)
 
@@ -10,7 +10,11 @@ vi.mock('tamagui', () => {
     onPress,
     testID,
     ...rest
-  }: { children?: ReactNode; onPress?: () => void; testID?: string }) => {
+  }: {
+    children?: ReactNode
+    onPress?: () => void
+    testID?: string
+  }) => {
     const props: Record<string, unknown> = { ...rest }
 
     if (testID) {

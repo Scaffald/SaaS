@@ -1,12 +1,12 @@
-import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
 import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
-import { Drawer } from 'expo-router/drawer'
-import { YStack, Text, Spinner } from 'tamagui'
-import { useRouter } from 'expo-router'
-import { usePathname } from '@app/core/utils/usePathname'
-import { useEffect } from 'react'
 import { api } from '@app/core/utils/api'
+import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
+import { usePathname } from '@app/core/utils/usePathname'
+import { useRouter } from 'expo-router'
+import { Drawer } from 'expo-router/drawer'
+import { useEffect } from 'react'
+import { Spinner, Text, YStack } from 'tamagui'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()

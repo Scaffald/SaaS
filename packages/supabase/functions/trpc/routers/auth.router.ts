@@ -1,19 +1,22 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
 
-import { protectedProcedure, publicProcedure, t } from "../middleware.ts";
+import { protectedProcedure, publicProcedure, t } from '../middleware.ts'
 
 const MAGIC_LINK_REDIRECT_FALLBACK =
-  Deno.env.get("MAGIC_LINK_REDIRECT_URL") ??
-  Deno.env.get("EXPO_PUBLIC_URL") ??
-  Deno.env.get("SUPABASE_SITE_URL") ??
-  Deno.env.get("SITE_URL") ??
-  null;
+  Deno.env.get('MAGIC_LINK_REDIRECT_URL') ??
+  Deno.env.get('EXPO_PUBLIC_URL') ??
+  Deno.env.get('SUPABASE_SITE_URL') ??
+  Deno.env.get('SITE_URL') ??
+  null
 
 const requestMagicLinkInput = z.object({
-  email: z.string().email().transform((value) => value.trim().toLowerCase()),
+  email: z
+    .string()
+    .email()
+    .transform((value) => value.trim().toLowerCase()),
   redirectTo: z.string().url().optional(),
-});
+})
 
 /**
  * Auth router - handles authentication-related operations
@@ -28,42 +31,38 @@ export const authRouter = t.router({
   requestMagicLink: publicProcedure
     .input(requestMagicLinkInput)
     .mutation(async ({ ctx, input }) => {
-      const email = input.email;
+      const email = input.email
 
-      const redirectTarget = input.redirectTo ?? MAGIC_LINK_REDIRECT_FALLBACK;
+      const redirectTarget = input.redirectTo ?? MAGIC_LINK_REDIRECT_FALLBACK
       if (!redirectTarget) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Magic link redirect target is not configured",
-        });
+          code: 'BAD_REQUEST',
+          message: 'Magic link redirect target is not configured',
+        })
       }
 
-      const { data: existingUsers, error: lookupError } = await ctx.supabaseAdmin
-        .auth
-        .admin
-        .listUsers({
+      const { data: existingUsers, error: lookupError } =
+        await ctx.supabaseAdmin.auth.admin.listUsers({
           email,
           page: 1,
           perPage: 1,
-        });
+        })
 
       if (lookupError) {
-        console.error("[auth.requestMagicLink] Failed to lookup user", {
+        console.error('[auth.requestMagicLink] Failed to lookup user', {
           email,
           error: lookupError.message,
-        });
+        })
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Unable to request magic link",
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Unable to request magic link',
           cause: lookupError,
-        });
+        })
       }
 
       const isExistingUser = Boolean(
-        existingUsers?.users?.some((user) =>
-          (user.email ?? "").toLowerCase() === email
-        ),
-      );
+        existingUsers?.users?.some((user) => (user.email ?? '').toLowerCase() === email)
+      )
 
       const { error: otpError } = await ctx.supabase.auth.signInWithOtp({
         email,
@@ -71,25 +70,25 @@ export const authRouter = t.router({
           emailRedirectTo: redirectTarget,
           shouldCreateUser: !isExistingUser,
         },
-      });
+      })
 
       if (otpError) {
-        console.error("[auth.requestMagicLink] OTP request failed", {
+        console.error('[auth.requestMagicLink] OTP request failed', {
           email,
           error: otpError.message,
-        });
+        })
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to send magic link email",
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to send magic link email',
           cause: otpError,
-        });
+        })
       }
 
       return {
-        mode: isExistingUser ? "login" : "signup",
+        mode: isExistingUser ? 'login' : 'signup',
         email,
         redirectTo: redirectTarget,
-      };
+      }
     }),
 
   /**
@@ -98,35 +97,35 @@ export const authRouter = t.router({
    */
   getUserRoles: protectedProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabase
-      .schema("core")
-      .from("role_assignments")
-      .select("role:roles(name)")
-      .eq("user_id", ctx.user.id);
+      .schema('core')
+      .from('role_assignments')
+      .select('role:roles(name)')
+      .eq('user_id', ctx.user.id)
 
     if (error) {
-      console.error("[auth.getUserRoles] Failed to fetch roles", {
+      console.error('[auth.getUserRoles] Failed to fetch roles', {
         userId: ctx.user.id,
         error: error.message,
-      });
+      })
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Unable to load user roles",
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Unable to load user roles',
         cause: error,
-      });
+      })
     }
 
     const roles =
       (data as Array<{ role: { name: string } | null }> | null)
         ?.map((r) => r.role?.name)
-        .filter((name): name is string => Boolean(name)) ?? [];
+        .filter((name): name is string => Boolean(name)) ?? []
 
-    if (process.env.NODE_ENV !== "production") {
-      console.debug("[auth.getUserRoles] Roles fetched", {
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[auth.getUserRoles] Roles fetched', {
         userId: ctx.user.id,
         roleCount: roles.length,
-      });
+      })
     }
 
-    return { roles };
+    return { roles }
   }),
-});
+})

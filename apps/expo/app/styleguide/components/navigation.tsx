@@ -1,10 +1,9 @@
 // @ts-nocheck
-import React, { useState } from 'react'
+
+import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import { Button } from '@app/ui'
+import { useState } from 'react'
 import { Tabs, Text, XStack, YStack } from 'tamagui'
-import { StyleguidePage } from '@app/styleguide'
-import { AnchorHeading } from '@app/styleguide'
-import { ExampleCard } from '@app/styleguide'
 
 const TAB_ITEMS = ['Overview', 'Activity', 'Settings']
 

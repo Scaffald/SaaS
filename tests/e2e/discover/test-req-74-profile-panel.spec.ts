@@ -3,7 +3,7 @@
  * Tests the profile panel that appears when clicking map pins
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { setupAuth } from '../infrastructure/playwright/setup/auth.setup'
 
 test.describe('UserProfilePanel on Map', () => {
@@ -16,14 +16,19 @@ test.describe('UserProfilePanel on Map', () => {
 
   test('user clicks map pin and profile panel appears', async ({ page }) => {
     // Find a map pin (worker pin)
-    const mapPin = page.locator('[data-testid*="map-pin"]').or(page.locator('[data-testid*="worker-pin"]')).first()
+    const mapPin = page
+      .locator('[data-testid*="map-pin"]')
+      .or(page.locator('[data-testid*="worker-pin"]'))
+      .first()
 
     const pinCount = await mapPin.count()
     if (pinCount > 0) {
       await mapPin.click()
 
       // Wait for profile panel to appear
-      await expect(page.locator('[data-testid="profile-panel-card"]')).toBeVisible({ timeout: 5000 })
+      await expect(page.locator('[data-testid="profile-panel-card"]')).toBeVisible({
+        timeout: 5000,
+      })
     } else {
       // Skip if no pins available
       test.skip()
@@ -31,7 +36,10 @@ test.describe('UserProfilePanel on Map', () => {
   })
 
   test('profile panel displays user info', async ({ page }) => {
-    const mapPin = page.locator('[data-testid*="map-pin"]').or(page.locator('[data-testid*="worker-pin"]')).first()
+    const mapPin = page
+      .locator('[data-testid*="map-pin"]')
+      .or(page.locator('[data-testid*="worker-pin"]'))
+      .first()
 
     const pinCount = await mapPin.count()
     if (pinCount > 0) {
@@ -53,7 +61,10 @@ test.describe('UserProfilePanel on Map', () => {
   })
 
   test('user clicks "View Profile" button and navigates', async ({ page }) => {
-    const mapPin = page.locator('[data-testid*="map-pin"]').or(page.locator('[data-testid*="worker-pin"]')).first()
+    const mapPin = page
+      .locator('[data-testid*="map-pin"]')
+      .or(page.locator('[data-testid*="worker-pin"]'))
+      .first()
 
     const pinCount = await mapPin.count()
     if (pinCount > 0) {
@@ -63,14 +74,18 @@ test.describe('UserProfilePanel on Map', () => {
       await page.waitForSelector('[data-testid="profile-panel-card"]', { timeout: 5000 })
 
       // Click View Profile button
-      const viewProfileButton = page.locator('text=View Profile').or(page.locator('button:has-text("View Profile")'))
+      const viewProfileButton = page
+        .locator('text=View Profile')
+        .or(page.locator('button:has-text("View Profile")'))
       const buttonCount = await viewProfileButton.count()
 
       if (buttonCount > 0) {
         await viewProfileButton.first().click()
 
         // Panel should close
-        await expect(page.locator('[data-testid="profile-panel-card"]')).not.toBeVisible({ timeout: 2000 })
+        await expect(page.locator('[data-testid="profile-panel-card"]')).not.toBeVisible({
+          timeout: 2000,
+        })
 
         // Navigation should occur (check URL change)
         await page.waitForTimeout(1000)
@@ -85,7 +100,10 @@ test.describe('UserProfilePanel on Map', () => {
   })
 
   test('user closes panel with X button', async ({ page }) => {
-    const mapPin = page.locator('[data-testid*="map-pin"]').or(page.locator('[data-testid*="worker-pin"]')).first()
+    const mapPin = page
+      .locator('[data-testid*="map-pin"]')
+      .or(page.locator('[data-testid*="worker-pin"]'))
+      .first()
 
     const pinCount = await mapPin.count()
     if (pinCount > 0) {
@@ -95,14 +113,19 @@ test.describe('UserProfilePanel on Map', () => {
       await page.waitForSelector('[data-testid="profile-panel-card"]', { timeout: 5000 })
 
       // Find and click close button
-      const closeButton = page.locator('[data-testid="x-icon"]').closest('button').or(page.locator('button:has([data-testid="x-icon"])'))
+      const closeButton = page
+        .locator('[data-testid="x-icon"]')
+        .closest('button')
+        .or(page.locator('button:has([data-testid="x-icon"])'))
       const buttonCount = await closeButton.count()
 
       if (buttonCount > 0) {
         await closeButton.first().click()
 
         // Panel should close
-        await expect(page.locator('[data-testid="profile-panel-card"]')).not.toBeVisible({ timeout: 2000 })
+        await expect(page.locator('[data-testid="profile-panel-card"]')).not.toBeVisible({
+          timeout: 2000,
+        })
       } else {
         test.skip()
       }
@@ -115,7 +138,10 @@ test.describe('UserProfilePanel on Map', () => {
     // Test desktop size
     await page.setViewportSize({ width: 1920, height: 1080 })
 
-    const mapPin = page.locator('[data-testid*="map-pin"]').or(page.locator('[data-testid*="worker-pin"]')).first()
+    const mapPin = page
+      .locator('[data-testid*="map-pin"]')
+      .or(page.locator('[data-testid*="worker-pin"]'))
+      .first()
     const pinCount = await mapPin.count()
 
     if (pinCount > 0) {
@@ -130,7 +156,10 @@ test.describe('UserProfilePanel on Map', () => {
       await page.reload()
       await page.waitForTimeout(2000)
 
-      const mobilePin = page.locator('[data-testid*="map-pin"]').or(page.locator('[data-testid*="worker-pin"]')).first()
+      const mobilePin = page
+        .locator('[data-testid*="map-pin"]')
+        .or(page.locator('[data-testid*="worker-pin"]'))
+        .first()
       const mobilePinCount = await mobilePin.count()
 
       if (mobilePinCount > 0) {
@@ -151,4 +180,3 @@ test.describe('UserProfilePanel on Map', () => {
     }
   })
 })
-

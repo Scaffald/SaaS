@@ -1,12 +1,20 @@
+import { api } from '@app/core/utils/api'
+import {
+  CheckCircle2,
+  Clock,
+  FileWarning,
+  Info,
+  ListPlus,
+  Loader2,
+  RotateCcw,
+} from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Button, Card, H5, Paragraph, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
-import { CheckCircle2, FileWarning, Loader2, RotateCcw, Info, Clock, ListPlus } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
 import { useImportData } from '../hooks/useImportData'
-import { ConfidenceBadge } from './ConfidenceBadge'
-import { ImportSectionTabs } from './ImportSectionTabs'
-import { EditableField } from './EditableField'
 import { toConfidenceLevel } from '../utils/importConfidence'
+import { ConfidenceBadge } from './ConfidenceBadge'
+import { EditableField } from './EditableField'
+import { ImportSectionTabs } from './ImportSectionTabs'
 
 interface SelectedState {
   [sectionId: string]: Record<string, boolean>
@@ -45,10 +53,9 @@ export function ImportReviewScreen() {
 
   const currentSection = sections.find((section) => section.id === activeSection) ?? sections[0]
   const totalItems = sections.reduce((total, section) => total + section.items.length, 0)
-  const allSelected = totalItems > 0 &&
-    sections.every((section) =>
-      section.items.every((item) => selectedItems[section.id]?.[item.id]),
-    )
+  const allSelected =
+    totalItems > 0 &&
+    sections.every((section) => section.items.every((item) => selectedItems[section.id]?.[item.id]))
 
   const expiresInLabel = useMemo(() => {
     if (!metadata?.expiresAt) return null
@@ -107,7 +114,9 @@ export function ImportReviewScreen() {
         <Text color="$red11" fontWeight="600">
           We couldn’t load your import data
         </Text>
-        <Text color="$color11">Please retry. If the issue persists, try uploading your resume again.</Text>
+        <Text color="$color11">
+          Please retry. If the issue persists, try uploading your resume again.
+        </Text>
         <Button size="$4" onPress={() => refetch()}>
           Retry
         </Button>
@@ -135,14 +144,16 @@ export function ImportReviewScreen() {
     const buildSectionPayload = <T extends { id: string; raw?: Record<string, unknown> }>(
       sectionId: string,
       items: T[],
-      mapper: (item: T) => Record<string, unknown>,
+      mapper: (item: T) => Record<string, unknown>
     ) => {
       return items
         .filter((item) => selectedItems[sectionId]?.[item.id])
         .map((item) => {
           const base = item.raw ?? mapper(item)
           return Object.fromEntries(
-            Object.entries(base).filter(([, value]) => value !== undefined && value !== null && value !== ''),
+            Object.entries(base).filter(
+              ([, value]) => value !== undefined && value !== null && value !== ''
+            )
           )
         })
     }
@@ -156,7 +167,7 @@ export function ImportReviewScreen() {
         headline: item.headline,
         summary: item.summary,
         confidence_score: item.confidenceScore,
-      }),
+      })
     )
 
     const experiencePayload = buildSectionPayload(
@@ -169,7 +180,7 @@ export function ImportReviewScreen() {
         end_date: item.endDate,
         is_current: item.isCurrent,
         confidence_score: item.confidenceScore,
-      }),
+      })
     )
 
     const educationPayload = buildSectionPayload(
@@ -181,7 +192,7 @@ export function ImportReviewScreen() {
         start_date: item.startDate,
         end_date: item.endDate,
         confidence_score: item.confidenceScore,
-      }),
+      })
     )
 
     const skillsPayload = buildSectionPayload(
@@ -191,7 +202,7 @@ export function ImportReviewScreen() {
         name: item.name,
         taxonomy: item.taxonomy,
         confidence_score: item.confidenceScore,
-      }),
+      })
     )
 
     const certificationsPayload = buildSectionPayload(
@@ -202,7 +213,7 @@ export function ImportReviewScreen() {
         issuer: item.issuer,
         issue_date: item.issueDate,
         confidence_score: item.confidenceScore,
-      }),
+      })
     )
 
     if (
@@ -276,7 +287,8 @@ export function ImportReviewScreen() {
                 <H5>Imported data overview</H5>
               </XStack>
               <Paragraph color="$color11">
-                Review and confirm the details we extracted. You can import everything, bring over a subset, or clear the import and start again.
+                Review and confirm the details we extracted. You can import everything, bring over a
+                subset, or clear the import and start again.
               </Paragraph>
               <XStack gap="$3" flexWrap="wrap">
                 <XStack gap="$2" items="center">
@@ -291,9 +303,7 @@ export function ImportReviewScreen() {
                     {expiresInLabel?.label ?? 'Expires 24 hours after upload'}
                   </Text>
                 </XStack>
-                {storedAtLabel && (
-                  <Text color="$color10">Uploaded {storedAtLabel}</Text>
-                )}
+                {storedAtLabel && <Text color="$color10">Uploaded {storedAtLabel}</Text>}
                 <Text color="$color10">
                   Source:{' '}
                   <Text fontWeight="600" color="$color12">
@@ -341,7 +351,9 @@ export function ImportReviewScreen() {
 
           {currentSection?.items.map((item) => {
             const isSelected = selectedItems[currentSection.id]?.[item.id] ?? false
-            const confidenceLevel = toConfidenceLevel((item as { confidenceScore?: number }).confidenceScore)
+            const confidenceLevel = toConfidenceLevel(
+              (item as { confidenceScore?: number }).confidenceScore
+            )
             return (
               <Card bordered key={item.id} bg={isSelected ? '$color3' : '$background'}>
                 <Card.Header gap="$3">
@@ -417,7 +429,12 @@ export function ImportReviewScreen() {
 
       <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
         <XStack gap="$2" flexWrap="wrap">
-          <Button size="$3" variant="outlined" icon={RotateCcw} onPress={() => setSelectedItems({})}>
+          <Button
+            size="$3"
+            variant="outlined"
+            icon={RotateCcw}
+            onPress={() => setSelectedItems({})}
+          >
             Clear selections
           </Button>
           <Button
@@ -464,5 +481,3 @@ export function ImportReviewScreen() {
     </YStack>
   )
 }
-
-

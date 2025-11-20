@@ -1,12 +1,3 @@
-import { useMemo, useState } from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
-import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
-
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import {
   TeamActivityFeed,
@@ -17,6 +8,14 @@ import {
   TeamMembersList,
   TeamOverviewCard,
 } from '@app/core/features/office/teams'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']

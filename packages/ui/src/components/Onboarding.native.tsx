@@ -1,17 +1,15 @@
 import { useRef, useState } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { ScrollView as RNScrollView } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   Circle,
   Image,
   ScrollView,
   type ScrollViewProps,
-  Theme,
-  ThemeName,
-  XStack,
-  YStack,
   useTheme,
   useWindowDimensions,
+  XStack,
+  YStack,
 } from 'tamagui'
 
 import type { OnboardingProps } from './Onboarding'

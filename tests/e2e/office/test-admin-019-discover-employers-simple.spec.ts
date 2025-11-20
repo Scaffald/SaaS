@@ -4,7 +4,7 @@
  * Testing with increased timeout to diagnose auth/profile issues
  */
 
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 const ROUTE_PATH = '/dashboard/discover/employers'
@@ -16,7 +16,7 @@ test.describe('Admin • Employer Discovery (Simplified)', () => {
   // Setup: Sign in as admin and navigate to employer discovery route before each test
   test.beforeEach(async ({ page }: { page: Page }) => {
     console.log('Starting admin sign in...')
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     console.log('Admin signed in successfully, now on /dashboard')
 
     console.log('Navigating to employer discovery route...')
@@ -25,7 +25,11 @@ test.describe('Admin • Employer Discovery (Simplified)', () => {
     console.log('Current URL:', page.url())
   })
 
-  test('should sign in as admin and navigate to employer discovery', async ({ page }: { page: Page }) => {
+  test('should sign in as admin and navigate to employer discovery', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     // Already on ROUTE_PATH from beforeEach
     expect(page.url()).toContain(ROUTE_PATH)
 

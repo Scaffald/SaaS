@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { YStack, Text } from 'tamagui'
+import { Text, YStack } from 'tamagui'
 import { SearchSelect, type SearchSelectOption } from '../search-select'
 
 export interface University {

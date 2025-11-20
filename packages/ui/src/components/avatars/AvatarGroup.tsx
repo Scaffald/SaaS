@@ -58,9 +58,7 @@ export const AvatarGroup = memo(({ avatars, maxVisible = 5, size = '$4' }: Avata
             zIndex: displayAvatars.length - index,
           }}
         >
-          {avatar.src ? (
-            <Avatar.Image src={avatar.src} />
-          ) : null}
+          {avatar.src ? <Avatar.Image src={avatar.src} /> : null}
           <Avatar.Fallback bg="$blue9">
             <Text color="white" fontWeight="600" fontSize="$2">
               {avatar.name.charAt(0).toUpperCase()}
@@ -90,4 +88,3 @@ export const AvatarGroup = memo(({ avatars, maxVisible = 5, size = '$4' }: Avata
 })
 
 AvatarGroup.displayName = 'AvatarGroup'
-
