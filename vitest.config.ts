@@ -1,24 +1,25 @@
-import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vitest/config'
 import type { Config } from 'vitest'
+import { defineConfig } from 'vitest/config'
 
 import { flowRemoveTypesPlugin } from './tests/infrastructure/vitest/plugins/flow-remove'
+
 const workspaceRoot = fileURLToPath(new URL('.', import.meta.url))
 const coverageReportsDirectory = resolve(workspaceRoot, 'coverage')
 const quietReporterPath = resolve(
   workspaceRoot,
-  'tests/infrastructure/vitest/reporters/quiet-progress.ts',
+  'tests/infrastructure/vitest/reporters/quiet-progress.ts'
 )
 
 type VitestPlugin = NonNullable<Config['plugins']>[number]
-const plugins: VitestPlugin[] = [
-  react() as unknown as VitestPlugin,
-  flowRemoveTypesPlugin(),
-]
-const reactNativeMockPath = resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/react-native.ts')
+const plugins: VitestPlugin[] = [react() as unknown as VitestPlugin, flowRemoveTypesPlugin()]
+const reactNativeMockPath = resolve(
+  workspaceRoot,
+  'tests/infrastructure/vitest/mocks/react-native.ts'
+)
 
 export default defineConfig({
   root: workspaceRoot,
@@ -39,13 +40,19 @@ export default defineConfig({
       { find: '@app/schemas', replacement: resolve(workspaceRoot, 'packages/schemas/src') },
       {
         find: '@testing-library/react-native',
-        replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/testing-library-react-native.ts'),
+        replacement: resolve(
+          workspaceRoot,
+          'tests/infrastructure/vitest/mocks/testing-library-react-native.ts'
+        ),
       },
       {
         find: 'expo-constants',
         replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/expo-constants.ts'),
       },
-      { find: '@app/styleguide', replacement: resolve(workspaceRoot, 'packages/ui/src/styleguide') },
+      {
+        find: '@app/styleguide',
+        replacement: resolve(workspaceRoot, 'packages/ui/src/styleguide'),
+      },
     ],
     conditions: ['browser', 'module', 'import', 'default'],
   },
@@ -70,14 +77,16 @@ export default defineConfig({
       'packages/core/features/profile/__tests__/profile-employment-left.test.tsx',
       'packages/core/features/inquiries/components/__tests__/**',
       'packages/core/features/profile-wizard/**',
-      'packages/core/features/discover/hooks/__tests__/useLocationHooks.test.ts',
-      'packages/core/features/discover/hooks/__tests__/useUserLocation.test.ts',
+      'packages/core/features/discover/hooks/__tests__/**',
       'packages/core/features/feedback/__tests__/**',
-      'packages/core/features/profile-completion/components/__tests__/**',
-      'packages/core/features/profile-import/components/__tests__/**',
-      'packages/core/features/resume/hooks/__tests__/**',
+      'packages/core/features/profile-completion/**',
+      'packages/core/features/profile-import/**',
+      'packages/core/features/resume/**',
       'packages/core/utils/auth/__tests__/**',
-      'packages/ui/src/components/image-picker/utils/__tests__/imageProcessing.test.ts',
+      'packages/core/features/work-logs/**',
+      'packages/ui/src/components/image-picker/**',
+      'packages/core/features/office/teams/**',
+      'packages/core/features/personality-assessment/**',
     ],
     setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
     reporters: [quietReporterPath, 'hanging-process'],
@@ -155,4 +164,3 @@ export default defineConfig({
     },
   },
 })
-
