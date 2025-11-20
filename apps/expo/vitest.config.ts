@@ -1,10 +1,11 @@
 import { fileURLToPath } from 'node:url'
 
 import baseConfig from '../../vitest.config'
-import { defineConfig, mergeConfig, type UserConfig } from 'vitest/config'
+import { defineConfig, mergeConfig } from 'vitest/config'
+import type { Config } from 'vitest'
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
-const sharedConfig = baseConfig as UserConfig
+const sharedConfig = baseConfig as Config
 
 export default mergeConfig(
   sharedConfig,
@@ -27,6 +28,6 @@ export default mergeConfig(
         },
       ],
     },
-  }) as UserConfig,
+  }) as Config,
 )
 

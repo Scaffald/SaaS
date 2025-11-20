@@ -1,10 +1,10 @@
 import { extname } from 'node:path'
 
 import flowRemoveTypes from 'flow-remove-types'
-import type { UserConfig } from 'vitest/config'
+import type { Config } from 'vitest'
 
 type Matcher = RegExp | ((path: string) => boolean)
-type VitePlugin = NonNullable<UserConfig['plugins']>[number]
+type VitePlugin = NonNullable<Config['plugins']>[number]
 
 export interface FlowRemoveTypesPluginOptions {
   include?: Matcher[]
@@ -28,7 +28,7 @@ export function flowRemoveTypesPlugin({
   return {
     name: 'flow-remove-types',
     enforce: 'pre',
-    transform(code, id) {
+    transform(code: string, id: string) {
       if (process.env.VITEST !== 'true') {
         return null
       }

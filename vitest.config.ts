@@ -2,7 +2,8 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 
 import react from '@vitejs/plugin-react'
-import { defineConfig, type UserConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config'
+import type { Config } from 'vitest'
 
 import { flowRemoveTypesPlugin } from './tests/infrastructure/vitest/plugins/flow-remove'
 const workspaceRoot = fileURLToPath(new URL('.', import.meta.url))
@@ -12,7 +13,7 @@ const quietReporterPath = resolve(
   'tests/infrastructure/vitest/reporters/quiet-progress.ts',
 )
 
-type VitestPlugin = NonNullable<UserConfig['plugins']>[number]
+type VitestPlugin = NonNullable<Config['plugins']>[number]
 const plugins: VitestPlugin[] = [
   react() as unknown as VitestPlugin,
   flowRemoveTypesPlugin(),
