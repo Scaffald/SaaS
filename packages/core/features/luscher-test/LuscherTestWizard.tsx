@@ -194,7 +194,7 @@ export function LuscherTestWizard() {
   const showResultsSidebar = effectiveCurrentStep === 'results'
 
   const railContent = (
-    <YStack gap="$5" p="$2" $gtSm={{ p: '$1' }}>
+    <YStack gap="$5" p="$2" $md={{ p: '$1' }}>
       <YStack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Weekly Pulse
@@ -282,10 +282,5 @@ export function LuscherTestWizard() {
     </AssessmentWizard>
   )
 
-  return (
-    <DashboardLayout
-      leftContent={wizardContent}
-      rightContent={railContent}
-    />
-  )
+  return <DashboardLayout leftContent={wizardContent} rightContent={railContent} />
 }

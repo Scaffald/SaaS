@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { Dialog, XStack, YStack, Text, Button, ScrollView, useWindowDimensions } from 'tamagui'
-import { Sheet } from '@app/ui'
+import { XStack, YStack, Text, Button, ScrollView, useWindowDimensions } from 'tamagui'
+import { Sheet, Dialog } from '@app/ui'
 import { X } from '@tamagui/lucide-icons'
 
 /**
@@ -96,8 +96,8 @@ export function ResponsiveModal({
         zIndex={100000}
         animation="medium"
       >
-        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame bg="$background">
+        <Sheet.Overlay />
+        <Sheet.Frame>
           <Sheet.Handle />
 
           {showHeader && (
@@ -139,32 +139,8 @@ export function ResponsiveModal({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          width={finalWidth}
-          height={finalHeight}
-          gap="$0"
-        >
+        <Dialog.Overlay key="overlay" />
+        <Dialog.Content key="content" width={finalWidth} height={finalHeight} gap="$0">
           {showHeader && (
             <XStack
               p="$4"

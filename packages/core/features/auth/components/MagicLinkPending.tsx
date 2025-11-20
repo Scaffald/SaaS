@@ -114,7 +114,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         overflow="hidden"
         p="$4"
         px="$3"
-        $gtSm={{ p: '$5', minW: 300 }}
+        $md={{ p: '$5', minW: 300 }}
         width="100%"
         maxW={450}
       >

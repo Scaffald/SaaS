@@ -50,10 +50,10 @@ export default function GridPage() {
         <AnchorHeading
           id="grid-responsive"
           title="Responsive breakpoints"
-          description="Media tokens defined in packages/ui/src/config/media.ts map to Bootstrap’s xs/sm/md/lg ranges."
+          description="Media tokens defined in tamagui."
         />
         <Paragraph fontSize={13} color="$color10">
-          Use props like <Text fontFamily="monospace">$gtSm</Text> or{' '}
+          Use props like <Text fontFamily="monospace">$md</Text> or{' '}
           <Text fontFamily="monospace">$sm</Text> to override flex directions at specific
           breakpoints. Example:{' '}
           <Text fontFamily="monospace">$sm={{ flexDirection: 'column' }}</Text> mirrors Bootstrap’s

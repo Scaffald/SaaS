@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+// @ts-ignore Supabase Edge Functions run in Deno with URL-based imports
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 export interface FeedbackRow {
   id: string;
@@ -54,7 +55,10 @@ export function createServiceClient() {
   if (!supabaseUrl || !serviceKey) {
     console.error(
       "[feedback-sync] Missing Supabase environment configuration",
-      { supabaseUrlPresent: Boolean(supabaseUrl), serviceKeyPresent: Boolean(serviceKey) },
+      {
+        supabaseUrlPresent: Boolean(supabaseUrl),
+        serviceKeyPresent: Boolean(serviceKey),
+      },
     );
     return null;
   }
@@ -103,7 +107,9 @@ export function buildBraingridPayload(
       "---- Context ----",
       `Page: ${feedback.page_title ?? "Unknown"} (${feedback.page_url})`,
       `User: ${feedback.user_name ?? "Unknown"} <${feedback.user_email}>`,
-      `Browser: ${feedback.browser_name ?? "Unknown"} ${feedback.browser_version ?? ""}`.trim(),
+      `Browser: ${feedback.browser_name ?? "Unknown"} ${
+        feedback.browser_version ?? ""
+      }`.trim(),
       `OS: ${feedback.operating_system ?? "Unknown"}`,
       `Screen: ${feedback.screen_resolution ?? "Unknown"}`,
       `Viewport: ${feedback.viewport_size ?? "Unknown"}`,
@@ -144,5 +150,3 @@ async function updateFeedbackStatus(
     });
   }
 }
-
-

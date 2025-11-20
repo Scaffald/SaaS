@@ -63,15 +63,3 @@ export type DrawerSectionProps = {
   expandedItems?: Set<string>;
   onToggleExpanded?: (key: string) => void;
 };
-
-/**
- * Props for DrawerContent component
- */
-export type DrawerContentProps = {
-  pathname: string;
-  collapsed?: boolean;
-  onNavigate?: (href: string, event: GestureResponderEvent) => void;
-  expandedItems?: Set<string>;
-  onToggleExpanded?: (key: string) => void;
-  drawerProps?: DrawerContentComponentProps;
-};

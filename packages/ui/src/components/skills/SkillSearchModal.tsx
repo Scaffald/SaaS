@@ -5,7 +5,6 @@ import {
   Text,
   Button,
   Input,
-  Dialog,
   ScrollView,
   Spinner,
   Slider,
@@ -14,7 +13,7 @@ import {
   useWindowDimensions,
   type GetThemeValueForKey,
 } from 'tamagui'
-import { Sheet } from '@app/ui'
+import { Sheet, Dialog } from '@app/ui'
 import { Search, X, ChevronRight, ArrowLeft } from '@tamagui/lucide-icons'
 
 /**
@@ -512,34 +511,8 @@ export function SkillSearchModal({
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap="$4"
-          minW={500}
-          maxW={600}
-          minH={500}
-          maxH="80vh"
-        >
+        <Dialog.Overlay key="overlay" />
+        <Dialog.Content key="content" minW={500} maxW={600} minH={500} maxH="80vh">
           {/* Header */}
           <Dialog.Title>
             <XStack justify="space-between" items="center">

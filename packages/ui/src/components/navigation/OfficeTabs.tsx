@@ -1,6 +1,14 @@
 import { useMemo, type JSX } from 'react'
 import { Link } from 'expo-router'
-import { useMedia, Button, Paragraph, ScrollView, XStack, YStack, type ButtonProps } from 'tamagui'
+import {
+  useWindowDimensions,
+  Button,
+  Paragraph,
+  ScrollView,
+  XStack,
+  YStack,
+  type ButtonProps,
+} from 'tamagui'
 
 export type OfficeTabsItem = {
   key: string
@@ -37,8 +45,10 @@ export const OfficeTabs = ({
   currentPath,
   ariaLabel = 'Office navigation',
 }: OfficeTabsProps) => {
-  const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
+  // Use window dimensions for conditional rendering
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width <= 800
 
   const normalizedItems = useMemo(
     () =>

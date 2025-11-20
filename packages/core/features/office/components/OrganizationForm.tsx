@@ -349,7 +349,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         gap="$2"
         mt="$4"
         $sm={{ flexDirection: 'column' }}
-        $gtSm={{ flexDirection: 'row' }}
+        $md={{ flexDirection: 'row' }}
       >
         <Button
           testID="org-form-cancel-btn"
@@ -357,7 +357,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           onPress={() => router.back()}
           disabled={isLoading}
           $sm={{ height: 44, width: '100%' }}
-          $gtSm={{ height: undefined, width: undefined }}
+          $md={{ height: undefined, width: undefined }}
         >
           Cancel
         </Button>
@@ -367,7 +367,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           disabled={!isDirty || isLoading}
           icon={isLoading ? <Spinner /> : undefined}
           $sm={{ height: 44, width: '100%' }}
-          $gtSm={{ height: undefined, width: undefined }}
+          $md={{ height: undefined, width: undefined }}
         >
           {isLoading ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}
         </Button>

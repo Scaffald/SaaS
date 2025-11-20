@@ -1,4 +1,5 @@
-import { YStack, XStack, Text, Spinner, H4, Button, Dialog } from 'tamagui'
+import { YStack, XStack, Text, Spinner, H4, Button } from 'tamagui'
+import { Dialog } from '@app/ui'
 import { GraduationCap, Calendar, MapPin, Pencil, Trash2, AlertCircle } from '@tamagui/lucide-icons'
 import { DashboardWidget } from '@app/ui'
 import { ProfileEmptyState, EducationEntryEditModal } from './components'

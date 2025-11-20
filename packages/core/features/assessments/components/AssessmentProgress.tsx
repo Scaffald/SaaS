@@ -134,7 +134,7 @@ export function AssessmentProgress({
       )}
 
       {/* Step Indicators */}
-      <XStack gap="$2" flexWrap="wrap" justify="center" $gtXs={{ gap: '$6' }}>
+      <XStack gap="$2" flexWrap="wrap" justify="center" $md={{ gap: '$6' }}>
         {sortedSteps.map((step, index) => {
           const isCompleted = completedSteps.has(step.id)
           const isCurrent = step.id === currentStep

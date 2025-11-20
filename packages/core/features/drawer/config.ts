@@ -31,19 +31,13 @@ export interface AssessmentStatus {
 /**
  * Generates drawer items dynamically from dashboard routes
  * @param options - Optional configuration for drawer items
- * @param options.includeOfficeLink - DEPRECATED: Office navigation now in header flyout menu
  * @param options.assessmentStatus - Assessment completion status for checkmarks
  * @returns Array of drawer item configurations
  */
 export const generateDashboardDrawerItems = (options?: {
-  includeOfficeLink?: boolean;
   assessmentStatus?: AssessmentStatus;
-  includeTeamManagementLink?: boolean;
 }): DrawerItemConfig[] => {
   const items: DrawerItemConfig[] = [];
-
-  // Office section removed - now accessed via header flyout menu
-  // includeOfficeLink parameter kept for backward compatibility but not used
 
   // Main dashboard item
   items.push({
@@ -187,25 +181,13 @@ export const generateDashboardDrawerItems = (options?: {
 };
 
 /**
- * Main drawer sections configuration
- * @param options - Optional configuration for drawer sections
- * @param options.includeOfficeLink - Whether to include the Office link (for admin users)
+ * Get drawer items for the drawer menu
+ * @param options - Optional configuration for drawer items
  * @param options.assessmentStatus - Assessment completion status for checkmarks
- * @returns Array of drawer section configurations
+ * @returns Array of drawer item configurations
  */
-export const getDrawerSections = (options?: {
-  includeOfficeLink?: boolean;
+export const getDrawerItems = (options?: {
   assessmentStatus?: AssessmentStatus;
-  includeTeamManagementLink?: boolean;
-}): DrawerSectionConfig[] => [
-  {
-    key: "main",
-    title: "",
-    items: generateDashboardDrawerItems(options),
-  },
-];
-
-/**
- * Default drawer sections configuration (backward compatibility)
- */
-export const drawerSections: DrawerSectionConfig[] = getDrawerSections();
+}): DrawerItemConfig[] => {
+  return generateDashboardDrawerItems(options);
+};

@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import { Popover, YStack, XStack, Button, Separator } from 'tamagui'
+import { YStack, XStack, Button, Separator } from 'tamagui'
+import { Popover } from '@app/ui'
 import { FilterChip } from '../chips/FilterChip'
 import { FieldError } from '../FieldError'
 import type { SearchSelectProps } from './types'
@@ -53,10 +54,13 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
   const handleInputChange = useCallback(
     (value: string) => {
       setInputValue(value)
-      if (!value) {
+      const trimmed = value.trim()
+      if (!trimmed) {
         clearResults()
+        setIsOpen(false)
+      } else {
+        setIsOpen(true)
       }
-      setIsOpen(true)
     },
     [clearResults, setInputValue, setIsOpen]
   )
@@ -95,9 +99,11 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
     </YStack>
   ) : undefined
 
+  const shouldShowDropdown = isOpen && (inputValue.trim().length > 0 || isSearching)
+
   return (
     <YStack gap="$2">
-      <Popover open={isOpen} onOpenChange={setIsOpen} placement="bottom-start">
+      <Popover open={shouldShowDropdown} onOpenChange={setIsOpen} placement="bottom-start">
         <Popover.Trigger asChild>
           <YStack gap="$2" width="100%">
             <SearchInput
@@ -108,8 +114,13 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
               onClear={() => {
                 setInputValue('')
                 clearResults()
+                setIsOpen(false)
               }}
-              onFocus={() => setIsOpen(true)}
+              onFocus={() => {
+                if (inputValue.trim().length > 0) {
+                  setIsOpen(true)
+                }
+              }}
               onKeyPress={keyboardNav.handleKeyDown}
               disabled={props.disabled}
               isInvalid={Boolean(props.error)}

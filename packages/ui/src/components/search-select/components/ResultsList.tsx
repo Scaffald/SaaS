@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react'
 import type { ComponentType, CSSProperties, ReactNode } from 'react'
 import { Platform } from 'react-native'
-import { ScrollView, Separator, SizableText, YStack } from 'tamagui'
+import { ScrollView, SizableText, YStack } from 'tamagui'
 import { EmptyState } from './EmptyState'
 import { ErrorState } from './ErrorState'
 import { ResultItem } from './ResultItem'
@@ -55,8 +55,8 @@ function ResultsListComponent<T>({
   error,
   emptyContent,
   onRetry,
-  virtualizationThreshold = 60,
-  itemHeight = 48,
+  virtualizationThreshold = 1000, // Disabled by default - items should have natural height
+  itemHeight = 48, // Only used if virtualization is explicitly enabled
   headerContent,
   footerContent,
 }: ResultsListProps<T>) {
@@ -96,6 +96,7 @@ function ResultsListComponent<T>({
     const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
       const option = options[index]
       const optionId = `search-result-${index}`
+      const isLast = index === options.length - 1
       return (
         <YStack style={style} width="100%">
           <ResultItem
@@ -106,8 +107,8 @@ function ResultsListComponent<T>({
             onPress={onOptionPress}
             renderOption={renderOption}
             itemId={optionId}
+            isLast={isLast}
           />
-          {index < options.length - 1 ? <Separator bg="$borderColor" /> : null}
         </YStack>
       )
     }
@@ -137,6 +138,7 @@ function ResultsListComponent<T>({
           <YStack>
             {options.map((option, index) => {
               const optionId = `search-result-${index}`
+              const isLast = index === options.length - 1
               return (
                 <YStack key={option.value}>
                   <ResultItem
@@ -147,8 +149,8 @@ function ResultsListComponent<T>({
                     onPress={onOptionPress}
                     renderOption={renderOption}
                     itemId={optionId}
+                    isLast={isLast}
                   />
-                  {index < options.length - 1 ? <Separator bg="$borderColor" /> : null}
                 </YStack>
               )
             })}

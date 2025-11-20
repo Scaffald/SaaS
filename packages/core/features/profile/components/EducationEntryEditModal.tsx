@@ -1,10 +1,30 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { YStack, XStack, Text, Input, TextArea, Select, Adapt, Sheet, useWindowDimensions, Label, Spinner } from 'tamagui'
+import {
+  YStack,
+  XStack,
+  Text,
+  Input,
+  TextArea,
+  Select,
+  Adapt,
+  Sheet,
+  useWindowDimensions,
+  Label,
+  Spinner,
+} from 'tamagui'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown } from '@tamagui/lucide-icons'
 import { singleEducationEntrySchema, DEGREE_TYPE_OPTIONS } from '../config'
-import { UIButton as Button, CustomCheckbox, ResponsiveModal, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker, FieldError } from '@app/ui'
+import {
+  UIButton as Button,
+  CustomCheckbox,
+  ResponsiveModal,
+  UniversityAutocomplete,
+  ConfirmationDialog,
+  MonthYearPicker,
+  FieldError,
+} from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
@@ -411,11 +431,7 @@ export function EducationEntryEditModal({
 
           {/* Start and End Dates */}
           <YStack gap="$2">
-            <XStack 
-              gap="$3"
-              $sm={{ flexDirection: 'column' }}
-              $gtSm={{ flexDirection: 'row' }}
-            >
+            <XStack gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
               <YStack gap="$2" flex={1}>
                 <Controller
                   name="start_date"
@@ -533,12 +549,12 @@ export function EducationEntryEditModal({
           </YStack>
 
           {/* Action Buttons */}
-          <XStack 
-            justify="flex-end" 
-            gap="$3" 
+          <XStack
+            justify="flex-end"
+            gap="$3"
             pt="$4"
             $sm={{ flexDirection: 'column' }}
-            $gtSm={{ flexDirection: 'row' }}
+            $md={{ flexDirection: 'row' }}
           >
             <Button
               variant="outlined"
@@ -546,7 +562,7 @@ export function EducationEntryEditModal({
               onPress={() => setShowCancelDialog(true)}
               opacity={!isDirty ? 0.5 : 1}
               $sm={{ height: 44, width: '100%' }}
-              $gtSm={{ height: undefined, width: undefined }}
+              $md={{ height: undefined, width: undefined }}
             >
               Cancel
             </Button>
@@ -556,7 +572,7 @@ export function EducationEntryEditModal({
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
               $sm={{ height: 44, width: '100%' }}
-              $gtSm={{ height: undefined, width: undefined }}
+              $md={{ height: undefined, width: undefined }}
             >
               {isLoading ? (
                 <XStack gap="$2" items="center">

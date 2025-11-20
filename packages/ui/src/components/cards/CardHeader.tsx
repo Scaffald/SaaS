@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { SizableText, XStack, YStack, useMedia } from 'tamagui'
+import { SizableText, XStack, YStack, useWindowDimensions } from 'tamagui'
 import type { CardHeaderProps } from './types'
 
 /**
@@ -19,12 +19,14 @@ import type { CardHeaderProps } from './types'
  */
 export const CardHeader = memo(
   ({ title, subtitle, icon, badge, isSelected = false }: CardHeaderProps) => {
-    const media = useMedia()
+    // Use window dimensions for text truncation behavior
+    // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+    const { width } = useWindowDimensions()
     const titleColor = isSelected ? '$color1' : '$color12'
     const subtitleColor = isSelected ? '$color1' : '$color11'
     // Use responsive numberOfLines: 2 lines on small screens, 1 line on larger screens
-    const titleNumberOfLines = media.sm ? 2 : 1
-    const subtitleNumberOfLines = media.sm ? 2 : 1
+    const titleNumberOfLines = width <= 800 ? 2 : 1
+    const subtitleNumberOfLines = width <= 800 ? 2 : 1
 
     return (
       <XStack justify="space-between" items="flex-start" gap="$2">

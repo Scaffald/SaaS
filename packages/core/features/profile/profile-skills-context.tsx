@@ -340,32 +340,58 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     [addSkillMutation]
   )
 
-  const existingSkillIds =
-    userSkillsQuery.data?.skills.map((skill: { id: string; csi_skill_id: string | null; onet_occupation_id: string | null }) =>
-      skill.csi_skill_id || skill.onet_occupation_id || skill.id
-    ) || []
+  const existingSkillIds = useMemo(
+    () =>
+      userSkillsQuery.data?.skills.map((skill: { id: string; csi_skill_id: string | null; onet_occupation_id: string | null }) =>
+        skill.csi_skill_id || skill.onet_occupation_id || skill.id
+      ) || [],
+    [userSkillsQuery.data?.skills]
+  )
 
-  const value: ProfileSkillsContextValue = {
-    isLoadingIndustries,
-    industries,
-    selectedIndustryId,
-    selectedIndustrySlug,
-    industryDisplayName,
-    handleIndustryChange,
-    skillGuidance,
-    skillCount,
-    hasMinimumSkills,
-    completionPercent,
-    handleSuggestionSelect,
-    pendingSearch,
-    clearPendingSearch,
-    searchSkills,
-    selectSkill,
-    isSearchingSkills: searchSkillsMutation.isPending,
-    existingSkillIds,
-    isAddingSkill: addSkillMutation.isPending,
-    isRemovingSkill: removeSkillMutation.isPending,
-  }
+  const value: ProfileSkillsContextValue = useMemo(
+    () => ({
+      isLoadingIndustries,
+      industries,
+      selectedIndustryId,
+      selectedIndustrySlug,
+      industryDisplayName,
+      handleIndustryChange,
+      skillGuidance,
+      skillCount,
+      hasMinimumSkills,
+      completionPercent,
+      handleSuggestionSelect,
+      pendingSearch,
+      clearPendingSearch,
+      searchSkills,
+      selectSkill,
+      isSearchingSkills: searchSkillsMutation.isPending,
+      existingSkillIds,
+      isAddingSkill: addSkillMutation.isPending,
+      isRemovingSkill: removeSkillMutation.isPending,
+    }),
+    [
+      isLoadingIndustries,
+      industries,
+      selectedIndustryId,
+      selectedIndustrySlug,
+      industryDisplayName,
+      handleIndustryChange,
+      skillGuidance,
+      skillCount,
+      hasMinimumSkills,
+      completionPercent,
+      handleSuggestionSelect,
+      pendingSearch,
+      clearPendingSearch,
+      searchSkills,
+      selectSkill,
+      searchSkillsMutation.isPending,
+      existingSkillIds,
+      addSkillMutation.isPending,
+      removeSkillMutation.isPending,
+    ]
+  )
 
   return <ProfileSkillsContext.Provider value={value}>{children}</ProfileSkillsContext.Provider>
 }

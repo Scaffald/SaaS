@@ -3,6 +3,7 @@ import { YStack } from 'tamagui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
+import { useAuth } from '@app/core/provider/auth/useAuth'
 
 interface DiscoverWorkersLeftProps {
   searchQuery: string
@@ -31,10 +32,16 @@ export function DiscoverWorkersLeft({
 }: DiscoverWorkersLeftProps) {
   // Fetch workers using the same hook as the map page
   const { data: talentProfiles = [], isLoading } = useTalentProfiles()
+  const { session } = useAuth()
+  const currentUserId = session?.user?.id ?? null
 
   // Filter workers based on search and filters
   const filteredProfiles = useMemo(() => {
     return talentProfiles.filter((profile) => {
+      if (currentUserId && profile.id === currentUserId) {
+        return false
+      }
+
       // Search filter - matches name, title, or location
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
@@ -71,7 +78,14 @@ export function DiscoverWorkersLeft({
 
       return true
     })
-  }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications])
+  }, [
+    talentProfiles,
+    searchQuery,
+    minScore,
+    selectedSkills,
+    selectedCertifications,
+    currentUserId,
+  ])
 
   return (
     <YStack flex={1} overflow="hidden">

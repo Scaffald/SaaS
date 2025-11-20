@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react'
-import { YStack, XStack, Tabs, Text, Button, useMedia, ScrollView } from 'tamagui'
+import { YStack, XStack, Tabs, Text, Button, useWindowDimensions, ScrollView } from 'tamagui'
 import { Sheet } from '@app/ui'
 import {
   MapContainer,
@@ -37,11 +37,12 @@ import {
 } from '@tamagui/lucide-icons'
 
 export const DiscoverMapScreen = () => {
-  // Use Tamagui media queries for responsive behavior
-  // $md breakpoint is 768px - horizontal flow on $md and up, vertical on smaller screens
-  const media = useMedia()
+  // Use window dimensions for conditional rendering
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  // Native mobile is always treated as small screen
+  const { width } = useWindowDimensions()
   const isNativeMobile = Platform.OS !== 'web'
-  const isSmallScreen = !media.md || isNativeMobile // ensure native mobile always treated as small
+  const isSmallScreen = width <= 800 || isNativeMobile // ensure native mobile always treated as small
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
 

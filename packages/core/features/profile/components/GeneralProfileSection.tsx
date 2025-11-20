@@ -8,7 +8,13 @@ import {
   type GeneralProfileFormData,
   generalProfileDefaults,
 } from '../config/general-schema'
-import { UIButton as Button, PhoneNumberInput, AddressForm, DashboardWidget, AvatarImagePicker } from '@app/ui'
+import {
+  UIButton as Button,
+  PhoneNumberInput,
+  AddressForm,
+  DashboardWidget,
+  AvatarImagePicker,
+} from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 
@@ -211,11 +217,7 @@ export function GeneralProfileSection({
         </YStack>
 
         {/* Name Fields */}
-        <XStack 
-          gap="$3"
-          $sm={{ flexDirection: 'column' }}
-          $gtSm={{ flexDirection: 'row' }}
-        >
+        <XStack gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
           <YStack gap="$2" flex={1}>
             <Text fontWeight="600">First Name *</Text>
             <Controller

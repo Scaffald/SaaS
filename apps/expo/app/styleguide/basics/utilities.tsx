@@ -17,7 +17,7 @@ const utilities = [
   },
   {
     name: 'Text alignment',
-    usage: "textAlign='center' $gtSm={{ textAlign: 'left' }}",
+    usage: "textAlign='center' $md={{ textAlign: 'left' }}",
     description: 'Responsive text alignment.',
   },
   {

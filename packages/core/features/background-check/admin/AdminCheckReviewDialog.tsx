@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
 import { CheckCircle2, DownloadCloud, History, RefreshCcw } from '@tamagui/lucide-icons'
-import { Dialog, Input, Label, Select, Separator, Spinner, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Input, Label, Select, Separator, Spinner, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Dialog } from '@app/ui'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 

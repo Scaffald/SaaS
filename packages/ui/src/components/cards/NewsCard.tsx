@@ -10,7 +10,7 @@ import {
   Anchor,
   type CardProps,
   useTheme,
-  useMedia,
+  useWindowDimensions,
 } from 'tamagui'
 import * as Linking from 'expo-linking'
 import { borderRadius } from '../../config/radii'
@@ -73,12 +73,14 @@ export const NewsCard = ({
 }: NewsCardProps) => {
   const [imageError, setImageError] = useState(false)
   const theme = useTheme()
-  const media = useMedia()
+  // Use window dimensions for text truncation behavior
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width } = useWindowDimensions()
   const isDark = theme.background.val.includes('8%')
   // Use responsive numberOfLines: 3 lines on small screens, 2 lines on larger screens for title
   // 4 lines on small screens, 3 lines on larger screens for description
-  const titleNumberOfLines = media.sm ? 3 : 2
-  const descriptionNumberOfLines = media.sm ? 4 : 3
+  const titleNumberOfLines = width <= 800 ? 3 : 2
+  const descriptionNumberOfLines = width <= 800 ? 4 : 3
 
   // Generate random abstract image as fallback
   const fallbackImage = `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`

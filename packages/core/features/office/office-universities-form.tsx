@@ -364,7 +364,7 @@ export function OfficeUniversitiesForm({
             pt="$4"
             gap="$2"
             $sm={{ flexDirection: 'column' }}
-            $gtSm={{ flexDirection: 'row' }}
+            $md={{ flexDirection: 'row' }}
           >
             {isEditing && (
               <Button
@@ -373,7 +373,7 @@ export function OfficeUniversitiesForm({
                 disabled={isLoading}
                 data-testid="cancel-button"
                 $sm={{ height: 44, width: '100%' }}
-                $gtSm={{ height: undefined, width: undefined }}
+                $md={{ height: undefined, width: undefined }}
               >
                 Cancel
               </Button>
@@ -385,7 +385,7 @@ export function OfficeUniversitiesForm({
               opacity={!isDirty || isLoading ? 0.5 : 1}
               icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}
               $sm={{ height: 44, width: '100%' }}
-              $gtSm={{ height: undefined, width: undefined }}
+              $md={{ height: undefined, width: undefined }}
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>

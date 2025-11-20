@@ -91,13 +91,7 @@ export function LuscherTestStep({
       {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
       <YStack gap="$3" width="100%">
         {/* Mobile: 2 columns, 4 rows */}
-        <XStack
-          gap="$3"
-          flexWrap="wrap"
-          justify="center"
-          $xs={{ display: 'flex' }}
-          $gtXs={{ display: 'none' }}
-        >
+        <XStack gap="$3" flexWrap="wrap" justify="center" display="flex" $md={{ display: 'none' }}>
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 
@@ -137,13 +131,7 @@ export function LuscherTestStep({
         </XStack>
 
         {/* Desktop: 4 columns, 2 rows */}
-        <XStack
-          gap="$3"
-          flexWrap="wrap"
-          justify="center"
-          $xs={{ display: 'none' }}
-          $gtXs={{ display: 'flex' }}
-        >
+        <XStack gap="$3" flexWrap="wrap" justify="center" display="none" $md={{ display: 'flex' }}>
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 

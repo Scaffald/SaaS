@@ -8,7 +8,6 @@ import {
   Text,
   XStack,
   YStack,
-  useMedia,
   type GetThemeValueForKey,
 } from 'tamagui';
 import { Check, ChevronDown, Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons';
@@ -48,8 +47,6 @@ interface TeamInvitationsListProps {
 export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamInvitationsListProps) {
   const toast = useToastController();
   const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending');
-  const media = useMedia();
-  const isSmallScreen = media.sm; // sm = maxWidth: 800px
 
   const invitationsQuery = api.teams.invitations.list.useQuery(
     {
@@ -107,26 +104,35 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
   };
 
   return (
-    <YStack gap="$4" px={isSmallScreen ? '$3' : undefined}>
+    <YStack gap="$4" px="$3" $md={{ px: undefined }}>
       <XStack
         justify="space-between"
-        items={isSmallScreen ? 'flex-start' : 'center'}
+        items="flex-start"
         flexWrap="wrap"
         gap="$3"
-        flexDirection={isSmallScreen ? 'column' : 'row'}
+        flexDirection="column"
         width="100%"
+        $md={{
+          items: 'center',
+          flexDirection: 'row',
+        }}
       >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Invitations
         </Text>
         <XStack
           gap="$2"
-          items={isSmallScreen ? 'flex-start' : 'center'}
-          flexDirection={isSmallScreen ? 'column' : 'row'}
-          width={isSmallScreen ? '100%' : undefined}
+          items="flex-start"
+          flexDirection="column"
+          width="100%"
+          $md={{
+            items: 'center',
+            flexDirection: 'row',
+            width: undefined,
+          }}
         >
           {headerAction}
-          <YStack width={isSmallScreen ? '100%' : undefined}>
+          <YStack width="100%" $md={{ width: undefined }}>
             <Select
               native
               value={statusFilter}
@@ -262,8 +268,12 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  flexDirection={isSmallScreen ? 'column' : 'row'}
-                  items={isSmallScreen ? 'stretch' : 'center'}
+                  flexDirection="column"
+                  items="stretch"
+                  $md={{
+                    flexDirection: 'row',
+                    items: 'center',
+                  }}
                 >
                   <Text fontSize="$3" color="$color11">
                     Role:
@@ -297,8 +307,12 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  flexDirection={isSmallScreen ? 'column' : 'row'}
-                  items={isSmallScreen ? 'stretch' : 'center'}
+                  flexDirection="column"
+                  items="stretch"
+                  $md={{
+                    flexDirection: 'row',
+                    items: 'center',
+                  }}
                 >
                   <Text fontSize="$3" color="$color11">
                     Type:
@@ -310,10 +324,15 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  justify={isSmallScreen ? 'flex-start' : 'flex-end'}
+                  justify="flex-start"
                   flexWrap="wrap"
-                  flexDirection={isSmallScreen ? 'column' : 'row'}
-                  items={isSmallScreen ? 'stretch' : 'center'}
+                  flexDirection="column"
+                  items="stretch"
+                  $md={{
+                    justify: 'flex-end',
+                    flexDirection: 'row',
+                    items: 'center',
+                  }}
                 >
                   <Button
                     size="$2"
@@ -322,7 +341,8 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleResend(invitation.id)}
                     accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    width={isSmallScreen ? '100%' : undefined}
+                    width="100%"
+                    $md={{ width: undefined }}
                   >
                     Resend
                   </Button>
@@ -334,7 +354,8 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}
                     accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    width={isSmallScreen ? '100%' : undefined}
+                    width="100%"
+                    $md={{ width: undefined }}
                   >
                     Cancel
                   </Button>

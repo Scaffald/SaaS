@@ -143,4 +143,5 @@ export interface UseSearchSelectResult<T> {
   isSelected: (value: string) => boolean
   clearResults: () => void
   refreshResults: () => Promise<void>
+  setSelection: (value: T | T[] | null) => void
 }

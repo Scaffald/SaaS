@@ -3,15 +3,16 @@ import { Button, useTheme, YStack, Text, XStack, useWindowDimensions } from 'tam
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
-import { NotificationDropdown } from '@app/ui'
+import { NotificationDropdown, shadows, spacing } from '@app/ui'
 import { UserMenuAvatar } from './UserMenuAvatar'
-import { DrawerMenu } from './DrawerMenu'
+import { DrawerContent } from './DrawerContent'
 import { api } from '@app/core/utils/api'
 import type { NotificationItem } from '@app/ui'
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 import { FeedbackWidget } from '@app/core/features/feedback'
 import { OfficeFlyout } from '@app/core/features/office-navigation'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
+import { Pressable } from 'react-native'
 
 interface DrawerLayoutProps {
   /**
@@ -33,11 +34,7 @@ interface DrawerLayoutProps {
  * Shared drawer layout component used by both dashboard and office sections
  * Provides consistent drawer behavior, styling, and responsive design
  */
-export function DrawerLayout({
-  protectionComponent,
-  children,
-  hideDrawer = false,
-}: DrawerLayoutProps) {
+export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
   const { width } = useWindowDimensions()
   const theme = useTheme()
   // Permanent drawer when width >= 1024px, front drawer otherwise
@@ -127,55 +124,56 @@ export function DrawerLayout({
 
       <Drawer
         screenOptions={({ navigation }) => ({
-          headerShown: !hideDrawer,
-          drawerType: hideDrawer ? 'back' : isSmall ? 'front' : 'permanent',
-          swipeEnabled: hideDrawer ? false : isSmall,
-          ...(hideDrawer
-            ? {}
-            : {
-                headerStyle: {
-                  backgroundColor: theme.color2.val,
-                },
-                headerLeftContainerStyle: {},
-                headerTitleStyle: {
-                  color: theme.color12.val,
-                  marginLeft: isSmall ? 0 : 35,
-                },
-                headerLeft: () => (
-                  <Button
-                    borderStyle="unset"
-                    borderWidth={0}
-                    bg="transparent"
-                    display={isSmall ? 'flex' : 'none'}
-                    ml="$4"
-                    px="$4"
-                    height={30}
-                    onPress={() => {
-                      navigation.dispatch(DrawerActions.toggleDrawer())
-                    }}
-                  >
-                    <Menu size={24} />
-                  </Button>
-                ),
-                headerRight: () => (
-                  <XStack gap="$3" items="center" px="$4">
-                    {/* Show OfficeFlyout if user has office role */}
-                    {hasOfficeRole && <OfficeFlyout />}
-                    <NotificationDropdown
-                      notifications={transformedNotifications}
-                      unreadCount={unreadCount}
-                      isLoading={isLoadingNotifications}
-                      onNotificationClick={handleNotificationClick}
-                      onMarkAsRead={handleMarkAsRead}
-                    />
-                    <UserMenuAvatar />
-                  </XStack>
-                ),
-              }),
-          overlayColor: hideDrawer ? 'transparent' : 'rgba(0, 0, 0, 0.15)',
-          drawerStyle: hideDrawer ? { width: 0, display: 'none' } : { width: 300 },
+          drawerType: isSmall ? 'front' : 'permanent',
+          swipeEnabled: isSmall,
+          headerStyle: {
+            backgroundColor: theme.color3.val,
+            borderWidth: 0,
+          },
+          headerLeftContainerStyle: {
+            paddingLeft: 20,
+          },
+          headerRightContainerStyle: {
+            paddingRight: 20,
+          },
+          headerTitleStyle: {
+            color: theme.color12.val,
+          },
+          drawerStyle: {
+            backgroundColor: theme.color3.val,
+            borderRightWidth: 0,
+            borderRadius: 0,
+            padding: 10,
+            maxWidth: 300,
+          },
+          overlayColor: shadows.shadow1,
+          headerLeft: () => {
+            return isSmall ? (
+              <Pressable
+                onPress={() => {
+                  navigation.dispatch(DrawerActions.toggleDrawer())
+                }}
+              >
+                <Menu size={24} />
+              </Pressable>
+            ) : null
+          },
+          headerRight: () => (
+            <XStack gap="$3" items="center">
+              {/* Show OfficeFlyout if user has office role */}
+              {hasOfficeRole && <OfficeFlyout />}
+              <NotificationDropdown
+                notifications={transformedNotifications}
+                unreadCount={unreadCount}
+                isLoading={isLoadingNotifications}
+                onNotificationClick={handleNotificationClick}
+                onMarkAsRead={handleMarkAsRead}
+              />
+              <UserMenuAvatar />
+            </XStack>
+          ),
         })}
-        drawerContent={hideDrawer ? () => null : (props) => <DrawerMenu {...props} />}
+        drawerContent={(props) => <DrawerContent {...props} />}
       >
         {children}
       </Drawer>

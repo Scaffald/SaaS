@@ -61,12 +61,7 @@ export const CardStack = ({
       overflow="hidden"
       enterStyle={disableSlideIn ? { opacity: 1 } : { opacity: 0, [axis.axis]: axis.value }}
     >
-      <View
-        width={typeof width === 'number' ? width : undefined}
-        flex={typeof width === 'string' ? 1 : undefined}
-      >
-        {children}
-      </View>
+      <View {...(typeof width === 'number' ? { width } : { flex: 1 })}>{children}</View>
     </View>
   )
 }
@@ -190,8 +185,7 @@ export const StackedCards = ({
   return (
     <View
       position="relative"
-      width={typeof width === 'number' ? width : undefined}
-      flex={typeof width === 'string' ? 1 : undefined}
+      {...(typeof width === 'number' ? { width } : { flex: 1 })}
       height={200}
     >
       {visibleCards.map((card, stackIndex) => (

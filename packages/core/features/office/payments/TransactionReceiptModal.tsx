@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, Card, Dialog, Spinner, Text, XStack, YStack } from "tamagui";
+import { Button, Card, Spinner, Text, XStack, YStack } from "tamagui";
+import { Dialog } from '@app/ui'
 import { Download, X } from "@tamagui/lucide-icons";
 
 import { api } from "@app/core/utils/api";

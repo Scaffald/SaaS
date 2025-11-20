@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { Text } from 'tamagui'
+import { Text, YStack } from 'tamagui'
 import { SearchSelect, type SearchSelectOption } from '../search-select'
 import { useAddressAutocomplete } from './hooks'
 import type { AddressAutocompleteProps, AddressResult } from './types'
@@ -94,14 +94,51 @@ export function AddressAutocomplete({
     [onAddressSelect, onChange]
   )
 
+  // Determine if this is a full address search (vs region/city search)
+  const isFullAddressSearch = zoomLevel === 'street' || !zoomLevel
+
   // Custom render function for address results
   const renderOption = useCallback(
-    (option: SearchSelectOption<AddressResult>) => (
-      <Text fontSize="$3" color="$color12" numberOfLines={1}>
-        {option.label}
-      </Text>
-    ),
-    []
+    (option: SearchSelectOption<AddressResult>) => {
+      const address = option.raw
+
+      // For full address searches, show two-line format
+      if (isFullAddressSearch && address.streetAddress) {
+        // Build the second line: city, state zip, country
+        const secondLineParts: string[] = []
+        if (address.locality) {
+          secondLineParts.push(address.locality)
+        }
+        const stateZip = [address.stateAbbreviation, address.postalCode].filter(Boolean).join(' ')
+        if (stateZip) {
+          secondLineParts.push(stateZip)
+        }
+        if (address.country && address.country !== 'United States') {
+          secondLineParts.push(address.country)
+        }
+
+        return (
+          <YStack gap="$1" items="flex-start">
+            <Text fontSize="$3" color="$color12" fontWeight="600" numberOfLines={1}>
+              {address.streetAddress}
+            </Text>
+            {secondLineParts.length > 0 && (
+              <Text fontSize="$2" color="$color11" numberOfLines={1}>
+                {secondLineParts.join(', ')}
+              </Text>
+            )}
+          </YStack>
+        )
+      }
+
+      // For region/city searches, show single-line format (current behavior)
+      return (
+        <Text fontSize="$3" color="$color12" numberOfLines={1}>
+          {option.label}
+        </Text>
+      )
+    },
+    [isFullAddressSearch]
   )
 
   // Find matching address from results if value matches

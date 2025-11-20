@@ -10,8 +10,6 @@ import {
 import { Platform, Image as RNImage, type ImageStyle } from 'react-native'
 import { GestureDetector, Gesture } from 'react-native-gesture-handler'
 import {
-  Dialog,
-  Sheet,
   XStack,
   YStack,
   Text,
@@ -19,7 +17,6 @@ import {
   Image as TamaguiImage,
   View,
   Circle,
-  useMedia,
   useWindowDimensions,
 } from 'tamagui'
 import {
@@ -31,6 +28,7 @@ import {
   FlipHorizontal,
   FlipVertical,
 } from '@tamagui/lucide-icons'
+import { Dialog, Sheet } from '@app/ui'
 
 import { processCroppedImage } from './utils/imageProcessing'
 import { detectMimeTypeFromSrc, getNativeTransform, getWebTransform } from './utils/helpers'
@@ -72,9 +70,10 @@ export function AvatarCropModal({
   cropSize = 300,
   onError,
 }: AvatarCropModalProps) {
-  const { width, height } = useWindowDimensions() // Keep for actual dimensions (landscape detection)
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
+  // Use window dimensions for conditional rendering and calculations
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width, height } = useWindowDimensions()
+  const isMobile = width <= 800
   const isLandscape = width > height
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
@@ -556,8 +555,8 @@ export function AvatarCropModal({
   if (isMobile) {
     return (
       <Sheet modal open={open} onOpenChange={onOpenChange} snapPoints={[90]} dismissOnSnapToBottom>
-        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame bg="$background">
+        <Sheet.Overlay />
+        <Sheet.Frame>
           <Sheet.Handle />
           <XStack
             px="$4"
@@ -772,28 +771,9 @@ export function AvatarCropModal({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
+        <Dialog.Overlay key="overlay" />
         <Dialog.Content
-          bordered
-          elevate
           key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$0"
           width={displaySize + 128}
           maxW="90vw"

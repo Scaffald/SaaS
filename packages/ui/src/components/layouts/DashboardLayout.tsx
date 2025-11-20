@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack, useMedia } from 'tamagui'
+import { ScrollView, XStack, YStack } from 'tamagui'
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
@@ -30,59 +30,48 @@ export const DashboardLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
-  // Use media hook for reliable responsive behavior on native
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
-
-  const hasLeftContent = Boolean(leftContent)
-  const hasRightContent = Boolean(rightContent)
-  const hasBothColumns = hasLeftContent && hasRightContent
+  const hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
 
   return (
-    <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
+    <ScrollView flex={1} bg="$color4" showsVerticalScrollIndicator={false}>
       <YStack gap="$3" pt="$3" pb="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack px={isMobile ? '$2' : '$7'} pt="$3">
+          <XStack px="$2" pt="$3" $md={{ px: '$7' }}>
             <Breadcrumb items={displayBreadcrumbs} />
           </XStack>
         )}
 
-        {/* Content Area - Use programmatic responsive flexDirection */}
+        {/* Content Area - Responsive two-column or single-column layout */}
         <XStack
-          gap={isMobile ? '$3' : '$8'}
-          p={isMobile ? '$2' : '$7'}
-          flexDirection={isMobile ? 'column' : 'row'}
+          gap="$3"
+          p="$3"
+          flexDirection="column"
+          $md={{
+            gap: '$8',
+            p: '$7',
+            flexDirection: 'row',
+          }}
         >
-          {hasLeftContent && (
+          {leftContent && (
             <YStack
-              minW={isMobile ? '100%' : hasBothColumns ? 300 : 'auto'}
               width="100%"
-              maxW="100%"
-              flexBasis="auto"
-              flex={isMobile ? undefined : hasBothColumns ? 1 : undefined}
-              $gtSm={{
-                minW: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? '60%' : '100%',
-                maxW: hasBothColumns ? '60%' : '100%',
-                flexBasis: hasBothColumns ? '60%' : 'auto',
-                flex: hasBothColumns ? 1 : undefined,
+              $md={{
+                width: hasBothColumns ? undefined : '100%',
+                flex: hasBothColumns ? 3 : undefined,
+                minW: hasBothColumns ? 300 : undefined,
               }}
             >
               {leftContent}
             </YStack>
           )}
-          {hasRightContent && (
+          {rightContent && (
             <YStack
-              minW={isMobile ? '100%' : hasBothColumns ? 300 : 'auto'}
               width="100%"
-              maxW="100%"
-              flexBasis="auto"
-              $gtSm={{
-                minW: hasBothColumns ? 300 : 'auto',
-                width: hasBothColumns ? '40%' : '100%',
-                maxW: hasBothColumns ? '40%' : '100%',
-                flexBasis: hasBothColumns ? '40%' : 'auto',
+              $md={{
+                width: hasBothColumns ? undefined : '100%',
+                flex: hasBothColumns ? 2 : undefined,
+                minW: hasBothColumns ? 300 : undefined,
               }}
             >
               {rightContent}

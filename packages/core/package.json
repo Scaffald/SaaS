@@ -4,9 +4,7 @@
   "private": true,
   "main": "index.ts",
   "types": "./index.ts",
-  "sideEffects": [
-    "*.css"
-  ],
+  "sideEffects": ["*.css"],
   "scripts": {
     "watch": "tsc --watch",
     "check:type": "tsc --noEmit",
@@ -24,12 +22,9 @@
     "@rehookify/datepicker": "^6.6.6",
     "@supabase/supabase-js": "catalog:",
     "@tamagui/animations-react-native": "catalog:",
-    "@tamagui/colors": "catalog:",
     "@tamagui/font-inter": "catalog:",
     "@tamagui/helpers-icon": "catalog:",
     "@tamagui/lucide-icons": "catalog:",
-    "@tamagui/shorthands": "catalog:",
-    "@tamagui/themes": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-table": "catalog:",
     "@trpc/client": "catalog:",

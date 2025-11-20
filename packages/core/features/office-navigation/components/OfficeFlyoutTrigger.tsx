@@ -1,4 +1,5 @@
-import { Button, Popover } from 'tamagui'
+import { Button } from 'tamagui'
+import { Popover } from '@app/ui'
 import { Briefcase } from '@tamagui/lucide-icons'
 import { OfficeFlyoutMenu } from './OfficeFlyoutMenu'
 import { useOfficeFlyoutMenu } from '../hooks/useOfficeFlyoutMenu'
@@ -9,11 +10,7 @@ export interface OfficeFlyoutTriggerProps {
   triggerRef: React.RefObject<HTMLElement | null>
 }
 
-export const OfficeFlyoutTrigger = ({
-  isOpen,
-  onToggle,
-  triggerRef,
-}: OfficeFlyoutTriggerProps) => {
+export const OfficeFlyoutTrigger = ({ isOpen, onToggle, triggerRef }: OfficeFlyoutTriggerProps) => {
   const handlePress = () => {
     onToggle()
   }
@@ -28,7 +25,7 @@ export const OfficeFlyoutTrigger = ({
         height={30}
         px="$2"
         display="none"
-        $gtSm={{ display: 'flex' }}
+        $md={{ display: 'flex' }}
         aria-label="Office navigation menu"
         aria-expanded={isOpen}
         onPress={handlePress}
@@ -44,13 +41,7 @@ export const OfficeFlyoutTrigger = ({
 
 // Main export component that combines trigger and menu
 export const OfficeFlyout = () => {
-  const {
-    isOpen,
-    setIsOpen,
-    activeRoute,
-    toggleMenu,
-    triggerRef,
-  } = useOfficeFlyoutMenu()
+  const { isOpen, setIsOpen, activeRoute, toggleMenu, triggerRef } = useOfficeFlyoutMenu()
 
   const handleNavigate = () => {
     setIsOpen(false)
@@ -58,11 +49,7 @@ export const OfficeFlyout = () => {
 
   return (
     <Popover placement="bottom-end" open={isOpen} onOpenChange={setIsOpen}>
-      <OfficeFlyoutTrigger
-        isOpen={isOpen}
-        onToggle={toggleMenu}
-        triggerRef={triggerRef}
-      />
+      <OfficeFlyoutTrigger isOpen={isOpen} onToggle={toggleMenu} triggerRef={triggerRef} />
       <OfficeFlyoutMenu
         isOpen={isOpen}
         onOpenChange={setIsOpen}
@@ -73,4 +60,3 @@ export const OfficeFlyout = () => {
     </Popover>
   )
 }
-

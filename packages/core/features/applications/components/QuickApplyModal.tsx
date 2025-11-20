@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Dialog, YStack, XStack, Text, Button, ScrollView, Select, Adapt, Label } from 'tamagui'
-import { Sheet } from '@app/ui'
+import { YStack, XStack, Text, Button, ScrollView, Select, Adapt, Label } from 'tamagui'
+import { Sheet, Dialog } from '@app/ui'
 import { X, Check, CheckCircle2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { AddressAutocomplete } from '@app/ui'
@@ -260,28 +260,9 @@ export function QuickApplyModal({
   return (
     <Dialog modal open={open} onOpenChange={handleClose}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
+        <Dialog.Overlay key="overlay" />
         <Dialog.Content
-          bordered
-          elevate
           key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$4"
           width="90%"
           maxW={600}

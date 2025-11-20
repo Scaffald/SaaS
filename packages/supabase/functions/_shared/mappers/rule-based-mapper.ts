@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
 import type { IndustryMapping, ParsedJob } from "../types/external-job.ts";
 import {
   containsKeyword,

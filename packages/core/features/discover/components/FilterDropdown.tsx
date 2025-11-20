@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
-import { YStack, XStack, Text, Button, Label, Popover } from 'tamagui'
+import { YStack, XStack, Text, Button, Label } from 'tamagui'
+import { Popover } from '@app/ui'
 import { SlidersHorizontal, ChevronDown } from '@tamagui/lucide-icons'
 import { ToggleSwitch } from '@app/ui'
 

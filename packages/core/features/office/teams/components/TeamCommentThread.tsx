@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, XStack, YStack, useMedia } from 'tamagui'
+import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import { MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 
@@ -30,8 +30,6 @@ export function TeamCommentThread({
   const utils = api.useUtils()
   const [commentBody, setCommentBody] = useState('')
   const [selectedMentionId, setSelectedMentionId] = useState<string | null>(null)
-  const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const mentionLookup = useMemo(() => {
     return new Map(mentionOptions.map((option) => [option.id, option.label]))
@@ -88,7 +86,8 @@ export function TeamCommentThread({
       bg="$color2"
       p="$4"
       gap="$4"
-      px={isSmallScreen ? '$3' : undefined}
+      px="$3"
+      $md={{ px: undefined }}
     >
       <YStack gap="$2">
         <XStack gap="$2" items="center">
@@ -118,8 +117,12 @@ export function TeamCommentThread({
           <XStack
             gap="$2"
             flexWrap="wrap"
-            flexDirection={isSmallScreen ? 'column' : 'row'}
-            items={isSmallScreen ? 'stretch' : 'center'}
+            flexDirection="column"
+            items="stretch"
+            $md={{
+              flexDirection: 'row',
+              items: 'center',
+            }}
           >
             {mentionOptions.map((option) => (
               <Button
@@ -134,7 +137,8 @@ export function TeamCommentThread({
                     ? `Remove mention ${option.label}`
                     : `Mention ${option.label}`
                 }
-                width={isSmallScreen ? '100%' : undefined}
+                width="100%"
+                $md={{ width: undefined }}
               >
                 @{option.label}
               </Button>
@@ -158,7 +162,8 @@ export function TeamCommentThread({
             disabled={isSubmitting || commentBody.trim().length === 0}
             accessibilityLabel="Post comment"
             accessibilityHint="Shares this comment with the team"
-            width={isSmallScreen ? '100%' : undefined}
+            width="100%"
+            $md={{ width: undefined }}
           >
             {isSubmitting ? <Spinner size="small" color="$color1" /> : 'Post comment'}
           </Button>

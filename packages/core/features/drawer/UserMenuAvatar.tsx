@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Button, Popover, Separator, type TamaguiElement } from 'tamagui'
+import { YStack, XStack, Text, Button, Separator, type TamaguiElement } from 'tamagui'
+import { Popover } from '@app/ui'
 import { Image } from 'expo-image'
 import { User, Settings, Sun, Moon, LogOut, Eye, Pencil } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { useMedia } from 'tamagui'
 import { useUser } from '@app/core/utils/useUser'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
@@ -37,8 +37,6 @@ import { supabase } from '@app/core/utils/supabase/client'
 export function UserMenuAvatar() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
   const triggerRef = useRef<TamaguiElement | null>(null)
 
   const { user, profile } = useUser()
@@ -196,7 +194,8 @@ export function UserMenuAvatar() {
         animation="quick"
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-        style={{ width: isMobile ? 'calc(100vw - 32px)' as const : 240 }}
+        width="calc(100vw - 32px)"
+        $md={{ width: 240 }}
       >
         {/* Header */}
         <YStack

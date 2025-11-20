@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
-import { XStack, YStack, Text, Button, useMedia } from 'tamagui'
+import { XStack, YStack, Text, Button } from 'tamagui'
 import { RotateCcw, List } from '@tamagui/lucide-icons'
 import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
@@ -67,8 +67,6 @@ export const MapFilterBar = ({
   onResultsPress,
   onReset,
 }: MapFilterBarProps) => {
-  const media = useMedia()
-  const isSmallScreen = media.sm
   const [searchQuery, setSearchQuery] = useState('')
 
   // Validate API key
@@ -104,7 +102,7 @@ export const MapFilterBar = ({
     >
       {/* Search Input */}
       {tokenValidation.valid ? (
-        <YStack flex={1} minW={isSmallScreen ? '100%' : 200} $sm={{ minW: '100%', maxW: '100%' }}>
+        <YStack flex={1} minW="100%" $md={{ minW: 200 }} $sm={{ minW: '100%', maxW: '100%' }}>
           <AddressAutocomplete
             value={searchQuery}
             onChange={setSearchQuery}
@@ -130,7 +128,8 @@ export const MapFilterBar = ({
         <YStack
           flex={1}
           width="100%"
-          minW={isSmallScreen ? '100%' : 200}
+          minW="100%"
+          $md={{ minW: 200 }}
           bg="$background"
           p="$3"
           rounded="$4"

@@ -133,7 +133,7 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
   // Native: wrap with React Navigation theme provider and status bar
   return (
     <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />
       {children}
     </ThemeProvider>
   )

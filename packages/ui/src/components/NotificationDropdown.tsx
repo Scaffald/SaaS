@@ -9,7 +9,6 @@ import {
   Card,
   Separator,
   Spinner,
-  useMedia,
   type StackProps,
   type TextProps,
 } from 'tamagui'
@@ -166,8 +165,6 @@ export function NotificationDropdown({
 }: NotificationDropdownProps) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
   const triggerRef = useRef<ButtonRef>(null)
 
   // Separate notifications into unread and read
@@ -276,7 +273,8 @@ export function NotificationDropdown({
         animation="quick"
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-        style={{ width: isMobile ? 'calc(100vw - 32px)' : 360 }}
+        width="calc(100vw - 32px)"
+        $md={{ width: 360 }}
       >
         {/* Header */}
         <XStack

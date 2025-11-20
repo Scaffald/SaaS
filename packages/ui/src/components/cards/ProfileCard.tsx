@@ -1,6 +1,6 @@
 import { memo, forwardRef } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack, YStack, useMedia } from 'tamagui'
+import { Paragraph, Text, XStack, YStack, useWindowDimensions } from 'tamagui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { SelectableCard } from './SelectableCard'
@@ -78,9 +78,10 @@ export const ProfileCard = memo(
       },
       forwardedRef
     ) => {
-      const media = useMedia()
-      // Use responsive numberOfLines: 3 lines on small screens, 2 lines on larger screens
-      const titleNumberOfLines = media.sm ? 3 : 2
+      // Use window dimensions for text truncation behavior
+      // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+      const { width } = useWindowDimensions()
+      const titleNumberOfLines = width <= 800 ? 3 : 2
       // Build metadata items
       const metadataItems: MetadataItem[] = []
 

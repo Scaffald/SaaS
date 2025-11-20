@@ -122,3 +122,5 @@ export function useResumeWizard(resumeId: string) {
   }
 }
 
+export type ResumeWizardController = ReturnType<typeof useResumeWizard>
+

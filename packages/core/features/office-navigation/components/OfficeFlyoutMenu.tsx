@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { NativeSyntheticEvent, NativeScrollEvent, ViewStyle } from 'react-native'
-import { Popover, YStack, ScrollView, Separator, Text, useWindowDimensions, useMedia } from 'tamagui'
+import { YStack, ScrollView, Separator, Text, useWindowDimensions } from 'tamagui'
+import { Popover } from '@app/ui'
 import { ROUTES } from '@app/core/constants/routes'
 import { OfficeFlyoutMenuItem } from './OfficeFlyoutMenuItem'
 import type { RouteConfig } from '@app/core/constants/routes'
@@ -88,14 +89,13 @@ export const OfficeFlyoutMenu = ({
   triggerRef: _triggerRef,
 }: OfficeFlyoutMenuProps) => {
   const { width } = useWindowDimensions() // Keep for actual dimension calculation
-  const media = useMedia()
   const routes = useOrganizedRoutes()
   const [showTopShadow, setShowTopShadow] = useState(false)
   const [showBottomShadow, setShowBottomShadow] = useState(true)
 
-  // Calculate responsive width using Tamagui breakpoint
-  // sm = maxWidth: 800px (small screen), gtSm = minWidth: 801px (tablet/desktop)
-  const isSmallScreen = media.sm
+  // Calculate responsive width using window dimensions
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const isSmallScreen = width <= 800
   const menuWidth = isSmallScreen ? Math.min(width - 32, 400) : 360
 
   const categoryLabels: Record<keyof OrganizedRoutes, string> = {

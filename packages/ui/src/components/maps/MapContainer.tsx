@@ -13,8 +13,8 @@ import { validateGeoJSONFeatureCollection, extractViewportBounds } from './utils
 import { useThemeSetting } from '../../../../core/provider/theme/UniversalThemeProvider'
 import { createPulsingDot } from './PulsingDot'
 import {
-  primaryDarkColor,
-  primaryLightColor,
+  tealLight,
+  tealDark,
   purpleDark,
   purpleLight,
   yellowDark,
@@ -194,7 +194,6 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       pins,
       center = [-84.5555, 42.7325],
       zoom = 7,
-      radius,
       centerLocation,
       onPinPress,
       onPinHover,
@@ -215,7 +214,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const cardMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const centerMarkerRef = useRef<mapboxgl.Marker | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
-    const [currentZoom, setCurrentZoom] = useState(zoom)
+    const currentZoomRef = useRef(zoom)
+    const zoomRef = useRef(zoom)
+
+    useEffect(() => {
+      zoomRef.current = zoom
+      currentZoomRef.current = zoom
+    }, [zoom])
+
     // Determine map style based on app theme
     const themeMode = resolvedTheme === 'dark' ? 'dark' : 'light'
     const mapStyle = getMapStyleUrl(themeMode)
@@ -224,7 +230,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const pinColors = useMemo<PinColorMap>(() => {
       const isDark = resolvedTheme === 'dark'
       return {
-        worker: isDark ? primaryDarkColor : primaryLightColor,
+        worker: isDark ? tealDark.teal9 : tealLight.teal9,
         organization: isDark ? purpleDark.purple9 : purpleLight.purple9,
         job: isDark ? yellowDark.yellow9 : yellowLight.yellow9,
       }
@@ -234,6 +240,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     const onPinPressRef = useRef(onPinPress)
     const onPinHoverRef = useRef(onPinHover)
     const onClustersChangeRef = useRef(onClustersChange)
+    const onViewportChangeRef = useRef(onViewportChange)
+    const onMapReadyRef = useRef(onMapReady)
 
     useEffect(() => {
       latestPinsRef.current = pins
@@ -255,73 +263,85 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       onClustersChangeRef.current = onClustersChange
     }, [onClustersChange])
 
+    useEffect(() => {
+      onViewportChangeRef.current = onViewportChange
+    }, [onViewportChange])
+
+    useEffect(() => {
+      onMapReadyRef.current = onMapReady
+    }, [onMapReady])
+
     // Viewport change handler ref for debouncing
     const viewportChangeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     // Resize handler ref for debouncing
     const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     // Expose map methods to parent
-    useImperativeHandle(ref, () => ({
-      flyTo: (newCenter: [number, number], newZoom = zoom) => {
-        const map = mapRef.current
-        if (map?.flyTo) {
-          map.flyTo({
-            center: newCenter,
-            zoom: newZoom,
-            speed: 0.8,
+    useImperativeHandle(
+      ref,
+      () => ({
+        flyTo: (newCenter: [number, number], newZoom = zoomRef.current) => {
+          const map = mapRef.current
+          if (map?.flyTo) {
+            map.flyTo({
+              center: newCenter,
+              zoom: newZoom,
+              speed: 0.8,
+            })
+          }
+        },
+        centerOnPin: (pinId: string) => {
+          const map = mapRef.current
+          const pin = latestPinsRef.current.find((p) => p.id === pinId)
+          if (map && pin) {
+            map.flyTo({
+              center: pin.coordinate,
+              zoom: Math.max(map.getZoom(), 12), // Zoom in at least to level 12
+              speed: 0.8,
+            })
+          }
+        },
+        getPinScreenCoordinates: (pinId: string) => {
+          const map = mapRef.current
+          const pin = latestPinsRef.current.find((p) => p.id === pinId)
+          if (!map || !pin) {
+            return null
+          }
+          // Convert geo coordinates to screen coordinates
+          const point = map.project(pin.coordinate)
+          return { x: point.x, y: point.y }
+        },
+        setCardOverlay: (pinId: string | null, content: HTMLElement | null) => {
+          const map = mapRef.current
+          if (!map) return
+
+          // Remove existing card marker
+          if (cardMarkerRef.current) {
+            cardMarkerRef.current.remove()
+            cardMarkerRef.current = null
+          }
+
+          // If pinId is null or no content, just remove the marker
+          if (!pinId || !content) return
+
+          // Find the pin
+          const pin = latestPinsRef.current.find((p) => p.id === pinId)
+          if (!pin) return
+
+          // Create a new marker anchored to the pin's coordinates
+          const marker = new mapboxgl.Marker({
+            element: content,
+            anchor: 'bottom', // Anchor the bottom of the card to the pin location
+            offset: [0, -24], // Offset up by pin radius to position above pin
           })
-        }
-      },
-      centerOnPin: (pinId: string) => {
-        const map = mapRef.current
-        const pin = pins.find((p) => p.id === pinId)
-        if (map && pin) {
-          map.flyTo({
-            center: pin.coordinate,
-            zoom: Math.max(map.getZoom(), 12), // Zoom in at least to level 12
-            speed: 0.8,
-          })
-        }
-      },
-      getPinScreenCoordinates: (pinId: string) => {
-        const map = mapRef.current
-        const pin = pins.find((p) => p.id === pinId)
-        if (!map || !pin) {
-          return null
-        }
-        // Convert geo coordinates to screen coordinates
-        const point = map.project(pin.coordinate)
-        return { x: point.x, y: point.y }
-      },
-      setCardOverlay: (pinId: string | null, content: HTMLElement | null) => {
-        const map = mapRef.current
-        if (!map) return
+            .setLngLat(pin.coordinate)
+            .addTo(map)
 
-        // Remove existing card marker
-        if (cardMarkerRef.current) {
-          cardMarkerRef.current.remove()
-          cardMarkerRef.current = null
-        }
-
-        // If pinId is null or no content, just remove the marker
-        if (!pinId || !content) return
-
-        // Find the pin
-        const pin = pins.find((p) => p.id === pinId)
-        if (!pin) return
-
-        // Create a new marker anchored to the pin's coordinates
-        const marker = new mapboxgl.Marker({
-          element: content,
-          anchor: 'bottom', // Anchor the bottom of the card to the pin location
-          offset: [0, -24], // Offset up by pin radius to position above pin
-        })
-          .setLngLat(pin.coordinate)
-          .addTo(map)
-
-        cardMarkerRef.current = marker
-      },
-    }))
+          cardMarkerRef.current = marker
+        },
+      }),
+      []
+    )
 
     // Initialize map
     useEffect(() => {
@@ -526,7 +546,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
           // Track viewport changes (pan and zoom) with debouncing (500ms)
           // Use 'moveend' and 'zoomend' events which fire after pan/zoom completes
-          if (onViewportChange) {
+          if (onViewportChangeRef.current) {
             const handleViewportChangeDebounced = () => {
               // Clear existing timeout
               if (viewportChangeTimeoutRef.current) {
@@ -537,8 +557,8 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               viewportChangeTimeoutRef.current = setTimeout(() => {
                 const bounds = extractViewportBounds(map)
                 const newZoom = map.getZoom()
-                setCurrentZoom(newZoom)
-                onViewportChange(bounds, newZoom)
+                currentZoomRef.current = newZoom
+                onViewportChangeRef.current?.(bounds, newZoom)
               }, 500)
             }
 
@@ -548,11 +568,11 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
           setIsMapReady(true)
 
-          if (onMapReady) {
+          if (onMapReadyRef.current) {
             const initialBounds = extractViewportBounds(map)
             const initialZoom = map.getZoom()
-            setCurrentZoom(initialZoom)
-            onMapReady({
+            currentZoomRef.current = initialZoom
+            onMapReadyRef.current({
               bounds: initialBounds,
               zoom: initialZoom,
             })
@@ -586,7 +606,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       } catch (error) {
         console.error('Failed to initialize map:', error)
       }
-    }, [center, zoom, onViewportChange, onMapReady, mapStyle, themeMode])
+    }, [center, zoom, mapStyle, themeMode])
 
     // Update map style when theme changes
     useEffect(() => {
@@ -898,7 +918,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
                 return
               }
 
-              if (currentZoom > CLUSTER_MAX_ZOOM) {
+              if (currentZoomRef.current > CLUSTER_MAX_ZOOM) {
                 notifyClusters([])
                 return
               }
@@ -1001,7 +1021,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       } catch (error) {
         console.error('Error updating markers:', error)
       }
-    }, [pins, isMapReady, currentZoom])
+    }, [pins, isMapReady])
 
     // Handle empty map clicks (deselect when clicking on empty space)
     // Note: Layer-specific click handlers are set up in map.on('load') and style change handlers
@@ -1142,7 +1162,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         if (map.getSource('locationCircle')) {
           map.removeSource('locationCircle')
         }
-      } catch (error) {
+      } catch {
         // Ignore errors if layers/source don't exist
         // This is expected on first render or if already cleaned up
       }

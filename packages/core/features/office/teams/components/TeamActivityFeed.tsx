@@ -9,7 +9,6 @@ import {
   TextArea,
   XStack,
   YStack,
-  useMedia,
 } from 'tamagui'
 import { Check, ChevronDown, MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -49,8 +48,6 @@ export function TeamActivityFeed({
   const [commentBody, setCommentBody] = useState('')
   const [mentions, setMentions] = useState<MentionOption[]>([])
   const [mentionSelection, setMentionSelection] = useState('none')
-  const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const activityQuery = api.teams.analytics.activity.useInfiniteQuery(
     {
@@ -292,13 +289,17 @@ export function TeamActivityFeed({
   const disableSubmit = isPosting || commentBody.trim().length === 0
 
   return (
-    <YStack gap="$4" px={isSmallScreen ? '$3' : undefined}>
+    <YStack gap="$4" px="$3" $md={{ px: undefined }}>
       <XStack
         gap="$2"
-        items={isSmallScreen ? 'flex-start' : 'center'}
+        items="flex-start"
         justify="space-between"
         flexWrap="wrap"
-        flexDirection={isSmallScreen ? 'column' : 'row'}
+        flexDirection="column"
+        $md={{
+          items: 'center',
+          flexDirection: 'row',
+        }}
       >
         <XStack gap="$2" items="center">
           <MessageCircle size={20} accessibilityLabel="Team activity icon" />
@@ -313,7 +314,8 @@ export function TeamActivityFeed({
           disabled={activityQuery.isFetching}
           accessibilityLabel="Refresh team activity feed"
           accessibilityHint="Reloads the most recent team events"
-          width={isSmallScreen ? '100%' : undefined}
+          width="100%"
+          $md={{ width: undefined }}
         >
           Refresh
         </Button>
@@ -342,8 +344,12 @@ export function TeamActivityFeed({
             <XStack
               gap="$2"
               flexWrap="wrap"
-              flexDirection={isSmallScreen ? 'column' : 'row'}
-              items={isSmallScreen ? 'stretch' : 'center'}
+              flexDirection="column"
+              items="stretch"
+              $md={{
+                flexDirection: 'row',
+                items: 'center',
+              }}
             >
               {mentions.map((mention) => (
                 <Button
@@ -352,7 +358,8 @@ export function TeamActivityFeed({
                   variant="outlined"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
-                  width={isSmallScreen ? '100%' : undefined}
+                  width="100%"
+                  $md={{ width: undefined }}
                 >
                   @{mention.label}
                 </Button>
@@ -366,7 +373,8 @@ export function TeamActivityFeed({
                   <Select.Trigger
                     iconAfter={ChevronDown}
                     size="$2"
-                    width={isSmallScreen ? '100%' : undefined}
+                    width="100%"
+                    $md={{ width: undefined }}
                   >
                     <Select.Value placeholder="Mention teammate">
                       {mentionSelection === 'none' ? 'Add mention' : 'Mention added'}
@@ -411,7 +419,8 @@ export function TeamActivityFeed({
             disabled={disableSubmit}
             accessibilityLabel="Post update"
             accessibilityHint="Shares your message with the team"
-            width={isSmallScreen ? '100%' : undefined}
+            width="100%"
+            $md={{ width: undefined }}
           >
             {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
           </Button>

@@ -3,7 +3,8 @@
  * Use the router navigation to /dashboard/discover/jobs/[id] instead.
  * This component is kept for backward compatibility but will be removed in a future version.
  */
-import { YStack, XStack, Text, Button, Separator, ScrollView, Dialog } from 'tamagui'
+import { YStack, XStack, Text, Button, Separator, ScrollView } from 'tamagui'
+import { Dialog } from '@app/ui'
 import {
   Building2,
   MapPin,

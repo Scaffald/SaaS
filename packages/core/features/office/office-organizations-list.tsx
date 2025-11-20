@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
-import { Button, Dialog, Label, Paragraph, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Label, Paragraph, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Dialog } from '@app/ui'
 import { useToastController } from '@tamagui/toast'
 import {
   ArrowRightCircle,

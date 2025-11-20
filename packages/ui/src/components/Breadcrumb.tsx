@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack, Popover, Sheet, Adapt, ScrollView, useMedia } from 'tamagui'
+import {
+  Text,
+  XStack,
+  YStack,
+  Popover,
+  Sheet,
+  Adapt,
+  ScrollView,
+  useWindowDimensions,
+} from 'tamagui'
 import { Link, useRouter } from 'expo-router'
 import { Button as UIButton } from './buttons/Button'
 
@@ -89,58 +98,59 @@ export const Breadcrumb = React.memo(function Breadcrumb({
   onItemPress,
   showEllipsisDropdown = true,
 }: BreadcrumbProps) {
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
+  // Use window dimensions for item calculation logic
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width } = useWindowDimensions()
+  const isMobile = width <= 800
   const router = useRouter()
   const [ellipsisOpen, setEllipsisOpen] = useState(false)
 
   // Calculate which items to display based on viewport (memoized)
-  const { displayItems, showEllipsis, hiddenItems, hiddenStartIndex, hiddenEndIndex } =
-    useMemo(() => {
-      let displayItems: BreadcrumbItem[]
-      let showEllipsis = false
-      let hiddenStartIndex = -1
-      let hiddenEndIndex = -1
+  const { displayItems, showEllipsis, hiddenItems, hiddenStartIndex } = useMemo(() => {
+    let displayItems: BreadcrumbItem[]
+    let showEllipsis = false
+    let hiddenStartIndex = -1
+    let hiddenEndIndex = -1
 
-      if (isMobile) {
-        // Mobile: show only last N items
-        if (items.length > maxItemsMobile) {
-          displayItems = items.slice(-maxItemsMobile)
-          showEllipsis = true
-          hiddenStartIndex = 0
-          hiddenEndIndex = items.length - maxItemsMobile - 1
-        } else {
-          displayItems = items
-        }
+    if (isMobile) {
+      // Mobile: show only last N items
+      if (items.length > maxItemsMobile) {
+        displayItems = items.slice(-maxItemsMobile)
+        showEllipsis = true
+        hiddenStartIndex = 0
+        hiddenEndIndex = items.length - maxItemsMobile - 1
       } else {
-        // Desktop: show first + last (maxItemsDesktop - 1) items if exceeding threshold
-        if (items.length > maxItemsDesktop) {
-          const visibleCount = maxItemsDesktop
-          const firstItem = items[0]
-          const lastItems = items.slice(-(visibleCount - 1))
-          displayItems = [firstItem, ...lastItems]
-          showEllipsis = true
-          hiddenStartIndex = 1
-          hiddenEndIndex = items.length - (visibleCount - 1) - 1
-        } else {
-          displayItems = items
-        }
+        displayItems = items
       }
-
-      // Get hidden items for ellipsis dropdown
-      const hiddenItems =
-        showEllipsis && hiddenStartIndex >= 0 && hiddenEndIndex >= hiddenStartIndex
-          ? items.slice(hiddenStartIndex, hiddenEndIndex + 1)
-          : []
-
-      return {
-        displayItems,
-        showEllipsis,
-        hiddenItems,
-        hiddenStartIndex,
-        hiddenEndIndex,
+    } else {
+      // Desktop: show first + last (maxItemsDesktop - 1) items if exceeding threshold
+      if (items.length > maxItemsDesktop) {
+        const visibleCount = maxItemsDesktop
+        const firstItem = items[0]
+        const lastItems = items.slice(-(visibleCount - 1))
+        displayItems = [firstItem, ...lastItems]
+        showEllipsis = true
+        hiddenStartIndex = 1
+        hiddenEndIndex = items.length - (visibleCount - 1) - 1
+      } else {
+        displayItems = items
       }
-    }, [items, isMobile, maxItemsMobile, maxItemsDesktop])
+    }
+
+    // Get hidden items for ellipsis dropdown
+    const hiddenItems =
+      showEllipsis && hiddenStartIndex >= 0 && hiddenEndIndex >= hiddenStartIndex
+        ? items.slice(hiddenStartIndex, hiddenEndIndex + 1)
+        : []
+
+    return {
+      displayItems,
+      showEllipsis,
+      hiddenItems,
+      hiddenStartIndex,
+      hiddenEndIndex,
+    }
+  }, [items, isMobile, maxItemsMobile, maxItemsDesktop])
 
   // Handle navigation to hidden item (memoized)
   const handleHiddenItemPress = useCallback(

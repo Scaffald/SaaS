@@ -16,8 +16,7 @@
       "packages/ui/src/themes/scaffald-theme.ts",
       "packages/core/assets/brand-colors.ts"
     ],
-    "css": "Tamagui theme runtime generating CSS-in-JS for web",
-    "media": "packages/ui/src/config/media.ts"
+    "css": "Tamagui theme runtime generating CSS-in-JS for web"
   },
   "componentSources": {
     "uiPackage": "packages/ui/src",

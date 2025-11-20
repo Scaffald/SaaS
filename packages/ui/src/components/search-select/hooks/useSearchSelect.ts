@@ -96,7 +96,7 @@ export function useSearchSelect<T>(props: SearchSelectProps<T>): UseSearchSelect
       // Always call onInputChange if provided, regardless of controlled state
       // This allows parent components to trigger searches even when input is uncontrolled
       onInputChange?.(next)
-      
+
       if (isInputControlled) {
         // If controlled, parent manages state via onInputChange
         // Don't set internal state

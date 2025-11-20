@@ -6,6 +6,7 @@ import { ProfileSkillsLeft, ProfileSkillsProvider } from '@app/core/features/pro
 import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
 import { ProfileEducationLeft } from '@app/core/features/profile/profile-education-left'
 import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
+import { ProfileCertificationsHighlightProvider } from '@app/core/features/profile/profile-certifications-highlight-context'
 
 export default function EditUserPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -107,7 +108,9 @@ export default function EditUserPage() {
               certifications. Full multi-user support coming soon.
             </Text>
           </Card>
-          <ProfileCertificationsLeft />
+          <ProfileCertificationsHighlightProvider>
+            <ProfileCertificationsLeft />
+          </ProfileCertificationsHighlightProvider>
         </YStack>
       </YStack>
     </ScrollView>

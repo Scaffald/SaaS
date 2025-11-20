@@ -8,7 +8,8 @@ import {
   RefreshCcw,
   Shield,
 } from '@tamagui/lucide-icons'
-import { Card, Checkbox, Dialog, TextArea } from 'tamagui'
+import { Card, Checkbox, TextArea } from 'tamagui'
+import { Dialog } from '@app/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 
 import {

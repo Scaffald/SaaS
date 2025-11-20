@@ -34,21 +34,14 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
     const shouldShowClear = showClear && Boolean(value) && !loading && !disabled
 
     return (
-      <XStack
-        borderWidth={1}
-        borderColor={isInvalid ? '$red8' : '$borderColor'}
-        rounded="$4"
-        bg="$background"
-        pr="$2"
-        items="center"
-        focusStyle={{ borderColor: '$color8' }}
-        opacity={disabled ? 0.75 : 1}
-      >
+      <XStack position="relative" width="100%">
         <Input
           ref={ref}
-          flex={1}
-          bg="transparent"
-          borderWidth={0}
+          width="100%"
+          borderWidth={1}
+          borderColor={isInvalid ? '$red8' : '$borderColor'}
+          rounded="$4"
+          bg="$background"
           px="$4"
           py="$3"
           placeholder={placeholder}
@@ -61,24 +54,31 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           autoComplete="off"
           autoCorrect={false}
           autoCapitalize="none"
+          focusStyle={{ borderColor: '$color8' }}
+          opacity={disabled ? 0.75 : 1}
+          pr={shouldShowClear || loading ? '$10' : '$4'}
           {...inputProps}
         />
 
-        {loading ? (
-          <Spinner size="small" color="$color9" />
-        ) : shouldShowClear ? (
-          <Button
-            variant="outlined"
-            size="$2"
-            borderWidth={0}
-            circular
-            onPress={onClear}
-            disabled={disabled}
-            aria-label="Clear search input"
-          >
-            <X size={14} color="$color10" />
-          </Button>
-        ) : null}
+        {(loading || shouldShowClear) && (
+          <XStack position="absolute" r="$3" t={0} b={0} items="center" gap="$2">
+            {loading ? (
+              <Spinner size="small" color="$color9" />
+            ) : shouldShowClear ? (
+              <Button
+                variant="outlined"
+                size="$2"
+                borderWidth={0}
+                circular
+                onPress={onClear}
+                disabled={disabled}
+                aria-label="Clear search input"
+              >
+                <X size={14} color="$color10" />
+              </Button>
+            ) : null}
+          </XStack>
+        )}
       </XStack>
     )
   }

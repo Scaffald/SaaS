@@ -13,6 +13,7 @@ export interface ResultItemProps<T> {
   renderOption?: (option: SearchSelectOption<T>) => ReactNode
   showSelectionIcon?: boolean
   itemId?: string
+  isLast?: boolean
 }
 
 const highlightText = (label: string, ranges?: SearchSelectHighlightRange[]) => {
@@ -62,6 +63,7 @@ function ResultItemComponent<T>({
   renderOption,
   showSelectionIcon = true,
   itemId,
+  isLast = false,
 }: ResultItemProps<T>) {
   const content = useMemo(() => {
     if (renderOption) {
@@ -89,26 +91,31 @@ function ResultItemComponent<T>({
       unstyled
       id={itemId}
       px="$3"
-      py="$3"
-      items="center"
-      justify="space-between"
+      py="$2"
+      items="flex-start"
+      width="100%"
       bg={isActive ? '$color4' : 'transparent'}
       hoverStyle={{ bg: '$color4' }}
       pressStyle={{ bg: '$color5' }}
+      borderWidth={0}
+      borderBottomWidth={isLast ? 0 : 1}
+      borderBottomColor={isLast ? 'transparent' : '$borderColor'}
       onPress={() => onPress?.(option)}
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
       aria-selected={isSelected}
       aria-posinset={index + 1}
     >
-      {content}
-      {showSelectionIcon ? (
-        <Check
-          size={18}
-          color={isSelected ? '$color10' : 'transparent'}
-          aria-hidden={!isSelected}
-        />
-      ) : null}
+      <XStack flex={1} items="flex-start" justify="space-between" width="100%">
+        {content}
+        {showSelectionIcon ? (
+          <Check
+            size={18}
+            color={isSelected ? '$color10' : 'transparent'}
+            aria-hidden={!isSelected}
+          />
+        ) : null}
+      </XStack>
     </Button>
   )
 }

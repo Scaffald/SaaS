@@ -2,19 +2,26 @@ import { useMemo } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { YStack, Text, Button } from 'tamagui'
-import { ResumeWizard } from '@app/core/features/resume'
+import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@app/core/features/resume'
 
-function ResumeReviewContent() {
-  const router = useRouter()
+function useResumeIdFromParams() {
   const params = useLocalSearchParams<{ resumeId?: string }>()
 
-  const resumeId = useMemo(() => {
+  return useMemo(() => {
     const value = params.resumeId
     if (Array.isArray(value)) {
       return value[0]
     }
     return value ?? ''
   }, [params.resumeId])
+}
+
+interface ResumeReviewContentProps {
+  resumeId?: string
+}
+
+function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
+  const router = useRouter()
 
   if (!resumeId) {
     return (
@@ -40,7 +47,20 @@ function ResumeReviewContent() {
 }
 
 export default function ResumeReviewPage() {
+  const resumeId = useResumeIdFromParams()
+
+  if (!resumeId) {
+    return (
+      <DashboardLayout leftContent={<ResumeReviewContent />} rightContent={<QuickLinksSidebar />} />
+    )
+  }
+
   return (
-    <DashboardLayout leftContent={<ResumeReviewContent />} rightContent={<QuickLinksSidebar />} />
+    <ResumeWizardProvider resumeId={resumeId}>
+      <DashboardLayout
+        leftContent={<ResumeReviewContent resumeId={resumeId} />}
+        rightContent={<ResumeStepsSidebar />}
+      />
+    </ResumeWizardProvider>
   )
 }

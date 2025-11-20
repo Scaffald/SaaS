@@ -52,12 +52,7 @@ export function ResumeUploadModal({
   const [status, setStatus] = useState<UploadStatus>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
-  const [progressLogs, setProgressLogs] = useState<string[]>([])
   const uploadSequenceRef = useRef(0)
-
-  const appendLog = useCallback((message: string) => {
-    setProgressLogs((previous) => [...previous, message])
-  }, [])
 
   const resetState = useCallback(() => {
     uploadSequenceRef.current += 1
@@ -65,7 +60,6 @@ export function ResumeUploadModal({
     setStatus('idle')
     setErrorMessage(null)
     setFileName(null)
-    setProgressLogs([])
     uploadResumeMutation.reset()
     parseResumeMutation.reset()
   }, [parseResumeMutation, uploadResumeMutation])
@@ -82,7 +76,8 @@ export function ResumeUploadModal({
 
   const showProgress = status === 'uploading' || status === 'parsing'
 
-  const shouldShowProgressIndicators = status === 'uploading' || status === 'parsing' || status === 'success' || status === 'error'
+  const shouldShowProgressIndicators =
+    status === 'uploading' || status === 'parsing' || status === 'success' || status === 'error'
 
   const progressValue = useMemo(() => {
     switch (status) {
@@ -122,15 +117,17 @@ export function ResumeUploadModal({
     }
   }, [status])
 
-  const handleUploadError = useCallback((message: string) => {
-    setStatus('error')
-    setErrorMessage(message)
-    toast.show('Resume Import Failed', {
-      message,
-      type: 'error',
-    })
-    appendLog(`❌ ${message}`)
-  }, [appendLog, toast])
+  const handleUploadError = useCallback(
+    (message: string) => {
+      setStatus('error')
+      setErrorMessage(message)
+      toast.show('Resume Import Failed', {
+        message,
+        type: 'error',
+      })
+    },
+    [toast]
+  )
 
   const validateFileSize = (size: number): boolean => {
     if (size > MAX_FILE_BYTES) {
@@ -150,7 +147,7 @@ export function ResumeUploadModal({
 
       try {
         setStatus('uploading')
-        appendLog('⬆️ Preparing upload request...')
+        console.debug('[ResumeUploadModal] preparing upload request')
         const base64 =
           nextCandidate.kind === 'web'
             ? await fileToDataUrl(nextCandidate.file)
@@ -163,26 +160,32 @@ export function ResumeUploadModal({
           return
         }
 
-        appendLog('📡 Sending upload to resume.upload...')
+        console.debug('[ResumeUploadModal] sending upload to resume.upload')
         const uploadResponse = await uploadResumeMutation.mutateAsync({
           fileData: base64,
           fileName: nextCandidate.name,
           fileSize: nextCandidate.size,
           mimeType: nextCandidate.type,
         })
-        appendLog('✅ Upload stored, starting AI parsing...')
+        console.debug('[ResumeUploadModal] upload stored, starting AI parsing')
 
         if (sequence !== uploadSequenceRef.current) {
           return
         }
 
         setStatus('parsing')
-        appendLog('🤖 Resume uploaded. Starting AI parsing...')
         await parseResumeMutation.mutateAsync({
           resumeId: uploadResponse.resumeId,
-          sections: ['general', 'experience', 'education', 'skills', 'certifications', 'employment'],
+          sections: [
+            'general',
+            'experience',
+            'education',
+            'skills',
+            'certifications',
+            'employment',
+          ],
         })
-        appendLog('🤖 Parsing completed, updating dashboard...')
+        console.debug('[ResumeUploadModal] parsing completed, updating dashboard')
 
         if (sequence !== uploadSequenceRef.current) {
           return
@@ -195,12 +198,12 @@ export function ResumeUploadModal({
         }
 
         setStatus('success')
-        appendLog('✅ Parsing complete. Preparing your review wizard...')
+        console.debug('[ResumeUploadModal] parsing complete, preparing review wizard')
         toast.show('Resume Imported', {
           message: 'Review the parsed details before saving them to your profile.',
           type: 'success',
         })
-        appendLog('🚀 Redirecting to the review experience...')
+        console.debug('[ResumeUploadModal] redirecting to review experience')
         onUploadComplete?.(uploadResponse.resumeId)
         onOpenChange(false)
       } catch (error) {
@@ -213,14 +216,12 @@ export function ResumeUploadModal({
         handleUploadError(message)
       } finally {
         if (sequence === uploadSequenceRef.current) {
-          appendLog('ℹ️ Resetting uploader state.')
           activeCandidateRef.current = null
           setFileName(null)
         }
       }
     },
     [
-      appendLog,
       handleUploadError,
       onOpenChange,
       onUploadComplete,
@@ -231,33 +232,35 @@ export function ResumeUploadModal({
     ]
   )
 
-  const handleWebFileSelect = useCallback((file: File) => {
-    console.debug('[ResumeUploadModal] handleWebFileSelect', {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-    })
-    const mimeType = file.type || guessMimeTypeFromName(file.name)
-    if (!ACCEPTED_MIME_TYPES.includes(mimeType as typeof ACCEPTED_MIME_TYPES[number])) {
-      handleUploadError('Please upload a PDF or Word document.')
-      return
-    }
+  const handleWebFileSelect = useCallback(
+    (file: File) => {
+      console.debug('[ResumeUploadModal] handleWebFileSelect', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      })
+      const mimeType = file.type || guessMimeTypeFromName(file.name)
+      if (!ACCEPTED_MIME_TYPES.includes(mimeType as (typeof ACCEPTED_MIME_TYPES)[number])) {
+        handleUploadError('Please upload a PDF or Word document.')
+        return
+      }
 
-    if (!validateFileSize(file.size)) {
-      return
-    }
+      if (!validateFileSize(file.size)) {
+        return
+      }
 
-    const nextCandidate: UploadCandidate = {
-      kind: 'web',
-      name: file.name,
-      size: file.size,
-      type: mimeType,
-      file,
-    }
-    setFileName(file.name)
-    setProgressLogs([`📄 Selected file "${file.name}" (${Math.round(file.size / 1024)} KB)`])
-    void beginUpload(nextCandidate)
-  }, [beginUpload, handleUploadError, validateFileSize])
+      const nextCandidate: UploadCandidate = {
+        kind: 'web',
+        name: file.name,
+        size: file.size,
+        type: mimeType,
+        file,
+      }
+      setFileName(file.name)
+      void beginUpload(nextCandidate)
+    },
+    [beginUpload, handleUploadError, validateFileSize]
+  )
 
   const handleNativePick = useCallback(async () => {
     try {
@@ -289,7 +292,7 @@ export function ResumeUploadModal({
       const info = await FileSystem.getInfoAsync(uri)
       const infoSize =
         info.exists && 'size' in info && typeof info.size === 'number' ? info.size : undefined
-      const size = typeof asset?.size === 'number' ? asset.size : infoSize ?? 0
+      const size = typeof asset?.size === 'number' ? asset.size : (infoSize ?? 0)
 
       if (!validateFileSize(size)) {
         setStatus('idle')
@@ -312,7 +315,6 @@ export function ResumeUploadModal({
       }
       setFileName(name)
       setStatus('idle')
-      setProgressLogs([`📄 Selected file "${name}" (${Math.round(size / 1024)} KB)`])
       void beginUpload(nextCandidate)
     } catch (error) {
       console.error('[ResumeUploadModal] Native picker error', error)
@@ -322,16 +324,11 @@ export function ResumeUploadModal({
   }, [beginUpload, handleUploadError, validateFileSize])
 
   return (
-    <ResponsiveModal
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Import Resume"
-      size="medium"
-    >
+    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Import Resume" size="medium">
       <YStack gap={spacing.md}>
         <Paragraph color="$color11">
-          Upload a PDF or Word document under 1MB. We’ll extract your experience, education, skills, and preferences so
-          you can confirm the details before saving them to your profile.
+          Upload a PDF or Word document under 1MB. We’ll extract your experience, education, skills,
+          and preferences so you can confirm the details before saving them to your profile.
         </Paragraph>
 
         {Platform.OS === 'web' ? (
@@ -347,12 +344,11 @@ export function ResumeUploadModal({
               activeCandidateRef.current = null
               setStatus('idle')
               setErrorMessage(null)
-              setProgressLogs((previous) => [...previous, '🗑️ Removed selected file'])
               setFileName(null)
             }}
             disabled={status === 'uploading' || status === 'parsing'}
             currentFileName={fileName ?? undefined}
-            error={status === 'error' ? errorMessage ?? undefined : undefined}
+            error={status === 'error' ? (errorMessage ?? undefined) : undefined}
           />
         ) : (
           <YStack gap={spacing.sm}>
@@ -380,12 +376,7 @@ export function ResumeUploadModal({
 
         {shouldShowProgressIndicators && progressValue > 0 && (
           <YStack gap="$2" bg="$color2" p="$3" rounded="$3">
-            <YStack
-              height={8}
-              bg="$color4"
-              rounded="$4"
-              overflow="hidden"
-            >
+            <YStack height={8} bg="$color4" rounded="$4" overflow="hidden">
               <YStack
                 height="100%"
                 width={`${Math.round(progressValue * 100)}%`}
@@ -425,21 +416,6 @@ export function ResumeUploadModal({
           </XStack>
         )}
 
-        {progressLogs.length > 0 && (
-          <YStack gap="$2" bg="$color2" p="$3" rounded="$3">
-            <Text fontWeight="600" color="$color11">
-              Activity log
-            </Text>
-            <YStack gap="$1">
-              {progressLogs.map((log, index) => (
-                <Text key={`${index}-${log}`} color="$color10" fontSize="$2">
-                  {log}
-                </Text>
-              ))}
-            </YStack>
-          </YStack>
-        )}
-
         <XStack gap="$2" justify="flex-end">
           <Button
             size="$3"
@@ -458,7 +434,11 @@ export function ResumeUploadModal({
             borderColor={status === 'error' ? '$red7' : '$blue7'}
             borderWidth={1}
           >
-            {showProgress ? 'Working...' : status === 'error' ? 'Upload Failed' : 'Waiting for file'}
+            {showProgress
+              ? 'Working...'
+              : status === 'error'
+                ? 'Upload Failed'
+                : 'Waiting for file'}
           </Button>
         </XStack>
       </YStack>
@@ -503,5 +483,3 @@ async function fileToDataUrl(file: File): Promise<string> {
 
   throw new Error('Unable to encode file data.')
 }
-
-

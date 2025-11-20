@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
-import { YStack, XStack, Text, Input, H4, TextArea, ScrollView, Spinner, Label, Popover, Separator } from 'tamagui'
+import { YStack, XStack, Text, Input, H4, TextArea, ScrollView, Spinner, Label, Separator } from 'tamagui'
+import { Popover } from '@app/ui'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, X, ChevronDown } from '@tamagui/lucide-icons'

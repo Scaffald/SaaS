@@ -55,6 +55,7 @@ export * from './components/rich-text'
 // Individual component exports to avoid circular dependencies
 export { CustomToast } from './components/CustomToast'
 export * from './components/cookie-consent'
+export { Dialog, type DialogProps } from './components/dialog/Dialog'
 export * from './components/dialog'
 export * from './components/date-picker'
 export * from './components/cards'
@@ -77,6 +78,7 @@ export { StepContent } from './components/OnboardingStepContent'
 export { NotificationDropdown, type NotificationItem } from './components/NotificationDropdown'
 export { ResponsiveModal, type ResponsiveModalProps } from './components/ResponsiveModal'
 export { Sheet, type SheetProps } from './components/sheets/Sheet'
+export { Popover, type PopoverProps } from './components/popovers/Popover'
 
 // Layout components
 export { DashboardLayout } from './components/layouts/DashboardLayout'
@@ -115,6 +117,8 @@ export * from './components/user'
 export * from './components/states'
 export * from './components/typography'
 export * from './components/search-select'
+
+export * from './themes/scaffald-theme'
 
 // Hooks
 export * from './hooks/useUniversitySearch'

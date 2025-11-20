@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Button, Dialog, XStack, YStack, Text, Spinner } from 'tamagui'
+import { Button, XStack, YStack, Text, Spinner } from 'tamagui'
+import { Dialog } from '@app/ui'
 import { Trash2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 
@@ -86,30 +87,9 @@ export function DeleteButton({
 
       <Dialog modal open={isOpen} onOpenChange={setIsOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay
-            key="overlay"
-            animation="quick"
-            opacity={0.5}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-
+          <Dialog.Overlay key="overlay" />
           <Dialog.Content
-            bordered
-            elevate
             key="content"
-            animateOnly={['transform', 'opacity']}
-            animation={[
-              'quick',
-              {
-                opacity: {
-                  overshootClamping: true,
-                },
-              },
-            ]}
-            enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-            exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-            gap="$4"
             width={500}
           >
             <Dialog.Title>Confirm Delete</Dialog.Title>

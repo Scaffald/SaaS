@@ -1,63 +1,75 @@
+import type { DrawerContentComponentProps } from '@react-navigation/drawer'
+import { useCallback, useState } from 'react'
+import type { GestureResponderEvent } from 'react-native'
 import { YStack } from 'tamagui'
 import { DrawerContentScrollView } from '@react-navigation/drawer'
-import { getDrawerSections } from './config'
-import { DrawerSection } from './DrawerSection'
-import type { DrawerContentProps } from './types'
-import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
+import { getDrawerItems } from './config'
+import { DrawerLink } from './DrawerLink'
 import { useAssessmentStatus } from '@app/core/features/assessments/hooks/useAssessmentStatus'
-import { ScaffaldLogo } from '@app/core/assets'
+import { usePathname } from '@app/core/utils/usePathname'
+import { normalizePath } from './utils'
+
+export type DrawerContentProps = DrawerContentComponentProps & {
+  /**
+   * Callback when navigation occurs (for closing drawer on web)
+   */
+  onNavigate?: () => void
+}
 
 /**
  * DrawerContent component renders the main content area of the drawer
- * Includes the user header and scrollable navigation sections
- * Uses DrawerContentScrollView for proper gesture handling
+ * Handles state management, navigation logic, and renders the UI
+ * Works for both mobile (React Navigation) and web use cases
  */
-export const DrawerContent = ({
-  pathname,
-  onNavigate,
-  expandedItems,
-  onToggleExpanded,
-  drawerProps,
-}: DrawerContentProps) => {
-  const { hasOfficeRole, roles } = useUserRoles()
+export const DrawerContent = ({ navigation, onNavigate, ...drawerProps }: DrawerContentProps) => {
+  const pathname = normalizePath(usePathname())
   const assessmentStatus = useAssessmentStatus()
 
-  const teamManagementRoles = new Set([
-    'office',
-    'super_admin',
-    'partner_admin',
-    'admin',
-    'manager',
-  ])
-  const hasTeamManagementAccess = roles.some((role: string) => teamManagementRoles.has(role))
+  // State for managing expanded items
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
-  // Get drawer sections with Office link if user has office role and assessment status
-  const drawerSections = getDrawerSections({
-    includeOfficeLink: hasOfficeRole,
-    includeTeamManagementLink: hasTeamManagementAccess,
+  const toggleExpanded = useCallback((key: string) => {
+    setExpandedItems((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(key)) {
+        newSet.delete(key)
+      } else {
+        newSet.add(key)
+      }
+      return newSet
+    })
+  }, [])
+
+  const handleNavigate = useCallback(
+    (_href: string, _event?: GestureResponderEvent) => {
+      // Close drawer on mobile, call onNavigate callback on web
+      if (navigation) {
+        navigation.closeDrawer()
+      } else {
+        onNavigate?.()
+      }
+    },
+    [navigation, onNavigate]
+  )
+
+  const drawerItems = getDrawerItems({
     assessmentStatus,
   })
 
   return (
-    <YStack flex={1} gap="$4" px="$4" py="$4">
-      {/* Top Section - Scaffald Logo */}
-      <ScaffaldLogo height={20} width={120} style={{ marginLeft: 26 }} />
-
-      {/* Scrollable Content - Using DrawerContentScrollView for proper gesture handling */}
-      <DrawerContentScrollView {...drawerProps} showsVerticalScrollIndicator={false}>
-        <YStack flex={1}>
-          {drawerSections.map((section) => (
-            <DrawerSection
-              key={section.key}
-              section={section}
-              pathname={pathname}
-              onNavigate={onNavigate}
-              expandedItems={expandedItems}
-              onToggleExpanded={onToggleExpanded}
-            />
-          ))}
-        </YStack>
-      </DrawerContentScrollView>
-    </YStack>
+    <DrawerContentScrollView {...drawerProps} showsVerticalScrollIndicator={false}>
+      <YStack gap="$1" flex={1}>
+        {drawerItems.map((item) => (
+          <DrawerLink
+            key={item.key}
+            item={item}
+            pathname={pathname}
+            onNavigate={handleNavigate}
+            expandedItems={expandedItems}
+            onToggleExpanded={toggleExpanded}
+          />
+        ))}
+      </YStack>
+    </DrawerContentScrollView>
   )
 }
