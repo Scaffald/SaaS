@@ -13,6 +13,10 @@ const quietReporterPath = resolve(
   workspaceRoot,
   'tests/infrastructure/vitest/reporters/quiet-progress.ts'
 )
+const hangingTestReporterPath = resolve(
+  workspaceRoot,
+  'tests/infrastructure/vitest/reporters/hanging-test-reporter.ts'
+)
 
 type VitestPlugin = NonNullable<Config['plugins']>[number]
 const plugins: VitestPlugin[] = [react() as unknown as VitestPlugin, flowRemoveTypesPlugin()]
@@ -93,7 +97,7 @@ export default defineConfig({
       'packages/core/features/personality-assessment/**',
     ],
     setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
-    reporters: [quietReporterPath, 'hanging-process'],
+    reporters: [quietReporterPath, 'hanging-process', hangingTestReporterPath],
     server: {
       deps: {
         inline: [
