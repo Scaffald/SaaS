@@ -1,5 +1,7 @@
 export { DraggableCard } from './DraggableCard'
 export { DroppableColumn } from './DroppableColumn'
+export { KanbanCard } from './KanbanCard'
 export { ProgressBar } from './ProgressBar'
 export type { DragState, KanbanColumn, KanbanItem } from './types'
+export type { KanbanCardProps } from './KanbanCard'
 export type { ProgressBarProps } from './ProgressBar'
