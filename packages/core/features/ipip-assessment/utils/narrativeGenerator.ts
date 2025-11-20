@@ -1,6 +1,5 @@
 import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 import { getResults } from '@app/core/features/personality-assessment/lib/ipip'
-import { DOMAIN_NAMES } from './domainGrouping'
 
 const DOMAIN_ORDER: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
 

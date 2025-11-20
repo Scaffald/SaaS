@@ -106,7 +106,7 @@ export default function OfficeTeamDetailPage() {
         title="Team not specified"
         description="Provide a team identifier to view details."
         actionLabel="Back to teams"
-        onAction={() => router.replace(ROUTES.OFFICE_CMS_TEAMS.path)}
+        onAction={() => router.replace(ROUTES.OFFICE.CMS.TEAMS.path)}
       />
     )
   }
@@ -181,7 +181,7 @@ export default function OfficeTeamDetailPage() {
           icon={Briefcase}
           onPress={() =>
             router.push({
-              pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+              pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
               params: { teamId: team.id },
             })
           }
@@ -202,7 +202,7 @@ export default function OfficeTeamDetailPage() {
               size="$2"
               variant="outlined"
               icon={ArrowLeft}
-              onPress={() => router.push(ROUTES.OFFICE_CMS_TEAMS.path)}
+              onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
             >
               Back to teams
             </Button>
@@ -246,7 +246,7 @@ export default function OfficeTeamDetailPage() {
               }}
               onCreateJob={() =>
                 router.push({
-                  pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+                  pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                   params: { teamId: team.id },
                 })
               }

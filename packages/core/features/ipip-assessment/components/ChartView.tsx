@@ -1,4 +1,4 @@
-import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
+import type { IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 import { BarChart, RadarChart } from '@app/ui'
 import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { useMemo } from 'react'

@@ -74,7 +74,7 @@ export default function TeamAnalyticsPage() {
         title="Team not specified"
         description="Provide a team ID to view analytics."
         actionLabel="Return to teams"
-        onAction={() => router.replace(ROUTES.OFFICE_CMS_TEAMS.path)}
+        onAction={() => router.replace(ROUTES.OFFICE.CMS.TEAMS.path)}
       />
     )
   }

@@ -23,7 +23,6 @@ import type {
   MapContainerRef,
   MapPin,
   MapPinCategory,
-  ViewportBounds,
 } from './types'
 import { extractViewportBounds, validateGeoJSONFeatureCollection } from './utils'
 

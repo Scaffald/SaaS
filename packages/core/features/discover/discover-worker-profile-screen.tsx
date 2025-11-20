@@ -12,7 +12,7 @@ import { api } from '@app/core/utils/api'
 import { type BreadcrumbItem, DashboardWidget } from '@app/ui'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import type { ReactNode } from 'react'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Animated, Easing } from 'react-native'
 import { Text, XStack, YStack } from 'tamagui'
 
@@ -183,7 +183,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
 function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
   const skeletonBreadcrumbs: BreadcrumbItem[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
+    { label: 'Discover Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
     { label: 'Loading…', isActive: true },
   ]
 
@@ -211,7 +211,7 @@ export function DiscoverWorkerProfileScreen({
 
   const baseBreadcrumbs: BreadcrumbItem[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
+    { label: 'Discover Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
   ]
 
   if (!safeUserId) {

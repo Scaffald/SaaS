@@ -2,7 +2,7 @@ import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-ico
 import type { ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Paragraph, Text, XStack, YStack, useWindowDimensions } from 'tamagui'
 import { CardBadges } from './CardBadges'
 import { CardHeader } from './CardHeader'
 import { CardMetadata } from './CardMetadata'
@@ -212,12 +212,21 @@ export const ProfileCard = memo(
                   px="$1"
                   py="$0.5"
                   rounded="$8"
-                  // @ts-expect-error - Tamagui type limitations with string union
-                  bg={badgeConfig.bg}
+                  bg={
+                    badgeConfig.bg as typeof badgeConfig.bg extends string
+                      ? typeof badgeConfig.bg
+                      : never
+                  }
                 >
                   {badgeConfig.icon}
-                  {/* @ts-expect-error - Tamagui type limitations with string union */}
-                  <Text fontSize="$1" color={badgeConfig.color}>
+                  <Text
+                    fontSize="$1"
+                    color={
+                      badgeConfig.color as typeof badgeConfig.color extends string
+                        ? typeof badgeConfig.color
+                        : never
+                    }
+                  >
                     {badgeConfig.label}
                   </Text>
                 </XStack>

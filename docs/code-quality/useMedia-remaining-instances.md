@@ -81,7 +81,7 @@ This document lists the 13 remaining instances of `useMedia` in the codebase and
 - **Category**: ✅ **Logic-based** - Keep as-is
 - **Reason**: Chart sizing calculations
 
-### 12. OfficeFlyoutMenu (`packages/core/features/office-navigation/components/OfficeFlyoutMenu.tsx`)
+### 12. OfficePopoverMenu (`packages/core/features/office-navigation/components/OfficePopoverMenu.tsx`)
 - **Usage**: `const isSmallScreen = media.sm` - used for width calculation
 - **Purpose**: Calculates `menuWidth = isSmallScreen ? Math.min(width - 32, 400) : 360`
 - **Category**: ✅ **Logic-based** - Keep as-is

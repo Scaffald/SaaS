@@ -7,8 +7,19 @@ function usePostQuery() {
 
   const queryFn = async () => {
     // Type instantiation is excessively deep - posts table may not exist in database types yet
-    // biome-ignore lint/suspicious/noExplicitAny: Type instantiation is excessively deep, requires any cast
-    const result = await (supabase as any)
+    const result = await (
+      supabase as unknown as {
+        schema: (schema: string) => {
+          from: (table: string) => {
+            select: (columns: string) => {
+              order: (column: string, options: { ascending: boolean }) => {
+                limit: (count: number) => Promise<{ data: unknown[] | null }>
+              }
+            }
+          }
+        }
+      }
+    )
       .schema('core')
       .from('posts')
       .select('*')

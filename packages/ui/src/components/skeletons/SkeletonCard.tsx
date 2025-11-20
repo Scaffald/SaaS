@@ -10,7 +10,7 @@ export interface SkeletonCardProps {
   variant?: 'job' | 'profile' | 'organization'
 }
 
-export function SkeletonCard({ variant = 'job' }: SkeletonCardProps) {
+export function SkeletonCard({ variant: _variant = 'job' }: SkeletonCardProps) {
   return (
     <YStack
       gap={spacing.md}

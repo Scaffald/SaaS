@@ -1,4 +1,4 @@
-import { AUTH_ROUTES } from '@app/core/constants/routes'
+import { ROUTES } from '@app/core/constants/routes'
 import { getGlobalQueryClient } from '@app/core/provider/react-query'
 import { clearAllAuthStorage, isSessionExpired } from '@app/core/utils/auth/clearAuthStorage'
 import { supabase } from '@app/core/utils/supabase/client'
@@ -13,7 +13,7 @@ const useRedirectAfterSignOut = () => {
     const signOutListener = supabase.auth.onAuthStateChange((event: string) => {
       if (event === 'SIGNED_OUT') {
         console.log('[AuthStateChangeHandler] SIGNED_OUT event - redirecting to auth')
-        router.replace(AUTH_ROUTES.INDEX.path)
+        router.replace(ROUTES.AUTH.LOGIN.path)
       }
     })
     return () => {

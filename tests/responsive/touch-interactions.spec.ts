@@ -122,11 +122,9 @@ test.describe('Touch Interaction and Gesture Testing', () => {
 
         if (buttonCount > 0) {
           // Rapidly tap submit button
-          const startTime = Date.now()
           await submitButton.tap()
           await page.waitForTimeout(50) // Very short delay
           await submitButton.tap()
-          const totalTime = Date.now() - startTime
 
           // If debouncing is working, second tap should be ignored or delayed
           // This is a basic check - actual debouncing validation requires checking request count

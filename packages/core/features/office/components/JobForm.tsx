@@ -4,7 +4,6 @@ import type { AddressResult } from '@app/ui'
 import {
   AddressForm,
   Button,
-  CustomCheckbox,
   Input,
   ScrollView,
   Sheet,
@@ -14,9 +13,8 @@ import {
   YStack,
 } from '@app/ui'
 import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@app/ui/components/rich-text'
-import { Calendar, Check, ChevronDown, Eye, X } from '@tamagui/lucide-icons'
+import { Check, ChevronDown, Eye, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { Adapt, Card, Select, Switch } from 'tamagui'

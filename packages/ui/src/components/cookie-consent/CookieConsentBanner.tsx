@@ -1,5 +1,4 @@
-import { type ReactNode, useState } from 'react'
-import { Platform } from 'react-native'
+import { useState } from 'react'
 import {
   Anchor,
   AnimatePresence,
@@ -9,7 +8,6 @@ import {
   Paragraph,
   SizableText,
   type StackProps,
-  View,
   XStack,
   YStack,
 } from 'tamagui'

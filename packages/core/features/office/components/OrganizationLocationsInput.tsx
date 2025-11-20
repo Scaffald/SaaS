@@ -3,7 +3,7 @@ import type { AddressResult } from '@app/ui'
 import { AddressAutocomplete } from '@app/ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { Button, Input, Text, XStack, YStack } from 'tamagui'
 
 interface OrganizationLocationsInputProps {

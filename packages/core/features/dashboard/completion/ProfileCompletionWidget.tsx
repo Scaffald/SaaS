@@ -1,6 +1,5 @@
 import type { ChecklistItemType } from '@app/ui'
 import { Checklist, DashboardWidget } from '@app/ui'
-import React from 'react'
 import { useProfileCompletion } from './useProfileCompletion'
 
 export interface ProfileCompletionWidgetProps {

@@ -5,7 +5,6 @@ import {
   getQuestions,
   type IPIPAnswer,
   type IPIPChoice,
-  type IPIPQuestion,
 } from '../lib/ipip'
 
 export interface CooldownStepProps {
@@ -46,7 +45,7 @@ export function CooldownStep({
   useEffect(() => {
     // Calculate time remaining
     const updateTimer = () => {
-      const now = new Date().getTime()
+      const now = Date.now()
       const endTime = new Date(cooldownEndTime).getTime()
       const remaining = Math.max(0, Math.ceil((endTime - now) / 1000))
 

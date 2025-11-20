@@ -2,7 +2,8 @@ import { api } from '@app/core/utils/api'
 import { ConfirmationDialog, DashboardWidget } from '@app/ui'
 import { Award, Sparkles } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { TRPCClientError } from '@trpc/client'
+import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'
 import { Button, Progress, Text, XStack, YStack } from 'tamagui'
 import { ProfileResultCard, ProfileResultsPanel } from './components'
 import { useProfileSkillsContext } from './profile-skills-context'
@@ -59,8 +60,7 @@ export function ProfileSkillsRight() {
         message: 'Skill removed from your profile',
       })
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // Fade skill back in by clearing removing state
       // This triggers the fade-in animation (opacity 0 → 1, height 0 → auto)
       setRemovingSkillId(null)
@@ -69,24 +69,38 @@ export function ProfileSkillsRight() {
       // Match REQ-28 requirements for specific error messages
       let errorMessage = 'Something went wrong. Please try again.'
 
-      // Network errors (connection issues, fetch failures)
-      if (
-        error.message?.includes('fetch') ||
-        error.message?.includes('network') ||
-        error.message?.includes('Failed to fetch') ||
-        error.message?.includes('NetworkError') ||
-        error.code === 'ECONNREFUSED' ||
-        error.code === 'ETIMEDOUT'
-      ) {
-        errorMessage = 'Unable to remove skill. Check your connection and try again.'
-      }
-      // Server errors (5xx, internal server errors)
-      else if (
-        error.data?.code === 'INTERNAL_SERVER_ERROR' ||
-        error.data?.code === 'BAD_REQUEST' ||
-        error.data?.httpStatus >= 500
-      ) {
-        errorMessage = 'Failed to remove skill. Please try again.'
+      // Check if error is TRPCClientError
+      if (error instanceof TRPCClientError) {
+        // Network errors (connection issues, fetch failures)
+        if (
+          error.message?.includes('fetch') ||
+          error.message?.includes('network') ||
+          error.message?.includes('Failed to fetch') ||
+          error.message?.includes('NetworkError')
+        ) {
+          errorMessage = 'Unable to remove skill. Check your connection and try again.'
+        }
+        // Server errors (5xx, internal server errors)
+        else if (
+          error.data?.code === 'INTERNAL_SERVER_ERROR' ||
+          error.data?.code === 'BAD_REQUEST' ||
+          (typeof error.data?.httpStatus === 'number' && error.data.httpStatus >= 500)
+        ) {
+          errorMessage = 'Failed to remove skill. Please try again.'
+        } else {
+          errorMessage = error.message || errorMessage
+        }
+      } else if (error instanceof Error) {
+        // Handle generic Error objects
+        if (
+          error.message?.includes('fetch') ||
+          error.message?.includes('network') ||
+          error.message?.includes('Failed to fetch')
+        ) {
+          errorMessage = 'Unable to remove skill. Check your connection and try again.'
+        } else {
+          errorMessage = error.message || errorMessage
+        }
       }
 
       toast.show('Error', {
@@ -267,7 +281,7 @@ export function ProfileSkillsRight() {
         title="Your Skills"
         isLoading={isLoadingSkills}
         isEmpty={userSkills.length === 0}
-        emptyIcon={Award as React.ComponentType<{ size?: number; color?: string }>}
+        emptyIcon={Award as ComponentType<{ size?: number; color?: string }>}
         emptyMessage="No skills added yet. Use the form on the left to add your first skill."
       >
         <YStack gap="$3">

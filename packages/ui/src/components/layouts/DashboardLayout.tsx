@@ -33,7 +33,7 @@ export const DashboardLayout = ({
   const hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
 
   return (
-    <ScrollView flex={1} bg="$color4" showsVerticalScrollIndicator={false}>
+    <ScrollView flex={1} bg="$color3" showsVerticalScrollIndicator={false}>
       <YStack gap="$3" pt="$3" pb="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (

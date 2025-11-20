@@ -41,7 +41,7 @@ export default function EditUniversityPage() {
     <OfficeUniversitiesForm
       selectedUniversity={data.university}
       onUniversitySaved={() => {
-        router.push(ROUTES.OFFICE_CMS_UNIVERSITIES.path)
+        router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.path)
       }}
       onCancel={() => {
         router.back()

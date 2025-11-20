@@ -4,7 +4,7 @@ import { api } from '@app/core/utils/api'
 import { DraggableCard, DroppableColumn, KanbanCard } from '@app/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import {
   Button,
@@ -344,7 +344,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
               }
               commentCount={activeApplication.notes.length}
               durationDays={Math.floor(
-                (new Date().getTime() - new Date(activeApplication.appliedAt).getTime()) /
+                (Date.now() - new Date(activeApplication.appliedAt).getTime()) /
                   (1000 * 60 * 60 * 24)
               )}
               isDragging
@@ -454,8 +454,7 @@ const StatusColumn = ({
       color={color}
       emptyMessage="No applications"
     >
-      <>
-        {applications.map((app) => {
+      {applications.map((app) => {
           // Calculate attachment count
           const attachmentCount =
             (app.attachments.resume ? 1 : 0) +
@@ -464,7 +463,7 @@ const StatusColumn = ({
 
           // Calculate duration in days
           const durationDays = Math.floor(
-            (new Date().getTime() - new Date(app.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
+            (Date.now() - new Date(app.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
           )
 
           return (
@@ -488,7 +487,6 @@ const StatusColumn = ({
             />
           )
         })}
-      </>
     </DroppableColumn>
   )
 }

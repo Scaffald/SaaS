@@ -152,7 +152,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             size="$4"
             chromeless
             onPress={() => {
-              router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+              router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
             }}
           >
             Back to Jobs
@@ -201,10 +201,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           }}
           onCancel={() => {
             // Navigate back to jobs list
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
           onReturnToJobs={() => {
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         />
       </YStack>
@@ -249,7 +249,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           size="$4"
           chromeless
           onPress={() => {
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         >
           Back to Jobs
@@ -269,7 +269,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           size="$4"
           theme="info"
           onPress={() => {
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         >
           Back to Jobs

@@ -262,8 +262,13 @@ vi.mock('tamagui', () => {
   }: {
     source?: { uri?: string }
   } & Record<string, unknown>) => (
-    // biome-ignore lint/a11y/useAltText: Test mock, decorative
-    <img src={source?.uri} data-testid="portfolio-image" alt="" aria-hidden="true" {...rest} />
+    <img
+      src={source?.uri}
+      data-testid="portfolio-image"
+      alt=""
+      aria-hidden="true"
+      {...rest}
+    />
   )
 
   const H4 = ({

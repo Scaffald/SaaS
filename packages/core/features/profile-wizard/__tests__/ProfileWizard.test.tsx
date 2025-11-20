@@ -276,9 +276,9 @@ vi.mock('tamagui', () => {
     children?: ReactNode
     onPress?: () => void
   } & Record<string, unknown>) => (
-    <div {...rest} onClick={onPress}>
+    <button type="button" {...rest} onClick={onPress}>
       {children}
-    </div>
+    </button>
   )
 
   const Button = ({

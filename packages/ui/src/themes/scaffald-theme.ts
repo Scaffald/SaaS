@@ -299,13 +299,6 @@ export const shadows = {
   shadowColor: 'rgba(0,0,0,0.3)',
   shadowColorHover: 'rgba(0,0,0,0.4)',
   shadowColorPress: 'rgba(0,0,0,0.5)',
-
-  shadow1: 'rgba(0,0,0,0.2)',
-  shadow2: 'rgba(0,0,0,0.3)',
-  shadow3: 'rgba(0,0,0,0.4)',
-  shadow4: 'rgba(0,0,0,0.5)',
-  shadow5: 'rgba(0,0,0,0.6)',
-  shadow6: 'rgba(0,0,0,0.7)',
 }
 
 /**

@@ -75,7 +75,7 @@ export default function UserProfilePage() {
   const breadcrumbItems = useMemo<BreadcrumbItem[]>(
     () => [
       { label: 'Dashboard', href: '/dashboard' },
-      { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
+      { label: 'Discover Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
       {
         label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
         isActive: true,

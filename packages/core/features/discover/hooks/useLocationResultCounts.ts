@@ -1,6 +1,5 @@
 import { api } from '@app/core/utils/api'
 import type { ViewportBounds } from '@app/ui'
-import { useQuery } from '@tanstack/react-query'
 
 /**
  * Calculate approximate viewport bounds from a location point

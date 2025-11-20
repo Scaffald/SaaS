@@ -33,7 +33,7 @@ describe('processCroppedImage (web)', () => {
       width: 0,
       height: 0,
       getContext: vi.fn().mockReturnValue(ctxMock),
-      toBlob: vi.fn((callback: (blob: Blob | null) => void, mime: string, quality?: number) => {
+      toBlob: vi.fn((callback: (blob: Blob | null) => void, mime: string, _quality?: number) => {
         const fakeBlob = {
           type: mime,
           size: 4,
@@ -131,7 +131,7 @@ describe('processCroppedImage (web)', () => {
     it('reduces quality when JPEG exceeds size limit', async () => {
       let callCount = 0
       canvasMock.toBlob = vi.fn(
-        (callback: (blob: Blob | null) => void, mime: string, quality?: number) => {
+        (callback: (blob: Blob | null) => void, mime: string, _quality?: number) => {
           callCount++
           // First call: large blob (600KB)
           if (callCount === 1) {

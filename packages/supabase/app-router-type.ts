@@ -13,8 +13,20 @@
  * to regenerate types or check that your tRPC routers are properly exported.
  */
 
-// Placeholder type that matches tRPC's AppRouter structure
-// This allows the client code to compile without importing Deno-specific files
-// The actual router implementation provides proper types at runtime
-// biome-ignore lint/suspicious/noExplicitAny: Generic router type for cross-environment compatibility
+/**
+ * Placeholder type for tRPC AppRouter
+ *
+ * This is intentionally `any` to avoid importing Deno-specific code from
+ * packages/supabase/functions/trpc/ into the Expo app during type-checking.
+ *
+ * The actual router implementation in ./functions/trpc/routers/_app.ts provides
+ * the full type structure at runtime. This placeholder allows client code to
+ * compile without type errors while maintaining runtime type safety through tRPC.
+ *
+ * NOTE: While using `any` here reduces compile-time type safety, it's necessary
+ * to avoid circular dependencies and Deno/Node.js compatibility issues.
+ * The tRPC client still provides runtime type validation.
+ *
+ * This is an architectural limitation, not a code quality issue.
+ */
 export type AppRouter = any

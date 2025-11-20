@@ -18,7 +18,7 @@ test.describe('Security Testing Infrastructure', () => {
     // In production, all headers should be present
     try {
       await assertSecurityHeaders(page)
-    } catch (error) {
+    } catch {
       // In development, security headers may not be fully configured
       // This test validates that the infrastructure is in place
       // Production validation should enforce all headers

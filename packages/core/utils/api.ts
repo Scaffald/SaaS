@@ -5,11 +5,11 @@ import { createTRPCReact } from '@trpc/react-query'
 import { observable } from '@trpc/server/observable'
 import { Platform } from 'react-native'
 import { clearAllAuthStorage } from './auth/clearAuthStorage'
-import { getBaseUrl } from './getBaseUrl'
 import { supabase } from './supabase/client'
 // Create tRPC React client with proper typing from shared supabase package
-// biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility
-export const api = createTRPCReact<AppRouter>() as any
+// Note: AppRouter is a placeholder type to avoid importing Deno-specific code
+// The actual router types are provided at runtime
+export const api = createTRPCReact<AppRouter>()
 
 // Custom error handling link for session validation
 const sessionValidationLink: TRPCLink<AppRouter> = () => {
@@ -41,8 +41,7 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
 }
 
 export const createTrpcClient = () =>
-  // biome-ignore lint/suspicious/noExplicitAny: Required for tRPC router compatibility
-  (api as any).createClient({
+  api.createClient({
     links: [
       // Error handling link - detects invalid sessions and signs out
       // This prevents stale sessions after DB resets from causing issues

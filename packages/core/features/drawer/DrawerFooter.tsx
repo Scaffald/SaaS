@@ -1,9 +1,8 @@
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
 import { supabase } from '@app/core/utils/supabase/client'
 import { LogOut, Moon, Sun } from '@tamagui/lucide-icons'
-import { Link } from 'expo-router'
 import type { GestureResponderEvent } from 'react-native'
-import { Button, useTheme, XStack } from 'tamagui'
+import { Button, XStack } from 'tamagui'
 
 /**
  * DrawerFooter component renders fixed action buttons at the bottom of the drawer

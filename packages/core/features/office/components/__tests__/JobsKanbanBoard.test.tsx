@@ -69,17 +69,19 @@ vi.mock('tamagui', () => ({
 
 vi.mock('../JobCard', () => ({
   JobCard: ({ job, onPress }: { job: { id: string; title: string }; onPress?: () => void }) => (
-    <div
+    <button
+      type="button"
       data-testid={`job-card-${job.id}`}
       onClick={onPress}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
           onPress?.()
         }
       }}
     >
       {job.title}
-    </div>
+    </button>
   ),
 }))
 

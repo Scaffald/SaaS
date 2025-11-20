@@ -80,7 +80,7 @@ export function TeamJobsList({
                 return
               }
               router.push({
-                pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+                pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                 params: { teamId },
               })
             }}
@@ -200,7 +200,7 @@ export function TeamJobsList({
                 return
               }
               router.push({
-                pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+                pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                 params: { teamId },
               })
             }}

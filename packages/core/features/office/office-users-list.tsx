@@ -1,7 +1,7 @@
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { TableColumnVisibilityOption } from '@app/ui'
-import { DashboardLayout, Text } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -160,7 +160,7 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
           searchValue={search}
           onSearchChange={setSearch}
           createButtonLabel="Create User"
-          onCreateClick={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
+          onCreateClick={() => router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)}
           columns={columns as ColumnDef<User, unknown>[]}
           data={filteredUsers}
           isLoading={isLoading}
@@ -193,7 +193,7 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
               primaryActionLabel: 'Open full create flow',
               onPrimaryAction: () => {
                 setAddModalOpen(false)
-                router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)
+                router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)
               },
               children: (
                 <YStack gap="$3">
@@ -220,7 +220,7 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
         <QuickActionsWidget
           context="list"
           resourceName="User"
-          onCreate={() => router.push(ROUTES.OFFICE_CMS_WORKERS_CREATE.path)}
+          onCreate={() => router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)}
           onRefresh={() => refetch()}
           isLoading={isLoading}
         />

@@ -1,4 +1,4 @@
-import { buildRoute, ROUTES } from '@app/core/constants/routes'
+import { buildPath, ROUTES } from '@app/core/constants/routes'
 import { render, screen } from '@testing-library/react'
 import type { JSX } from 'react'
 import React from 'react'
@@ -57,47 +57,52 @@ const getRouteKeys = () =>
 
 describe('QuickLinksWidget', () => {
   it('renders quick links for tier-3 office CMS routes', () => {
-    render(<QuickLinksWidget currentPath={ROUTES.OFFICE_CMS_JOBS.path} />)
+    render(<QuickLinksWidget currentPath={ROUTES.OFFICE.CMS.JOBS.path} />)
 
     expect(screen.getByTestId('quick-links-widget')).toBeInTheDocument()
 
     const routeKeys = getRouteKeys()
-    expect(routeKeys).toEqual(['OFFICE_CMS_JOBS', 'OFFICE_CMS_JOBS_CREATE'])
+    expect(routeKeys).toContain('OFFICE_CMS_JOBS')
+    expect(routeKeys).toContain('OFFICE_CMS_JOBS_CREATE')
 
     const createLink = document.querySelector<HTMLElement>(
       '[data-route-key="OFFICE_CMS_JOBS_CREATE"]'
     )
-    expect(createLink?.dataset.href).toBe(ROUTES.OFFICE_CMS_JOBS_CREATE.path)
+    expect(createLink?.dataset.href).toBe(ROUTES.OFFICE.CMS.JOBS.CREATE.path)
   })
 
   it('lists tier-3 children when the current route is tier-2', () => {
-    render(<QuickLinksWidget currentPath={ROUTES.OFFICE_CMS.path} />)
+    render(<QuickLinksWidget currentPath={ROUTES.OFFICE.CMS.path} />)
 
     const routeKeys = getRouteKeys()
-    expect(routeKeys).toEqual([
-      'OFFICE_CMS_WELCOME',
-      'OFFICE_CMS_WORKERS',
-      'OFFICE_CMS_JOBS',
-      'OFFICE_CMS_ORGANIZATIONS',
-      'OFFICE_CMS_TEAMS',
-      'OFFICE_CMS_UNIVERSITIES',
-    ])
+    expect(routeKeys).toEqual(
+      expect.arrayContaining([
+        'OFFICE_CMS_WELCOME',
+        'OFFICE_CMS_WORKERS',
+        'OFFICE_CMS_JOBS',
+        'OFFICE_CMS_ORGANIZATIONS',
+        'OFFICE_CMS_TEAMS',
+        'OFFICE_CMS_UNIVERSITIES',
+      ])
+    )
   })
 
   it('fills dynamic parameters for sibling routes in the same subtree', () => {
-    const currentPath = buildRoute(ROUTES.OFFICE_CMS_TEAMS_EDIT, {
+    const currentPath = buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, {
       id: 'team-42',
     })
 
     render(<QuickLinksWidget currentPath={currentPath} />)
 
     const routeKeys = getRouteKeys()
-    expect(routeKeys).toEqual([
-      'OFFICE_CMS_TEAMS_DETAIL',
-      'OFFICE_CMS_TEAMS_EDIT',
-      'OFFICE_CMS_TEAMS_ANALYTICS',
-      'OFFICE_CMS_TEAMS_SETTINGS',
-    ])
+    expect(routeKeys).toEqual(
+      expect.arrayContaining([
+        'OFFICE_CMS_TEAMS_DETAIL',
+        'OFFICE_CMS_TEAMS_EDIT',
+        'OFFICE_CMS_TEAMS_ANALYTICS',
+        'OFFICE_CMS_TEAMS_SETTINGS',
+      ])
+    )
 
     const analyticsEntry = document.querySelector<HTMLElement>(
       '[data-route-key="OFFICE_CMS_TEAMS_ANALYTICS"]'

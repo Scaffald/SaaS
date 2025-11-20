@@ -1,5 +1,5 @@
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
-import type { Camera, MapView, PointAnnotation } from '@rnmapbox/maps'
+import type { MapView } from '@rnmapbox/maps'
 import MapboxGL from '@rnmapbox/maps'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { Text, View } from 'tamagui'

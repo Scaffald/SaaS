@@ -1,6 +1,5 @@
-import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
 import { api } from '@app/core/utils/api'
-import { CreditCard, DollarSign, Plus, TrendingUp } from '@tamagui/lucide-icons'
+import { CreditCard, DollarSign, Plus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Button, Card, Input, Spinner, Text, XStack, YStack } from 'tamagui'

@@ -1,6 +1,5 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import type { ReactNode } from 'react'
+import { render, screen } from '@testing-library/react'
+import type { ReactElement, ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseQuery = vi.fn()
@@ -60,10 +59,10 @@ vi.mock('tamagui', () => {
   const AlertDialogTitle = ({ children }: { children?: ReactNode }) => <h2>{children}</h2>
   const AlertDialogDescription = ({ children }: { children?: ReactNode }) => <p>{children}</p>
   const AlertDialogCancel = ({ children, asChild }: { children?: ReactNode; asChild?: boolean }) =>
-    asChild ? <>{children}</> : <button type="button">{children}</button>
+    asChild ? (children as ReactElement) : <button type="button">{children}</button>
   const AlertDialogAction = ({ children, asChild }: { children?: ReactNode; asChild?: boolean }) =>
-    asChild ? <>{children}</> : <button type="button">{children}</button>
-  const AlertDialogPortal = ({ children }: { children?: ReactNode }) => <>{children}</>
+    asChild ? (children as ReactElement) : <button type="button">{children}</button>
+  const AlertDialogPortal = ({ children }: { children?: ReactNode }) => children as ReactElement
 
   const AlertDialog = Object.assign(
     ({ open, children }: { open: boolean; children?: ReactNode }) =>

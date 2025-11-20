@@ -3,25 +3,24 @@ import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { DashboardLayout, Sheet } from '@app/ui'
 import {
-  ArrowRightCircle,
   Check,
-  ChevronDown,
   Eye,
   EyeOff,
   Pencil,
-  RefreshCw,
 } from '@tamagui/lucide-icons'
-import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Adapt, Button, H2, Select, Text, XStack, YStack } from 'tamagui'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 
+type ProjectStatus = 'planning' | 'active' | 'completed' | 'on_hold'
+
 type Project = {
   id: string
   name: string
   description: string | null
-  status: 'planning' | 'active' | 'completed' | 'on_hold'
+  status: ProjectStatus
   start_date: string | null
   end_date: string | null
   location_visibility: 'public' | 'authenticated' | 'organization_only' | 'private'
@@ -109,12 +108,11 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
   const router = useRouter()
   const { data: organizationsData } = useAllOrganizations()
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState<string | null>(null)
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus | null>(null)
 
   const { data, isLoading, refetch } = api.projects.list.useQuery({
     organization_id: selectedOrg || undefined,
-    // biome-ignore lint/suspicious/noExplicitAny: Status filter type needs to match API schema
-    status: (statusFilter as any) || undefined,
+    status: statusFilter || undefined,
     limit: 50,
     offset: 0,
   })
@@ -240,7 +238,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
               </XStack>
 
               <Button
-                onPress={() => router.push(ROUTES.OFFICE_CMS_PROJECTS_CREATE.path)}
+                onPress={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
                 bg="$blue9"
                 color="$blue12"
               >
@@ -294,7 +292,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
         <QuickActionsWidget
           context="list"
           resourceName="Project"
-          onCreate={() => router.push(ROUTES.OFFICE_CMS_PROJECTS_CREATE.path)}
+          onCreate={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
           onRefresh={() => refetch()}
           isLoading={isLoading}
         />

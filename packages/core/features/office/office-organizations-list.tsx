@@ -2,10 +2,8 @@ import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardLayout, DashboardWidget, Dialog, QuickLinksSidebar } from '@app/ui'
 import {
-  ArrowRightCircle,
   Check,
   Loader2,
-  Pencil,
   RefreshCw,
   X as XIcon,
 } from '@tamagui/lucide-icons'
@@ -333,7 +331,7 @@ export function OfficeOrganizationsList() {
             searchValue={search}
             onSearchChange={setSearch}
             createButtonLabel="Create Organization"
-            onCreateClick={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
+            onCreateClick={() => router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path)}
             columns={columns as ColumnDef<Organization, unknown>[]}
             data={filteredOrganizations}
             isLoading={isLoading}
@@ -470,7 +468,7 @@ export function OfficeOrganizationsList() {
               <QuickActionsWidget
                 context="list"
                 resourceName="Organization"
-                onCreate={() => router.push(ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path)}
+                onCreate={() => router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path)}
                 onRefresh={refreshRequests}
                 isLoading={isRequestsLoading || isRequestsRefetching}
               />

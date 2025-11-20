@@ -3,7 +3,7 @@
 import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import { CustomCheckbox, CustomRadio, ToggleCard, ToggleSwitch } from '@app/ui'
 import { Check } from '@tamagui/lucide-icons'
-import type React from 'react'
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { Checkbox, Label, Paragraph, RadioGroup, Switch, Text, XStack, YStack } from 'tamagui'
 
@@ -279,7 +279,7 @@ export default function FormChoicePage() {
 
 type ComparisonColumnProps = {
   title: string
-  children: React.ReactNode
+  children: ReactNode
 }
 
 const ComparisonColumn = ({ title, children }: ComparisonColumnProps) => (
@@ -307,7 +307,7 @@ const ComparisonColumn = ({ title, children }: ComparisonColumnProps) => (
   </YStack>
 )
 
-const ComparisonGrid = ({ children }: { children: React.ReactNode }) => (
+const ComparisonGrid = ({ children }: { children: ReactNode }) => (
   <XStack gap="$4" flexWrap="wrap" $sm={{ flexDirection: 'column' }}>
     {children}
   </XStack>

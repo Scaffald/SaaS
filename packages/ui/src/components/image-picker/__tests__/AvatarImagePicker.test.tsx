@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React, { type ReactNode } from 'react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock AvatarCropModal
@@ -83,7 +83,6 @@ vi.mock('tamagui', async () => {
   Button.Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
 
   const Image = ({ source, ...rest }: { source?: { uri?: string } }) => (
-    // biome-ignore lint/a11y/useAltText: Test mock, decorative
     <img src={source?.uri} alt="Avatar" {...rest} />
   )
 

@@ -30,7 +30,7 @@ export function SiteBoundaryDrawer({
   onBoundaryChange,
   onAreaChange,
   center = [-84.5555, 42.7325],
-  zoom = 12,
+  zoom: _zoom = 12,
 }: SiteBoundaryDrawerProps) {
   const [coordinates, setCoordinates] = useState<Boundary>(boundary)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)

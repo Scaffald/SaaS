@@ -336,7 +336,7 @@ export function AdminBackgroundChecksPage() {
         <Button
           size="$3"
           variant="outlined"
-          onPress={() => router.push(ROUTES.OFFICE_ATS_CHECKS.path)}
+          onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
         >
           Go to organization background checks
         </Button>
@@ -511,7 +511,7 @@ export function AdminBackgroundChecksPage() {
             <Button
               size="$3"
               variant="outlined"
-              onPress={() => router.push(ROUTES.OFFICE_ATS_CHECKS.path)}
+              onPress={() => router.push(ROUTES.OFFICE.ATS.CHECKS.path)}
             >
               Organization view
             </Button>

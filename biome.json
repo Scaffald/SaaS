@@ -12,7 +12,9 @@
       "!**/android",
       "!**/*.test.ts",
       "!**/*.css",
-      "!**/packages/fonts/types/index.d.ts"
+      "!**/packages/fonts/types/index.d.ts",
+      "!**/coverage",
+      "!**/.turbo"
     ]
   },
   "formatter": {

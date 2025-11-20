@@ -28,7 +28,7 @@ export function RIASECAssessmentWidget() {
   }
 
   const handleStart = () => {
-    router.push(ROUTES.DASHBOARD_ASSESSMENT_RIASEC.path)
+    router.push(ROUTES.DASHBOARD.ASSESSMENTS.RIASEC.path)
   }
 
   return (

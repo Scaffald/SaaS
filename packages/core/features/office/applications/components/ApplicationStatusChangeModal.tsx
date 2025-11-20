@@ -417,7 +417,7 @@ function deriveHireInputs(application?: MockApplication | null): HireInputs | nu
   const jobDurationDays = payType === 'salary' ? 60 : 21
 
   const hireStartDate = normalizeDate(
-    application.screeningAnswers.earliestStartDate || application.job.targetStartDate || undefined
+    application.screeningAnswers.earliestStartDate || undefined // targetStartDate column doesn't exist in database yet
   )
 
   return {

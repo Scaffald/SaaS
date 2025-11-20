@@ -265,8 +265,7 @@ export function ApplicationProcessSection({
             }
           }}
         >
-          <>
-            <Sheet.Frame p="$4" gap="$4">
+          <Sheet.Frame p="$4" gap="$4">
               <YStack gap="$3">
                 <Text fontSize="$6" fontWeight="600">
                   Add Capability Question
@@ -392,7 +391,6 @@ export function ApplicationProcessSection({
               </YStack>
             </Sheet.Frame>
             <Sheet.Overlay />
-          </>
         </Sheet>
       </YStack>
     </YStack>

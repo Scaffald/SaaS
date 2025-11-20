@@ -1,16 +1,19 @@
 import { Popover } from '@app/ui'
 import { Briefcase } from '@tamagui/lucide-icons'
+import type { ElementRef } from 'react'
 import { Button } from 'tamagui'
-import { useOfficeFlyoutMenu } from '../hooks/useOfficeFlyoutMenu'
-import { OfficeFlyoutMenu } from './OfficeFlyoutMenu'
+import { useOfficePopoverMenu } from '../hooks/useOfficePopoverMenu'
+import { OfficePopoverMenu } from './OfficePopoverMenu'
 
-export interface OfficeFlyoutTriggerProps {
+type ButtonRef = ElementRef<typeof Button>
+
+export interface OfficePopoverTriggerProps {
   isOpen: boolean
   onToggle: () => void
-  triggerRef: React.RefObject<HTMLElement | null>
+  triggerRef: React.RefObject<ButtonRef>
 }
 
-export const OfficeFlyoutTrigger = ({ isOpen, onToggle, triggerRef }: OfficeFlyoutTriggerProps) => {
+export const OfficePopoverTrigger = ({ isOpen, onToggle, triggerRef }: OfficePopoverTriggerProps) => {
   const handlePress = () => {
     onToggle()
   }
@@ -24,8 +27,6 @@ export const OfficeFlyoutTrigger = ({ isOpen, onToggle, triggerRef }: OfficeFlyo
         bg="transparent"
         height={30}
         px="$2"
-        display="none"
-        $md={{ display: 'flex' }}
         aria-label="Office navigation menu"
         aria-expanded={isOpen}
         onPress={handlePress}
@@ -40,8 +41,8 @@ export const OfficeFlyoutTrigger = ({ isOpen, onToggle, triggerRef }: OfficeFlyo
 }
 
 // Main export component that combines trigger and menu
-export const OfficeFlyout = () => {
-  const { isOpen, setIsOpen, activeRoute, toggleMenu, triggerRef } = useOfficeFlyoutMenu()
+export const OfficePopover = () => {
+  const { isOpen, setIsOpen, activeRoute, toggleMenu, triggerRef } = useOfficePopoverMenu()
 
   const handleNavigate = () => {
     setIsOpen(false)
@@ -49,8 +50,8 @@ export const OfficeFlyout = () => {
 
   return (
     <Popover placement="bottom-end" open={isOpen} onOpenChange={setIsOpen}>
-      <OfficeFlyoutTrigger isOpen={isOpen} onToggle={toggleMenu} triggerRef={triggerRef} />
-      <OfficeFlyoutMenu
+      <OfficePopoverTrigger isOpen={isOpen} onToggle={toggleMenu} triggerRef={triggerRef} />
+      <OfficePopoverMenu
         isOpen={isOpen}
         onOpenChange={setIsOpen}
         pathname={activeRoute}
@@ -60,3 +61,4 @@ export const OfficeFlyout = () => {
     </Popover>
   )
 }
+

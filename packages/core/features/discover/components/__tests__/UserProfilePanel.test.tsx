@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { UserProfilePanel } from '../UserProfilePanel'
@@ -131,7 +131,6 @@ vi.mock('tamagui', () => {
   )
 
   Avatar.Image = ({ source, ...rest }: { source?: { uri?: string } } & Record<string, unknown>) => (
-    // biome-ignore lint/a11y/useAltText: Test mock, decorative
     <img src={source?.uri} data-testid="avatar-image" alt="" aria-hidden="true" {...rest} />
   )
 

@@ -6,13 +6,11 @@ import {
   Briefcase,
   Building2,
   Calendar,
-  Clock,
   DollarSign,
   MapPin,
   Users,
 } from '@tamagui/lucide-icons'
-import { useState } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface JobPreviewModalProps {
   jobId: string | null

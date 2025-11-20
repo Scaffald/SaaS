@@ -12,11 +12,10 @@ import {
   YStack,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { Progress, Select, TextArea } from 'tamagui'
+import { Progress, TextArea } from 'tamagui'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {
@@ -220,8 +219,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
   return (
     <Sheet modal open={open} onOpenChange={handleClose}>
-      <>
-        <Sheet.Frame>
+      <Sheet.Frame>
           <FormProvider {...form}>
             <YStack p="$4" flex={1}>
               <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
@@ -500,9 +498,8 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
               </XStack>
             </YStack>
           </FormProvider>
-        </Sheet.Frame>
-        <Sheet.Overlay />
-      </>
+      </Sheet.Frame>
+      <Sheet.Overlay />
     </Sheet>
   )
 }

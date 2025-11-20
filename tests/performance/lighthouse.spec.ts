@@ -16,13 +16,8 @@ import { expect, test } from '@playwright/test'
 /**
  * Lighthouse configuration
  * These thresholds align with REQ-198 performance targets
+ * Note: Actual thresholds are configured in .github/workflows/lighthouse-ci.yml
  */
-const LIGHTHOUSE_THRESHOLDS = {
-  performance: 90,
-  accessibility: 95,
-  'best-practices': 90,
-  seo: 90,
-} as const
 
 /**
  * Key pages to test with Lighthouse

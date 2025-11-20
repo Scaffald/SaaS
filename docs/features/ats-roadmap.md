@@ -388,7 +388,7 @@
 - [ATS Getting Started](./ats-getting-started.md) - Setup and quickstart
 - [ATS Schema](./ats-schema.md) - Basic database schema
 - [ATS Schema Design (Full)](../roadmap/ats-schema-design.md) - Complete future schema
-- [Recent Work Summary](../RECENT-WORK-SUMMARY.md) - Last 2 weeks of work
+- [Features Documentation](./README.md) - Complete feature documentation
 
 ---
 

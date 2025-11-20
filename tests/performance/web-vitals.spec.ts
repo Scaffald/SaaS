@@ -17,7 +17,6 @@ import {
   assertWebVitalsTargets,
   measureWebVitals,
   PERFORMANCE_TARGETS,
-  type WebVitalsMetrics,
 } from '../infrastructure/playwright/helpers/performance'
 
 /**

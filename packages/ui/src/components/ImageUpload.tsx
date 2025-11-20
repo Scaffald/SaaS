@@ -344,8 +344,9 @@ export function ImageUpload({
         p="$4"
         bg={isDragActive ? '$blue2' : hasImage ? '$background' : '$background'}
         opacity={disabled ? 0.5 : 1}
-        // @ts-expect-error - drag events work on web
-        {...(getRootProps ? getRootProps() : {})}
+        {...(Platform.OS === 'web' && getRootProps
+          ? (getRootProps() as Record<string, unknown>)
+          : {})}
       >
         {hasImage ? (
           // Image Preview Mode

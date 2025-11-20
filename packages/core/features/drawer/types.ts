@@ -1,8 +1,6 @@
 import type { RouteKey } from '@app/core/constants/routes'
 import type { TranslationKey } from '@app/core/locales'
-import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 import type { BarChart3 } from '@tamagui/lucide-icons'
-import type { JSX } from 'react'
 import type { GestureResponderEvent } from 'react-native'
 
 /**

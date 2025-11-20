@@ -33,18 +33,49 @@ vi.mock('tamagui', () => {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     ...rest
-  }: MockViewProps) => (
-    <div
-      data-testid={testID}
-      role={role}
-      aria-checked={ariaChecked}
-      aria-disabled={ariaDisabled}
-      onClick={onPress}
-      {...(rest as Record<string, string | number | boolean | undefined>)}
-    >
-      {children}
-    </div>
-  )
+  }: MockViewProps) => {
+    const isCheckbox = role === 'checkbox' || !role
+    if (isCheckbox && onPress) {
+      return (
+        <button
+          type="button"
+          data-testid={testID}
+          role="checkbox"
+          aria-checked={ariaChecked}
+          aria-disabled={ariaDisabled}
+          onClick={onPress}
+          onKeyDown={(e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && onPress) {
+              e.preventDefault()
+              onPress()
+            }
+          }}
+          {...(rest as Record<string, string | number | boolean | undefined>)}
+        >
+          {children}
+        </button>
+      )
+    }
+    return (
+      <div
+        data-testid={testID}
+        role={role || 'checkbox'}
+        aria-checked={ariaChecked}
+        aria-disabled={ariaDisabled}
+        tabIndex={onPress ? 0 : undefined}
+        onClick={onPress}
+        onKeyDown={(e) => {
+          if ((e.key === 'Enter' || e.key === ' ') && onPress) {
+            e.preventDefault()
+            onPress()
+          }
+        }}
+        {...(rest as Record<string, string | number | boolean | undefined>)}
+      >
+        {children}
+      </div>
+    )
+  }
 
   const styled = (Component: (props: any) => ReactNode, config: Record<string, unknown>) => {
     styledCalls.push(config)

@@ -99,8 +99,13 @@ vi.mock('tamagui', () => {
   }: {
     source?: { uri?: string }
   } & Record<string, unknown>) => (
-    // biome-ignore lint/a11y/useAltText: Test mock, decorative
-    <img src={source?.uri} data-testid="portfolio-image" alt="" aria-hidden="true" {...rest} />
+    <img
+      src={source?.uri}
+      data-testid="portfolio-image"
+      alt=""
+      aria-hidden="true"
+      {...rest}
+    />
   )
 
   const Card = ({
@@ -111,9 +116,9 @@ vi.mock('tamagui', () => {
     children?: ReactNode
     onPress?: () => void
   } & Record<string, unknown>) => (
-    <div data-testid="portfolio-card" onClick={onPress} {...rest}>
+    <button type="button" data-testid="portfolio-card" onClick={onPress} {...rest}>
       {children}
-    </div>
+    </button>
   )
 
   const H4 = ({

@@ -1,6 +1,5 @@
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
+import type { DragEndEvent, DragStartEvent, UniqueIdentifier } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import type { UniqueIdentifier } from '@dnd-kit/core'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'

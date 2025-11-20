@@ -502,7 +502,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                 <Button size="$3" onPress={() => setViewMode('list')}>
                   List
                 </Button>
-                <Button size="$3" onPress={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}>
+                <Button size="$3" onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}>
                   Create Job
                 </Button>
               </XStack>
@@ -530,7 +530,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           searchValue={search}
           onSearchChange={setSearch}
           createButtonLabel="Create Job"
-          onCreateClick={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
+          onCreateClick={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
           columns={columns as ColumnDef<Job, unknown>[]}
           data={filteredAndSortedJobs}
           isLoading={isLoading}
@@ -545,7 +545,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           actionBarConfig={{
             bar: {
               addLabel: 'Create Job',
-              onAddPress: () => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path),
+              onAddPress: () => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path),
               showDisabled: true,
               searchValue: search,
               onSearchChange: setSearch,
@@ -569,7 +569,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         <QuickActionsWidget
           context="list"
           resourceName="Job"
-          onCreate={() => router.push(ROUTES.OFFICE_CMS_JOBS_CREATE.path)}
+          onCreate={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
           onRefresh={() => refetch()}
           isLoading={isLoading}
         />

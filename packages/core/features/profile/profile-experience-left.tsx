@@ -34,6 +34,27 @@ import {
   experienceProfileDefaults,
   experienceProfileSchema,
 } from './config'
+
+/**
+ * Experience entry from API response
+ * Based on experienceEntrySchema from the router
+ */
+type ExperienceEntry = {
+  id?: string
+  user_id?: string
+  organization_id?: string | null
+  job_title: string
+  company_name: string
+  employment_type?: string | null
+  location?: string | object | null
+  is_remote: boolean
+  start_date?: string | null
+  end_date?: string | null
+  is_current: boolean
+  description?: string | null
+  created_at?: string
+  updated_at?: string
+}
 import { useExperienceEdit } from './contexts/experience-edit-context'
 import { formatDateRange } from './utils/date-formatting'
 import { invalidateProfileQueries } from './utils/profile-sync'
@@ -144,12 +165,11 @@ export function ProfileExperienceLeft() {
     if (experienceQuery.data && experienceSummaryQuery.data) {
       const formData = {
         career_level: experienceSummaryQuery.data.career_level || undefined,
-        // biome-ignore lint/suspicious/noExplicitAny: API response type
-        experience_entries: experienceQuery.data.map((exp: any) => {
+        experience_entries: (experienceQuery.data as ExperienceEntry[]).map((exp) => {
           // Handle location: prefer location_structured, fallback to location TEXT
           // If location is string, keep as string for backward compatibility
           // ControlledAddressForm will handle conversion to structured format on edit
-          const location = exp.location_structured || exp.location || undefined
+          const location = (exp as ExperienceEntry & { location_structured?: unknown }).location_structured || exp.location || undefined
 
           // If location is a string and we need structured format, we'll let ControlledAddressForm handle it
           // For now, keep the raw location value (API already transforms it)

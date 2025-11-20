@@ -2,7 +2,6 @@ import { useStripeConfig } from '@app/core/features/payments/hooks/useStripeConf
 import { api } from '@app/core/utils/api'
 import { Button, Spinner, Text, XStack, YStack } from '@app/ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
-import type { SetupIntent } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { useToastController } from '@tamagui/toast'
 import { useMemo, useState } from 'react'

@@ -874,7 +874,6 @@ export const inquiriesRouter = router({
           remote_option,
           address,
           timezone,
-          target_start_date,
           travel_percentage,
           require_drivers_license,
           overtime_eligible,

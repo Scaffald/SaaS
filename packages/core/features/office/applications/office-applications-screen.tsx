@@ -73,7 +73,7 @@ export const OfficeApplicationsScreen = () => {
         pay_range_type?: string | null
         employment_type?: string | null
         organization_id?: string | null
-        target_start_date?: string | null
+        // target_start_date?: string | null // Column doesn't exist in database yet
       } | null
       const assignments = jobInfo?.teamAssignments ?? []
       const primaryAssignment =
@@ -145,7 +145,7 @@ export const OfficeApplicationsScreen = () => {
           payRangeMaxCents: jobInfo?.pay_range_max_cents ?? null,
           payRangeType: jobInfo?.pay_range_type ?? null,
           employmentType: jobInfo?.employment_type ?? null,
-          targetStartDate: jobInfo?.target_start_date ?? null,
+          targetStartDate: null, // target_start_date column doesn't exist in database yet
         },
         organizationId: jobInfo?.organization_id ?? null,
         workerUserId: app.user_id ?? null,

@@ -65,7 +65,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
         setVerified(true)
         setCodeEntered(true)
-        router.push(ROUTES.AUTH_SUCCESS.path)
+        router.push(ROUTES.AUTH.SUCCESS.path)
       } catch (err) {
         console.error('Error during OTP verification:', err)
         setError(translateError(err))

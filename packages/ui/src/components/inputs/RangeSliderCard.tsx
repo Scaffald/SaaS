@@ -82,7 +82,7 @@ export function RangeSliderCard({
   formatMin,
   formatMax,
   showLabels = true,
-  sliderSize = 'medium',
+  _sliderSize = 'medium',
 }: RangeSliderCardProps) {
   // Default formatting functions
   const defaultFormatValue = (v: number) => v.toString()

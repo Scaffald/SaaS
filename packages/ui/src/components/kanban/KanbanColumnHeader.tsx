@@ -1,7 +1,7 @@
 import { MoreVertical, Plus } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
 import type { GetThemeValueForKey } from 'tamagui'
+import { Button, Text, XStack, YStack } from 'tamagui'
 
 export interface KanbanColumnHeaderProps {
   /** Column title */

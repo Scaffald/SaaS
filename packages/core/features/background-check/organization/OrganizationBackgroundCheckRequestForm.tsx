@@ -149,7 +149,7 @@ export function OrganizationBackgroundCheckRequestForm() {
           organization_id: orgId,
         })
         router.replace({
-          pathname: ROUTES.OFFICE_ATS_CHECKS.path,
+          pathname: ROUTES.OFFICE.ATS.CHECKS.path,
           params: { organizationId: orgId },
         })
       } else if (record?.organization_id) {

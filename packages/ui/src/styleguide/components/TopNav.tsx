@@ -3,7 +3,7 @@
 import { ScaffaldLogo } from '@app/core/assets/ScaffaldLogo'
 import { Github, Search } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
-import React, { useCallback, useEffect, useRef } from 'react'
+import { forwardRef, useCallback, useEffect, useRef } from 'react'
 import { Input, isWeb, Text, Theme, View, XStack, YStack } from 'tamagui'
 import { Button } from '../../components/buttons/Button'
 
@@ -127,7 +127,7 @@ type SearchFieldProps = {
   placeholder?: string
 }
 
-const SearchField = React.forwardRef<unknown, SearchFieldProps>(
+const SearchField = forwardRef<unknown, SearchFieldProps>(
   ({ value, onValueChange, placeholder }, ref) => (
     <XStack
       alignItems="center"

@@ -16,7 +16,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import type { ReactNode } from 'react'
 import { useRef, useState } from 'react'
 import { Button, Input, isWeb, ScrollView, Text, View, XGroup } from 'tamagui'
 import { Table } from './TableParts'

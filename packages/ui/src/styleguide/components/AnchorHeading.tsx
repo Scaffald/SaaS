@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { Link2 } from '@tamagui/lucide-icons'
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { H2, H3, isWeb, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { Button } from '../../components/buttons/Button'
 

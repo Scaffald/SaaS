@@ -1,4 +1,4 @@
-import type { AddressResult, ProviderConfig, SearchOptions } from '../types'
+import type { AddressResult, SearchOptions } from '../types'
 import { GeocodingError } from '../types'
 import {
   BaseGeocodingProvider,

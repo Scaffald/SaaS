@@ -1,3 +1,3 @@
-export { OfficeFlyout } from './components'
-export type { OfficeFlyoutMenuActions, OfficeFlyoutMenuState } from './hooks'
-export { useOfficeFlyoutMenu } from './hooks'
+export { OfficePopover } from './components'
+export type { OfficePopoverMenuActions, OfficePopoverMenuState } from './hooks'
+export { useOfficePopoverMenu } from './hooks'

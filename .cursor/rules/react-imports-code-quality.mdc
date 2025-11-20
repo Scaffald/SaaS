@@ -1,0 +1,125 @@
+---
+alwaysApply: true
+---
+
+# React Imports and Code Quality
+
+## React Import Guidelines
+
+### ❌ Avoid Global React Imports
+
+**NEVER use global React namespace imports** - Always prefer named function and type imports.
+
+```typescript
+// ❌ BAD - Global React import
+import React from 'react';
+
+function Component() {
+  return React.Fragment;
+}
+
+// ❌ BAD - Using React namespace
+<React.Fragment>
+  <div>Content</div>
+</React.Fragment>
+```
+
+### ✅ Prefer Named Function and Type Imports
+
+**ALWAYS use named imports** for React functions, hooks, and types.
+
+```typescript
+// ✅ GOOD - Named function imports
+import { Fragment, useState, useEffect } from 'react';
+
+function Component() {
+  return Fragment;
+}
+
+// ✅ GOOD - Using Fragment directly
+<Fragment>
+  <div>Content</div>
+</Fragment>
+
+// ✅ GOOD - Type imports
+import type { FC, ReactNode } from 'react';
+
+interface Props {
+  children: ReactNode;
+}
+
+const Component: FC<Props> = ({ children }) => {
+  return <div>{children}</div>;
+};
+```
+
+### Import Patterns
+
+```typescript
+// ✅ GOOD - Function imports
+import { useState, useEffect, useCallback, useMemo } from 'react';
+
+// ✅ GOOD - Type imports
+import type { ComponentProps, ReactElement } from 'react';
+
+// ✅ GOOD - Mixed function and type imports
+import { useState, useEffect } from 'react';
+import type { FC, ReactNode } from 'react';
+
+// ❌ BAD - Default import
+import React from 'react';
+```
+
+## Prohibited: TypeScript and Biome Ignore Comments
+
+### ❌ Never Use Ignore Comments
+
+**NEVER use `@ts-ignore`, `@ts-expect-error`, `// biome-ignore`, or any other ignore comments** to suppress errors or warnings.
+
+```typescript
+// ❌ BAD - TypeScript ignore
+// @ts-ignore
+const value: string = someFunction();
+
+// ❌ BAD - TypeScript expect error
+// @ts-expect-error - This is intentional
+const value: string = someFunction();
+
+// ❌ BAD - Biome ignore
+// biome-ignore lint/correctness/noUnusedVariables: needed for future use
+const unused = true;
+```
+
+### ✅ Fix the Root Cause Instead
+
+**ALWAYS fix the underlying issue** rather than suppressing it with ignore comments.
+
+```typescript
+// ✅ GOOD - Fix type issues properly
+const value: string = someFunction() as string; // Only if truly necessary
+// OR better: fix the function signature
+function someFunction(): string {
+  return 'value';
+}
+
+// ✅ GOOD - Remove unused code or use it
+const used = true;
+console.log(used);
+
+// ✅ GOOD - Fix linting issues
+// Remove unused variables, fix formatting, etc.
+```
+
+### When You Encounter Errors
+
+1. **Understand the error** - Read the TypeScript/Biome error message
+2. **Fix the root cause** - Address the actual problem
+3. **Refactor if needed** - Sometimes the code structure needs adjustment
+4. **Ask for help** - If stuck, discuss with the team rather than suppressing
+
+### Benefits
+
+- **Better code quality** - Forces proper fixes instead of hiding problems
+- **Type safety** - Maintains TypeScript's type checking benefits
+- **Maintainability** - Future developers won't encounter suppressed errors
+- **Code clarity** - No hidden issues or workarounds

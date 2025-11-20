@@ -2,27 +2,27 @@ import type { RouteConfig } from '@app/core/constants/routes'
 import { isActivePath } from '@app/core/features/drawer/utils'
 import { ChevronRight } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
-import { useCallback } from 'react'
+import { type ComponentType, useCallback } from 'react'
 import { Paragraph, XStack, YStack } from 'tamagui'
 
-export interface OfficeFlyoutMenuItemProps {
+export interface OfficePopoverMenuItemProps {
   route: RouteConfig & { key: string }
   pathname: string
   depth?: number
   onNavigate?: () => void
-  children?: RouteConfig[]
+  childRoutes?: RouteConfig[]
 }
 
-export const OfficeFlyoutMenuItem = ({
+export const OfficePopoverMenuItem = ({
   route,
   pathname,
   depth = 0,
   onNavigate,
-  children,
-}: OfficeFlyoutMenuItemProps) => {
+  childRoutes,
+}: OfficePopoverMenuItemProps) => {
   const active = isActivePath(pathname, route.path)
   const Icon = route.menuIcon
-  const hasChildren = Boolean(children?.length)
+  const hasChildren = Boolean(childRoutes?.length)
 
   // Calculate indent based on depth (max $8 after 2 levels)
   const indent = depth === 0 ? '$3' : depth === 1 ? '$6' : '$8'
@@ -31,7 +31,7 @@ export const OfficeFlyoutMenuItem = ({
     if (!Icon) return null
 
     // Type assertion for lucide-icons components which accept size and color props
-    const IconComponent = Icon as React.ComponentType<{ size?: number; color?: string }>
+    const IconComponent = Icon as ComponentType<{ size?: number; color?: string }>
 
     return (
       <XStack items="center" justify="center" width={20} height={20}>
@@ -83,15 +83,16 @@ export const OfficeFlyoutMenuItem = ({
       </Link>
 
       {/* Render nested children */}
-      {hasChildren && children && (
+      {hasChildren && childRoutes && (
         <YStack>
-          {children.map((child, index) => (
-            <OfficeFlyoutMenuItem
+          {childRoutes.map((child, index) => (
+            <OfficePopoverMenuItem
               key={(child as RouteConfig & { key?: string }).key || child.path || `child-${index}`}
               route={child as RouteConfig & { key: string }}
               pathname={pathname}
               depth={depth + 1}
               onNavigate={onNavigate}
+              childRoutes={undefined}
             />
           ))}
         </YStack>
@@ -99,3 +100,4 @@ export const OfficeFlyoutMenuItem = ({
     </YStack>
   )
 }
+

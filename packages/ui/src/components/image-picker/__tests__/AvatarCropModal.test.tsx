@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import React, { type ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -238,7 +237,6 @@ vi.mock('tamagui', async () => {
     </button>
   )
 
-  // biome-ignore lint/a11y/useAltText: Mock component, alt text is provided in the img element
   const Image = ({ source, ...rest }: { source?: { uri?: string } }) => (
     <img src={source?.uri} alt="Crop preview" aria-label="Crop preview" {...rest} />
   )

@@ -410,7 +410,7 @@ export function ComparisonColumn({
         variant="outlined"
         onPress={() =>
           router.push(
-            ROUTES.OFFICE_APPLICATION_INQUIRY.path.replace(':applicationId', inquiry.application_id)
+            ROUTES.OFFICE.APPLICATIONS.INQUIRY.path.replace(':applicationId', inquiry.application_id)
           )
         }
       >

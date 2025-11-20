@@ -12,28 +12,50 @@ All route paths must be defined in `packages/core/constants/routes.ts` and refer
 
 ## Route Constants Structure
 
-### Available Route Constants
+### Nested Route Structure
+
+Routes are organized in a nested, hierarchical structure for better organization and type safety:
+
+```typescript
+import { ROUTES } from '@app/core/constants/routes'
+
+// Dashboard routes - nested structure
+ROUTES.DASHBOARD.path                    // "/dashboard"
+ROUTES.DASHBOARD.PROFILE.path             // "/dashboard/profile"
+ROUTES.DASHBOARD.PROFILE.GENERAL.path     // "/dashboard/profile/general"
+ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path  // "/dashboard/profile/employment"
+ROUTES.DASHBOARD.SETTINGS.path            // "/dashboard/settings"
+ROUTES.DASHBOARD.SETTINGS.GENERAL.path    // "/dashboard/settings/general"
+
+// Office routes - nested structure
+ROUTES.OFFICE.path                        // "/office"
+ROUTES.OFFICE.CMS.path                    // "/office/cms"
+ROUTES.OFFICE.CMS.JOBS.path               // "/office/cms/jobs"
+ROUTES.OFFICE.CMS.JOBS.CREATE.path        // "/office/cms/jobs/create"
+ROUTES.OFFICE.CMS.JOBS.EDIT.path          // "/office/cms/jobs/:id/edit"
+ROUTES.OFFICE.ATS.CHECKS.path             // "/office/ats/checks"
+
+// Auth routes - nested structure
+ROUTES.AUTH.LOGIN.path                    // "/auth"
+ROUTES.AUTH.CONFIRM.path                  // "/auth/confirm"
+ROUTES.AUTH.SUCCESS.path                   // "/auth/success"
+```
+
+### Legacy Route Constants (Deprecated)
+
+The following are deprecated but still available for backward compatibility:
 
 ```typescript
 import { 
-  ROUTES, 
   DASHBOARD_ROUTES, 
   OFFICE_ROUTES, 
   AUTH_ROUTES 
 } from '@app/core/constants/routes'
 
-// Dashboard routes
-DASHBOARD_ROUTES.INDEX.fullPath        // "/dashboard"
-DASHBOARD_ROUTES.PROFILE.fullPath      // "/dashboard/profile"
-DASHBOARD_ROUTES.SETTINGS.fullPath     // "/dashboard/settings"
-
-// Office routes (admin only)
-OFFICE_ROUTES.INDEX.fullPath           // "/office"
-OFFICE_ROUTES.JOBS.fullPath            // "/office/jobs"
-
-// Auth routes
-AUTH_ROUTES.INDEX.fullPath             // "/auth"
-AUTH_ROUTES.CONFIRM.fullPath           // "/auth/confirm"
+// These still work but use nested structure internally
+DASHBOARD_ROUTES.INDEX.path        // "/dashboard"
+OFFICE_ROUTES.JOBS.path            // "/office/cms/jobs"
+AUTH_ROUTES.INDEX.path              // "/auth"
 ```
 
 ## Usage Patterns
@@ -51,27 +73,30 @@ router.replace('/office')
 const isActive = pathname === '/dashboard'
 ```
 
-### ✅ Good - Using Route Constants
+### ✅ Good - Using Nested Route Constants
 
 ```typescript
-// DO THIS
-import { DASHBOARD_ROUTES, OFFICE_ROUTES } from '@app/core/constants/routes'
+// DO THIS - Use nested structure
+import { ROUTES } from '@app/core/constants/routes'
 
-<Link href={DASHBOARD_ROUTES.INDEX.fullPath}>Dashboard</Link>
-<Link href={OFFICE_ROUTES.JOBS.fullPath}>Manage Jobs</Link>
+<Link href={ROUTES.DASHBOARD.path}>Dashboard</Link>
+<Link href={ROUTES.OFFICE.CMS.JOBS.path}>Manage Jobs</Link>
+<Link href={ROUTES.DASHBOARD.PROFILE.GENERAL.path}>Profile</Link>
 
-router.push(DASHBOARD_ROUTES.INDEX.fullPath)
-router.replace(OFFICE_ROUTES.INDEX.fullPath)
+router.push(ROUTES.DASHBOARD.path)
+router.replace(ROUTES.OFFICE.path)
 
-const isActive = pathname === DASHBOARD_ROUTES.INDEX.fullPath
+const isActive = pathname === ROUTES.DASHBOARD.PROFILE.GENERAL.path
 ```
 
-### Using Route Titles
+### Using Route Metadata
 
 ```typescript
-// Access route metadata
-const title = DASHBOARD_ROUTES.PROFILE.title // "Profile"
-const path = DASHBOARD_ROUTES.PROFILE.fullPath // "/dashboard/profile"
+// Access route metadata from nested structure
+const title = ROUTES.DASHBOARD.PROFILE.title        // "Profile"
+const path = ROUTES.DASHBOARD.PROFILE.path          // "/dashboard/profile"
+const isProtected = ROUTES.DASHBOARD.PROFILE.protected // true
+const icon = ROUTES.DASHBOARD.PROFILE.icon          // ComponentType (if set)
 ```
 
 ## Adding New Routes
@@ -79,33 +104,42 @@ const path = DASHBOARD_ROUTES.PROFILE.fullPath // "/dashboard/profile"
 When adding new routes, update `packages/core/constants/routes.ts`:
 
 ```typescript
-// 1. Add to route config
-const routeConfig: Record<string, RouteConfig> = {
+// Add to nested ROUTES_CONFIG structure
+const ROUTES_CONFIG = {
   // ... existing routes
   
-  newSection: {
-    path: "/new-section",
-    title: "New Section",
-    isProtected: true,
-    children: {
-      index: {
-        path: "/new-section",
-        title: "New Section Home",
-      },
-      subsection: {
-        path: "/new-section/subsection",
+  DASHBOARD: {
+    // ... existing dashboard routes
+    
+    NEW_SECTION: {
+      path: "/dashboard/new-section",
+      title: "New Section",
+      protected: true,
+      exact: false,
+      SUBSECTION: {
+        path: "/dashboard/new-section/subsection",
         title: "Subsection",
+        protected: true,
+        exact: true,
       },
     },
   },
-}
+} as const
 
-// 2. Export convenience accessor
-export const NEW_SECTION_ROUTES = {
-  INDEX: ROUTES.newSection.childrenArray?.find((r) => r.path === "/new-section"),
-  SUBSECTION: ROUTES.newSection.childrenArray?.find((r) => r.path === "/new-section/subsection"),
-}
+// Access via nested structure
+ROUTES.DASHBOARD.NEW_SECTION.path           // "/dashboard/new-section"
+ROUTES.DASHBOARD.NEW_SECTION.SUBSECTION.path // "/dashboard/new-section/subsection"
 ```
+
+### Route Configuration Properties
+
+- `path`: The route path (required)
+- `title`: Display title (required)
+- `protected`: Whether route requires authentication (optional, default: false)
+- `roles`: Array of required roles for access (optional)
+- `icon`: Icon component (optional)
+- `exact`: Whether path must match exactly (optional, default: false)
+- `hidden`: Whether to hide from navigation (optional, default: false)
 
 ## Special Cases
 
@@ -118,18 +152,29 @@ if (href === "/") {
 }
 ```
 
-### Path Matching in Utils
+### Path Matching and Helper Functions
 
-Use route constants for path matching:
+Use route constants and helper functions for path operations:
 
 ```typescript
-import { DASHBOARD_ROUTES, OFFICE_ROUTES } from '@app/core/constants/routes'
+import { ROUTES, matchesRoute, isActiveRoute, getBreadcrumbs } from '@app/core/constants/routes'
 
 // Exact path matching
-const dashboardPath = DASHBOARD_ROUTES.INDEX?.fullPath || "/dashboard"
+const dashboardPath = ROUTES.DASHBOARD.path
 if (href === dashboardPath) {
-  return pathname === dashboardPath || pathname === `${dashboardPath}/index`
+  return pathname === dashboardPath
 }
+
+// Smart path matching (handles dynamic segments and exact flag)
+matchesRoute('/dashboard/profile/general', ROUTES.DASHBOARD.PROFILE.GENERAL) // true
+matchesRoute('/dashboard/profile/general', ROUTES.DASHBOARD.PROFILE) // true (prefix match)
+
+// Active route checking
+isActiveRoute('/dashboard/profile/general', ROUTES.DASHBOARD.PROFILE) // true
+
+// Breadcrumb generation
+const breadcrumbs = getBreadcrumbs('/dashboard/profile/general')
+// Returns: [ROUTES.DASHBOARD, ROUTES.DASHBOARD.PROFILE, ROUTES.DASHBOARD.PROFILE.GENERAL]
 ```
 
 ## Benefits
@@ -142,17 +187,36 @@ if (href === dashboardPath) {
 
 ## Enforcement
 
-- **ALWAYS import route constants** when working with navigation
+- **ALWAYS import ROUTES** when working with navigation
 - **NEVER use string literals** for route paths (except in routes.ts itself)
-- **ALWAYS use `.fullPath`** property to get the actual path string
+- **ALWAYS use `.path`** property to get the actual path string
+- **USE nested structure** for route access (e.g., `ROUTES.DASHBOARD.PROFILE.GENERAL.path`)
 - **DOCUMENT new routes** with proper titles and descriptions
+- **USE helper functions** (`buildPath`, `matchesRoute`, `getBreadcrumbs`) for route operations
 
 ## Migration
 
-When finding hardcoded paths:
+When finding hardcoded paths or old flat route references:
 
 1. Identify the path and its purpose
-2. Check if it exists in `routes.ts`
-3. If not, add it to `routes.ts` with proper structure
-4. Replace hardcoded string with route constant reference
-5. Verify the change works correctly
+2. Check if it exists in `routes.ts` nested structure
+3. If not, add it to `routes.ts` with proper nested structure
+4. Replace hardcoded string or flat reference with nested route constant
+5. Update from `ROUTES.DASHBOARD_PROFILE_GENERAL` to `ROUTES.DASHBOARD.PROFILE.GENERAL`
+6. Use `buildPath()` for dynamic routes instead of string replacement
+7. Verify the change works correctly
+
+### Migration Examples
+
+```typescript
+// Old flat structure (deprecated)
+ROUTES.DASHBOARD_PROFILE_GENERAL.path
+ROUTES.OFFICE_CMS_JOBS_CREATE.path
+
+// New nested structure
+ROUTES.DASHBOARD.PROFILE.GENERAL.path
+ROUTES.OFFICE.CMS.JOBS.CREATE.path
+
+// Dynamic routes
+buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: '123' }) // "/office/cms/jobs/123/edit"
+```

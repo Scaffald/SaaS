@@ -14,7 +14,7 @@ test.describe('PostHog Analytics Validation', () => {
     await page.goto('/', { waitUntil: 'networkidle' })
 
     // Check if PostHog is loaded
-    const posthogLoaded = await page.evaluate(() => {
+    await page.evaluate(() => {
       // Check for PostHog object
       return (
         typeof (window as unknown as { posthog?: unknown }).posthog !== 'undefined' ||

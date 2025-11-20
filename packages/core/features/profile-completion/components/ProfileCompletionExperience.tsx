@@ -113,7 +113,7 @@ export function ProfileCompletionExperience() {
   const handleUploadResume = useCallback(() => {
     dismissModal('opened_import_review')
     setIsWizardOpen(false)
-    router.push(ROUTES.DASHBOARD_PROFILE_IMPORT_REVIEW.path)
+    router.push(ROUTES.DASHBOARD.PROFILE.IMPORT_REVIEW.path)
   }, [dismissModal, router])
 
   const handleWizardClosed = useCallback(() => {
@@ -121,7 +121,7 @@ export function ProfileCompletionExperience() {
   }, [])
 
   const handleViewProfile = useCallback(() => {
-    router.push(ROUTES.DASHBOARD_PROFILE_GENERAL.path)
+    router.push(ROUTES.DASHBOARD.PROFILE.GENERAL.path)
   }, [router])
 
   return (

@@ -48,7 +48,7 @@ test.describe('Database Query Performance Testing', () => {
         expect(responseTime, `API endpoint should respond within 500ms: ${endpoint}`).toBeLessThan(
           500
         )
-      } catch (error) {
+      } catch {
         // If no response was caught, verify page still loads
         const bodyText = (await page.textContent('body')) || ''
         expect(bodyText.length, 'Page should load even if API timing not captured').toBeGreaterThan(
@@ -77,7 +77,7 @@ test.describe('Database Query Performance Testing', () => {
       // Subsequent requests should be faster due to caching
       // This is a basic check - actual caching validation requires inspecting response headers
       expect(response.status(), 'API should return successful response').toBeLessThan(400)
-    } catch (error) {
+    } catch {
       // If no response caught, that's okay - caching might prevent the request
       const bodyText = (await page.textContent('body')) || ''
       expect(bodyText.length, 'Page should load successfully').toBeGreaterThan(0)

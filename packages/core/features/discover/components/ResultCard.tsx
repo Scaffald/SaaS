@@ -2,7 +2,7 @@ import { RouteBuilder } from '@app/core/constants/routes'
 import { Award, BadgeCheck, Clock3, DollarSign, ExternalLink, Star } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
-import { forwardRef, memo, Ref } from 'react'
+import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Button, Paragraph, SizableText, Text, XStack, YStack } from 'tamagui'
 
@@ -15,12 +15,15 @@ type ResultCardProps = {
 }
 
 export const ResultCard = memo(
-  // biome-ignore lint/correctness/noUnusedVariables: forwardedRef is used in the ref callback below
   forwardRef<TamaguiElement, ResultCardProps>(({ profile, isSelected, onSelect }, forwardedRef) => {
     const router = useRouter()
     const toast = useToastController()
 
     const handleCardPress = () => {
+      // Notify parent component about selection
+      onSelect(profile.id)
+      
+      // Navigate to detail page
       try {
         router.push(RouteBuilder.discoverWorkerDetail(profile.id))
       } catch (navigationError) {

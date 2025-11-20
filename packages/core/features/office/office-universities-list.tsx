@@ -87,7 +87,7 @@ export function OfficeUniversitiesList() {
           searchValue={search}
           onSearchChange={setSearch}
           createButtonLabel="Create University"
-          onCreateClick={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
+          onCreateClick={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
           columns={columns as ColumnDef<University, unknown>[]}
           data={universities}
           isLoading={isLoading}
@@ -103,7 +103,7 @@ export function OfficeUniversitiesList() {
         <QuickActionsWidget
           context="list"
           resourceName="University"
-          onCreate={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
+          onCreate={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
           onRefresh={() => refetch()}
           isLoading={isLoading}
         />

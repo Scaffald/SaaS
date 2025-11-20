@@ -11,7 +11,10 @@ export function useDropZone(options: DropZoneOptionsCustom) {
         if (!value) {
           return acc
         }
-        Object.assign(acc, value)
+        // Use direct property assignment instead of Object.assign for better performance
+        for (const [key, val] of Object.entries(value)) {
+          acc[key] = val
+        }
         return acc
       },
       {} as Record<string, string[]>

@@ -63,7 +63,7 @@ export { DashboardLayout } from './components/layouts/DashboardLayout'
 export { OfficeLayout } from './components/layouts/OfficeLayout'
 export { ProfileLayout } from './components/layouts/ProfileLayout'
 export * from './components/maps'
-export { NotificationDropdown, type NotificationItem } from './components/NotificationDropdown'
+export { NotificationPopover, type NotificationItem } from './components/NotificationPopover'
 export {
   OfficeAccordion,
   type OfficeAccordionProps,
@@ -74,6 +74,11 @@ export {
   type OfficeTabsItem,
   type OfficeTabsProps,
 } from './components/navigation/OfficeTabs'
+export {
+  ProfileTabs,
+  type ProfileTabsItem,
+  type ProfileTabsProps,
+} from './components/navigation/ProfileTabs'
 export {
   QuickLinksSidebar,
   type QuickLinksSidebarProps,

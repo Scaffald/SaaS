@@ -1,6 +1,6 @@
 import { ChevronRight } from '@tamagui/lucide-icons'
 import { Link, useRouter } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
+import { Fragment, memo, useCallback, useMemo, useState } from 'react'
 import {
   Adapt,
   Popover,
@@ -91,7 +91,7 @@ export interface BreadcrumbProps {
  * />
  * ```
  */
-export const Breadcrumb = React.memo(function Breadcrumb({
+export const Breadcrumb = memo(function Breadcrumb({
   items,
   maxItemsMobile = 2,
   maxItemsDesktop = 4,
@@ -312,7 +312,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
         )
 
         return (
-          <React.Fragment key={`${item.label}-${actualIndex}`}>
+          <Fragment key={`${item.label}-${actualIndex}`}>
             {isClickable && item.href && !onItemPress ? (
               <Link href={item.href} asChild>
                 <XStack pressStyle={{ opacity: 0.7 }} cursor="pointer">
@@ -327,7 +327,7 @@ export const Breadcrumb = React.memo(function Breadcrumb({
               content
             )}
             {!isLast && <ChevronRight size={12} color="var(--color8)" />}
-          </React.Fragment>
+          </Fragment>
         )
       })}
     </XStack>

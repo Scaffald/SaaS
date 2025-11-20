@@ -744,9 +744,7 @@ async function ensureOrganizationTeamRoles(
   return Object.fromEntries(existingRoles.entries())
 }
 
-async function createTeamRecord(
-  params: CreateTeamParams
-): Promise<{
+async function createTeamRecord(params: CreateTeamParams): Promise<{
   id: string
   slug: string
   name: string

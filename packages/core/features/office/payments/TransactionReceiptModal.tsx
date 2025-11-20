@@ -1,7 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { Dialog } from '@app/ui'
 import { Download, X } from '@tamagui/lucide-icons'
-import { useState } from 'react'
 import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type TransactionReceiptModalProps = {

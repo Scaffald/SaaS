@@ -1,5 +1,6 @@
 import { Camera, Delete, Edit3, User } from '@tamagui/lucide-icons'
 import { useEffect, useId, useState } from 'react'
+import { Platform } from 'react-native'
 import { Button, Circle, Image, Label, Spinner, Text, View, XStack, YStack } from 'tamagui'
 import type { UploadSelection } from '../upload/UploadSurface'
 import { UploadSurface } from '../upload/UploadSurface'
@@ -111,14 +112,16 @@ export function AvatarImagePicker({
               }) as Record<string, unknown>)}
             >
               {/* Hidden input for web */}
-              {/* @ts-ignore */}
-              <View
-                id={id}
-                tag="input"
-                width={0}
-                height={0}
-                {...(getInputProps({ accept: 'image/*' }) as Record<string, unknown>)}
-              />
+              {Platform.OS === 'web' && (
+                <View
+                  id={id}
+                  // @ts-expect-error - Tamagui tag prop allows rendering as HTML elements on web
+                  tag="input"
+                  width={0}
+                  height={0}
+                  {...(getInputProps({ accept: 'image/*' }) as Record<string, unknown>)}
+                />
+              )}
 
               <Circle
                 size={size}

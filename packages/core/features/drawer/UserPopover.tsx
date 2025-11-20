@@ -5,7 +5,7 @@ import { supabase } from '@app/core/utils/supabase/client'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { useUser } from '@app/core/utils/useUser'
 import { Popover } from '@app/ui'
-import { Eye, LogOut, Moon, Pencil, Settings, Sun, User } from '@tamagui/lucide-icons'
+import { Eye, LogOut, Moon, Pencil, Settings, Sun } from '@tamagui/lucide-icons'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -31,10 +31,10 @@ import { Button, Separator, type TamaguiElement, Text, XStack, YStack } from 'ta
 // }
 
 /**
- * UserMenuAvatar component
+ * UserPopover component
  * Displays user avatar in header with popover menu for profile and settings actions
  */
-export function UserMenuAvatar() {
+export function UserPopover() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const triggerRef = useRef<TamaguiElement | null>(null)
@@ -94,8 +94,8 @@ export function UserMenuAvatar() {
         action()
       }
       if (href) {
-        // Biome-ignore lint/suspicious/noExplicitAny: expo-router requires dynamic route typing
-        router.push(href as unknown as Parameters<typeof router.push>[0])
+        // RouteBuilder and ROUTES.path return strings, which router.push accepts
+        router.push(href)
       }
       setOpen(false)
     },
@@ -122,8 +122,8 @@ export function UserMenuAvatar() {
   // Routes
   const userId = user?.id || ''
   const viewProfileHref = userId ? RouteBuilder.dashboardUser(userId) : undefined
-  const editProfileHref = ROUTES.DASHBOARD_PROFILE_GENERAL.path
-  const settingsHref = ROUTES.DASHBOARD_SETTINGS.path
+  const editProfileHref = ROUTES.DASHBOARD.PROFILE.GENERAL.path
+  const settingsHref = ROUTES.DASHBOARD.SETTINGS.path
 
   // Avatar size (matches notification icon height)
   const avatarSize = 30
@@ -330,3 +330,4 @@ export function UserMenuAvatar() {
     </Popover>
   )
 }
+

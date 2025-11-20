@@ -83,7 +83,7 @@ export function IPIPResultsPage() {
         <Text fontSize="$4" color="$color10" text="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
-        <Button onPress={() => router.push(ROUTES.DASHBOARD_ASSESSMENT_IPIP.path)}>
+        <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
           Start Assessment
         </Button>
       </YStack>

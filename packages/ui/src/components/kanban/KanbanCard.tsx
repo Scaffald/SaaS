@@ -1,7 +1,6 @@
 import { Clock, Eye, MessageSquare, MoreVertical, Paperclip } from '@tamagui/lucide-icons'
 import { memo, useState } from 'react'
 import { Avatar, Button, Card, Text, XStack, YStack } from 'tamagui'
-import { AvatarGroup } from '../avatars/AvatarGroup'
 import { Chip } from '../chips/Chip'
 import { ProgressBar } from './ProgressBar'
 
@@ -73,7 +72,7 @@ export const KanbanCard = memo(
     jobTitle,
     applicationDate,
     score,
-    status,
+    status: _status,
     tags = [],
     attachmentCount = 0,
     commentCount = 0,

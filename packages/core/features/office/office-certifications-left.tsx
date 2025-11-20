@@ -107,10 +107,11 @@ export function OfficeCertificationsLeft({
       reset()
       onCertificationSaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create certification'
       toast.show('Error', {
-        message: error.message || 'Failed to create certification',
+        message: errorMessage,
       })
     },
   })
@@ -122,10 +123,11 @@ export function OfficeCertificationsLeft({
       })
       onCertificationSaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update certification'
       toast.show('Error', {
-        message: error.message || 'Failed to update certification',
+        message: errorMessage,
       })
     },
   })
@@ -328,7 +330,7 @@ export function OfficeCertificationsLeft({
                 <Input
                   placeholder="e.g. 2"
                   value={field.value?.toString() || ''}
-                  onChangeText={(text) => field.onChange(text ? Number.parseInt(text) : undefined)}
+                  onChangeText={(text) => field.onChange(text ? parseInt(text, 10) : undefined)}
                   keyboardType="numeric"
                 />
               )}
@@ -374,7 +376,7 @@ export function OfficeCertificationsLeft({
                     placeholder="e.g. 36"
                     value={field.value?.toString() || ''}
                     onChangeText={(text) =>
-                      field.onChange(text ? Number.parseInt(text) : undefined)
+                      field.onChange(text ? parseInt(text, 10) : undefined)
                     }
                     keyboardType="numeric"
                   />

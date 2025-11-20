@@ -76,10 +76,11 @@ export function OfficeUniversitiesForm({
       reset()
       onUniversitySaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create university'
       toast.show('Error', {
-        message: error.message || 'Failed to create university',
+        message: errorMessage,
       })
     },
   })
@@ -91,10 +92,11 @@ export function OfficeUniversitiesForm({
       })
       onUniversitySaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update university'
       toast.show('Error', {
-        message: error.message || 'Failed to update university',
+        message: errorMessage,
       })
     },
   })

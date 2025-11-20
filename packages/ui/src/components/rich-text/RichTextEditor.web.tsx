@@ -4,13 +4,12 @@
  */
 
 import { Bold, Italic, List, ListOrdered, Underline as UnderlineIcon } from '@tamagui/lucide-icons'
-import type { JSONContent } from '@tiptap/core'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEffect, useMemo } from 'react'
-import { Button, styled, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from 'tamagui'
 import type { RichTextEditorProps } from './types'
 import { RICH_TEXT_LIMITS, RICH_TEXT_PLACEHOLDERS } from './utils/constants'
 import { createEmptyDocument, extractPlainText, sanitizeTipTapJSON } from './utils/sanitize'
@@ -264,7 +263,13 @@ export function RichTextEditor({
       )}
 
       {/* Editor Content */}
+      {/* TipTap EditorContent requires a div wrapper (not a textarea) for its contenteditable implementation.
+          This is an architectural limitation of the TipTap library. The div is properly marked with
+          role="textbox" and aria-label for accessibility. */}
       <div
+        role="textbox"
+        aria-label="Rich text editor"
+        tabIndex={-1}
         style={{
           height: resolvedHeight,
           minHeight: resolvedHeight,

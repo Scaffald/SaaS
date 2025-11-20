@@ -28,7 +28,7 @@ export function OccupationAssessmentWidget() {
   }
 
   const handleStart = () => {
-    router.push(ROUTES.DASHBOARD_ASSESSMENT_OCCUPATION.path)
+    router.push(ROUTES.DASHBOARD.ASSESSMENTS.OCCUPATION.path)
   }
 
   return (

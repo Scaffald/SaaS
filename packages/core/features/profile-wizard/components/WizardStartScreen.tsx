@@ -11,7 +11,7 @@ import {
   UserRound,
   Zap,
 } from '@tamagui/lucide-icons'
-import { memo } from 'react'
+import { type ComponentType, memo } from 'react'
 import { Button, Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
@@ -39,7 +39,7 @@ export const WizardStartScreen = memo(function WizardStartScreen({
       0
     )
 
-  const STEP_ICONS: Record<string, React.ComponentType<IconProps>> = {
+  const STEP_ICONS: Record<string, ComponentType<IconProps>> = {
     general: UserRound,
     skills: Sparkles,
     experience: Briefcase,

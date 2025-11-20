@@ -1,7 +1,6 @@
 import { RouteBuilder } from '@app/core/constants/routes'
-import { Building2, Clock, DollarSign, ExternalLink, MapPin } from '@tamagui/lucide-icons'
+import { Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Linking } from 'react-native'
 import { Button, Card, Separator, Text, XStack, YStack } from 'tamagui'
 
 export interface ExternalJob {

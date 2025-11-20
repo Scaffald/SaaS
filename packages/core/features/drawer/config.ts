@@ -1,4 +1,5 @@
-import { DASHBOARD_ROUTES, OFFICE_ROUTES, ROUTES } from '@app/core/constants/routes'
+import { ROUTES, type RouteConfig } from '@app/core/constants/routes'
+import type { TranslationKey } from '@app/core/locales'
 import {
   BarChart3,
   Briefcase,
@@ -8,8 +9,6 @@ import {
   User,
   Users,
 } from '@tamagui/lucide-icons'
-import type { JSX } from 'react'
-import type { DrawerItemConfig, DrawerSectionConfig } from './types'
 
 export interface AssessmentStatus {
   luscher1: {
@@ -22,6 +21,42 @@ export interface AssessmentStatus {
   luscher2: { isCompleted: boolean; isLoading: boolean }
   riasec: { isCompleted: boolean; isLoading: boolean }
   occupation: { isCompleted: boolean; isLoading: boolean }
+}
+
+/**
+ * Maps assessment route keys to assessment status keys
+ */
+function getAssessmentStatusKey(routeKey: string): keyof AssessmentStatus | null {
+  const mapping: Record<string, keyof AssessmentStatus> = {
+    LUSCHER: 'luscher1',
+    IPIP: 'ipip',
+    RIASEC: 'riasec',
+    OCCUPATION: 'occupation',
+  }
+  return mapping[routeKey] || null
+}
+
+/**
+ * Converts a route configuration to a drawer item configuration
+ */
+function routeToDrawerItem(
+  key: string,
+  route: RouteConfig,
+  options?: {
+    isCompleted?: boolean
+    isOnCooldown?: boolean
+    routeKey?: string
+  }
+): DrawerItemConfig {
+  return {
+    key: key.toLowerCase().replace(/_/g, '-'),
+    titleKey: route.title as TranslationKey,
+    href: route.path,
+    routeKey: options?.routeKey || key,
+    icon: route.icon,
+    isCompleted: options?.isCompleted,
+    isOnCooldown: options?.isOnCooldown,
+  }
 }
 
 /**
@@ -48,7 +83,7 @@ export const generateDashboardDrawerItems = (options?: {
   items.push({
     key: 'map',
     titleKey: 'navigation.discoverMap',
-    href: ROUTES.DASHBOARD_DISCOVER_MAP.path,
+    href: ROUTES.DASHBOARD.DISCOVER.MAP.path,
     routeKey: 'DASHBOARD_DISCOVER_MAP',
     icon: MapIcon,
   })
@@ -57,7 +92,7 @@ export const generateDashboardDrawerItems = (options?: {
   items.push({
     key: 'workers',
     titleKey: 'navigation.discoverWorkers',
-    href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path,
+    href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path,
     routeKey: 'DASHBOARD_DISCOVER_WORKERS',
     icon: Users,
   })
@@ -66,7 +101,7 @@ export const generateDashboardDrawerItems = (options?: {
   items.push({
     key: 'employers',
     titleKey: 'navigation.discoverEmployers',
-    href: ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.path,
+    href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path,
     routeKey: 'DASHBOARD_DISCOVER_EMPLOYERS',
     icon: Building2,
   })
@@ -75,97 +110,78 @@ export const generateDashboardDrawerItems = (options?: {
   items.push({
     key: 'jobs',
     titleKey: 'navigation.discoverJobs',
-    href: ROUTES.DASHBOARD_DISCOVER_JOBS.path,
+    href: ROUTES.DASHBOARD.DISCOVER.JOBS.path,
     routeKey: 'DASHBOARD_DISCOVER_JOBS',
     icon: Briefcase,
   })
 
-  // Profile route - Always show subItems, parent is clickable
+  // Profile route - Dynamically generate sub-items from nested route structure
+  const profileSubItems: DrawerItemConfig[] = []
+
+  // Iterate through profile routes and create drawer items
+  // ROUTES.DASHBOARD.PROFILE is a RouteNode that contains both route properties and child routes
+  const profileNode = ROUTES.DASHBOARD.PROFILE as Record<string, unknown>
+  for (const [key, value] of Object.entries(profileNode)) {
+    // Skip route config properties (path, title, etc.)
+    if (key === 'path' || key === 'title' || key === 'protected' || key === 'exact' || key === 'icon') {
+      continue
+    }
+    // Check if this is a RouteConfig (has path property)
+    if (value && typeof value === 'object' && 'path' in value) {
+      const routeConfig = value as RouteConfig
+      if (!routeConfig.hidden) {
+        profileSubItems.push(
+          routeToDrawerItem(`profile-${key.toLowerCase()}`, routeConfig, {
+            routeKey: `DASHBOARD_PROFILE_${key}`,
+          })
+        )
+      }
+    }
+  }
+
   items.push({
     key: 'profile',
     titleKey: 'navigation.profile',
-    href: ROUTES.DASHBOARD_PROFILE.path,
+    href: ROUTES.DASHBOARD.PROFILE.path,
     routeKey: 'DASHBOARD_PROFILE',
     icon: User,
     isExpandable: true,
     expandOnActive: true,
-    subItems: [
-      {
-        key: 'profile-general',
-        titleKey: 'navigation.profileGeneral',
-        href: ROUTES.DASHBOARD_PROFILE_GENERAL.path,
-        routeKey: 'DASHBOARD_PROFILE_GENERAL',
-      },
-      {
-        key: 'profile-employment',
-        titleKey: 'navigation.profileEmployment',
-        href: ROUTES.DASHBOARD_PROFILE_EMPLOYMENT.path,
-        routeKey: 'DASHBOARD_PROFILE_EMPLOYMENT',
-      },
-      {
-        key: 'profile-skills',
-        titleKey: 'navigation.profileSkills',
-        href: ROUTES.DASHBOARD_PROFILE_SKILLS.path,
-        routeKey: 'DASHBOARD_PROFILE_SKILLS',
-      },
-      {
-        key: 'profile-certifications',
-        titleKey: 'navigation.profileCertifications',
-        href: ROUTES.DASHBOARD_PROFILE_CERTIFICATIONS.path,
-        routeKey: 'DASHBOARD_PROFILE_CERTIFICATIONS',
-      },
-      {
-        key: 'profile-education',
-        titleKey: 'navigation.profileEducation',
-        href: ROUTES.DASHBOARD_PROFILE_EDUCATION.path,
-        routeKey: 'DASHBOARD_PROFILE_EDUCATION',
-      },
-      {
-        key: 'profile-experience',
-        titleKey: 'navigation.profileExperience',
-        href: ROUTES.DASHBOARD_PROFILE_EXPERIENCE.path,
-        routeKey: 'DASHBOARD_PROFILE_EXPERIENCE',
-      },
-    ],
+    subItems: profileSubItems,
   })
 
-  // Assessments route - Always show sub-items for each assessment
-  const assessmentSubItems: DrawerItemConfig[] = [
-    {
-      key: 'assessment-pulse',
-      titleKey: 'navigation.assessmentsPulse',
-      href: ROUTES.DASHBOARD_ASSESSMENT_LUSCHER.path,
-      routeKey: 'DASHBOARD_ASSESSMENT_LUSCHER',
-      isCompleted: options?.assessmentStatus?.luscher1.isCompleted,
-      isOnCooldown: options?.assessmentStatus?.luscher1.isOnCooldown,
-    },
-    {
-      key: 'assessment-ipip',
-      titleKey: 'navigation.assessmentsPersonality',
-      href: ROUTES.DASHBOARD_ASSESSMENT_IPIP.path,
-      routeKey: 'DASHBOARD_ASSESSMENT_IPIP',
-      isCompleted: options?.assessmentStatus?.ipip.isCompleted,
-    },
-    {
-      key: 'assessment-riasec',
-      titleKey: 'navigation.assessmentsRiasec',
-      href: ROUTES.DASHBOARD_ASSESSMENT_RIASEC.path,
-      routeKey: 'DASHBOARD_ASSESSMENT_RIASEC',
-      isCompleted: options?.assessmentStatus?.riasec.isCompleted,
-    },
-    {
-      key: 'assessment-occupation',
-      titleKey: 'navigation.assessmentsOccupation',
-      href: ROUTES.DASHBOARD_ASSESSMENT_OCCUPATION.path,
-      routeKey: 'DASHBOARD_ASSESSMENT_OCCUPATION',
-      isCompleted: options?.assessmentStatus?.occupation.isCompleted,
-    },
-  ]
+  // Assessments route - Dynamically generate sub-items from nested route structure
+  const assessmentSubItems: DrawerItemConfig[] = []
+
+  // Iterate through assessment routes and create drawer items with status
+  const assessmentsNode = ROUTES.DASHBOARD.ASSESSMENTS as Record<string, unknown>
+  for (const [key, value] of Object.entries(assessmentsNode)) {
+    // Skip route config properties (path, title, etc.)
+    if (key === 'path' || key === 'title' || key === 'protected' || key === 'exact' || key === 'icon') {
+      continue
+    }
+    // Check if this is a RouteConfig (has path property)
+    if (value && typeof value === 'object' && 'path' in value) {
+      const routeConfig = value as RouteConfig
+      if (!routeConfig.hidden) {
+        const statusKey = getAssessmentStatusKey(key)
+        const status = statusKey ? options?.assessmentStatus?.[statusKey] : null
+
+        assessmentSubItems.push(
+          routeToDrawerItem(`assessment-${key.toLowerCase()}`, routeConfig, {
+            routeKey: `DASHBOARD_ASSESSMENT_${key}`,
+            isCompleted: status && 'isCompleted' in status ? status.isCompleted : undefined,
+            isOnCooldown: status && 'isOnCooldown' in status ? status.isOnCooldown : undefined,
+          })
+        )
+      }
+    }
+  }
 
   items.push({
     key: 'assessments',
     titleKey: 'navigation.assessments',
-    href: ROUTES.DASHBOARD_ASSESSMENTS.path,
+    href: ROUTES.DASHBOARD.ASSESSMENTS.path,
     routeKey: 'DASHBOARD_ASSESSMENTS',
     icon: ClipboardCheck,
     isExpandable: true,

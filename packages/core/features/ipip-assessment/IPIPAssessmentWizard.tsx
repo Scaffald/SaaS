@@ -10,7 +10,6 @@ import { Button, Text, YStack } from 'tamagui'
 import {
   DOMAIN_NAMES,
   getCompletedDomainsCount,
-  QUESTIONS_PER_DOMAIN,
 } from './utils/domainGrouping'
 
 interface SaveIPIPProgressResult {

@@ -1,5 +1,5 @@
 import { useAuth } from '@app/core/provider/auth/useAuth'
-import { useMemo } from 'react'
+import { type RefObject, useMemo } from 'react'
 import { YStack } from 'tamagui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
@@ -13,7 +13,7 @@ interface DiscoverWorkersLeftProps {
   selectedCertifications: string[]
   selectedProfileId: string | null
   onSelect: (id: string) => void
-  resultListRef: React.RefObject<ResultListRef | null>
+  resultListRef: RefObject<ResultListRef | null>
 }
 
 /**

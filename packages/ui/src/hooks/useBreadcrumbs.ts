@@ -1,4 +1,4 @@
-import { matchesRoute, ROUTES, type RouteConfig } from '@app/core/constants/routes'
+import { matchesRoute, flattenRoutes, type RouteConfig } from '@app/core/constants/routes'
 import { usePathname } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
 import type { BreadcrumbItem, BreadcrumbSibling } from '../components/Breadcrumb'
@@ -84,14 +84,15 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
   // Find matching route for a given path
   const findMatchingRoute = useCallback((path: string): RouteConfig | null => {
+    const allRoutes = flattenRoutes()
     // Try exact match first
-    const exactMatch = Object.values(ROUTES).find((route) => route.path === path)
+    const exactMatch = allRoutes.find((route) => route.path === path)
     if (exactMatch) {
       return exactMatch
     }
 
     // Try dynamic route match
-    const dynamicMatch = Object.values(ROUTES).find((route) => matchesRoute(path, route))
+    const dynamicMatch = allRoutes.find((route) => matchesRoute(path, route))
     if (dynamicMatch) {
       return dynamicMatch
     }
@@ -155,7 +156,8 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
       const siblings: BreadcrumbSibling[] = []
       const parentPath = pathSegments.slice(0, -1).join('/')
 
-      for (const route of Object.values(ROUTES)) {
+      const allRoutes = flattenRoutes()
+      for (const route of allRoutes) {
         // Skip dynamic routes with parameters (they're not true siblings)
         if (route.path.includes(':')) {
           continue
@@ -193,7 +195,8 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
   // Find all routes sharing a common parent path (for intermediate segments)
   const findRoutesAtPath = useCallback((parentPath: string): RouteConfig[] => {
-    return Object.values(ROUTES).filter((route) => {
+    const allRoutes = flattenRoutes()
+    return allRoutes.filter((route) => {
       // Skip dynamic routes
       if (route.path.includes(':')) {
         return false

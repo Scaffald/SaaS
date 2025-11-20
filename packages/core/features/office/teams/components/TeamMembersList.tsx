@@ -81,7 +81,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       })
       setLeaveReason('')
       setIsLeaveDialogOpen(false)
-      router.replace(ROUTES.OFFICE_CMS_TEAMS.path)
+      router.replace(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: Error) => {
       toast.show('Unable to leave team', { message: error.message })

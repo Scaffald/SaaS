@@ -1,26 +1,18 @@
-import {
-  Check,
-  FlipHorizontal,
-  FlipVertical,
-  RotateCcw,
-  X,
-  ZoomIn,
-  ZoomOut,
-} from '@tamagui/lucide-icons'
+import { Check, X } from '@tamagui/lucide-icons'
 import {
   type ComponentRef,
-  type CSSProperties,
+  type MouseEvent,
+  type WheelEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import { type ImageStyle, Platform, Image as RNImage } from 'react-native'
+import { Platform, Image as RNImage } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import {
   Button,
-  Circle,
   Image as TamaguiImage,
   Text,
   useWindowDimensions,
@@ -309,7 +301,7 @@ export function AvatarCropModal({
   }, [imageDimensions, displaySize, cropSize])
 
   const handleWheel = useCallback(
-    (event: React.WheelEvent) => {
+    (event: WheelEvent) => {
       if (Platform.OS !== 'web' || !imageLoaded) return
       event.preventDefault()
 
@@ -324,7 +316,7 @@ export function AvatarCropModal({
   )
 
   const handleMouseDown = useCallback(
-    (event: React.MouseEvent) => {
+    (event: MouseEvent) => {
       if (Platform.OS !== 'web' || !containerRef.current) return
       event.preventDefault()
       setIsDragging(true)
@@ -345,7 +337,7 @@ export function AvatarCropModal({
   )
 
   const handleMouseMove = useCallback(
-    (event: React.MouseEvent) => {
+    (event: MouseEvent) => {
       if (!isDragging || Platform.OS !== 'web' || !containerRef.current) return
       event.preventDefault()
 
@@ -831,110 +823,111 @@ export function AvatarCropModal({
 
                 {renderControls()}
 
-                {/* @ts-ignore ref for web drag handling */}
-                <div
-                  ref={containerRef}
-                  style={{
-                    position: 'relative',
-                    width: displaySize,
-                    height: displaySize,
-                    backgroundColor: 'var(--color2)',
-                    borderRadius: 'var(--radius-4)',
-                    overflow: 'hidden',
-                    cursor: isDragging ? 'grabbing' : 'grab',
-                  }}
-                  role="img"
-                  aria-label="Avatar crop area. Drag to reposition and scroll to zoom."
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  onWheel={handleWheel}
-                >
-                  {imageRef.current && (
-                    <img
-                      src={imageUri}
-                      alt="Crop preview"
+                {Platform.OS === 'web' ? (
+                  <div
+                    ref={containerRef}
+                    style={{
+                      position: 'relative',
+                      width: displaySize,
+                      height: displaySize,
+                      backgroundColor: 'var(--color2)',
+                      borderRadius: 'var(--radius-4)',
+                      overflow: 'hidden',
+                      cursor: isDragging ? 'grabbing' : 'grab',
+                    }}
+                    role="img"
+                    aria-label="Avatar crop area. Drag to reposition and scroll to zoom."
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    onWheel={handleWheel}
+                  >
+                    {imageRef.current && (
+                      <img
+                        src={imageUri}
+                        alt="Crop preview"
+                        style={{
+                          position: 'absolute',
+                          left: formatPixels(cropAreaTopLeft.x - cropPosition.x * scale),
+                          top: formatPixels(cropAreaTopLeft.y - cropPosition.y * scale),
+                          width: scaledImageWidth,
+                          height: scaledImageHeight,
+                          pointerEvents: 'none',
+                          userSelect: 'none',
+                          transition: isDragging ? 'none' : 'left 0.1s ease-out, top 0.1s ease-out',
+                          transform: getWebTransform(
+                            scaledImageWidth,
+                            scaledImageHeight,
+                            flipHorizontal,
+                            flipVertical
+                          ),
+                        }}
+                      />
+                    )}
+
+                    <div
                       style={{
                         position: 'absolute',
-                        left: formatPixels(cropAreaTopLeft.x - cropPosition.x * scale),
-                        top: formatPixels(cropAreaTopLeft.y - cropPosition.y * scale),
-                        width: scaledImageWidth,
-                        height: scaledImageHeight,
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: formatPixels((displaySize - cropDisplaySize) / 2),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
                         pointerEvents: 'none',
-                        userSelect: 'none',
-                        transition: isDragging ? 'none' : 'left 0.1s ease-out, top 0.1s ease-out',
-                        transform: getWebTransform(
-                          scaledImageWidth,
-                          scaledImageHeight,
-                          flipHorizontal,
-                          flipVertical
-                        ),
                       }}
                     />
-                  )}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        width: '100%',
+                        height: formatPixels((displaySize - cropDisplaySize) / 2),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: formatPixels((displaySize - cropDisplaySize) / 2),
+                        left: 0,
+                        width: formatPixels((displaySize - cropDisplaySize) / 2),
+                        height: formatPixels(cropDisplaySize),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: formatPixels((displaySize - cropDisplaySize) / 2),
+                        right: 0,
+                        width: formatPixels((displaySize - cropDisplaySize) / 2),
+                        height: formatPixels(cropDisplaySize),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        pointerEvents: 'none',
+                      }}
+                    />
 
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: formatPixels((displaySize - cropDisplaySize) / 2),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      height: formatPixels((displaySize - cropDisplaySize) / 2),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: formatPixels((displaySize - cropDisplaySize) / 2),
-                      left: 0,
-                      width: formatPixels((displaySize - cropDisplaySize) / 2),
-                      height: formatPixels(cropDisplaySize),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: formatPixels((displaySize - cropDisplaySize) / 2),
-                      right: 0,
-                      width: formatPixels((displaySize - cropDisplaySize) / 2),
-                      height: formatPixels(cropDisplaySize),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: '50%',
-                      top: '50%',
-                      width: formatPixels(cropDisplaySize),
-                      height: formatPixels(cropDisplaySize),
-                      transform: 'translate(-50%, -50%)',
-                      border: '2px solid var(--blue10)',
-                      borderRadius: 'var(--radius-2)',
-                      pointerEvents: 'none',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                      zIndex: 10,
-                    }}
-                  />
-                </div>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '50%',
+                        width: formatPixels(cropDisplaySize),
+                        height: formatPixels(cropDisplaySize),
+                        transform: 'translate(-50%, -50%)',
+                        border: '2px solid var(--blue10)',
+                        borderRadius: 'var(--radius-2)',
+                        pointerEvents: 'none',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                        zIndex: 10,
+                      }}
+                    />
+                  </div>
+                ) : null}
 
                 <XStack gap="$3" width="100%">
                   <Dialog.Close asChild>

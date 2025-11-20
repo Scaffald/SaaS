@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React, { type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock processCroppedImage
@@ -88,7 +88,6 @@ vi.mock('tamagui', async () => {
 
   Button.Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
 
-  // biome-ignore lint/a11y/useAltText: Mock component, alt text is provided in the img element
   const Image = ({ source, ...rest }: { source?: { uri?: string } }) => (
     <img src={source?.uri} alt="Avatar" aria-label="Avatar" {...rest} />
   )

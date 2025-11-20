@@ -122,7 +122,7 @@ export function OrganizationBackgroundChecksPage() {
   const handleNavigateToRequest = () => {
     if (!selectedOrganizationId) return
     router.push({
-      pathname: ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
+      pathname: ROUTES.OFFICE.ATS.CHECKS.REQUEST.path,
       params: { organizationId: selectedOrganizationId },
     })
   }

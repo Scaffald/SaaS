@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import { DataTable } from '@app/ui'
-import { AlertTriangle, RefreshCw } from '@tamagui/lucide-icons'
+import { RefreshCw } from '@tamagui/lucide-icons'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'

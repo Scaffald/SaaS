@@ -1,6 +1,6 @@
 import type { MapMouseEvent } from 'mapbox-gl'
 import mapboxgl from 'mapbox-gl'
-import React from 'react'
+import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import { PinMarker } from './PinMarker'
 import { getPinColor } from './pinColors'
@@ -19,7 +19,6 @@ interface CustomMarkerOptions {
  */
 export class CustomMarker extends mapboxgl.Marker {
   private _handleClick?: () => void
-  private _handleHover?: (pinId: string | null) => void
   public pin: MapPin
 
   constructor(options: CustomMarkerOptions) {
@@ -45,7 +44,7 @@ export class CustomMarker extends mapboxgl.Marker {
       }
     }
 
-    el.innerHTML = renderToString(React.createElement(PinMarker, { color, tooltip }))
+    el.innerHTML = renderToString(createElement(PinMarker, { color, tooltip }))
 
     // Add click handler
     if (onClick) {
@@ -75,7 +74,6 @@ export class CustomMarker extends mapboxgl.Marker {
 
     this.pin = pin
     this._handleClick = onClick ? () => onClick(pin.id) : undefined
-    this._handleHover = onHover
   }
 
   /**

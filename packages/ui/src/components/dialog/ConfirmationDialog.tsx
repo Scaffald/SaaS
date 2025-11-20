@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from 'tamagui'
+import { XStack } from 'tamagui'
 import { Button, type ButtonProps } from '../buttons/Button'
 import { Dialog } from './Dialog'
 

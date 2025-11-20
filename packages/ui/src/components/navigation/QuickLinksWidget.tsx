@@ -2,7 +2,6 @@ import { matchesRoute, ROUTES, type RouteConfig, type RouteKey } from '@app/core
 import {
   getHierarchyInfo,
   getHierarchyInfoForPath,
-  getRouteKeyForPath,
   MIN_QUICK_LINK_DEPTH,
   type RouteHierarchyInfo,
 } from '@app/core/utils/navigation/routeHierarchy'
@@ -108,7 +107,9 @@ export const QuickLinksWidget = ({
         return
       }
 
-      const route = routeMap[node.key as RouteKey]
+      const route = (routeMap as Record<string, RouteConfig>)[node.key as string] as
+        | RouteConfig
+        | undefined
       if (!route) return
 
       const href = resolveHref(route, currentSegments, normalizedCurrentPath)

@@ -1,5 +1,5 @@
 import { X } from '@tamagui/lucide-icons'
-import { type ReactNode, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   Dialog,

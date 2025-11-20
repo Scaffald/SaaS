@@ -394,7 +394,8 @@ export function AttachmentsStep({
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
               >
-                <div
+                <section
+                  aria-label="Resume upload drop zone"
                   onDragOver={(e) => handleDragOver('resume', e)}
                   onDragLeave={() => handleDragLeave('resume')}
                   onDrop={(e) => handleDrop('resume', e)}
@@ -409,7 +410,7 @@ export function AttachmentsStep({
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
-                </div>
+                </section>
               </YStack>
             </label>
             <input
@@ -524,7 +525,8 @@ export function AttachmentsStep({
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
               >
-                <div
+                <section
+                  aria-label="Cover letter upload drop zone"
                   onDragOver={(e) => handleDragOver('cover_letter', e)}
                   onDragLeave={() => handleDragLeave('cover_letter')}
                   onDrop={(e) => handleDrop('cover_letter', e)}
@@ -539,7 +541,7 @@ export function AttachmentsStep({
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
-                </div>
+                </section>
               </YStack>
             </label>
             <input
@@ -654,7 +656,8 @@ export function AttachmentsStep({
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
               >
-                <div
+                <section
+                  aria-label="Portfolio upload drop zone"
                   onDragOver={(e) => handleDragOver('portfolio', e)}
                   onDragLeave={() => handleDragLeave('portfolio')}
                   onDrop={(e) => handleDrop('portfolio', e)}
@@ -669,7 +672,7 @@ export function AttachmentsStep({
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
-                </div>
+                </section>
               </YStack>
             </label>
             <input

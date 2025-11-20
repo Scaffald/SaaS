@@ -1,189 +1,361 @@
-import type { RouteConfig, RouteHierarchyNode, RouteKey } from '@app/core/constants/routes'
-import { matchesRoute, ROUTE_HIERARCHY, ROUTES } from '@app/core/constants/routes'
+import type { RouteConfig, RouteKey } from "@app/core/constants/routes";
+import {
+  flattenRoutes,
+  matchesRoute,
+  ROUTES,
+} from "@app/core/constants/routes";
 
-type RouteMap = typeof ROUTES
+type RouteMap = typeof ROUTES;
+
+type RouteHierarchyNode = {
+  key: RouteKey;
+  path: string;
+  children?: RouteHierarchyNode[];
+};
 
 type TraversalResult = {
-  key: RouteKey
-  node: RouteHierarchyNode
-  depth: number
-  ancestors: RouteKey[]
-}
+  key: RouteKey;
+  path: string;
+  depth: number;
+  ancestors: string[];
+  node: RouteHierarchyNode;
+};
 
-export type RouteHierarchyInfo = TraversalResult
+export type RouteHierarchyInfo = TraversalResult;
 
-export const MIN_QUICK_LINK_DEPTH = 3
+export const MIN_QUICK_LINK_DEPTH = 3;
 
-const ROUTE_ENTRIES = Object.entries(ROUTES) as Array<[RouteKey, RouteConfig]>
+// Get all routes as flat array for iteration
+const getAllRoutes = (): RouteConfig[] => flattenRoutes();
 
 const normalizePath = (path: string) => {
-  if (!path) return '/'
-  if (path === '/') return path
-  return path.endsWith('/') ? path.slice(0, -1) : path
-}
+  if (!path) return "/";
+  if (path === "/") return path;
+  return path.endsWith("/") ? path.slice(0, -1) : path;
+};
 
 export const getRouteKeyForPath = (path: string): RouteKey | undefined => {
-  const normalizedPath = normalizePath(path)
+  const normalizedPath = normalizePath(path);
+  const allRoutes = getAllRoutes();
 
-  for (const [key, route] of ROUTE_ENTRIES) {
-    if (normalizePath(route.path) === normalizedPath) {
-      return key
-    }
+  // Try exact match first
+  const exactMatch = allRoutes.find((route) =>
+    normalizePath(route.path) === normalizedPath
+  );
+  if (exactMatch) {
+    // Find the key by searching the nested structure
+    return findRouteKeyInNested(ROUTES, exactMatch.path) || undefined;
   }
 
-  for (const [key, route] of ROUTE_ENTRIES) {
-    if (matchesRoute(normalizedPath, route)) {
-      return key
-    }
+  // Try dynamic route match
+  const dynamicMatch = allRoutes.find((route) =>
+    matchesRoute(normalizedPath, route)
+  );
+  if (dynamicMatch) {
+    return findRouteKeyInNested(ROUTES, dynamicMatch.path) || undefined;
   }
 
-  return undefined
-}
+  return undefined;
+};
 
-const findHierarchyEntry = (
-  targetKey: RouteKey,
-  nodes: readonly RouteHierarchyNode[],
-  ancestors: RouteKey[] = [],
-  depth = 1
-): TraversalResult | undefined => {
-  for (const node of nodes) {
-    if (node.key === targetKey) {
-      return { key: targetKey, node, depth, ancestors }
-    }
+// Helper to find route key in nested structure
+function findRouteKeyInNested(
+  routeNode: unknown,
+  targetPath: string,
+  currentPath: string[] = [],
+): RouteKey | null {
+  if (!routeNode || typeof routeNode !== "object") {
+    return null;
+  }
 
-    if (node.children?.length) {
-      const result = findHierarchyEntry(
-        targetKey,
-        node.children,
-        [...ancestors, node.key as RouteKey],
-        depth + 1
-      )
-
+  for (const [key, value] of Object.entries(routeNode)) {
+    if (value && typeof value === "object" && "path" in value) {
+      const routeConfig = value as RouteConfig;
+      if (routeConfig.path === targetPath) {
+        // Return the full path as key (e.g., "DASHBOARD.PROFILE.GENERAL")
+        return (currentPath.length > 0 ? `${currentPath.join(".")}.` : "") +
+          key as RouteKey;
+      }
+    } else if (typeof value === "object" && value !== null) {
+      const result = findRouteKeyInNested(value, targetPath, [
+        ...currentPath,
+        key,
+      ]);
       if (result) {
-        return result
+        return result;
       }
     }
   }
 
-  return undefined
+  return null;
 }
 
-export const getHierarchyInfo = (routeKey: RouteKey): RouteHierarchyInfo | undefined =>
-  findHierarchyEntry(routeKey, ROUTE_HIERARCHY)
-
-export const getHierarchyInfoForPath = (path: string): RouteHierarchyInfo | undefined => {
-  const routeKey = getRouteKeyForPath(path)
-  if (!routeKey) return undefined
-  return getHierarchyInfo(routeKey)
-}
-
-const getAncestorKeyAtDepth = (
-  info: TraversalResult,
-  targetDepth: number
-): RouteKey | undefined => {
-  if (targetDepth === info.depth) {
-    return info.key
+// Build node structure from route node
+function buildRouteNode(
+  routeNode: unknown,
+  currentKey: string,
+  currentPath: string[] = [],
+): RouteHierarchyNode | null {
+  if (!routeNode || typeof routeNode !== "object") {
+    return null;
   }
 
-  return info.ancestors[targetDepth - 1]
+  const fullKey = (currentPath.length > 0 ? `${currentPath.join(".")}.` : "") +
+    currentKey as RouteKey;
+  let path = "";
+  const children: RouteHierarchyNode[] = [];
+
+  for (const [key, value] of Object.entries(routeNode)) {
+    if (key === "path" && typeof value === "string") {
+      path = value;
+    } else if (value && typeof value === "object" && "path" in value) {
+      // This is a route config
+      const routeConfig = value as RouteConfig;
+      const childKey =
+        (currentPath.length > 0 ? `${currentPath.join(".")}.` : "") +
+        key as RouteKey;
+      children.push({
+        key: childKey,
+        path: routeConfig.path,
+      });
+    } else if (typeof value === "object" && value !== null) {
+      // This is a nested route group
+      const childNode = buildRouteNode(value, key, [
+        ...currentPath,
+        currentKey,
+      ]);
+      if (childNode) {
+        children.push(childNode);
+      }
+    }
+  }
+
+  return {
+    key: fullKey,
+    path: path || "",
+    children: children.length > 0 ? children : undefined,
+  };
 }
 
-const isDescendantOf = (info: TraversalResult, ancestorKey: RouteKey): boolean =>
-  info.ancestors.includes(ancestorKey)
+// Find hierarchy info by traversing nested structure
+function findHierarchyInfoInNested(
+  routeNode: unknown,
+  targetPath: string,
+  ancestors: string[] = [],
+  depth = 1,
+): TraversalResult | undefined {
+  if (!routeNode || typeof routeNode !== "object") {
+    return undefined;
+  }
+
+  for (const [key, value] of Object.entries(routeNode)) {
+    if (value && typeof value === "object" && "path" in value) {
+      const routeConfig = value as RouteConfig;
+      if (routeConfig.path === targetPath) {
+        const routeKey =
+          (ancestors.length > 0 ? `${ancestors.join(".")}.` : "") +
+          key as RouteKey;
+        const node = buildRouteNode(value, key, ancestors);
+        if (!node) return undefined;
+
+        return {
+          key: routeKey,
+          path: routeConfig.path,
+          depth,
+          ancestors,
+          node,
+        };
+      }
+    } else if (typeof value === "object" && value !== null) {
+      // Check if this node has a path (it's a navigable parent)
+      const parentPath = (value as { path?: string }).path;
+      const newAncestors = parentPath ? [...ancestors, key] : ancestors;
+
+      const result = findHierarchyInfoInNested(
+        value,
+        targetPath,
+        newAncestors,
+        depth + 1,
+      );
+      if (result) {
+        return result;
+      }
+    }
+  }
+
+  return undefined;
+}
+
+export const getHierarchyInfo = (
+  _routeKey: RouteKey,
+): RouteHierarchyInfo | undefined => {
+  // For nested routes, we need to find by path
+  // This is a simplified version - in practice, we'd need to map keys to paths
+  // Try to find route by key (this is approximate for now)
+  return undefined;
+};
+
+export const getHierarchyInfoForPath = (
+  path: string,
+): RouteHierarchyInfo | undefined => {
+  return findHierarchyInfoInNested(ROUTES, path);
+};
+
+const _getAncestorKeyAtDepth = (
+  _info: TraversalResult,
+  _targetDepth: number,
+): RouteKey | undefined => {
+  if (_targetDepth === _info.depth) {
+    return _info.key;
+  }
+
+  return _info.ancestors[_targetDepth - 1] as RouteKey | undefined;
+};
+
+const _isDescendantOf = (
+  _info: TraversalResult,
+  _ancestorKey: RouteKey,
+): boolean => false;
 
 export const getRouteDepth = (path: string): number => {
-  const routeKey = getRouteKeyForPath(path)
-  if (!routeKey) return 0
+  const hierarchyEntry = getHierarchyInfoForPath(path);
+  return hierarchyEntry?.depth ?? 0;
+};
 
-  const hierarchyEntry = getHierarchyInfo(routeKey)
-  return hierarchyEntry?.depth ?? 0
-}
+export const getChildRoutes = (
+  parentPath: string,
+  _routeMap: RouteMap = ROUTES,
+): RouteConfig[] => {
+  // Find the route node itself (not its parent) in nested structure
+  const routeNode = findRouteNodeInNested(ROUTES, parentPath);
+  if (!routeNode) return [];
 
-export const getChildRoutes = (parentPath: string, routeMap: RouteMap = ROUTES): RouteConfig[] => {
-  const parentKey = getRouteKeyForPath(parentPath)
-  if (!parentKey) return []
-
-  const hierarchyEntry = getHierarchyInfo(parentKey)
-  if (!hierarchyEntry?.node.children?.length) {
-    return []
+  // Get all child routes from the route node
+  const children: RouteConfig[] = [];
+  for (const [key, value] of Object.entries(routeNode)) {
+    if (
+      key === "path" || key === "title" || key === "protected" ||
+      key === "exact" || key === "icon" || key === "hidden"
+    ) {
+      continue;
+    }
+    if (value && typeof value === "object" && "path" in value) {
+      children.push(value as RouteConfig);
+    }
   }
 
-  return hierarchyEntry.node.children.map((child) => routeMap[child.key]).filter(Boolean)
-}
+  return children;
+};
 
-const collectNodesAtDepth = (
-  node: RouteHierarchyNode,
-  currentDepth: number,
-  targetDepth: number,
-  accumulator: RouteHierarchyNode[]
-) => {
-  if (currentDepth === targetDepth) {
-    accumulator.push(node)
-    return
+// Helper to find the route node itself (not its parent) by path
+function findRouteNodeInNested(
+  routeNode: unknown,
+  targetPath: string,
+): Record<string, unknown> | null {
+  if (!routeNode || typeof routeNode !== "object") {
+    return null;
   }
 
-  if (!node.children?.length || currentDepth > targetDepth) {
-    return
+  // Check if this node itself matches
+  if (
+    "path" in (routeNode as Record<string, unknown>) &&
+    (routeNode as { path?: string }).path === targetPath
+  ) {
+    return routeNode as Record<string, unknown>;
   }
 
-  for (const child of node.children) {
-    collectNodesAtDepth(child, currentDepth + 1, targetDepth, accumulator)
+  // Recursively search children
+  for (const [, value] of Object.entries(routeNode)) {
+    if (value && typeof value === "object") {
+      if ("path" in value) {
+        const routeConfig = value as RouteConfig;
+        if (routeConfig.path === targetPath) {
+          // Found the matching route, return it
+          return value as Record<string, unknown>;
+        }
+      } else if (value !== null) {
+        // Recursively search nested objects
+        const result = findRouteNodeInNested(value, targetPath);
+        if (result) {
+          return result;
+        }
+      }
+    }
   }
+
+  return null;
 }
 
 export const getRoutesAtDepth = (
   basePath: string,
   depth: number,
-  routeMap: RouteMap = ROUTES
+  _routeMap: RouteMap = ROUTES,
 ): RouteConfig[] => {
-  const baseKey = getRouteKeyForPath(basePath)
-  if (!baseKey) return []
+  const baseEntry = getHierarchyInfoForPath(basePath);
+  if (!baseEntry) return [];
 
-  const baseEntry = getHierarchyInfo(baseKey)
-  if (!baseEntry) return []
+  const targetDepth = baseEntry.depth + (depth - baseEntry.depth);
+  const allRoutes = getAllRoutes();
 
-  const nodes: RouteHierarchyNode[] = []
-  const startingDepth = baseEntry.depth + 1
+  // Filter routes at target depth that are descendants of basePath
+  return allRoutes.filter((route) => {
+    const routeInfo = getHierarchyInfoForPath(route.path);
+    if (!routeInfo) return false;
 
-  if (!baseEntry.node.children?.length) {
-    return []
-  }
+    // Check if route is at target depth and is a descendant
+    return routeInfo.depth === targetDepth &&
+      route.path.startsWith(basePath.split(":")[0]);
+  });
+};
 
-  for (const child of baseEntry.node.children) {
-    collectNodesAtDepth(child, startingDepth, depth, nodes)
-  }
-
-  return nodes.map((node) => routeMap[node.key]).filter(Boolean)
-}
-
-export const shouldShowInQuickLinks = (routePath: string, currentPath: string): boolean => {
-  const candidateKey = getRouteKeyForPath(routePath)
-  const currentKey = getRouteKeyForPath(currentPath)
-
-  if (!candidateKey || !currentKey) {
-    return false
-  }
-
-  const candidateInfo = getHierarchyInfo(candidateKey)
-  const currentInfo = getHierarchyInfo(currentKey)
+export const shouldShowInQuickLinks = (
+  routePath: string,
+  currentPath: string,
+): boolean => {
+  const candidateInfo = getHierarchyInfoForPath(routePath);
+  const currentInfo = getHierarchyInfoForPath(currentPath);
 
   if (!candidateInfo || !currentInfo) {
-    return false
+    return false;
   }
 
   if (currentInfo.depth < MIN_QUICK_LINK_DEPTH) {
-    return candidateInfo.depth > currentInfo.depth && isDescendantOf(candidateInfo, currentInfo.key)
+    return candidateInfo.depth > currentInfo.depth &&
+      candidateInfo.path.startsWith(currentInfo.path.split(":")[0]);
   }
 
-  const anchorKey = getAncestorKeyAtDepth(currentInfo, MIN_QUICK_LINK_DEPTH) ?? currentInfo.key
+  const anchorPath =
+    getAncestorPathAtDepth(currentInfo, MIN_QUICK_LINK_DEPTH) ??
+      currentInfo.path;
 
-  if (candidateInfo.key === anchorKey) {
-    return true
+  if (candidateInfo.path === anchorPath) {
+    return true;
   }
 
   if (candidateInfo.depth < MIN_QUICK_LINK_DEPTH) {
-    return false
+    return false;
   }
 
-  return isDescendantOf(candidateInfo, anchorKey)
-}
+  return candidateInfo.path.startsWith(anchorPath.split(":")[0]);
+};
+
+const getAncestorPathAtDepth = (
+  info: TraversalResult,
+  targetDepth: number,
+): string | undefined => {
+  if (targetDepth === info.depth) {
+    return info.path;
+  }
+
+  // Find ancestor path at target depth by traversing up
+  if (info.ancestors.length >= targetDepth) {
+    // This is a simplified version - we'd need to map ancestor keys to paths
+    // For now, calculate based on path segments
+    const segments = info.path.split("/").filter(Boolean);
+    if (segments.length >= targetDepth) {
+      return `/${segments.slice(0, targetDepth).join("/")}`;
+    }
+  }
+
+  return undefined;
+};

@@ -37,7 +37,7 @@ export function IPIPAssessmentWidget() {
   const progressPercentage = Math.round((progress / 120) * 100)
 
   const handleStart = () => {
-    router.push(ROUTES.DASHBOARD_ASSESSMENT_IPIP.path)
+    router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)
   }
 
   const handleViewResults = () => {

@@ -1,18 +1,14 @@
 import { OrganizationDeletionPanel } from '@app/core/features/organizations/components/OrganizationDeletionPanel'
 import { api } from '@app/core/utils/api'
 import { supabase } from '@app/core/utils/supabase/client'
-import {
-  type OrganizationCreate,
-  type OrganizationLocation,
-  organizationCreateSchema,
-} from '@app/schemas'
+import { organizationCreateSchema } from '@app/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, H4, Input, ScrollView, Select, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, ScrollView, Select, Spinner, Text, XStack, YStack } from 'tamagui'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'

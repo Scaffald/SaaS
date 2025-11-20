@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from 'react'
-import { styled, Text, View } from 'tamagui'
+import { useCallback, useState } from 'react'
+import { styled, View } from 'tamagui'
 
 interface LayoutEvent {
   nativeEvent: {

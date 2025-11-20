@@ -1,11 +1,11 @@
 /**
- * REQ-74: NotificationDropdown Accessibility Tests
+ * REQ-74: NotificationPopover Accessibility Tests
  * Tests ARIA labels, keyboard navigation, and screen reader support
  */
 
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { NotificationDropdown, type NotificationItem } from '../NotificationDropdown'
+import { NotificationPopover, type NotificationItem } from '../NotificationPopover'
 
 // Mock expo-router
 vi.mock('expo-router', () => ({
@@ -46,7 +46,7 @@ vi.mock('tamagui', () => {
   const Card = ({
     children,
     onPress,
-    role,
+    role = 'button',
     tabIndex,
     'aria-label': ariaLabel,
     ...rest
@@ -56,22 +56,26 @@ vi.mock('tamagui', () => {
     role?: string
     tabIndex?: number
     'aria-label'?: string
-  } & Record<string, unknown>) => (
-    <div
-      role={role}
-      tabIndex={tabIndex}
-      onClick={onPress}
-      onKeyDown={(e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && onPress) {
-          onPress()
-        }
-      }}
-      aria-label={ariaLabel}
-      {...rest}
-    >
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => {
+    if (onPress) {
+      return (
+        <button
+          type="button"
+          tabIndex={tabIndex ?? 0}
+          onClick={onPress}
+          aria-label={ariaLabel}
+          {...rest}
+        >
+          {children}
+        </button>
+      )
+    }
+    return (
+      <div role={role} tabIndex={tabIndex} aria-label={ariaLabel} {...rest}>
+        {children}
+      </div>
+    )
+  }
 
   const ScrollView = ({
     children,
@@ -122,7 +126,7 @@ vi.mock('tamagui', () => {
 
   Popover.Content = ({
     children,
-    role,
+    role = 'menu',
     'aria-labelledby': ariaLabelledBy,
     ...rest
   }: {
@@ -160,7 +164,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   X: () => <span data-testid="x-icon">X</span>,
 }))
 
-describe('NotificationDropdown Accessibility', () => {
+describe('NotificationPopover Accessibility', () => {
   const mockNotifications: NotificationItem[] = [
     {
       id: '1',
@@ -178,21 +182,21 @@ describe('NotificationDropdown Accessibility', () => {
 
   describe('ARIA Labels', () => {
     it('has proper ARIA label on bell icon button with unread count', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const button = screen.getByLabelText('Notifications (1 unread)')
       expect(button).toBeInTheDocument()
     })
 
     it('has proper ARIA label on bell icon button without unread count', () => {
-      render(<NotificationDropdown notifications={[]} unreadCount={0} />)
+      render(<NotificationPopover notifications={[]} unreadCount={0} />)
 
       const button = screen.getByLabelText('Notifications')
       expect(button).toBeInTheDocument()
     })
 
-    it('has menu role on dropdown content', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+    it('has menu role on popover content', () => {
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -201,8 +205,8 @@ describe('NotificationDropdown Accessibility', () => {
       expect(content).toHaveAttribute('role', 'menu')
     })
 
-    it('has aria-labelledby on dropdown content', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+    it('has aria-labelledby on popover content', () => {
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -213,7 +217,7 @@ describe('NotificationDropdown Accessibility', () => {
     })
 
     it('has menuitem role on notification items', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -223,7 +227,7 @@ describe('NotificationDropdown Accessibility', () => {
     })
 
     it('has aria-label on notification items', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -234,7 +238,7 @@ describe('NotificationDropdown Accessibility', () => {
     })
 
     it('has aria-label on close button', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -246,7 +250,7 @@ describe('NotificationDropdown Accessibility', () => {
 
   describe('Keyboard Navigation', () => {
     it('supports Tab navigation through notification items', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -258,7 +262,7 @@ describe('NotificationDropdown Accessibility', () => {
     it('activates notification on Enter key', () => {
       const mockOnMarkAsRead = vi.fn()
       render(
-        <NotificationDropdown
+        <NotificationPopover
           notifications={mockNotifications}
           unreadCount={1}
           onMarkAsRead={mockOnMarkAsRead}
@@ -275,8 +279,8 @@ describe('NotificationDropdown Accessibility', () => {
       expect(mockOnMarkAsRead).toHaveBeenCalled()
     })
 
-    it('closes dropdown on Escape key', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+    it('closes popover on Escape key', () => {
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -290,7 +294,7 @@ describe('NotificationDropdown Accessibility', () => {
     })
 
     it('returns focus to trigger button on close', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       const button = trigger.querySelector('button')
@@ -312,21 +316,21 @@ describe('NotificationDropdown Accessibility', () => {
 
   describe('Screen Reader Support', () => {
     it('announces unread count in button label', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={5} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={5} />)
 
       const button = screen.getByLabelText('Notifications (5 unread)')
       expect(button).toBeInTheDocument()
     })
 
     it('announces "99+" for counts over 99', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={150} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={150} />)
 
       const button = screen.getByLabelText('Notifications (150 unread)')
       expect(button).toBeInTheDocument()
     })
 
     it('provides descriptive aria-label for each notification', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)
@@ -340,7 +344,7 @@ describe('NotificationDropdown Accessibility', () => {
 
   describe('Focus Management', () => {
     it('maintains focusable elements with tabIndex', () => {
-      render(<NotificationDropdown notifications={mockNotifications} unreadCount={1} />)
+      render(<NotificationPopover notifications={mockNotifications} unreadCount={1} />)
 
       const trigger = screen.getByTestId('popover-trigger')
       fireEvent.click(trigger)

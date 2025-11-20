@@ -1,13 +1,11 @@
 import { InquiryOverviewWidget } from '@app/core/features/inquiries/components/InquiryOverviewWidget'
-import { ResumeImportWidget } from '@app/core/features/resume'
 import { api } from '@app/core/utils/api'
 import { SkeletonCard } from '@app/ui'
-import { Text, YStack } from 'tamagui'
+import { YStack } from 'tamagui'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
 import { ProfileSnapshotWidget } from '../profile/widgets'
-import { ProfileCompletionExperience } from '../profile-completion/components/ProfileCompletionExperience'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
 
 /**

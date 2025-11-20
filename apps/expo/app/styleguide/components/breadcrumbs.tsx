@@ -3,6 +3,7 @@
 import { AnchorHeading, ExampleCard, StyleguidePage } from '@app/styleguide'
 import { Breadcrumb, Text, useBreadcrumbs, XStack, YStack } from '@app/ui'
 import { ChevronRight } from '@tamagui/lucide-icons'
+import { Fragment } from 'react'
 
 const trail = ['Home', 'Teams', 'Compliance', 'Training']
 
@@ -178,12 +179,12 @@ type BreadcrumbTrailProps = {
 const BreadcrumbTrail = ({ items }: BreadcrumbTrailProps) => (
   <XStack alignItems="center" gap="$2" flexWrap="wrap">
     {items.map((item, index) => (
-      <React.Fragment key={item}>
+      <Fragment key={item}>
         <Text fontSize={12} color={index === items.length - 1 ? '$color11' : '$color10'}>
           {item}
         </Text>
         {index < items.length - 1 ? <ChevronRight size={12} color="var(--color8)" /> : null}
-      </React.Fragment>
+      </Fragment>
     ))}
   </XStack>
 )

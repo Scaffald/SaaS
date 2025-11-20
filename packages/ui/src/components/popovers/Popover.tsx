@@ -6,6 +6,9 @@ import { styled, Popover as TamaguiPopover, withStaticProperties } from 'tamagui
  */
 const PopoverContent = styled(TamaguiPopover.Content, {
   bg: '$color1',
+  borderWidth: 0,
+  borderColor: 'transparent',
+  boxShadow: '$shadowColor',
 })
 
 /**

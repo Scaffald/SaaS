@@ -4,7 +4,7 @@ import {
   getPhoneRegionCode,
   isValidPhoneNumber,
 } from '@app/schemas/common/phone'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Adapt, Input, Select, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
 import {
   COUNTRIES,

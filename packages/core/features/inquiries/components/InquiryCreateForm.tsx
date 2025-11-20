@@ -11,7 +11,7 @@ import {
   XStack,
   YStack,
 } from '@app/ui'
-import { Check, HelpCircle, Info } from '@tamagui/lucide-icons'
+import { Check, Info } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, FormProvider } from 'react-hook-form'

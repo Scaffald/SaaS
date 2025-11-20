@@ -1,5 +1,4 @@
 import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
-import { normalizeScores } from './scoreNormalizer'
 
 /**
  * Condition for archetype matching

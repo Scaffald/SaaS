@@ -9,6 +9,7 @@ import {
   Users,
 } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
+import type { ReactNode } from 'react'
 import { Card, type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
@@ -192,7 +193,7 @@ function MetricItem({
   label,
   value,
 }: {
-  icon: React.ReactNode
+  icon: ReactNode
   label: string
   value: string
 }) {

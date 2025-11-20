@@ -1,9 +1,10 @@
 import { X } from '@tamagui/lucide-icons'
+import type { ReactNode } from 'react'
 import { Button, Card, type CardProps, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */
-  children: React.ReactNode
+  children: ReactNode
   /** Callback when remove button is clicked */
   onRemove?: () => void
   /** Whether remove action is disabled */
@@ -15,7 +16,7 @@ interface ProfileResultCardProps extends CardProps {
   /** Whether this is a newly added skill (for highlight animation) */
   isNew?: boolean
   /** Custom action buttons to display */
-  actions?: React.ReactNode
+  actions?: ReactNode
   /** Whether to show the card border */
   bordered?: boolean
 }

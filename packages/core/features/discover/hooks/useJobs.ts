@@ -54,8 +54,7 @@ export const buildJobsQuery = (options: UseJobsOptions = {}) => {
     const result = (await (supabase
       .schema('public')
       // @ts-expect-error - get_jobs_with_coords may not be in generated types yet
-      // biome-ignore lint/suspicious/noExplicitAny: RPC function may not exist in database types yet
-      .rpc('get_jobs_with_coords') as any)) as {
+      .rpc('get_jobs_with_coords') as unknown)) as {
       data: JobWithCoords[] | null
       error: { message: string } | null
     }

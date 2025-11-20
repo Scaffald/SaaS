@@ -6,7 +6,7 @@ import type {
   SearchOptions,
   UseAddressAutocompleteReturn,
 } from '../types'
-import { useAddressDebounce, useAddressDebouncedCallback } from './useDebounce'
+import { useAddressDebounce } from './useDebounce'
 import { useGeocodingProvider } from './useGeocodingProvider'
 
 interface UseAddressAutocompleteOptions {

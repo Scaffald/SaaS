@@ -20,8 +20,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, DollarSign, Flag, MapPin, Plane, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { type Control, Controller, useController, useForm } from 'react-hook-form'
 import { useWindowDimensions } from 'react-native'
 import { AnimatePresence, H4, Input, Label, Spinner, Text, XStack, YStack } from 'tamagui'
@@ -45,7 +44,7 @@ interface UpdateEmploymentContext {
 interface MultiSelectToggleFieldProps {
   control: Control<EmploymentProfileFormData>
   name: MultiSelectFieldName
-  icon: React.ReactNode
+  icon: ReactNode
   title: string
   description: string
   options: readonly string[]

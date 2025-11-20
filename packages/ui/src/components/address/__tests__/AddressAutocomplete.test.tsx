@@ -40,17 +40,7 @@ vi.mock('tamagui', () => {
   )
 
   const PopoverRoot = ({ children, open, onOpenChange }: any) => (
-    <div
-      data-testid="popover"
-      data-open={open}
-      onClick={() => onOpenChange?.(!open)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onOpenChange?.(!open)
-        }
-      }}
-    >
+    <div data-testid="popover" data-open={open}>
       {children}
     </div>
   )

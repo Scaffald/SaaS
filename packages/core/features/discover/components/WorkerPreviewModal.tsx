@@ -25,6 +25,54 @@ interface WorkerPreviewModalProps {
 }
 
 /**
+ * Enriched skill from API response
+ * Based on EnrichedUserSkill from skill-enrichment
+ */
+type EnrichedSkill = {
+  id: string
+  name: string
+  label: string
+  displayCode?: string | null
+  proficiency: number
+  [key: string]: unknown
+}
+
+/**
+ * Certification from API response
+ */
+type Certification = {
+  id: string
+  name: string
+  issuing_organization?: string | null
+  issue_date?: string | null
+  [key: string]: unknown
+}
+
+/**
+ * Experience entry from API response
+ */
+type ExperienceEntry = {
+  id: string
+  job_title: string
+  company_name: string
+  start_date?: string | null
+  end_date?: string | null
+  is_current?: boolean | null
+  [key: string]: unknown
+}
+
+/**
+ * Education entry from API response
+ */
+type EducationEntry = {
+  id: string
+  degree_type?: string | null
+  degree_name?: string | null
+  institution_name?: string | null
+  [key: string]: unknown
+}
+
+/**
  * Worker Preview Modal
  * Shows a quick preview of a worker's profile with option to view full profile
  */
@@ -270,8 +318,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   )}
                 </XStack>
                 <YStack gap="$2">
-                  {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
-                  {topSkills.map((skill: any) => {
+                  {topSkills.map((skill: EnrichedSkill) => {
                     const label =
                       typeof skill.label === 'string'
                         ? skill.label
@@ -326,8 +373,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   )}
                 </XStack>
                 <YStack gap="$2">
-                  {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
-                  {topCertifications.map((cert: any) => (
+                  {topCertifications.map((cert: Certification) => (
                     <YStack key={cert.id} gap="$1">
                       <Text fontSize="$4" fontWeight="600" color="$color12">
                         {cert.name}
@@ -363,8 +409,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   )}
                 </XStack>
                 <YStack gap="$2">
-                  {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
-                  {recentExperience.map((exp: any) => (
+                  {recentExperience.map((exp: ExperienceEntry) => (
                     <YStack key={exp.id} gap="$1">
                       <Text fontSize="$4" fontWeight="600" color="$color12">
                         {exp.job_title} at {exp.company_name}
@@ -391,8 +436,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                   </Text>
                 </XStack>
                 <YStack gap="$2">
-                  {/* biome-ignore lint/suspicious/noExplicitAny: API response type */}
-                  {topEducation.map((edu: any) => (
+                  {topEducation.map((edu: EducationEntry) => (
                     <YStack key={edu.id} gap="$1">
                       <Text fontSize="$4" fontWeight="600" color="$color12">
                         {edu.degree_type} {edu.degree_name}

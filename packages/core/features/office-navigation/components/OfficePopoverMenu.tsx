@@ -1,17 +1,20 @@
 import type { RouteConfig } from '@app/core/constants/routes'
 import { ROUTES } from '@app/core/constants/routes'
 import { Popover } from '@app/ui'
-import { useMemo, useState } from 'react'
+import type { ElementRef } from 'react'
+import { type RefObject, useMemo, useState } from 'react'
 import type { NativeScrollEvent, NativeSyntheticEvent, ViewStyle } from 'react-native'
-import { ScrollView, Separator, Text, useWindowDimensions, YStack } from 'tamagui'
-import { OfficeFlyoutMenuItem } from './OfficeFlyoutMenuItem'
+import { type Button, ScrollView, Separator, Text, useWindowDimensions, YStack } from 'tamagui'
+import { OfficePopoverMenuItem } from './OfficePopoverMenuItem'
 
-export interface OfficeFlyoutMenuProps {
+type ButtonRef = ElementRef<typeof Button>
+
+export interface OfficePopoverMenuProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   pathname: string
   onNavigate: () => void
-  triggerRef: React.RefObject<HTMLElement | null>
+  triggerRef: RefObject<ButtonRef>
 }
 
 type OrganizedRoutes = {
@@ -85,13 +88,13 @@ const useOrganizedRoutes = (): OrganizedRoutes => {
   }, [])
 }
 
-export const OfficeFlyoutMenu = ({
+export const OfficePopoverMenu = ({
   isOpen: _isOpen,
   onOpenChange: _onOpenChange,
   pathname,
   onNavigate,
   triggerRef: _triggerRef,
-}: OfficeFlyoutMenuProps) => {
+}: OfficePopoverMenuProps) => {
   const { width } = useWindowDimensions() // Keep for actual dimension calculation
   const routes = useOrganizedRoutes()
   const [showTopShadow, setShowTopShadow] = useState(false)
@@ -142,12 +145,10 @@ export const OfficeFlyoutMenu = ({
           {showTopShadow && (
             <YStack
               position="absolute"
-              style={{ top: 0, left: 0, right: 0, height: 20 } as ViewStyle}
+              style={{ top: 0, left: 0, right: 0, height: 20, zIndex: 1 } as ViewStyle}
               bg="$color2"
               opacity={0.8}
               pointerEvents="none"
-              // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
-              zIndex={1}
             />
           )}
 
@@ -174,13 +175,12 @@ export const OfficeFlyoutMenu = ({
                 {/* Category Items */}
                 <YStack>
                   {items.map((route) => (
-                    <OfficeFlyoutMenuItem
+                    <OfficePopoverMenuItem
                       key={route.key}
                       route={route}
                       pathname={pathname}
                       onNavigate={onNavigate}
-                      // biome-ignore lint/correctness/noChildrenProp: children here is route config data, not React children
-                      children={route.children}
+                      childRoutes={route.children}
                     />
                   ))}
                 </YStack>
@@ -192,12 +192,10 @@ export const OfficeFlyoutMenu = ({
           {showBottomShadow && (
             <YStack
               position="absolute"
-              style={{ bottom: 0, left: 0, right: 0, height: 20 } as ViewStyle}
+              style={{ bottom: 0, left: 0, right: 0, height: 20, zIndex: 1 } as ViewStyle}
               bg="$color2"
               opacity={0.8}
               pointerEvents="none"
-              // @ts-expect-error - Tamagui positioning props work at runtime but TypeScript doesn't recognize them
-              zIndex={1}
             />
           )}
         </YStack>
@@ -205,3 +203,4 @@ export const OfficeFlyoutMenu = ({
     </Popover.Content>
   )
 }
+

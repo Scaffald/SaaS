@@ -1,5 +1,4 @@
 // @ts-nocheck
-import React from 'react'
 import { ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 
 type PropRow = {

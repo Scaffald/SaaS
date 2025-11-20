@@ -1,18 +1,17 @@
-import { FeedbackWidget } from '@app/core/features/feedback'
-import { OfficeFlyout } from '@app/core/features/office-navigation'
+import { OfficePopover } from '@app/core/features/office-navigation'
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 import { api } from '@app/core/utils/api'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
 import type { NotificationItem } from '@app/ui'
-import { NotificationDropdown, shadows, spacing } from '@app/ui'
+import { NotificationPopover, shadows } from '@app/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import type { ReactNode } from 'react'
 import { Pressable } from 'react-native'
-import { Button, Text, useTheme, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { useTheme, useWindowDimensions, XStack } from 'tamagui'
 import { DrawerContent } from './DrawerContent'
-import { UserMenuAvatar } from './UserMenuAvatar'
+import { UserPopover } from './UserPopover'
 
 interface DrawerLayoutProps {
   /**
@@ -146,7 +145,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             padding: 10,
             maxWidth: 300,
           },
-          overlayColor: shadows.shadow1,
+          overlayColor: shadows.shadowColor,
           headerLeft: () => {
             return isSmall ? (
               <Pressable
@@ -160,16 +159,16 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           },
           headerRight: () => (
             <XStack gap="$3" items="center">
-              {/* Show OfficeFlyout if user has office role */}
-              {hasOfficeRole && <OfficeFlyout />}
-              <NotificationDropdown
+              {/* Show OfficePopover if user has office role */}
+              {hasOfficeRole && <OfficePopover />}
+              <NotificationPopover
                 notifications={transformedNotifications}
                 unreadCount={unreadCount}
                 isLoading={isLoadingNotifications}
                 onNotificationClick={handleNotificationClick}
                 onMarkAsRead={handleMarkAsRead}
               />
-              <UserMenuAvatar />
+              <UserPopover />
             </XStack>
           ),
         })}

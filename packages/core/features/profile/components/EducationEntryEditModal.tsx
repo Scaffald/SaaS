@@ -521,9 +521,7 @@ export function EducationEntryEditModal({
                       />
                     )}
                   />
-                ) : (
-                  <></>
-                )
+                ) : null
               }
             />
           </YStack>

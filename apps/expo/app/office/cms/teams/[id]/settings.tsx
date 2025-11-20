@@ -40,7 +40,7 @@ export default function OfficeTeamSettingsPage() {
         title="Team not specified"
         description="Provide a team identifier to manage settings."
         actionLabel="Back to teams"
-        onAction={() => router.replace(ROUTES.OFFICE_CMS_TEAMS.path)}
+        onAction={() => router.replace(ROUTES.OFFICE.CMS.TEAMS.path)}
       />
     )
   }
@@ -82,7 +82,7 @@ export default function OfficeTeamSettingsPage() {
             size="$2"
             variant="outlined"
             icon={ArrowLeft}
-            onPress={() => router.push(ROUTES.OFFICE_CMS_TEAMS.path)}
+            onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
           >
             Back to teams
           </Button>

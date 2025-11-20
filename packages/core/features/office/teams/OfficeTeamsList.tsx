@@ -8,7 +8,7 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Spinner, Text, XStack, YStack } from 'tamagui'
 import { OfficePageLayout } from '../components/OfficePageLayout'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 
@@ -146,7 +146,7 @@ export function OfficeTeamsList() {
             searchValue={search}
             onSearchChange={setSearch}
             createButtonLabel="Create Team"
-            onCreateClick={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
+            onCreateClick={() => router.push(ROUTES.OFFICE.CMS.TEAMS.CREATE.path)}
             columns={columns}
             data={filteredTeams}
             isLoading={isLoading || archiveMutation.isPending}
@@ -176,7 +176,7 @@ export function OfficeTeamsList() {
         <QuickActionsWidget
           context="list"
           resourceName="Team"
-          onCreate={() => router.push(ROUTES.OFFICE_CMS_TEAMS_CREATE.path)}
+          onCreate={() => router.push(ROUTES.OFFICE.CMS.TEAMS.CREATE.path)}
           onRefresh={() => refetch()}
           isLoading={isLoading || archiveMutation.isPending}
         />

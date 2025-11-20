@@ -1,3 +1,4 @@
+import type { ViewProps } from 'tamagui'
 import { styled, View } from 'tamagui'
 
 export interface SkeletonBoxProps {
@@ -8,7 +9,7 @@ export interface SkeletonBoxProps {
   /** Whether animation is enabled */
   animated?: boolean
   /** Border radius */
-  borderRadius?: number | string
+  borderRadius?: ViewProps['borderRadius']
 }
 
 const SkeletonBoxBase = styled(View, {
@@ -22,7 +23,7 @@ export const SkeletonBox = ({
   width,
   height,
   animated = true,
-  borderRadius,
+  borderRadius = '$2',
   ...props
 }: SkeletonBoxProps) => {
   return (
@@ -33,16 +34,9 @@ export const SkeletonBox = ({
         ...(typeof width === 'string' ? { width } : {}),
         ...(typeof height === 'string' ? { height } : {}),
       }}
-      // @ts-expect-error - rounded prop type mismatch with theme tokens
-      rounded={
-        typeof borderRadius === 'string' && borderRadius.startsWith('$')
-          ? borderRadius
-          : typeof borderRadius === 'number'
-            ? borderRadius
-            : '$2'
-      }
+      rounded={borderRadius}
       opacity={animated ? 0.6 : 0.5}
-      aria-busy="true"
+      aria-busy={true}
       aria-label="Loading content"
       {...props}
     />

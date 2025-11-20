@@ -2,8 +2,8 @@ import type { UniqueIdentifier } from '@dnd-kit/core'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { ReactNode } from 'react'
-import { KanbanCard } from './KanbanCard'
 import type { KanbanCardProps } from './KanbanCard'
+import { KanbanCard } from './KanbanCard'
 
 interface DraggableCardProps {
   id: UniqueIdentifier

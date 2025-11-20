@@ -1,5 +1,5 @@
 export type {
-  OfficeFlyoutMenuActions,
-  OfficeFlyoutMenuState,
-} from './useOfficeFlyoutMenu'
-export { useOfficeFlyoutMenu } from './useOfficeFlyoutMenu'
+  OfficePopoverMenuActions,
+  OfficePopoverMenuState,
+} from './useOfficePopoverMenu'
+export { useOfficePopoverMenu } from './useOfficePopoverMenu'

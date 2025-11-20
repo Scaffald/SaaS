@@ -36,7 +36,6 @@ export function AddressAutocomplete({
   debounceMs = 300,
   minLength = 2,
   maxResults = 5,
-  containerProps = {},
 }: AddressAutocompleteProps) {
   // Memoize config to prevent recreation on every render
   const providerConfig = useMemo(() => {

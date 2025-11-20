@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { DashboardWidget } from '@app/ui'
 import { Filter, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void

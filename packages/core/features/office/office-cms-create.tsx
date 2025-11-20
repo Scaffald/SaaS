@@ -12,7 +12,7 @@ export function OfficeCMSCreate() {
 
   const handleSubmit = async (data: WelcomeSlideCreate) => {
     await createSlide.mutateAsync(data)
-    router.push(ROUTES.OFFICE_CMS_WELCOME.path)
+    router.push(ROUTES.OFFICE.CMS.WELCOME.path)
   }
 
   return (

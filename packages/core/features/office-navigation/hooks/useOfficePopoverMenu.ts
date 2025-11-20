@@ -1,21 +1,25 @@
 import { usePathname } from '@app/core/utils/usePathname'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import type { ElementRef } from 'react'
+import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
+import type { Button } from 'tamagui'
 
-export interface OfficeFlyoutMenuState {
+type ButtonRef = ElementRef<typeof Button>
+
+export interface OfficePopoverMenuState {
   isOpen: boolean
   activeRoute: string
 }
 
-export interface OfficeFlyoutMenuActions {
+export interface OfficePopoverMenuActions {
   setIsOpen: (open: boolean) => void
   toggleMenu: () => void
-  triggerRef: React.RefObject<HTMLElement | null>
+  triggerRef: RefObject<ButtonRef>
 }
 
-export const useOfficeFlyoutMenu = (): OfficeFlyoutMenuState & OfficeFlyoutMenuActions => {
+export const useOfficePopoverMenu = (): OfficePopoverMenuState & OfficePopoverMenuActions => {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const triggerRef = useRef<HTMLElement>(null)
+  const triggerRef = useRef<ButtonRef>(null)
 
   // Active route detection
   const activeRoute = pathname || ''
@@ -51,3 +55,4 @@ export const useOfficeFlyoutMenu = (): OfficeFlyoutMenuState & OfficeFlyoutMenuA
     triggerRef,
   }
 }
+

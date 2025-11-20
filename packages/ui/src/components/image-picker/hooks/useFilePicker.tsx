@@ -2,12 +2,7 @@ import type * as DocumentPicker from 'expo-document-picker'
 import type * as ImagePicker from 'expo-image-picker/src/ImagePicker'
 import { useEvent } from 'tamagui'
 
-import type {
-  MediaTypeOptionsString,
-  OnPickType,
-  UseFilePickerControl,
-  UseFilePickerProps,
-} from '../types'
+import type { MediaTypeOptionsString, UseFilePickerControl, UseFilePickerProps } from '../types'
 import { useDropZone } from './useDropZone'
 
 type _NativeFiles<MT extends MediaTypeOptionsString[]> = MT[number] extends 'Images'

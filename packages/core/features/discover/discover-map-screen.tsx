@@ -12,7 +12,6 @@ import {
   List as ListIcon,
   Map as MapIcon,
   RotateCcw,
-  Search,
   SlidersHorizontal,
   X,
 } from '@tamagui/lucide-icons'
@@ -226,11 +225,18 @@ export const DiscoverMapScreen = () => {
     }
 
     // Update pin states based on cluster membership
+    // Only update if cluster ID actually changed to prevent infinite loops
     for (const pin of mapPins) {
-      const clusterId = pinToClusterMap.get(pin.id)
-      setPinCluster(pin.id, clusterId)
+      const newClusterId = pinToClusterMap.get(pin.id)
+      const currentState = pinStates.get(pin.id)
+      const currentClusterId = currentState?.clusterId
+
+      // Only call setPinCluster if the cluster ID actually changed
+      if (newClusterId !== currentClusterId) {
+        setPinCluster(pin.id, newClusterId)
+      }
     }
-  }, [clusters, mapPins, setPinCluster])
+  }, [clusters, mapPins, setPinCluster, pinStates])
 
   // Handle cluster changes from MapContainer
   const handleClustersChange = useCallback((newClusters: ClusterInfo[]) => {

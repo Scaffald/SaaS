@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { FC } from 'react'
 import { PanResponder } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {

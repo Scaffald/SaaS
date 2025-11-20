@@ -102,7 +102,7 @@ export function SkillSearchModal({
   onSelectSkill,
   onUpdateSkill,
   onSearchParents,
-  onGetChildren,
+  onGetChildren: _onGetChildren,
   isSearching = false,
   existingSkillIds = [],
 }: SkillSearchModalProps) {

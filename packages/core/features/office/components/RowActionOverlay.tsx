@@ -1,6 +1,6 @@
-import { Copy, Eye, Pencil, Trash2, X } from '@tamagui/lucide-icons'
+import { Eye, Pencil, X } from '@tamagui/lucide-icons'
 import { useEffect, useRef } from 'react'
-import { Button, XStack, YStack } from 'tamagui'
+import { Button, XStack } from 'tamagui'
 import { DeleteButton } from './DeleteButton'
 import { DuplicateButton } from './DuplicateButton'
 

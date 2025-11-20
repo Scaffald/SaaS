@@ -133,6 +133,6 @@ export function setup() {
 /**
  * Teardown function (runs once after all VUs)
  */
-export function teardown(data) {
+export function teardown() {
   console.log('Load test complete!')
 }

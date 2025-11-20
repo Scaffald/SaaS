@@ -7,6 +7,27 @@ import { useExperienceEdit } from './contexts/experience-edit-context'
 import { formatDateRange } from './utils/date-formatting'
 
 /**
+ * Experience entry from API response
+ * Based on experienceEntrySchema from the router
+ */
+type ExperienceEntry = {
+  id?: string
+  user_id?: string
+  organization_id?: string | null
+  job_title: string
+  company_name: string
+  employment_type?: string | null
+  location?: string | object | null
+  is_remote: boolean
+  start_date?: string | null
+  end_date?: string | null
+  is_current: boolean
+  description?: string | null
+  created_at?: string
+  updated_at?: string
+}
+
+/**
  * Location formatting helper
  */
 function formatLocationForDisplay(
@@ -98,8 +119,7 @@ export function ProfileExperienceRight() {
         />
       ) : (
         <YStack gap="$3">
-          {/* biome-ignore lint/suspicious/noExplicitAny: tRPC types not yet generated */}
-          {experienceEntries.map((exp: any) => {
+          {(experienceEntries as ExperienceEntry[]).map((exp) => {
             const locationDisplay = formatLocationForDisplay(exp.location, exp.is_remote || false)
 
             return (

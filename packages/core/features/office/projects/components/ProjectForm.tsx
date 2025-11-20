@@ -2,7 +2,7 @@ import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { Sheet } from '@app/ui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { Check } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
@@ -119,7 +119,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           location_visibility_override: formData.location_visibility_override,
         })
         toast.show('Project created successfully', { variant: 'success' })
-        router.push(ROUTES.OFFICE_CMS_PROJECTS.path)
+        router.push(ROUTES.OFFICE.CMS.PROJECTS.path)
       } else if (projectId) {
         await updateMutation.mutateAsync({
           id: projectId,

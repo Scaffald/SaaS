@@ -1,4 +1,4 @@
-import { Input, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
+import { Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Adapt, Label, Select } from 'tamagui'

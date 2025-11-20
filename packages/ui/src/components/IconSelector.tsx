@@ -137,7 +137,7 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
             <XStack flexWrap="wrap" gap="$1" p="$2">
               {filteredIcons.map((iconName) => {
                 const IconComponent = (
-                  LucideIcons as Record<string, React.ComponentType<{ size?: number }>>
+                  LucideIcons as Record<string, ComponentType<{ size?: number }>>
                 )[iconName]
                 const isSelected = iconName === value
 

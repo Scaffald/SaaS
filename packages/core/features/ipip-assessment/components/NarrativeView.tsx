@@ -1,5 +1,4 @@
 import type {
-  IPIPDomain,
   IPIPResults,
   IPIPScores,
 } from '@app/core/features/personality-assessment/lib/ipip'

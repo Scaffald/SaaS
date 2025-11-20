@@ -1,9 +1,8 @@
 import { api } from '@app/core/utils/api'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
-import type { InquiryCreateInput, InquirySectionName } from '@app/schemas'
-import { Button, ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
-import { Check, Pencil, X } from '@tamagui/lucide-icons'
-import { useMemo } from 'react'
+import type { InquirySectionName } from '@app/schemas'
+import { ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
+import { type ReactNode, useMemo } from 'react'
 import { Card } from 'tamagui'
 import { InquiryCommentThread } from './InquiryCommentThread'
 
@@ -156,7 +155,7 @@ export function InquiryViewOrganization({
   }: {
     title: string
     sectionName: InquirySectionName
-    children: React.ReactNode
+    children: ReactNode
   }) => {
     const section = sections.find(
       (s: { section_name: InquirySectionName }) => s.section_name === sectionName

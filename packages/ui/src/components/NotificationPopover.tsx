@@ -1,3 +1,4 @@
+import { Popover } from '@app/ui'
 import { AlertCircle, Bell, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
@@ -5,7 +6,6 @@ import { type ElementRef, useCallback, useEffect, useRef, useState } from 'react
 import {
   Button,
   Card,
-  Popover,
   ScrollView,
   Separator,
   Spinner,
@@ -69,7 +69,7 @@ function Pill({ label, bg, color }: PillProps) {
   )
 }
 
-interface NotificationDropdownProps {
+interface NotificationPopoverProps {
   /**
    * Array of notifications to display
    */
@@ -152,17 +152,17 @@ function getNotificationColor(severity: NotificationItem['severity']) {
 }
 
 /**
- * NotificationDropdown component
- * Displays notifications in a dropdown popover from the header bell icon
+ * NotificationPopover component
+ * Displays notifications in a popover from the header bell icon
  * Replaces the previous NotificationsActionSheet component
  */
-export function NotificationDropdown({
+export function NotificationPopover({
   notifications,
   unreadCount,
   isLoading = false,
   onNotificationClick,
   onMarkAsRead,
-}: NotificationDropdownProps) {
+}: NotificationPopoverProps) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const triggerRef = useRef<ButtonRef>(null)
@@ -189,7 +189,7 @@ export function NotificationDropdown({
         router.push(notification.ctaUrl as Href)
       }
 
-      // Close dropdown
+      // Close popover
       setOpen(false)
     },
     [onNotificationClick, onMarkAsRead, router]
@@ -263,18 +263,9 @@ export function NotificationDropdown({
       <Popover.Content
         role="menu"
         aria-labelledby="notifications-title"
-        rounded="$4"
-        p={0}
-        maxH={400}
-        elevate
-        borderWidth={1}
-        borderColor="$borderColor"
-        bg="$background"
         animation="quick"
         enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
-        width="calc(100vw - 32px)"
-        $md={{ width: 360 }}
       >
         {/* Header */}
         <XStack
