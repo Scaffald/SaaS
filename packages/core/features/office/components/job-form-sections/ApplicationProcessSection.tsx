@@ -1,7 +1,7 @@
-import { Button, Input, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
-import { Check, Plus, X } from '@tamagui/lucide-icons'
+import { Button, Input, ResponsiveSelect, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
+import { Plus, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Adapt, Card, Label, Select, Switch } from 'tamagui'
+import { Card, Label, Switch } from 'tamagui'
 
 interface CapabilityQuestion {
   name: string
@@ -293,7 +293,7 @@ export function ApplicationProcessSection({
                 {/* Question Type */}
                 <YStack gap="$2">
                   <Label>Question Type *</Label>
-                  <Select
+                  <ResponsiveSelect
                     value={newQuestion.type || 'boolean'}
                     onValueChange={(type) =>
                       setNewQuestion({
@@ -301,43 +301,13 @@ export function ApplicationProcessSection({
                         type: type as 'boolean' | 'number' | 'text',
                       })
                     }
-                  >
-                    <Select.Trigger>
-                      <Select.Value placeholder="Select type" />
-                    </Select.Trigger>
-                    <Adapt when="sm" platform="touch">
-                      <Sheet modal dismissOnSnapToBottom>
-                        <Sheet.Frame>
-                          <Sheet.ScrollView>
-                            <Adapt.Contents />
-                          </Sheet.ScrollView>
-                        </Sheet.Frame>
-                        <Sheet.Overlay />
-                      </Sheet>
-                    </Adapt>
-                    <Select.Content zIndex={200000}>
-                      <Select.Viewport>
-                        <Select.Item value="boolean" index={0}>
-                          <Select.ItemText>Yes/No</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item value="number" index={1}>
-                          <Select.ItemText>Numeric</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item value="text" index={2}>
-                          <Select.ItemText>Text</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select>
+                    placeholder="Select type"
+                    options={[
+                      { value: 'boolean', label: 'Yes/No' },
+                      { value: 'number', label: 'Numeric' },
+                      { value: 'text', label: 'Text' },
+                    ]}
+                  />
                 </YStack>
 
                 {/* Unit (for number type) */}

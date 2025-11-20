@@ -1,6 +1,6 @@
 import { Table } from '@app/ui'
 import { useMemo } from 'react'
-import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack } from 'tamagui'
 import {
   useDocumentDownloadUrl,
   useDocumentUploadSession,

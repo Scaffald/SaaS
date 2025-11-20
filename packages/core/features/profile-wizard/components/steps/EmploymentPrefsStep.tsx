@@ -1,9 +1,9 @@
 import { ControlledAddressForm } from '@app/core/forms'
-import { Sheet } from '@app/ui'
+import { ResponsiveSelect } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Adapt, Button, Input, Paragraph, Select, Text, XStack, YStack } from 'tamagui'
+import { Input, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
 import type { EmploymentPreferencesStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -180,34 +180,15 @@ export function EmploymentPrefsStep({
             control={control}
             name="availability"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <Select.Trigger>
-                  <Select.Value placeholder="Select availability" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet
-                    modal
-                    dismissOnSnapToBottom
-                    animationConfig={{ type: 'spring', damping: 20, mass: 1, stiffness: 250 }}
-                  >
-                    <Sheet.Frame>
-                      <Sheet.ScrollView />
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    {AVAILABILITY_OPTIONS.map((option, index) => (
-                      <Select.Item key={option.value} value={option.value} index={index}>
-                        <Select.ItemText>{option.label}</Select.ItemText>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+              <ResponsiveSelect
+                value={field.value || ''}
+                onValueChange={field.onChange}
+                placeholder="Select availability"
+                options={AVAILABILITY_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+              />
             )}
           />
         </YStack>
@@ -235,34 +216,15 @@ export function EmploymentPrefsStep({
           control={control}
           name="remotePreference"
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <Select.Trigger>
-                <Select.Value placeholder="Select preferred environment" />
-              </Select.Trigger>
-              <Adapt when="sm" platform="touch">
-                <Sheet
-                  modal
-                  dismissOnSnapToBottom
-                  animationConfig={{ type: 'spring', damping: 20, mass: 1, stiffness: 250 }}
-                >
-                  <Sheet.Frame>
-                    <Sheet.ScrollView />
-                  </Sheet.Frame>
-                  <Sheet.Overlay />
-                </Sheet>
-              </Adapt>
-              <Select.Content>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  {WORK_MODE_OPTIONS.map((option, index) => (
-                    <Select.Item key={option.value} value={option.value} index={index}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                    </Select.Item>
-                  ))}
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+            <ResponsiveSelect
+              value={field.value || ''}
+              onValueChange={field.onChange}
+              placeholder="Select preferred environment"
+              options={WORK_MODE_OPTIONS.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+            />
           )}
         />
       </YStack>

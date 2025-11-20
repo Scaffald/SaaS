@@ -4,8 +4,6 @@ import {
   type FieldPath,
   type FieldValues,
   type PathValue,
-  type UseFormSetValue,
-  type UseFormTrigger,
   useWatch,
 } from 'react-hook-form'
 import { Text, YStack } from 'tamagui'

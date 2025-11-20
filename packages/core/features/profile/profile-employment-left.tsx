@@ -18,12 +18,12 @@ import {
   ToggleCard,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Car, DollarSign, Flag, MapPin, Plane, Shield } from '@tamagui/lucide-icons'
+import { Calendar, Car, Flag, MapPin, Plane, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { Platform } from 'react-native'
 import { type Control, Controller, useController, useForm } from 'react-hook-form'
-import { useWindowDimensions } from 'react-native'
-import { AnimatePresence, H4, Input, Label, Spinner, Text, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Input, Label, Spinner, Text, XStack, YStack } from 'tamagui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
   completeProfileSync,
@@ -246,7 +246,12 @@ export function ProfileEmploymentLeft() {
 
   // Browser navigation guard - prevent data loss on page close/navigation
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (Platform.OS !== 'web') {
+      return
+    }
+    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') {
+      return
+    }
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {

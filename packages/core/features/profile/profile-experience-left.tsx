@@ -6,27 +6,14 @@ import {
   CustomCheckbox,
   DashboardWidget,
   MonthYearPicker,
-  Sheet,
+  ResponsiveSelect,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, Check, CheckCircle, ChevronDown, Plus, X } from '@tamagui/lucide-icons'
+import { AlertTriangle, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import {
-  Adapt,
-  H4,
-  Input,
-  Label,
-  Select,
-  Spinner,
-  Text,
-  TextArea,
-  useWindowDimensions,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { H4, Input, Label, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import {
   CAREER_LEVEL_OPTIONS,
   createNewExperienceEntry,
@@ -57,7 +44,6 @@ type ExperienceEntry = {
   updated_at?: string
 }
 import { useExperienceEdit } from './contexts/experience-edit-context'
-import { formatDateRange } from './utils/date-formatting'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
   completeProfileSync,
@@ -86,8 +72,6 @@ interface SaveExperienceContext {
 export function ProfileExperienceLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
-  const { width } = useWindowDimensions()
-  const isMobile = width < 640
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
   const { editingEntryId, cancelEditing } = useExperienceEdit()
@@ -360,48 +344,15 @@ export function ProfileExperienceLeft() {
               name="career_level"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || ''} onValueChange={field.onChange}>
-                  <Select.Trigger iconAfter={ChevronDown}>
-                    <Select.Value placeholder="Select career level" />
-                  </Select.Trigger>
-
-                  <Adapt when={isMobile} platform="touch">
-                    <Sheet
-                      native
-                      modal
-                      dismissOnSnapToBottom
-                      animationConfig={{
-                        type: 'spring',
-                        damping: 20,
-                        mass: 1.2,
-                        stiffness: 250,
-                      }}
-                    >
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay
-                        animation="lazy"
-                        enterStyle={{ opacity: 0 }}
-                        exitStyle={{ opacity: 0 }}
-                      />
-                    </Sheet>
-                  </Adapt>
-
-                  <Select.Content>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      {CAREER_LEVEL_OPTIONS.map((level) => (
-                        <Select.Item key={level} value={level} index={0}>
-                          <Select.ItemText>{level}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                <ResponsiveSelect
+                  value={field.value || ''}
+                  onValueChange={field.onChange}
+                  placeholder="Select career level"
+                  options={CAREER_LEVEL_OPTIONS.map((level) => ({
+                    value: level,
+                    label: level,
+                  }))}
+                />
               )}
             />
           </YStack>
@@ -491,48 +442,15 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.employment_type`}
                     control={control}
                     render={({ field }) => (
-                      <Select value={field.value || ''} onValueChange={field.onChange}>
-                        <Select.Trigger iconAfter={ChevronDown}>
-                          <Select.Value placeholder="Select type" />
-                        </Select.Trigger>
-
-                        <Adapt when={isMobile} platform="touch">
-                          <Sheet
-                            native
-                            modal
-                            dismissOnSnapToBottom
-                            animationConfig={{
-                              type: 'spring',
-                              damping: 20,
-                              mass: 1.2,
-                              stiffness: 250,
-                            }}
-                          >
-                            <Sheet.Frame>
-                              <Sheet.ScrollView>
-                                <Adapt.Contents />
-                              </Sheet.ScrollView>
-                            </Sheet.Frame>
-                            <Sheet.Overlay
-                              animation="lazy"
-                              enterStyle={{ opacity: 0 }}
-                              exitStyle={{ opacity: 0 }}
-                            />
-                          </Sheet>
-                        </Adapt>
-
-                        <Select.Content>
-                          <Select.ScrollUpButton />
-                          <Select.Viewport>
-                            {EMPLOYMENT_TYPE_OPTIONS.map((type) => (
-                              <Select.Item key={type} value={type} index={0}>
-                                <Select.ItemText>{type}</Select.ItemText>
-                              </Select.Item>
-                            ))}
-                          </Select.Viewport>
-                          <Select.ScrollDownButton />
-                        </Select.Content>
-                      </Select>
+                      <ResponsiveSelect
+                        value={field.value || ''}
+                        onValueChange={field.onChange}
+                        placeholder="Select type"
+                        options={EMPLOYMENT_TYPE_OPTIONS.map((type) => ({
+                          value: type,
+                          label: type,
+                        }))}
+                      />
                     )}
                   />
                 </YStack>

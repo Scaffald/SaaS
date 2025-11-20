@@ -2,7 +2,7 @@ import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-ico
 import type { ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack, YStack, useWindowDimensions } from 'tamagui'
+import { Paragraph, Text, XStack, useWindowDimensions } from 'tamagui'
 import { CardBadges } from './CardBadges'
 import { CardHeader } from './CardHeader'
 import { CardMetadata } from './CardMetadata'
@@ -80,8 +80,8 @@ export const ProfileCard = memo(
     ) => {
       // Use window dimensions for text truncation behavior
       // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
-      const { width } = useWindowDimensions()
-      const titleNumberOfLines = width <= 800 ? 3 : 2
+      const dimensions = useWindowDimensions()
+      const titleNumberOfLines = dimensions.width <= 800 ? 3 : 2
       // Build metadata items
       const metadataItems: MetadataItem[] = []
 

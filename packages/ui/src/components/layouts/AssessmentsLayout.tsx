@@ -1,53 +1,48 @@
 import type { ReactNode } from 'react'
 import { ScrollView, XStack, YStack } from 'tamagui'
+
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
-import { ProfileTabs } from '../navigation/ProfileTabs'
+import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
 
-type ProfileLayoutProps = {
-  rightContent: ReactNode
-  leftContent: ReactNode
-  /** Whether to show tab navigation (default: true) */
+type AssessmentsLayoutProps = {
+  leftContent?: ReactNode
+  rightContent?: ReactNode
   showTabs?: boolean
-  /** Whether to show breadcrumb navigation (default: true) */
   showBreadcrumb?: boolean
-  /** Manual breadcrumb items to override auto-generation */
   breadcrumbItems?: BreadcrumbItem[]
-  /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
 }
 
-export const ProfileLayout = ({
-  rightContent,
+export const AssessmentsLayout = ({
   leftContent,
+  rightContent,
   showTabs = true,
   showBreadcrumb = false,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
-}: ProfileLayoutProps) => {
-  // Auto-generate breadcrumbs if enabled and no manual override
+}: AssessmentsLayoutProps) => {
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
     customItems: breadcrumbItems,
   })
 
-  // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
+  const hasLeftContent = Boolean(leftContent)
+  const hasRightContent = Boolean(rightContent)
+  const hasBothColumns = hasLeftContent && hasRightContent
 
   return (
     <ScrollView flex={1} bg="$color3" showsVerticalScrollIndicator={false}>
       <YStack gap="$3" pt="$3" pb="$5">
-        {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <XStack px="$2" pt="$3" $md={{ px: '$7' }}>
             <Breadcrumb items={displayBreadcrumbs} />
           </XStack>
         )}
 
-        {/* Tab Navigation - positioned at top */}
-        {showTabs && <ProfileTabs mx="$7" mt="$3" />}
+        {showTabs && <AssessmentsTabs mx="$7" mt="$3" />}
 
-        {/* Content Area - Responsive two-column layout */}
         <XStack
           gap="$3"
           px="$3"
@@ -60,24 +55,28 @@ export const ProfileLayout = ({
             flexDirection: 'row',
           }}
         >
-          <YStack
-            width="100%"
-            $md={{
-              flex: 3,
-              minW: 300,
-            }}
-          >
-            {leftContent}
-          </YStack>
-          <YStack
-            width="100%"
-            $md={{
-              flex: 2,
-              minW: 300,
-            }}
-          >
-            {rightContent}
-          </YStack>
+          {hasLeftContent && (
+            <YStack
+              width="100%"
+              $md={{
+                flex: hasBothColumns ? 3 : 1,
+                minW: hasBothColumns ? 300 : undefined,
+              }}
+            >
+              {leftContent}
+            </YStack>
+          )}
+          {hasRightContent && (
+            <YStack
+              width="100%"
+              $md={{
+                flex: hasBothColumns ? 2 : 1,
+                minW: hasBothColumns ? 300 : undefined,
+              }}
+            >
+              {rightContent}
+            </YStack>
+          )}
         </XStack>
       </YStack>
     </ScrollView>

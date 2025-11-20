@@ -4,6 +4,7 @@ import {
   Button,
   CustomCheckbox,
   Input,
+  ResponsiveSelect,
   ScrollView,
   Separator,
   Sheet,
@@ -11,12 +12,12 @@ import {
   XStack,
   YStack,
 } from '@app/ui'
-import { Check, Info } from '@tamagui/lucide-icons'
+import { Info } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, FormProvider } from 'react-hook-form'
 import { Platform } from 'react-native'
-import { Adapt, Select, Switch, TextArea } from 'tamagui'
+import { Switch, TextArea } from 'tamagui'
 import { useInquiryEdit } from '../hooks/useInquiryEdit'
 import { useInquiryForm } from '../hooks/useInquiryForm'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
@@ -471,46 +472,18 @@ export function InquiryCreateForm({
 
                   <XStack gap="$2" $sm={{ flexDirection: 'column' }}>
                     <YStack flex={1}>
-                      <Select
-                        value={selectedTemplateId ?? undefined}
+                      <ResponsiveSelect
+                        value={selectedTemplateId || ''}
                         onValueChange={setSelectedTemplateId}
-                      >
-                        <Select.Trigger disabled={templates.length === 0 || isTemplatesLoading}>
-                          <Select.Value
-                            placeholder={
-                              templates.length === 0 ? 'No templates yet' : 'Choose a template'
-                            }
-                          />
-                        </Select.Trigger>
-                        <Adapt when="sm" platform="touch">
-                          <Sheet modal dismissOnSnapToBottom>
-                            <Sheet.Frame>
-                              <Sheet.ScrollView>
-                                <Adapt.Contents />
-                              </Sheet.ScrollView>
-                            </Sheet.Frame>
-                            <Sheet.Overlay />
-                          </Sheet>
-                        </Adapt>
-                        <Select.Content zIndex={200000}>
-                          <Select.ScrollUpButton />
-                          <Select.Viewport>
-                            {templateOptions.map((template) => (
-                              <Select.Item
-                                key={template.id}
-                                value={template.id}
-                                index={template.index}
-                              >
-                                <Select.ItemText>{template.name}</Select.ItemText>
-                                <Select.ItemIndicator marginLeft="auto">
-                                  <Check size={16} />
-                                </Select.ItemIndicator>
-                              </Select.Item>
-                            ))}
-                          </Select.Viewport>
-                          <Select.ScrollDownButton />
-                        </Select.Content>
-                      </Select>
+                        placeholder={
+                          templates.length === 0 ? 'No templates yet' : 'Choose a template'
+                        }
+                        disabled={templates.length === 0 || isTemplatesLoading}
+                        options={templateOptions.map((template) => ({
+                          value: template.id,
+                          label: template.name,
+                        }))}
+                      />
                     </YStack>
 
                     <Button
@@ -734,37 +707,15 @@ export function InquiryCreateForm({
                           control={control}
                           name="workingHoursTimezone"
                           render={({ field }) => (
-                            <Select value={field.value} onValueChange={field.onChange}>
-                              <Select.Trigger>
-                                <Select.Value placeholder="Time zone" />
-                              </Select.Trigger>
-                              <Adapt when="sm" platform="touch">
-                                <Sheet modal dismissOnSnapToBottom>
-                                  <Sheet.Frame>
-                                    <Sheet.ScrollView>
-                                      <Adapt.Contents />
-                                    </Sheet.ScrollView>
-                                  </Sheet.Frame>
-                                  <Sheet.Overlay />
-                                </Sheet>
-                              </Adapt>
-                              <Select.Content zIndex={200000}>
-                                <Select.Viewport>
-                                  {TIMEZONE_OPTIONS.map((option, index) => (
-                                    <Select.Item
-                                      key={option.value}
-                                      value={option.value}
-                                      index={index}
-                                    >
-                                      <Select.ItemText>{option.label}</Select.ItemText>
-                                      <Select.ItemIndicator marginLeft="auto">
-                                        <Check size={16} />
-                                      </Select.ItemIndicator>
-                                    </Select.Item>
-                                  ))}
-                                </Select.Viewport>
-                              </Select.Content>
-                            </Select>
+                            <ResponsiveSelect
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                              placeholder="Time zone"
+                              options={TIMEZONE_OPTIONS.map((option) => ({
+                                value: option.value,
+                                label: option.label,
+                              }))}
+                            />
                           )}
                         />
                       </YStack>
@@ -964,37 +915,15 @@ export function InquiryCreateForm({
                           control={control}
                           name="rateType"
                           render={({ field }) => (
-                            <Select value={field.value} onValueChange={field.onChange}>
-                              <Select.Trigger>
-                                <Select.Value placeholder="Type" />
-                              </Select.Trigger>
-                              <Adapt when="sm" platform="touch">
-                                <Sheet modal dismissOnSnapToBottom>
-                                  <Sheet.Frame>
-                                    <Sheet.ScrollView>
-                                      <Adapt.Contents />
-                                    </Sheet.ScrollView>
-                                  </Sheet.Frame>
-                                  <Sheet.Overlay />
-                                </Sheet>
-                              </Adapt>
-                              <Select.Content zIndex={200000}>
-                                <Select.Viewport>
-                                  {RATE_TYPE_OPTIONS.map((option, index) => (
-                                    <Select.Item
-                                      key={option.value}
-                                      value={option.value}
-                                      index={index}
-                                    >
-                                      <Select.ItemText>{option.label}</Select.ItemText>
-                                      <Select.ItemIndicator marginLeft="auto">
-                                        <Check size={16} />
-                                      </Select.ItemIndicator>
-                                    </Select.Item>
-                                  ))}
-                                </Select.Viewport>
-                              </Select.Content>
-                            </Select>
+                            <ResponsiveSelect
+                              value={field.value || ''}
+                              onValueChange={field.onChange}
+                              placeholder="Type"
+                              options={RATE_TYPE_OPTIONS.map((option) => ({
+                                value: option.value,
+                                label: option.label,
+                              }))}
+                            />
                           )}
                         />
                       </YStack>

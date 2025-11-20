@@ -3,15 +3,15 @@ import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { useDebounce } from '@app/core/utils/useDebounce'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Check, ChevronDown, RefreshCcw } from '@tamagui/lucide-icons'
+import { RefreshCcw } from '@tamagui/lucide-icons'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
+import { ResponsiveSelect } from '@app/ui'
 import {
   Button,
   Card,
   type GetThemeValueForKey,
-  Select,
   Spinner,
   Tabs,
   Text,
@@ -306,45 +306,24 @@ export function IdVerificationAdminPage({
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Organization
           </Text>
-          <Select
+          <ResponsiveSelect
             value={selectedOrganizationId ?? '__all__'}
             onValueChange={handleOrganizationChange}
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value
-                placeholder={
-                  selectedOrganizationId
-                    ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
-                      'Select organization')
-                    : 'All organizations'
-                }
-              />
-            </Select.Trigger>
-            <Select.Content zIndex={200_000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Organizations</Select.Label>
-                  <Select.Item value="__all__" index={0}>
-                    <Select.ItemText>All organizations</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                  {organizations.map((org, index) => (
-                    <Select.Item key={org.id as string} value={org.id as string} index={index + 1}>
-                      <Select.ItemText>{(org.name as string) ?? 'Untitled org'}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder={
+              selectedOrganizationId
+                ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
+                  'Select organization')
+                : 'All organizations'
+            }
+            label="Organization"
+            options={[
+              { value: '__all__', label: 'All organizations' },
+              ...organizations.map((org) => ({
+                value: org.id as string,
+                label: (org.name as string) ?? 'Untitled org',
+              })),
+            ]}
+          />
           {isLoadingOrganizations ? (
             <XStack gap="$2" items="center">
               <Spinner size="small" />

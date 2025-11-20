@@ -1,9 +1,15 @@
 import { api } from '@app/core/utils/api'
-import { type SaveStatus, SaveStatusIndicator, SavingModal, Sheet, SkeletonForm } from '@app/ui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import {
+  type SaveStatus,
+  SaveStatusIndicator,
+  SavingModal,
+  SkeletonForm,
+  ResponsiveSelect,
+} from '@app/ui'
+import { Check } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Adapt, Button, Select, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import { InlineSkillSearch, ProfileFormPanel } from './components'
 import { useProfileSkillsContext } from './profile-skills-context'
 
@@ -42,24 +48,43 @@ export function ProfileSkillsLeft() {
     setHasUnsavedChanges(isAddingSkill || isRemovingSkill)
   }, [isAddingSkill, isRemovingSkill])
 
-  // Track save status from context mutation
+  // Track when mutations start - set status to 'saving'
   useEffect(() => {
     if (isAddingSkill || isRemovingSkill) {
-      setSaveStatus('saving')
+      setSaveStatus((prevStatus) => {
+        // Only update if not already saving to avoid unnecessary updates
+        if (prevStatus !== 'saving') {
+          return 'saving'
+        }
+        return prevStatus
+      })
       setSaveError(undefined)
     }
   }, [isAddingSkill, isRemovingSkill])
 
-  // Track successful saves by monitoring when mutations complete
+  // Track when mutations complete - set status to 'saved' then 'idle'
   useEffect(() => {
-    if (!isAddingSkill && !isRemovingSkill && saveStatus === 'saving') {
-      setSaveStatus('saved')
-      setLastSavedAt(new Date())
-      setTimeout(() => {
+    if (!isAddingSkill && !isRemovingSkill) {
+      setSaveStatus((prevStatus) => {
+        // Only transition from 'saving' to 'saved'
+        if (prevStatus === 'saving') {
+          setLastSavedAt(new Date())
+          return 'saved'
+        }
+        return prevStatus
+      })
+    }
+  }, [isAddingSkill, isRemovingSkill])
+
+  // Reset status to idle after being saved for 3 seconds
+  useEffect(() => {
+    if (saveStatus === 'saved') {
+      const timeoutId = setTimeout(() => {
         setSaveStatus('idle')
       }, 3000)
+      return () => clearTimeout(timeoutId)
     }
-  }, [isAddingSkill, isRemovingSkill, saveStatus])
+  }, [saveStatus])
 
   // Browser navigation guard
   useEffect(() => {
@@ -165,59 +190,16 @@ export function ProfileSkillsLeft() {
         <Text fontSize="$2" color="$color11">
           Select your industry to search for relevant skills
         </Text>
-        <Select value={selectedIndustryId} onValueChange={handleIndustryChange} size="$4">
-          <Select.Trigger
-            width="100%"
-            iconAfter={ChevronDown}
-            cursor="pointer"
-            hoverStyle={{
-              borderColor: '$borderColorHover',
-              bg: '$backgroundHover',
-            }}
-            data-testid="primary-industry-select-trigger"
-          >
-            <Select.Value placeholder="Select an industry" />
-          </Select.Trigger>
-
-          <Adapt when="sm" platform="touch">
-            <Sheet
-              native
-              modal
-              dismissOnSnapToBottom
-              animationConfig={{
-                type: 'spring',
-                damping: 20,
-                mass: 1.2,
-                stiffness: 250,
-              }}
-            >
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay
-                animation="lazy"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-              />
-            </Sheet>
-          </Adapt>
-
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              {industries.map((industry, index) => {
-                return (
-                  <Select.Item key={industry.id} value={industry.id} index={index}>
-                    <Select.ItemText>{industry.name}</Select.ItemText>
-                  </Select.Item>
-                )
-              })}
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+        <ResponsiveSelect
+          value={selectedIndustryId || ''}
+          onValueChange={handleIndustryChange}
+          placeholder="Select an industry"
+          testID="primary-industry-select-trigger"
+          options={industries.map((industry) => ({
+            value: industry.id,
+            label: industry.name,
+          }))}
+        />
       </YStack>
 
       <Separator />

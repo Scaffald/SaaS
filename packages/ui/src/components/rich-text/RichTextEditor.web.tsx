@@ -264,12 +264,8 @@ export function RichTextEditor({
 
       {/* Editor Content */}
       {/* TipTap EditorContent requires a div wrapper (not a textarea) for its contenteditable implementation.
-          This is an architectural limitation of the TipTap library. The div is properly marked with
-          role="textbox" and aria-label for accessibility. */}
+          This is an architectural limitation of the TipTap library. */}
       <div
-        role="textbox"
-        aria-label="Rich text editor"
-        tabIndex={-1}
         style={{
           height: resolvedHeight,
           minHeight: resolvedHeight,
@@ -280,9 +276,15 @@ export function RichTextEditor({
           overflowY: 'auto',
         }}
         className={`rich-text-editor-container${disabled ? ' disabled' : ''}`}
-        onMouseDown={handleContainerPointerDown}
       >
-        <EditorContent editor={editor} />
+        <EditorContent
+          editor={editor}
+          role="textbox"
+          aria-label="Rich text editor"
+          aria-multiline="true"
+          tabIndex={-1}
+          onMouseDown={handleContainerPointerDown}
+        />
       </div>
 
       {/* Character Count */}

@@ -60,6 +60,30 @@ alwaysApply: true
 4. **Check git history** for context on bugs or issues
 5. **Use pnpm workspace commands** for package-specific operations
 
+## Post-Completion Code Quality (MANDATORY)
+
+### Linting Requirements
+**⚠️ REQUIRED**: After completing any work, ALWAYS run `pnpm lint:fix` and address any remaining warnings or errors before considering the work complete.
+
+### Workflow
+1. **Run `pnpm lint:fix`** after all code changes are complete
+2. **Review any remaining warnings or errors** that couldn't be auto-fixed
+3. **Address all remaining issues** - fix warnings, resolve errors, refactor as needed
+4. **DO NOT leave linting warnings or errors** - all issues must be resolved before work is considered complete
+5. **DO NOT use ignore comments** - fix the root cause instead (see React Imports and Code Quality rules)
+
+### When to Run
+- After implementing new features
+- After fixing bugs
+- After refactoring code
+- Before committing changes
+- After responding to review feedback
+
+### Integration with Other Checks
+- `pnpm lint:fix` fixes auto-fixable issues
+- `pnpm check` runs full validation (format, lint, type check) - use this for comprehensive validation
+- Both should pass before work is considered complete
+
 ## BrainGrid Integration (CRITICAL)
 
 ### Mandatory Task Status Updates

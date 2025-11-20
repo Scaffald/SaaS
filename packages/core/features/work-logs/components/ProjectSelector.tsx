@@ -1,6 +1,7 @@
-import { AlertCircle, ChevronDown, RefreshCw } from '@tamagui/lucide-icons'
+import { ResponsiveSelect } from '@app/ui'
+import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { memo, useMemo } from 'react'
-import { Button, Select, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export interface ProjectSelectorOrganization {
   id: string
@@ -66,7 +67,7 @@ export const ProjectSelector = memo(function ProjectSelector({
           <Text fontSize="$3" color="$color10">
             Organization
           </Text>
-          <Select
+          <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(nextValue) => {
               if (nextValue === 'all') {
@@ -75,31 +76,16 @@ export const ProjectSelector = memo(function ProjectSelector({
                 onOrganizationFilterChange(nextValue)
               }
             }}
-            disablePreventBodyScroll
+            placeholder="All organizations"
             size="$4"
-          >
-            <Select.Trigger bordered iconAfter={ChevronDown}>
-              <Select.Value placeholder="All organizations" />
-            </Select.Trigger>
-            <Select.Content zIndex={1_000_000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Organizations</Select.Label>
-                  <Select.Item index={0} value="all">
-                    <Select.ItemText>All organizations</Select.ItemText>
-                  </Select.Item>
-                  {organizations.map((organization, index) => (
-                    <Select.Item key={organization.id} index={index + 1} value={organization.id}>
-                      <Select.ItemText>{organization.name}</Select.ItemText>
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            options={[
+              { value: 'all', label: 'All organizations' },
+              ...organizations.map((organization) => ({
+                value: organization.id,
+                label: organization.name,
+              })),
+            ]}
+          />
         </YStack>
       )}
 
@@ -107,34 +93,17 @@ export const ProjectSelector = memo(function ProjectSelector({
         <Text fontSize="$3" color="$color10">
           Select a project to associate with this work log.
         </Text>
-        <Select value={value} onValueChange={onChange} size="$4" disablePreventBodyScroll>
-          <Select.Trigger
-            bordered
-            iconAfter={ChevronDown}
-            disabled={disabled || isLoading || filteredProjects.length === 0}
-          >
-            <Select.Value placeholder={isLoading ? 'Loading projects...' : 'Select a project'} />
-          </Select.Trigger>
-
-          <Select.Content zIndex={1_000_000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Projects</Select.Label>
-                {filteredProjects.map((project, index) => (
-                  <Select.Item key={project.id} index={index} value={project.id}>
-                    <Select.ItemText>
-                      {project.name}
-                      {project.isArchived ? ' (Archived)' : ''}
-                    </Select.ItemText>
-                    <Select.ItemIndicator />
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+        <ResponsiveSelect
+          value={value}
+          onValueChange={onChange}
+          placeholder={isLoading ? 'Loading projects...' : 'Select a project'}
+          size="$4"
+          disabled={disabled || isLoading || filteredProjects.length === 0}
+          options={filteredProjects.map((project) => ({
+            value: project.id,
+            label: `${project.name}${project.isArchived ? ' (Archived)' : ''}`,
+          }))}
+        />
       </YStack>
 
       {isLoading && (

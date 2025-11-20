@@ -1,8 +1,7 @@
 import { IdVerificationBadge } from '@app/core/features/id-verification'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
-import { useRouter } from 'expo-router'
+import { DashboardWidget, LoadingState, spacing, UIButton } from '@app/ui'
 import { Avatar, Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
 

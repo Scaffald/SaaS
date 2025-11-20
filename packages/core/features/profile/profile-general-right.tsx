@@ -1,6 +1,5 @@
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
-import { WorkLogVisibilitySettingsCard } from '@app/core/features/work-logs/components/WorkLogVisibilitySettingsCard'
-import { DashboardWidget, StackedCards, spacing } from '@app/ui'
+import { DashboardWidget, spacing } from '@app/ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { H3, H4, Text, YStack } from 'tamagui'

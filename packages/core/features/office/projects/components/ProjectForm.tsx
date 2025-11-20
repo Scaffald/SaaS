@@ -1,17 +1,14 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { Sheet } from '@app/ui'
-import { Check } from '@tamagui/lucide-icons'
+import { ResponsiveSelect } from '@app/ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import {
-  Adapt,
   Button,
   Card,
   Input,
-  Select,
   Spinner,
   Switch,
   Text,
@@ -154,38 +151,17 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           <YStack gap="$2">
             <Text fontWeight="600">Organization</Text>
             {organizationsData && (
-              <Select
+              <ResponsiveSelect
                 value={formData.organization_id}
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, organization_id: value }))
                 }
-              >
-                <Select.Trigger>
-                  <Select.Value placeholder="Select organization" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.Viewport>
-                    {organizationsData.map((org: (typeof organizationsData)[0], index: number) => (
-                      <Select.Item key={org.id} value={org.id} index={index}>
-                        <Select.ItemText>{org.name}</Select.ItemText>
-                        <Select.ItemIndicator marginLeft="auto">
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                </Select.Content>
-              </Select>
+                placeholder="Select organization"
+                options={organizationsData.map((org: (typeof organizationsData)[0]) => ({
+                  value: org.id,
+                  label: org.name,
+                }))}
+              />
             )}
           </YStack>
 
@@ -211,7 +187,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           <XStack gap="$4">
             <YStack gap="$2" flex={1}>
               <Text fontWeight="600">Status</Text>
-              <Select
+              <ResponsiveSelect
                 value={formData.status}
                 onValueChange={(value) => {
                   if (
@@ -223,33 +199,12 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                     setFormData((prev) => ({ ...prev, status: value }))
                   }
                 }}
-              >
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.Viewport>
-                    {STATUS_OPTIONS.map((option, index) => (
-                      <Select.Item key={option.value} value={option.value} index={index}>
-                        <Select.ItemText>{option.label}</Select.ItemText>
-                        <Select.ItemIndicator marginLeft="auto">
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                </Select.Content>
-              </Select>
+                placeholder="Select status"
+                options={STATUS_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+              />
             </YStack>
 
             <YStack gap="$2" flex={1}>
@@ -295,7 +250,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
 
               <YStack gap="$2">
                 <Text fontWeight="600">Visibility Level</Text>
-                <Select
+                <ResponsiveSelect
                   value={formData.location_visibility}
                   onValueChange={(value) => {
                     if (
@@ -307,33 +262,12 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                       setFormData((prev) => ({ ...prev, location_visibility: value }))
                     }
                   }}
-                >
-                  <Select.Trigger>
-                    <Select.Value />
-                  </Select.Trigger>
-                  <Adapt when="sm" platform="touch">
-                    <Sheet modal dismissOnSnapToBottom>
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay />
-                    </Sheet>
-                  </Adapt>
-                  <Select.Content zIndex={200000}>
-                    <Select.Viewport>
-                      {VISIBILITY_OPTIONS.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select>
+                  placeholder="Select visibility"
+                  options={VISIBILITY_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: option.label,
+                  }))}
+                />
                 <Text fontSize="$2" color="$gray10">
                   {formData.location_visibility === 'public' && 'Anyone can see exact locations'}
                   {formData.location_visibility === 'authenticated' &&

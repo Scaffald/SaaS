@@ -58,9 +58,8 @@ export function CertificationSearch({
 
   const handleSelect = (cert: Certification) => {
     onSelect(cert)
-    // Keep search query active (don't clear) to allow adding multiple certs
-    // setSearchQuery('')
-    // setShowResults(false)
+    setSearchQuery('')
+    setShowResults(false)
   }
 
   const filteredResults = searchResults.filter((cert) => !selectedIds.includes(cert.id))

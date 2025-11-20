@@ -203,16 +203,12 @@ export function ResponsiveSelect({
           {label}
         </Text>
       )}
-      <Select
-        value={value}
-        onValueChange={onValueChange}
-        disabled={disabled}
-        disablePreventBodyScroll
-      >
+      <Select value={value} onValueChange={onValueChange} disablePreventBodyScroll>
         <Select.Trigger
           testID={testID}
           size={size}
           iconAfter={ChevronDown}
+          disabled={disabled}
           borderColor={error ? '$red8' : '$borderColor'}
           {...triggerProps}
         >

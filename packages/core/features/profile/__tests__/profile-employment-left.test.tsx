@@ -1,12 +1,6 @@
 import type { EmploymentProfileFormData } from '@app/core/utils/api'
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native'
-import {
-  type ComponentPropsWithoutRef,
-  forwardRef,
-  type HTMLAttributes,
-  type ReactElement,
-  type ReactNode,
-} from 'react'
+import { type ComponentPropsWithoutRef, forwardRef, type ReactElement, type ReactNode } from 'react'
 import type { Mock } from 'vitest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 

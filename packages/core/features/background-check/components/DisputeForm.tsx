@@ -1,5 +1,5 @@
-import { type UploadSelection, UploadSurface } from '@app/ui'
-import { AlertCircle, Check, ChevronDown, Upload, X } from '@tamagui/lucide-icons'
+import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@app/ui'
+import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Controller, FormProvider, type UseFormReturn } from 'react-hook-form'
 import {
@@ -8,7 +8,6 @@ import {
   Fieldset,
   Input,
   Label,
-  Select,
   Separator,
   Text,
   TextArea,
@@ -104,41 +103,17 @@ export function DisputeForm({
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <YStack gap="$1">
                 <Label htmlFor="dispute-reason">What needs review?</Label>
-                <Select
-                  id="dispute-reason"
-                  value={value}
+                <ResponsiveSelect
+                  value={value || ''}
                   onValueChange={onChange}
-                  disablePreventBodyScroll
-                >
-                  <Select.Trigger
-                    iconAfter={ChevronDown}
-                    borderColor={error ? '$red8' : '$borderColor'}
-                  >
-                    <Select.Value placeholder="Select a reason" />
-                  </Select.Trigger>
-                  <Select.Content zIndex={100_000}>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      <Select.Group>
-                        <Select.Label>Reasons</Select.Label>
-                        {reasonOptions.map((option, index) => (
-                          <Select.Item key={option.value} value={option.value} index={index}>
-                            <Select.ItemText>{option.label}</Select.ItemText>
-                            <Select.ItemIndicator>
-                              <Check size={16} />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                        ))}
-                      </Select.Group>
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
-                {error ? (
-                  <Text fontSize="$2" color="$red10">
-                    {error.message}
-                  </Text>
-                ) : null}
+                  placeholder="Select a reason"
+                  label="What needs review?"
+                  error={error?.message}
+                  options={reasonOptions.map((option) => ({
+                    value: option.value,
+                    label: option.label,
+                  }))}
+                />
               </YStack>
             )}
           />

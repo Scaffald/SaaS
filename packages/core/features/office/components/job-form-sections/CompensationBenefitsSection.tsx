@@ -1,7 +1,6 @@
-import { Input, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { useState } from 'react'
-import { Adapt, Label, Select, TextArea } from 'tamagui'
+import { Label, TextArea } from 'tamagui'
 
 interface CompensationBenefitsSectionProps {
   benefitsSummary?: string
@@ -213,43 +212,15 @@ export function CompensationBenefitsSection({
       {/* Pay Frequency */}
       <YStack gap="$2">
         <Label>Pay frequency</Label>
-        <Select
+        <ResponsiveSelect
           value={localState.pay_frequency || ''}
           onValueChange={(value) => handleChange('pay_frequency', value || undefined)}
-        >
-          <Select.Trigger iconAfter={ChevronDown}>
-            <Select.Value placeholder="Select pay frequency" />
-          </Select.Trigger>
-
-          <Adapt when="sm" platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Pay Frequency</Select.Label>
-                {PAY_FREQUENCIES.map((freq, i) => (
-                  <Select.Item key={freq.value} index={i} value={freq.value}>
-                    <Select.ItemText>{freq.label}</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder="Select pay frequency"
+          options={PAY_FREQUENCIES.map((freq) => ({
+            value: freq.value,
+            label: freq.label,
+          }))}
+        />
       </YStack>
     </YStack>
   )

@@ -6,19 +6,16 @@ import {
   FieldError,
   MonthYearPicker,
   ResponsiveModal,
+  ResponsiveSelect,
   UniversityAutocomplete,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
-  Adapt,
   Input,
   Label,
-  Select,
-  Sheet,
   Spinner,
   Text,
   TextArea,
@@ -58,7 +55,7 @@ export function EducationEntryEditModal({
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EducationEntryFormValues | null>(null)
   const { width } = useWindowDimensions()
-  const isMobile = width < 640
+  const _isMobile = width < 640
   const toast = useToastController()
 
   // University search state
@@ -258,53 +255,17 @@ export function EducationEntryEditModal({
               name="degree_type"
               control={control}
               render={({ field }) => (
-                <Select
+                <ResponsiveSelect
                   value={field.value ?? ''}
                   onValueChange={(value) =>
                     field.onChange(value === '' ? undefined : (value as DegreeOption))
                   }
-                >
-                  <Select.Trigger iconAfter={ChevronDown}>
-                    <Select.Value placeholder="Select degree type" />
-                  </Select.Trigger>
-
-                  <Adapt when={isMobile} platform="touch">
-                    <Sheet
-                      native
-                      modal
-                      dismissOnSnapToBottom
-                      animationConfig={{
-                        type: 'spring',
-                        damping: 20,
-                        mass: 1.2,
-                        stiffness: 250,
-                      }}
-                    >
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay
-                        animation="lazy"
-                        enterStyle={{ opacity: 0 }}
-                        exitStyle={{ opacity: 0 }}
-                      />
-                    </Sheet>
-                  </Adapt>
-
-                  <Select.Content zIndex={200000}>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      {DEGREE_TYPE_OPTIONS.map((type, idx) => (
-                        <Select.Item key={type} value={type} index={idx}>
-                          <Select.ItemText>{type}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                  placeholder="Select degree type"
+                  options={DEGREE_TYPE_OPTIONS.map((type) => ({
+                    value: type,
+                    label: type,
+                  }))}
+                />
               )}
             />
             {/* Custom Degree Type Input (shown when "Other" is selected) */}

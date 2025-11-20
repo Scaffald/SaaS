@@ -5,8 +5,9 @@ import {
   TEAM_INVITATION_TTL_MIN,
 } from '@app/schemas'
 import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
+import { ResponsiveSelect } from '@app/ui'
 import { UserSearch } from '@app/ui/components/user/UserSearch'
-import { Check, ChevronDown, Mail, UserPlus } from '@tamagui/lucide-icons'
+import { Mail, UserPlus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -14,7 +15,6 @@ import {
   Input,
   Label,
   RadioGroup,
-  Select,
   Spinner,
   Text,
   TextArea,
@@ -222,37 +222,16 @@ export function TeamInviteModal({
           ) : roleOptions.length === 0 ? (
             <Text color="$color11">No roles are configured for this organization.</Text>
           ) : (
-            <Select
-              native
-              value={selectedRoleId || defaultRoleId || roleOptions[0]?.id}
+            <ResponsiveSelect
+              value={selectedRoleId || defaultRoleId || roleOptions[0]?.id || ''}
               onValueChange={setSelectedRoleId}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger iconAfter={ChevronDown} disabled={inviteMutation.isPending}>
-                <Select.Value placeholder="Select a team role">
-                  {roleOptions.find((role) => role.id === (selectedRoleId || defaultRoleId))
-                    ?.name ?? 'Select a team role'}
-                </Select.Value>
-                {inviteMutation.isPending ? <Spinner size="small" ml="$2" /> : null}
-              </Select.Trigger>
-              <Select.Content zIndex={1000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Team roles</Select.Label>
-                    {roleOptions.map((role, index) => (
-                      <Select.Item key={role.id} value={role.id} index={index}>
-                        <Select.ItemText>{role.name}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder="Select a team role"
+              disabled={inviteMutation.isPending}
+              options={roleOptions.map((role) => ({
+                value: role.id,
+                label: role.name,
+              }))}
+            />
           )}
         </YStack>
 

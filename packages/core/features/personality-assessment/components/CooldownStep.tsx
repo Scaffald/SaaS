@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from 'tamagui'
+import { Button, Progress, Text, YStack } from 'tamagui'
 import {
   getChoices,
   getQuestions,

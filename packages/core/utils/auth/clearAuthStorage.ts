@@ -2,6 +2,8 @@ import type { QueryClient } from '@tanstack/react-query'
 import { Platform } from 'react-native'
 import { supabase } from '../supabase/client'
 
+type CookieStoreDeleteTarget = string | { name: string; domain?: string; path?: string }
+
 /**
  * Comprehensive auth storage cleanup utility
  * Clears all authentication-related storage across platforms
@@ -124,6 +126,36 @@ async function clearWebStorage(): Promise<void> {
     // Clear sessionStorage
     sessionStorage.clear()
 
+    const cookieStoreApi = (globalThis as typeof globalThis & {
+      cookieStore?: {
+        delete: (options: CookieStoreDeleteTarget) => Promise<void>
+      }
+    }).cookieStore
+
+    let cookieStoreWarningLogged = false
+    const deleteCookie = async (cookieName: string) => {
+      if (!cookieStoreApi) {
+        if (!cookieStoreWarningLogged) {
+          console.warn(
+            '[clearAuthStorage] Cookie Store API not available; skipping cookie deletion'
+          )
+          cookieStoreWarningLogged = true
+        }
+        return
+      }
+
+      const targets: CookieStoreDeleteTarget[] = [cookieName]
+      const hostname = typeof window !== 'undefined' ? window.location.hostname : undefined
+      if (hostname) {
+        targets.push({ name: cookieName, path: '/', domain: hostname })
+        targets.push({ name: cookieName, path: '/', domain: `.${hostname}` })
+      }
+
+      for (const target of targets) {
+        await cookieStoreApi.delete(target)
+      }
+    }
+
     // Clear cookies (best effort - some may be httpOnly)
     const cookies = document.cookie.split(';')
     for (const cookie of cookies) {
@@ -137,10 +169,7 @@ async function clearWebStorage(): Promise<void> {
         name.includes('auth') ||
         name.includes('session')
       ) {
-        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`
-        // Try with leading dot for subdomain cookies
-        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.${window.location.hostname}`
+        await deleteCookie(name)
       }
     }
 

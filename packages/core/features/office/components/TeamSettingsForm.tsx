@@ -1,17 +1,15 @@
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check, ChevronDown, Info } from '@tamagui/lucide-icons'
+import { Info } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
+import { ResponsiveSelect } from '@app/ui'
 import {
-  Adapt,
   Button,
   Card,
-  Select,
   Separator,
-  Sheet,
   Spinner,
   Switch,
   Text,
@@ -247,50 +245,20 @@ export function TeamSettingsForm({
             control={control}
             name="defaultRoleId"
             render={({ field }) => (
-              <Select
+              <ResponsiveSelect
                 value={field.value ?? 'none'}
                 onValueChange={(value: string) => field.onChange(value === 'none' ? null : value)}
-              >
-                <Select.Trigger
-                  iconAfter={ChevronDown}
-                  disabled={!canEdit || updateMutation.isPending || isLoadingRoles}
-                >
-                  <Select.Value placeholder="Select a role" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Roles</Select.Label>
-                      <Select.Item value="none" index={0}>
-                        <Select.ItemText>Use organization default</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                      {roles.map((role, index) => (
-                        <Select.Item key={role.id} value={role.id} index={index + 1}>
-                          <Select.ItemText>{role.name}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+                placeholder="Select a role"
+                label="Default role for new members"
+                disabled={!canEdit || updateMutation.isPending || isLoadingRoles}
+                options={[
+                  { value: 'none', label: 'Use organization default' },
+                  ...roles.map((role) => ({
+                    value: role.id,
+                    label: role.name,
+                  })),
+                ]}
+              />
             )}
           />
         </YStack>

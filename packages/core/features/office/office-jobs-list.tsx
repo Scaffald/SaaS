@@ -1,11 +1,10 @@
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout, Sheet } from '@app/ui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { DashboardLayout, ResponsiveSelect } from '@app/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Adapt, Button, H2, Select, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, H2, Switch, Text, XStack, YStack } from 'tamagui'
 import { JobsKanbanBoard } from './components/JobsKanbanBoard'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
@@ -245,159 +244,60 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         <Text fontSize="$2" color="$color11">
           Status
         </Text>
-        <Select
+        <ResponsiveSelect
           value={statusFilter ?? 'all'}
           onValueChange={(value: string) => setStatusFilter(value === 'all' ? null : value)}
-        >
-          <Select.Trigger iconAfter={ChevronDown} size="$2">
-            <Select.Value placeholder="All statuses" />
-          </Select.Trigger>
-          <Adapt when="sm" platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Status</Select.Label>
-                <Select.Item value="all" index={0}>
-                  <Select.ItemText>All statuses</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="draft" index={1}>
-                  <Select.ItemText>Draft</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="open" index={2}>
-                  <Select.ItemText>Open</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="paused" index={3}>
-                  <Select.ItemText>Paused</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="closed" index={4}>
-                  <Select.ItemText>Closed</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder="All statuses"
+          size="$2"
+          options={[
+            { value: 'all', label: 'All statuses' },
+            { value: 'draft', label: 'Draft' },
+            { value: 'open', label: 'Open' },
+            { value: 'paused', label: 'Paused' },
+            { value: 'closed', label: 'Closed' },
+          ]}
+        />
       </XStack>
       {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
         <XStack gap="$2" items="center">
           <Text fontSize="$2" color="$color11">
             Organization
           </Text>
-          <Select
+          <ResponsiveSelect
             value={organizationFilter ?? 'all'}
             onValueChange={(value: string) => setOrganizationFilter(value === 'all' ? null : value)}
-          >
-            <Select.Trigger iconAfter={ChevronDown} size="$2">
-              <Select.Value placeholder="All organizations" />
-            </Select.Trigger>
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Organizations</Select.Label>
-                  <Select.Item value="all" index={0}>
-                    <Select.ItemText>All organizations</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                  {organizationsData.organizations.map(
-                    (org: (typeof organizationsData.organizations)[0], index: number) => (
-                      <Select.Item key={org.id} value={org.id} index={index + 1}>
-                        <Select.ItemText>{org.name}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    )
-                  )}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="All organizations"
+            size="$2"
+            options={[
+              { value: 'all', label: 'All organizations' },
+              ...organizationsData.organizations.map(
+                (org: (typeof organizationsData.organizations)[0]) => ({
+                  value: org.id,
+                  label: org.name,
+                })
+              ),
+            ]}
+          />
         </XStack>
       )}
       <XStack gap="$2" items="center">
         <Text fontSize="$2" color="$color11">
           Team
         </Text>
-        <Select
+        <ResponsiveSelect
           value={teamFilterSelectValue}
           onValueChange={(value: string) => setTeamFilter(value === 'all' ? null : value)}
-        >
-          <Select.Trigger iconAfter={ChevronDown} disabled={teamsLoading} size="$2">
-            <Select.Value placeholder={teamFilterPlaceholder} />
-          </Select.Trigger>
-          <Adapt when="sm" platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Teams</Select.Label>
-                <Select.Item value="all" index={0}>
-                  <Select.ItemText>All teams</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                {teams.map((team, index) => (
-                  <Select.Item key={team.id} value={team.id} index={index + 1}>
-                    <Select.ItemText>{team.name ?? 'Untitled Team'}</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder={teamFilterPlaceholder}
+          size="$2"
+          disabled={teamsLoading}
+          options={[
+            { value: 'all', label: 'All teams' },
+            ...teams.map((team) => ({
+              value: team.id,
+              label: team.name ?? 'Untitled Team',
+            })),
+          ]}
+        />
       </XStack>
       <XStack gap="$2" items="center">
         <Text fontSize="$2" color="$color11">
@@ -411,73 +311,20 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         <Text fontSize="$2" color="$color11">
           Sort
         </Text>
-        <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as SortOption)}>
-          <Select.Trigger iconAfter={ChevronDown} size="$2">
-            <Select.Value>
-              {sortBy === 'created_desc' && 'Newest first'}
-              {sortBy === 'created_asc' && 'Oldest first'}
-              {sortBy === 'title_asc' && 'Title A-Z'}
-              {sortBy === 'title_desc' && 'Title Z-A'}
-              {sortBy === 'status_asc' && 'Status A-Z'}
-              {sortBy === 'status_desc' && 'Status Z-A'}
-            </Select.Value>
-          </Select.Trigger>
-          <Adapt when="sm" platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Sort by</Select.Label>
-                <Select.Item value="created_desc" index={0}>
-                  <Select.ItemText>Newest first</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="created_asc" index={1}>
-                  <Select.ItemText>Oldest first</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="title_asc" index={2}>
-                  <Select.ItemText>Title A-Z</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="title_desc" index={3}>
-                  <Select.ItemText>Title Z-A</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="status_asc" index={4}>
-                  <Select.ItemText>Status A-Z</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                <Select.Item value="status_desc" index={5}>
-                  <Select.ItemText>Status Z-A</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+        <ResponsiveSelect
+          value={sortBy}
+          onValueChange={(value: string) => setSortBy(value as SortOption)}
+          placeholder="Sort by"
+          size="$2"
+          options={[
+            { value: 'created_desc', label: 'Newest first' },
+            { value: 'created_asc', label: 'Oldest first' },
+            { value: 'title_asc', label: 'Title A-Z' },
+            { value: 'title_desc', label: 'Title Z-A' },
+            { value: 'status_asc', label: 'Status A-Z' },
+            { value: 'status_desc', label: 'Status Z-A' },
+          ]}
+        />
       </XStack>
     </XStack>
   )

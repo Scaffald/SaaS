@@ -1,18 +1,15 @@
 import { api } from '@app/core/utils/api'
-import { CustomCheckbox, DashboardWidget } from '@app/ui'
+import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
-  Adapt,
   Button,
   H4,
   Input,
   Label,
-  Select,
-  Sheet,
   Spinner,
   Text,
   TextArea,
@@ -73,7 +70,7 @@ export function OfficeCertificationsLeft({
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToastController()
   const { width } = useWindowDimensions()
-  const isMobile = width < 640
+  const _isMobile = width < 640
 
   const {
     control,
@@ -252,34 +249,15 @@ export function OfficeCertificationsLeft({
               name="category"
               control={control}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <Select.Trigger>
-                    <Select.Value placeholder="Select category" />
-                  </Select.Trigger>
-
-                  <Adapt when={isMobile} platform="touch">
-                    <Sheet native modal dismissOnSnapToBottom>
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay />
-                    </Sheet>
-                  </Adapt>
-
-                  <Select.Content zIndex={200000}>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      {CATEGORY_OPTIONS.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                <ResponsiveSelect
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  placeholder="Select category"
+                  options={CATEGORY_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: option.label,
+                  }))}
+                />
               )}
             />
           </YStack>

@@ -1,8 +1,8 @@
 import { api } from '@app/core/utils/api'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { ResponsiveSelect } from '@app/ui'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
-import { Select, Text, YStack } from 'tamagui'
+import { Text, YStack } from 'tamagui'
 import type { TeamRoleOption } from '../hooks/useTeamFormOptions'
 
 interface TeamMemberRoleSelectProps {
@@ -31,7 +31,7 @@ export function TeamMemberRoleSelect({
     setSelectedRoleId(currentRoleId ?? '')
   }, [currentRoleId])
 
-  const roleLookup = useMemo(() => {
+  const _roleLookup = useMemo(() => {
     const map = new Map<string, TeamRoleOption>()
     for (const role of roles) {
       map.set(role.id, role)
@@ -61,50 +61,24 @@ export function TeamMemberRoleSelect({
     })
   }
 
-  const activeRole = selectedRoleId ? roleLookup.get(selectedRoleId) : undefined
-
   return (
     <YStack gap="$2">
       <Text fontSize="$3" color="$color11">
         Role
       </Text>
-      <Select
-        native
+      <ResponsiveSelect
         value={selectedRoleId}
         onValueChange={handleRoleChange}
-        disablePreventBodyScroll
-      >
-        <Select.Trigger
-          iconAfter={ChevronDown}
-          disabled={disabled || updateRoleMutation.isPending}
-          accessibilityLabel={
-            activeRole ? `Team role ${activeRole.name}. Double tap to change.` : 'Select team role'
-          }
-          accessibilityHint="Opens a list of available team roles"
-          width={fullWidth ? '100%' : undefined}
-        >
-          <Select.Value placeholder="Select role">
-            {activeRole ? activeRole.name : 'Select role'}
-          </Select.Value>
-        </Select.Trigger>
-        <Select.Content zIndex={1000}>
-          <Select.ScrollUpButton />
-          <Select.Viewport>
-            <Select.Group>
-              <Select.Label>Team roles</Select.Label>
-              {roles.map((role, index) => (
-                <Select.Item key={role.id} value={role.id} index={index}>
-                  <Select.ItemText>{role.name}</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-              ))}
-            </Select.Group>
-          </Select.Viewport>
-          <Select.ScrollDownButton />
-        </Select.Content>
-      </Select>
+        placeholder="Select role"
+        disabled={disabled || updateRoleMutation.isPending}
+        options={roles.map((role) => ({
+          value: role.id,
+          label: role.name,
+        }))}
+        triggerProps={{
+          width: fullWidth ? '100%' : undefined,
+        }}
+      />
     </YStack>
   )
 }

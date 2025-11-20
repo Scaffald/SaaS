@@ -1,16 +1,16 @@
 import { api } from '@app/core/utils/api'
 import { TEAM_INVITATION_STATUSES } from '@app/schemas'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Check, ChevronDown, Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons'
+import { Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
+import { ResponsiveSelect } from '@app/ui'
 import {
   Button,
   Card,
   type GetThemeValueForKey,
-  Select,
   Spinner,
   Text,
   XStack,
@@ -136,48 +136,27 @@ export function TeamInvitationsList({
         >
           {headerAction}
           <YStack width="100%" $md={{ width: undefined }}>
-            <Select
-              native
+            <ResponsiveSelect
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger
-                iconAfter={ChevronDown}
-                accessibilityLabel="Filter invitations by status"
-                accessibilityHint="Opens a menu of invitation statuses"
-                flex={1}
-              >
-                <Select.Value placeholder="Filter status">
-                  {statusFilter === 'all'
-                    ? 'All statuses'
-                    : STATUS_LABELS[statusFilter as InvitationStatus]}
-                </Select.Value>
-              </Select.Trigger>
-              <Select.Content zIndex={1000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Status</Select.Label>
-                    <Select.Item value="all" index={0}>
-                      <Select.ItemText>All statuses</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                    {TEAM_INVITATION_STATUSES.map((status, index) => (
-                      <Select.Item key={status} value={status} index={index + 1}>
-                        <Select.ItemText>{STATUS_LABELS[status]}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder={
+                statusFilter === 'all'
+                  ? 'All statuses'
+                  : STATUS_LABELS[statusFilter as InvitationStatus]
+              }
+              options={[
+                { value: 'all', label: 'All statuses' },
+                ...TEAM_INVITATION_STATUSES.map((status) => ({
+                  value: status,
+                  label: STATUS_LABELS[status],
+                })),
+              ]}
+              triggerProps={{
+                accessibilityLabel: 'Filter invitations by status',
+                accessibilityHint: 'Opens a menu of invitation statuses',
+                flex: 1,
+              }}
+            />
           </YStack>
         </XStack>
       </XStack>

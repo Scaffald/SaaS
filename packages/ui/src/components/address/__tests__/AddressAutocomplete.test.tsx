@@ -39,7 +39,7 @@ vi.mock('tamagui', () => {
     }
   )
 
-  const PopoverRoot = ({ children, open, onOpenChange }: any) => (
+  const PopoverRoot = ({ children, open, onOpenChange: _onOpenChange }: any) => (
     <div data-testid="popover" data-open={open}>
       {children}
     </div>

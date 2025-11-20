@@ -3,12 +3,13 @@ import { OfficePageLayout } from '@app/core/features/office/components/OfficePag
 import { api } from '@app/core/utils/api'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
 import type { AppRouter } from '@app/supabase/client-types'
-import { AlertTriangle, Check, ChevronDown, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
+import { AlertTriangle, ClipboardList, RefreshCcw } from '@tamagui/lucide-icons'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Select, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Card, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
 
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -469,35 +470,15 @@ export function AdminBackgroundChecksPage() {
         {activeTab === 'checks' ? (
           <XStack gap="$3" flexWrap="wrap" justify="space-between" items="center">
             <XStack gap="$2" items="center">
-              <Select
+              <ResponsiveSelect
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value as 'all' | BackgroundCheckStatus)}
-                disablePreventBodyScroll
-              >
-                <Select.Trigger iconAfter={ChevronDown}>
-                  <Select.Value
-                    placeholder="Filter by status"
-                    aria-label="Filter background checks by status"
-                  />
-                </Select.Trigger>
-                <Select.Content zIndex={200_000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Status filters</Select.Label>
-                      {STATUS_FILTERS.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+                placeholder="Filter by status"
+                options={STATUS_FILTERS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+              />
               <Button
                 size="$3"
                 variant="outlined"

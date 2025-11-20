@@ -5,19 +5,19 @@ import {
   AddressForm,
   Button,
   Input,
+  ResponsiveSelect,
   ScrollView,
-  Sheet,
   Spinner,
   Text,
   XStack,
   YStack,
 } from '@app/ui'
 import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@app/ui/components/rich-text'
-import { Check, ChevronDown, Eye, X } from '@tamagui/lucide-icons'
+import { Eye, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { Adapt, Card, Select, Switch } from 'tamagui'
+import { Card, Switch } from 'tamagui'
 import { JobPreviewModal } from './JobPreviewModal'
 import {
   ApplicationProcessSection,
@@ -835,44 +835,17 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Organization Selector */}
         <YStack gap="$2">
           <Text fontWeight="600">Organization *</Text>
-          <Select
-            data-testid="job-organization-select"
+          <ResponsiveSelect
+            testID="job-organization-select"
             value={formData.organization_id}
             onValueChange={(value: string) => setFormData({ ...formData, organization_id: value })}
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value placeholder="Select organization" />
-            </Select.Trigger>
-
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Organizations</Select.Label>
-                  {organizations.map((org: Organization, i: number) => (
-                    <Select.Item key={org.id} index={i} value={org.id}>
-                      <Select.ItemText>{org.name}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="Select organization"
+            label="Organization"
+            options={organizations.map((org: Organization) => ({
+              value: org.id,
+              label: org.name,
+            }))}
+          />
         </YStack>
 
         {/* Details Section */}
@@ -977,7 +950,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 No teams available for this organization.
               </Text>
             ) : (
-              <Select
+              <ResponsiveSelect
                 value={primaryTeamId || ''}
                 onValueChange={(value: string) => {
                   if (value) {
@@ -985,38 +958,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     toggleTeamSelection(value, true)
                   }
                 }}
-              >
-                <Select.Trigger iconAfter={ChevronDown}>
-                  <Select.Value placeholder="Select one" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Teams</Select.Label>
-                      {teams.map((team, i) => (
-                        <Select.Item key={team.id} index={i} value={team.id}>
-                          <Select.ItemText>{team.name ?? 'Untitled Team'}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+                placeholder="Select one"
+                label="Primary Team"
+                options={teams.map((team) => ({
+                  value: team.id,
+                  label: team.name ?? 'Untitled Team',
+                }))}
+              />
             )}
             <Text fontSize="$2" color="$color10">
               Not visible on job posting

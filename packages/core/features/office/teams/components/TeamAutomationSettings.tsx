@@ -1,9 +1,9 @@
 import { api } from '@app/core/utils/api'
+import { ResponsiveSelect } from '@app/ui'
 import { useDebounce } from '@app/core/utils/useDebounce'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Input, Select, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Switch, Text, XStack, YStack } from 'tamagui'
 
 const WORKLOAD_STRATEGIES = [
   { value: 'manual', label: 'Manual assignment' },
@@ -226,34 +226,18 @@ export function TeamAutomationSettings({
           <Text fontSize="$4" fontWeight="600">
             Workload strategy
           </Text>
-          <Select
+          <ResponsiveSelect
             value={formState.workloadStrategy}
             onValueChange={(value: string) =>
               setFormState((prev) => ({ ...prev, workloadStrategy: value }))
             }
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown} disabled={!canEdit || updateMutation.isPending}>
-              <Select.Value placeholder="Choose workload strategy" />
-            </Select.Trigger>
-            <Select.Content zIndex={1000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Strategies</Select.Label>
-                  {WORKLOAD_STRATEGIES.map((option, index) => (
-                    <Select.Item key={option.value} value={option.value} index={index}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="Choose workload strategy"
+            disabled={!canEdit || updateMutation.isPending}
+            options={WORKLOAD_STRATEGIES.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
           <Text fontSize="$3" color="$color10">
             Choose how work should be distributed when new applications arrive.
           </Text>

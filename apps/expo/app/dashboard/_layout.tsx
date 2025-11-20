@@ -57,12 +57,7 @@ export default function Layout() {
         <Drawer.Screen name="employers/index" options={{ title: 'Search Employers' }} />
         <Drawer.Screen name="jobs/index" options={{ title: 'Search Jobs' }} />
         <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
-        <Drawer.Screen name="profile/general/index" options={{ title: 'General Information' }} />
-        <Drawer.Screen name="profile/education/index" options={{ title: 'Education' }} />
-        <Drawer.Screen name="profile/employment/index" options={{ title: 'Employment' }} />
-        <Drawer.Screen name="profile/experience/index" options={{ title: 'Experience' }} />
-        <Drawer.Screen name="profile/skills/index" options={{ title: 'Skills' }} />
-        <Drawer.Screen name="profile/certifications/index" options={{ title: 'Certifications' }} />
+        <Drawer.Screen name="profile/index" options={{ title: 'Profile' }} />
         <Drawer.Screen name="assessments/pulse/index" options={{ title: 'Weekly Pulse' }} />
         <Drawer.Screen
           name="assessments/ipip/index"

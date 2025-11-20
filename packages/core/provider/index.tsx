@@ -1,6 +1,6 @@
 import { DatePickerProvider } from '@rehookify/datepicker'
 import type { Session } from '@supabase/auth-js'
-import React, { type FC, type ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
 
 import { AuthProvider } from './auth/AuthProvider'
 import { CookieConsentProvider } from './cookie-consent'

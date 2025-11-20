@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { DashboardWidget } from '@app/ui'
-import { AlertCircle, Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
+import { Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
 import { Button, H4, Spinner, Text, XStack, YStack } from 'tamagui'
 import { ProfileEmptyState } from './components'
 import { useExperienceEdit } from './contexts/experience-edit-context'

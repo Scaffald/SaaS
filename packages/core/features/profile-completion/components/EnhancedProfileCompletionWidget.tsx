@@ -1,7 +1,7 @@
 import type { ProfileWizardStepId } from '@app/supabase/client-types'
 import { DashboardWidget } from '@app/ui'
 import { LinearGradient } from '@tamagui/linear-gradient'
-import { ChevronLeft, ChevronRight, Sparkles, UploadCloud } from '@tamagui/lucide-icons'
+import { ChevronLeft, ChevronRight, Sparkles } from '@tamagui/lucide-icons'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewStyle } from 'react-native'
 import { AnimatePresence, Button, Card, Progress, styled, Text, XStack, YStack } from 'tamagui'

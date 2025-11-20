@@ -1,7 +1,6 @@
 import results from './data/en.results.json'
 import type {
   IPIPAnswer,
-  IPIPDomain,
   IPIPFacet,
   IPIPResults,
   IPIPScoreOptions,

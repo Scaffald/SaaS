@@ -93,7 +93,7 @@ export const DrawerLink = ({
           py="$2"
           pl="$9"
           pressStyle={{ bg: '$color1' }}
-          hoverStyle={{ bg: '$color4' }}
+          hoverStyle={{ bg: '$blue4' }}
           cursor="pointer"
           flex={1}
         >
@@ -122,8 +122,8 @@ export const DrawerLink = ({
             rounded="$4"
             my="$1"
             bg={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
+            pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
             cursor="pointer"
           >
             {renderContent()}
@@ -161,8 +161,8 @@ export const DrawerLink = ({
             rounded="$4"
             my="$1"
             bg={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
+            pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
             cursor="pointer"
           >
             {renderContent()}
@@ -235,8 +235,8 @@ export const DrawerLink = ({
         rounded="$2"
         my="$1"
         bg={active ? '$blue9' : 'transparent'}
-        hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-        pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+        hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
+        pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
         cursor="pointer"
       >
         {renderContent()}

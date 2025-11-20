@@ -15,7 +15,7 @@ import {
 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { type ComponentType, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Alert, Linking, ScrollView } from 'react-native'
 import { Button, Card, Input, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 

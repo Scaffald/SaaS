@@ -1,11 +1,12 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Check, ChevronDown, MessageCircle, Send } from '@tamagui/lucide-icons'
+import { MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
-import { Button, Select, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type MentionOption = {
   id: string
@@ -349,45 +350,19 @@ export function TeamActivityFeed({
                 </Button>
               ))}
               {availableMentionOptions.length > 0 ? (
-                <Select
+                <ResponsiveSelect
                   value={mentionSelection}
                   onValueChange={(value) => handleMentionSelection(value)}
-                  disablePreventBodyScroll
-                >
-                  <Select.Trigger
-                    iconAfter={ChevronDown}
-                    size="$2"
-                    width="100%"
-                    $md={{ width: undefined }}
-                  >
-                    <Select.Value placeholder="Mention teammate">
-                      {mentionSelection === 'none' ? 'Add mention' : 'Mention added'}
-                    </Select.Value>
-                  </Select.Trigger>
-                  <Select.Content zIndex={1000}>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      <Select.Group>
-                        <Select.Label>Teammates</Select.Label>
-                        <Select.Item value="none" index={0}>
-                          <Select.ItemText>Select teammate</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        {availableMentionOptions.map((option, index) => (
-                          <Select.Item key={option.id} value={option.id} index={index + 1}>
-                            <Select.ItemText>{option.label}</Select.ItemText>
-                            <Select.ItemIndicator>
-                              <Check size={16} />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                        ))}
-                      </Select.Group>
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                  placeholder="Mention teammate"
+                  size="$2"
+                  options={[
+                    { value: 'none', label: 'Select teammate' },
+                    ...availableMentionOptions.map((option) => ({
+                      value: option.id,
+                      label: option.label,
+                    })),
+                  ]}
+                />
               ) : null}
             </XStack>
           </YStack>

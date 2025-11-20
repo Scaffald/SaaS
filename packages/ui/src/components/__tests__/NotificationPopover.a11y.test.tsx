@@ -71,7 +71,12 @@ vi.mock('tamagui', () => {
       )
     }
     return (
-      <div role={role} tabIndex={tabIndex} aria-label={ariaLabel} {...rest}>
+      <div
+        role={role}
+        tabIndex={tabIndex}
+        {...(role === 'button' || role === 'link' ? { 'aria-label': ariaLabel } : {})}
+        {...rest}
+      >
         {children}
       </div>
     )
@@ -134,7 +139,12 @@ vi.mock('tamagui', () => {
     role?: string
     'aria-labelledby'?: string
   } & Record<string, unknown>) => (
-    <div data-testid="popover-content" role={role} aria-labelledby={ariaLabelledBy} {...rest}>
+    <div
+      data-testid="popover-content"
+      role={role}
+      {...(role === 'menu' || role === 'listbox' ? { 'aria-labelledby': ariaLabelledBy } : {})}
+      {...rest}
+    >
       {children}
     </div>
   )

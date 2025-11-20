@@ -207,15 +207,17 @@ vi.mock('@app/ui', () => ({
     options,
     placeholder,
     'data-testid': dataTestId,
+    testID,
   }: {
     value?: string
     onValueChange: (value: string) => void
     options: Array<{ value: string; label: string }>
     placeholder?: string
     'data-testid'?: string
+    testID?: string
   }) => (
     <select
-      data-testid={dataTestId}
+      data-testid={dataTestId ?? testID ?? 'select'}
       value={value ?? ''}
       onChange={(event) => onValueChange(event.target.value)}
     >

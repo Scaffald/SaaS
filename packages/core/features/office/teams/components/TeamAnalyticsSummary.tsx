@@ -1,9 +1,10 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Check, ChevronDown, RefreshCw } from '@tamagui/lucide-icons'
+import { RefreshCw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
-import { Button, Select, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface TeamAnalyticsSummaryProps {
   teamId: string
@@ -114,34 +115,16 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
           Analytics summary
         </Text>
         <XStack gap="$2" items="center" flexWrap="wrap">
-          <Select
+          <ResponsiveSelect
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown} size="$2">
-              <Select.Value placeholder="Select range">
-                {RANGE_OPTIONS.find((option) => option.value === range)?.label ?? 'Select range'}
-              </Select.Value>
-            </Select.Trigger>
-            <Select.Content zIndex={1000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Time range</Select.Label>
-                  {RANGE_OPTIONS.map((option, index) => (
-                    <Select.Item key={option.value} value={String(option.value)} index={index}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="Select range"
+            size="$2"
+            options={RANGE_OPTIONS.map((option) => ({
+              value: String(option.value),
+              label: option.label,
+            }))}
+          />
           <Button
             size="$2"
             variant="outlined"

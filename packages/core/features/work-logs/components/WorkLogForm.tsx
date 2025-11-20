@@ -14,7 +14,6 @@ import {
   YStack,
 } from 'tamagui'
 import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
-import type { CreateWorkLogInput } from '../schemas'
 import { PhotoUpload } from './PhotoUpload'
 import { ProjectSelector } from './ProjectSelector'
 import { TimeEntryInput } from './TimeEntryInput'

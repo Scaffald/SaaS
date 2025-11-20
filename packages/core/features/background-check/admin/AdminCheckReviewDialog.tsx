@@ -1,15 +1,15 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import { Button, Dialog } from '@app/ui'
-import { CheckCircle2, DownloadCloud, History, RefreshCcw } from '@tamagui/lucide-icons'
+import { CheckCircle2, DownloadCloud, RefreshCcw } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
+import { ResponsiveSelect } from '@app/ui'
 import {
   Input,
   Label,
-  Select,
   Separator,
   Spinner,
   Switch,
@@ -466,35 +466,19 @@ export function AdminCheckReviewDialog({
                 <YStack gap="$3">
                   <YStack gap="$1">
                     <Label>Status</Label>
-                    <Select
+                    <ResponsiveSelect
                       value={status}
                       onValueChange={(value) => setStatus(value as BackgroundCheckStatus)}
-                      disablePreventBodyScroll
-                    >
-                      <Select.Trigger iconAfter={History}>
-                        <Select.Value placeholder="Select status" />
-                      </Select.Trigger>
-                      <Select.Content zIndex={200_000}>
-                        <Select.ScrollUpButton />
-                        <Select.Viewport>
-                          <Select.Group>
-                            <Select.Label>Status</Select.Label>
-                            {STATUS_OPTIONS.map((option, index) => {
-                              const meta = getStatusMetadata(option)
-                              return (
-                                <Select.Item key={option} value={option} index={index}>
-                                  <Select.ItemText>{meta.label}</Select.ItemText>
-                                  <Select.ItemIndicator>
-                                    <CheckCircle2 size={16} />
-                                  </Select.ItemIndicator>
-                                </Select.Item>
-                              )
-                            })}
-                          </Select.Group>
-                        </Select.Viewport>
-                        <Select.ScrollDownButton />
-                      </Select.Content>
-                    </Select>
+                      placeholder="Select status"
+                      label="Status"
+                      options={STATUS_OPTIONS.map((option) => {
+                        const meta = getStatusMetadata(option)
+                        return {
+                          value: option,
+                          label: meta.label,
+                        }
+                      })}
+                    />
                   </YStack>
 
                   <YStack gap="$1">

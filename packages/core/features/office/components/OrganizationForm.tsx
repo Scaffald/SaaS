@@ -3,12 +3,12 @@ import { api } from '@app/core/utils/api'
 import { supabase } from '@app/core/utils/supabase/client'
 import { organizationCreateSchema } from '@app/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Input, ScrollView, Select, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ResponsiveSelect } from '@app/ui'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
 import { OrganizationLocationsInput } from './OrganizationLocationsInput'
@@ -183,56 +183,23 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       <Controller
         name="industry_id"
         control={control}
-        render={({ field }) => {
-          const selectedIndustry = industries.find(
-            (i: { id: string; name: string }) => i.id === field.value
-          )
-          return (
-            <YStack gap="$2">
-              <Text fontWeight="600">Industry</Text>
-              <Select
-                value={field.value || ''}
-                onValueChange={field.onChange}
-                disablePreventBodyScroll
-              >
-                <Select.Trigger testID="org-form-industry" iconAfter={ChevronDown}>
-                  <Select.Value placeholder="Select an industry">
-                    {selectedIndustry ? selectedIndustry.name : 'Select an industry'}
-                  </Select.Value>
-                </Select.Trigger>
-
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Industries</Select.Label>
-                      <Select.Item index={0} value="">
-                        <Select.ItemText>None</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                      {industries.map((industry: { id: string; name: string }, index: number) => (
-                        <Select.Item key={industry.id} index={index + 1} value={industry.id}>
-                          <Select.ItemText>{industry.name}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
-              {errors.industry_id && (
-                <Text color="$red10" fontSize="$2">
-                  {errors.industry_id.message}
-                </Text>
-              )}
-            </YStack>
-          )
-        }}
+        render={({ field }) => (
+          <ResponsiveSelect
+            value={field.value || ''}
+            onValueChange={field.onChange}
+            placeholder="Select an industry"
+            label="Industry"
+            testID="org-form-industry"
+            error={errors.industry_id?.message}
+            options={[
+              { value: '', label: 'None' },
+              ...industries.map((industry: { id: string; name: string }) => ({
+                value: industry.id,
+                label: industry.name,
+              })),
+            ]}
+          />
+        )}
       />
 
       {/* Logo URL */}
@@ -265,33 +232,17 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         render={({ field }) => (
           <YStack gap="$2">
             <Text fontWeight="600">Visibility</Text>
-            <Select value={field.value} onValueChange={field.onChange} disablePreventBodyScroll>
-              <Select.Trigger testID="org-form-visibility" iconAfter={ChevronDown}>
-                <Select.Value placeholder="Select visibility" />
-              </Select.Trigger>
-
-              <Select.Content zIndex={200000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Visibility</Select.Label>
-                    <Select.Item index={0} value="public">
-                      <Select.ItemText>Public</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                    <Select.Item index={1} value="private">
-                      <Select.ItemText>Private</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+            <ResponsiveSelect
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder="Select visibility"
+              label="Visibility"
+              testID="org-form-visibility"
+              options={[
+                { value: 'public', label: 'Public' },
+                { value: 'private', label: 'Private' },
+              ]}
+            />
             {errors.visibility && (
               <Text color="$red10" fontSize="$2">
                 {errors.visibility.message}

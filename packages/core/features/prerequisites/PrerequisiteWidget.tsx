@@ -1,7 +1,13 @@
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
-import { CustomCheckbox, DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import {
+  CustomCheckbox,
+  DashboardWidget,
+  ResponsiveSelect,
+  UIButton as StyledButton,
+  spacing,
+} from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
@@ -9,12 +15,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable } from 'react-native'
 import {
-  Adapt,
-  Button,
   Input,
-  Select,
   Separator,
-  Sheet,
   Spinner,
   Text,
   XStack,
@@ -328,50 +330,19 @@ export function PrerequisiteWidget() {
                         <Text color="$color11">Loading industries...</Text>
                       </XStack>
                     ) : (
-                      <Select value={field.value} onValueChange={field.onChange} size="$4">
-                        <Select.Trigger width="100%">
-                          <Select.Value placeholder="Select your industry" />
-                        </Select.Trigger>
-
-                        <Adapt when="sm" platform="touch">
-                          <Sheet
-                            native
-                            modal
-                            dismissOnSnapToBottom
-                            animationConfig={{
-                              type: 'spring',
-                              damping: 20,
-                              mass: 1.2,
-                              stiffness: 250,
-                            }}
-                          >
-                            <Sheet.Frame>
-                              <Sheet.ScrollView>
-                                <Adapt.Contents />
-                              </Sheet.ScrollView>
-                            </Sheet.Frame>
-                            <Sheet.Overlay
-                              animation="lazy"
-                              enterStyle={{ opacity: 0 }}
-                              exitStyle={{ opacity: 0 }}
-                            />
-                          </Sheet>
-                        </Adapt>
-
-                        <Select.Content zIndex={200000}>
-                          <Select.ScrollUpButton />
-                          <Select.Viewport>
-                            {industriesData?.industries.map(
-                              (industry: { id: string; name: string }, index: number) => (
-                                <Select.Item key={industry.id} value={industry.id} index={index}>
-                                  <Select.ItemText>{industry.name}</Select.ItemText>
-                                </Select.Item>
-                              )
-                            )}
-                          </Select.Viewport>
-                          <Select.ScrollDownButton />
-                        </Select.Content>
-                      </Select>
+                      <ResponsiveSelect
+                        value={field.value || ''}
+                        onValueChange={field.onChange}
+                        placeholder="Select your industry"
+                        options={
+                          industriesData?.industries.map(
+                            (industry: { id: string; name: string }) => ({
+                              value: industry.id,
+                              label: industry.name,
+                            })
+                          ) || []
+                        }
+                      />
                     )}
                   </YStack>
                 )}

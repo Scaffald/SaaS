@@ -1,9 +1,8 @@
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { DashboardLayout, Sheet } from '@app/ui'
+import { DashboardLayout, ResponsiveSelect } from '@app/ui'
 import {
-  Check,
   Eye,
   EyeOff,
   Pencil,
@@ -11,7 +10,7 @@ import {
 import { createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Adapt, Button, H2, Select, Text, XStack, YStack } from 'tamagui'
+import { Button, H2, Text, XStack, YStack } from 'tamagui'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 
 type ProjectStatus = 'planning' | 'active' | 'completed' | 'on_hold'
@@ -144,96 +143,36 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
               <XStack gap="$4" items="center" flexWrap="wrap">
                 {organizationsData && (
                   <XStack width={200}>
-                    <Select value={selectedOrg || ''} onValueChange={setSelectedOrg} size="$3">
-                      <Select.Trigger>
-                        <Select.Value placeholder="All Organizations" />
-                      </Select.Trigger>
-                      <Adapt when="sm" platform="touch">
-                        <Sheet modal dismissOnSnapToBottom>
-                          <Sheet.Frame>
-                            <Sheet.ScrollView>
-                              <Adapt.Contents />
-                            </Sheet.ScrollView>
-                          </Sheet.Frame>
-                          <Sheet.Overlay />
-                        </Sheet>
-                      </Adapt>
-                      <Select.Content zIndex={200000}>
-                        <Select.Viewport>
-                          <Select.Item index={0} value="" key="all">
-                            <Select.ItemText>All Organizations</Select.ItemText>
-                            <Select.ItemIndicator marginLeft="auto">
-                              <Check size={16} />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                          {organizationsData.map((org: (typeof organizationsData)[0]) => (
-                            <Select.Item
-                              key={org.id}
-                              value={org.id}
-                              index={organizationsData.indexOf(org) + 1}
-                            >
-                              <Select.ItemText>{org.name}</Select.ItemText>
-                              <Select.ItemIndicator marginLeft="auto">
-                                <Check size={16} />
-                              </Select.ItemIndicator>
-                            </Select.Item>
-                          ))}
-                        </Select.Viewport>
-                      </Select.Content>
-                    </Select>
+                    <ResponsiveSelect
+                      value={selectedOrg || ''}
+                      onValueChange={setSelectedOrg}
+                      placeholder="All Organizations"
+                      size="$3"
+                      options={[
+                        { value: '', label: 'All Organizations' },
+                        ...organizationsData.map((org: (typeof organizationsData)[0]) => ({
+                          value: org.id,
+                          label: org.name,
+                        })),
+                      ]}
+                    />
                   </XStack>
                 )}
 
                 <XStack width={150}>
-                  <Select value={statusFilter || ''} onValueChange={setStatusFilter} size="$3">
-                    <Select.Trigger>
-                      <Select.Value placeholder="All Statuses" />
-                    </Select.Trigger>
-                    <Adapt when="sm" platform="touch">
-                      <Sheet modal dismissOnSnapToBottom>
-                        <Sheet.Frame>
-                          <Sheet.ScrollView>
-                            <Adapt.Contents />
-                          </Sheet.ScrollView>
-                        </Sheet.Frame>
-                        <Sheet.Overlay />
-                      </Sheet>
-                    </Adapt>
-                    <Select.Content zIndex={200000}>
-                      <Select.Viewport>
-                        <Select.Item index={0} value="" key="all">
-                          <Select.ItemText>All Statuses</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item index={1} value="planning" key="planning">
-                          <Select.ItemText>Planning</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item index={2} value="active" key="active">
-                          <Select.ItemText>Active</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item index={3} value="completed" key="completed">
-                          <Select.ItemText>Completed</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item index={4} value="on_hold" key="on_hold">
-                          <Select.ItemText>On Hold</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select>
+                  <ResponsiveSelect
+                    value={statusFilter || ''}
+                    onValueChange={setStatusFilter}
+                    placeholder="All Statuses"
+                    size="$3"
+                    options={[
+                      { value: '', label: 'All Statuses' },
+                      { value: 'planning', label: 'Planning' },
+                      { value: 'active', label: 'Active' },
+                      { value: 'completed', label: 'Completed' },
+                      { value: 'on_hold', label: 'On Hold' },
+                    ]}
+                  />
                 </XStack>
               </XStack>
 

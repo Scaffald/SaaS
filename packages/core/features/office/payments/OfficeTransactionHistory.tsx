@@ -1,12 +1,12 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { DataTable } from '@app/ui'
+import { DataTable, ResponsiveSelect } from '@app/ui'
 import { Download, FileText, RefreshCw } from '@tamagui/lucide-icons'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
-import { Button, Card, Select, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 import { TransactionReceiptModal } from './TransactionReceiptModal'
 
 type TransactionListOutput = inferRouterOutputs<AppRouter>['payments']['adminListTransactions']
@@ -216,73 +216,41 @@ export function OfficeTransactionHistory() {
             <Text fontSize="$2" color="$color10">
               Status
             </Text>
-            <Select
+            <ResponsiveSelect
               value={statusFilter ?? ''}
               onValueChange={(value) => setStatusFilter(value || undefined)}
-            >
-              <Select.Trigger width={200}>
-                <Select.Value placeholder="All Statuses" />
-              </Select.Trigger>
-              <Select.Content>
-                <Select.Item index={0} value="">
-                  <Select.ItemText>All Statuses</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={1} value="succeeded">
-                  <Select.ItemText>Succeeded</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={2} value="failed">
-                  <Select.ItemText>Failed</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={3} value="pending">
-                  <Select.ItemText>Pending</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={4} value="refunded">
-                  <Select.ItemText>Refunded</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={5} value="cancelled">
-                  <Select.ItemText>Cancelled</Select.ItemText>
-                </Select.Item>
-              </Select.Content>
-            </Select>
+              placeholder="All Statuses"
+              options={[
+                { value: '', label: 'All Statuses' },
+                { value: 'succeeded', label: 'Succeeded' },
+                { value: 'failed', label: 'Failed' },
+                { value: 'pending', label: 'Pending' },
+                { value: 'refunded', label: 'Refunded' },
+                { value: 'cancelled', label: 'Cancelled' },
+              ]}
+              triggerProps={{ width: 200 }}
+            />
           </YStack>
           <YStack gap="$1" width={200}>
             <Text fontSize="$2" color="$color10">
               Type
             </Text>
-            <Select
+            <ResponsiveSelect
               value={transactionTypeFilter ?? ''}
               onValueChange={(value) => setTransactionTypeFilter(value || undefined)}
-            >
-              <Select.Trigger width={200}>
-                <Select.Value placeholder="All Types" />
-              </Select.Trigger>
-              <Select.Content>
-                <Select.Item index={0} value="">
-                  <Select.ItemText>All Types</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={1} value="success_fee_upfront">
-                  <Select.ItemText>Success Fee (Upfront)</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={2} value="success_fee_final">
-                  <Select.ItemText>Success Fee (Final)</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={3} value="background_check">
-                  <Select.ItemText>Background Check</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={4} value="background_check_shared">
-                  <Select.ItemText>Background Check (Shared)</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={5} value="id_verification">
-                  <Select.ItemText>ID Verification</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={6} value="credit_deposit">
-                  <Select.ItemText>Credit Deposit</Select.ItemText>
-                </Select.Item>
-                <Select.Item index={7} value="credit_refund">
-                  <Select.ItemText>Credit Refund</Select.ItemText>
-                </Select.Item>
-              </Select.Content>
-            </Select>
+              placeholder="All Types"
+              options={[
+                { value: '', label: 'All Types' },
+                { value: 'success_fee_upfront', label: 'Success Fee (Upfront)' },
+                { value: 'success_fee_final', label: 'Success Fee (Final)' },
+                { value: 'background_check', label: 'Background Check' },
+                { value: 'background_check_shared', label: 'Background Check (Shared)' },
+                { value: 'id_verification', label: 'ID Verification' },
+                { value: 'credit_deposit', label: 'Credit Deposit' },
+                { value: 'credit_refund', label: 'Credit Refund' },
+              ]}
+              triggerProps={{ width: 200 }}
+            />
           </YStack>
         </XStack>
       </Card>

@@ -12,22 +12,12 @@ import {
   RichTextEditor,
   SkeletonForm,
 } from '@app/ui'
+import { useSafeToast } from '@app/core/hooks/useSafeToast'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
 import type { JSONContent } from '@tiptap/core'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import {
-  AnimatePresence,
-  Avatar,
-  H4,
-  Input,
-  ScrollView,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -52,7 +42,7 @@ export function ProfileGeneralLeft() {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
-  const toast = useToastController()
+  const toast = useSafeToast()
   const utils = api.useContext()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'

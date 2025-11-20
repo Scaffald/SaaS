@@ -5,7 +5,7 @@ import { DashboardLayout } from '@app/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Paragraph, XStack, YStack } from 'tamagui'
+import { Paragraph, YStack } from 'tamagui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
 

@@ -2,11 +2,12 @@ import { PaymentIntentForm } from '@app/core/features/payments/components/Paymen
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Check, ChevronDown, CreditCard, RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
+import { CreditCard, RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Input, Label, Select, Text, XStack, YStack } from 'tamagui'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Input, Label, Text, XStack, YStack } from 'tamagui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
@@ -173,46 +174,25 @@ export function IdVerificationRequestPanel({
 
       <YStack gap="$2">
         <Label htmlFor="idv-organization">Organization</Label>
-        <Select
+        <ResponsiveSelect
           id="idv-organization"
           value={organizationId ?? '__none__'}
           onValueChange={handleOrganizationChange}
-          disablePreventBodyScroll
-        >
-          <Select.Trigger iconAfter={ChevronDown}>
-            <Select.Value
-              placeholder={
-                organizationId
-                  ? (organizations.find((org) => org.id === organizationId)?.name ??
-                    'Select organization')
-                  : 'Select organization'
-              }
-            />
-          </Select.Trigger>
-          <Select.Content zIndex={200_000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Organizations</Select.Label>
-                <Select.Item value="__none__" index={0}>
-                  <Select.ItemText>Select organization</Select.ItemText>
-                  <Select.ItemIndicator>
-                    <Check size={16} />
-                  </Select.ItemIndicator>
-                </Select.Item>
-                {organizations.map((org, index) => (
-                  <Select.Item key={org.id as string} value={org.id as string} index={index + 1}>
-                    <Select.ItemText>{(org.name as string) ?? 'Untitled org'}</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder={
+            organizationId
+              ? (organizations.find((org) => org.id === organizationId)?.name ??
+                'Select organization')
+              : 'Select organization'
+          }
+          label="Organization"
+          options={[
+            { value: '__none__', label: 'Select organization' },
+            ...organizations.map((org) => ({
+              value: org.id as string,
+              label: (org.name as string) ?? 'Untitled org',
+            })),
+          ]}
+        />
       </YStack>
 
       <YStack gap="$2">
@@ -224,89 +204,46 @@ export function IdVerificationRequestPanel({
           onChangeText={setWorkerSearch}
           autoCapitalize="none"
         />
-        <Select
+        <ResponsiveSelect
           id="idv-worker"
           value={selectedWorkerId ?? ''}
           onValueChange={(value) => setSelectedWorkerId(value)}
-          disablePreventBodyScroll
-        >
-          <Select.Trigger iconAfter={ChevronDown}>
-            <Select.Value placeholder={selectedWorkerId ? undefined : workerPlaceholder} />
-          </Select.Trigger>
-          <Select.Content zIndex={200_000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Workers</Select.Label>
-                {workers.length === 0 ? (
-                  <Select.Item value="__empty__" disabled index={0}>
-                    <Select.ItemText>No workers found</Select.ItemText>
-                  </Select.Item>
-                ) : (
-                  workers.map((worker, index) => (
-                    <Select.Item
-                      key={worker.id as string}
-                      value={worker.id as string}
-                      index={index}
-                    >
-                      <Select.ItemText>
-                        {worker.display_name ??
-                          worker.email ??
-                          worker.username ??
-                          `Worker ${String(worker.id).slice(0, 8)}`}
-                      </Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))
-                )}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder={selectedWorkerId ? undefined : workerPlaceholder}
+          label="Worker"
+          options={
+            workers.length === 0
+              ? [{ value: '__empty__', label: 'No workers found', disabled: true }]
+              : workers.map((worker) => ({
+                  value: worker.id as string,
+                  label:
+                    worker.display_name ??
+                    worker.email ??
+                    worker.username ??
+                    `Worker ${String(worker.id).slice(0, 8)}`,
+                }))
+          }
+        />
       </YStack>
 
       <YStack gap="$2">
         <Label htmlFor="idv-pricing">Verification plan</Label>
-        <Select
+        <ResponsiveSelect
           id="idv-pricing"
           value={selectedPricingId ?? ''}
           onValueChange={(value) => setSelectedPricingId(value)}
-          disablePreventBodyScroll
-        >
-          <Select.Trigger iconAfter={ChevronDown}>
-            <Select.Value
-              placeholder={
-                selectedPricing
-                  ? `${selectedPricing.name} (${formatCurrency(selectedPricing.priceCents)})`
-                  : pricingQuery.isLoading
-                    ? 'Loading pricing…'
-                    : 'Select pricing'
-              }
-            />
-          </Select.Trigger>
-          <Select.Content zIndex={200_000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Available plans</Select.Label>
-                {pricingOptions.map((option: PricingOption, index: number) => (
-                  <Select.Item key={option.id} value={option.id} index={index}>
-                    <Select.ItemText>
-                      {option.name} · {formatCurrency(option.priceCents)}
-                    </Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder={
+            selectedPricing
+              ? `${selectedPricing.name} (${formatCurrency(selectedPricing.priceCents)})`
+              : pricingQuery.isLoading
+                ? 'Loading pricing…'
+                : 'Select pricing'
+          }
+          label="Verification plan"
+          options={pricingOptions.map((option: PricingOption) => ({
+            value: option.id,
+            label: `${option.name} · ${formatCurrency(option.priceCents)}`,
+          }))}
+        />
       </YStack>
 
       {!paymentSession ? (

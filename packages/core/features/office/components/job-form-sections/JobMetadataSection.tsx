@@ -1,7 +1,6 @@
-import { Input, Sheet, Text, ToggleSwitch, UserSearch, XStack, YStack } from '@app/ui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { Input, ResponsiveSelect, Text, ToggleSwitch, UserSearch, XStack, YStack } from '@app/ui'
 import { useState } from 'react'
-import { Adapt, Label, Select } from 'tamagui'
+import { Label } from 'tamagui'
 
 interface JobMetadataSectionProps {
   internalJobCode?: string
@@ -175,43 +174,15 @@ export function JobMetadataSection({
       {/* Priority Level */}
       <YStack gap="$2">
         <Label>Priority level</Label>
-        <Select
+        <ResponsiveSelect
           value={localState.priority_level || ''}
           onValueChange={(value) => handleChange('priority_level', value || undefined)}
-        >
-          <Select.Trigger iconAfter={ChevronDown}>
-            <Select.Value placeholder="Select priority" />
-          </Select.Trigger>
-
-          <Adapt when="sm" platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Priority Level</Select.Label>
-                {PRIORITY_LEVELS.map((level, i) => (
-                  <Select.Item key={level.value} index={i} value={level.value}>
-                    <Select.ItemText>{level.label}</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder="Select priority"
+          options={PRIORITY_LEVELS.map((level) => ({
+            value: level.value,
+            label: level.label,
+          }))}
+        />
       </YStack>
 
       {/* Requisition Number */}

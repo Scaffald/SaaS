@@ -1,9 +1,9 @@
 import { api } from '@app/core/utils/api'
-import { Sheet } from '@app/ui'
-import { Check, ChevronDown, ExternalLink } from '@tamagui/lucide-icons'
+import { ResponsiveSelect } from '@app/ui'
+import { ExternalLink } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Adapt, Button, Card, Select, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface OrganizationProjectPrivacySettingsProps {
   organizationId: string
@@ -91,43 +91,15 @@ export function OrganizationProjectPrivacySettings({
 
         <YStack gap="$2">
           <Text fontWeight="600">Default Project Location Visibility</Text>
-          <Select
+          <ResponsiveSelect
             value={selectedVisibility}
             onValueChange={(value) => setSelectedVisibility(value as ProjectLocationVisibility)}
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value />
-            </Select.Trigger>
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-            <Select.Content zIndex={200000}>
-              <Select.Viewport>
-                {VISIBILITY_OPTIONS.map((option, index) => (
-                  <Select.Item key={option.value} value={option.value} index={index}>
-                    <Select.ItemText>
-                      <YStack>
-                        <Text fontWeight="600">{option.label}</Text>
-                        <Text fontSize="$2" color="$gray10">
-                          {option.description}
-                        </Text>
-                      </YStack>
-                    </Select.ItemText>
-                    <Select.ItemIndicator marginLeft="auto">
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Viewport>
-            </Select.Content>
-          </Select>
+            placeholder="Select visibility"
+            options={VISIBILITY_OPTIONS.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
         </YStack>
 
         <Card p="$3" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>

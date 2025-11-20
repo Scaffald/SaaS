@@ -59,6 +59,7 @@ export * from './components/inputs'
 export * from './components/kanban'
 export { LoadingOverlay } from './components/LoadingOverlay'
 // Layout components
+export { AssessmentsLayout } from './components/layouts/AssessmentsLayout'
 export { DashboardLayout } from './components/layouts/DashboardLayout'
 export { OfficeLayout } from './components/layouts/OfficeLayout'
 export { ProfileLayout } from './components/layouts/ProfileLayout'
@@ -69,6 +70,11 @@ export {
   type OfficeAccordionProps,
   type OfficeAccordionSection,
 } from './components/navigation/OfficeAccordion'
+export {
+  AssessmentsTabs,
+  type AssessmentsTabsItem,
+  type AssessmentsTabsProps,
+} from './components/navigation/AssessmentsTabs'
 export {
   OfficeTabs,
   type OfficeTabsItem,
@@ -92,6 +98,11 @@ export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
 export { StepContent } from './components/OnboardingStepContent'
 export { Popover, type PopoverProps } from './components/popovers/Popover'
+export {
+  ResponsiveSelect,
+  type ResponsiveSelectOption,
+  type ResponsiveSelectProps,
+} from './components/ResponsiveSelect'
 export { ResponsiveModal, type ResponsiveModalProps } from './components/ResponsiveModal'
 export * from './components/rich-text'
 export {

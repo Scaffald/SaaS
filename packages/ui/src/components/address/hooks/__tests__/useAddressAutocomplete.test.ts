@@ -204,8 +204,9 @@ describe('useAddressAutocomplete', () => {
 
     result.current.search('Boston')
 
-    // Wait a bit for the search to start
-    await new Promise((resolve) => setTimeout(resolve, 50))
+    await waitFor(() => {
+      expect(mockProvider.search).toHaveBeenCalled()
+    })
 
     result.current.clearResults()
 
@@ -230,10 +231,9 @@ describe('useAddressAutocomplete', () => {
 
     result.current.search('Bo') // Only 2 characters
 
-    // Wait a bit to ensure no search is triggered
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    expect(mockProvider.search).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(mockProvider.search).not.toHaveBeenCalled()
+    })
   })
 
   it('limits results to maxResults', async () => {

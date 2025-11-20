@@ -142,7 +142,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             backgroundColor: theme.color3.val,
             borderRightWidth: 0,
             borderRadius: 0,
-            padding: 10,
+            padding: 25,
             maxWidth: 300,
           },
           overlayColor: shadows.shadowColor,

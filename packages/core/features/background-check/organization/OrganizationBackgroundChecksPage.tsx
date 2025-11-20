@@ -3,12 +3,13 @@ import { OfficePageLayout } from '@app/core/features/office/components/OfficePag
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Check, ChevronDown, ExternalLink, Eye, RefreshCcw } from '@tamagui/lucide-icons'
+import { ExternalLink, Eye, RefreshCcw } from '@tamagui/lucide-icons'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Label, Select, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Label, Spinner, Text, XStack, YStack } from 'tamagui'
 
 import { getStatusMetadata } from '../components/status.utils'
 import { OrganizationCheckDetails } from './OrganizationCheckDetails'
@@ -227,45 +228,25 @@ export function OrganizationBackgroundChecksPage() {
       <YStack p="$4" gap="$3">
         <YStack gap="$2">
           <Label htmlFor="office-background-checks-organization">Organization</Label>
-          <Select
+          <ResponsiveSelect
             id="office-background-checks-organization"
             value={selectedOrganizationId ?? ''}
             onValueChange={(value) => {
               setSelectedOrganizationId(value)
               setSelectedCheckId(null)
             }}
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value
-                placeholder={
-                  selectedOrganizationId
-                    ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
-                      'Select organization')
-                    : 'Select organization'
-                }
-              />
-            </Select.Trigger>
-            <Select.Content zIndex={200_000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Organizations</Select.Label>
-                  {organizations.map((org, index) => (
-                    <Select.Item key={org.id as string} value={org.id as string} index={index}>
-                      <Select.ItemText>
-                        {(org.name as string) ?? 'Untitled organization'}
-                      </Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder={
+              selectedOrganizationId
+                ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
+                  'Select organization')
+                : 'Select organization'
+            }
+            label="Organization"
+            options={organizations.map((org) => ({
+              value: org.id as string,
+              label: (org.name as string) ?? 'Untitled organization',
+            }))}
+          />
         </YStack>
 
         <XStack gap="$2" justify="flex-end">

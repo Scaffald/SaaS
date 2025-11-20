@@ -9,7 +9,7 @@ import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Text, YStack } from 'tamagui'
+import { Button, YStack } from 'tamagui'
 
 /**
  * RIASECAssessmentWizard - Standalone wizard for RIASEC Career Interests

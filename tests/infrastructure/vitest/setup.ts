@@ -8,14 +8,40 @@ import { afterEach, vi } from 'vitest'
 process.env.EXPO_PUBLIC_SUPABASE_URL ??= 'http://127.0.0.1:54321'
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??= 'test-anon-key'
 
+const originalCreateElement = React.createElement
+
+const normalizeTestIdProp = <T extends Record<string, unknown> | null | undefined>(props: T): T => {
+  if (!props || typeof props !== 'object') {
+    return props
+  }
+
+  const maybeTestId = (props as Record<string, unknown>).testID
+  const hasDataTestId = 'data-testid' in (props as Record<string, unknown>)
+
+  if (typeof maybeTestId === 'string' && maybeTestId.length > 0) {
+    const { testID: _ignored, ...rest } = props as Record<string, unknown>
+
+    return {
+      ...rest,
+      ...(hasDataTestId ? {} : { 'data-testid': maybeTestId }),
+    } as T
+  }
+
+  return props
+}
+
+React.createElement = ((type, props, ...children) => {
+  return originalCreateElement(type, normalizeTestIdProp(props), ...children)
+}) as typeof React.createElement
+
 const createComponent =
   (tag: string) =>
   ({ children, ...props }: Record<string, unknown>) =>
-    React.createElement(tag, props, children)
+    React.createElement(tag, normalizeTestIdProp(props), children)
 
 const createPrimitive = (tag: string) =>
   React.forwardRef((props: Record<string, unknown>, ref: React.Ref<HTMLElement>) =>
-    React.createElement(tag, { ref, ...props }, props.children)
+    React.createElement(tag, normalizeTestIdProp({ ref, ...props }), props.children)
   )
 
 const ButtonMock = React.forwardRef(
@@ -27,7 +53,7 @@ const ButtonMock = React.forwardRef(
       'button',
       {
         ref,
-        ...props,
+        ...normalizeTestIdProp(props),
         onClick: typeof onPress === 'function' ? onPress : props.onClick,
       },
       children

@@ -1,11 +1,11 @@
-import { Check, Edit3, Eye, EyeOff, Tag, Trash2, X } from '@tamagui/lucide-icons'
+import { Edit3, Eye, EyeOff, Tag, Trash2, X } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
+import { ResponsiveSelect } from '@app/ui'
 import {
   Button,
   Image,
   Input,
-  Select,
   Separator,
   SizableText,
   Spinner,
@@ -277,22 +277,17 @@ export function PhotoCard({
             Photo Type
           </Text>
           {canChangeType ? (
-            <Select
+            <ResponsiveSelect
               value={(photo.photoType ?? 'general') as Exclude<WorkLogPhotoType, null>}
               onValueChange={(value) => handleUpdateType(value as WorkLogPhotoType)}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger width="100%" disabled={disabled}>
-                <Select.Value placeholder="Choose category" />
-              </Select.Trigger>
-              <Select.Content>
-                {PHOTO_TYPE_OPTIONS.map((option, index) => (
-                  <Select.Item key={option.value} value={option.value} index={index}>
-                    <Select.ItemText>{option.label}</Select.ItemText>
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select>
+              placeholder="Choose category"
+              disabled={disabled}
+              options={PHOTO_TYPE_OPTIONS.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+              triggerProps={{ width: '100%' }}
+            />
           ) : (
             <Text color="$color10">{typeOption?.label ?? 'Uncategorized'}</Text>
           )}

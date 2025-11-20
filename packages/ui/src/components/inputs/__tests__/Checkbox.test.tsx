@@ -34,35 +34,45 @@ vi.mock('tamagui', () => {
     'aria-disabled': ariaDisabled,
     ...rest
   }: MockViewProps) => {
-    const isCheckbox = role === 'checkbox' || !role
-    if (isCheckbox && onPress) {
+    const effectiveRole = role || 'checkbox'
+    const isCheckbox = effectiveRole === 'checkbox'
+
+    if (onPress) {
       return (
         <button
           type="button"
           data-testid={testID}
-          role="checkbox"
-          aria-checked={ariaChecked}
-          aria-disabled={ariaDisabled}
+          role={effectiveRole}
+          {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
+          disabled={ariaDisabled === 'true' || ariaDisabled === true}
           onClick={onPress}
-          onKeyDown={(e) => {
-            if ((e.key === 'Enter' || e.key === ' ') && onPress) {
-              e.preventDefault()
-              onPress()
-            }
-          }}
           {...(rest as Record<string, string | number | boolean | undefined>)}
         >
           {children}
         </button>
       )
     }
+    // For non-interactive elements, return a plain div
+    if (!onPress) {
+      return (
+        <div
+          data-testid={testID}
+          role={effectiveRole}
+          {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
+          {...(rest as Record<string, string | number | boolean | undefined>)}
+        >
+          {children}
+        </div>
+      )
+    }
+    // For interactive elements, use a button to satisfy accessibility requirements
     return (
-      <div
+      <button
+        type="button"
         data-testid={testID}
-        role={role || 'checkbox'}
-        aria-checked={ariaChecked}
-        aria-disabled={ariaDisabled}
-        tabIndex={onPress ? 0 : undefined}
+        role={effectiveRole}
+        {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
+        disabled={ariaDisabled === 'true' || ariaDisabled === true}
         onClick={onPress}
         onKeyDown={(e) => {
           if ((e.key === 'Enter' || e.key === ' ') && onPress) {
@@ -73,7 +83,7 @@ vi.mock('tamagui', () => {
         {...(rest as Record<string, string | number | boolean | undefined>)}
       >
         {children}
-      </div>
+      </button>
     )
   }
 

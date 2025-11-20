@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Spinner, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
 
 interface UserSkill {

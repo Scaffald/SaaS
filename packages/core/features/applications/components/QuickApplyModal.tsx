@@ -1,11 +1,11 @@
 import { api } from '@app/core/utils/api'
 import type { ScreeningAnswers } from '@app/schemas'
 import type { AddressResult } from '@app/ui'
-import { AddressAutocomplete, Dialog, Sheet } from '@app/ui'
-import { Check, CheckCircle2, X } from '@tamagui/lucide-icons'
+import { AddressAutocomplete, Dialog, ResponsiveSelect } from '@app/ui'
+import { CheckCircle2, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
-import { Adapt, Button, Label, ScrollView, Select, Text, XStack, YStack } from 'tamagui'
+import { Button, Label, ScrollView, Text, XStack, YStack } from 'tamagui'
 
 export interface QuickApplyModalProps {
   /**
@@ -378,44 +378,20 @@ export function QuickApplyModal({
                   <Label htmlFor="years_experience" fontSize="$4" fontWeight="600">
                     Years of experience <Text color="$red10">*</Text>
                   </Label>
-                  <Select
+                  <ResponsiveSelect
                     value={getYearsExperienceValue()}
                     onValueChange={handleYearsExperienceChange}
-                  >
-                    <Select.Trigger
-                      id="years_experience"
-                      borderColor={errors.years_experience ? '$red9' : '$borderColor'}
-                    >
-                      <Select.Value placeholder="Select experience" />
-                    </Select.Trigger>
-                    <Adapt when="sm" platform="touch">
-                      <Sheet modal dismissOnSnapToBottom>
-                        <Sheet.Frame>
-                          <Sheet.ScrollView>
-                            <Adapt.Contents />
-                          </Sheet.ScrollView>
-                        </Sheet.Frame>
-                        <Sheet.Overlay />
-                      </Sheet>
-                    </Adapt>
-                    <Select.Content zIndex={200000}>
-                      <Select.Viewport>
-                        {YEARS_EXPERIENCE_OPTIONS.map((option, index) => (
-                          <Select.Item key={option.value} value={option.value} index={index}>
-                            <Select.ItemText>{option.label}</Select.ItemText>
-                            <Select.ItemIndicator marginLeft="auto">
-                              <Check size={16} />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                        ))}
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select>
-                  {errors.years_experience && (
-                    <Text fontSize="$2" color="$red10">
-                      {errors.years_experience}
-                    </Text>
-                  )}
+                    placeholder="Select experience"
+                    error={errors.years_experience}
+                    options={YEARS_EXPERIENCE_OPTIONS.map((option) => ({
+                      value: option.value,
+                      label: option.label,
+                    }))}
+                    triggerProps={{
+                      id: 'years_experience',
+                      borderColor: errors.years_experience ? '$red9' : '$borderColor',
+                    }}
+                  />
                 </YStack>
 
                 {/* Required Skills (Display Only) */}
@@ -503,44 +479,20 @@ export function QuickApplyModal({
                   <Label htmlFor="earliest_start_date" fontSize="$4" fontWeight="600">
                     Earliest start date <Text color="$red10">*</Text>
                   </Label>
-                  <Select
-                    value={formData.earliest_start_date}
+                  <ResponsiveSelect
+                    value={formData.earliest_start_date || ''}
                     onValueChange={handleEarliestStartDateChange}
-                  >
-                    <Select.Trigger
-                      id="earliest_start_date"
-                      borderColor={errors.earliest_start_date ? '$red9' : '$borderColor'}
-                    >
-                      <Select.Value placeholder="Select one" />
-                    </Select.Trigger>
-                    <Adapt when="sm" platform="touch">
-                      <Sheet modal dismissOnSnapToBottom>
-                        <Sheet.Frame>
-                          <Sheet.ScrollView>
-                            <Adapt.Contents />
-                          </Sheet.ScrollView>
-                        </Sheet.Frame>
-                        <Sheet.Overlay />
-                      </Sheet>
-                    </Adapt>
-                    <Select.Content zIndex={200000}>
-                      <Select.Viewport>
-                        {EARLIEST_START_DATE_OPTIONS.map((option, index) => (
-                          <Select.Item key={option.value} value={option.value} index={index}>
-                            <Select.ItemText>{option.label}</Select.ItemText>
-                            <Select.ItemIndicator marginLeft="auto">
-                              <Check size={16} />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                        ))}
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select>
-                  {errors.earliest_start_date && (
-                    <Text fontSize="$2" color="$red10">
-                      {errors.earliest_start_date}
-                    </Text>
-                  )}
+                    placeholder="Select one"
+                    error={errors.earliest_start_date}
+                    options={EARLIEST_START_DATE_OPTIONS.map((option) => ({
+                      value: option.value,
+                      label: option.label,
+                    }))}
+                    triggerProps={{
+                      id: 'earliest_start_date',
+                      borderColor: errors.earliest_start_date ? '$red9' : '$borderColor',
+                    }}
+                  />
                 </YStack>
               </YStack>
             </ScrollView>

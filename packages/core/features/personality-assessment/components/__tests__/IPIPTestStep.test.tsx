@@ -78,7 +78,6 @@ import type {
 } from '@app/core/features/personality-assessment/lib/ipip'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { ReactNode } from 'react'
 
 const hoistedData = vi.hoisted(() => {
   const domainOrder: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
