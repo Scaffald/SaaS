@@ -6,7 +6,15 @@ import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Tabs, type GetThemeValueForKey, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  type GetThemeValueForKey,
+  Tabs,
+  Text,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from 'tamagui'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
@@ -261,7 +269,10 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       >
         {isMobile ? (
           // Mobile: Tab-based view showing one column at a time
-          <Tabs value={activeColumn} onValueChange={(value) => setActiveColumn(value as ApplicationStatus)}>
+          <Tabs
+            value={activeColumn}
+            onValueChange={(value) => setActiveColumn(value as ApplicationStatus)}
+          >
             <Tabs.List
               separator={<YStack width="$1" />}
               disablePassBorderRadius="bottom"
@@ -283,20 +294,16 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             </Tabs.List>
 
             {STATUSES.map((status) => (
-              <Tabs.Content key={status} value={status} p="$0">
-                <ScrollView>
-                  <YStack p="$3">
-                    <StatusColumn
-                      status={status}
-                      label={STATUS_LABELS[status]}
-                      color={STATUS_COLORS[status]}
-                      applications={groupedApplications[status]}
-                      selectedApplicationIds={selectedApplicationIds}
-                      onSelectApplication={setSelectedApplication}
-                      onToggleSelection={toggleApplicationSelection}
-                    />
-                  </YStack>
-                </ScrollView>
+              <Tabs.Content key={status} value={status} p="$3">
+                <StatusColumn
+                  status={status}
+                  label={STATUS_LABELS[status]}
+                  color={STATUS_COLORS[status]}
+                  applications={groupedApplications[status]}
+                  selectedApplicationIds={selectedApplicationIds}
+                  onSelectApplication={setSelectedApplication}
+                  onToggleSelection={toggleApplicationSelection}
+                />
               </Tabs.Content>
             ))}
           </Tabs>
@@ -337,7 +344,8 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
               }
               commentCount={activeApplication.notes.length}
               durationDays={Math.floor(
-                (new Date().getTime() - new Date(activeApplication.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
+                (new Date().getTime() - new Date(activeApplication.appliedAt).getTime()) /
+                  (1000 * 60 * 60 * 24)
               )}
               isDragging
             />
@@ -484,4 +492,3 @@ const StatusColumn = ({
     </DroppableColumn>
   )
 }
-
