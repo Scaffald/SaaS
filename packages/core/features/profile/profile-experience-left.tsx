@@ -206,6 +206,21 @@ export function ProfileExperienceLeft() {
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
 
+  // Browser navigation guard - prevent data loss on page close/navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = '' // Required for Chrome
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
+
   // Handle edit mode - entries are already loaded in form from API
   // When editingEntryId is set, the entry should already exist in form fields
   // The form will display it automatically since all entries are loaded

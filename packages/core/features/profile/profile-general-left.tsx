@@ -185,6 +185,21 @@ export function ProfileGeneralLeft() {
     })
   }, [isDirty, errors])
 
+  // Browser navigation guard - prevent data loss on page close/navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = '' // Required for Chrome
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
+
   const onSubmit = async (data: GeneralProfileFormData) => {
     console.log('🟢 Form submission started')
     console.log('📋 Form data:', JSON.stringify(data, null, 2))
