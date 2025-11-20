@@ -1,4 +1,4 @@
-import { useToastController } from '@tamagui/toast'
+import { useToastController, useToastState } from '@tamagui/toast'
 import { Alert, Platform } from 'react-native'
 
 /**
@@ -62,6 +62,9 @@ export function useSafeToast() {
     }
   }
 
-  return { show, hide: toast.hide, currentToast: toast.currentToast }
+  // Use useToastState to get current toast data if needed
+  const currentToast = useToastState()
+
+  return { show, hide: toast.hide, currentToast }
 }
 

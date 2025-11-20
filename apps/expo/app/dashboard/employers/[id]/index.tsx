@@ -1,8 +1,9 @@
 import { ROUTES } from '@app/core/constants/routes'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { DiscoverEmployerDetailScreen } from '@app/core/features/discover/discover-employer-detail-screen'
-import { usePageTitle } from '@app/core/hooks/usePageTitle'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import type { DashboardBreadcrumbSegment } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
+import { QuickLinksSidebar } from '@app/ui'
 import { useLocalSearchParams } from 'expo-router'
 import { useMemo } from 'react'
 
@@ -16,29 +17,10 @@ export default function EmployerDetailPage() {
     }
   )
 
-  usePageTitle({
-    title: () => {
-      if (!id) {
-        return null
-      }
-
-      if (isLoading || !employer) {
-        return 'Employer Profile'
-      }
-
-      return employer.name || 'Employer Profile'
-    },
-    deps: [id, employer?.name, isLoading],
-  })
-
-  const breadcrumbItems = useMemo(
+  const breadcrumbs = useMemo<DashboardBreadcrumbSegment[]>(
     () => [
-      { label: 'Dashboard', href: ROUTES.DASHBOARD.path },
-      { label: 'Employers', href: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path },
-      {
-        label: employer?.name || 'Employer Profile',
-        isActive: true,
-      },
+      { route: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS },
+      { label: employer?.name || 'Employer Profile', isActive: true },
     ],
     [employer?.name]
   )
@@ -50,8 +32,16 @@ export default function EmployerDetailPage() {
   const { left, right } = DiscoverEmployerDetailScreen({ employerId: id })
 
   return (
-    <DashboardLayout
-      breadcrumbItems={breadcrumbItems}
+    <DashboardPage
+      breadcrumbs={breadcrumbs}
+      pageTitle={() => {
+        if (isLoading || !employer) {
+          return 'Employer Profile'
+        }
+
+        return employer.name || 'Employer Profile'
+      }}
+      pageTitleDeps={[employer?.name, isLoading]}
       leftContent={left}
       rightContent={<QuickLinksSidebar>{right}</QuickLinksSidebar>}
     />

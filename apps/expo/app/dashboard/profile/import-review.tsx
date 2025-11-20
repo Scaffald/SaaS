@@ -1,6 +1,17 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { ImportReviewScreen } from '@app/core/features/profile-import/components/ImportReviewScreen'
-import { ProfileLayout, QuickLinksSidebar } from '@app/ui'
+import { QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileImportReviewPage() {
-  return <ProfileLayout leftContent={<ImportReviewScreen />} rightContent={<QuickLinksSidebar />} />
+  return (
+    <ProfilePage
+      breadcrumbs={[
+        { route: ROUTES.DASHBOARD.PROFILE },
+        { route: ROUTES.DASHBOARD.PROFILE.IMPORT_REVIEW },
+      ]}
+      leftContent={<ImportReviewScreen />}
+      rightContent={<QuickLinksSidebar />}
+    />
+  )
 }

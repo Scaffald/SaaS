@@ -67,7 +67,7 @@ export interface BreadcrumbProps {
  * <Breadcrumb
  *   items={[
  *     { label: 'Dashboard', href: '/dashboard' },
- *     { label: 'Discover Workers', href: '/dashboard/workers' },
+ *     { label: 'Workers', href: '/dashboard/workers' },
  *     { label: 'John Smith', isActive: true },
  *   ]}
  * />

@@ -118,7 +118,11 @@ export function ResponsiveSelect({
           width="100%"
           {...triggerProps}
         >
-          <Text flex={1} ta="left" color={selectedOption ? '$color' : '$color10'}>
+          <Text
+            flex={1}
+            style={{ textAlign: 'left' }}
+            color={selectedOption ? '$color' : '$color10'}
+          >
             {displayValue}
           </Text>
           <ChevronDown size={16} />
@@ -174,7 +178,11 @@ export function ResponsiveSelect({
                         bg: isSelected ? '$blue3' : '$backgroundHover',
                       }}
                     >
-                      <Text flex={1} ta="left" fontWeight={isSelected ? '600' : '400'}>
+                      <Text
+                        flex={1}
+                        style={{ textAlign: 'left' }}
+                        fontWeight={isSelected ? '600' : '400'}
+                      >
                         {option.label}
                       </Text>
                       {showIndicator && isSelected && <Check size={16} color="$blue10" />}

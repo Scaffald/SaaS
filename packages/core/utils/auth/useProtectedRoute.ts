@@ -1,4 +1,4 @@
-import { ROUTES } from '@app/core/constants/routes'
+import { AUTH_ROUTES, ROUTES } from '@app/core/constants/routes'
 import { useUser } from '@app/core/utils/useUser'
 import { useRouter, useSegments } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'

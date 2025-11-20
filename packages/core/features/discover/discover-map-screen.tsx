@@ -98,21 +98,26 @@ export const DiscoverMapScreen = () => {
   // This prevents refetching on every pan and ensures initial data loads
   const queryEnabled = mapReady && viewportBounds !== null
 
-  const { data: talentProfiles = [], isLoading } = useTalentProfiles({
+  const { data: talentProfilesData, isLoading } = useTalentProfiles({
     bounds: viewportBounds,
     limit: 500,
     enabled: queryEnabled && showWorkers,
   })
-  const { data: organizations = [], isLoading: isLoadingOrgs } = useOrganizations({
+  const talentProfiles = useMemo(() => talentProfilesData || [], [talentProfilesData])
+
+  const { data: organizationsData, isLoading: isLoadingOrgs } = useOrganizations({
     bounds: viewportBounds,
     limit: 200,
     enabled: queryEnabled && showOrganizations,
   })
-  const { data: jobs = [], isLoading: isLoadingJobs } = useJobs({
+  const organizations = useMemo(() => organizationsData || [], [organizationsData])
+
+  const { data: jobsData, isLoading: isLoadingJobs } = useJobs({
     bounds: viewportBounds,
     limit: 500,
     enabled: queryEnabled && showJobs,
   })
+  const jobs = useMemo(() => jobsData || [], [jobsData])
 
   // Determine map center based on search location, user location, or default
   const mapCenter: [number, number] = useMemo(() => {

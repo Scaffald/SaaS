@@ -1,5 +1,7 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@app/core/features/resume'
-import { ProfileLayout, QuickLinksSidebar } from '@app/ui'
+import { QuickLinksSidebar } from '@app/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Button, Text, YStack } from 'tamagui'
@@ -49,15 +51,26 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
 export default function ResumeReviewPage() {
   const resumeId = useResumeIdFromParams()
 
+  const breadcrumbs = [
+    { route: ROUTES.DASHBOARD.PROFILE },
+    { route: ROUTES.DASHBOARD.PROFILE.RESUME },
+    { route: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW },
+  ] as const
+
   if (!resumeId) {
     return (
-      <ProfileLayout leftContent={<ResumeReviewContent />} rightContent={<QuickLinksSidebar />} />
+      <ProfilePage
+        breadcrumbs={breadcrumbs}
+        leftContent={<ResumeReviewContent />}
+        rightContent={<QuickLinksSidebar />}
+      />
     )
   }
 
   return (
     <ResumeWizardProvider resumeId={resumeId}>
-      <ProfileLayout
+      <ProfilePage
+        breadcrumbs={breadcrumbs}
         leftContent={<ResumeReviewContent resumeId={resumeId} />}
         rightContent={<ResumeStepsSidebar />}
       />

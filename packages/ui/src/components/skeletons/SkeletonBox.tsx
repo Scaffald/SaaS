@@ -1,4 +1,4 @@
-import type { ViewProps } from 'tamagui'
+import type { SizeTokens } from 'tamagui'
 import { styled, View } from 'tamagui'
 
 export interface SkeletonBoxProps {
@@ -8,8 +8,8 @@ export interface SkeletonBoxProps {
   height?: number | string
   /** Whether animation is enabled */
   animated?: boolean
-  /** Border radius */
-  borderRadius?: ViewProps['borderRadius']
+  /** Border radius (Tamagui uses rounded prop) */
+  borderRadius?: SizeTokens
 }
 
 const SkeletonBoxBase = styled(View, {
@@ -34,7 +34,7 @@ export const SkeletonBox = ({
         ...(typeof width === 'string' ? { width } : {}),
         ...(typeof height === 'string' ? { height } : {}),
       }}
-      rounded={borderRadius}
+      rounded={borderRadius as any}
       opacity={animated ? 0.6 : 0.5}
       aria-busy={true}
       aria-label="Loading content"

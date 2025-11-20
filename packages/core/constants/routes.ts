@@ -159,6 +159,18 @@ const ROUTES_CONFIG = {
         protected: true,
         exact: true,
       },
+      RESUME: {
+        path: '/dashboard/profile/resume',
+        title: 'Resume',
+        protected: true,
+        exact: false,
+        REVIEW: {
+          path: '/dashboard/profile/resume/review',
+          title: 'Resume Review',
+          protected: true,
+          exact: true,
+        },
+      },
       BACKGROUND_CHECK: {
         path: '/dashboard/profile/background-check',
         title: 'Background Checks',
@@ -232,6 +244,12 @@ const ROUTES_CONFIG = {
         title: 'Employers',
         protected: true,
         exact: false,
+        CREATE: {
+          path: '/dashboard/employers/create',
+          title: 'Create Employer',
+          protected: true,
+          exact: true,
+        },
         DETAIL: {
           path: '/dashboard/employers/:id',
           title: 'Employer Details',
@@ -253,6 +271,10 @@ const ROUTES_CONFIG = {
       },
     },
     ORGANIZATIONS: {
+      path: '/dashboard/organizations',
+      title: 'Organizations',
+      protected: true,
+      exact: true,
       CREATE: {
         path: '/dashboard/organizations/create',
         title: 'Request Organization',
@@ -330,6 +352,18 @@ const ROUTES_CONFIG = {
         title: 'Personality',
         protected: true,
         exact: true,
+        RESULTS: {
+          path: '/dashboard/assessments/ipip/results',
+          title: 'Assessment Results',
+          protected: true,
+          exact: true,
+        },
+        SHARED: {
+          path: '/dashboard/assessments/ipip/shared/:token',
+          title: 'Shared Assessment',
+          protected: true,
+          exact: true,
+        },
       },
       RIASEC: {
         path: '/dashboard/assessments/riasec',
@@ -343,6 +377,12 @@ const ROUTES_CONFIG = {
         protected: true,
         exact: true,
       },
+    },
+    NEWS: {
+      path: '/dashboard/news',
+      title: 'Industry News',
+      protected: true,
+      exact: true,
     },
   },
 

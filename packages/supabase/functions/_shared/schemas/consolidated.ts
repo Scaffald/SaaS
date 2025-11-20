@@ -1,5 +1,4 @@
 import { z } from 'zod'
-// @ts-expect-error - Deno requires .ts extension for relative imports
 import { phoneNumberSchema } from '../phone.ts'
 
 // Phone validation helper (matches frontend validation)

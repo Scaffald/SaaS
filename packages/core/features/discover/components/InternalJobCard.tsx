@@ -1,9 +1,9 @@
 import { RouteBuilder } from '@app/core/constants/routes'
-import { Chip, extractPlainText } from '@app/ui'
+import { Chip, DiscoverCard, extractPlainText } from '@app/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Card, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from 'tamagui'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -201,16 +201,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         : ''
 
   return (
-    <Card
-      elevate
-      bordered
-      p="$4"
-      bg="$background"
-      hoverStyle={{ bg: '$backgroundHover' }}
-      pressStyle={{ bg: '$backgroundPress' }}
-      cursor="pointer"
-      onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))}
-    >
+    <DiscoverCard onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))} p="$4">
       <YStack gap="$3">
         {/* Header */}
         <YStack gap="$2">
@@ -342,6 +333,6 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           {buttonLabel}
         </Button>
       </YStack>
-    </Card>
+    </DiscoverCard>
   )
 }

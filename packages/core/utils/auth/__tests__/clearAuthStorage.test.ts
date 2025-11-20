@@ -8,8 +8,8 @@ const getSessionMock = vi.hoisted(() => vi.fn())
 const signOutMock = vi.hoisted(() => vi.fn())
 
 const asyncStorageMock = {
-  getAllKeys: vi.fn<[], Promise<string[]>>(),
-  multiRemove: vi.fn<[(string[])], Promise<void>>(),
+  getAllKeys: vi.fn<() => Promise<string[]>>(),
+  multiRemove: vi.fn<(keys: string[]) => Promise<void>>(),
 }
 
 vi.mock('@app/core/utils/supabase/client', () => ({

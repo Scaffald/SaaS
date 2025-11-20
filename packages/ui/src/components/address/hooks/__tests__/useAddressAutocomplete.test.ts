@@ -120,7 +120,7 @@ describe('useAddressAutocomplete', () => {
   })
 
   it('updates loading state correctly', async () => {
-    let resolveSearch: (value: AddressResult[]) => void
+    let resolveSearch!: (value: AddressResult[]) => void
     const searchPromise = new Promise<AddressResult[]>((resolve) => {
       resolveSearch = resolve
     })
@@ -141,7 +141,7 @@ describe('useAddressAutocomplete', () => {
     )
 
     // Resolve the search
-    resolveSearch?.([])
+    resolveSearch([])
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)

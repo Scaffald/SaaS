@@ -115,7 +115,6 @@ export function AvatarImagePicker({
               {Platform.OS === 'web' && (
                 <View
                   id={id}
-                  // @ts-expect-error - Tamagui tag prop allows rendering as HTML elements on web
                   tag="input"
                   width={0}
                   height={0}

@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import type { SizeTokens } from 'tamagui'
 import { Avatar, Text, XStack } from 'tamagui'
 
 export interface AvatarGroupAvatar {
@@ -14,7 +15,7 @@ export interface AvatarGroupProps {
   /** Maximum number of avatars to display before showing overflow */
   maxVisible?: number
   /** Size of each avatar */
-  size?: number | string
+  size?: number | SizeTokens
 }
 
 /**

@@ -1,6 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import { DashboardWidget, Heading, LoadingState, ResponsiveModal, spacing, UIButton } from '@app/ui'
+import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Card, Text, XStack, YStack } from 'tamagui'

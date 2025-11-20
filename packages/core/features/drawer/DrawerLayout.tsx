@@ -1,9 +1,6 @@
-import { OfficePopover } from '@app/core/features/office-navigation'
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 import { api } from '@app/core/utils/api'
-import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
-import type { NotificationItem } from '@app/ui'
-import { NotificationPopover, shadows } from '@app/ui'
+import { shadows, type NotificationItem } from '@app/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
@@ -11,7 +8,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
 import { useTheme, useWindowDimensions, XStack } from 'tamagui'
 import { DrawerContent } from './DrawerContent'
-import { UserPopover } from './UserPopover'
+import { ScaffaldLogo } from '@app/core/assets'
 
 interface DrawerLayoutProps {
   /**
@@ -39,7 +36,6 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
   const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
-  const { hasOfficeRole } = useUserRoles()
   const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
@@ -125,7 +121,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   }, [isDrawerCollapsed, isSmall])
 
   const drawerWidth = isSmall ? undefined : isDrawerCollapsed ? 92 : 300
-  const drawerPadding = isSmall ? 25 : isDrawerCollapsed ? 16 : 25
+  const drawerPadding = 15
 
   return (
     <>
@@ -135,6 +131,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
         screenOptions={({ navigation }) => ({
           drawerType: isSmall ? 'front' : 'permanent',
           swipeEnabled: isSmall,
+          headerShown: isSmall,
           headerStyle: {
             backgroundColor: theme.blue1.val,
             borderWidth: 0,
@@ -171,16 +168,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           },
           headerRight: () => (
             <XStack gap="$3" items="center">
-              {/* Show OfficePopover if user has office role */}
-              {hasOfficeRole && <OfficePopover />}
-              <NotificationPopover
-                notifications={transformedNotifications}
-                unreadCount={unreadCount}
-                isLoading={isLoadingNotifications}
-                onNotificationClick={handleNotificationClick}
-                onMarkAsRead={handleMarkAsRead}
-              />
-              <UserPopover />
+              <ScaffaldLogo height={22} width={22} showWordmark={false} />
             </XStack>
           ),
         })}

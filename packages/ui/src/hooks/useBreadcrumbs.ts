@@ -245,6 +245,12 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
       let currentPath = ''
       segments.forEach((segment, index) => {
         currentPath += `/${segment}`
+
+        // Skip duplicate Dashboard entry when already added as apex
+        if (segments[0] === 'dashboard' && index === 0) {
+          return
+        }
+
         const isLast = index === segments.length - 1
 
         // Capitalize first letter and replace hyphens with spaces

@@ -1,7 +1,8 @@
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { RouteBuilder } from '@app/core/constants/routes'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { QuickLinksSidebar } from '@app/ui'
 import { Users } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
@@ -18,14 +19,6 @@ export default function DashboardTeamsIndexPage() {
   })
 
   const teams = useMemo<TeamRecord[]>(() => (data?.teams ?? []) as TeamRecord[], [data?.teams])
-
-  const breadcrumbItems = useMemo(
-    () => [
-      { label: 'Dashboard', href: ROUTES.DASHBOARD.path },
-      { label: 'Teams', isActive: true },
-    ],
-    []
-  )
 
   const mainContent = (
     <YStack gap="$4">
@@ -138,11 +131,9 @@ export default function DashboardTeamsIndexPage() {
   )
 
   return (
-    <DashboardLayout
+    <DashboardPage
       leftContent={mainContent}
-      showBreadcrumb
-      breadcrumbItems={breadcrumbItems}
-      autoGenerateBreadcrumbs={false}
+      showBreadcrumb={false}
       rightContent={<QuickLinksSidebar />}
     />
   )

@@ -2,7 +2,7 @@ import { EmptyState, ErrorState, SkeletonList } from '@app/ui'
 import { Search } from '@tamagui/lucide-icons'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
-import { ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Text, XStack, YStack } from 'tamagui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -162,7 +162,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           renderToHardwareTextureAndroid
           width="100%"
         >
-          <YStack gap="$2" pb="$6" width="100%">
+          <YStack gap="$3" pb="$6" width="100%">
             {allResults.length === 0 ? (
               <EmptyState
                 icon={<Search size={48} color="$color9" />}
@@ -170,8 +170,8 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
                 description="Try adjusting your search filters or search terms to find more workers."
               />
             ) : (
-              allResults.map((result, index) => (
-                <YStack key={result.id} gap="$2">
+              allResults.map((result) => (
+                <YStack key={result.id}>
                   {result.type === 'profile' ? (
                     <ResultCard
                       ref={(ref) => registerCardRef(result.id, ref)}
@@ -193,7 +193,6 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
                       onPress={() => onSelect(result.id)}
                     />
                   )}
-                  {index < allResults.length - 1 ? <Separator /> : null}
                 </YStack>
               ))
             )}

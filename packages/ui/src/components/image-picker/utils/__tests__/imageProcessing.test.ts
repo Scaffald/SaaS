@@ -1,7 +1,8 @@
-import type { Mock } from 'vitest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { processCroppedImage } from '../imageProcessing'
+
+type ToBlobFn = (callback: (blob: Blob | null) => void, mime: string, quality?: number) => void
 
 describe('processCroppedImage (web)', () => {
   const OriginalImage = globalThis.Image
@@ -17,7 +18,7 @@ describe('processCroppedImage (web)', () => {
     width: number
     height: number
     getContext: ReturnType<typeof vi.fn>
-    toBlob: Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>
+    toBlob: ToBlobFn
   }
 
   beforeEach(() => {
@@ -42,7 +43,7 @@ describe('processCroppedImage (web)', () => {
           },
         }
         callback(fakeBlob as unknown as Blob)
-      }) as Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>,
+      }) as ToBlobFn,
     }
 
     const createElementSpy = vi
@@ -155,7 +156,7 @@ describe('processCroppedImage (web)', () => {
             callback(smallBlob as unknown as Blob)
           }
         }
-      ) as Mock<[(blob: Blob | null) => void, string, number?], void>
+      ) as ToBlobFn
 
       const result = await processCroppedImage({
         imageSrc: 'data:image/jpeg;base64,AAAA',
@@ -196,7 +197,7 @@ describe('processCroppedImage (web)', () => {
           }
           callback(smallBlob as unknown as Blob)
         }
-      }) as Mock<[(blob: Blob | null) => void, string], void>
+      }) as ToBlobFn
 
       const result = await processCroppedImage({
         imageSrc: 'data:image/png;base64,AAAA',
@@ -235,7 +236,7 @@ describe('processCroppedImage (web)', () => {
           }
           callback(smallBlob as unknown as Blob)
         }
-      }) as Mock<[(blob: Blob | null) => void, string], void>
+      }) as ToBlobFn
 
       const result = await processCroppedImage({
         imageSrc: 'data:image/webp;base64,AAAA',
@@ -265,7 +266,7 @@ describe('processCroppedImage (web)', () => {
           }
           callback(largeBlob as unknown as Blob)
         }
-      ) as Mock<[(blob: Blob | null) => void, string, number?], void>
+      ) as ToBlobFn
 
       await expect(
         processCroppedImage({
@@ -433,7 +434,7 @@ describe('processCroppedImage (web)', () => {
         (callback: (blob: Blob | null) => void, _mime?: string, _quality?: number) => {
           callback(null) // Simulate blob generation failure
         }
-      ) as unknown as Mock<[(blob: Blob | null) => void, string, (number | undefined)?], void>
+      ) as ToBlobFn
 
       await expect(
         processCroppedImage({

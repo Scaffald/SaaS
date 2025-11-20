@@ -107,9 +107,10 @@ export const QuickLinksWidget = ({
         return
       }
 
-      const route = (routeMap as Record<string, RouteConfig>)[node.key as string] as
-        | RouteConfig
-        | undefined
+      const routeValue = (routeMap as Record<string, RouteConfig | Record<string, RouteConfig>>)[
+        node.key as string
+      ]
+      const route = routeValue && 'path' in routeValue ? (routeValue as RouteConfig) : undefined
       if (!route) return
 
       const href = resolveHref(route, currentSegments, normalizedCurrentPath)

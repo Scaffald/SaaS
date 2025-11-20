@@ -1,8 +1,10 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { InquiryViewCandidate } from '@app/core/features/inquiries/components/InquiryViewCandidate'
 import { api } from '@app/core/utils/api'
 import { Text, YStack } from '@app/ui'
 import { useLocalSearchParams } from 'expo-router'
-import { ScrollView, Spinner } from 'tamagui'
+import { Spinner } from 'tamagui'
 
 export default function DashboardApplicationInquiryRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
@@ -14,36 +16,39 @@ export default function DashboardApplicationInquiryRoute() {
     { enabled }
   )
 
+  const breadcrumbs = [
+    { route: ROUTES.DASHBOARD.APPLICATIONS },
+    { route: ROUTES.DASHBOARD.APPLICATIONS.INQUIRY },
+  ] as const
+
+  let content: JSX.Element
+
   if (!enabled) {
-    return (
+    content = (
       <YStack flex={1} items="center" justify="center" p="$4">
         <Text color="$color11">Missing application ID</Text>
       </YStack>
     )
-  }
-
-  if (isLoading) {
-    return (
+  } else if (isLoading) {
+    content = (
       <YStack flex={1} items="center" justify="center" p="$4" gap="$2">
         <Spinner size="large" />
         <Text>Loading inquiry...</Text>
       </YStack>
     )
-  }
-
-  if (error || !data || !data.inquiry) {
-    return (
+  } else if (error || !data || !data.inquiry) {
+    content = (
       <YStack flex={1} items="center" justify="center" p="$4" gap="$2">
         <Text color="$red10">Unable to load inquiry</Text>
       </YStack>
     )
-  }
-
-  return (
-    <ScrollView>
+  } else {
+    content = (
       <YStack gap="$4" p="$4" flex={1}>
         <InquiryViewCandidate applicationId={applicationParam} inquiryId={data.inquiry.id} />
       </YStack>
-    </ScrollView>
-  )
+    )
+  }
+
+  return <DashboardPage breadcrumbs={breadcrumbs} leftContent={content} />
 }

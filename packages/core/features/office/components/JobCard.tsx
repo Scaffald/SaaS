@@ -1,4 +1,5 @@
 import type { AppRouter } from '@app/supabase/client-types'
+import { DiscoverCard } from '@app/ui'
 import {
   Briefcase,
   Building2,
@@ -10,7 +11,7 @@ import {
 } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { Card, type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
+import { type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -63,21 +64,12 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
-    <Card
-      elevate={isSelected}
-      bordered
-      bg={isSelected ? '$yellow2' : '$background'}
-      borderColor={isSelected ? '$yellow8' : '$borderColor'}
-      pressStyle={{ scale: 0.98 }}
+    <DiscoverCard
+      variant="warning"
+      isSelected={isSelected}
       onPress={onPress}
-      animation="quick"
       p="$4"
       gap="$3"
-      cursor="pointer"
-      hoverStyle={{
-        borderColor: isSelected ? '$yellow8' : '$color8',
-        bg: isSelected ? '$yellow2' : '$color2',
-      }}
     >
       {/* Header: Title and Status */}
       <XStack justify="space-between" items="flex-start" gap="$3">
@@ -184,7 +176,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           </Text>
         </XStack>
       )}
-    </Card>
+    </DiscoverCard>
   )
 }
 

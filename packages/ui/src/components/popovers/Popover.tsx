@@ -5,10 +5,11 @@ import { styled, Popover as TamaguiPopover, withStaticProperties } from 'tamagui
  * This ensures all popovers have a consistent background globally
  */
 const PopoverContent = styled(TamaguiPopover.Content, {
-  bg: '$color1',
+  bg: '$gray1',
   borderWidth: 0,
   borderColor: 'transparent',
   boxShadow: '$shadowColor',
+  elevate: true,
 })
 
 /**

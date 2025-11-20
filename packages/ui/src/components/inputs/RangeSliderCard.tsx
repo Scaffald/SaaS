@@ -82,7 +82,7 @@ export function RangeSliderCard({
   formatMin,
   formatMax,
   showLabels = true,
-  _sliderSize = 'medium',
+  sliderSize = 'medium',
 }: RangeSliderCardProps) {
   // Default formatting functions
   const defaultFormatValue = (v: number) => v.toString()
@@ -96,9 +96,17 @@ export function RangeSliderCard({
   // Ensure value is within bounds
   const clampedValue = Math.max(min, Math.min(max, value))
 
-  // Slider dimensions - thinner track, smaller thumb
-  const trackHeight = 8
-  const thumbSize = 10
+  const sizeTokens: Record<
+    NonNullable<RangeSliderCardProps['sliderSize']>,
+    { track: number; thumb: number }
+  > = {
+    small: { track: 6, thumb: 10 },
+    medium: { track: 8, thumb: 12 },
+    large: { track: 10, thumb: 14 },
+  } as const
+
+  const resolvedSliderSize: NonNullable<RangeSliderCardProps['sliderSize']> = sliderSize ?? 'medium'
+  const { track, thumb } = sizeTokens[resolvedSliderSize]
 
   return (
     <YStack
@@ -149,7 +157,7 @@ export function RangeSliderCard({
           height={16}
           testID={testID ? `${testID}-slider` : undefined}
         >
-          <Slider.Track bg="$color4" rounded="$1" height={trackHeight}>
+          <Slider.Track bg="$color4" rounded="$1" height={track}>
             <Slider.TrackActive bg="$blue9" rounded="$1" />
           </Slider.Track>
           <Slider.Thumb
@@ -158,8 +166,8 @@ export function RangeSliderCard({
             bg="white"
             borderWidth={2}
             borderColor="$blue9"
-            width={thumbSize}
-            height={thumbSize}
+            width={thumb}
+            height={thumb}
             style={{
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
             }}

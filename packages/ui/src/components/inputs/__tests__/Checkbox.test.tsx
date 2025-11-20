@@ -37,6 +37,8 @@ vi.mock('tamagui', () => {
     const effectiveRole = role || 'checkbox'
     const isCheckbox = effectiveRole === 'checkbox'
 
+    const isDisabled = ariaDisabled === true
+
     if (onPress) {
       return (
         <button
@@ -44,7 +46,7 @@ vi.mock('tamagui', () => {
           data-testid={testID}
           role={effectiveRole}
           {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
-          disabled={ariaDisabled === 'true' || ariaDisabled === true}
+          disabled={isDisabled}
           onClick={onPress}
           {...(rest as Record<string, string | number | boolean | undefined>)}
         >
@@ -52,38 +54,17 @@ vi.mock('tamagui', () => {
         </button>
       )
     }
+
     // For non-interactive elements, return a plain div
-    if (!onPress) {
-      return (
-        <div
-          data-testid={testID}
-          role={effectiveRole}
-          {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
-          {...(rest as Record<string, string | number | boolean | undefined>)}
-        >
-          {children}
-        </div>
-      )
-    }
-    // For interactive elements, use a button to satisfy accessibility requirements
     return (
-      <button
-        type="button"
+      <div
         data-testid={testID}
         role={effectiveRole}
         {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
-        disabled={ariaDisabled === 'true' || ariaDisabled === true}
-        onClick={onPress}
-        onKeyDown={(e) => {
-          if ((e.key === 'Enter' || e.key === ' ') && onPress) {
-            e.preventDefault()
-            onPress()
-          }
-        }}
         {...(rest as Record<string, string | number | boolean | undefined>)}
       >
         {children}
-      </button>
+      </div>
     )
   }
 

@@ -108,10 +108,10 @@ export const KanbanCard = memo(
         rounded="$4"
         gap="$3"
         opacity={isDragging ? 0.5 : 1}
-        elevate={isDragging ? 2 : 1}
+        elevate={isDragging}
         hoverStyle={{
           bg: isSelected ? '$blue4' : '$gray2',
-          elevate: 2,
+          elevate: true,
         }}
         pressStyle={{ scale: 0.98 }}
         animation="quick"

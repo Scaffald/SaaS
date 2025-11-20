@@ -1,7 +1,13 @@
+import type { RouteConfig } from '@app/core/constants/routes'
+import { getChildRoutes } from '@app/core/utils/navigation/routeHierarchy'
+import { usePathname } from '@app/core/utils/usePathname'
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from 'tamagui'
+import { useMemo } from 'react'
+import { ScrollView, useWindowDimensions, XStack, YStack } from 'tamagui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
+import { Tab } from '../navigation/Tab'
+import { TabGroup } from '../navigation/TabGroup'
 
 type OfficeLayoutProps = {
   rightContent?: ReactNode
@@ -28,6 +34,29 @@ type OfficeLayoutProps = {
  * />
  * ```
  */
+const isPathActive = (currentPath: string, targetHref: string) => {
+  if (!targetHref) return false
+
+  const normalizedCurrent = currentPath.replace(/\/$/, '')
+  const normalizedTarget = targetHref.replace(/\/$/, '')
+
+  if (normalizedCurrent === normalizedTarget) {
+    return true
+  }
+
+  const base = normalizedTarget.split('/:')[0]
+  if (!base) {
+    return false
+  }
+
+  // For top-level office routes, match exact or sub-paths
+  if (normalizedTarget.startsWith('/office/')) {
+    return normalizedCurrent === base || normalizedCurrent.startsWith(`${base}/`)
+  }
+
+  return normalizedCurrent === base || normalizedCurrent.startsWith(`${base}/`)
+}
+
 export const OfficeLayout = ({
   rightContent,
   leftContent,
@@ -35,6 +64,11 @@ export const OfficeLayout = ({
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
 }: OfficeLayoutProps) => {
+  const pathname = usePathname()
+  const currentPath = pathname ?? ''
+  const { width } = useWindowDimensions()
+  const isSmallScreen = width <= 800
+
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
     autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
@@ -44,9 +78,45 @@ export const OfficeLayout = ({
   // Determine which breadcrumbs to display
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
+  // Get top-level office routes (direct children of /office)
+  const childRoutes = useMemo(() => getChildRoutes('/office'), [])
+
+  const topLevelRoutes = useMemo(() => {
+    return childRoutes.filter((route: RouteConfig) => {
+      const pathSegments = route.path.split('/').filter(Boolean)
+      // Top-level routes have exactly 2 segments: ['office', 'section']
+      return pathSegments.length === 2
+    })
+  }, [childRoutes])
+
+  type TabItem = {
+    key: string
+    label: string
+    href: string
+  }
+
+  const tabItems = useMemo<TabItem[]>(
+    () =>
+      topLevelRoutes.map((route: RouteConfig) => ({
+        key: route.path,
+        label: route.title ?? '',
+        href: route.path,
+      })),
+    [topLevelRoutes]
+  )
+
+  const activeTabValue = useMemo(() => {
+    const activeItem = tabItems.find((item: TabItem) => isPathActive(currentPath, item.href))
+    return activeItem?.key ?? tabItems[0]?.key ?? ''
+  }, [currentPath, tabItems])
+
   const hasLeftContent = Boolean(leftContent)
   const hasRightContent = Boolean(rightContent)
   const hasBothColumns = hasLeftContent && hasRightContent
+
+  const handleTabChange = () => {
+    // Navigation is handled by Link components in Tab
+  }
 
   return (
     <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
@@ -55,6 +125,23 @@ export const OfficeLayout = ({
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
           <XStack px="$3" pt="$3" $md={{ px: '$7' }}>
             <Breadcrumb items={displayBreadcrumbs} />
+          </XStack>
+        )}
+
+        {/* TabGroup Navigation - Top-level office routes */}
+        {tabItems.length > 0 && (
+          <XStack px="$3" $md={{ px: '$7' }}>
+            <TabGroup
+              value={activeTabValue}
+              onValueChange={handleTabChange}
+              ariaLabel="Office navigation"
+              scrollable={isSmallScreen}
+              bordered={true}
+            >
+              {tabItems.map((item: TabItem) => (
+                <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
+              ))}
+            </TabGroup>
           </XStack>
         )}
 

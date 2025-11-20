@@ -96,13 +96,12 @@ export const DiscoverCard = memo(
     (
       {
         children,
-        interactive = true,
+        interactive: interactiveProp = true,
         selected,
         isSelected,
         tone,
         variant,
         elevationLevel = 'none',
-        interactive: interactiveProp,
         hoverStyle: hoverStyleProp,
         pressStyle: pressStyleProp,
         cursor: cursorProp,

@@ -64,7 +64,7 @@ export const DroppableColumn = ({
         rounded="$4"
         p="$4"
         gap="$3"
-        minHeight={200}
+        style={{ minHeight: 200 }}
       >
         {title && (
           <KanbanColumnHeader

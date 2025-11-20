@@ -1,6 +1,0 @@
-export type { OfficePopoverMenuProps } from './OfficePopoverMenu'
-export { OfficePopoverMenu } from './OfficePopoverMenu'
-export type { OfficePopoverMenuItemProps } from './OfficePopoverMenuItem'
-export { OfficePopoverMenuItem } from './OfficePopoverMenuItem'
-export type { OfficePopoverTriggerProps } from './OfficePopoverTrigger'
-export { OfficePopover, OfficePopoverTrigger } from './OfficePopoverTrigger'
