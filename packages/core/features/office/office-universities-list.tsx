@@ -1,6 +1,6 @@
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout, Text } from '@app/ui'
+import { Text } from '@app/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
@@ -79,26 +79,24 @@ export function OfficeUniversitiesList() {
   const getItemName = (university: University) => university.name
 
   return (
-    <DashboardLayout
-      leftContent={
-        <OfficePageLayout
-          title="Universities"
-          searchPlaceholder="Search universities..."
-          searchValue={search}
-          onSearchChange={setSearch}
-          createButtonLabel="Create University"
-          onCreateClick={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
-          columns={columns as ColumnDef<University, unknown>[]}
-          data={universities}
-          isLoading={isLoading}
-          pageSize={50}
-          emptyMessage="No universities found"
-          onRowEdit={handleRowEdit}
-          onRowDelete={handleRowDelete}
-          getItemName={getItemName}
-          itemType="university"
-        />
-      }
+    <OfficePageLayout
+      wrapWithOfficeLayout
+      showBreadcrumb
+      title="Universities"
+      searchPlaceholder="Search universities..."
+      searchValue={search}
+      onSearchChange={setSearch}
+      createButtonLabel="Create University"
+      onCreateClick={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
+      columns={columns as ColumnDef<University, unknown>[]}
+      data={universities}
+      isLoading={isLoading}
+      pageSize={50}
+      emptyMessage="No universities found"
+      onRowEdit={handleRowEdit}
+      onRowDelete={handleRowDelete}
+      getItemName={getItemName}
+      itemType="university"
       rightContent={
         <QuickActionsWidget
           context="list"

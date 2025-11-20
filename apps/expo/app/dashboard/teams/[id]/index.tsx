@@ -11,7 +11,6 @@ import {
 } from '@app/core/features/office/teams'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { QuickLinksSidebar } from '@app/ui'
 import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -128,7 +127,7 @@ export default function DashboardTeamDetailPage() {
         }
         showBreadcrumb
         breadcrumbItems={breadcrumbItems}
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
@@ -247,7 +246,7 @@ export default function DashboardTeamDetailPage() {
         leftContent={mainContent}
         showBreadcrumb
         breadcrumbItems={breadcrumbItems}
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
       {team ? (
         <TeamInviteModal

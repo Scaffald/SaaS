@@ -2,17 +2,13 @@ import {
   BackgroundCheckNavigationMenu,
   OrganizationBackgroundChecksPage,
 } from '@app/core/features/background-check'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 
 export default function OfficeBackgroundChecksScreen() {
   return (
     <DashboardLayout
       leftContent={<OrganizationBackgroundChecksPage />}
-      rightContent={
-        <QuickLinksSidebar>
-          <BackgroundCheckNavigationMenu />
-        </QuickLinksSidebar>
-      }
+      rightContent={<BackgroundCheckNavigationMenu />}
     />
   )
 }

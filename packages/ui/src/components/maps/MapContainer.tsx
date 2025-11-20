@@ -289,13 +289,16 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             })
           }
         },
-        centerOnPin: (pinId: string) => {
+        centerOnPin: (pinId: string, options?: { preserveZoom?: boolean }) => {
           const map = mapRef.current
           const pin = latestPinsRef.current.find((p) => p.id === pinId)
           if (map && pin) {
+            const currentZoom = map.getZoom()
+            const targetZoom =
+              options?.preserveZoom === true ? currentZoom : Math.max(currentZoom, 12)
             map.flyTo({
               center: pin.coordinate,
-              zoom: Math.max(map.getZoom(), 12), // Zoom in at least to level 12
+              zoom: targetZoom,
               speed: 0.8,
             })
           }
@@ -337,6 +340,12 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
             .addTo(map)
 
           cardMarkerRef.current = marker
+        },
+        getContainerRect: () => {
+          if (!mapContainerRef.current) {
+            return null
+          }
+          return mapContainerRef.current.getBoundingClientRect()
         },
       }),
       []

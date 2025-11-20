@@ -1,7 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@app/core/features/resume'
-import { QuickLinksSidebar } from '@app/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Button, Text, YStack } from 'tamagui'
@@ -62,7 +61,7 @@ export default function ResumeReviewPage() {
       <ProfilePage
         breadcrumbs={breadcrumbs}
         leftContent={<ResumeReviewContent />}
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }

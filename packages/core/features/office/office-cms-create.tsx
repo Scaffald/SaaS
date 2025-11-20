@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate } from '@app/schemas'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 import { useRouter } from 'expo-router'
 import { Text, YStack } from 'tamagui'
 import { CMSSlideForm } from './cms-slide-form'
@@ -23,17 +23,15 @@ export function OfficeCMSCreate() {
         </YStack>
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <Text fontSize="$5" fontWeight="bold">
-              Create New Slide
-            </Text>
-            <Text>Add a new welcome slide to be shown during user onboarding.</Text>
-            <Text>
-              Make sure to set the display order appropriately to control when this slide appears.
-            </Text>
-          </YStack>
-        </QuickLinksSidebar>
+        <YStack gap="$4">
+          <Text fontSize="$5" fontWeight="bold">
+            Create New Slide
+          </Text>
+          <Text>Add a new welcome slide to be shown during user onboarding.</Text>
+          <Text>
+            Make sure to set the display order appropriately to control when this slide appears.
+          </Text>
+        </YStack>
       }
     />
   )

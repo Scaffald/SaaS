@@ -3,7 +3,6 @@ import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { DiscoverEmployerDetailScreen } from '@app/core/features/discover/discover-employer-detail-screen'
 import { api } from '@app/core/utils/api'
 import type { DashboardBreadcrumbSegment } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
-import { QuickLinksSidebar } from '@app/ui'
 import { useLocalSearchParams } from 'expo-router'
 import { useMemo } from 'react'
 
@@ -43,7 +42,7 @@ export default function EmployerDetailPage() {
       }}
       pageTitleDeps={[employer?.name, isLoading]}
       leftContent={left}
-      rightContent={<QuickLinksSidebar>{right}</QuickLinksSidebar>}
+      rightContent={right}
     />
   )
 }

@@ -314,38 +314,7 @@ export const getRoutesAtDepth = (
   });
 };
 
-export const shouldShowInQuickLinks = (
-  routePath: string,
-  currentPath: string,
-): boolean => {
-  const candidateInfo = getHierarchyInfoForPath(routePath);
-  const currentInfo = getHierarchyInfoForPath(currentPath);
-
-  if (!candidateInfo || !currentInfo) {
-    return false;
-  }
-
-  if (currentInfo.depth < MIN_QUICK_LINK_DEPTH) {
-    return candidateInfo.depth > currentInfo.depth &&
-      candidateInfo.path.startsWith(currentInfo.path.split(":")[0]);
-  }
-
-  const anchorPath =
-    getAncestorPathAtDepth(currentInfo, MIN_QUICK_LINK_DEPTH) ??
-      currentInfo.path;
-
-  if (candidateInfo.path === anchorPath) {
-    return true;
-  }
-
-  if (candidateInfo.depth < MIN_QUICK_LINK_DEPTH) {
-    return false;
-  }
-
-  return candidateInfo.path.startsWith(anchorPath.split(":")[0]);
-};
-
-const getAncestorPathAtDepth = (
+const _getAncestorPathAtDepth = (
   info: TraversalResult,
   targetDepth: number,
 ): string | undefined => {

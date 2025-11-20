@@ -1,7 +1,6 @@
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { TableColumnVisibilityOption } from '@app/ui'
-import { DashboardLayout } from '@app/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -152,70 +151,28 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
   }
 
   return (
-    <DashboardLayout
-      leftContent={
-        <OfficePageLayout
-          title="Users"
-          searchPlaceholder="Search users..."
-          searchValue={search}
-          onSearchChange={setSearch}
-          createButtonLabel="Create User"
-          onCreateClick={() => router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)}
-          columns={columns as ColumnDef<User, unknown>[]}
-          data={filteredUsers}
-          isLoading={isLoading}
-          pageSize={50}
-          emptyMessage="No users found"
-          hideCreateButton
-          columnVisibility={columnVisibility}
-          onColumnVisibilityChange={setColumnVisibility}
-          onRowEdit={handleRowEdit}
-          onRowDelete={handleRowDelete}
-          getItemName={getItemName}
-          itemType="user"
-          actionBarConfig={{
-            bar: {
-              addLabel: 'Add',
-              onAddPress: () => setAddModalOpen(true),
-              showLabel: 'Show',
-              onShowPress: () => setColumnModalOpen(true),
-              searchValue: search,
-              onSearchChange: setSearch,
-              searchPlaceholder: 'Search users...',
-              helperText: 'List all the filterable items.',
-            },
-            addModalProps: {
-              open: addModalOpen,
-              onOpenChange: setAddModalOpen,
-              title: 'Create User',
-              description:
-                'Quickly add a new office user. The fully featured form is coming soon, but you can jump to the dedicated page now.',
-              primaryActionLabel: 'Open full create flow',
-              onPrimaryAction: () => {
-                setAddModalOpen(false)
-                router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)
-              },
-              children: (
-                <YStack gap="$3">
-                  <Paragraph size="$4" color="$color11">
-                    This modal will collect user details in an upcoming iteration. Until then, use
-                    the primary action below to launch the full create page.
-                  </Paragraph>
-                </YStack>
-              ),
-            },
-            columnVisibilityModalProps: {
-              open: columnModalOpen,
-              onOpenChange: setColumnModalOpen,
-              columns: columnVisibilityOptions,
-              visibility: columnVisibility,
-              onVisibilityChange: handleColumnVisibilityChange,
-              minimumVisibleColumns: 2,
-            },
-          }}
-          hideHeader={!showHeader}
-        />
-      }
+    <OfficePageLayout
+      wrapWithOfficeLayout
+      showBreadcrumb
+      title="Users"
+      searchPlaceholder="Search users..."
+      searchValue={search}
+      onSearchChange={setSearch}
+      createButtonLabel="Create User"
+      onCreateClick={() => router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)}
+      columns={columns as ColumnDef<User, unknown>[]}
+      data={filteredUsers}
+      isLoading={isLoading}
+      pageSize={50}
+      emptyMessage="No users found"
+      hideCreateButton
+      columnVisibility={columnVisibility}
+      onColumnVisibilityChange={setColumnVisibility}
+      onRowEdit={handleRowEdit}
+      onRowDelete={handleRowDelete}
+      getItemName={getItemName}
+      itemType="user"
+      hideHeader={!showHeader}
       rightContent={
         <QuickActionsWidget
           context="list"
@@ -225,6 +182,46 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
           isLoading={isLoading}
         />
       }
+      actionBarConfig={{
+        bar: {
+          addLabel: 'Add',
+          onAddPress: () => setAddModalOpen(true),
+          showLabel: 'Show',
+          onShowPress: () => setColumnModalOpen(true),
+          searchValue: search,
+          onSearchChange: setSearch,
+          searchPlaceholder: 'Search users...',
+          helperText: 'List all the filterable items.',
+        },
+        addModalProps: {
+          open: addModalOpen,
+          onOpenChange: setAddModalOpen,
+          title: 'Create User',
+          description:
+            'Quickly add a new office user. The fully featured form is coming soon, but you can jump to the dedicated page now.',
+          primaryActionLabel: 'Open full create flow',
+          onPrimaryAction: () => {
+            setAddModalOpen(false)
+            router.push(ROUTES.OFFICE.CMS.WORKERS.CREATE.path)
+          },
+          children: (
+            <YStack gap="$3">
+              <Paragraph size="$4" color="$color11">
+                This modal will collect user details in an upcoming iteration. Until then, use the
+                primary action below to launch the full create page.
+              </Paragraph>
+            </YStack>
+          ),
+        },
+        columnVisibilityModalProps: {
+          open: columnModalOpen,
+          onOpenChange: setColumnModalOpen,
+          columns: columnVisibilityOptions,
+          visibility: columnVisibility,
+          onVisibilityChange: handleColumnVisibilityChange,
+          minimumVisibleColumns: 2,
+        },
+      }}
     />
   )
 }

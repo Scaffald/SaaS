@@ -2,7 +2,6 @@ import { ROUTES } from '@app/core/constants/routes'
 import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
 import { OrganizationRequestForm } from '@app/core/features/organizations/components/OrganizationRequestForm'
-import { QuickLinksSidebar } from '@app/ui'
 import { Building2, Info } from '@tamagui/lucide-icons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, Separator, Text, XStack, YStack } from 'tamagui'
@@ -66,11 +65,5 @@ export default function DashboardOrganizationCreatePage() {
     </YStack>
   )
 
-  return (
-    <DashboardPage
-      showBreadcrumb={false}
-      leftContent={form}
-      rightContent={<QuickLinksSidebar>{sidebar}</QuickLinksSidebar>}
-    />
-  )
+  return <DashboardPage showBreadcrumb={false} leftContent={form} rightContent={sidebar} />
 }

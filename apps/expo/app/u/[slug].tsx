@@ -10,7 +10,7 @@ import {
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@app/ui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { Spinner, Text, YStack } from 'tamagui'
@@ -74,7 +74,7 @@ export default function PublicUserProfilePage() {
             </Text>
           </YStack>
         }
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
@@ -94,7 +94,7 @@ export default function PublicUserProfilePage() {
             </Text>
           </YStack>
         }
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
@@ -124,15 +124,13 @@ export default function PublicUserProfilePage() {
         </YStack>
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
-            {visibility.certifications && (
-              <CertificationsWidget userId={profileData.id} showEdit={false} />
-            )}
-            {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
-          </YStack>
-        </QuickLinksSidebar>
+        <YStack gap="$4">
+          {visibility.skills && <SkillsWidget userId={profileData.id} showEdit={false} />}
+          {visibility.certifications && (
+            <CertificationsWidget userId={profileData.id} showEdit={false} />
+          )}
+          {visibility.reviews && <ReviewsWidget userId={profileData.id} showEdit={false} />}
+        </YStack>
       }
     />
   )

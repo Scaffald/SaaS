@@ -2,7 +2,6 @@ import { ROUTES } from '@app/core/constants/routes'
 import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { ProfileGeneralLeft } from '@app/core/features/profile/profile-general-left'
 import { ProfileGeneralRight } from '@app/core/features/profile/profile-general-right'
-import { QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileGeneralPage() {
   return (
@@ -12,11 +11,7 @@ export default function ProfileGeneralPage() {
         { route: ROUTES.DASHBOARD.PROFILE.GENERAL },
       ]}
       leftContent={<ProfileGeneralLeft />}
-      rightContent={
-        <QuickLinksSidebar>
-          <ProfileGeneralRight />
-        </QuickLinksSidebar>
-      }
+      rightContent={<ProfileGeneralRight />}
     />
   )
 }

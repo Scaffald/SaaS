@@ -5,7 +5,6 @@ import {
   ProfileSkillsRight,
 } from '@app/core/features/profile'
 import { ProfilePage } from '@app/core/features/profile/ProfilePage'
-import { QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileSkillsPage() {
   return (
@@ -16,11 +15,7 @@ export default function ProfileSkillsPage() {
           { route: ROUTES.DASHBOARD.PROFILE.SKILLS },
         ]}
         leftContent={<ProfileSkillsLeft />}
-        rightContent={
-          <QuickLinksSidebar>
-            <ProfileSkillsRight />
-          </QuickLinksSidebar>
-        }
+        rightContent={<ProfileSkillsRight />}
       />
     </ProfileSkillsProvider>
   )

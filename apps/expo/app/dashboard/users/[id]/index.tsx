@@ -11,7 +11,6 @@ import {
 } from '@app/core/features/profile/widgets'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
-import { QuickLinksSidebar } from '@app/ui'
 import { useLocalSearchParams } from 'expo-router'
 import { useMemo } from 'react'
 import { YStack } from 'tamagui'
@@ -81,13 +80,11 @@ export default function UserProfilePage() {
         </YStack>
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <SkillsWidget userId={id} showEdit={false} />
-            <CertificationsWidget userId={id} showEdit={false} />
-            <ReviewsWidget userId={id} showEdit />
-          </YStack>
-        </QuickLinksSidebar>
+        <YStack gap="$4">
+          <SkillsWidget userId={id} showEdit={false} />
+          <CertificationsWidget userId={id} showEdit={false} />
+          <ReviewsWidget userId={id} showEdit />
+        </YStack>
       }
     />
   )

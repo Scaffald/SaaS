@@ -1,16 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  ROUTES,
-  buildPath,
-} from "@app/core/constants/routes";
+import { buildPath, ROUTES } from "@app/core/constants/routes";
 
 import {
   getChildRoutes,
   getRouteDepth,
   getRouteKeyForPath,
   getRoutesAtDepth,
-  shouldShowInQuickLinks,
 } from "../routeHierarchy";
 
 describe("routeHierarchy utilities", () => {
@@ -74,53 +70,4 @@ describe("routeHierarchy utilities", () => {
       ]),
     );
   });
-
-  it("decides quick link visibility based on current path context", () => {
-    const currentJobsPath = ROUTES.OFFICE.CMS.JOBS.path;
-    expect(
-      shouldShowInQuickLinks(currentJobsPath, currentJobsPath),
-    ).toBe(true);
-    expect(
-      shouldShowInQuickLinks(ROUTES.OFFICE.CMS.JOBS.CREATE.path, currentJobsPath),
-    ).toBe(true);
-    expect(
-      shouldShowInQuickLinks(
-        buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: "abc" }),
-        currentJobsPath,
-      ),
-    ).toBe(true);
-    expect(
-      shouldShowInQuickLinks(
-        ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
-        currentJobsPath,
-      ),
-    ).toBe(false);
-
-    const currentCmsPath = ROUTES.OFFICE.CMS.path;
-    expect(
-      shouldShowInQuickLinks(ROUTES.OFFICE.CMS.WELCOME.path, currentCmsPath),
-    ).toBe(true);
-
-    const currentOrgEditPath = buildPath(
-      ROUTES.OFFICE.CMS.ORGANIZATIONS.EDIT,
-      { id: "org-42" },
-    );
-    expect(
-      shouldShowInQuickLinks(currentOrgEditPath, currentOrgEditPath),
-    ).toBe(true);
-    expect(
-      shouldShowInQuickLinks(
-        ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
-        currentOrgEditPath,
-      ),
-    ).toBe(true);
-    expect(
-      shouldShowInQuickLinks(
-        ROUTES.OFFICE.CMS.JOBS.path,
-        currentOrgEditPath,
-      ),
-    ).toBe(false);
-  });
 });
-
-

@@ -48,12 +48,12 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
-  const { data: notificationsData, isLoading: isLoadingNotifications } =
+  const { data: notificationsData, isLoading: _isLoadingNotifications } =
     api.notifications.list.useQuery({ limit: 25 })
 
   // Fetch unread count
   const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
-  const unreadCount = unreadCountData?.count || 0
+  const _unreadCount = unreadCountData?.count || 0
 
   // Mark as read mutation
   const utils = api.useUtils()
@@ -66,7 +66,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   })
 
   // Handle notification click
-  const handleNotificationClick = (notification: NotificationItem) => {
+  const _handleNotificationClick = (notification: NotificationItem) => {
     // Mark as read if unread
     if (!notification.read) {
       markAsReadMutation.mutate({ id: notification.id })
@@ -74,12 +74,12 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   }
 
   // Handle mark as read
-  const handleMarkAsRead = (notificationId: string) => {
+  const _handleMarkAsRead = (notificationId: string) => {
     markAsReadMutation.mutate({ id: notificationId })
   }
 
   // Transform notifications to match NotificationItem interface
-  const transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
+  const _transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
     (notification: unknown): NotificationItem => {
       const item = notification as {
         id: string

@@ -23,7 +23,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         // Native implementation would require calling native methods
         console.warn('flyTo not yet implemented for native')
       },
-      centerOnPin: (_pinId: string) => {
+      centerOnPin: (_pinId: string, _options?: { preserveZoom?: boolean }) => {
         // Native implementation would require calling native methods
         console.warn('centerOnPin not yet implemented for native')
       },
@@ -34,6 +34,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       setCardOverlay: (_pinId: string | null, _content: HTMLElement | null) => {
         // Not supported on native platform (HTML elements don't exist in native)
         console.warn('setCardOverlay not supported on native')
+      },
+      getContainerRect: () => {
+        // Not available on native
+        return null
       },
     }))
 

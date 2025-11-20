@@ -12,7 +12,6 @@ import {
   SkillsWidget,
 } from '@app/core/features/profile/widgets'
 import { useUser } from '@app/core/utils/useUser'
-import { QuickLinksSidebar } from '@app/ui'
 import { YStack } from 'tamagui'
 
 /**
@@ -38,15 +37,13 @@ export default function ProfileIndexScreen() {
           </YStack>
         }
         rightContent={
-          <QuickLinksSidebar>
-            <YStack gap="$4">
-              <SkillsWidget userId={user.id} showEdit />
-              <IdVerificationWidget />
-              <ProfileCertificationsRight />
-              <PreferencesWidget showEdit />
-              <AccountDeletionPanel />
-            </YStack>
-          </QuickLinksSidebar>
+          <YStack gap="$4">
+            <SkillsWidget userId={user.id} showEdit />
+            <IdVerificationWidget />
+            <ProfileCertificationsRight />
+            <PreferencesWidget showEdit />
+            <AccountDeletionPanel />
+          </YStack>
         }
       />
     </ProfileCertificationsHighlightProvider>

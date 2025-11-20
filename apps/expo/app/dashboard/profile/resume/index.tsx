@@ -6,7 +6,6 @@ import {
 } from '@app/core/features/resume'
 import { api } from '@app/core/utils/api'
 import { ProfilePage } from '@app/core/features/profile/ProfilePage'
-import { QuickLinksSidebar } from '@app/ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
@@ -94,7 +93,7 @@ export default function ResumeImportPage() {
         { route: ROUTES.DASHBOARD.PROFILE.RESUME },
       ]}
       leftContent={<ResumeImportContent />}
-      rightContent={<QuickLinksSidebar />}
+      rightContent={null}
     />
   )
 }

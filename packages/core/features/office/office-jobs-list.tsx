@@ -1,6 +1,6 @@
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout, ResponsiveSelect } from '@app/ui'
+import { OfficeLayout, ResponsiveSelect } from '@app/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -332,86 +332,87 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   // Kanban view
   if (viewMode === 'kanban') {
     return (
-      <YStack flex={1} bg="$background">
-        {showHeader && (
-          <YStack p="$4" pb="$3" gap="$3">
-            <XStack justify="space-between" items="center">
-              <YStack>
-                <H2>Jobs</H2>
-                <Text color="$color11" fontSize="$3">
-                  {filteredAndSortedJobs.length} total jobs
-                </Text>
+      <OfficeLayout
+        showBreadcrumb
+        leftContent={
+          <YStack flex={1} bg="$background">
+            {showHeader && (
+              <YStack p="$4" pb="$3" gap="$3">
+                <XStack justify="space-between" items="center">
+                  <YStack>
+                    <H2>Jobs</H2>
+                    <Text color="$color11" fontSize="$3">
+                      {filteredAndSortedJobs.length} total jobs
+                    </Text>
+                  </YStack>
+                  <XStack gap="$2">
+                    <Button size="$3" onPress={() => setViewMode('kanban')} variant="outlined">
+                      Kanban
+                    </Button>
+                    <Button size="$3" onPress={() => setViewMode('list')}>
+                      List
+                    </Button>
+                    <Button size="$3" onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}>
+                      Create Job
+                    </Button>
+                  </XStack>
+                </XStack>
+                <XStack gap="$2" items="center" flexWrap="wrap">
+                  {filtersAccessory}
+                </XStack>
               </YStack>
-              <XStack gap="$2">
-                <Button size="$3" onPress={() => setViewMode('kanban')} variant="outlined">
-                  Kanban
-                </Button>
-                <Button size="$3" onPress={() => setViewMode('list')}>
-                  List
-                </Button>
-                <Button size="$3" onPress={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}>
-                  Create Job
-                </Button>
-              </XStack>
-            </XStack>
-            {/* Filters for Kanban view */}
-            <XStack gap="$2" items="center" flexWrap="wrap">
-              {filtersAccessory}
-            </XStack>
+            )}
+            <YStack flex={1}>
+              <JobsKanbanBoard jobs={filteredAndSortedJobs} onJobUpdate={() => refetch()} />
+            </YStack>
           </YStack>
-        )}
-        <YStack flex={1}>
-          <JobsKanbanBoard jobs={filteredAndSortedJobs} onJobUpdate={() => refetch()} />
-        </YStack>
-      </YStack>
+        }
+      />
     )
   }
 
-  // List view
   return (
-    <DashboardLayout
-      leftContent={
-        <OfficePageLayout
-          title="Jobs"
-          searchPlaceholder="Search jobs..."
-          searchValue={search}
-          onSearchChange={setSearch}
-          createButtonLabel="Create Job"
-          onCreateClick={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
-          columns={columns as ColumnDef<Job, unknown>[]}
-          data={filteredAndSortedJobs}
-          isLoading={isLoading}
-          pageSize={50}
-          emptyMessage="No jobs found"
-          hideHeader={!showHeader}
-          onRowEdit={handleRowEdit}
-          onRowDelete={handleRowDelete}
-          onRowDuplicate={handleRowDuplicate}
-          getItemName={getItemName}
-          itemType="job"
-          actionBarConfig={{
-            bar: {
-              addLabel: 'Create Job',
-              onAddPress: () => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path),
-              showDisabled: true,
-              searchValue: search,
-              onSearchChange: setSearch,
-              searchPlaceholder: 'Search jobs...',
-              rightAccessory: (
-                <XStack gap="$2" items="center">
-                  {filtersAccessory}
-                  <Button size="$2" onPress={() => setViewMode('kanban')} variant="outlined">
-                    Kanban
-                  </Button>
-                  <Button size="$2" onPress={() => setViewMode('list')}>
-                    List
-                  </Button>
-                </XStack>
-              ),
-            },
-          }}
-        />
-      }
+    <OfficePageLayout
+      wrapWithOfficeLayout
+      showBreadcrumb
+      title="Jobs"
+      searchPlaceholder="Search jobs..."
+      searchValue={search}
+      onSearchChange={setSearch}
+      createButtonLabel="Create Job"
+      onCreateClick={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
+      columns={columns as ColumnDef<Job, unknown>[]}
+      data={filteredAndSortedJobs}
+      isLoading={isLoading}
+      pageSize={50}
+      emptyMessage="No jobs found"
+      hideHeader={!showHeader}
+      onRowEdit={handleRowEdit}
+      onRowDelete={handleRowDelete}
+      onRowDuplicate={handleRowDuplicate}
+      getItemName={getItemName}
+      itemType="job"
+      actionBarConfig={{
+        bar: {
+          addLabel: 'Create Job',
+          onAddPress: () => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path),
+          showDisabled: true,
+          searchValue: search,
+          onSearchChange: setSearch,
+          searchPlaceholder: 'Search jobs...',
+          rightAccessory: (
+            <XStack gap="$2" items="center">
+              {filtersAccessory}
+              <Button size="$2" onPress={() => setViewMode('kanban')} variant="outlined">
+                Kanban
+              </Button>
+              <Button size="$2" onPress={() => setViewMode('list')}>
+                List
+              </Button>
+            </XStack>
+          ),
+        },
+      }}
       rightContent={
         <QuickActionsWidget
           context="list"

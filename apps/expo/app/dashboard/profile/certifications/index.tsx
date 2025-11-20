@@ -3,7 +3,6 @@ import { ProfileCertificationsHighlightProvider } from '@app/core/features/profi
 import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
 import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
-import { QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileCertificationsPage() {
   return (
@@ -14,11 +13,7 @@ export default function ProfileCertificationsPage() {
           { route: ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS },
         ]}
         leftContent={<ProfileCertificationsLeft />}
-        rightContent={
-          <QuickLinksSidebar>
-            <ProfileCertificationsRight />
-          </QuickLinksSidebar>
-        }
+        rightContent={<ProfileCertificationsRight />}
       />
     </ProfileCertificationsHighlightProvider>
   )

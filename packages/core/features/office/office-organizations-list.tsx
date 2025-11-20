@@ -1,12 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout, DashboardWidget, Dialog, QuickLinksSidebar } from '@app/ui'
-import {
-  Check,
-  Loader2,
-  RefreshCw,
-  X as XIcon,
-} from '@tamagui/lucide-icons'
+import { DashboardWidget, Dialog } from '@app/ui'
+import { Check, Loader2, RefreshCw, X as XIcon } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
@@ -323,27 +318,25 @@ export function OfficeOrganizationsList() {
         </Dialog.Portal>
       </Dialog>
 
-      <DashboardLayout
-        leftContent={
-          <OfficePageLayout
-            title="Organizations"
-            searchPlaceholder="Search organizations..."
-            searchValue={search}
-            onSearchChange={setSearch}
-            createButtonLabel="Create Organization"
-            onCreateClick={() => router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path)}
-            columns={columns as ColumnDef<Organization, unknown>[]}
-            data={filteredOrganizations}
-            isLoading={isLoading}
-            pageSize={50}
-            emptyMessage="No organizations found"
-            hideCreateButton
-            onRowEdit={handleRowEdit}
-            onRowDelete={handleRowDelete}
-            getItemName={getItemName}
-            itemType="organization"
-          />
-        }
+      <OfficePageLayout
+        wrapWithOfficeLayout
+        showBreadcrumb
+        title="Organizations"
+        searchPlaceholder="Search organizations..."
+        searchValue={search}
+        onSearchChange={setSearch}
+        createButtonLabel="Create Organization"
+        onCreateClick={() => router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path)}
+        columns={columns as ColumnDef<Organization, unknown>[]}
+        data={filteredOrganizations}
+        isLoading={isLoading}
+        pageSize={50}
+        emptyMessage="No organizations found"
+        hideCreateButton
+        onRowEdit={handleRowEdit}
+        onRowDelete={handleRowDelete}
+        getItemName={getItemName}
+        itemType="organization"
         rightContent={
           <QuickLinksSidebar>
             <YStack gap="$4">

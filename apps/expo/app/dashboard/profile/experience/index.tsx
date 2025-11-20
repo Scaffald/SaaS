@@ -3,7 +3,6 @@ import { ExperienceEditProvider } from '@app/core/features/profile/contexts/expe
 import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
 import { ProfileExperienceRight } from '@app/core/features/profile/profile-experience-right'
-import { QuickLinksSidebar } from '@app/ui'
 
 export default function ProfileExperiencePage() {
   return (
@@ -14,11 +13,7 @@ export default function ProfileExperiencePage() {
           { route: ROUTES.DASHBOARD.PROFILE.EXPERIENCE },
         ]}
         leftContent={<ProfileExperienceLeft />}
-        rightContent={
-          <QuickLinksSidebar>
-            <ProfileExperienceRight />
-          </QuickLinksSidebar>
-        }
+        rightContent={<ProfileExperienceRight />}
       />
     </ExperienceEditProvider>
   )

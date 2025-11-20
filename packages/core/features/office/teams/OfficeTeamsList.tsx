@@ -2,7 +2,6 @@ import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@app/schemas'
 import type { AppRouter } from '@app/supabase/client-types'
-import { DashboardLayout } from '@app/ui'
 import { useToastController } from '@tamagui/toast'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -137,41 +136,23 @@ export function OfficeTeamsList() {
   const getItemName = (team: TeamRow) => team.name
 
   return (
-    <DashboardLayout
-      leftContent={
-        <YStack flex={1}>
-          <OfficePageLayout
-            title="Teams"
-            searchPlaceholder="Search teams..."
-            searchValue={search}
-            onSearchChange={setSearch}
-            createButtonLabel="Create Team"
-            onCreateClick={() => router.push(ROUTES.OFFICE.CMS.TEAMS.CREATE.path)}
-            columns={columns}
-            data={filteredTeams}
-            isLoading={isLoading || archiveMutation.isPending}
-            emptyMessage="No teams found"
-            onRowEdit={handleRowEdit}
-            onRowDelete={handleRowDelete}
-            getItemName={getItemName}
-            itemType="team"
-          />
-          {archiveMutation.isPending ? (
-            <YStack
-              bg="$color2"
-              p="$3"
-              rounded="$4"
-              shadowColor="$color10"
-              style={{ alignSelf: 'flex-end', marginRight: 16, marginBottom: 16 }}
-            >
-              <XStack gap="$3" items="center">
-                <Spinner size="small" />
-                <Text>Archiving team...</Text>
-              </XStack>
-            </YStack>
-          ) : null}
-        </YStack>
-      }
+    <OfficePageLayout
+      wrapWithOfficeLayout
+      showBreadcrumb
+      title="Teams"
+      searchPlaceholder="Search teams..."
+      searchValue={search}
+      onSearchChange={setSearch}
+      createButtonLabel="Create Team"
+      onCreateClick={() => router.push(ROUTES.OFFICE.CMS.TEAMS.CREATE.path)}
+      columns={columns}
+      data={filteredTeams}
+      isLoading={isLoading || archiveMutation.isPending}
+      emptyMessage="No teams found"
+      onRowEdit={handleRowEdit}
+      onRowDelete={handleRowDelete}
+      getItemName={getItemName}
+      itemType="team"
       rightContent={
         <QuickActionsWidget
           context="list"
@@ -180,6 +161,24 @@ export function OfficeTeamsList() {
           onRefresh={() => refetch()}
           isLoading={isLoading || archiveMutation.isPending}
         />
+      }
+      afterContent={
+        archiveMutation.isPending ? (
+          <YStack
+            bg="$color2"
+            p="$3"
+            rounded="$4"
+            shadowColor="$color10"
+            alignSelf="flex-end"
+            mr="$4"
+            mb="$4"
+          >
+            <XStack gap="$3" items="center">
+              <Spinner size="small" />
+              <Text>Archiving team...</Text>
+            </XStack>
+          </YStack>
+        ) : null
       }
     />
   )

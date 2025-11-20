@@ -2,7 +2,6 @@ import { RouteBuilder } from '@app/core/constants/routes'
 import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { QuickLinksSidebar } from '@app/ui'
 import { Users } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
@@ -130,11 +129,5 @@ export default function DashboardTeamsIndexPage() {
     </YStack>
   )
 
-  return (
-    <DashboardPage
-      leftContent={mainContent}
-      showBreadcrumb={false}
-      rightContent={<QuickLinksSidebar />}
-    />
-  )
+  return <DashboardPage leftContent={mainContent} showBreadcrumb={false} rightContent={null} />
 }

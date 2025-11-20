@@ -75,7 +75,8 @@ export interface MapContainerProps {
 
 export interface MapContainerRef {
   flyTo: (center: [number, number], zoom?: number) => void
-  centerOnPin: (pinId: string) => void
+  centerOnPin: (pinId: string, options?: { preserveZoom?: boolean }) => void
   getPinScreenCoordinates: (pinId: string) => { x: number; y: number } | null
   setCardOverlay: (pinId: string | null, content: HTMLElement | null) => void
+  getContainerRect: () => DOMRect | null
 }

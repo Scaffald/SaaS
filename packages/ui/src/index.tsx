@@ -85,14 +85,6 @@ export {
   type ProfileTabsItem,
   type ProfileTabsProps,
 } from './components/navigation/ProfileTabs'
-export {
-  QuickLinksSidebar,
-  type QuickLinksSidebarProps,
-} from './components/navigation/QuickLinksSidebar'
-export {
-  QuickLinksWidget,
-  type QuickLinksWidgetProps,
-} from './components/navigation/QuickLinksWidget'
 export * from './components/notifications'
 export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
@@ -147,7 +139,6 @@ export * from './config/shadows'
 export * from './config/spacing'
 export * from './config/typography'
 export { useBreadcrumbs } from './hooks/useBreadcrumbs'
-export { useQuickLinks } from './hooks/useQuickLinks'
 // Hooks
 export * from './hooks/useUniversitySearch'
 // Styleguide

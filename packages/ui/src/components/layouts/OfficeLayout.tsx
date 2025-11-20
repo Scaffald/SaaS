@@ -4,6 +4,7 @@ import { usePathname } from '@app/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions, XStack, YStack } from 'tamagui'
+import type { StackProps } from 'tamagui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 import { Tab } from '../navigation/Tab'
@@ -18,6 +19,12 @@ type OfficeLayoutProps = {
   breadcrumbItems?: BreadcrumbItem[]
   /** Whether to auto-generate breadcrumbs from route (default: true) */
   autoGenerateBreadcrumbs?: boolean
+  /** Optional props for the main content wrapper */
+  contentProps?: StackProps
+  /** Optional props for the left column wrapper */
+  leftContainerProps?: StackProps
+  /** Optional props for the right column wrapper */
+  rightContainerProps?: StackProps
 }
 
 /**
@@ -60,9 +67,12 @@ const isPathActive = (currentPath: string, targetHref: string) => {
 export const OfficeLayout = ({
   rightContent,
   leftContent,
-  showBreadcrumb = true,
+  showBreadcrumb = false,
   breadcrumbItems,
   autoGenerateBreadcrumbs = true,
+  contentProps,
+  leftContainerProps,
+  rightContainerProps,
 }: OfficeLayoutProps) => {
   const pathname = usePathname()
   const currentPath = pathname ?? ''
@@ -82,10 +92,20 @@ export const OfficeLayout = ({
   const childRoutes = useMemo(() => getChildRoutes('/office'), [])
 
   const topLevelRoutes = useMemo(() => {
+    // Filter to only include routes that are direct children of /office
+    // These will have paths like /office/applications, /office/cms, etc.
+    // Exclude nested routes (which would have 4+ segments like /office/cms/jobs)
     return childRoutes.filter((route: RouteConfig) => {
+      // Skip hidden routes
+      if (route.hidden) {
+        return false
+      }
       const pathSegments = route.path.split('/').filter(Boolean)
-      // Top-level routes have exactly 2 segments: ['office', 'section']
-      return pathSegments.length === 2
+      // Top-level routes have 2-3 segments:
+      // - 2 segments: ['office', 'section'] e.g. /office/applications
+      // - 3 segments: ['office', 'section', 'subsection'] e.g. /office/cms (which is a container)
+      // Exclude deeper nested routes (4+ segments)
+      return pathSegments.length >= 2 && pathSegments.length <= 3 && pathSegments[0] === 'office'
     })
   }, [childRoutes])
 
@@ -114,12 +134,16 @@ export const OfficeLayout = ({
   const hasRightContent = Boolean(rightContent)
   const hasBothColumns = hasLeftContent && hasRightContent
 
+  const { $md: contentMdProps, ...restContentProps } = contentProps ?? {}
+  const { $md: leftMdProps, ...restLeftContainerProps } = leftContainerProps ?? {}
+  const { $md: rightMdProps, ...restRightContainerProps } = rightContainerProps ?? {}
+
   const handleTabChange = () => {
     // Navigation is handled by Link components in Tab
   }
 
   return (
-    <ScrollView flex={1} bg="$color2" showsVerticalScrollIndicator={false}>
+    <ScrollView flex={1} bg="$color3" showsVerticalScrollIndicator={false}>
       <YStack gap="$3" pt="$3" pb="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
@@ -150,10 +174,12 @@ export const OfficeLayout = ({
           gap="$3"
           p="$3"
           flexDirection="column"
+          {...restContentProps}
           $md={{
             gap: '$8',
             p: '$7',
             flexDirection: 'row',
+            ...(contentMdProps ?? {}),
           }}
         >
           {hasLeftContent && (
@@ -162,12 +188,14 @@ export const OfficeLayout = ({
               width="100%"
               maxW="100%"
               flexBasis="auto"
+              {...restLeftContainerProps}
               $md={{
                 minW: hasBothColumns ? 300 : 'auto',
                 width: hasBothColumns ? '60%' : '100%',
                 maxW: hasBothColumns ? '60%' : '100%',
                 flexBasis: hasBothColumns ? '60%' : 'auto',
                 flex: hasBothColumns ? 1 : undefined,
+                ...(leftMdProps ?? {}),
               }}
             >
               {leftContent}
@@ -179,11 +207,13 @@ export const OfficeLayout = ({
               width="100%"
               maxW="100%"
               flexBasis="auto"
+              {...restRightContainerProps}
               $md={{
                 minW: hasBothColumns ? 300 : 'auto',
                 width: hasBothColumns ? '40%' : '100%',
                 maxW: hasBothColumns ? '40%' : '100%',
                 flexBasis: hasBothColumns ? '40%' : 'auto',
+                ...(rightMdProps ?? {}),
               }}
             >
               {rightContent}

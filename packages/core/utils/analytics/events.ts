@@ -35,6 +35,13 @@ export const eventSchemas = {
     job_id: z.string(),
     url: z.string().nullable().optional(),
   }),
+  map_profile_hover_card_opened: z.object({
+    pin_type: z.enum(['worker', 'organization']),
+    recentered: z.boolean(),
+    trigger: z.literal('click'),
+    viewport: z.enum(['desktop', 'mobile']),
+    reason: z.enum(['edge', 'forced']).optional(),
+  }),
 } as const
 
 export type AnalyticsEventName = keyof typeof eventSchemas

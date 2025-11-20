@@ -8,6 +8,7 @@ import {
   ToggleSwitch,
   type ViewportBounds,
 } from '@app/ui'
+import { captureEvent } from '@app/core/utils/analytics/client'
 import {
   List as ListIcon,
   Map as MapIcon,
@@ -17,7 +18,16 @@ import {
 } from '@tamagui/lucide-icons'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Tabs, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  ScrollView,
+  Tabs,
+  Text,
+  useWindowDimensions,
+  XStack,
+  YStack,
+  type TamaguiElement,
+} from 'tamagui'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { MapFilterBar } from './components/MapFilterBar'
 import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
@@ -33,6 +43,10 @@ import { useOrganizations } from './hooks/useOrganizations'
 import { useTalentProfiles } from './hooks/useTalentProfiles'
 import { useUserLocation } from './hooks/useUserLocation'
 import { useMapState } from './providers/MapStateProvider'
+import { isPinNearViewportEdge } from './utils/hoverCardPositioning'
+
+type HoverCardTrigger = 'click'
+const MAP_RECENTER_DELAY_MS = 360
 
 export const DiscoverMapScreen = () => {
   // Use window dimensions for conditional rendering
@@ -43,6 +57,7 @@ export const DiscoverMapScreen = () => {
   const isSmallScreen = width <= 800 || isNativeMobile // ensure native mobile always treated as small
   const resultListRef = useRef<ResultListRef>(null)
   const mapRef = useRef<MapContainerRef>(null)
+  const layoutRef = useRef<TamaguiElement | null>(null)
 
   // Location functionality
   const { location } = useUserLocation()
@@ -71,15 +86,13 @@ export const DiscoverMapScreen = () => {
   const mapboxToken = process.env.EXPO_PUBLIC_MAPBOX_TOKEN
 
   // Hover state management
-  const [hoveredPinId, setHoveredPinId] = useState<string | null>(null)
-  const [hoveredPinType, setHoveredPinType] = useState<'worker' | 'organization' | null>(null)
+  const [activePinId, setActivePinId] = useState<string | null>(null)
+  const [activePinType, setActivePinType] = useState<'worker' | 'organization' | null>(null)
   const [hoverCardVisible, setHoverCardVisible] = useState(false)
   const [hoverCardPosition, setHoverCardPosition] = useState<{ x: number; y: number } | undefined>(
     undefined
   )
-  const [isHoverCardPinned, setIsHoverCardPinned] = useState(false)
-  const [isHoverCardLocked, setIsHoverCardLocked] = useState(false)
-  const hoverDismissPendingRef = useRef(false)
+  const recenterTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Pin state management for transitions and clustering
   const [clusters, setClusters] = useState<ClusterInfo[]>([])
@@ -214,6 +227,14 @@ export const DiscoverMapScreen = () => {
   }, [processPins])
 
   useEffect(() => {
+    return () => {
+      if (recenterTimeoutRef.current) {
+        clearTimeout(recenterTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     if (mapPins.length > 0 || clusters.length > 0) {
       processPinsRef.current(mapPins, clusters)
     }
@@ -249,11 +270,12 @@ export const DiscoverMapScreen = () => {
   }, [])
 
   const clearHoverState = useCallback(() => {
-    hoverDismissPendingRef.current = false
-    setIsHoverCardPinned(false)
-    setIsHoverCardLocked(false)
-    setHoveredPinId(null)
-    setHoveredPinType(null)
+    if (recenterTimeoutRef.current) {
+      clearTimeout(recenterTimeoutRef.current)
+      recenterTimeoutRef.current = null
+    }
+    setActivePinId(null)
+    setActivePinType(null)
     setHoverCardVisible(false)
     setHoverCardPosition(undefined)
   }, [])
@@ -273,64 +295,119 @@ export const DiscoverMapScreen = () => {
 
   const updateHoverCardPosition = useCallback((pinId: string) => {
     const coords = mapRef.current?.getPinScreenCoordinates?.(pinId)
-    if (coords) {
-      setHoverCardPosition(coords)
+    if (!coords) {
+      return
     }
+
+    if (Platform.OS === 'web') {
+      const mapRect = mapRef.current?.getContainerRect?.()
+      const layoutNode = layoutRef.current
+      const layoutRect =
+        layoutNode && 'getBoundingClientRect' in layoutNode
+          ? (layoutNode as HTMLElement).getBoundingClientRect()
+          : null
+      if (mapRect && layoutRect) {
+        setHoverCardPosition({
+          x: mapRect.left - layoutRect.left + coords.x,
+          y: mapRect.top - layoutRect.top + coords.y,
+        })
+        return
+      }
+    }
+
+    setHoverCardPosition(coords)
   }, [])
+
+  const maybeCenterPinForHoverCard = useCallback(
+    (pinId: string, { force }: { force?: boolean } = {}) => {
+      const mapInstance = mapRef.current
+      if (!mapInstance?.centerOnPin) {
+        return { recentered: false as const }
+      }
+
+      const coords = mapInstance.getPinScreenCoordinates?.(pinId)
+      const mapRect = mapInstance.getContainerRect?.()
+
+      const basePadding = {
+        horizontal: isSmallScreen ? 140 : 220,
+        vertical: isSmallScreen ? 160 : 220,
+      }
+      const viewport = mapRect
+        ? {
+            width: mapRect.width,
+            height: mapRect.height,
+          }
+        : null
+      const nearEdge = isPinNearViewportEdge(coords ?? null, viewport, basePadding)
+
+      if (force || nearEdge) {
+        mapInstance.centerOnPin(pinId, { preserveZoom: true })
+        return {
+          recentered: true as const,
+          reason: nearEdge ? ('edge' as const) : ('forced' as const),
+        }
+      }
+
+      return { recentered: false as const }
+    },
+    [isSmallScreen]
+  )
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return
+    }
+    if (!hoverCardVisible || !activePinId) {
+      return
+    }
+    const handleResize = () => {
+      updateHoverCardPosition(activePinId)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [hoverCardVisible, activePinId, updateHoverCardPosition])
 
   const showHoverCardForPin = useCallback(
-    (pinId: string, pinType: 'worker' | 'organization') => {
-      hoverDismissPendingRef.current = false
-      setHoveredPinId(pinId)
-      setHoveredPinType(pinType)
-      setHoverCardVisible(true)
-      updateHoverCardPosition(pinId)
-    },
-    [updateHoverCardPosition]
-  )
+    (
+      pinId: string,
+      pinType: 'worker' | 'organization',
+      options: { trigger: HoverCardTrigger; forceCenter?: boolean } = { trigger: 'click' }
+    ) => {
+      setActivePinId(pinId)
+      setActivePinType(pinType)
 
-  // Handle pin hover - show preview card
-  const handlePinHover = useCallback(
-    (pinId: string | null) => {
-      if (pinId === null) {
-        if (isHoverCardPinned || isHoverCardLocked) {
-          hoverDismissPendingRef.current = true
-          return
+      const result = maybeCenterPinForHoverCard(pinId, { force: options.forceCenter })
+      const revealHoverCard = () => {
+        updateHoverCardPosition(pinId)
+        setHoverCardVisible(true)
+
+        if (result.recentered && Platform.OS === 'web') {
+          captureEvent('map_profile_hover_card_opened', {
+            pin_type: pinType,
+            recentered: true,
+            trigger: options.trigger,
+            viewport: isSmallScreen ? 'mobile' : 'desktop',
+            reason: result.reason ?? 'edge',
+          })
         }
-        clearHoverState()
-        return
       }
 
-      if (isHoverCardLocked) {
-        return
-      }
-
-      hoverDismissPendingRef.current = false
-
-      const pinType = getPinType(pinId)
-
-      if (pinType) {
-        setIsHoverCardPinned(false)
-        showHoverCardForPin(pinId, pinType)
+      if (result.recentered) {
+        setHoverCardVisible(false)
+        if (recenterTimeoutRef.current) {
+          clearTimeout(recenterTimeoutRef.current)
+        }
+        recenterTimeoutRef.current = setTimeout(() => {
+          revealHoverCard()
+        }, MAP_RECENTER_DELAY_MS)
       } else {
-        clearHoverState()
+        revealHoverCard()
       }
     },
-    [clearHoverState, getPinType, isHoverCardLocked, isHoverCardPinned, showHoverCardForPin]
+    [isSmallScreen, maybeCenterPinForHoverCard, updateHoverCardPosition]
   )
-
-  const handleHoverCardEnter = useCallback(() => {
-    hoverDismissPendingRef.current = false
-    setIsHoverCardPinned(true)
-  }, [])
-
-  const handleHoverCardLeave = useCallback(() => {
-    setIsHoverCardPinned(false)
-    if (hoverDismissPendingRef.current && !isHoverCardLocked) {
-      hoverDismissPendingRef.current = false
-      clearHoverState()
-    }
-  }, [clearHoverState, isHoverCardLocked])
 
   // Handle pin click - focus corresponding card
   const handleMarkerPress = useCallback(
@@ -348,10 +425,11 @@ export const DiscoverMapScreen = () => {
 
       const pinType = getPinType(pinId)
       if (pinType) {
-        setIsHoverCardLocked(true)
-        showHoverCardForPin(pinId, pinType)
+        showHoverCardForPin(pinId, pinType, {
+          trigger: 'click',
+          forceCenter: isSmallScreen,
+        })
       } else {
-        setIsHoverCardLocked(false)
         clearHoverState()
       }
 
@@ -431,49 +509,55 @@ export const DiscoverMapScreen = () => {
 
   // Handle viewport changes from map (debounced by 500ms in MapContainer)
   // Only update viewport bounds for data fetching, not persisted state (to avoid excessive updates)
-  const handleViewportChange = useCallback((bounds: ViewportBounds, _zoom: number) => {
-    // Only update bounds if they've changed significantly (avoid unnecessary refetches)
-    // Check both center position and bounds size to determine if viewport changed meaningfully
-    setViewportBounds((prevBounds) => {
-      if (!prevBounds) {
-        setMapReady(true)
-        return bounds // First bounds update
+  const handleViewportChange = useCallback(
+    (bounds: ViewportBounds, _zoom: number) => {
+      // Only update bounds if they've changed significantly (avoid unnecessary refetches)
+      // Check both center position and bounds size to determine if viewport changed meaningfully
+      setViewportBounds((prevBounds) => {
+        if (!prevBounds) {
+          setMapReady(true)
+          return bounds // First bounds update
+        }
+
+        // Calculate center points
+        const prevCenterLat = (prevBounds.north + prevBounds.south) / 2
+        const prevCenterLng = (prevBounds.east + prevBounds.west) / 2
+        const centerLat = (bounds.north + bounds.south) / 2
+        const centerLng = (bounds.east + bounds.west) / 2
+
+        // Calculate bounds size (width and height)
+        const prevLatRange = Math.abs(prevBounds.north - prevBounds.south)
+        const prevLngRange = Math.abs(prevBounds.east - prevBounds.west)
+        const latRange = Math.abs(bounds.north - bounds.south)
+        const lngRange = Math.abs(bounds.east - bounds.west)
+
+        // Check if center moved significantly (more than 20% of viewport size)
+        const centerLatDiff = Math.abs(centerLat - prevCenterLat) / prevLatRange
+        const centerLngDiff = Math.abs(centerLng - prevCenterLng) / prevLngRange
+
+        // Check if bounds size changed significantly (more than 15% change in zoom)
+        const latRangeDiff = Math.abs(latRange - prevLatRange) / prevLatRange
+        const lngRangeDiff = Math.abs(lngRange - prevLngRange) / prevLngRange
+
+        // Only update if center moved significantly OR bounds size changed significantly
+        // This prevents refetching on small pans while still updating on zoom changes
+        if (
+          centerLatDiff > 0.2 ||
+          centerLngDiff > 0.2 ||
+          latRangeDiff > 0.15 ||
+          lngRangeDiff > 0.15
+        ) {
+          setMapReady(true)
+          return bounds
+        }
+        return prevBounds // Keep previous bounds to avoid unnecessary refetch
+      })
+      if (hoverCardVisible && activePinId) {
+        updateHoverCardPosition(activePinId)
       }
-
-      // Calculate center points
-      const prevCenterLat = (prevBounds.north + prevBounds.south) / 2
-      const prevCenterLng = (prevBounds.east + prevBounds.west) / 2
-      const centerLat = (bounds.north + bounds.south) / 2
-      const centerLng = (bounds.east + bounds.west) / 2
-
-      // Calculate bounds size (width and height)
-      const prevLatRange = Math.abs(prevBounds.north - prevBounds.south)
-      const prevLngRange = Math.abs(prevBounds.east - prevBounds.west)
-      const latRange = Math.abs(bounds.north - bounds.south)
-      const lngRange = Math.abs(bounds.east - bounds.west)
-
-      // Check if center moved significantly (more than 20% of viewport size)
-      const centerLatDiff = Math.abs(centerLat - prevCenterLat) / prevLatRange
-      const centerLngDiff = Math.abs(centerLng - prevCenterLng) / prevLngRange
-
-      // Check if bounds size changed significantly (more than 15% change in zoom)
-      const latRangeDiff = Math.abs(latRange - prevLatRange) / prevLatRange
-      const lngRangeDiff = Math.abs(lngRange - prevLngRange) / prevLngRange
-
-      // Only update if center moved significantly OR bounds size changed significantly
-      // This prevents refetching on small pans while still updating on zoom changes
-      if (
-        centerLatDiff > 0.2 ||
-        centerLngDiff > 0.2 ||
-        latRangeDiff > 0.15 ||
-        lngRangeDiff > 0.15
-      ) {
-        setMapReady(true)
-        return bounds
-      }
-      return prevBounds // Keep previous bounds to avoid unnecessary refetch
-    })
-  }, [])
+    },
+    [activePinId, hoverCardVisible, updateHoverCardPosition]
+  )
 
   const handleMapReady = useCallback(({ bounds }: { bounds: ViewportBounds; zoom: number }) => {
     setViewportBounds(bounds)
@@ -504,7 +588,7 @@ export const DiscoverMapScreen = () => {
   }, [])
 
   return (
-    <YStack flex={1} height="100vh" overflow="hidden" position="relative">
+    <YStack ref={layoutRef} flex={1} height="100vh" overflow="hidden" position="relative">
       {/* Filter Bar / Mobile Header */}
       {isSmallScreen ? (
         <MobileSearchHeader
@@ -556,7 +640,6 @@ export const DiscoverMapScreen = () => {
               radius={state.lastSearchLocation ? 50 : undefined}
               centerLocation={state.lastSearchLocation?.coordinates}
               onPinPress={handleMarkerPress}
-              onPinHover={handlePinHover}
               onViewportChange={handleViewportChange}
               onMapReady={handleMapReady}
               onClustersChange={handleClustersChange}
@@ -574,7 +657,6 @@ export const DiscoverMapScreen = () => {
               radius={state.lastSearchLocation ? 50 : undefined}
               centerLocation={state.lastSearchLocation?.coordinates}
               onPinPress={handleMarkerPress}
-              onPinHover={handlePinHover}
               onViewportChange={handleViewportChange}
               onMapReady={handleMapReady}
               onClustersChange={handleClustersChange}
@@ -603,12 +685,10 @@ export const DiscoverMapScreen = () => {
       {/* Hover Card - Web only */}
       {Platform.OS === 'web' && (
         <ProfileHoverCard
-          pinId={hoveredPinId}
-          pinType={hoveredPinType}
+          pinId={activePinId}
+          pinType={activePinType}
           visible={hoverCardVisible}
           position={hoverCardPosition}
-          onHoverCardEnter={handleHoverCardEnter}
-          onHoverCardLeave={handleHoverCardLeave}
         />
       )}
 
@@ -741,6 +821,7 @@ const MobileSearchHeader = ({
             rounded: '$5',
             height: 25,
             justifyContent: 'center',
+            style: { flexShrink: 1 },
           }}
         />
       ) : (
@@ -752,6 +833,7 @@ const MobileSearchHeader = ({
           borderWidth={1}
           borderColor="$red8"
           gap="$2"
+          style={{ flexShrink: 1 }}
         >
           <Text fontSize="$4" fontWeight="600" color="$red10">
             Map Search Unavailable
@@ -769,6 +851,7 @@ const MobileSearchHeader = ({
         icon={SlidersHorizontal}
         aria-label="Open filters"
         onPress={onFiltersPress}
+        style={{ flexShrink: 0 }}
       />
     </XStack>
   )
