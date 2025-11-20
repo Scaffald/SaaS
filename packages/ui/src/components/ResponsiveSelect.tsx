@@ -114,11 +114,11 @@ export function ResponsiveSelect({
           size={size}
           disabled={disabled}
           onPress={() => !disabled && setIsOpen(true)}
-          justifyContent="space-between"
+          justify="space-between"
           width="100%"
           {...triggerProps}
         >
-          <Text flex={1} textAlign="left" color={selectedOption ? '$color' : '$color10'}>
+          <Text flex={1} ta="left" color={selectedOption ? '$color' : '$color10'}>
             {displayValue}
           </Text>
           <ChevronDown size={16} />
@@ -166,7 +166,7 @@ export function ResponsiveSelect({
                         onValueChange(option.value)
                         setIsOpen(false)
                       }}
-                      justifyContent="space-between"
+                      justify="space-between"
                       bg={isSelected ? '$blue2' : 'transparent'}
                       borderWidth={isSelected ? 1 : 0}
                       borderColor="$blue8"
@@ -174,7 +174,7 @@ export function ResponsiveSelect({
                         bg: isSelected ? '$blue3' : '$backgroundHover',
                       }}
                     >
-                      <Text flex={1} textAlign="left" fontWeight={isSelected ? '600' : '400'}>
+                      <Text flex={1} ta="left" fontWeight={isSelected ? '600' : '400'}>
                         {option.label}
                       </Text>
                       {showIndicator && isSelected && <Check size={16} color="$blue10" />}
