@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { ScrollView, XStack, YStack } from 'tamagui'
+import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
+import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb'
 import { ProfileTabs } from '../navigation/ProfileTabs'
 
 type ProfileLayoutProps = {
@@ -7,16 +9,41 @@ type ProfileLayoutProps = {
   leftContent: ReactNode
   /** Whether to show tab navigation (default: true) */
   showTabs?: boolean
+  /** Whether to show breadcrumb navigation (default: true) */
+  showBreadcrumb?: boolean
+  /** Manual breadcrumb items to override auto-generation */
+  breadcrumbItems?: BreadcrumbItem[]
+  /** Whether to auto-generate breadcrumbs from route (default: true) */
+  autoGenerateBreadcrumbs?: boolean
 }
 
 export const ProfileLayout = ({
   rightContent,
   leftContent,
   showTabs = true,
+  showBreadcrumb = true,
+  breadcrumbItems,
+  autoGenerateBreadcrumbs = true,
 }: ProfileLayoutProps) => {
+  // Auto-generate breadcrumbs if enabled and no manual override
+  const { breadcrumbs } = useBreadcrumbs({
+    autoGenerate: autoGenerateBreadcrumbs && !breadcrumbItems,
+    customItems: breadcrumbItems,
+  })
+
+  // Determine which breadcrumbs to display
+  const displayBreadcrumbs = breadcrumbItems || breadcrumbs
+
   return (
     <ScrollView flex={1} bg="$color4" showsVerticalScrollIndicator={false}>
       <YStack gap="$3" pt="$3" pb="$5">
+        {/* Breadcrumb - positioned at top */}
+        {showBreadcrumb && displayBreadcrumbs.length > 0 && (
+          <XStack px="$2" pt="$3" $md={{ px: '$7' }}>
+            <Breadcrumb items={displayBreadcrumbs} />
+          </XStack>
+        )}
+
         {/* Tab Navigation - positioned at top */}
         {showTabs && (
           <XStack pt="$3" $md={{ pt: '$3' }}>

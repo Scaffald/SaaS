@@ -29,7 +29,18 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Employer not specified
           </Text>
-          <Button onPress={() => router.back()}>Go Back</Button>
+          <Button
+            onPress={() => {
+              // Try to go back, fallback to employers list if no history
+              try {
+                router.back()
+              } catch {
+                router.replace('/dashboard/discover/employers')
+              }
+            }}
+          >
+            Go Back
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -53,7 +64,18 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Employer not found
           </Text>
-          <Button onPress={() => router.back()}>Go Back</Button>
+          <Button
+            onPress={() => {
+              // Try to go back, fallback to employers list if no history
+              try {
+                router.back()
+              } catch {
+                router.replace('/dashboard/discover/employers')
+              }
+            }}
+          >
+            Go Back
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -69,7 +91,19 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     <DashboardWidget gap="$4">
       {/* Header with Back Button */}
       <XStack items="center" gap="$3">
-        <Button size="$3" variant="outlined" icon={ArrowLeft} onPress={() => router.back()}>
+        <Button
+          size="$3"
+          variant="outlined"
+          icon={ArrowLeft}
+          onPress={() => {
+            // Try to go back, fallback to employers list if no history
+            try {
+              router.back()
+            } catch {
+              router.replace('/dashboard/discover/employers')
+            }
+          }}
+        >
           Back
         </Button>
         <XStack items="center" gap="$2" flex={1}>
