@@ -556,7 +556,7 @@ const ROUTES_CONFIG = {
     },
     ATS: {
       path: '/office/ats',
-      title: 'Applications',
+      title: 'ATS',
       protected: true,
       exact: false,
       icon: ClipboardCheck,
@@ -612,6 +612,7 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
       icon: Bell,
+      hidden: true,
     },
     STORAGE: {
       path: '/office/storage',
@@ -619,6 +620,7 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: true,
       icon: HardDrive,
+      hidden: true,
     },
     PAYMENTS: {
       path: '/office/payments',
@@ -647,6 +649,7 @@ const ROUTES_CONFIG = {
       protected: true,
       exact: false,
       icon: ShieldCheck,
+      hidden: true,
       GEOGRAPHIC: {
         path: '/office/settings/geographic',
         title: 'Geographic Settings',

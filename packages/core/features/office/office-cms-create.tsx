@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate } from '@app/schemas'
-import { DashboardLayout } from '@app/ui'
+import { OfficeLayout } from '@app/ui'
 import { useRouter } from 'expo-router'
 import { Text, YStack } from 'tamagui'
 import { CMSSlideForm } from './cms-slide-form'
@@ -16,7 +16,8 @@ export function OfficeCMSCreate() {
   }
 
   return (
-    <DashboardLayout
+    <OfficeLayout
+      showBreadcrumb
       leftContent={
         <YStack gap="$4">
           <CMSSlideForm onSubmit={handleSubmit} isLoading={createSlide.isPending} />

@@ -29,4 +29,4 @@
  *
  * This is an architectural limitation, not a code quality issue.
  */
-export type AppRouter = any
+export type AppRouter = any;

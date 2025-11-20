@@ -125,10 +125,60 @@ export const OfficeLayout = ({
     [topLevelRoutes]
   )
 
+  const activeTopRoute = useMemo(() => {
+    return (
+      topLevelRoutes.find((route) => isPathActive(currentPath, route.path)) ?? topLevelRoutes[0]
+    )
+  }, [currentPath, topLevelRoutes])
+
   const activeTabValue = useMemo(() => {
     const activeItem = tabItems.find((item: TabItem) => isPathActive(currentPath, item.href))
     return activeItem?.key ?? tabItems[0]?.key ?? ''
   }, [currentPath, tabItems])
+
+  const secondaryTabItems = useMemo<TabItem[]>(() => {
+    if (!activeTopRoute) {
+      return []
+    }
+
+    const parentPath = activeTopRoute.path
+    const shouldShowSecondaryTabs =
+      parentPath.startsWith('/office/cms') || parentPath.startsWith('/office/ats')
+    if (!shouldShowSecondaryTabs) {
+      return []
+    }
+
+    const children = getChildRoutes(parentPath)
+
+    return children
+      .filter((route) => {
+        if (route.hidden) {
+          return false
+        }
+        const normalizedChild = route.path.replace(/\/$/, '')
+        const normalizedParent = parentPath.replace(/\/$/, '')
+        if (normalizedChild === normalizedParent) {
+          return false
+        }
+        if (normalizedChild.includes('/:')) {
+          return false
+        }
+        return true
+      })
+      .map((route) => ({
+        key: route.path,
+        label: route.title ?? '',
+        href: route.path,
+      }))
+  }, [activeTopRoute])
+
+  const activeSecondaryValue = useMemo(() => {
+    if (secondaryTabItems.length === 0) {
+      return ''
+    }
+    const activeItem = secondaryTabItems.find((item) => isPathActive(currentPath, item.href))
+    return activeItem?.key ?? secondaryTabItems[0]?.key ?? ''
+  }, [currentPath, secondaryTabItems])
 
   const hasLeftContent = Boolean(leftContent)
   const hasRightContent = Boolean(rightContent)
@@ -154,19 +204,36 @@ export const OfficeLayout = ({
 
         {/* TabGroup Navigation - Top-level office routes */}
         {tabItems.length > 0 && (
-          <XStack px="$3" $md={{ px: '$7' }}>
-            <TabGroup
-              value={activeTabValue}
-              onValueChange={handleTabChange}
-              ariaLabel="Office navigation"
-              scrollable={isSmallScreen}
-              bordered={true}
-            >
-              {tabItems.map((item: TabItem) => (
-                <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
-              ))}
-            </TabGroup>
-          </XStack>
+          <>
+            <XStack px="$3" $md={{ px: '$7' }}>
+              <TabGroup
+                value={activeTabValue}
+                onValueChange={handleTabChange}
+                ariaLabel="Office navigation"
+                scrollable={isSmallScreen}
+                bordered={true}
+              >
+                {tabItems.map((item: TabItem) => (
+                  <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
+                ))}
+              </TabGroup>
+            </XStack>
+            {secondaryTabItems.length > 0 && (
+              <XStack px="$3" $md={{ px: '$7' }}>
+                <TabGroup
+                  value={activeSecondaryValue}
+                  onValueChange={handleTabChange}
+                  ariaLabel="Office subsection navigation"
+                  scrollable={isSmallScreen}
+                  bordered={false}
+                >
+                  {secondaryTabItems.map((item: TabItem) => (
+                    <Tab key={item.key} value={item.key} label={item.label} href={item.href} />
+                  ))}
+                </TabGroup>
+              </XStack>
+            )}
+          </>
         )}
 
         {/* Content Area - Use programmatic responsive flexDirection */}

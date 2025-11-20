@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout } from '@app/ui'
+import { OfficeLayout } from '@app/ui'
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useState } from 'react'
@@ -52,7 +52,8 @@ export function OfficeCMSList() {
   }
 
   return (
-    <DashboardLayout
+    <OfficeLayout
+      showBreadcrumb
       leftContent={
         <YStack flex={1} gap="$4">
           <XStack justify="space-between" items="center">

@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
-import { DashboardLayout } from '@app/ui'
+import { OfficeLayout } from '@app/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Spinner, Text, YStack } from 'tamagui'
 import { CMSSlideForm } from './cms-slide-form'
@@ -21,7 +21,8 @@ export function OfficeCMSEdit() {
 
   if (isLoading) {
     return (
-      <DashboardLayout
+      <OfficeLayout
+        showBreadcrumb
         leftContent={
           <YStack items="center" justify="center" flex={1}>
             <Spinner size="large" />
@@ -34,7 +35,8 @@ export function OfficeCMSEdit() {
 
   if (!data?.slide) {
     return (
-      <DashboardLayout
+      <OfficeLayout
+        showBreadcrumb
         leftContent={
           <YStack gap="$4">
             <Text>Slide not found</Text>
@@ -46,7 +48,8 @@ export function OfficeCMSEdit() {
   }
 
   return (
-    <DashboardLayout
+    <OfficeLayout
+      showBreadcrumb
       leftContent={
         <YStack gap="$4">
           <CMSSlideForm

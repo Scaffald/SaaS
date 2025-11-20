@@ -1,7 +1,7 @@
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { DashboardLayout, ResponsiveSelect } from '@app/ui'
+import { OfficeLayout, ResponsiveSelect } from '@app/ui'
 import {
   Eye,
   EyeOff,
@@ -127,7 +127,8 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
   const _getItemName = (project: Project) => project.name
 
   return (
-    <DashboardLayout
+    <OfficeLayout
+      showBreadcrumb
       leftContent={
         <YStack flex={1} p="$4" gap="$4">
           {showHeader && (
