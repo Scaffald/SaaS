@@ -66,12 +66,11 @@ export function useAddressAutocomplete(
 
   const provider = externalProvider || hookProvider
   const abortControllerRef = useRef<AbortController | null>(null)
-  const mounted = useRef(false)
+  const mounted = useRef(true)
   const lastRequest = useRef<unknown>(undefined)
 
   // Mounted tracking
   useEffect(() => {
-    mounted.current = true
     return () => {
       mounted.current = false
     }
@@ -130,7 +129,11 @@ export function useAddressAutocomplete(
         }
 
         if (!mounted.current) return
-        setResults(searchResults)
+        const limitedResults =
+          typeof maxResults === 'number' && maxResults > 0
+            ? searchResults.slice(0, maxResults)
+            : searchResults
+        setResults(limitedResults)
         setError(null)
       } catch (err: unknown) {
         // Don't show error for aborted requests or if unmounted/stale

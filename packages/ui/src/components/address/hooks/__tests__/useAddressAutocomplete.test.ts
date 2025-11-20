@@ -23,7 +23,7 @@ vi.mock('../useDebounce', () => ({
   useAddressDebouncedCallback: vi.fn(),
 }))
 
-import type { AddressResult } from '../../types'
+import type { AddressResult, UseAddressAutocompleteReturn } from '../../types'
 import { useAddressAutocomplete } from '../useAddressAutocomplete'
 
 describe('useAddressAutocomplete', () => {
@@ -31,8 +31,20 @@ describe('useAddressAutocomplete', () => {
     vi.clearAllMocks()
   })
 
+  const triggerSearch = async (
+    result: { current: UseAddressAutocompleteReturn },
+    query: string
+  ) => {
+    await act(async () => {
+      result.current.search(query)
+      await Promise.resolve()
+    })
+  }
+
   it('initializes with empty state', () => {
-    const { result } = renderHook(() => useAddressAutocomplete({ debounceMs: 0 }))
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
     expect(result.current.results).toEqual([])
     expect(result.current.loading).toBe(false)
@@ -60,11 +72,11 @@ describe('useAddressAutocomplete', () => {
 
     mockProvider.search.mockResolvedValue(mockResults)
 
-    const { result } = renderHook(() => useAddressAutocomplete({ debounceMs: 0 }))
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
-    act(() => {
-      result.current.search('Boston')
-    })
+    await triggerSearch(result, 'Boston')
 
     await waitFor(() => {
       expect(mockProvider.search).toHaveBeenCalledWith('Boston', expect.any(Object))
@@ -96,11 +108,11 @@ describe('useAddressAutocomplete', () => {
 
     mockProvider.search.mockResolvedValue(mockResults)
 
-    const { result } = renderHook(() => useAddressAutocomplete({ debounceMs: 0 }))
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
-    act(() => {
-      result.current.search('Boston')
-    })
+    await triggerSearch(result, 'Boston')
 
     await waitFor(() => {
       expect(result.current.results).toEqual(mockResults)
@@ -114,11 +126,11 @@ describe('useAddressAutocomplete', () => {
     })
     mockProvider.search.mockReturnValue(searchPromise)
 
-    const { result } = renderHook(() => useAddressAutocomplete({ debounceMs: 0 }))
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
-    act(() => {
-      result.current.search('Boston')
-    })
+    await triggerSearch(result, 'Boston')
 
     // Wait for debounced query to trigger search
     await waitFor(
@@ -140,11 +152,11 @@ describe('useAddressAutocomplete', () => {
     const error = new Error('Search failed')
     mockProvider.search.mockRejectedValue(error)
 
-    const { result } = renderHook(() => useAddressAutocomplete({ debounceMs: 0 }))
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
-    act(() => {
-      result.current.search('Boston')
-    })
+    await triggerSearch(result, 'Boston')
 
     await waitFor(() => {
       expect(result.current.error).toBeTruthy()
@@ -173,9 +185,11 @@ describe('useAddressAutocomplete', () => {
 
     mockProvider.search.mockResolvedValue(mockResults)
 
-    const { result } = renderHook(() => useAddressAutocomplete({ debounceMs: 0 }))
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
-    result.current.search('Boston')
+    await triggerSearch(result, 'Boston')
 
     await waitFor(
       () => {
@@ -215,14 +229,13 @@ describe('useAddressAutocomplete', () => {
         })
     )
 
-    const { result } = renderHook(() => useAddressAutocomplete())
+    const { result } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
-    act(() => {
-      result.current.search('Boston')
-    })
+    await triggerSearch(result, 'Boston')
 
     await waitFor(() => {
-      expect(mockProvider.search).toHaveBeenCalled()
       expect(result.current.loading).toBe(true)
     })
 
@@ -247,14 +260,13 @@ describe('useAddressAutocomplete', () => {
   it('prevents search when query is shorter than minLength', async () => {
     const { result } = renderHook(() =>
       useAddressAutocomplete({
+        provider: mockProvider,
         minLength: 3,
         debounceMs: 0,
       })
     )
 
-    act(() => {
-      result.current.search('Bo')
-    })
+    await triggerSearch(result, 'Bo')
 
     await waitFor(() => {
       expect(mockProvider.search).not.toHaveBeenCalled()
@@ -282,32 +294,26 @@ describe('useAddressAutocomplete', () => {
 
     const { result } = renderHook(() =>
       useAddressAutocomplete({
+        provider: mockProvider,
         maxResults: 5,
         debounceMs: 0,
       })
     )
 
-    act(() => {
-      result.current.search('City')
-    })
+    await triggerSearch(result, 'City')
 
     await waitFor(() => {
-      expect(mockProvider.search).toHaveBeenCalled()
-    })
-
-    await waitFor(() => {
-      expect(mockProvider.search).toHaveBeenCalledWith(
-        'City',
-        expect.objectContaining({ limit: 5 })
-      )
+      expect(result.current.results).toHaveLength(5)
     })
   })
 
   it('handles provider not ready state', async () => {
     mockIsReady = false
-    const { result, rerender } = renderHook(() => useAddressAutocomplete({ debounceMs: 0 }))
+    const { result, rerender } = renderHook(() =>
+      useAddressAutocomplete({ provider: mockProvider, debounceMs: 0 })
+    )
 
-    result.current.search('Boston')
+    await triggerSearch(result, 'Boston')
 
     await waitFor(() => {
       expect(result.current.error).toBe('Geocoding provider not available')

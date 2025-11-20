@@ -1,10 +1,11 @@
 import { RouteBuilder } from '@app/core/constants/routes'
+import { DiscoverCard } from '@app/ui'
 import { Award, BadgeCheck, Clock3, DollarSign, ExternalLink, Star } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { Button, Paragraph, SizableText, Text, XStack, YStack } from 'tamagui'
+import { Button, Paragraph, SizableText, Text, XStack } from 'tamagui'
 
 import type { TalentProfile } from '../types'
 
@@ -22,7 +23,7 @@ export const ResultCard = memo(
     const handleCardPress = () => {
       // Notify parent component about selection
       onSelect(profile.id)
-      
+
       // Navigate to detail page
       try {
         router.push(RouteBuilder.discoverWorkerDetail(profile.id))
@@ -39,30 +40,11 @@ export const ResultCard = memo(
     }
 
     return (
-      <YStack
-        ref={(node) => {
-          // Forward to parent ref
-          if (typeof forwardedRef === 'function') {
-            forwardedRef(node)
-          } else if (forwardedRef) {
-            forwardedRef.current = node
-          }
-        }}
-        borderWidth={1}
-        borderColor={isSelected ? '$blue9' : '$color5'}
-        rounded="$3"
-        p="$3"
-        bg={isSelected ? '$blue9' : '$background'}
-        gap="$2"
-        width="100%"
-        pressStyle={{ scale: 0.98 }}
-        hoverStyle={{ bg: isSelected ? '$blue9' : '$color2' }}
+      <DiscoverCard
+        ref={forwardedRef}
+        variant="info"
+        isSelected={isSelected}
         onPress={handleCardPress}
-        // Add animation for selection highlight
-        animation={isSelected ? 'bouncy' : undefined}
-        animateOnly={['backgroundColor', 'borderColor']}
-        // Add subtle shadow when selected
-        style={isSelected ? { boxShadow: '0 4px 8px rgba(59, 130, 246, 0.2)' } : undefined}
       >
         <XStack justify="space-between" items="center">
           <SizableText size="$5" fontWeight="700" color={isSelected ? '$color1' : '$color12'}>
@@ -177,7 +159,7 @@ export const ResultCard = memo(
         >
           View Full Profile
         </Button>
-      </YStack>
+      </DiscoverCard>
     )
   })
 )

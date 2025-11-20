@@ -136,7 +136,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
           drawerType: isSmall ? 'front' : 'permanent',
           swipeEnabled: isSmall,
           headerStyle: {
-            backgroundColor: theme.color3.val,
+            backgroundColor: theme.blue1.val,
             borderWidth: 0,
           },
           headerLeftContainerStyle: {
