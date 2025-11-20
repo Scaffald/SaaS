@@ -1,5 +1,5 @@
 import { DashboardWidget } from '@app/ui'
-import { H3, ScrollView, Text, YStack } from 'tamagui'
+import { H3, Text, YStack } from 'tamagui'
 
 interface ProfileRightPanelProps {
   title: string
