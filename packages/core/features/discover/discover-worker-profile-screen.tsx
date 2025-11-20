@@ -7,7 +7,7 @@ import {
   ReviewsWidget,
   SkillsWidget,
 } from '@app/core/features/profile/widgets'
-import { useAuth } from '@app/core/provider/auth/useAuth'
+import { useSessionContext } from '@app/core/utils/supabase/useSessionContext'
 import { api } from '@app/core/utils/api'
 import { type BreadcrumbItem, DashboardWidget } from '@app/ui'
 import { LinearGradient } from '@tamagui/linear-gradient'
@@ -198,7 +198,7 @@ export function DiscoverWorkerProfileScreen({
   userId,
 }: DiscoverWorkerProfileScreenOptions): DiscoverWorkerProfileScreenResult {
   const safeUserId = typeof userId === 'string' ? userId : null
-  const { session } = useAuth()
+  const { session } = useSessionContext()
   const currentUserId = session?.user?.id
 
   const generalInfoQuery = api.profile.widgets.getGeneralInfo.useQuery(

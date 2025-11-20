@@ -55,8 +55,8 @@ export function ProfileExperienceRight() {
   const { startEditing } = useExperienceEdit()
 
   // Query saved experience data
-  const experienceQuery = api.profile.getExperience.useQuery()
-  const experienceSummaryQuery = api.profile.getExperienceSummary.useQuery()
+  const experienceQuery = api.profile.experience.getExperience.useQuery()
+  const experienceSummaryQuery = api.profile.experience.getExperienceSummary.useQuery()
   const experienceEntries = experienceQuery.data || []
 
   // Show loading state

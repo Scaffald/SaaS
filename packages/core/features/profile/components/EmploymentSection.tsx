@@ -55,7 +55,7 @@ export function EmploymentSection({
   const useQuery =
     mode === 'admin' && userId
       ? () => api.office.getUserEmployment.useQuery({ userId })
-      : () => api.profile.getEmployment.useQuery()
+      : () => api.profile.employment.getEmployment.useQuery()
 
   const useMutation =
     mode === 'admin' && userId
@@ -77,7 +77,7 @@ export function EmploymentSection({
             },
           })
       : () =>
-          api.profile.updateEmployment.useMutation({
+          api.profile.employment.updateEmployment.useMutation({
             onSuccess: () => {
               toast.show('Employment Updated', {
                 message: 'Your employment preferences have been saved successfully!',

@@ -1,4 +1,5 @@
 import { getChildRoutes } from '@app/core/utils/navigation/routeHierarchy'
+import { useTranslation } from '@app/core/utils/useTranslation'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useMemo } from 'react'
 import { useWindowDimensions } from 'tamagui'
@@ -53,6 +54,7 @@ export const AssessmentsTabs = ({
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
   const isSmallScreen = width <= 800
+  const { t, locale } = useTranslation()
 
   const childRoutes = useMemo(() => getChildRoutes('/dashboard/assessments'), [])
 
@@ -67,10 +69,10 @@ export const AssessmentsTabs = ({
     () =>
       directChildRoutes.map((route) => ({
         key: route.path,
-        label: route.title ?? '',
+        label: t(route.titleKey),
         href: route.path,
       })),
-    [directChildRoutes]
+    [directChildRoutes, locale, t]
   )
 
   const activeValue = useMemo(() => {

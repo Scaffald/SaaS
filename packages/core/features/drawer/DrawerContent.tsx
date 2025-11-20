@@ -71,7 +71,7 @@ export const DrawerContent = ({
   const { resolvedTheme, set: setTheme } = useThemeSetting()
   const { user, profile } = useUser()
   const { hasOfficeRole } = useUserRoles()
-  const { data: generalProfile } = api.profile.getGeneral.useQuery(undefined, {
+  const { data: generalProfile } = api.profile.general.getGeneral.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
   })
   const isSmall = width < 1024
@@ -157,7 +157,7 @@ export const DrawerContent = ({
     <YStack
       flex={1}
       bg="$color3"
-      px={isCollapsed ? '$2' : '$4'}
+      px={isCollapsed ? '$2' : '$6'}
       py="$5"
       items={isCollapsed ? 'center' : 'stretch'}
     >

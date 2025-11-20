@@ -152,14 +152,14 @@ export function ProfileEmploymentLeft() {
     data: employmentData,
     isLoading: isLoadingEmployment,
     isFetching: isFetchingEmployment,
-  } = api.profile.getEmployment.useQuery()
-  const updateEmploymentMutation = api.profile.updateEmployment.useMutation({
+  } = api.profile.employment.getEmployment.useQuery()
+  const updateEmploymentMutation = api.profile.employment.updateEmployment.useMutation({
     async onMutate(input: UpdateEmploymentInput): Promise<UpdateEmploymentContext> {
       resetProfileSyncError()
       startProfileSync()
-      await utils.profile.getEmployment.cancel()
-      const previousEmployment = utils.profile.getEmployment.getData()
-      utils.profile.getEmployment.setData(
+      await utils.profile.employment.getEmployment.cancel()
+      const previousEmployment = utils.profile.employment.getEmployment.getData()
+      utils.profile.employment.getEmployment.setData(
         undefined,
         (current: EmploymentProfileFormData | undefined) => ({
           ...(current ?? profileEmploymentDefaults),
@@ -171,7 +171,7 @@ export function ProfileEmploymentLeft() {
     onError: (error: unknown, _input: UpdateEmploymentInput, context?: UpdateEmploymentContext) => {
       console.error('Error saving employment:', error)
       if (context?.previousEmployment) {
-        utils.profile.getEmployment.setData(undefined, context.previousEmployment)
+        utils.profile.employment.getEmployment.setData(undefined, context.previousEmployment)
       }
       failProfileSync()
       toast.show('Error', {
@@ -185,7 +185,7 @@ export function ProfileEmploymentLeft() {
       toast.show('Employment Updated', {
         message: 'Your employment preferences have been saved successfully!',
       })
-      await utils.profile.getEmployment.invalidate()
+      await utils.profile.employment.getEmployment.invalidate()
     },
     onSettled: async (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {

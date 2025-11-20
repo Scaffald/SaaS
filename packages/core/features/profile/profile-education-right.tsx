@@ -18,11 +18,11 @@ export function ProfileEducationRight() {
   const toast = useToastController()
 
   // Query saved education data
-  const educationQuery = api.profile.getEducation.useQuery()
+  const educationQuery = api.profile.education.getEducation.useQuery()
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Delete mutation
-  const deleteEducationMutation = api.profile.deleteEducation.useMutation({
+  const deleteEducationMutation = api.profile.education.deleteEducation.useMutation({
     onError: (error: unknown) => {
       toast.show('Delete Failed', {
         message:

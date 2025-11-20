@@ -1,15 +1,15 @@
-import { getGlobalQueryClient } from '@app/core/provider/react-query/queryClient'
-import type { AppRouter } from '@app/supabase/client-types'
-import { httpBatchLink, TRPCClientError, type TRPCLink } from '@trpc/client'
-import { createTRPCReact } from '@trpc/react-query'
-import { observable } from '@trpc/server/observable'
-import { Platform } from 'react-native'
-import { clearAllAuthStorage } from './auth/clearAuthStorage'
-import { supabase } from './supabase/client'
+import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
+import type { AppRouter } from "@app/supabase/client-types";
+import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";
+import { createTRPCReact } from "@trpc/react-query";
+import { observable } from "@trpc/server/observable";
+import { Platform } from "react-native";
+import { clearAllAuthStorage } from "./auth/clearAuthStorage";
+import { supabase } from "./supabase/client";
 // Create tRPC React client with proper typing from shared supabase package
 // Note: AppRouter is a placeholder type to avoid importing Deno-specific code
 // The actual router types are provided at runtime
-export const api = createTRPCReact<AppRouter>()
+export const api = createTRPCReact<AppRouter>();
 
 // Custom error handling link for session validation
 const sessionValidationLink: TRPCLink<AppRouter> = () => {
@@ -19,26 +19,34 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
         next: observer.next.bind(observer),
         error: async (err) => {
           // Check if this is an UNAUTHORIZED error indicating invalid session
-          if (err instanceof TRPCClientError && err.data?.code === 'UNAUTHORIZED') {
-            console.log('[tRPC] UNAUTHORIZED error detected - invalid or expired session')
-            console.log('[tRPC] Triggering comprehensive auth cleanup and redirect')
+          if (
+            err instanceof TRPCClientError && err.data?.code === "UNAUTHORIZED"
+          ) {
+            console.log(
+              "[tRPC] UNAUTHORIZED error detected - invalid or expired session",
+            );
+            console.log(
+              "[tRPC] Triggering comprehensive auth cleanup and redirect",
+            );
 
             // Get query client for cache clearing
-            const queryClient = getGlobalQueryClient()
+            const queryClient = getGlobalQueryClient();
 
             // Perform comprehensive cleanup
-            await clearAllAuthStorage(queryClient || undefined)
+            await clearAllAuthStorage(queryClient || undefined);
 
-            console.log('[tRPC] Auth cleanup completed - user will be redirected to /auth')
+            console.log(
+              "[tRPC] Auth cleanup completed - user will be redirected to /auth",
+            );
           }
-          observer.error(err)
+          observer.error(err);
         },
         complete: observer.complete.bind(observer),
-      })
-      return unsubscribe
-    })
-  }
-}
+      });
+      return unsubscribe;
+    });
+  };
+};
 
 export const createTrpcClient = () =>
   api.createClient({
@@ -49,34 +57,37 @@ export const createTrpcClient = () =>
       httpBatchLink({
         url: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/trpc`,
         async headers() {
-          const headers = new Map<string, string>()
+          const headers = new Map<string, string>();
 
           // Set platform-specific source header
-          headers.set('x-trpc-source', Platform.OS === 'web' ? 'expo-web' : 'expo-react')
+          headers.set(
+            "x-trpc-source",
+            Platform.OS === "web" ? "expo-web" : "expo-react",
+          );
 
           // Always include apikey header for Supabase Edge Functions
-          const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+          const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
           if (anonKey) {
-            headers.set('apikey', anonKey)
+            headers.set("apikey", anonKey);
           }
 
-          const session = (await supabase.auth.getSession()).data.session
+          const session = (await supabase.auth.getSession()).data.session;
 
           // Supabase Edge Functions require an Authorization header
           // Use user's access token if available, otherwise use anon key for public endpoints
           if (session?.access_token && session.access_token.trim().length > 0) {
-            headers.set('Authorization', `Bearer ${session.access_token}`)
+            headers.set("Authorization", `Bearer ${session.access_token}`);
           } else if (anonKey) {
             // For public endpoints, use anon key as Bearer token
             // This satisfies Supabase's requirement for Authorization header
-            headers.set('Authorization', `Bearer ${anonKey}`)
+            headers.set("Authorization", `Bearer ${anonKey}`);
           }
 
-          return Object.fromEntries(headers)
+          return Object.fromEntries(headers);
         },
       }),
     ],
-  })
+  });
 
 // Export individual types for easier usage
 export type {
@@ -89,7 +100,7 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from '@app/supabase/client-types'
+} from "@app/supabase/client-types";
 
 // Export constants and schemas for form usage
 export {
@@ -98,4 +109,4 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from '@app/supabase/client-types'
+} from "@app/supabase/client-types";

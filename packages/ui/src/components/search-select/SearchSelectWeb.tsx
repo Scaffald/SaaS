@@ -99,11 +99,11 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
     </YStack>
   ) : undefined
 
-  const shouldShowDropdown = isOpen && (inputValue.trim().length > 0 || isSearching)
+  const shouldRenderDropdown = isOpen && (inputValue.trim().length > 0 || isSearching)
 
   return (
     <YStack gap="$2">
-      <Popover open={shouldShowDropdown} onOpenChange={setIsOpen} placement="bottom-start">
+      <Popover open={isOpen} onOpenChange={setIsOpen} placement="bottom-start">
         <Popover.Trigger asChild>
           <YStack gap="$2" width="100%">
             <SearchInput
@@ -140,28 +140,30 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
           </YStack>
         </Popover.Trigger>
 
-        <Popover.Content
-          p={0}
-          mt="$2"
-          bordered
-          elevate
-          style={{ maxHeight: 320, minWidth: 280, width: '100%' }}
-        >
-          <ResultsList
-            options={results}
-            activeIndex={keyboardNav.activeIndex}
-            selectedValues={selectedValueSet}
-            onOptionPress={handleOptionSelect}
-            loading={isSearching}
-            loadingLabel={strings.searching ?? DEFAULT_STRINGS.searching}
-            error={error}
-            onRetry={refreshResults}
-            headerContent={listHeader}
-            emptyContent={emptyContent}
-            virtualizationThreshold={props.virtualizationThreshold}
-            maxHeight={320}
-          />
-        </Popover.Content>
+        {shouldRenderDropdown && (
+          <Popover.Content
+            p={0}
+            mt="$2"
+            bordered
+            elevate
+            style={{ maxHeight: 320, minWidth: 280, width: '100%' }}
+          >
+            <ResultsList
+              options={results}
+              activeIndex={keyboardNav.activeIndex}
+              selectedValues={selectedValueSet}
+              onOptionPress={handleOptionSelect}
+              loading={isSearching}
+              loadingLabel={strings.searching ?? DEFAULT_STRINGS.searching}
+              error={error}
+              onRetry={refreshResults}
+              headerContent={listHeader}
+              emptyContent={emptyContent}
+              virtualizationThreshold={props.virtualizationThreshold}
+              maxHeight={320}
+            />
+          </Popover.Content>
+        )}
       </Popover>
 
       <FieldError message={props.error} />

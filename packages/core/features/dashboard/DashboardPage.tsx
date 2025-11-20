@@ -1,5 +1,6 @@
 import { ROUTES, flattenRoutes, matchesRoute, type RouteConfig } from '@app/core/constants/routes'
 import { usePageTitle } from '@app/core/hooks/usePageTitle'
+import { useTranslation } from '@app/core/utils/useTranslation'
 import {
   buildDashboardBreadcrumbs,
   type DashboardBreadcrumbSegment,
@@ -51,6 +52,7 @@ export function DashboardPage({
 }: DashboardPageProps) {
   const pathname = usePathname()
   const matchedRoute = useMemo(() => findRouteForPath(pathname), [pathname])
+  const { t, locale } = useTranslation()
 
   const computedBreadcrumbItems = useMemo(() => {
     if (breadcrumbItems) {
@@ -65,7 +67,10 @@ export function DashboardPage({
   usePageTitle({
     title: () => {
       if (typeof pageTitle === 'function') {
-        return pageTitle() ?? matchedRoute?.title ?? ROUTES.DASHBOARD.title
+        return (
+          pageTitle() ??
+          (matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.DASHBOARD.titleKey))
+        )
       }
       if (typeof pageTitle === 'string') {
         return pageTitle
@@ -81,9 +86,9 @@ export function DashboardPage({
         }
       }
 
-      return matchedRoute?.title ?? ROUTES.DASHBOARD.title
+      return matchedRoute ? t(matchedRoute.titleKey) : t(ROUTES.DASHBOARD.titleKey)
     },
-    deps: [matchedRoute?.title, computedBreadcrumbItems, ...pageTitleDeps],
+    deps: [locale, matchedRoute?.titleKey, computedBreadcrumbItems, ...pageTitleDeps],
     formatDocumentTitle,
   })
 

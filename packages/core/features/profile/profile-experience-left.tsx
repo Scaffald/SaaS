@@ -9,7 +9,7 @@ import {
   ResponsiveSelect,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
+import { AlertTriangle, Check, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
@@ -78,25 +78,25 @@ export function ProfileExperienceLeft() {
   const toast = useToastController()
 
   // Queries
-  const experienceQuery = api.profile.getExperience.useQuery()
-  const experienceSummaryQuery = api.profile.getExperienceSummary.useQuery()
+  const experienceQuery = api.profile.experience.getExperience.useQuery()
+  const experienceSummaryQuery = api.profile.experience.getExperienceSummary.useQuery()
   const utils = api.useContext()
 
   // Mutations
-  const saveExperienceMutation = api.profile.saveExperience.useMutation({
+  const saveExperienceMutation = api.profile.experience.saveExperience.useMutation({
     async onMutate(input: SaveExperienceInput): Promise<SaveExperienceContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
-        utils.profile.getExperience.cancel(),
-        utils.profile.getExperienceSummary.cancel(),
+        utils.profile.experience.getExperience.cancel(),
+        utils.profile.experience.getExperienceSummary.cancel(),
       ])
 
-      const previousExperience = utils.profile.getExperience.getData()
-      const previousSummary = utils.profile.getExperienceSummary.getData()
+      const previousExperience = utils.profile.experience.getExperience.getData()
+      const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
-      utils.profile.getExperience.setData(undefined, input.experience_entries)
-      utils.profile.getExperienceSummary.setData(undefined, {
+      utils.profile.experience.getExperience.setData(undefined, input.experience_entries)
+      utils.profile.experience.getExperienceSummary.setData(undefined, {
         career_level: input.career_level ?? null,
       })
 
@@ -105,10 +105,10 @@ export function ProfileExperienceLeft() {
     onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
       console.error('Error saving experience:', error)
       if (context?.previousExperience) {
-        utils.profile.getExperience.setData(undefined, context.previousExperience)
+        utils.profile.experience.getExperience.setData(undefined, context.previousExperience)
       }
       if (context?.previousSummary) {
-        utils.profile.getExperienceSummary.setData(undefined, context.previousSummary)
+        utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary)
       }
       failProfileSync()
       toast.show('Error', {

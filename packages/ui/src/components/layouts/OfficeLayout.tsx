@@ -1,4 +1,5 @@
 import type { RouteConfig } from '@app/core/constants/routes'
+import { useTranslation } from '@app/core/utils/useTranslation'
 import { getChildRoutes } from '@app/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@app/core/utils/usePathname'
 import type { ReactNode } from 'react'
@@ -78,6 +79,7 @@ export const OfficeLayout = ({
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
   const isSmallScreen = width <= 800
+  const { t, locale } = useTranslation()
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
@@ -119,10 +121,10 @@ export const OfficeLayout = ({
     () =>
       topLevelRoutes.map((route: RouteConfig) => ({
         key: route.path,
-        label: route.title ?? '',
+        label: t(route.titleKey),
         href: route.path,
       })),
-    [topLevelRoutes]
+    [locale, t, topLevelRoutes]
   )
 
   const activeTopRoute = useMemo(() => {
@@ -167,10 +169,10 @@ export const OfficeLayout = ({
       })
       .map((route) => ({
         key: route.path,
-        label: route.title ?? '',
+        label: t(route.titleKey),
         href: route.path,
       }))
-  }, [activeTopRoute])
+  }, [activeTopRoute, locale, t])
 
   const activeSecondaryValue = useMemo(() => {
     if (secondaryTabItems.length === 0) {

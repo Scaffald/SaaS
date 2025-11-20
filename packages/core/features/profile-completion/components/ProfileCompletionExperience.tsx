@@ -26,7 +26,7 @@ export function ProfileCompletionExperience() {
     hasMultiple,
     isLoading: isBenefitLoading,
   } = useCompletionNudges()
-  const dismissNudgeMutation = api.profile.dismissNudge.useMutation()
+  const dismissNudgeMutation = api.profile.completion.dismissNudge.useMutation()
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'first-login' | 'progress-reminder'>(

@@ -68,8 +68,10 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
     setShowReviewModal(false)
   }
 
-  const handleReviewComplete = () => {
+  const handleReviewComplete = async () => {
     setShowReviewModal(false)
+    // Refetch reviews to update aggregates after new review submission
+    await refetch()
   }
 
   if (isLoading) {

@@ -121,7 +121,6 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   }, [isDrawerCollapsed, isSmall])
 
   const drawerWidth = isSmall ? undefined : isDrawerCollapsed ? 92 : 300
-  const drawerPadding = 15
 
   return (
     <>
@@ -149,7 +148,6 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             backgroundColor: theme.color3.val,
             borderRightWidth: 0,
             borderRadius: 0,
-            padding: drawerPadding,
             width: drawerWidth,
             maxWidth: drawerWidth,
             minWidth: drawerWidth,

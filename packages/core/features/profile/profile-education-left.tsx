@@ -99,26 +99,26 @@ export function ProfileEducationLeft() {
   const isSyncing = syncStatus === 'syncing'
 
   // Queries
-  const educationQuery = api.profile.getEducation.useQuery()
-  const educationLevelQuery = api.profile.getEducationLevel.useQuery()
+  const educationQuery = api.profile.education.getEducation.useQuery()
+  const educationLevelQuery = api.profile.education.getEducationLevel.useQuery()
   const utils = api.useContext()
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Mutations
-  const saveEducationMutation = api.profile.saveEducation.useMutation({
+  const saveEducationMutation = api.profile.education.saveEducation.useMutation({
     async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
-        utils.profile.getEducation.cancel(),
-        utils.profile.getEducationLevel.cancel(),
+        utils.profile.education.getEducation.cancel(),
+        utils.profile.education.getEducationLevel.cancel(),
       ])
 
-      const previousEducation = utils.profile.getEducation.getData()
-      const previousLevel = utils.profile.getEducationLevel.getData()
+      const previousEducation = utils.profile.education.getEducation.getData()
+      const previousLevel = utils.profile.education.getEducationLevel.getData()
 
-      utils.profile.getEducation.setData(undefined, input.education_entries ?? [])
-      utils.profile.getEducationLevel.setData(undefined, {
+      utils.profile.education.getEducation.setData(undefined, input.education_entries ?? [])
+      utils.profile.education.getEducationLevel.setData(undefined, {
         education_level: input.education_level ?? null,
       })
 
@@ -127,10 +127,10 @@ export function ProfileEducationLeft() {
     onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
-        utils.profile.getEducation.setData(undefined, context.previousEducation)
+        utils.profile.education.getEducation.setData(undefined, context.previousEducation)
       }
       if (context?.previousLevel) {
-        utils.profile.getEducationLevel.setData(undefined, context.previousLevel)
+        utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel)
       }
       failProfileSync()
       toast.show('Save Failed', {

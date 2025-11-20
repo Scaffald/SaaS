@@ -1,4 +1,5 @@
 import { ROUTES, type RouteConfig } from '@app/core/constants/routes'
+import { i18n } from '@app/core/locales'
 import type { BreadcrumbItem } from '@app/ui'
 
 type RouteSegment = {
@@ -26,7 +27,7 @@ export function buildDashboardBreadcrumbs(
 ): BreadcrumbItem[] {
   const items: BreadcrumbItem[] = [
     {
-      label: ROUTES.DASHBOARD.title,
+      label: i18n.t(ROUTES.DASHBOARD.titleKey),
       href: ROUTES.DASHBOARD.path,
       isActive: segments.length === 0,
     },
@@ -36,7 +37,7 @@ export function buildDashboardBreadcrumbs(
     const isLast = index === segments.length - 1
     if (isRouteSegment(segment)) {
       items.push({
-        label: segment.route.title,
+        label: i18n.t(segment.route.titleKey),
         href: segment.route.path,
         isActive: segment.isActive ?? isLast,
       })

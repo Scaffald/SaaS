@@ -11,7 +11,7 @@ import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from 'tam
  */
 export function ProfileSnapshotWidget() {
   const router = useRouter()
-  const { data: user } = api.profile.useUser.useQuery()
+  const { data: user } = api.profile.general.useUser.useQuery()
 
   // Fetch all data needed for snapshot
   const { data: generalInfo, isLoading: loadingGeneral } =

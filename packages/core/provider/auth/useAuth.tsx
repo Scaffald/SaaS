@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { SessionContext, type SessionContextHelper } from './AuthProvider'
+import { useSessionContext } from '@app/core/utils/supabase/useSessionContext'
+import type { SessionContextHelper } from './AuthProvider'
 
 /**
  * Modern useAuth hook for consuming authentication state
@@ -13,18 +13,7 @@ import { SessionContext, type SessionContextHelper } from './AuthProvider'
  * @returns SessionContextHelper with auth state and methods
  * @throws Error if used outside AuthProvider
  */
-export const useAuth = (): SessionContextHelper => {
-  const context = useContext(SessionContext)
-
-  if (!context) {
-    throw new Error(
-      'useAuth must be used within an AuthProvider. ' +
-        'Make sure to wrap your component tree with <AuthProvider>.'
-    )
-  }
-
-  return context
-}
+export const useAuth = (): SessionContextHelper => useSessionContext()
 
 /**
  * Utility hook that returns just the current user

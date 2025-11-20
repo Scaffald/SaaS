@@ -15,7 +15,8 @@ type FixedSizeListComponent = ComponentType<{
   itemCount: number
   itemSize: number
   className?: string
-  children: (props: { index: number; style: CSSProperties }) => ReactNode
+  itemData?: unknown
+  children: ComponentType<{ index: number; style: CSSProperties; data: unknown }>
 }>
 let FixedSizeList: FixedSizeListComponent | null = null
 
@@ -43,6 +44,39 @@ export interface ResultsListProps<T> {
   footerContent?: ReactNode
 }
 
+interface RowData<T> {
+  options: SearchSelectOption<T>[]
+  activeIndex: number
+  selectedSet: Set<string>
+  onOptionPress: (option: SearchSelectOption<T>) => void
+  renderOption?: (option: SearchSelectOption<T>) => ReactNode
+}
+
+// Memoized Row component for react-window
+const VirtualRow = memo(
+  ({ index, style, data }: { index: number; style: CSSProperties; data: RowData<unknown> }) => {
+    const { options, activeIndex, selectedSet, onOptionPress, renderOption } = data
+    const option = options[index]
+    const optionId = `search-result-${index}`
+    const isLast = index === options.length - 1
+
+    return (
+      <YStack style={style} width="100%">
+        <ResultItem
+          option={option}
+          index={index}
+          isActive={activeIndex === index}
+          isSelected={selectedSet.has(option.value)}
+          onPress={onOptionPress}
+          renderOption={renderOption}
+          itemId={optionId}
+          isLast={isLast}
+        />
+      </YStack>
+    )
+  }
+)
+
 function ResultsListComponent<T>({
   options,
   activeIndex = -1,
@@ -61,6 +95,17 @@ function ResultsListComponent<T>({
   footerContent,
 }: ResultsListProps<T>) {
   const selectedSet = useMemo(() => selectedValues ?? new Set<string>(), [selectedValues])
+
+  const itemData = useMemo(
+    () => ({
+      options,
+      activeIndex,
+      selectedSet,
+      onOptionPress,
+      renderOption,
+    }),
+    [options, activeIndex, selectedSet, onOptionPress, renderOption]
+  )
 
   if (loading) {
     return (
@@ -93,25 +138,6 @@ function ResultsListComponent<T>({
 
   if (shouldVirtualize && FixedSizeList) {
     const height = Math.min(maxHeight, options.length * itemHeight)
-    const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
-      const option = options[index]
-      const optionId = `search-result-${index}`
-      const isLast = index === options.length - 1
-      return (
-        <YStack style={style} width="100%">
-          <ResultItem
-            option={option}
-            index={index}
-            isActive={activeIndex === index}
-            isSelected={selectedSet.has(option.value)}
-            onPress={onOptionPress}
-            renderOption={renderOption}
-            itemId={optionId}
-            isLast={isLast}
-          />
-        </YStack>
-      )
-    }
 
     return (
       <YStack {...accessibilityProps}>
@@ -122,8 +148,9 @@ function ResultsListComponent<T>({
           itemSize={itemHeight}
           width="100%"
           className="search-select-virtual-list"
+          itemData={itemData}
         >
-          {Row}
+          {VirtualRow as any}
         </FixedSizeList>
         {footerContent}
       </YStack>

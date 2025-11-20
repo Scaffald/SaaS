@@ -26,7 +26,7 @@ export interface ProfileCompletionData {
 }
 
 export const useProfileCompletion = () => {
-  const { data: status, isLoading } = api.profile.getStatus.useQuery(undefined, {
+  const { data: status, isLoading } = api.profile.completion.getStatus.useQuery(undefined, {
     staleTime: 5 * 60 * 1000, // 5 minutes cache
   })
 

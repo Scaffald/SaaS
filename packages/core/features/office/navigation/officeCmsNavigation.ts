@@ -1,4 +1,5 @@
 import { ROUTES } from '@app/core/constants/routes'
+import { i18n } from '@app/core/locales'
 import type { OfficeAccordionSection, OfficeTabsItem } from '@app/ui'
 
 export const CMS_TABS: OfficeTabsItem[] = [
@@ -9,32 +10,32 @@ export const CMS_TABS: OfficeTabsItem[] = [
   },
   {
     key: 'cms-jobs',
-    label: ROUTES.OFFICE.CMS.JOBS.title,
+    label: i18n.t(ROUTES.OFFICE.CMS.JOBS.titleKey),
     href: ROUTES.OFFICE.CMS.JOBS.path,
   },
   {
     key: 'cms-teams',
-    label: ROUTES.OFFICE.CMS.TEAMS.title,
+    label: i18n.t(ROUTES.OFFICE.CMS.TEAMS.titleKey),
     href: ROUTES.OFFICE.CMS.TEAMS.path,
   },
   {
     key: 'cms-universities',
-    label: ROUTES.OFFICE.CMS.UNIVERSITIES.title,
+    label: i18n.t(ROUTES.OFFICE.CMS.UNIVERSITIES.titleKey),
     href: ROUTES.OFFICE.CMS.UNIVERSITIES.path,
   },
   {
     key: 'cms-organizations',
-    label: ROUTES.OFFICE.CMS.ORGANIZATIONS.title,
+    label: i18n.t(ROUTES.OFFICE.CMS.ORGANIZATIONS.titleKey),
     href: ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
   },
   {
     key: 'cms-welcome',
-    label: ROUTES.OFFICE.CMS.WELCOME.title,
+    label: i18n.t(ROUTES.OFFICE.CMS.WELCOME.titleKey),
     href: ROUTES.OFFICE.CMS.WELCOME.path,
   },
   {
     key: 'cms-applications',
-    label: ROUTES.OFFICE.APPLICATIONS.title,
+    label: i18n.t(ROUTES.OFFICE.APPLICATIONS.titleKey),
     href: ROUTES.OFFICE.APPLICATIONS.path,
   },
 ]

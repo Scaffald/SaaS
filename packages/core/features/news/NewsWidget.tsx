@@ -133,7 +133,7 @@ export function NewsWidget({
   const headlineLimit = Math.max(1, maxItems)
   const fetchCount = headlineLimit * FETCH_MULTIPLIER
 
-  const { data: user } = api.profile.useUser.useQuery()
+  const { data: user } = api.profile.general.useUser.useQuery()
   const userId = user?.id
 
   const { data: generalInfo } = api.profile.widgets.getGeneralInfo.useQuery(

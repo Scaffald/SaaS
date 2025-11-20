@@ -95,7 +95,7 @@ export function useCompletionStatus() {
     isLoading: boolean
     isError: boolean
     refetch: () => Promise<unknown>
-  } = api.profile.getStatus.useQuery()
+  } = api.profile.completion.getStatus.useQuery()
   const { user } = useUser()
 
   const userType: 'worker' | 'employer' =

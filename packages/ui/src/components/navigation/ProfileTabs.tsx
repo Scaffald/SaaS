@@ -1,4 +1,5 @@
 import { getChildRoutes } from '@app/core/utils/navigation/routeHierarchy'
+import { useTranslation } from '@app/core/utils/useTranslation'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useMemo } from 'react'
 import { useWindowDimensions } from 'tamagui'
@@ -60,6 +61,7 @@ export const ProfileTabs = ({
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
   const isSmallScreen = width <= 800
+  const { t, locale } = useTranslation()
 
   // Get child routes for /dashboard/profile
   const childRoutes = useMemo(() => {
@@ -88,10 +90,10 @@ export const ProfileTabs = ({
     () =>
       directChildRoutes.map((route) => ({
         key: route.path,
-        label: route.title ?? '',
+        label: t(route.titleKey),
         href: route.path,
       })),
-    [directChildRoutes]
+    [directChildRoutes, locale, t]
   )
 
   // Find the currently active tab value

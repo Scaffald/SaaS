@@ -5,7 +5,7 @@ import navigation from './navigation.json'
 import routes from './routes.json'
 import validation from './validation.json'
 
-const en = {
+const fr = {
   auth,
   common,
   errors,
@@ -14,6 +14,6 @@ const en = {
   validation,
 } as const
 
-export type EnTranslations = typeof en
+export type FrTranslations = typeof fr
 
-export default en
+export default fr

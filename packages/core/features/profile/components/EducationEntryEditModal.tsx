@@ -63,7 +63,7 @@ export function EducationEntryEditModal({
   const [manualEntryMode, setManualEntryMode] = useState(false)
 
   // Queries
-  const educationQuery = api.profile.getEducation.useQuery()
+  const educationQuery = api.profile.education.getEducation.useQuery()
   const searchUniversitiesQuery = api.office.universities.searchUniversities.useQuery(
     {
       query: searchQuery,
@@ -77,7 +77,7 @@ export function EducationEntryEditModal({
   )
 
   // Mutations
-  const saveEducationMutation = api.profile.saveEducation.useMutation({
+  const saveEducationMutation = api.profile.education.saveEducation.useMutation({
     onSuccess: () => {
       toast.show('Education Updated', {
         message: 'Your education entry has been updated successfully!',

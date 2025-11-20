@@ -3,6 +3,7 @@ import { I18n } from 'i18n-js'
 
 import en from './en'
 import es from './es'
+import fr from './fr'
 import type { TranslationKey } from './types'
 
 export type { TranslationKey, TranslationNamespaces } from './types'
@@ -12,6 +13,7 @@ declare const __DEV__: boolean | undefined
 export const translations = {
   en,
   es,
+  fr,
 } as const
 
 export type SupportedLocale = keyof typeof translations
@@ -72,12 +74,47 @@ const isDevEnvironment =
     process.env.NODE_ENV !== undefined &&
     process.env.NODE_ENV !== 'production')
 
+const collectDuplicateKeys = (data: Record<string, unknown>): string[] => {
+  const seen = new Set<string>()
+  const duplicates = new Set<string>()
+
+  const traverse = (node: unknown, prefix: string) => {
+    if (node === null || typeof node !== 'object') {
+      return
+    }
+
+    for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+      const fullKey = prefix ? `${prefix}.${key}` : key
+      if (seen.has(fullKey)) {
+        duplicates.add(fullKey)
+      } else {
+        seen.add(fullKey)
+      }
+      traverse(value, fullKey)
+    }
+  }
+
+  traverse(data, '')
+  return Array.from(duplicates).sort()
+}
+
 if (isDevEnvironment) {
   i18n.missingTranslation.register('dev-console', (_i18n, scope) => {
     const key = Array.isArray(scope) ? scope.join('.') : String(scope)
     console.warn(`[i18n] Missing translation for key "${key}" (locale: "${i18n.locale}")`)
     return key
   })
+
+  for (const [localeCode, localeData] of Object.entries(translations)) {
+    const duplicates = collectDuplicateKeys(localeData)
+    if (duplicates.length > 0) {
+      console.warn(
+        `[i18n] Duplicate translation keys detected in locale "${localeCode}": ${duplicates.join(
+          ', '
+        )}`
+      )
+    }
+  }
 }
 
 export const supportedLocales = Object.keys(translations) as SupportedLocale[]

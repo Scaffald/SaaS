@@ -62,7 +62,7 @@ export function GeneralProfileSection({
   const useQuery =
     mode === 'admin' && userId
       ? () => api.office.getUserGeneral.useQuery({ userId })
-      : () => api.profile.getGeneral.useQuery()
+      : () => api.profile.general.getGeneral.useQuery()
 
   const useMutation =
     mode === 'admin' && userId
@@ -84,7 +84,7 @@ export function GeneralProfileSection({
             },
           })
       : () =>
-          api.profile.updateGeneral.useMutation({
+          api.profile.general.updateGeneral.useMutation({
             onSuccess: () => {
               toast.show('Profile Updated', {
                 message: 'Your profile has been saved successfully!',
@@ -105,7 +105,7 @@ export function GeneralProfileSection({
 
   const updateProfileMutation = useMutation()
 
-  const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
+  const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
     onSuccess: (data: { avatarPath: string }) => {
       toast.show('Avatar Uploaded', {
         message: 'Avatar has been uploaded successfully!',

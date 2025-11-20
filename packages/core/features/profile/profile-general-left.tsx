@@ -48,14 +48,14 @@ export function ProfileGeneralLeft() {
   const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update profile data
-  const { data: profileData, isLoading: isLoadingProfile } = api.profile.getGeneral.useQuery()
-  const updateProfileMutation = api.profile.updateGeneral.useMutation({
+  const { data: profileData, isLoading: isLoadingProfile } = api.profile.general.getGeneral.useQuery()
+  const updateProfileMutation = api.profile.general.updateGeneral.useMutation({
     async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
       resetProfileSyncError()
       startProfileSync()
-      await utils.profile.getGeneral.cancel()
-      const previousGeneral = utils.profile.getGeneral.getData()
-      utils.profile.getGeneral.setData(
+      await utils.profile.general.getGeneral.cancel()
+      const previousGeneral = utils.profile.general.getGeneral.getData()
+      utils.profile.general.getGeneral.setData(
         undefined,
         (current: GeneralProfileFormData | undefined) => ({
           ...(current ?? {}),
@@ -67,7 +67,7 @@ export function ProfileGeneralLeft() {
     onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
       console.error('Error saving profile:', error)
       if (context?.previousGeneral) {
-        utils.profile.getGeneral.setData(undefined, context.previousGeneral)
+        utils.profile.general.getGeneral.setData(undefined, context.previousGeneral)
       }
       failProfileSync()
       toast.show('Error', {
@@ -88,7 +88,7 @@ export function ProfileGeneralLeft() {
     },
   })
 
-  const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
+  const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
     onMutate: () => {
       resetProfileSyncError()
       startProfileSync()

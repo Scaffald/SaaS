@@ -110,13 +110,13 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     skipSection,
   } = wizardController ?? useResumeWizard(resumeId)
 
-  const generalProfileQuery = api.profile.getGeneral.useQuery(undefined, {
+  const generalProfileQuery = api.profile.general.getGeneral.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  const experienceQuery = api.profile.getExperience.useQuery(undefined, {
+  const experienceQuery = api.profile.experience.getExperience.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  const educationQuery = api.profile.getEducation.useQuery(undefined, {
+  const educationQuery = api.profile.education.getEducation.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
   const skillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery(undefined, {
@@ -128,7 +128,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       refetchOnWindowFocus: false,
     }
   )
-  const employmentQuery = api.profile.getEmployment.useQuery(undefined, {
+  const employmentQuery = api.profile.employment.getEmployment.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
 

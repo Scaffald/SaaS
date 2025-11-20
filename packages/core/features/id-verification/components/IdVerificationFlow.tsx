@@ -41,16 +41,19 @@ const formatDuration = (value?: string | null) => {
   return formatDistanceToNow(new Date(value), { addSuffix: true })
 }
 
-export function IdVerificationFlow() {
+export function IdVerificationContent() {
   const { user } = useUser()
   const toast = useToastController()
 
   const pricingQuery = api.idVerification.getPricing.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
   })
-  const currentVerificationQuery = api.idVerification.getCurrentVerification.useQuery(undefined, {
-    staleTime: 60 * 1000,
-  })
+  const currentVerificationQuery = api.idVerification.getCurrentVerification.useQuery(
+    {},
+    {
+      staleTime: 60 * 1000,
+    }
+  )
 
   const requestVerification = api.idVerification.requestVerification.useMutation()
   const confirmVerification = api.idVerification.confirmVerificationPayment.useMutation()
@@ -114,7 +117,7 @@ export function IdVerificationFlow() {
     try {
       await confirmVerification.mutateAsync({ paymentIntentId })
       toast.show('Verification scheduled', {
-        message: 'We’re creating your Persona inquiry now.',
+        message: "We're creating your Persona inquiry now.",
       })
       setPaymentSession(null)
       void currentVerificationQuery.refetch()
@@ -126,80 +129,94 @@ export function IdVerificationFlow() {
   }
 
   return (
+    <YStack gap="$4">
+      {statusCard}
+
+      <Card p="$4" bordered>
+        <YStack gap="$2">
+          <Text fontSize="$5" fontWeight="600">
+            Why verify your identity?
+          </Text>
+          <Text color="$color11">
+            Verified profiles are highlighted across search, inquiries, and background checks,
+            giving organizations confidence that you are who you say you are.
+          </Text>
+          <YStack gap="$1" mt="$2">
+            <Text color="$color11">• Badge displayed on your profile and worker cards</Text>
+            <Text color="$color11">• Valid for 6 months with automated reminders</Text>
+            <Text color="$color11">• Powered by Persona, the same provider used by banks</Text>
+          </YStack>
+        </YStack>
+      </Card>
+
+      <PricingSection
+        pricingOptions={pricingOptions}
+        selectedPricingId={selectedPricingId}
+        onSelectPlan={setSelectedPricingId}
+        isLoading={pricingQuery.isLoading}
+      />
+
+      <PaymentSection
+        selectedPricing={selectedPricing}
+        paymentSession={paymentSession}
+        isRequesting={requestVerification.isPending}
+        isConfirming={confirmVerification.isPending}
+        requestError={requestError}
+        onCreateSession={handleCreatePaymentSession}
+        onResetSession={() => {
+          if (!confirmVerification.isPending) {
+            setPaymentSession(null)
+            setRequestError(null)
+          }
+        }}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
+    </YStack>
+  )
+}
+
+export function IdVerificationRight() {
+  return (
+    <YStack gap="$4">
+      <Card p="$4" bordered>
+        <YStack gap="$2">
+          <Text fontSize="$5" fontWeight="600">
+            What happens after payment?
+          </Text>
+          <Text color="$color11">
+            We automatically create a Persona inquiry using your Scaffald profile details. You'll
+            receive an email and in-app notification with a secure link to upload your government ID
+            and selfie. Most verifications finish within a few minutes.
+          </Text>
+          <YStack gap="$1">
+            <Text color="$color11">1. Complete the Persona flow on web or mobile</Text>
+            <Text color="$color11">2. Persona confirms the authenticity of your ID</Text>
+            <Text color="$color11">3. Your badge updates instantly across the platform</Text>
+          </YStack>
+        </YStack>
+      </Card>
+
+      <Card p="$4" bordered bg="$blue2" borderColor="$blue6">
+        <YStack gap="$2">
+          <Text fontSize="$4" fontWeight="600" color="$blue12">
+            Need help?
+          </Text>
+          <Text color="$blue11">
+            Email support@scaffald.com if you run into issues with Persona, need an invoice, or
+            want to request a bulk verification plan for your organization.
+          </Text>
+        </YStack>
+      </Card>
+    </YStack>
+  )
+}
+
+export function IdVerificationFlow() {
+  return (
     <YStack flex={1} bg="$background">
       <ScrollView flex={1}>
         <YStack gap="$4" px="$4" pb="$8">
-          {statusCard}
-
-          <Card p="$4" bordered>
-            <YStack gap="$2">
-              <Text fontSize="$5" fontWeight="600">
-                Why verify your identity?
-              </Text>
-              <Text color="$color11">
-                Verified profiles are highlighted across search, inquiries, and background checks,
-                giving organizations confidence that you are who you say you are.
-              </Text>
-              <YStack gap="$1" mt="$2">
-                <Text color="$color11">• Badge displayed on your profile and worker cards</Text>
-                <Text color="$color11">• Valid for 6 months with automated reminders</Text>
-                <Text color="$color11">• Powered by Persona, the same provider used by banks</Text>
-              </YStack>
-            </YStack>
-          </Card>
-
-          <PricingSection
-            pricingOptions={pricingOptions}
-            selectedPricingId={selectedPricingId}
-            onSelectPlan={setSelectedPricingId}
-            isLoading={pricingQuery.isLoading}
-          />
-
-          <PaymentSection
-            selectedPricing={selectedPricing}
-            paymentSession={paymentSession}
-            isRequesting={requestVerification.isPending}
-            isConfirming={confirmVerification.isPending}
-            requestError={requestError}
-            onCreateSession={handleCreatePaymentSession}
-            onResetSession={() => {
-              if (!confirmVerification.isPending) {
-                setPaymentSession(null)
-                setRequestError(null)
-              }
-            }}
-            onPaymentSuccess={handlePaymentSuccess}
-          />
-
-          <Card p="$4" bordered>
-            <YStack gap="$2">
-              <Text fontSize="$5" fontWeight="600">
-                What happens after payment?
-              </Text>
-              <Text color="$color11">
-                We automatically create a Persona inquiry using your Scaffald profile details.
-                You’ll receive an email and in-app notification with a secure link to upload your
-                government ID and selfie. Most verifications finish within a few minutes.
-              </Text>
-              <YStack gap="$1">
-                <Text color="$color11">1. Complete the Persona flow on web or mobile</Text>
-                <Text color="$color11">2. Persona confirms the authenticity of your ID</Text>
-                <Text color="$color11">3. Your badge updates instantly across the platform</Text>
-              </YStack>
-            </YStack>
-          </Card>
-
-          <Card p="$4" bordered bg="$blue2" borderColor="$blue6">
-            <YStack gap="$2">
-              <Text fontSize="$4" fontWeight="600" color="$blue12">
-                Need help?
-              </Text>
-              <Text color="$blue11">
-                Email support@scaffald.com if you run into issues with Persona, need an invoice, or
-                want to request a bulk verification plan for your organization.
-              </Text>
-            </YStack>
-          </Card>
+          <IdVerificationContent />
         </YStack>
       </ScrollView>
     </YStack>
