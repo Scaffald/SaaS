@@ -60,8 +60,12 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     watch: false,
-    testTimeout: 10_000, // 10 seconds per test (reduced to fail faster)
+    testTimeout: 5_000, // 5 seconds per test
     hookTimeout: 5_000, // 5 seconds for hooks
+    teardownTimeout: 5_000, // 5 seconds for teardown
+    detectOpenHandles: true, // Detect open handles that prevent test exit
+    forceExit: true, // Force exit if tests don't complete
+    retry: 1, // Retry failed tests once
     include: ['{apps,packages}/**/*.{test,spec}.{ts,tsx}'],
     exclude: [
       '**/node_modules/**',
