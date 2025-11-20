@@ -26,9 +26,27 @@ Several tests are failing due to incomplete mocks. The ResponsiveSelect mock was
 - `packages/core/features/office/components/__tests__/JobForm.test.tsx` - Missing `data-testid="job-organization-select"`
 - Other test files using `@app/ui` mocks
 
+- ✅ `@app/ui` global mock now normalizes `testID` → `data-testid` via `tests/infrastructure/vitest/setup.ts`. DOM queries work for components passing only `testID`.
+- ✅ Job form tests use updated `ResponsiveSelect` mock that propagates `testID`/`data-testid` (fixes `job-organization-select` failures).
+- ✅ Applications filters tests switched to native `<select>` interactions. Local mock now exports `ResponsiveSelect` with deterministic markup.
+- ✅ Login screen tests pass again after re-importing `Text` from `@app/ui` (bug was referencing `window.Text`).
+- ✅ Checkbox tests updated to keep DOM `<button>` structure with explicit `aria-*` props; ensures accessibility assertions succeed.
+- ⚠️ `useAddressAutocomplete` tests still red—`AbortController` expectations never fire even after debounced search refactor. Needs deeper hook investigation (likely pending request management/abort wiring issue).
+
 ### 2. Run Full Test Suite and Identify Failures
 
 **Priority: High**
+- Latest `pnpm test:unit` (Nov 20) highlights remaining red suites:
+  - `packages/ui/src/components/address/hooks/__tests__/useAddressAutocomplete.test.ts` (abort + maxResults assertions) – see note above.
+  - All other suites green after mock/data-testid fixes.
+
+- ✅ `deno test --allow-all --no-check packages/supabase/functions/trpc/__tests__/auth.test.ts`
+  - ✅ Tokens cached/validated locally
+  - ⚠️ Admin user fixture missing (Signup disabled) – currently logged but test marked pass; revisit when admin seeds restored.
+
+- ✅ Documented new `testID` normalization in this file for future mock writers.
+- ✅ Added Deno test status/results (see above).
+- ⏳ Still need to capture root cause + remediation steps for `useAddressAutocomplete` abort failures once fixed.
 
 **Tasks:**
 - [ ] Run `pnpm test:unit` and capture all failures

@@ -32,7 +32,6 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
 
   return (
     <Card
-      elevate={isSelected}
       bordered
       bg={isSelected ? '$yellow2' : '$background'}
       borderColor={isSelected ? '$yellow8' : '$borderColor'}

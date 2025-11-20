@@ -131,10 +131,11 @@ describe('ApplicationsFilters', () => {
       <ApplicationsFilters filters={defaultFilters} onFiltersChange={onFiltersChange} jobs={jobs} />
     )
 
-    await user.click(screen.getByTestId('select-item-job-1'))
+    const selects = screen.getAllByTestId('responsive-select') as HTMLSelectElement[]
+    await user.selectOptions(selects[0], 'job-1')
     expect(onFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, jobId: 'job-1' })
 
-    await user.click(screen.getByTestId('select-item-interview'))
+    await user.selectOptions(selects[1], 'interview')
     expect(onFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, status: 'interview' })
   })
 

@@ -141,9 +141,9 @@ export const LoginScreen = () => {
             />
 
             {form.formState.errors.email && (
-              <Text color="$red10" fontSize="$2">
+              <Paragraph color="$red10" fontSize="$2">
                 {form.formState.errors.email.message}
-              </Text>
+              </Paragraph>
             )}
 
             <Button

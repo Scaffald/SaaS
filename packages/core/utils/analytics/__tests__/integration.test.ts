@@ -170,9 +170,10 @@ describe('analytics integration', () => {
 
   describe('event capture', () => {
     test('captures events with correct properties', async () => {
-      const { initAnalytics, captureEvent } = await import('../client')
+      const { initAnalytics, captureEvent, isAnalyticsInitialized } = await import('../client')
       
       await initAnalytics({ hasConsent: true })
+      console.log('analytics initialized?', isAnalyticsInitialized())
       
       const result = captureEvent('user_signed_in', {
         provider: 'email',

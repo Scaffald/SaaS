@@ -32,6 +32,7 @@ export const DrawerSection = ({
             onNavigate={onNavigate}
             expandedItems={expandedItems}
             onToggleExpanded={onToggleExpanded}
+            isCollapsed={collapsed}
           />
         ))}
       </YStack>
@@ -49,6 +50,7 @@ export const DrawerSection = ({
           onNavigate={onNavigate}
           expandedItems={expandedItems}
           onToggleExpanded={onToggleExpanded}
+          isCollapsed={collapsed}
         />
       ))}
     </YStack>

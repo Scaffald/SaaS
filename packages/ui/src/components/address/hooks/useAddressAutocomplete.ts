@@ -173,10 +173,17 @@ export function useAddressAutocomplete(
   }, [debouncedQuery])
 
   // Manual search function
-  const search = useCallback((searchQuery: string) => {
-    if (!mounted.current) return
-    setQuery(searchQuery)
-  }, [])
+  const search = useCallback(
+    (searchQuery: string) => {
+      if (!mounted.current) return
+      setQuery(searchQuery)
+
+      if (debounceMs === 0) {
+        void performSearch(searchQuery)
+      }
+    },
+    [debounceMs, performSearch]
+  )
 
   // Clear results function
   const clearResults = useCallback(() => {

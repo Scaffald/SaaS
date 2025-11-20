@@ -1,4 +1,4 @@
-import { extractPlainText } from '@app/ui'
+import { cardShadows, extractPlainText } from '@app/ui'
 import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { Button, Card, Text, XStack, YStack } from 'tamagui'
@@ -36,11 +36,10 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
 
   return (
     <Card
-      elevate
       bordered
       p="$4"
       bg="$background"
-      hoverStyle={{ bg: '$backgroundHover', borderColor: '$borderColorHover' }}
+      hoverStyle={{ borderColor: '$borderColorHover', boxShadow: cardShadows.light }}
       pressStyle={{ bg: '$backgroundPress' }}
       cursor="pointer"
       onPress={() => onViewDetails(employer)}

@@ -7,7 +7,7 @@ import { NotificationPopover, shadows } from '@app/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
 import { useTheme, useWindowDimensions, XStack } from 'tamagui'
 import { DrawerContent } from './DrawerContent'
@@ -38,6 +38,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
   const theme = useTheme()
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
+  const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
   const { hasOfficeRole } = useUserRoles()
   const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
@@ -117,6 +118,15 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
     }
   )
 
+  useEffect(() => {
+    if (isSmall && isDrawerCollapsed) {
+      setIsDrawerCollapsed(false)
+    }
+  }, [isDrawerCollapsed, isSmall])
+
+  const drawerWidth = isSmall ? undefined : isDrawerCollapsed ? 92 : 300
+  const drawerPadding = isSmall ? 25 : isDrawerCollapsed ? 16 : 25
+
   return (
     <>
       {protectionComponent}
@@ -142,8 +152,10 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             backgroundColor: theme.color3.val,
             borderRightWidth: 0,
             borderRadius: 0,
-            padding: 25,
-            maxWidth: 300,
+            padding: drawerPadding,
+            width: drawerWidth,
+            maxWidth: drawerWidth,
+            minWidth: drawerWidth,
           },
           overlayColor: shadows.shadowColor,
           headerLeft: () => {
@@ -172,7 +184,14 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             </XStack>
           ),
         })}
-        drawerContent={(props) => <DrawerContent {...props} />}
+        drawerContent={(props) => (
+          <DrawerContent
+            {...props}
+            isCollapsed={!isSmall && isDrawerCollapsed}
+            canCollapse={!isSmall}
+            onToggleCollapse={() => setIsDrawerCollapsed((prev) => !prev)}
+          />
+        )}
       >
         {children}
       </Drawer>

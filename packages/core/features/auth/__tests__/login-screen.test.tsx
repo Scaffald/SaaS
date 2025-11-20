@@ -19,6 +19,9 @@ const mockOnAuthStateChange = vi.hoisted(() =>
 
 const captureEventMock = vi.hoisted(() => vi.fn())
 const captureEventWithQueueMock = vi.hoisted(() => vi.fn().mockResolvedValue(true))
+const translateErrorMock = vi.hoisted(() =>
+  vi.fn((error: unknown) => (error instanceof Error ? error.message : 'Unknown error'))
+)
 
 vi.mock('@app/ui', () => ({
   Button: ({ children, onPress, ...rest }: { children: ReactNode; onPress?: () => void }) => (
@@ -103,6 +106,10 @@ vi.mock('@app/core/utils/analytics/queue', () => ({
   captureEventWithQueue: captureEventWithQueueMock,
 }))
 
+vi.mock('@app/core/utils/errors/translateError', () => ({
+  translateError: translateErrorMock,
+}))
+
 vi.mock('../components/SocialLogin', () => ({
   SocialLogin: () => <div data-testid="social-login" />,
 }))
@@ -130,6 +137,7 @@ describe('LoginScreen', () => {
     mockMutateAsync.mockReset()
     captureEventMock.mockReset()
     captureEventWithQueueMock.mockReset()
+    translateErrorMock.mockClear()
     captureEventMock.mockReturnValue(true)
     captureEventWithQueueMock.mockResolvedValue(true)
   })

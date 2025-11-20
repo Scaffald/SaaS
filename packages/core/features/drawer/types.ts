@@ -39,6 +39,7 @@ export type DrawerLinkProps = {
   onToggleExpanded?: (key: string) => void
   // Optional for drawer close functionality if needed
   onNavigate?: (href: string, event: GestureResponderEvent) => void
+  isCollapsed?: boolean
 }
 
 /**

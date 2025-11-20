@@ -127,6 +127,14 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
   }
 
   if (!isAnalyticsAvailable()) {
+    console.log('[analytics debug] unavailable', {
+      POSTHOG_KEY,
+      POSTHOG_HOST,
+      APP_ENV,
+      CHANNEL,
+      IS_WEB,
+      isAllowedEnvironment,
+    })
     console.warn('[analytics] PostHog key or host not configured; analytics disabled.')
     return
   }
@@ -139,6 +147,11 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
   }
 
   if (!isAllowedEnvironment) {
+    console.log('[analytics debug] disallowed environment', {
+      APP_ENV,
+      CHANNEL,
+      __DEV__,
+    })
     if (debug) {
       console.info(
         `[analytics] Skipping PostHog init for env=${APP_ENV}, channel=${CHANNEL}, dev=${__DEV__} (environment not allowed)`
@@ -165,6 +178,7 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
     await instance.optIn()
 
     client = instance
+    console.log('[analytics debug] client initialized', Boolean(client))
   } catch (error) {
     console.error('[analytics] Failed to initialize PostHog', error)
     client = null
@@ -192,9 +206,13 @@ export const captureEvent = <TName extends AnalyticsEventName>(
   event: TName,
   properties: AnalyticsEventProperties<TName>
 ) => {
-  if (!hasActiveClient() || !client) return false
+  if (!hasActiveClient() || !client) {
+    console.log('[analytics debug] capture aborted', { hasClient: Boolean(client) })
+    return false
+  }
   const validation = validateEventProperties(event, properties)
   if (!validation.success) {
+    console.log('[analytics debug] validation failed', { event, properties, error: validation.error })
     console.warn('[analytics] Invalid event payload', event, validation.error.flatten())
     return false
   }

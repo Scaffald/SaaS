@@ -1,0 +1,12 @@
+---
+description: "Avoid commands that require manual intervention to exit"
+alwaysApply: true
+---
+
+# No Non-terminating Watcher Commands
+
+- **Do not run** tests or scripts in watch mode (e.g., `--watch`, `--watchAll`, `pnpm test -- --watch`).
+- **Avoid** log/monitor commands like `tail -f`, `pnpm dev`, or similar tools that never exit on their own.
+- **Skip** background tasks that require manual interruption unless the team explicitly requests them.
+- **Prefer** single-run commands (`pnpm test:all`, `pnpm check`) that finish autonomously and report status.
+- **Confirm** with the team if a long-running process seems necessary before starting it.
