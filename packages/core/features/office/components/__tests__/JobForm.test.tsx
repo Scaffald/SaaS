@@ -201,6 +201,34 @@ vi.mock('@app/ui', () => ({
     open?: boolean
     onOpenChange?: (open: boolean) => void
   }) => (open ? <div data-testid="responsive-modal">{children}</div> : null),
+  ResponsiveSelect: ({
+    value,
+    onValueChange,
+    options,
+    placeholder,
+    'data-testid': dataTestId,
+  }: {
+    value?: string
+    onValueChange: (value: string) => void
+    options: Array<{ value: string; label: string }>
+    placeholder?: string
+    'data-testid'?: string
+  }) => (
+    <select
+      data-testid={dataTestId}
+      value={value ?? ''}
+      onChange={(event) => onValueChange(event.target.value)}
+    >
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ),
+  Sheet: ({ children, open }: { children: ReactNode; open?: boolean }) =>
+    open ? <div data-testid="sheet">{children}</div> : null,
 }))
 
 vi.mock('@tamagui/lucide-icons', () => ({

@@ -174,6 +174,34 @@ vi.mock('expo-modules-core', () => ({
   },
 }))
 
+// Mock @app/ui components - provide ResponsiveSelect mock
+vi.mock('@app/ui', async () => {
+  const ResponsiveSelectMock = Object.assign(createPrimitive('select'), {
+    Trigger: createPrimitive('button'),
+    Value: createPrimitive('span'),
+    Content: createPrimitive('div'),
+    Viewport: createPrimitive('div'),
+    Item: createPrimitive('div'),
+    ItemText: createPrimitive('span'),
+    ItemIndicator: createPrimitive('span'),
+  })
+
+  try {
+    const mod = await vi.importActual<typeof import('@app/ui')>('@app/ui')
+    return {
+      ...mod,
+      ResponsiveSelect: ResponsiveSelectMock,
+    }
+  } catch (error) {
+    // If importActual fails, return a minimal mock with ResponsiveSelect
+    console.warn('Failed to importActual @app/ui, using minimal mock:', error)
+    return {
+      __esModule: true as const,
+      ResponsiveSelect: ResponsiveSelectMock,
+    }
+  }
+})
+
 if (typeof window !== 'undefined' && !window.matchMedia) {
   const mockMatchMediaResult = {
     matches: false,
