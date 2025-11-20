@@ -1,20 +1,26 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react'
-import { ScrollView } from 'react-native'
-import { XStack, YStack, Text, Card, Avatar, type GetThemeValueForKey, Button } from 'tamagui'
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import { DroppableColumn, DraggableCard } from '@app/ui'
-import { CheckSquare, Square } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
-import type { MockApplication, ApplicationStatus } from '../../mock-data/ats-mock-data'
-import { CandidateDetailModal } from './CandidateDetailModal'
-import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
-import { InquiryStatusBadges } from './kanban/InquiryStatusBadges'
 import { BulkInquiryModal } from '@app/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@app/core/features/inquiries/components/InquiryComparisonView'
+import { api } from '@app/core/utils/api'
+import { DraggableCard, DroppableColumn, KanbanCard } from '@app/ui'
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { ScrollView } from 'react-native'
+import { Button, type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
+import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
+import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
+import { CandidateDetailModal } from './CandidateDetailModal'
 
-const STATUSES: ApplicationStatus[] = ['new', 'screen', 'inquired', 'interview', 'offer', 'hired', 'rejected']
+const STATUSES: ApplicationStatus[] = [
+  'new',
+  'screen',
+  'inquired',
+  'interview',
+  'offer',
+  'hired',
+  'rejected',
+]
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   new: 'New Applications',
@@ -47,7 +53,9 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   const [showComparison, setShowComparison] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
   const [comparisonInquiryIds, setComparisonInquiryIds] = useState<string[]>([])
-  const [_inquiryToApplicationMap, setInquiryToApplicationMap] = useState<Record<string, string>>({})
+  const [_inquiryToApplicationMap, setInquiryToApplicationMap] = useState<Record<string, string>>(
+    {}
+  )
 
   // Fetch inquiry IDs for selected applications
   const selectedApplications = useMemo(
@@ -206,15 +214,11 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
           $sm={{ flexDirection: 'column', items: 'stretch' }}
         >
           <Text fontSize="$4" fontWeight="600">
-            {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''} selected
+            {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''}{' '}
+            selected
           </Text>
           <XStack gap="$2" flexWrap="wrap" $sm={{ width: '100%', flexDirection: 'column' }}>
-            <Button
-              size="$3"
-              variant="outlined"
-              onPress={clearSelection}
-              $sm={{ width: '100%' }}
-            >
+            <Button size="$3" variant="outlined" onPress={clearSelection} $sm={{ width: '100%' }}>
               Clear
             </Button>
             {selectedApplications.length >= 2 &&
@@ -271,7 +275,25 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
 
         <DragOverlay>
           {activeApplication ? (
-            <ApplicationCard application={activeApplication} onPress={() => {}} isDragging />
+            <KanbanCard
+              id={activeApplication.id}
+              applicantName={activeApplication.candidate.name}
+              applicantAvatar={activeApplication.candidate.photo}
+              jobTitle={activeApplication.job.title}
+              applicationDate={new Date(activeApplication.appliedAt)}
+              score={activeApplication.score}
+              status={activeApplication.status}
+              attachmentCount={
+                (activeApplication.attachments.resume ? 1 : 0) +
+                (activeApplication.attachments.coverLetter ? 1 : 0) +
+                (activeApplication.attachments.portfolio ? 1 : 0)
+              }
+              commentCount={activeApplication.notes.length}
+              durationDays={Math.floor(
+                (new Date().getTime() - new Date(activeApplication.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
+              )}
+              isDragging
+            />
           ) : null}
         </DragOverlay>
       </DndContext>
@@ -369,173 +391,50 @@ const StatusColumn = ({
   onToggleSelection,
 }: StatusColumnProps) => {
   return (
-    <DroppableColumn id={status} items={applications.map((app) => app.id)}>
-      <YStack data-testid={`kanban-column-${status}`} width={300} bg="$color2" rounded="$4" p="$3">
-        {/* Column Header */}
-        <XStack justify="space-between" items="center" mb="$3">
-          <XStack gap="$2" items="center">
-            <YStack width={8} height={8} rounded="$10" bg={color} />
-            <Text fontWeight="600" fontSize="$4">
-              {label}
-            </Text>
-          </XStack>
-          <YStack bg="$color5" px="$2" py="$1" rounded="$2">
-            <Text fontSize="$2">{applications.length}</Text>
-          </YStack>
-        </XStack>
+    <DroppableColumn
+      id={status}
+      items={applications.map((app) => app.id)}
+      title={label}
+      count={applications.length}
+      color={color}
+      emptyMessage="No applications"
+    >
+      <>
+        {applications.map((app) => {
+          // Calculate attachment count
+          const attachmentCount =
+            (app.attachments.resume ? 1 : 0) +
+            (app.attachments.coverLetter ? 1 : 0) +
+            (app.attachments.portfolio ? 1 : 0)
 
-        {/* Application Cards */}
-        <YStack gap="$2" flex={1}>
-          {applications.length === 0 ? (
-            <Card p="$4" bg="gray">
-              <Text fontSize="$2" text="center">
-                No applications
-              </Text>
-            </Card>
-          ) : (
-            applications.map((app) => (
-              <DraggableCard key={app.id} id={app.id}>
-                <ApplicationCard
-                  application={app}
-                  isSelected={selectedApplicationIds.has(app.id)}
-                  onPress={() => onSelectApplication(app)}
-                  onToggleSelection={(e) => {
-                    e.stopPropagation()
-                    onToggleSelection(app.id)
-                  }}
-                />
-              </DraggableCard>
-            ))
-          )}
-        </YStack>
-      </YStack>
+          // Calculate duration in days
+          const durationDays = Math.floor(
+            (new Date().getTime() - new Date(app.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
+          )
+
+          return (
+            <DraggableCard
+              key={app.id}
+              id={app.id}
+              kanbanCardProps={{
+                applicantName: app.candidate.name,
+                applicantAvatar: app.candidate.photo,
+                jobTitle: app.job.title,
+                applicationDate: new Date(app.appliedAt),
+                score: app.score,
+                status: app.status,
+                attachmentCount,
+                commentCount: app.notes.length,
+                durationDays,
+                isSelected: selectedApplicationIds.has(app.id),
+                onToggleSelection: () => onToggleSelection(app.id),
+                onView: () => onSelectApplication(app),
+              }}
+            />
+          )
+        })}
+      </>
     </DroppableColumn>
   )
 }
 
-interface ApplicationCardProps {
-  application: MockApplication
-  isSelected?: boolean
-  onPress: () => void
-  onToggleSelection?: (e: { stopPropagation: () => void }) => void
-  isDragging?: boolean
-}
-
-const ApplicationCard = ({
-  application,
-  isSelected = false,
-  onPress,
-  onToggleSelection,
-}: ApplicationCardProps) => {
-  const appliedDate = new Date(application.appliedAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
-
-  const scoreColor =
-    application.score >= 80 ? '$green10' : application.score >= 60 ? '$blue10' : '$red10'
-  const scoreBg = application.score >= 80 ? '$green3' : application.score >= 60 ? '$blue3' : '$red3'
-
-  // Fetch inquiry data if status is 'inquired'
-  const { data: inquiryData } = api.inquiries.getByApplication.useQuery(
-    { applicationId: application.id },
-    { enabled: application.status === 'inquired' }
-  )
-
-  return (
-    <Card
-      data-testid={`kanban-card-${application.id}`}
-      p="$3"
-      bg={isSelected ? '$blue3' : '$background'}
-      borderWidth={isSelected ? 2 : 0}
-      borderColor="$blue9"
-      hoverStyle={{
-        bg: isSelected ? '$blue4' : 'gray',
-      }}
-      pressStyle={{ scale: 0.98 }}
-      animation="quick"
-      elevate
-      onPress={onPress}
-    >
-      {/* Selection Checkbox */}
-      {onToggleSelection && (
-        <XStack
-          style={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            zIndex: 10,
-          }}
-        >
-          <Button
-            size="$2"
-            circular
-            unstyled
-            onPress={onToggleSelection}
-            bg={isSelected ? '$blue9' : '$color5'}
-            items="center"
-            justify="center"
-            width={24}
-            height={24}
-          >
-            {isSelected ? (
-              <CheckSquare size={16} color="white" />
-            ) : (
-              <Square size={16} color="$color11" />
-            )}
-          </Button>
-        </XStack>
-      )}
-
-      {/* Candidate Info */}
-      <XStack gap="$3" items="flex-start" mb="$2">
-        <Avatar circular size="$4">
-          <Avatar.Image src={application.candidate.photo} />
-          <Avatar.Fallback bg="$blue9">
-            <Text color="white" fontWeight="600">
-              {application.candidate.name.charAt(0)}
-            </Text>
-          </Avatar.Fallback>
-        </Avatar>
-
-        <YStack flex={1}>
-          <Text fontWeight="600" fontSize="$4" numberOfLines={1}>
-            {application.candidate.name}
-          </Text>
-          <Text fontSize="$2" numberOfLines={1} opacity={0.6}>
-            {application.candidate.title}
-          </Text>
-        </YStack>
-      </XStack>
-
-      {/* Score and Date */}
-      <XStack justify="space-between" items="center" mt="$2">
-        <YStack bg={scoreBg} px="$2" py="$1" rounded="$2">
-          <Text fontSize="$2" fontWeight="600" color={scoreColor}>
-            Score: {application.score}
-          </Text>
-        </YStack>
-
-        <Text fontSize="$1" opacity={0.6}>
-          {appliedDate}
-        </Text>
-      </XStack>
-
-      {/* Job Info */}
-      <Text fontSize="$1" mt="$2" numberOfLines={1} opacity={0.6}>
-        {application.job.title}
-      </Text>
-
-      {/* Inquiry Status Badges */}
-      {application.status === 'inquired' && inquiryData?.inquiry && (
-        <InquiryStatusBadges
-          inquiryData={{
-            sections: inquiryData.sections,
-            comments: inquiryData.comments,
-            capabilityResponses: inquiryData.capabilityResponses,
-          }}
-        />
-      )}
-    </Card>
-  )
-}
