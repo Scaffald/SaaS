@@ -6,7 +6,7 @@ import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
+import { Button, Tabs, type GetThemeValueForKey, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
@@ -56,6 +56,9 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
   const [_inquiryToApplicationMap, setInquiryToApplicationMap] = useState<Record<string, string>>(
     {}
   )
+  const [activeColumn, setActiveColumn] = useState<ApplicationStatus>(STATUSES[0])
+  const { width } = useWindowDimensions()
+  const isMobile = width < 768
 
   // Fetch inquiry IDs for selected applications
   const selectedApplications = useMemo(
@@ -256,22 +259,66 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <XStack gap="$3" pb="$4">
+        {isMobile ? (
+          // Mobile: Tab-based view showing one column at a time
+          <Tabs value={activeColumn} onValueChange={(value) => setActiveColumn(value as ApplicationStatus)}>
+            <Tabs.List
+              separator={<YStack width="$1" />}
+              disablePassBorderRadius="bottom"
+              aria-label="Kanban column navigation"
+              $sm={{ flexWrap: 'wrap' }}
+            >
+              {STATUSES.map((status) => (
+                <Tabs.Tab key={status} value={status} flex={1} minWidth={100}>
+                  <Text fontSize="$3" fontWeight="600" numberOfLines={1}>
+                    {STATUS_LABELS[status]}
+                  </Text>
+                  <YStack bg="$color5" px="$2" py="$1" rounded="$2" mt="$1">
+                    <Text fontSize="$1" fontWeight="600" color="$color11">
+                      {groupedApplications[status].length}
+                    </Text>
+                  </YStack>
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+
             {STATUSES.map((status) => (
-              <StatusColumn
-                key={status}
-                status={status}
-                label={STATUS_LABELS[status]}
-                color={STATUS_COLORS[status]}
-                applications={groupedApplications[status]}
-                selectedApplicationIds={selectedApplicationIds}
-                onSelectApplication={setSelectedApplication}
-                onToggleSelection={toggleApplicationSelection}
-              />
+              <Tabs.Content key={status} value={status} p="$0">
+                <ScrollView>
+                  <YStack p="$3">
+                    <StatusColumn
+                      status={status}
+                      label={STATUS_LABELS[status]}
+                      color={STATUS_COLORS[status]}
+                      applications={groupedApplications[status]}
+                      selectedApplicationIds={selectedApplicationIds}
+                      onSelectApplication={setSelectedApplication}
+                      onToggleSelection={toggleApplicationSelection}
+                    />
+                  </YStack>
+                </ScrollView>
+              </Tabs.Content>
             ))}
-          </XStack>
-        </ScrollView>
+          </Tabs>
+        ) : (
+          // Desktop: Horizontal scrolling layout
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <XStack gap="$3" pb="$4">
+              {STATUSES.map((status) => (
+                <StatusColumn
+                  key={status}
+                  status={status}
+                  label={STATUS_LABELS[status]}
+                  color={STATUS_COLORS[status]}
+                  applications={groupedApplications[status]}
+                  selectedApplicationIds={selectedApplicationIds}
+                  onSelectApplication={setSelectedApplication}
+                  onToggleSelection={toggleApplicationSelection}
+                />
+              ))}
+            </XStack>
+          </ScrollView>
+        )}
 
         <DragOverlay>
           {activeApplication ? (
