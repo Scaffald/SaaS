@@ -752,7 +752,8 @@ export function ProfileCertificationsLeft({
                   <Button
                     variant="primary"
                     onPress={handleCustomFormSubmit}
-                    disabled={isSavingCustom}
+                    disabled={isSavingCustom || Object.keys(customErrors).length > 0 || !customForm.name.trim() || !customForm.organization.trim()}
+                    opacity={isSavingCustom || Object.keys(customErrors).length > 0 || !customForm.name.trim() || !customForm.organization.trim() ? 0.5 : 1}
                   >
                     {showAdaptiveCustomSaving ? 'Saving...' : 'Save Certification'}
                   </Button>
