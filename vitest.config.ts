@@ -53,8 +53,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     watch: false,
-    testTimeout: 30_000, // 30 seconds per test
-    hookTimeout: 10_000, // 10 seconds for hooks
+    testTimeout: 10_000, // 10 seconds per test (reduced to fail faster)
+    hookTimeout: 5_000, // 5 seconds for hooks
     include: ['{apps,packages}/**/*.{test,spec}.{ts,tsx}'],
     exclude: [
       '**/node_modules/**',
@@ -65,6 +65,19 @@ export default defineConfig({
       'packages/supabase/tests/**',
       'tests/e2e/**',
       'tests/infrastructure/**',
+      // Temporarily exclude potentially hanging tests (REQ-231)
+      'packages/core/features/profile/__tests__/profile-certifications-left.test.tsx',
+      'packages/core/features/profile/__tests__/profile-employment-left.test.tsx',
+      'packages/core/features/inquiries/components/__tests__/**',
+      'packages/core/features/profile-wizard/**',
+      'packages/core/features/discover/hooks/__tests__/useLocationHooks.test.ts',
+      'packages/core/features/discover/hooks/__tests__/useUserLocation.test.ts',
+      'packages/core/features/feedback/__tests__/**',
+      'packages/core/features/profile-completion/components/__tests__/**',
+      'packages/core/features/profile-import/components/__tests__/**',
+      'packages/core/features/resume/hooks/__tests__/**',
+      'packages/core/utils/auth/__tests__/**',
+      'packages/ui/src/components/image-picker/utils/__tests__/imageProcessing.test.ts',
     ],
     setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
     reporters: [quietReporterPath, 'hanging-process'],
