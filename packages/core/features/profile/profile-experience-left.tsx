@@ -10,6 +10,7 @@ import {
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, Check, CheckCircle, ChevronDown, Plus, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
@@ -90,6 +91,7 @@ export function ProfileExperienceLeft() {
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
   const { editingEntryId, cancelEditing } = useExperienceEdit()
+  const toast = useToastController()
 
   // Queries
   const experienceQuery = api.profile.getExperience.useQuery()
@@ -125,6 +127,17 @@ export function ProfileExperienceLeft() {
         utils.profile.getExperienceSummary.setData(undefined, context.previousSummary)
       }
       failProfileSync()
+      toast.show('Error', {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save experience. Please try again.',
+      })
+    },
+    onSuccess: () => {
+      toast.show('Experience Saved', {
+        message: 'Your work experience has been updated successfully!',
+      })
     },
     onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
