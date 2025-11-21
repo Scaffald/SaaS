@@ -37,8 +37,6 @@ export interface DataTableProps<TData> {
   getItemName?: (row: TData) => string
   /** Type of item (for delete confirmation) */
   itemType?: string
-  /** @deprecated Use onRowView, onRowEdit, onRowDelete instead */
-  onRowClick?: (row: TData) => void
   pageSize?: number
   isLoading?: boolean
   emptyMessage?: string
@@ -59,7 +57,6 @@ export function DataTable<TData>({
   onRowDuplicate,
   getItemName,
   itemType = 'item',
-  onRowClick,
   pageSize = 50,
   isLoading = false,
   emptyMessage = 'No data available',
@@ -106,8 +103,8 @@ export function DataTable<TData>({
   // Find active row data
   const activeRow = activeRowId ? tableRows.find((row) => row.id === activeRowId)?.original : null
 
-  // Handle row click - calculate position and open overlay or use legacy onRowClick
-  const handleRowClick = (row: TData, rowId: string, event?: any) => {
+  // Handle row click - calculate position and open overlay
+  const handleRowClick = (_row: TData, rowId: string, event?: any) => {
     if (useOverlay && isWeb) {
       // Calculate position relative to table container
       // Try to get position from event or from row element
@@ -143,9 +140,6 @@ export function DataTable<TData>({
         setOverlayPosition({ x, y })
         setActiveRowId(rowId)
       }
-    } else if (onRowClick) {
-      // Legacy behavior
-      onRowClick(row)
     }
   }
 
@@ -296,12 +290,10 @@ export function DataTable<TData>({
                       key={row.id}
                       hoverStyle={{ bg: '$color2' }}
                       pressStyle={{ opacity: 0.8 }}
-                      cursor={useOverlay || onRowClick ? 'pointer' : 'default'}
+                      cursor={useOverlay ? 'pointer' : 'default'}
                       onPress={(event) => {
                         if (useOverlay) {
                           handleRowClick(row.original, row.id, event)
-                        } else if (onRowClick) {
-                          onRowClick(row.original)
                         }
                       }}
                       rowLocation={rowIdx === tableRows.length - 1 ? 'last' : 'middle'}

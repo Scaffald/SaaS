@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from 'vitest'
-import { invalidateProfileQueries } from '../profile-sync'
+import { describe, expect, it, vi } from "vitest";
+import { invalidateProfileQueries } from "../profile-sync";
 
-const createInvalidateMock = () => vi.fn().mockResolvedValue(undefined)
+const createInvalidateMock = () => vi.fn().mockResolvedValue(undefined);
 
 const createUtilsMock = () => {
-  const makeSection = () => ({ invalidate: createInvalidateMock() })
+  const makeSection = () => ({ invalidate: createInvalidateMock() });
 
   return {
     profile: {
@@ -40,8 +40,8 @@ const createUtilsMock = () => {
       getUserExperience: makeSection(),
       getUserEducation: makeSection(),
     },
-  }
-}
+  };
+};
 
 const collectInvalidateSpies = (utils: ReturnType<typeof createUtilsMock>) => [
   utils.profile.general.getGeneral.invalidate,
@@ -58,37 +58,38 @@ const collectInvalidateSpies = (utils: ReturnType<typeof createUtilsMock>) => [
   utils.userProfile.getUserCertifications.invalidate,
   utils.userProfile.getUserExperience.invalidate,
   utils.userProfile.getUserEducation.invalidate,
-]
+];
 
-describe('invalidateProfileQueries', () => {
-  it('invokes all invalidate hooks successfully', async () => {
-    const utils = createUtilsMock()
+describe("invalidateProfileQueries", () => {
+  it("invokes all invalidate hooks successfully", async () => {
+    const utils = createUtilsMock();
 
-    await invalidateProfileQueries(utils as never)
+    await invalidateProfileQueries(utils as never);
 
     for (const spy of collectInvalidateSpies(utils)) {
-      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1);
     }
-  })
+  });
 
-  it('still resolves when some invalidations reject', async () => {
-    const utils = createUtilsMock()
-    const [first, , third] = collectInvalidateSpies(utils)
-    
+  it("still resolves when some invalidations reject", async () => {
+    const utils = createUtilsMock();
+    const [first, , third] = collectInvalidateSpies(utils);
+
     // Suppress unhandled rejection warnings since Promise.allSettled handles them
-    const originalConsoleError = console.error
-    console.error = vi.fn()
-    
-    first.mockRejectedValueOnce(new Error('network'))
-    third.mockRejectedValueOnce(new Error('timeout'))
+    const originalConsoleError = console.error;
+    console.error = vi.fn();
 
-    await expect(invalidateProfileQueries(utils as never)).resolves.toBeUndefined()
+    first.mockRejectedValueOnce(new Error("network"));
+    third.mockRejectedValueOnce(new Error("timeout"));
+
+    await expect(invalidateProfileQueries(utils as never)).resolves
+      .toBeUndefined();
 
     for (const spy of collectInvalidateSpies(utils)) {
-      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1);
     }
-    
+
     // Restore console.error
-    console.error = originalConsoleError
-  })
-})
+    console.error = originalConsoleError;
+  });
+});

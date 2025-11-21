@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import { renderHook } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { describe, expect, it, vi } from 'vitest'
@@ -19,7 +19,11 @@ function createMockChannel(name: string) {
     },
     subscribe: () => channel,
     unsubscribe,
-    trigger: () => callbacks.forEach((callback) => callback()),
+    trigger: () => {
+      callbacks.forEach((callback) => {
+        callback()
+      })
+    },
   }
 
   channelMocks.push(channel)
@@ -61,7 +65,9 @@ describe('useInquirySubscription', () => {
     expect(supabaseMock.channel).toHaveBeenCalledWith('inquiry-sections-inquiry-123')
     expect(supabaseMock.channel).toHaveBeenCalledWith('inquiry-capability-inquiry-123')
 
-    channelMocks.forEach((channel) => channel.trigger())
+    channelMocks.forEach((channel) => {
+      channel.trigger()
+    })
 
     expect(invalidateSpy).toHaveBeenCalledTimes(4)
 

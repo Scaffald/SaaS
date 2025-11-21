@@ -288,7 +288,7 @@ export function OrganizationBackgroundChecksPage() {
               ? 'Loading background checks…'
               : 'No background checks found for this organization yet.'
           }
-          onRowClick={(row: CheckRow) => setSelectedCheckId(row.id)}
+          onRowView={(row: CheckRow) => setSelectedCheckId(row.id)}
         />
       ) : (
         <YStack flex={1} p="$4" gap="$3" items="center" justify="center">

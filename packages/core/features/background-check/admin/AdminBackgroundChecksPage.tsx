@@ -531,7 +531,7 @@ export function AdminBackgroundChecksPage() {
               ? 'Loading background checks…'
               : 'No background checks found for this filter.'
           }
-          onRowClick={(row) => setSelectedCheck(row.raw)}
+          onRowView={(row) => setSelectedCheck(row.raw)}
         />
       ) : null}
 
@@ -552,7 +552,7 @@ export function AdminBackgroundChecksPage() {
               ? 'Loading disputes…'
               : 'No disputes require attention right now.'
           }
-          onRowClick={(row) => setSelectedDispute(row.raw)}
+          onRowView={(row) => setSelectedDispute(row.raw)}
         />
       ) : null}
 

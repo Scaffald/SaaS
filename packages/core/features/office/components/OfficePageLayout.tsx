@@ -34,8 +34,6 @@ interface OfficePageLayoutProps<TData> {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   isLoading?: boolean
-  /** @deprecated Use onRowView, onRowEdit, onRowDelete instead */
-  onRowClick?: (row: TData) => void
   /** View action handler (opens overlay on row click) */
   onRowView?: (row: TData) => void
   /** Edit action handler (opens overlay on row click) */
@@ -83,7 +81,6 @@ export function OfficePageLayout<TData>({
   columns,
   data,
   isLoading = false,
-  onRowClick,
   onRowView,
   onRowEdit,
   onRowDelete,
@@ -140,7 +137,6 @@ export function OfficePageLayout<TData>({
         columns={columns}
         data={data}
         isLoading={isLoading}
-        onRowClick={onRowClick}
         onRowView={onRowView}
         onRowEdit={onRowEdit}
         onRowDelete={onRowDelete}

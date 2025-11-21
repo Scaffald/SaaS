@@ -1,7 +1,7 @@
 import { RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button, DashboardWidget, SkeletonCard, Text, YStack } from '@app/ui'
+import { Button, SkeletonCard, Text, YStack } from '@app/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 
@@ -21,16 +21,7 @@ export function InquiryOverviewWidget() {
   }
 
   if (!data || data.length === 0) {
-    return (
-      <DashboardWidget>
-        <Text fontWeight="600" fontSize="$5">
-          Negotiations
-        </Text>
-        <Text color="$color11">
-          Once an employer opens a negotiation, it will appear here so you can review and respond.
-        </Text>
-      </DashboardWidget>
-    )
+    return null
   }
 
   const entries = data.slice(0, 3)

@@ -3,16 +3,20 @@ import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton }
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Text, XStack, YStack } from 'tamagui'
+import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 
-interface UserSkill {
+// EnrichedUserSkill type from skill-enrichment.ts
+interface EnrichedUserSkill {
   id: string
-  skill_taxonomy: string
+  taxonomy: 'csi' | 'onet'
+  name: string
+  label: string
+  displayCode: string | null
+  proficiency: number
+  yearsExperience: number | null
+  verified: boolean
   metadata: Record<string, unknown> | null
-  proficiency_level: number | null
-  years_experience: number | null
-  notes: string | null
-  verified: boolean | null
 }
 
 /**
@@ -63,12 +67,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     )
   }
 
-  const skills = data || []
+  const skills = (data || []) as EnrichedUserSkill[]
   const showCompact = variant === 'compact'
 
   // Group skills by taxonomy
-  const groupedSkills = skills.reduce((acc: Record<string, UserSkill[]>, skill: UserSkill) => {
-    const taxonomy = skill.skill_taxonomy || 'Other'
+  const groupedSkills = skills.reduce((acc: Record<string, EnrichedUserSkill[]>, skill: EnrichedUserSkill) => {
+    const taxonomy = skill.taxonomy || 'Other'
     if (!acc[taxonomy]) {
       acc[taxonomy] = []
     }
@@ -85,26 +89,6 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     if (bIndex === -1) return -1
     return aIndex - bIndex
   })
-
-  // Helper to get skill display name from metadata
-  const getSkillName = (skill: UserSkill): string => {
-    if (skill.metadata && typeof skill.metadata === 'object') {
-      const name = skill.metadata.name
-      const title = skill.metadata.title
-      if (typeof name === 'string') return name
-      if (typeof title === 'string') return title
-    }
-    return 'Unnamed Skill'
-  }
-
-  // Helper to get proficiency label
-  const getProficiencyLabel = (level: number | null): string => {
-    if (level === null) return ''
-    if (level >= 4) return 'Expert'
-    if (level >= 3) return 'Advanced'
-    if (level >= 2) return 'Intermediate'
-    return 'Beginner'
-  }
 
   return (
     <DashboardWidget>
@@ -151,7 +135,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                 <XStack gap="$2" flexWrap="wrap">
                   {groupedSkills[taxonomy]
                     .slice(0, showCompact ? 5 : undefined)
-                    .map((skill: UserSkill) => (
+                    .map((skill: EnrichedUserSkill) => (
                       <XStack
                         key={skill.id}
                         bg="$blue2"
@@ -166,18 +150,18 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                         {skill.verified && <CheckCircle size={14} color="$blue11" />}
                         <YStack gap="$0.5">
                           <Text fontSize="$2" fontWeight="500" color="$blue11">
-                            {getSkillName(skill)}
+                            {skill.name}
                           </Text>
                           {!showCompact && (
                             <XStack gap="$2">
-                              {skill.proficiency_level !== null && (
+                              {skill.proficiency > 0 && (
                                 <Text fontSize="$1" color="$blue10">
-                                  {getProficiencyLabel(skill.proficiency_level)}
+                                  {getProficiencyLabel(skill.proficiency)}
                                 </Text>
                               )}
-                              {skill.years_experience !== null && skill.years_experience > 0 && (
+                              {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
                                 <Text fontSize="$1" color="$blue10">
-                                  • {skill.years_experience}y
+                                  • {skill.yearsExperience}y
                                 </Text>
                               )}
                             </XStack>
