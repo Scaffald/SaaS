@@ -16,7 +16,7 @@ export function FollowersList() {
     if (!searchTerm.trim()) return followers
 
     const search = searchTerm.toLowerCase()
-    return followers.filter((follow) => {
+    return followers.filter((follow: Follower) => {
       const name = follow.user?.display_name || follow.user?.username || ''
       return name.toLowerCase().includes(search)
     })

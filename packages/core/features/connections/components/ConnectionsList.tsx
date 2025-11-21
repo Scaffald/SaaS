@@ -36,7 +36,7 @@ export function ConnectionsList() {
     if (!searchTerm.trim()) return connections
 
     const search = searchTerm.toLowerCase()
-    return connections.filter((conn) => {
+    return connections.filter((conn: Connection) => {
       const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
       const name = user?.display_name || user?.username || ''
       return name.toLowerCase().includes(search)
@@ -58,7 +58,7 @@ export function ConnectionsList() {
     }
 
     const headers = ['Name', 'Email', 'Industry', 'Connected Since']
-    const rows = connections.map((conn) => {
+    const rows = connections.map((conn: Connection) => {
       const user = conn.requester_user_id === conn.user?.id ? conn.addressee_user : conn.user
       const name = user?.display_name || user?.username || ''
       const email = user?.email || ''
@@ -68,7 +68,7 @@ export function ConnectionsList() {
       return [name, email, industry, date]
     })
 
-    const csvContent = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n')
+    const csvContent = [headers, ...rows].map((row: string[]) => row.map((cell: string) => `"${cell}"`).join(',')).join('\n')
     
     // Web-only CSV export
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {

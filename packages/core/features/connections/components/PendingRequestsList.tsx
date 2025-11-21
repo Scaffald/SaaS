@@ -92,8 +92,8 @@ export function PendingRequestsList() {
 
   const combinedRequests: RequestRow[] = useMemo(() => {
     if (!pendingRequests) return []
-    const sent: PendingRequest[] = (pendingRequests.sent || []).map((req) => ({ ...req, type: 'sent' }))
-    const received: ReceivedRequest[] = (pendingRequests.received || []).map((req) => ({
+    const sent: PendingRequest[] = (pendingRequests.sent || []).map((req: PendingRequestsData['sent'][number]) => ({ ...req, type: 'sent' }))
+    const received: ReceivedRequest[] = (pendingRequests.received || []).map((req: PendingRequestsData['received'][number]) => ({
       ...req,
       type: 'received',
     }))

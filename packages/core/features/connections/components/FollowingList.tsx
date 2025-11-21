@@ -34,7 +34,7 @@ export function FollowingList() {
     if (!searchTerm.trim()) return following
 
     const search = searchTerm.toLowerCase()
-    return following.filter((follow) => {
+    return following.filter((follow: Following) => {
       const name = follow.user?.display_name || follow.user?.username || ''
       return name.toLowerCase().includes(search)
     })

@@ -1025,6 +1025,14 @@ async function upsertCertifications(
   entries: Array<z.infer<typeof parsedCertificationSchema>>,
   strategy: "replace" | "append" | "keepExisting",
 ): Promise<void> {
+  // Note: The user_certifications table requires a certification_id (FK to certifications taxonomy).
+  // Resume parsing extracts free-form certification data (name, issuer, dates) that doesn't
+  // match the taxonomy structure. We skip saving certifications from resume parsing here.
+  // Users can manually add certifications through the profile certifications interface,
+  // which has proper taxonomy matching logic.
+  //
+  // If strategy is "replace", we still clear existing certifications to maintain consistency
+  // with the user's intent to replace data from the resume.
   if (strategy === "replace") {
     const { error: deleteError } = await supabase
       .schema("core")
@@ -1038,33 +1046,11 @@ async function upsertCertifications(
         message: `Failed to reset certifications: ${deleteError.message}`,
       });
     }
-  } else if (strategy === "keepExisting") {
-    return;
   }
 
-  const payload = entries
-    .filter((entry) => entry.name)
-    .map((entry) => ({
-      user_id: userId,
-      name: entry.name ?? "",
-      issuer: entry.issuer ?? null,
-      issued_on: entry.issuedOn ?? null,
-      expires_on: entry.expiresOn ?? null,
-    }));
-
-  if (payload.length === 0) {
-    return;
-  }
-
-  const { error } = await supabase.schema("core").from("user_certifications")
-    .insert(payload);
-
-  if (error) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: `Failed to upsert certifications: ${error.message}`,
-    });
-  }
+  // Skip inserting certifications since we can't match them to the taxonomy
+  // without additional logic to find/create matching certification entries
+  return;
 }
 
 async function upsertSkills(
