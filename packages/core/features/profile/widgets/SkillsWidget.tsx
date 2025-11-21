@@ -1,8 +1,12 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
+import { SoftSkillsCategoryTabs, type SoftSkillCategory } from '../components/SoftSkillsCategoryTabs'
+import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
+import { SoftSkillsRadarGrid } from '@app/ui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, Tab, TabGroup, UIButton } from '@app/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Text, XStack, YStack } from 'tamagui'
+import { useMemo, useState } from 'react'
+import { Separator, Text, XStack, YStack } from 'tamagui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 
@@ -29,12 +33,46 @@ interface EnrichedUserSkill {
  */
 export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState<'technical' | 'soft-skills'>('technical')
+  const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
+
+  // Fetch technical skills
   const { data, isLoading, error, refetch, isFetching } = api.profile.widgets.getSkills.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
   )
+
+  // Fetch soft skills
+  const {
+    data: softSkillsData,
+    isLoading: isLoadingSoftSkills,
+    error: softSkillsError,
+  } = api.profile.skills.getSoftSkills.useQuery(
+    userId ? { userId } : undefined,
+    {
+      enabled: !!userId && activeTab === 'soft-skills',
+      staleTime: 5 * 60 * 1000,
+    },
+  )
+
+  // Note: Peer comparison data would be fetched here if needed for individual skill displays
+  // For now, we only show self-assessments in the skills widget
+
+  // Prepare soft skills for display
+  const softSkills = useMemo<SoftSkill[]>(() => {
+    if (!softSkillsData) return []
+
+    return softSkillsData.skills.map((skill) => ({
+      id: skill.id,
+      name: skill.name,
+      category: skill.category,
+      selfRating: skill.rating ?? 0,
+      peerRating: undefined, // Individual peer ratings not available
+      versionHistory: undefined, // Not needed for widget
+    }))
+  }, [softSkillsData])
 
   if (isLoading) {
     return (
@@ -90,6 +128,9 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     return aIndex - bIndex
   })
 
+  const isLoadingSkills = isLoading && activeTab === 'technical'
+  const isError = error && activeTab === 'technical'
+
   return (
     <DashboardWidget>
       <YStack gap={spacing.md}>
@@ -100,14 +141,49 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             <UIButton
               variant="outlined"
               size="$2"
-              onPress={() => router.push('/dashboard/profile/skills')}
+              onPress={() => {
+                if (activeTab === 'soft-skills') {
+                  router.push('/dashboard/profile/skills?tab=soft-skills')
+                } else {
+                  router.push('/dashboard/profile/skills')
+                }
+              }}
             >
               Edit
             </UIButton>
           )}
         </XStack>
 
-        {skills.length === 0 ? (
+        {/* Tabs */}
+        <TabGroup value={activeTab} onValueChange={(value) => setActiveTab(value as 'technical' | 'soft-skills')}>
+          <Tab value="technical" label="Technical Skills" />
+          <Tab value="soft-skills" label="Soft Skills" />
+        </TabGroup>
+
+        <Separator />
+
+        {/* Technical Skills Tab Content */}
+        {activeTab === 'technical' &&
+          (isLoadingSkills ? (
+              <LoadingState message="Loading skills..." />
+            ) : isError ? (
+              <YStack gap="$4" items="center" py="$8">
+                <Text color="$red10">Failed to load skills</Text>
+                <Text color="$color11" fontSize="$2">
+                  {error?.message}
+                </Text>
+                <UIButton
+                  variant="primary"
+                  size="$2"
+                  onPress={() => {
+                    void refetch()
+                  }}
+                  disabled={isFetching}
+                >
+                  Retry
+                </UIButton>
+              </YStack>
+            ) : skills.length === 0 ? (
           <EmptyState
             title="No skills added yet"
             description="Add your skills to showcase your expertise"
@@ -188,7 +264,76 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               </Text>
             )}
           </YStack>
-        )}
+          ))}
+
+        {/* Soft Skills Tab Content */}
+        {activeTab === 'soft-skills' &&
+          (isLoadingSoftSkills ? (
+              <LoadingState message="Loading soft skills..." />
+            ) : softSkillsError ? (
+              <YStack gap="$4" items="center" py="$8">
+                <Text color="$red10">Failed to load soft skills</Text>
+                <Text color="$color11" fontSize="$2">
+                  {softSkillsError.message}
+                </Text>
+                <UIButton
+                  variant="primary"
+                  size="$2"
+                  onPress={() => {
+                    router.push('/dashboard/profile/skills?tab=soft-skills')
+                  }}
+                >
+                  Complete Assessment
+                </UIButton>
+              </YStack>
+            ) : softSkills.length === 0 ? (
+              <EmptyState
+                title="No soft skills assessment"
+                description="Complete your soft skills assessment to see your profile"
+                action={
+                  showEdit ? (
+                    <UIButton
+                      variant="primary"
+                      onPress={() => router.push('/dashboard/profile/skills?tab=soft-skills')}
+                    >
+                      Start Assessment
+                    </UIButton>
+                  ) : undefined
+                }
+              />
+            ) : (
+              <YStack gap="$4">
+                {/* Category Tabs */}
+                <SoftSkillsCategoryTabs
+                  activeCategory={activeCategory}
+                  onCategoryChange={setActiveCategory}
+                  skills={softSkills}
+                />
+
+                <Separator />
+
+                {/* Skills Grid */}
+                <SoftSkillsRadarGrid
+                  skills={softSkills}
+                  activeCategory={activeCategory}
+                  onCategoryChange={setActiveCategory}
+                  isLoading={false}
+                />
+
+                {/* Update Assessment Button */}
+                {showEdit && (
+                  <XStack justify="flex-end" pt="$2">
+                    <UIButton
+                      variant="outlined"
+                      size="$3"
+                      onPress={() => router.push('/dashboard/profile/skills?tab=soft-skills')}
+                    >
+                      Update Assessment
+                    </UIButton>
+                  </XStack>
+                )}
+              </YStack>
+            ))}
       </YStack>
     </DashboardWidget>
   )
