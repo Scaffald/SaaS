@@ -1,16 +1,14 @@
 import { TRPCError } from '@trpc/server'
-// @ts-expect-error - Deno requires .ts extension for relative imports
 import {
   formatPhoneNumber,
   getPhoneRegionCode,
   isValidPhoneNumber,
-} from '../../../_shared/phone.ts'
+} from '@app/trpc/utils'
 import {
   type ProfileUpdate,
   profileGeneralInputSchema,
   type UserPrivateUpdate,
-  // @ts-expect-error - Deno requires .ts extension
-} from '../../../_shared/schemas/consolidated.ts'
+} from '@app/trpc/schemas'
 import { protectedProcedure, t } from '../../middleware.ts'
 
 /**

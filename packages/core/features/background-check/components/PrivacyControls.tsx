@@ -91,7 +91,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
     )
   }
 
-  const isSaving = updatePrivacyMutation.isLoading || updatePrivacyMutation.isPending
+  const isSaving = updatePrivacyMutation.isPending
 
   return (
     <YStack gap="$4">

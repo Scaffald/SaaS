@@ -3,8 +3,7 @@ import { TRPCError } from '@trpc/server'
 import JSZip from 'jszip'
 import OpenAI from 'openai'
 import { z } from 'zod'
-// @ts-expect-error - Deno requires file extension
-import { extractTextFromPdf as sharedExtractTextFromPdf } from '../../../_shared/pdf/extract-text.ts'
+import { extractTextFromPdf as sharedExtractTextFromPdf } from '@app/trpc/utils'
 import {
   clearImportDataInputSchema,
   type ImportMetadata,
@@ -15,7 +14,7 @@ import {
   resumeParseInputSchema,
   saveImportDataInputSchema,
   validateJsonInputSchema,
-} from '../../../_shared/schemas/profileImport.ts'
+} from '@app/trpc/schemas'
 import type { Context } from '../../context.ts'
 import { protectedProcedure, t } from '../../middleware.ts'
 

@@ -2,8 +2,7 @@ import { TRPCError } from '@trpc/server'
 import {
   profileEmploymentInputSchema,
   type UserPrivateEmploymentUpdate,
-  // @ts-expect-error - Deno requires .ts extension
-} from '../../../_shared/schemas/consolidated.ts'
+} from '@app/trpc/schemas'
 import { protectedProcedure, t } from '../../middleware.ts'
 
 /**

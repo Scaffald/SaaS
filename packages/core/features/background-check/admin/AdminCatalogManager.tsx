@@ -910,12 +910,12 @@ export function AdminCatalogManager() {
                   </Dialog.Close>
                   <Button
                     size="$3"
-                    disabled={upsertPackageMutation.isLoading}
+                    disabled={upsertPackageMutation.isPending}
                     onPress={() => {
                       void handlePackageSubmit()
                     }}
                   >
-                    {upsertPackageMutation.isLoading ? 'Saving…' : 'Save package'}
+                    {upsertPackageMutation.isPending ? 'Saving…' : 'Save package'}
                   </Button>
                 </XStack>
               </YStack>
@@ -1074,12 +1074,12 @@ export function AdminCatalogManager() {
                   </Dialog.Close>
                   <Button
                     size="$3"
-                    disabled={upsertCheckTypeMutation.isLoading}
+                    disabled={upsertCheckTypeMutation.isPending}
                     onPress={() => {
                       void handleCheckTypeSubmit()
                     }}
                   >
-                    {upsertCheckTypeMutation.isLoading ? 'Saving…' : 'Save check type'}
+                    {upsertCheckTypeMutation.isPending ? 'Saving…' : 'Save check type'}
                   </Button>
                 </XStack>
               </YStack>

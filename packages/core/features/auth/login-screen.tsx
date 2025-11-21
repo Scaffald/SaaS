@@ -149,15 +149,15 @@ export const LoginScreen = () => {
 
             <Button
               onPress={handleSubmit}
-              disabled={isSubmitting || requestMagicLink.isLoading}
-              opacity={isSubmitting || requestMagicLink.isLoading ? 0.5 : 1}
+              disabled={isSubmitting || requestMagicLink.isPending}
+              opacity={isSubmitting || requestMagicLink.isPending ? 0.5 : 1}
               bg="$blue9"
               color="$blue1"
               animation="quick"
               hoverStyle={{ scale: 1.02, bg: '$blue9' }}
               pressStyle={{ scale: 0.98 }}
             >
-              {isSubmitting || requestMagicLink.isLoading
+              {isSubmitting || requestMagicLink.isPending
                 ? t('auth.login.sending')
                 : t('auth.login.submitButton')}
             </Button>

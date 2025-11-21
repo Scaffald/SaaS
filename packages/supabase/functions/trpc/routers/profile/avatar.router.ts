@@ -1,8 +1,5 @@
 import { TRPCError } from '@trpc/server'
-import {
-  uploadAvatarInputSchema,
-  // @ts-expect-error - Deno requires .ts extension
-} from '../../../_shared/schemas/consolidated.ts'
+import { uploadAvatarInputSchema } from '@app/trpc/schemas'
 import { protectedProcedure, t } from '../../middleware.ts'
 
 /**

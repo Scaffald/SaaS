@@ -54,7 +54,7 @@ export default function ResumeReviewPage() {
     { route: ROUTES.DASHBOARD.PROFILE },
     { route: ROUTES.DASHBOARD.PROFILE.RESUME },
     { route: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW },
-  ] as const
+  ]
 
   if (!resumeId) {
     return (

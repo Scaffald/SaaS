@@ -680,31 +680,28 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 )}
 
                 {/* Follow Button */}
-                {!followStatus.isLoading && (
-                  <>
-                    {!followStatus.isFollowing ? (
-                      <Button
-                        size="$4"
-                        variant="outlined"
-                        icon={isFollowMutating ? Loader2 : UserPlus}
-                        onPress={handleFollow}
-                        disabled={isFollowMutating}
-                      >
-                        {isFollowMutating ? 'Following...' : 'Follow'}
-                      </Button>
-                    ) : (
-                      <Button
-                        size="$4"
-                        variant="outlined"
-                        icon={isFollowMutating ? Loader2 : UserMinus}
-                        onPress={handleUnfollow}
-                        disabled={isFollowMutating}
-                      >
-                        {isFollowMutating ? 'Unfollowing...' : 'Following'}
-                      </Button>
-                    )}
-                  </>
-                )}
+                {!followStatus.isLoading &&
+                  (!followStatus.isFollowing ? (
+                    <Button
+                      size="$4"
+                      variant="outlined"
+                      icon={isFollowMutating ? Loader2 : UserPlus}
+                      onPress={handleFollow}
+                      disabled={isFollowMutating}
+                    >
+                      {isFollowMutating ? 'Following...' : 'Follow'}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="$4"
+                      variant="outlined"
+                      icon={isFollowMutating ? Loader2 : UserMinus}
+                      onPress={handleUnfollow}
+                      disabled={isFollowMutating}
+                    >
+                      {isFollowMutating ? 'Unfollowing...' : 'Following'}
+                    </Button>
+                  ))}
               </XStack>
               <Separator />
             </>

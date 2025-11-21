@@ -422,7 +422,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
     reset,
 
     // Loading states
-    isSubmitting: submitMutation.isLoading || updateMutation.isLoading || state.isSaving,
+    isSubmitting: submitMutation.isPending || updateMutation.isPending || state.isSaving,
     submitError: submitMutation.error || updateMutation.error,
 
     // Edit mode flag

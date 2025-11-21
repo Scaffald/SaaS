@@ -4,7 +4,7 @@ import {
   PROFILE_WIZARD_STEP_WEIGHTS,
   PROFILE_WIZARD_STEPS,
   type ProfileWizardStepId,
-} from '../../../_shared/schemas/consolidated.ts'
+} from '@app/trpc/schemas'
 import type { Context } from '../../context.ts'
 import { protectedProcedure, t } from '../../middleware.ts'
 

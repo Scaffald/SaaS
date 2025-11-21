@@ -4,6 +4,7 @@ packages:
   - packages/ui
   - packages/supabase
   - packages/schemas
+  - packages/trpc
 
 catalog:
   '@babel/core': ~7.26.0

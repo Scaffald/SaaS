@@ -1,12 +1,12 @@
 /**
  * Client-side types and exports for tRPC and schemas
- * Re-exports from _shared directory to avoid importing Deno-specific code
+ * Re-exports from @app/trpc package to avoid importing Deno-specific code
  */
 
 // Re-export AppRouter type (placeholder to avoid Deno imports)
 export type { AppRouter } from './app-router-type'
 
-// Re-export types from consolidated schemas
+// Re-export types from @app/trpc schemas
 export type {
   EmploymentProfileFormData,
   ProfileEmploymentInput,
@@ -21,7 +21,7 @@ export type {
   ProfileWizardStepId,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from './functions/_shared/schemas/consolidated'
+} from '@app/trpc/schemas'
 // Re-export constants and schemas
 export {
   AVAILABILITY_OPTIONS,
@@ -36,15 +36,15 @@ export {
   profileWizardDefaultProgress,
   profileWizardProgressSchema,
   profileWizardSaveStepInputSchema,
-} from './functions/_shared/schemas/consolidated'
+} from '@app/trpc/schemas'
 export type {
   ImportPayload,
   ResumeParseInput,
-} from './functions/_shared/schemas/profileImport'
+} from '@app/trpc/schemas'
 
 export {
   importPayloadSchema,
   resumeParseInputSchema,
   saveImportDataInputSchema,
   validateJsonInputSchema,
-} from './functions/_shared/schemas/profileImport'
+} from '@app/trpc/schemas'

@@ -1063,3 +1063,30 @@ export { isRouteConfig };
 // Type for accessing nested routes (will be properly typed once all routes are nested)
 export type RoutePath = string;
 export type RouteKey = string;
+
+// ============================================================================
+// Legacy Route Exports (for backward compatibility)
+// ============================================================================
+
+export const AUTH_ROUTES = ROUTES.AUTH;
+
+// ============================================================================
+// Route Builder (convenience methods for building routes with parameters)
+// ============================================================================
+
+export const RouteBuilder = {
+  dashboardTeams: () => ROUTES.DASHBOARD.TEAMS.path,
+  dashboardTeamsInvitations: () => ROUTES.DASHBOARD.TEAMS.INVITATIONS.path,
+  dashboardTeamDetail: (teamId: string | number) =>
+    buildPath(ROUTES.DASHBOARD.TEAMS.DETAIL, { teamId: String(teamId) }),
+  officeTeamsDetail: (id: string | number) =>
+    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL, { id: String(id) }),
+  officeTeamsEdit: (id: string | number) =>
+    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, { id: String(id) }),
+  officeTeamsAnalytics: (id: string | number) =>
+    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.ANALYTICS, { id: String(id) }),
+  officeTeamsSettings: (id: string | number) =>
+    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.SETTINGS, { id: String(id) }),
+  projectEdit: (id: string | number) =>
+    buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: String(id) }),
+} as const;

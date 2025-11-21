@@ -75,8 +75,9 @@ export const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 /**
  * Middleware to enforce office role
  * Checks if user has office role before proceeding
+ * Adds supabaseAdmin to context only after role verification
  */
-export const enforceOfficeRole = t.middleware(async ({ ctx, next }) => {
+export const enforceOfficeRole = t.middleware(async ({ ctx, next, path }) => {
   if (!ctx.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
@@ -98,17 +99,43 @@ export const enforceOfficeRole = t.middleware(async ({ ctx, next }) => {
 
   // Check if user has office role with platform scope
   const hasOfficeRole = data?.some(
-    (assignment) => assignment.role?.name === 'office' && assignment.role?.scope === 'platform'
+    (assignment) => {
+      const role = assignment.role as { name: string; scope: string } | null
+      return role?.name === 'office' && role?.scope === 'platform'
+    }
   )
 
   if (!hasOfficeRole) {
+    console.warn('[middleware] Office access denied', {
+      userId: ctx.user.id,
+      userEmail: ctx.user.email,
+      path,
+    })
     throw new TRPCError({
       code: 'FORBIDDEN',
       message: 'Office access required',
     })
   }
 
-  return next({ ctx })
+  // Create service client only after role verification
+  const { createClient } = await import('@supabase/supabase-js')
+  const { supabaseServiceKey, supabaseUrl } = await import('./context.ts')
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
+  // Log service client usage for security audit
+  console.log('[middleware] Service client created for office role', {
+    userId: ctx.user.id,
+    userEmail: ctx.user.email,
+    path,
+    timestamp: new Date().toISOString(),
+  })
+
+  return next({
+    ctx: {
+      ...ctx,
+      supabaseAdmin, // Only available after role verification
+    },
+  })
 })
 
 const baseProcedure = t.procedure.use(requestLoggingMiddleware).use(errorHandlingMiddleware)

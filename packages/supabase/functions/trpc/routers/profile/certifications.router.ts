@@ -10,8 +10,7 @@ import {
   saveCertificationsOutputSchema,
   uploadCertificationFileInputSchema,
   uploadCertificationFileOutputSchema,
-  // @ts-expect-error - Deno requires .ts extension
-} from '../../../_shared/schemas/consolidated.ts'
+} from '@app/trpc/schemas'
 import { protectedProcedure, t } from '../../middleware.ts'
 
 /**

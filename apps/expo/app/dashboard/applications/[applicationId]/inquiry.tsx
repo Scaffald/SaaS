@@ -4,6 +4,7 @@ import { InquiryViewCandidate } from '@app/core/features/inquiries/components/In
 import { api } from '@app/core/utils/api'
 import { Text, YStack } from '@app/ui'
 import { useLocalSearchParams } from 'expo-router'
+import type { ReactElement } from 'react'
 import { Spinner } from 'tamagui'
 
 export default function DashboardApplicationInquiryRoute() {
@@ -19,9 +20,9 @@ export default function DashboardApplicationInquiryRoute() {
   const breadcrumbs = [
     { route: ROUTES.DASHBOARD.APPLICATIONS },
     { route: ROUTES.DASHBOARD.APPLICATIONS.INQUIRY },
-  ] as const
+  ]
 
-  let content: JSX.Element
+  let content: ReactElement
 
   if (!enabled) {
     content = (

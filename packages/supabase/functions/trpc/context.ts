@@ -132,31 +132,35 @@ export const createTRPCContext = async (opts: { req: Request }) => {
     console.log('No authorization header found')
   }
 
-  // Create Supabase client - use anon key for public access (respects RLS)
-  // Use service_role key only for authenticated user requests
-  const supabaseKey = userId && !isAnonKey ? supabaseServiceKey : supabaseAnonKey
-  const supabase = createClient(supabaseUrl, supabaseKey, {
+  // Default to anon key client with Authorization header for RLS
+  // This respects RLS policies while allowing authenticated operations
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     global: {
       headers:
-        authorizationHeader && !isAnonKey && userId ? { Authorization: authorizationHeader } : {},
+        authorizationHeader && !isAnonKey && userId
+          ? { Authorization: authorizationHeader }
+          : {},
     },
   })
 
-  // Create admin client without auth header for elevated operations
-  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-
+  // Service client is only created when explicitly needed via role checking
+  // Do not create it by default - use role-based middleware instead
   console.log('Final user context:', userId ? { id: userId, email: userEmail } : 'undefined')
 
   return {
     user: userId ? { id: userId, email: userEmail } : undefined,
     userToken,
-    supabase,
-    supabaseAdmin, // Admin client without user auth
+    supabase, // Default client with anon key + auth header (respects RLS)
+    // supabaseAdmin is not created by default
+    // Use role-based middleware (enforceOfficeRole, etc.) to add it when needed
   }
 }
 
 // Export environment variables for use in routers
-export { supabaseAnonKey, supabaseUrl }
+export { supabaseAnonKey, supabaseServiceKey, supabaseUrl }
 
 // Export type for context
-export type Context = Awaited<ReturnType<typeof createTRPCContext>>
+// Note: supabaseAdmin is optional and only added by role-based middleware
+export type Context = Awaited<ReturnType<typeof createTRPCContext>> & {
+  supabaseAdmin?: ReturnType<typeof createClient<unknown, 'public', 'default'>>
+}

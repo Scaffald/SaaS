@@ -674,11 +674,10 @@ const parseTimeEntries = (raw: unknown): WorkLogExportTimeEntry[] => {
       end,
       durationHours: effectiveDuration / 60,
       breakMinutes,
-      description:
-        typeof entry.description === "string" &&
+      description: typeof entry.description === "string" &&
           entry.description.trim().length > 0
-          ? entry.description
-          : null,
+        ? entry.description
+        : null,
     });
   }
 
@@ -706,13 +705,12 @@ const resolveStringField = (
 function resolveProjectDisplayName(
   project: Record<string, unknown> | null | undefined,
 ): string {
-  const name =
-    resolveStringField(project, [
-      "name",
-      "project_name",
-      "title",
-      "display_name",
-    ]) ?? "";
+  const name = resolveStringField(project, [
+    "name",
+    "project_name",
+    "title",
+    "display_name",
+  ]) ?? "";
 
   const trimmed = name.trim();
 
@@ -1614,26 +1612,23 @@ export const workLogsRouter = t.router({
             ? project.organization_id
             : String(project.organization_id ?? "");
 
-          const status =
-            resolveStringField(project, [
-              "status",
-              "project_status",
-              "state",
-            ]) ?? null;
+          const status = resolveStringField(project, [
+            "status",
+            "project_status",
+            "state",
+          ]) ?? null;
 
-          const startsAt =
-            resolveStringField(project, [
-              "start_date",
-              "starts_at",
-              "project_start",
-            ]) ?? null;
+          const startsAt = resolveStringField(project, [
+            "start_date",
+            "starts_at",
+            "project_start",
+          ]) ?? null;
 
-          const endsAt =
-            resolveStringField(project, [
-              "end_date",
-              "ends_at",
-              "project_end",
-            ]) ?? null;
+          const endsAt = resolveStringField(project, [
+            "end_date",
+            "ends_at",
+            "project_end",
+          ]) ?? null;
 
           return {
             id,
@@ -2189,13 +2184,12 @@ export const workLogsRouter = t.router({
       for (const row of workerRows.data ?? []) {
         const id = typeof row?.id === "string" ? row.id : null;
         if (!id) continue;
-        const displayName =
-          typeof row?.display_name === "string" &&
+        const displayName = typeof row?.display_name === "string" &&
             row.display_name.trim().length > 0
-            ? row.display_name.trim()
-            : typeof row?.username === "string"
-            ? row.username
-            : "Member";
+          ? row.display_name.trim()
+          : typeof row?.username === "string"
+          ? row.username
+          : "Member";
         const username = typeof row?.username === "string"
           ? row.username
           : null;
@@ -2871,14 +2865,14 @@ export const workLogsRouter = t.router({
         });
       }
 
-      if (workLog.status !== "draft" && !input.reason) {
+      if (_workLog.status !== "draft" && !input.reason) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "A reason is required to modify submitted work logs.",
         });
       }
 
-      if (input.payload.status && input.payload.status !== workLog.status) {
+      if (input.payload.status && input.payload.status !== _workLog.status) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Status updates must use the dedicated workflow endpoints.",
@@ -2897,7 +2891,7 @@ export const workLogsRouter = t.router({
         if (typeof newVal !== "undefined") {
           updates[columnName] = newVal;
           oldValue[columnName] =
-            (workLog as Record<string, unknown>)[columnName];
+            (_workLog as Record<string, unknown>)[columnName];
           newValue[columnName] = newVal;
         }
       };
@@ -2923,16 +2917,16 @@ export const workLogsRouter = t.router({
         updates.device_type = capture.deviceType ?? null;
         updates.location_permission_status = capture.permissionStatus ?? null;
 
-        oldValue.gps_location = workLog.gps_location ?? null;
+        oldValue.gps_location = _workLog.gps_location ?? null;
         newValue.gps_location = updates.gps_location;
-        oldValue.gps_accuracy_meters = workLog.gps_accuracy_meters ?? null;
+        oldValue.gps_accuracy_meters = _workLog.gps_accuracy_meters ?? null;
         newValue.gps_accuracy_meters = updates.gps_accuracy_meters;
-        oldValue.gps_captured_at = workLog.gps_captured_at ?? null;
+        oldValue.gps_captured_at = _workLog.gps_captured_at ?? null;
         newValue.gps_captured_at = updates.gps_captured_at;
-        oldValue.device_type = workLog.device_type ?? null;
+        oldValue.device_type = _workLog.device_type ?? null;
         newValue.device_type = updates.device_type ?? null;
         oldValue.location_permission_status =
-          workLog.location_permission_status ?? null;
+          _workLog.location_permission_status ?? null;
         newValue.location_permission_status =
           updates.location_permission_status ?? null;
       }
@@ -2966,7 +2960,7 @@ export const workLogsRouter = t.router({
         });
       }
 
-      if (workLog.status !== "draft" && Object.keys(newValue).length > 0) {
+      if (_workLog.status !== "draft" && Object.keys(newValue).length > 0) {
         await recordAuditLog(supabase, {
           workLogId: input.workLogId,
           userId: user.id,
@@ -3256,7 +3250,7 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const { role } = await getWorkLogAccess(
+      const { workLog, role } = await getWorkLogAccess(
         supabase,
         input.workLogId,
         user.id,

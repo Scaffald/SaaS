@@ -292,9 +292,8 @@ export function AdminCheckReviewDialog({
     [documentDownloadMutation, detailedCheck, openSignedUrl, toast]
   )
 
-  const isPrivacySaving = privacyMutation.isLoading || privacyMutation.isPending
-  const isDownloadingDocument =
-    documentDownloadMutation.isLoading || documentDownloadMutation.isPending
+  const isPrivacySaving = privacyMutation.isPending
+  const isDownloadingDocument = documentDownloadMutation.isPending
   const downloadingDocumentId = documentDownloadMutation.variables?.document_id
 
   const workerName = useMemo(() => {

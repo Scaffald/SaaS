@@ -709,6 +709,14 @@ GRANT ALL ON core.review_skill_ratings TO service_role;
 GRANT SELECT ON core.review_aspects TO anon, authenticated;
 GRANT INSERT ON core.review_aspects TO authenticated;
 GRANT ALL ON core.review_aspects TO service_role;
+-- Review Category Ratings
+GRANT SELECT ON core.review_category_ratings TO anon, authenticated;
+GRANT INSERT, UPDATE ON core.review_category_ratings TO authenticated;
+GRANT ALL ON core.review_category_ratings TO service_role;
+-- Review Soft Skill Votes
+GRANT SELECT ON core.review_soft_skill_votes TO anon, authenticated;
+GRANT INSERT, UPDATE ON core.review_soft_skill_votes TO authenticated;
+GRANT ALL ON core.review_soft_skill_votes TO service_role;
 -- =========================================================
 -- SECTION 32: GRANTS - PRIVATE SCHEMA
 -- =========================================================

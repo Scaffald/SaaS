@@ -40,7 +40,7 @@ export function FollowingList() {
     })
   }, [following, searchTerm])
 
-  const handleUnfollow = async (followId: string, userId: string) => {
+  const handleUnfollow = async (_followId: string, userId: string) => {
     if (confirm('Are you sure you want to unfollow this user?')) {
       await unfollowMutation.mutateAsync({ userId })
     }

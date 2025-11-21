@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { Tab, TabGroup } from '@app/ui'
 import { useMemo, useState } from 'react'
-import { Spinner, Tabs, Text, YStack } from 'tamagui'
+import { Tabs, Text, YStack } from 'tamagui'
 import { ConnectionsList } from './components/ConnectionsList'
 import { FollowersList } from './components/FollowersList'
 import { FollowingList } from './components/FollowingList'

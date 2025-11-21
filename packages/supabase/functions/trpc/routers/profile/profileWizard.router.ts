@@ -1,5 +1,4 @@
 import { TRPCError } from '@trpc/server'
-// @ts-expect-error - Deno requires .ts extension for relative imports
 import {
   PROFILE_WIZARD_REQUIRED_STEPS,
   PROFILE_WIZARD_STEP_WEIGHTS,
@@ -12,7 +11,7 @@ import {
   profileWizardDefaultProgress,
   profileWizardProgressSchema,
   profileWizardSaveStepInputSchema,
-} from '../../../_shared/schemas/consolidated.ts'
+} from '@app/trpc/schemas'
 import type { Context } from '../../context.ts'
 import { protectedProcedure, t } from '../../middleware.ts'
 

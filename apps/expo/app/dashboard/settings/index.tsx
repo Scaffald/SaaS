@@ -140,7 +140,7 @@ export default function NotificationsCenterScreen() {
     {
       getNextPageParam: (lastPage: { nextCursor?: string | null }) =>
         lastPage?.nextCursor ?? undefined,
-      keepPreviousData: true,
+      placeholderData: (previousData) => previousData,
     }
   )
 
@@ -267,10 +267,10 @@ export default function NotificationsCenterScreen() {
             <Button
               variant="primary"
               size="$2"
-              disabled={savePreferencesMutation.isLoading}
+              disabled={savePreferencesMutation.isPending}
               onPress={handleSavePreferences}
             >
-              {savePreferencesMutation.isLoading ? 'Saving…' : 'Save changes'}
+              {savePreferencesMutation.isPending ? 'Saving…' : 'Save changes'}
             </Button>
           </XStack>
 

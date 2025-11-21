@@ -9,8 +9,7 @@ import {
   removeUserSkillInputSchema,
   searchParentSkillsInputSchema,
   updateUserSkillInputSchema,
-  // @ts-expect-error - Deno requires .ts extension
-} from '../../../_shared/schemas/consolidated.ts'
+} from '@app/trpc/schemas'
 import { supabaseAnonKey, supabaseUrl } from '../../context.ts'
 import { protectedProcedure, t } from '../../middleware.ts'
 

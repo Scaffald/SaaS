@@ -3,15 +3,12 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { TRPCError } from '@trpc/server'
 import { extractRawText } from 'mammoth'
 import { z } from 'zod'
-// @ts-expect-error - Deno requires file extension
 import type { Database } from '../../_shared/database.types.ts'
-// @ts-expect-error - Deno requires file extension
-import { extractTextFromPdf as sharedExtractTextFromPdf } from '../../_shared/pdf/extract-text.ts'
-// @ts-expect-error - Deno requires file extension
+import { extractTextFromPdf as sharedExtractTextFromPdf } from '@app/trpc/utils'
 import {
   profileEmploymentInputSchema,
   profileGeneralInputSchema,
-} from '../../_shared/schemas/consolidated.ts'
+} from '@app/trpc/schemas'
 import { supabaseAnonKey, supabaseUrl } from '../context.ts'
 import { protectedProcedure, t } from '../middleware.ts'
 

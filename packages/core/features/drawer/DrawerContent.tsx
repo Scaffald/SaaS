@@ -182,7 +182,7 @@ export const DrawerContent = ({
           />
         ) : null}
 
-        <YStack gap="$3" flex={1} mt="$2" width="100%" items={isCollapsed ? 'center' : 'stretch'}>
+        <YStack gap="$2" flex={1} mt="$2" width="100%" items={isCollapsed ? 'center' : 'stretch'}>
           {hasOfficeRole ? (
             <DrawerLink
               item={OFFICE_DRAWER_ITEM}

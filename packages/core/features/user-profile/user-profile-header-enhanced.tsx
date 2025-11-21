@@ -421,31 +421,29 @@ export function UserProfileHeaderEnhanced({
             )}
 
             {/* Follow Button (only for other users' profiles) */}
-            {!isOwnProfile && !followStatus.isLoading && (
-              <>
-                {!followStatus.isFollowing ? (
-                  <Button
-                    size={isMobile ? '$3' : '$4'}
-                    variant="outlined"
-                    icon={isFollowMutating ? Loader2 : UserPlus}
-                    onPress={handleFollow}
-                    disabled={isFollowMutating}
-                  >
-                    {isFollowMutating ? 'Following...' : 'Follow'}
-                  </Button>
-                ) : (
-                  <Button
-                    size={isMobile ? '$3' : '$4'}
-                    variant="outlined"
-                    icon={isFollowMutating ? Loader2 : UserMinus}
-                    onPress={handleUnfollow}
-                    disabled={isFollowMutating}
-                  >
-                    {isFollowMutating ? 'Unfollowing...' : 'Following'}
-                  </Button>
-                )}
-              </>
-            )}
+            {!isOwnProfile &&
+              !followStatus.isLoading &&
+              (!followStatus.isFollowing ? (
+                <Button
+                  size={isMobile ? '$3' : '$4'}
+                  variant="outlined"
+                  icon={isFollowMutating ? Loader2 : UserPlus}
+                  onPress={handleFollow}
+                  disabled={isFollowMutating}
+                >
+                  {isFollowMutating ? 'Following...' : 'Follow'}
+                </Button>
+              ) : (
+                <Button
+                  size={isMobile ? '$3' : '$4'}
+                  variant="outlined"
+                  icon={isFollowMutating ? Loader2 : UserMinus}
+                  onPress={handleUnfollow}
+                  disabled={isFollowMutating}
+                >
+                  {isFollowMutating ? 'Unfollowing...' : 'Following'}
+                </Button>
+              ))}
 
             {!isOwnProfile && (
               <Button size={isMobile ? '$3' : '$4'} variant="outlined" icon={Share2}>
