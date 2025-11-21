@@ -86,7 +86,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     Boolean(slugValue) && (mode === 'create' || slugValue.toLowerCase() !== initialSlug)
   const slugAvailabilityBlocksSubmit =
     slugNeedsValidation &&
-    (slugStatus.state === 'checking' || slugStatus.state === 'invalid' || slugStatus.state === 'taken')
+    (slugStatus.state === 'checking' ||
+      slugStatus.state === 'invalid' ||
+      slugStatus.state === 'taken')
   const slugHasAvailabilityError = slugStatus.state === 'invalid' || slugStatus.state === 'taken'
 
   // Reset form when initialData changes (for edit mode)

@@ -10,14 +10,6 @@ interface SoftSkillsHistoryTimelineProps {
   userId?: string
 }
 
-type CategoryAverages = Record<SoftSkillCategory, number>
-
-interface VersionHistory {
-  version: number
-  selfAssessedAt: string | null
-  categoryAverages: CategoryAverages
-}
-
 /**
  * SoftSkillsHistoryTimeline component
  *
