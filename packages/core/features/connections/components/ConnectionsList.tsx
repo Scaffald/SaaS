@@ -199,7 +199,7 @@ export function ConnectionsList() {
           bg="$color2"
           items="center"
           justify="center"
-          minHeight="$15"
+          style={{ minHeight: 300 }}
         >
           <Text fontWeight="600">No connections yet</Text>
           <Text color="$color11" ta="center">

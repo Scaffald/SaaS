@@ -147,7 +147,7 @@ export function FollowingList() {
           bg="$color2"
           items="center"
           justify="center"
-          minHeight="$15"
+          style={{ minHeight: 300 }}
         >
           <Text fontWeight="600">Not following anyone yet</Text>
           <Text color="$color11" style={{ textAlign: 'center' }}>
