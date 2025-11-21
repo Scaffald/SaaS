@@ -1,4 +1,5 @@
-import { SoftSkillsRadarWidget, TechnicalSkillsWidget } from '../widgets'
+import { SoftSkillsRadarWidget } from '../widgets/SoftSkillsRadarWidget'
+import { TechnicalSkillsWidget } from '../widgets/TechnicalSkillsWidget'
 import type { ProfileWidgetProps } from '../widgets/types'
 import { YStack } from 'tamagui'
 

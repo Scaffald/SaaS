@@ -46,6 +46,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
 
   // API mutations
   const submitMutation = api.applications.submit.useMutation()
+  const createDraftMutation = api.jobs.createApplication.useMutation()
   const updateMutation = api.jobs.updateApplication.useMutation()
   const updateStepMutation = api.applications.updateStep.useMutation()
 
@@ -100,18 +101,24 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         is_complete: false, // Draft, not complete
       }
 
-      const result = await submitMutation.mutateAsync(draftData)
+      // Use createApplication for drafts (accepts optional fields)
+      const result = await createDraftMutation.mutateAsync(draftData)
+
+      const applicationId = result?.application?.id
+      if (!applicationId) {
+        throw new Error('Failed to create application: no ID returned')
+      }
 
       setState((prev) => ({
         ...prev,
-        applicationId: result.id,
+        applicationId,
         isSaving: false,
         isDirty: false,
         lastSavedAt: new Date(),
         saveError: null,
       }))
 
-      return result.id
+      return applicationId
     } catch (error) {
       console.error('Failed to create draft:', error)
       setState((prev) => ({
@@ -366,8 +373,9 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         }
       }
 
-      // Otherwise create new application
-      const applicationData: ApplicationCreateInput = {
+      // Otherwise create new application (complete submission)
+      // submitMutation requires all fields and is_complete: true
+      const applicationData = {
         job_id: jobId,
         current_location: state.screeningAnswers.current_location || '',
         willing_to_relocate: state.screeningAnswers.willing_to_relocate || false,
@@ -377,7 +385,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
         custom_question_answers: state.customQuestionAnswers,
         attachments: state.attachments,
         completed_steps: state.completedSteps,
-        is_complete: true,
+        is_complete: true as const, // Literal true required by submitMutation
       }
 
       const result = await submitMutation.mutateAsync(applicationData)

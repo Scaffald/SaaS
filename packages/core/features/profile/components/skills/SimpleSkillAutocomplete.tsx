@@ -1,5 +1,5 @@
 import { X } from '@tamagui/lucide-icons'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Button, Card, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
@@ -48,6 +48,12 @@ export function SimpleSkillAutocomplete({
   const debouncedValue = useDebounceValue(value, 300)
   const [showResults, setShowResults] = useState(false)
 
+  // Use ref to store latest onSearch without causing re-renders
+  const onSearchRef = useRef(onSearch)
+  useEffect(() => {
+    onSearchRef.current = onSearch
+  }, [onSearch])
+
   // Handle search
   useEffect(() => {
     let isMounted = true
@@ -61,7 +67,7 @@ export function SimpleSkillAutocomplete({
 
       setIsSearching(true)
       try {
-        const searchResults = await onSearch(debouncedValue)
+        const searchResults = await onSearchRef.current(debouncedValue)
         if (isMounted) {
           setResults(searchResults)
           setShowResults(true)
@@ -83,7 +89,7 @@ export function SimpleSkillAutocomplete({
     return () => {
       isMounted = false
     }
-  }, [debouncedValue, onSearch])
+  }, [debouncedValue])
 
   // Hide results when input is cleared
   useEffect(() => {

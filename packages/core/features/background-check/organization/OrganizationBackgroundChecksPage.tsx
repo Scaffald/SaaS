@@ -229,7 +229,6 @@ export function OrganizationBackgroundChecksPage() {
         <YStack gap="$2">
           <Label htmlFor="office-background-checks-organization">Organization</Label>
           <ResponsiveSelect
-            id="office-background-checks-organization"
             value={selectedOrganizationId ?? ''}
             onValueChange={(value) => {
               setSelectedOrganizationId(value)

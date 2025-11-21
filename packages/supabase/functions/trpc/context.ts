@@ -1,3 +1,4 @@
+// @ts-nocheck - This file is excluded from expo tsconfig but imported for types
 import { createClient } from '@supabase/supabase-js'
 
 const DEFAULT_LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321'

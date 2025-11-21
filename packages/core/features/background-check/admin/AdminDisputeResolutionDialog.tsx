@@ -186,7 +186,6 @@ export function AdminDisputeResolutionDialog({
                   <YStack gap="$1">
                     <Label htmlFor="dispute-resolution-status">Resolution</Label>
                     <ResponsiveSelect
-                      id="dispute-resolution-status"
                       value={resolutionStatus}
                       onValueChange={(value) =>
                         setResolutionStatus(value as (typeof RESOLUTION_STATUSES)[number]['value'])

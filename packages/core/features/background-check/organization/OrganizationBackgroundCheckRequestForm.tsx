@@ -135,7 +135,7 @@ export function OrganizationBackgroundCheckRequestForm() {
     if (!paymentSession) return
 
     try {
-      const record = await confirmPaymentMutation.mutateAsync({
+      await confirmPaymentMutation.mutateAsync({
         background_check_id: paymentSession.backgroundCheckId,
         payment_intent_id: paymentIntentId,
       })
@@ -152,10 +152,6 @@ export function OrganizationBackgroundCheckRequestForm() {
         router.replace({
           pathname: ROUTES.OFFICE.ATS.CHECKS.path,
           params: { organizationId: orgId },
-        })
-      } else if (record?.organization_id) {
-        await utils.backgroundChecks.organizationListChecks.invalidate({
-          organization_id: record.organization_id,
         })
       }
       setPaymentSession(null)
@@ -257,7 +253,6 @@ export function OrganizationBackgroundCheckRequestForm() {
           <YStack gap="$2">
             <Label htmlFor="org-select">Organization</Label>
             <ResponsiveSelect
-              id="org-select"
               value={organizationId ?? ''}
               onValueChange={(value) => {
                 setOrganizationId(value)
@@ -280,7 +275,6 @@ export function OrganizationBackgroundCheckRequestForm() {
           <YStack gap="$2">
             <Label htmlFor="package-select">Background check package</Label>
             <ResponsiveSelect
-              id="package-select"
               value={selectedPackageId ?? ''}
               onValueChange={(value) => setSelectedPackageId(value)}
               placeholder={
@@ -341,7 +335,6 @@ export function OrganizationBackgroundCheckRequestForm() {
           <YStack gap="$2">
             <Label htmlFor="job-select">Related job (optional)</Label>
             <ResponsiveSelect
-              id="job-select"
               value={selectedJobId ?? ''}
               onValueChange={(value) => setSelectedJobId(value || null)}
               placeholder={

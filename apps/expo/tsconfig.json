@@ -21,9 +21,7 @@
     "../../tests/infrastructure/vitest/plugins/flow-remove.ts"
   ],
   "exclude": [
-    "../../packages/supabase/functions/trpc/**/*",
-    "../../packages/supabase/functions/job-import/**/*",
-    "../../packages/supabase/functions/news/**/*",
+    "../../packages/supabase/functions/**/*",
     "../../packages/supabase/scripts/**/*",
     "../../packages/supabase/types-trpc.ts"
   ],
@@ -33,6 +31,7 @@
     "composite": true,
     "jsx": "react-jsx",
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "baseUrl": "../../",
     "paths": {
       "@app/core": ["packages/core"],

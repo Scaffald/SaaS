@@ -1,3 +1,4 @@
+// @ts-nocheck - This file is excluded from expo tsconfig but imported for types
 import { initTRPC, TRPCError } from '@trpc/server'
 import type { Context } from './context.ts'
 

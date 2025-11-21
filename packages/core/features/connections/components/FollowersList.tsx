@@ -4,7 +4,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { Avatar, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
-type Follower = NonNullable<ReturnType<typeof api.follows.getFollowers.useQuery>['data']>[number]
+type FollowersQueryResult = ReturnType<typeof api.follows.getFollowers.useQuery>
+type Follower = NonNullable<FollowersQueryResult['data']> extends Array<infer T> ? T : never
 
 export function FollowersList() {
   const [searchTerm, setSearchTerm] = useState('')

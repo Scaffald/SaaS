@@ -231,12 +231,12 @@ export function UserProfileHeaderEnhanced({
   }, [isOwnProfile, connectionStatus])
 
   const isConnectionMutating =
-    sendRequestMutation.isLoading ||
-    acceptRequestMutation.isLoading ||
-    declineRequestMutation.isLoading ||
-    removeConnectionMutation.isLoading
+    sendRequestMutation.isPending ||
+    acceptRequestMutation.isPending ||
+    declineRequestMutation.isPending ||
+    removeConnectionMutation.isPending
 
-  const isFollowMutating = followMutation.isLoading || unfollowMutation.isLoading
+  const isFollowMutating = followMutation.isPending || unfollowMutation.isPending
 
   const formatHourlyRate = (cents: number | null) => {
     if (!cents) return null

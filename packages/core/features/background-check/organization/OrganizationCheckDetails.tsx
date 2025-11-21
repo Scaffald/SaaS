@@ -123,14 +123,8 @@ export function OrganizationCheckDetails({
               label="Package"
               value={summary?.package?.display_name ?? summary?.package?.slug ?? 'Unknown package'}
             />
-            <InfoRow
-              label="Requested"
-              value={formatDateTime(detail?.created_at ?? summary?.created_at)}
-            />
-            <InfoRow
-              label="Invited"
-              value={formatDateTime(detail?.invited_at ?? summary?.invited_at)}
-            />
+            <InfoRow label="Requested" value={formatDateTime(summary?.created_at)} />
+            <InfoRow label="Invited" value={formatDateTime(summary?.invited_at)} />
             <InfoRow
               label="Completed"
               value={formatDateTime(detail?.completed_at ?? summary?.completed_at)}

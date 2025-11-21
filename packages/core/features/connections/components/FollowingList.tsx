@@ -6,7 +6,8 @@ import { UserMinus } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
-type Following = NonNullable<ReturnType<typeof api.follows.getFollowing.useQuery>['data']>[number]
+type FollowingQueryResult = ReturnType<typeof api.follows.getFollowing.useQuery>
+type Following = NonNullable<FollowingQueryResult['data']> extends Array<infer T> ? T : never
 
 export function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('')

@@ -19,6 +19,7 @@ type PendingRequestsData = NonNullable<
       username: string | null
       avatar_url: string | null
       headline: string | null
+      industry?: { name: string } | null
     } | null
   }>
   received: Array<{
@@ -31,6 +32,7 @@ type PendingRequestsData = NonNullable<
       username: string | null
       avatar_url: string | null
       headline: string | null
+      industry?: { name: string } | null
     } | null
   }>
 }
@@ -92,11 +94,15 @@ export function PendingRequestsList() {
 
   const combinedRequests: RequestRow[] = useMemo(() => {
     if (!pendingRequests) return []
-    const sent: PendingRequest[] = (pendingRequests.sent || []).map((req: PendingRequestsData['sent'][number]) => ({ ...req, type: 'sent' }))
-    const received: ReceivedRequest[] = (pendingRequests.received || []).map((req: PendingRequestsData['received'][number]) => ({
-      ...req,
-      type: 'received',
-    }))
+    const sent: PendingRequest[] = (pendingRequests.sent || []).map(
+      (req: PendingRequestsData['sent'][number]) => ({ ...req, type: 'sent' })
+    )
+    const received: ReceivedRequest[] = (pendingRequests.received || []).map(
+      (req: PendingRequestsData['received'][number]) => ({
+        ...req,
+        type: 'received',
+      })
+    )
     return [...received, ...sent]
   }, [pendingRequests])
 
@@ -175,7 +181,8 @@ export function PendingRequestsList() {
         header: 'Actions',
         cell: ({ row }) => {
           const request = row.original
-          const isLoading = acceptMutation.isPending || declineMutation.isPending || cancelMutation.isPending
+          const isLoading =
+            acceptMutation.isPending || declineMutation.isPending || cancelMutation.isPending
 
           if (request.type === 'sent') {
             return (
@@ -244,7 +251,8 @@ export function PendingRequestsList() {
       >
         <Text fontWeight="600">No pending requests</Text>
         <Text color="$color11" style={{ textAlign: 'center' }}>
-          You don't have any pending connection requests. Send connection requests to build your network.
+          You don't have any pending connection requests. Send connection requests to build your
+          network.
         </Text>
       </YStack>
     )

@@ -259,7 +259,7 @@ export function AdminCatalogManager() {
     }
 
     let metadata: Record<string, unknown> = {}
-    let componentOverrides: unknown[] = []
+    let componentOverrides: Record<string, unknown>[] = []
 
     try {
       metadata = packageForm.metadata.trim()
@@ -272,7 +272,7 @@ export function AdminCatalogManager() {
 
     try {
       componentOverrides = packageForm.componentOverrides.trim()
-        ? (JSON.parse(packageForm.componentOverrides) as unknown[])
+        ? (JSON.parse(packageForm.componentOverrides) as Record<string, unknown>[])
         : []
     } catch (_error) {
       setPackageFormError('Component overrides must be valid JSON.')

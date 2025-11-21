@@ -43,17 +43,25 @@ export function ConnectionsManagementPage() {
           badge={pendingReceivedCount > 0 ? pendingReceivedCount : undefined}
         />
 
-        <Tabs.Content value="connections" paddingTop="$4">
-          <ConnectionsList />
+        <Tabs.Content value="connections">
+          <YStack paddingTop="$4">
+            <ConnectionsList />
+          </YStack>
         </Tabs.Content>
-        <Tabs.Content value="followers" paddingTop="$4">
-          <FollowersList />
+        <Tabs.Content value="followers">
+          <YStack paddingTop="$4">
+            <FollowersList />
+          </YStack>
         </Tabs.Content>
-        <Tabs.Content value="following" paddingTop="$4">
-          <FollowingList />
+        <Tabs.Content value="following">
+          <YStack paddingTop="$4">
+            <FollowingList />
+          </YStack>
         </Tabs.Content>
-        <Tabs.Content value="pending" paddingTop="$4">
-          <PendingRequestsList />
+        <Tabs.Content value="pending">
+          <YStack paddingTop="$4">
+            <PendingRequestsList />
+          </YStack>
         </Tabs.Content>
       </TabGroup>
     </YStack>

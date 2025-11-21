@@ -6,9 +6,10 @@ import { Download, Trash2 } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
-type Connection = NonNullable<
+type ConnectionsData = NonNullable<
   ReturnType<typeof api.connections.getConnections.useQuery>['data']
->[number]
+>
+type Connection = ConnectionsData[number]
 
 export function ConnectionsList() {
   const [searchTerm, setSearchTerm] = useState('')

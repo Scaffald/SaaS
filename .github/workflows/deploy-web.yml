@@ -145,13 +145,13 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
           # Determine environment based on branch
-          AWS_ENV: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref == 'refs/heads/preview' && 'preview' || github.ref == 'refs/heads/staging' && 'staging' || 'production' }}
+          AWS_ENV: ${{ github.ref == 'refs/heads/main' && 'main' || github.ref == 'refs/heads/preview' && 'preview' || github.ref == 'refs/heads/staging' && 'staging' || 'production' }}
           # Environment-specific bucket names
           AWS_S3_BUCKET: ${{ github.ref == 'refs/heads/main' && secrets.AWS_S3_BUCKET_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_S3_BUCKET_PREVIEW || github.ref == 'refs/heads/staging' && secrets.AWS_S3_BUCKET_PROD || secrets.AWS_S3_BUCKET_PROD }}
           AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || github.ref == 'refs/heads/staging' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
         run: |
           echo "🚀 Deploying to AWS S3 + CloudFront ($AWS_ENV environment)..."
-          
+
           # Install AWS CLI if not present
           if ! command -v aws &> /dev/null; then
             echo "Installing AWS CLI..."
@@ -159,10 +159,10 @@ jobs:
             unzip -q awscliv2.zip
             sudo ./aws/install
           fi
-          
+
           # Verify AWS credentials
           aws sts get-caller-identity
-          
+
           # Determine bucket name if not set via secrets
           if [ -z "$AWS_S3_BUCKET" ] || [ "$AWS_S3_BUCKET" == "" ]; then
             case "$AWS_ENV" in
@@ -177,13 +177,13 @@ jobs:
                 ;;
             esac
           fi
-          
+
           echo "Environment: $AWS_ENV"
           echo "Bucket: $AWS_S3_BUCKET"
           if [ -n "$AWS_CLOUDFRONT_DISTRIBUTION_ID" ]; then
             echo "CloudFront Distribution: $AWS_CLOUDFRONT_DISTRIBUTION_ID"
           fi
-          
+
           # Upload to S3
           echo "Uploading files to S3..."
           aws s3 sync ./apps/expo/dist s3://$AWS_S3_BUCKET \
@@ -193,23 +193,23 @@ jobs:
             --exclude "*.html" \
             --exclude "_redirects" \
             --exclude "_headers"
-          
+
           # Upload HTML files with no cache
           aws s3 sync ./apps/expo/dist s3://$AWS_S3_BUCKET \
             --delete \
             --include "*.html" \
             --cache-control "public, max-age=0, must-revalidate" \
             --content-type "text/html"
-          
+
           # Upload redirects and headers
           if [ -f ./apps/expo/dist/_redirects ]; then
             aws s3 cp ./apps/expo/dist/_redirects s3://$AWS_S3_BUCKET/_redirects
           fi
-          
+
           if [ -f ./apps/expo/dist/_headers ]; then
             aws s3 cp ./apps/expo/dist/_headers s3://$AWS_S3_BUCKET/_headers
           fi
-          
+
           # Invalidate CloudFront cache
           if [ -n "$AWS_CLOUDFRONT_DISTRIBUTION_ID" ] && [ "$AWS_CLOUDFRONT_DISTRIBUTION_ID" != "" ]; then
             echo "Invalidating CloudFront cache..."
@@ -223,7 +223,7 @@ jobs:
             echo "⚠️ CloudFront distribution ID not set for $AWS_ENV environment, skipping cache invalidation"
             echo "   Set AWS_CLOUDFRONT_DISTRIBUTION_ID_$AWS_ENV secret to enable cache invalidation"
           fi
-          
+
           echo "✅ AWS deployment complete!"
         continue-on-error: true
 
