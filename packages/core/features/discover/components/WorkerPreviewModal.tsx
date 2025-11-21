@@ -243,11 +243,11 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
   }, [isOwnProfile, open, connectionStatus])
 
   const isConnectionMutating =
-    sendRequestMutation.isLoading ||
-    acceptRequestMutation.isLoading ||
-    declineRequestMutation.isLoading
+    sendRequestMutation.isPending ||
+    acceptRequestMutation.isPending ||
+    declineRequestMutation.isPending
 
-  const isFollowMutating = followMutation.isLoading || unfollowMutation.isLoading
+  const isFollowMutating = followMutation.isPending || unfollowMutation.isPending
 
   // Fetch worker profile data
   const { data: profile, isLoading: profileLoading } = api.userProfile.getUserProfile.useQuery(
