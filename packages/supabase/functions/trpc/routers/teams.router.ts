@@ -3012,11 +3012,17 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
         })
       )
       .query(async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx
+        const { user } = ctx
 
         if (!user) {
           throw new TRPCError({ code: 'UNAUTHORIZED' })
         }
+
+        // Create service client for role assignment queries
+        // This is needed because role_assignments may require service role access
+        const { createClient } = await import('@supabase/supabase-js')
+        const { supabaseServiceKey, supabaseUrl } = await import('../context.ts')
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
         const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
         const superAdmin = isSuperAdmin(assignments)

@@ -313,7 +313,7 @@ export const officeRouter = t.router({
 
       // Check if user is super admin
       const { loadUserRoleAssignments, isSuperAdmin } = await import(
-        '../_shared/permissions/team-permissions'
+        '../../_shared/permissions/team-permissions.ts'
       )
       const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
       const superAdmin = isSuperAdmin(assignments)
@@ -572,7 +572,7 @@ export const officeRouter = t.router({
 
       // Verify organization access (unless super admin)
       const { loadUserRoleAssignments, isSuperAdmin } = await import(
-        '../_shared/permissions/team-permissions'
+        '../../_shared/permissions/team-permissions'
       )
       const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
       const superAdmin = isSuperAdmin(assignments)
@@ -673,7 +673,7 @@ export const officeRouter = t.router({
 
     // Verify organization access (unless super admin)
     const { loadUserRoleAssignments, isSuperAdmin } = await import(
-      '../_shared/permissions/team-permissions'
+      '../../_shared/permissions/team-permissions'
     )
     const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
     const superAdmin = isSuperAdmin(assignments)
@@ -912,7 +912,7 @@ export const officeRouter = t.router({
 
     // Verify organization access (unless super admin)
     const { loadUserRoleAssignments, isSuperAdmin } = await import(
-      '../_shared/permissions/team-permissions'
+      '../../_shared/permissions/team-permissions'
     )
     const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
     const superAdmin = isSuperAdmin(assignments)
@@ -1273,7 +1273,7 @@ export const officeRouter = t.router({
 
       // Verify organization access (unless super admin)
       const { loadUserRoleAssignments, isSuperAdmin } = await import(
-        '../_shared/permissions/team-permissions'
+        '../../_shared/permissions/team-permissions'
       )
       const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
       const superAdmin = isSuperAdmin(assignments)
@@ -1374,7 +1374,7 @@ export const officeRouter = t.router({
 
       // Verify organization access (unless super admin)
       const { loadUserRoleAssignments, isSuperAdmin } = await import(
-        '../_shared/permissions/team-permissions'
+        '../../_shared/permissions/team-permissions'
       )
       const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
       const superAdmin = isSuperAdmin(assignments)
@@ -1473,7 +1473,7 @@ export const officeRouter = t.router({
 
       // Verify organization access (unless super admin)
       const { loadUserRoleAssignments, isSuperAdmin } = await import(
-        '../_shared/permissions/team-permissions'
+        '../../_shared/permissions/team-permissions'
       )
       const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
       const superAdmin = isSuperAdmin(assignments)
@@ -1577,7 +1577,7 @@ export const officeRouter = t.router({
 
       // Verify organization access (unless super admin)
       const { loadUserRoleAssignments, isSuperAdmin } = await import(
-        '../_shared/permissions/team-permissions'
+        '../../_shared/permissions/team-permissions'
       )
       const assignments = await loadUserRoleAssignments(supabaseAdmin, user.id)
       const superAdmin = isSuperAdmin(assignments)

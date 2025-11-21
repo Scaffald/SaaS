@@ -508,3 +508,148 @@ Deno.test({
       .eq("id", jobId);
   },
 });
+
+Deno.test({
+  name: "Office router - listJobs works without module import errors (verifies fix)",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const adminAuth = await ensureOfficeAdminAccess();
+    const adminClient = createAdminClient();
+
+    const fixture = await setupTeamManagementFixture({
+      organizationName: "Test Org for listJobs",
+    });
+
+    // Create a job for the organization
+    const jobId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const { error: jobError } = await adminClient
+      .schema("core")
+      .from("jobs")
+      .insert({
+        id: jobId,
+        organization_id: fixture.organization.id,
+        title: "Test Job for listJobs",
+        slug: `test-job-${jobId.slice(0, 8)}`,
+        status: "open",
+        created_at: now,
+        updated_at: now,
+      });
+
+    if (jobError && jobError.code !== "23505") {
+      throw new Error(`Failed to create test job: ${jobError.message}`);
+    }
+
+    // This test verifies that office.listJobs works correctly after fixing
+    // the import path from '../_shared' to '../../_shared'
+    const response = await callTRPCEndpoint(
+      "office.listJobs",
+      {
+        limit: 100,
+        offset: 0,
+        myTeamsOnly: false,
+      },
+      {
+        authToken: adminAuth.token,
+      },
+    );
+
+    // Should not have a module not found error
+    const error = response[0]?.error;
+    if (error) {
+      const errorMessage = error.message || JSON.stringify(error);
+      if (errorMessage.includes("Module not found") || 
+          errorMessage.includes("team-permissions")) {
+        throw new Error(
+          `office.listJobs failed with module import error: ${errorMessage}. This indicates the import path fix didn't work.`
+        );
+      }
+    }
+
+    const result = response[0]?.result?.data;
+    assertExists(result, "Request should return data");
+    assertEquals(Array.isArray(result.jobs), true);
+    assertExists(result.total, "Response should have total count");
+
+    // Cleanup
+    await adminClient
+      .schema("core")
+      .from("jobs")
+      .delete()
+      .eq("id", jobId);
+  },
+});
+
+Deno.test({
+  name: "Office router - listJobs supports filtering by organization_id",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const adminAuth = await ensureOfficeAdminAccess();
+    const adminClient = createAdminClient();
+
+    const fixture = await setupTeamManagementFixture({
+      organizationName: "Test Org for listJobs Filter",
+    });
+
+    // Create jobs for the organization
+    const job1Id = crypto.randomUUID();
+    const job2Id = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    await adminClient
+      .schema("core")
+      .from("jobs")
+      .insert([
+        {
+          id: job1Id,
+          organization_id: fixture.organization.id,
+          title: "Job 1",
+          slug: `job-1-${job1Id.slice(0, 8)}`,
+          status: "open",
+          created_at: now,
+          updated_at: now,
+        },
+        {
+          id: job2Id,
+          organization_id: fixture.organization.id,
+          title: "Job 2",
+          slug: `job-2-${job2Id.slice(0, 8)}`,
+          status: "open",
+          created_at: now,
+          updated_at: now,
+        },
+      ]);
+
+    // Filter by organization_id
+    const response = await callTRPCEndpoint(
+      "office.listJobs",
+      {
+        organization_id: fixture.organization.id,
+        limit: 100,
+        offset: 0,
+      },
+      {
+        authToken: adminAuth.token,
+      },
+    );
+
+    const result = response[0]?.result?.data;
+    assertExists(result, "Request should return data");
+    assertEquals(Array.isArray(result.jobs), true);
+
+    // Verify all returned jobs belong to the organization
+    const allMatchOrg = result.jobs.every(
+      (job: { organization_id: string }) => job.organization_id === fixture.organization.id
+    );
+    assertEquals(allMatchOrg, true, "All jobs should belong to the specified organization");
+
+    // Cleanup
+    await adminClient
+      .schema("core")
+      .from("jobs")
+      .delete()
+      .in("id", [job1Id, job2Id]);
+  },
+});

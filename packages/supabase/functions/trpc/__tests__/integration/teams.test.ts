@@ -218,6 +218,46 @@ Deno.test({
 });
 
 Deno.test({
+  name: "Teams router - list works without supabaseAdmin in context (verifies fix)",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const fixture = await setupTeamManagementFixture();
+
+    // This test verifies that teams.list works correctly even though
+    // protectedProcedure doesn't provide supabaseAdmin by default.
+    // The endpoint should create the service client internally.
+    const response = await callTRPCEndpoint(
+      "teams.list",
+      { includeArchived: false },
+      {
+        type: "query",
+        authToken: fixture.owner.token,
+      },
+    );
+
+    // Should not have an error about undefined supabaseAdmin
+    const error = response[0]?.error;
+    if (error) {
+      const errorMessage = error.message || JSON.stringify(error);
+      if (errorMessage.includes("Cannot read properties of undefined") || 
+          errorMessage.includes("reading 'schema'")) {
+        throw new Error(
+          `teams.list failed with supabaseAdmin error: ${errorMessage}. This indicates the fix didn't work.`
+        );
+      }
+    }
+
+    const result = response[0]?.result?.data as
+      | { teams: Array<Record<string, unknown>> }
+      | undefined;
+
+    assertExists(result, "Expected teams list response");
+    assertEquals(Array.isArray(result.teams), true);
+  },
+});
+
+Deno.test({
   name: "Teams router - member can view team by id",
   sanitizeResources: false,
   sanitizeOps: false,
