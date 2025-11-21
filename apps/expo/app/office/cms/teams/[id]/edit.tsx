@@ -81,7 +81,9 @@ export default function EditTeamPage() {
 
   const { team } = data
 
-  const visibility = TEAM_VISIBILITIES.includes(team.visibility ?? '')
+  const visibility: (typeof TEAM_VISIBILITIES)[number] = TEAM_VISIBILITIES.includes(
+    (team.visibility ?? '') as (typeof TEAM_VISIBILITIES)[number]
+  )
     ? (team.visibility as (typeof TEAM_VISIBILITIES)[number])
     : 'organization'
 
