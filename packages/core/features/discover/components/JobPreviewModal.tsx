@@ -1,3 +1,4 @@
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@app/ui'
 import {
@@ -8,9 +9,8 @@ import {
   ExternalLink,
   MapPin,
 } from '@tamagui/lucide-icons'
-import { useState } from 'react'
+import { useRouter } from 'expo-router'
 import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import { InternalJobDetailModal } from './InternalJobDetailModal'
 
 interface JobPreviewModalProps {
   jobId: string | null
@@ -23,7 +23,7 @@ interface JobPreviewModalProps {
  * Shows a quick preview of a job posting with option to view full details
  */
 export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalProps) {
-  const [showFullDetails, setShowFullDetails] = useState(false)
+  const router = useRouter()
 
   // Fetch job data
   const { data: job, isLoading } = api.jobs.getJob.useQuery(
@@ -73,17 +73,16 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   }
 
   const handleViewFullDetails = () => {
-    setShowFullDetails(true)
-  }
-
-  const handleCloseFullDetails = () => {
-    setShowFullDetails(false)
+    if (job?.id) {
+      router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
+      onOpenChange(false)
+    }
   }
 
   return (
     <>
       <ResponsiveModal
-        open={open && !showFullDetails}
+        open={open}
         onOpenChange={onOpenChange}
         title={job?.title || 'Job Details'}
         size="medium"
@@ -232,23 +231,6 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
           </>
         )}
       </ResponsiveModal>
-
-      {/* Full Details Modal */}
-      {job && (
-        <InternalJobDetailModal
-          job={job}
-          open={showFullDetails}
-          onOpenChange={(open) => {
-            if (!open) {
-              handleCloseFullDetails()
-            }
-          }}
-          onApplySuccess={() => {
-            handleCloseFullDetails()
-            onOpenChange(false)
-          }}
-        />
-      )}
     </>
   )
 }
