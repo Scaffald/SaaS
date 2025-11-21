@@ -158,11 +158,6 @@ export function ProfileCertificationsLeft({
   })
 
   // Legacy mutations (kept for backwards compatibility with existing UI flows)
-  // Note: addTopLevel is still used by handleRemoveTopLevel, so we keep it
-  const _addTopLevel = api.profile.certifications.addTopLevelCertification.useMutation({
-    onSuccess: () => refetchTree(),
-  })
-
   const addCategory = api.profile.certifications.addCategoryCertification.useMutation({
     onSuccess: () => refetchTree(),
   })
