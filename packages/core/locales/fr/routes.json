@@ -1,10 +1,12 @@
 {
   "home": "Home",
   "styleguide": "Styleguide",
+  "styleguideApprovalQueue": "Styleguide Approval Queue",
   "auth": {
     "login": "Sign In",
     "confirm": "Confirm Account",
-    "success": "Success"
+    "success": "Success",
+    "verify": "Verify Email"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -82,6 +84,12 @@
       "occupation": "Occupation Preferences"
     },
     "news": "Industry News"
+  },
+  "teams": {
+    "title": "Teams",
+    "invitations": {
+      "accept": "Accept Team Invitation"
+    }
   },
   "office": {
     "title": "Office",

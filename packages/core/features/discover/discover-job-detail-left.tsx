@@ -88,15 +88,38 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     }
   }, [job, flowType])
 
+  // Track job view for engagement analytics
+  const trackEventMutation = api.engagement.trackEvent.useMutation()
+
   useEffect(() => {
     if (job) {
+      // Track in analytics (existing)
       captureEvent('job_viewed', {
         job_id: job.id,
         is_external: isExternal,
         organization_id:
           !isExternal && 'organization' in job ? (job.organization?.id ?? null) : null,
       })
+
+      // Track in engagement analytics (REQ-254)
+      try {
+        trackEventMutation.mutate({
+          eventType: 'job.viewed',
+          targetType: 'job',
+          targetId: job.id,
+          metadata: {
+            job_title: job.title,
+            is_external,
+            organization_id:
+              !isExternal && 'organization' in job ? (job.organization?.id ?? null) : null,
+          },
+        })
+      } catch (error) {
+        // Silent error handling - don't impact user flow
+        console.warn('Failed to track job view:', error)
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [job, isExternal])
 
   if (isLoading) {
@@ -141,8 +164,22 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             theme="info"
             onPress={() => {
               setShowQuickApply(true)
-              // TODO: Add 'application_started' to analytics event types
-              console.log('Application started:', { flow_type: 'quick', job_id: job.id })
+              // Track application started for quick apply flow
+              try {
+                trackEventMutation.mutate({
+                  eventType: 'application.started',
+                  targetType: 'job',
+                  targetId: job.id,
+                  metadata: {
+                    job_title: job.title,
+                    flow_type: 'quick',
+                    organization_name: job.organization?.name || 'Unknown Organization',
+                  },
+                })
+              } catch (error) {
+                // Silent error handling - don't impact user flow
+                console.warn('Failed to track application started (quick):', error)
+              }
             }}
           >
             Apply Now
@@ -166,13 +203,24 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
               open={showQuickApply}
               onOpenChange={setShowQuickApply}
               onSuccess={(applicationId) => {
-                console.log('Quick application submitted successfully:', applicationId)
-                // TODO: Add 'application_completed' to analytics event types
-                console.log('Application completed:', {
-                  flow_type: 'quick',
-                  job_id: job.id,
-                  application_id: applicationId,
-                })
+                // Track application submitted for quick apply flow
+                try {
+                  trackEventMutation.mutate({
+                    eventType: 'application.submitted',
+                    targetType: 'job',
+                    targetId: job.id,
+                    metadata: {
+                      job_title: job.title,
+                      flow_type: 'quick',
+                      application_id: applicationId,
+                      organization_name: job.organization?.name || 'Unknown Organization',
+                    },
+                  })
+                } catch (error) {
+                  // Silent error handling - don't impact user flow
+                  console.warn('Failed to track application submitted (quick):', error)
+                }
+
                 setShowQuickApply(false)
                 // Could navigate to applications page or show success
               }}
@@ -190,13 +238,23 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           jobTitle={job.title}
           organizationName={job.organization?.name || 'Unknown Organization'}
           onSuccess={(applicationId) => {
-            console.log('Application submitted successfully:', applicationId)
-            // TODO: Add 'application_completed' to analytics event types
-            console.log('Application completed:', {
-              flow_type: 'full',
-              job_id: job.id,
-              application_id: applicationId,
-            })
+            // Track application submitted for full wizard flow
+            try {
+              trackEventMutation.mutate({
+                eventType: 'application.submitted',
+                targetType: 'job',
+                targetId: job.id,
+                metadata: {
+                  job_title: job.title,
+                  flow_type: 'full',
+                  application_id: applicationId,
+                  organization_name: job.organization?.name || 'Unknown Organization',
+                },
+              })
+            } catch (error) {
+              // Silent error handling - don't impact user flow
+              console.warn('Failed to track application submitted (full):', error)
+            }
             // Could navigate to applications page or show success
           }}
           onCancel={() => {

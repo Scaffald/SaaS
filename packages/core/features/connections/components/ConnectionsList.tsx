@@ -1,10 +1,10 @@
 import { api } from '@app/core/utils/api'
 import { DataTable } from '@app/ui'
 import type { ColumnDef } from '@tanstack/react-table'
+import { useToastController } from '@tamagui/toast'
 import { Download, Trash2 } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
-import { toast } from 'sonner-native'
 
 type Connection = NonNullable<
   ReturnType<typeof api.connections.getConnections.useQuery>['data']
@@ -13,16 +13,21 @@ type Connection = NonNullable<
 export function ConnectionsList() {
   const [searchTerm, setSearchTerm] = useState('')
   const utils = api.useUtils()
+  const toast = useToastController()
 
   const { data: connections, isLoading } = api.connections.getConnections.useQuery()
 
   const removeConnectionMutation = api.connections.removeConnection.useMutation({
     onSuccess: () => {
       utils.connections.getConnections.invalidate()
-      toast.success('Connection removed')
+      toast.show('Success', {
+        message: 'Connection removed',
+      })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to remove connection')
+      toast.show('Error', {
+        message: error.message || 'Failed to remove connection',
+      })
     },
   })
 
@@ -46,7 +51,9 @@ export function ConnectionsList() {
 
   const handleExportCSV = () => {
     if (!connections || connections.length === 0) {
-      toast.error('No connections to export')
+      toast.show('Error', {
+        message: 'No connections to export',
+      })
       return
     }
 
@@ -72,9 +79,13 @@ export function ConnectionsList() {
       link.download = `connections-${new Date().toISOString().split('T')[0]}.csv`
       link.click()
       URL.revokeObjectURL(url)
-      toast.success('Connections exported successfully')
+      toast.show('Success', {
+        message: 'Connections exported successfully',
+      })
     } else {
-      toast.error('CSV export is only available on web')
+      toast.show('Error', {
+        message: 'CSV export is only available on web',
+      })
     }
   }
 

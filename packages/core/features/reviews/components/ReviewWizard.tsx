@@ -145,6 +145,9 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
     reviewDraft.goToNextStep()
   }
 
+  // Track review submission for engagement analytics
+  const trackEventMutation = api.engagement.trackEvent.useMutation()
+
   const handleSubmit = async () => {
     if (!reviewId) {
       console.error('Cannot submit: no review ID')
@@ -153,10 +156,27 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
 
     try {
       const draft = reviewDraft.getDraft()
-      await submitReviewMutation.mutateAsync({
+      const result = await submitReviewMutation.mutateAsync({
         reviewId,
         recommendation: draft.recommendation ? 1 : -1,
       })
+
+      // Track review submission after successful submit
+      try {
+        trackEventMutation.mutate({
+          eventType: 'review.submitted',
+          targetType: 'user',
+          targetId: subjectId,
+          metadata: {
+            review_id: reviewId,
+            recommendation: draft.recommendation ? 1 : -1,
+          },
+        })
+      } catch (error) {
+        // Silent error handling - don't impact review submission
+        console.warn('Failed to track review submission:', error)
+      }
+
       onComplete()
     } catch (error) {
       console.error('Failed to submit review:', error)

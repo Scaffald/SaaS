@@ -1,10 +1,10 @@
 import { api } from '@app/core/utils/api'
 import { DataTable } from '@app/ui'
 import type { ColumnDef } from '@tanstack/react-table'
+import { useToastController } from '@tamagui/toast'
 import { CheckCircle2, X } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import { toast } from 'sonner-native'
 
 type PendingRequest = NonNullable<
   ReturnType<typeof api.connections.getPendingRequests.useQuery>['data']
@@ -18,6 +18,7 @@ type RequestRow = PendingRequest | ReceivedRequest
 
 export function PendingRequestsList() {
   const utils = api.useUtils()
+  const toast = useToastController()
 
   const { data: pendingRequests, isLoading } = api.connections.getPendingRequests.useQuery()
 
@@ -25,30 +26,42 @@ export function PendingRequestsList() {
     onSuccess: () => {
       utils.connections.getPendingRequests.invalidate()
       utils.connections.getConnections.invalidate()
-      toast.success('Connection request accepted')
+      toast.show('Success', {
+        message: 'Connection request accepted',
+      })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to accept request')
+      toast.show('Error', {
+        message: error.message || 'Failed to accept request',
+      })
     },
   })
 
   const declineMutation = api.connections.declineRequest.useMutation({
     onSuccess: () => {
       utils.connections.getPendingRequests.invalidate()
-      toast.success('Connection request declined')
+      toast.show('Success', {
+        message: 'Connection request declined',
+      })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to decline request')
+      toast.show('Error', {
+        message: error.message || 'Failed to decline request',
+      })
     },
   })
 
   const cancelMutation = api.connections.declineRequest.useMutation({
     onSuccess: () => {
       utils.connections.getPendingRequests.invalidate()
-      toast.success('Connection request cancelled')
+      toast.show('Success', {
+        message: 'Connection request cancelled',
+      })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to cancel request')
+      toast.show('Error', {
+        message: error.message || 'Failed to cancel request',
+      })
     },
   })
 

@@ -10,10 +10,9 @@ import {
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
-import { getOrCreateSessionId } from '@app/core/utils/sessionId'
 import type { BreadcrumbItem } from '@app/ui'
 import { DashboardLayout } from '@app/ui'
-import { useLocalSearchParams, usePathname, useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { Spinner, Text, YStack } from 'tamagui'
 
@@ -44,11 +43,10 @@ export default function PublicUserProfilePage() {
 
   // Profile view tracking
   const recordViewMutation = api.profileViews.recordView.useMutation()
-  const pathname = usePathname()
 
   // Track profile view automatically (before redirect check)
   useEffect(() => {
-    const trackProfileView = async () => {
+    const trackProfileView = () => {
       // Don't track if loading, no profile data, or own profile
       if (isLoading || !profileData || !profileData.id) {
         return
@@ -61,17 +59,10 @@ export default function PublicUserProfilePage() {
       }
 
       try {
-        // Get or create session ID for deduplication
-        const sessionId = await getOrCreateSessionId()
-
-        // Get referrer URL (current pathname)
-        const referrerUrl = pathname || undefined
-
         // Record view (fire-and-forget, don't wait for response)
+        // The router handles session ID generation and deduplication internally
         recordViewMutation.mutate({
           viewedUserId: profileData.id,
-          sessionId,
-          referrerUrl,
         })
       } catch (error) {
         // Silent error handling - don't block page load
@@ -81,7 +72,7 @@ export default function PublicUserProfilePage() {
 
     trackProfileView()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileData?.id, currentUserId, pathname, isLoading])
+  }, [profileData?.id, currentUserId, isLoading])
 
   // Redirect to dashboard route if viewing own profile
   useEffect(() => {

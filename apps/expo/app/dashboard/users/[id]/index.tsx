@@ -11,8 +11,7 @@ import {
 } from '@app/core/features/profile/widgets'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
-import { getOrCreateSessionId } from '@app/core/utils/sessionId'
-import { useLocalSearchParams, usePathname } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo } from 'react'
 import { YStack } from 'tamagui'
 
@@ -49,28 +48,20 @@ export default function UserProfilePage() {
 
   // Profile view tracking
   const recordViewMutation = api.profileViews.recordView.useMutation()
-  const pathname = usePathname()
 
   useEffect(() => {
     // Track profile view automatically
-    const trackProfileView = async () => {
+    const trackProfileView = () => {
       // Don't track own profile views
       if (!id || isOwnProfile || !currentUserId) {
         return
       }
 
       try {
-        // Get or create session ID for deduplication
-        const sessionId = await getOrCreateSessionId()
-
-        // Get referrer URL (current pathname)
-        const referrerUrl = pathname || undefined
-
         // Record view (fire-and-forget, don't wait for response)
+        // The router handles session ID generation and deduplication internally
         recordViewMutation.mutate({
           viewedUserId: id,
-          sessionId,
-          referrerUrl,
         })
       } catch (error) {
         // Silent error handling - don't block page load
@@ -80,7 +71,7 @@ export default function UserProfilePage() {
 
     trackProfileView()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isOwnProfile, currentUserId, pathname])
+  }, [id, isOwnProfile, currentUserId])
 
   const breadcrumbs = useMemo<DashboardBreadcrumbSegment[]>(
     () => [

@@ -1,6 +1,8 @@
 import { api } from '@app/core/utils/api'
+import { useAuth } from '@app/core/provider/auth/useAuth'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
+import { useEffect, useRef } from 'react'
 import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface CategoryRating {
@@ -22,6 +24,13 @@ interface UserProfileReviewsProps {
 }
 
 export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviewsProps) {
+  const { session } = useAuth()
+  const currentUserId = session?.user?.id
+  const hasTrackedViewRef = useRef(false) // Track if we've already recorded a view for this component mount
+
+  // Track review view for engagement analytics
+  const trackEventMutation = api.engagement.trackEvent.useMutation()
+
   // Fetch real reviews from database
   const { data: reviewsData, isLoading } = api.reviews.getBySubject.useQuery({
     subjectId: userId,
@@ -30,6 +39,40 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   })
 
   const reviews = (Array.isArray(reviewsData) ? reviewsData : []) as Review[]
+
+  // Track review view when reviews are loaded (only once per mount, and not for own profile)
+  useEffect(() => {
+    // Don't track if: already tracked, loading, no data, viewing own profile, or no reviews
+    if (
+      hasTrackedViewRef.current ||
+      isLoading ||
+      !reviewsData ||
+      !currentUserId ||
+      currentUserId === userId ||
+      reviews.length === 0
+    ) {
+      return
+    }
+
+    // Mark as tracked
+    hasTrackedViewRef.current = true
+
+    // Track review view
+    try {
+      trackEventMutation.mutate({
+        eventType: 'review.viewed',
+        targetType: 'user',
+        targetId: userId,
+        metadata: {
+          reviews_count: reviews.length,
+        },
+      })
+    } catch (error) {
+      // Silent error handling - don't impact review display
+      console.warn('Failed to track review view:', error)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, currentUserId, isLoading, reviewsData, reviews.length])
 
   if (isLoading) {
     return (

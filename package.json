@@ -35,7 +35,7 @@
     "format": "turbo format",
     "format:fix": "turbo format:fix",
     "postinstall": "pnpm check-deps",
-    "build": "turbo build",
+    "build": "pnpm locales:validate && turbo build",
     "check": "pnpm locales:validate && turbo check",
     "locales:validate": "ts-node packages/core/locales/scripts/validate-translations.ts",
     "locales:coverage": "ts-node packages/core/locales/scripts/translation-coverage.ts",

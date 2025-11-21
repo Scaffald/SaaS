@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface OccupationSearchProps {
@@ -36,6 +36,10 @@ export function OccupationSearch({
   const [selectedTitle, setSelectedTitle] = useState('')
   const [showResults, setShowResults] = useState(false)
   const debouncedSearch = useDebounce(searchTerm, 300)
+  const lastTrackedSearchRef = useRef<string>('') // Track last searched query to avoid duplicate tracking
+
+  // Track occupation searches for engagement analytics
+  const trackEventMutation = api.engagement.trackEvent.useMutation()
 
   // Search occupations
   const {
@@ -51,6 +55,36 @@ export function OccupationSearch({
       enabled: debouncedSearch.length >= 2,
     }
   )
+
+  // Track occupation search when results are available
+  useEffect(() => {
+    // Only track if query is valid, has results, and hasn't been tracked yet
+    if (
+      debouncedSearch.length >= 2 &&
+      data?.occupations &&
+      data.occupations.length > 0 &&
+      lastTrackedSearchRef.current !== debouncedSearch &&
+      !isLoading
+    ) {
+      lastTrackedSearchRef.current = debouncedSearch
+
+      try {
+        trackEventMutation.mutate({
+          eventType: 'occupation.searched',
+          targetType: undefined,
+          targetId: undefined,
+          metadata: {
+            query: debouncedSearch.trim(),
+            results_count: data.occupations.length,
+          },
+        })
+      } catch (error) {
+        // Silent error handling - don't impact search functionality
+        console.warn('Failed to track occupation search:', error)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, data?.occupations, isLoading])
 
   // Get selected occupation title
   useEffect(() => {

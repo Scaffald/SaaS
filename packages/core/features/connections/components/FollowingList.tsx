@@ -1,26 +1,31 @@
 import { api } from '@app/core/utils/api'
 import { DataTable } from '@app/ui'
 import type { ColumnDef } from '@tanstack/react-table'
+import { useToastController } from '@tamagui/toast'
 import { UserMinus } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
-import { toast } from 'sonner-native'
 
 type Following = NonNullable<ReturnType<typeof api.follows.getFollowing.useQuery>['data']>[number]
 
 export function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('')
   const utils = api.useUtils()
+  const toast = useToastController()
 
   const { data: following, isLoading } = api.follows.getFollowing.useQuery()
 
   const unfollowMutation = api.follows.unfollowUser.useMutation({
     onSuccess: () => {
       utils.follows.getFollowing.invalidate()
-      toast.success('Unfollowed successfully')
+      toast.show('Success', {
+        message: 'Unfollowed successfully',
+      })
     },
     onError: (error) => {
-      toast.error(error.message || 'Failed to unfollow user')
+      toast.show('Error', {
+        message: error.message || 'Failed to unfollow user',
+      })
     },
   })
 

@@ -1,8 +1,9 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@app/schemas'
 import { ApplicationStep } from '@app/schemas'
+import { api } from '@app/core/utils/api'
 import { SaveStatusIndicator } from '@app/ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, ScrollView, Text, XStack, YStack } from 'tamagui'
 import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { Attachments } from './AttachmentsStep'
@@ -96,6 +97,28 @@ export function ApplicationWizard({
   // TODO: Fetch actual custom questions for this job
   const customQuestions: CustomQuestion[] = [] // Replace with actual data fetch
 
+  // Track application started for engagement analytics
+  const trackEventMutation = api.engagement.trackEvent.useMutation()
+
+  useEffect(() => {
+    // Track when application wizard is opened (application started)
+    try {
+      trackEventMutation.mutate({
+        eventType: 'application.started',
+        targetType: 'job',
+        targetId: jobId,
+        metadata: {
+          job_title: jobTitle,
+          organization_name: organizationName,
+        },
+      })
+    } catch (error) {
+      // Silent error handling - don't impact user flow
+      console.warn('Failed to track application started:', error)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
+
   // Define application steps - only include custom questions if there are any
   const steps: Array<{ id: ApplicationStepType; label: string }> = [
     { id: ApplicationStep.SCREENING, label: 'Screening' },
@@ -111,6 +134,23 @@ export function ApplicationWizard({
     try {
       const result = await submitApplication()
       if (result.success && result.applicationId) {
+        // Track application submitted for engagement analytics
+        try {
+          trackEventMutation.mutate({
+            eventType: 'application.submitted',
+            targetType: 'job',
+            targetId: jobId,
+            metadata: {
+              job_title: jobTitle,
+              organization_name: organizationName,
+              application_id: result.applicationId,
+            },
+          })
+        } catch (error) {
+          // Silent error handling - don't impact user flow
+          console.warn('Failed to track application submitted:', error)
+        }
+
         setSubmittedApplicationId(result.applicationId)
         onSuccess?.(result.applicationId)
       }

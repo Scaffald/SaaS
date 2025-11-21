@@ -132,10 +132,13 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     setPendingSearch(null)
   }, [])
 
+  // Track skill searches for engagement analytics
+  const trackEventMutation = api.engagement.trackEvent.useMutation()
+
   // Search skills function - use cascading approach (searchParentSkills)
   const searchSkills = useCallback(
     async (query: string, taxonomies: string[]): Promise<ParentSkill[]> => {
-      if (!selectedIndustryId || taxonomies.length === 0) {
+      if (!selectedIndustryId || taxonomies.length === 0 || !query.trim()) {
         return []
       }
 
@@ -164,13 +167,34 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
           })
         )
 
+        // Track skill search for engagement analytics (only if results exist)
+        if (skills.length > 0) {
+          try {
+            const taxonomyList = taxonomies.join(',')
+            trackEventMutation.mutate({
+              eventType: 'skill.searched',
+              targetType: undefined,
+              targetId: undefined,
+              metadata: {
+                query: query.trim(),
+                results_count: skills.length,
+                taxonomy: taxonomyList,
+                industry_id: selectedIndustryId,
+              },
+            })
+          } catch (error) {
+            // Silent error handling - don't impact search functionality
+            console.warn('Failed to track skill search:', error)
+          }
+        }
+
         return skills
       } catch (error) {
         console.error('Search error:', error)
         return []
       }
     },
-    [selectedIndustryId] // Only depends on primitive values
+    [selectedIndustryId, trackEventMutation] // Only depends on primitive values
   )
 
   // Derived state
