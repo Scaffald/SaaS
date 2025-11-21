@@ -2,6 +2,7 @@
   "version": "0.0.0",
   "name": "@app/core",
   "private": true,
+  "type": "module",
   "main": "index.ts",
   "types": "./index.ts",
   "sideEffects": [

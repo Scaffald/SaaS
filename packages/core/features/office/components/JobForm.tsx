@@ -30,6 +30,7 @@ import {
   JobMetadataSection,
   LocationSchedulingSection,
   ScoreThresholdSection,
+  SoftSkillsRequirementsSection,
 } from './job-form-sections'
 
 type JobFormData = {
@@ -149,6 +150,9 @@ type JobFormData = {
   is_disability_friendly?: boolean
   affirmative_action_plan?: boolean
   source_tracking_enabled?: boolean
+
+  // Soft Skills Requirements (REQ-255)
+  required_soft_skills?: Array<{ skill_id: string; importance: number }> | null
 }
 
 type JobFormProps = {
@@ -201,6 +205,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     skill_ids: initialData?.skill_ids || [],
     certification_ids: initialData?.certification_ids || [],
     inquiry_capability_questions: initialData?.inquiry_capability_questions || [],
+    required_soft_skills: initialData?.required_soft_skills || null,
   })
 
   // Auto-select organization if only one available
@@ -1078,6 +1083,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           securityClearanceRequired={formData.security_clearance_required}
           travelPercentage={formData.travel_percentage}
           shiftRequirements={formData.shift_requirements}
+          onUpdate={handleSectionUpdate}
+        />
+
+        {/* Soft Skills Requirements Section */}
+        <SoftSkillsRequirementsSection
+          requiredSoftSkills={formData.required_soft_skills}
           onUpdate={handleSectionUpdate}
         />
 

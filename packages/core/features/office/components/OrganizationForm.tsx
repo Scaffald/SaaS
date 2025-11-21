@@ -84,9 +84,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   const initialSlug = initialData?.slug?.toLowerCase() ?? ''
   const slugNeedsValidation =
     Boolean(slugValue) && (mode === 'create' || slugValue.toLowerCase() !== initialSlug)
-  const _slugAvailabilityBlocksSubmit =
-    slugNeedsValidation &&
-    (slugStatus.state === 'checking' || slugStatus.state === 'invalid' || slugStatus.state === 'taken')
+  const slugHasAvailabilityError = slugStatus.state === 'invalid' || slugStatus.state === 'taken'
 
   // Reset form when initialData changes (for edit mode)
   useEffect(() => {
@@ -151,7 +149,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               : 'An organization with this vanity URL already exists.'
 
         setSlugStatus({
-          state: reason === 'format' ? 'invalid' : 'taken',
+          state: reason === 'taken' ? 'taken' : 'invalid',
           message: result.message ?? fallbackMessage,
           suggestions: result.suggestions,
         })
@@ -242,9 +240,11 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
             <Input
               testID="org-form-slug"
               value={field.value}
-              onChangeText={field.onChange}
+              onChangeText={(value) => field.onChange(normalizeOrganizationSlug(value))}
               placeholder="organization-username"
-              borderColor={errors.slug ? '$red8' : '$borderColor'}
+              autoCapitalize="none"
+              autoCorrect={false}
+              borderColor={slugHasAvailabilityError || errors.slug ? '$red8' : '$borderColor'}
             />
             <Text fontSize="$2" opacity={0.7}>
               Lowercase, URL-friendly username (hyphens only)
@@ -252,6 +252,50 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
             {errors.slug && (
               <Text data-testid="slug-error" color="$red10" fontSize="$2">
                 {errors.slug.message}
+              </Text>
+            )}
+            {slugStatus.state === 'checking' && slugNeedsValidation && (
+              <XStack gap="$2" alignItems="center">
+                <Spinner size="small" />
+                <Text fontSize="$2" color="$color11">
+                  Checking availability...
+                </Text>
+              </XStack>
+            )}
+            {slugStatus.state === 'available' && slugNeedsValidation && (
+              <Text color="$green10" fontSize="$2">
+                This vanity URL is available.
+              </Text>
+            )}
+            {slugStatus.state === 'invalid' && (
+              <Text color="$red10" fontSize="$2">
+                {slugStatus.message}
+              </Text>
+            )}
+            {slugStatus.state === 'taken' && (
+              <YStack gap="$2">
+                <Text color="$red10" fontSize="$2">
+                  {slugStatus.message}
+                </Text>
+                {slugStatus.suggestions?.length ? (
+                  <XStack gap="$2" flexWrap="wrap">
+                    {slugStatus.suggestions.map((suggestion) => (
+                      <Button
+                        key={suggestion}
+                        size="$2"
+                        variant="outlined"
+                        onPress={() => setValue('slug', suggestion, { shouldValidate: true })}
+                      >
+                        {suggestion}
+                      </Button>
+                    ))}
+                  </XStack>
+                ) : null}
+              </YStack>
+            )}
+            {slugStatus.state === 'error' && (
+              <Text color="$orange10" fontSize="$2">
+                {slugStatus.message}
               </Text>
             )}
           </YStack>
@@ -390,7 +434,14 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         <Button
           testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
-          disabled={!isDirty || isLoading}
+          disabled={
+            !isDirty ||
+            isLoading ||
+            (slugNeedsValidation &&
+              (slugStatus.state === 'checking' ||
+                slugStatus.state === 'invalid' ||
+                slugStatus.state === 'taken'))
+          }
           icon={isLoading ? <Spinner /> : undefined}
           $sm={{ height: 44, width: '100%' }}
           $md={{ height: undefined, width: undefined }}
