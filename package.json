@@ -89,6 +89,7 @@
     "test:schemas": "pnpm --filter @app/schemas test",
     "test:expo": "pnpm --filter expo-app test",
     "test": "pnpm test:vitest && pnpm test:api",
+    "test:contracts": "vitest run contracts/contract-suite.test.ts --config vitest.contracts.config.ts",
     "test:performance": "cd apps/expo && time pnpm web:build",
     "validate:migration": "pnpm test:all && echo '✅ Migration validation complete'",
     "test:playwright": "playwright test"

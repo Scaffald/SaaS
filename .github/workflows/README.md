@@ -89,3 +89,19 @@ pnpm supa stop
 ```
 
 When Supabase is already running on your machine the `pnpm test` command will reuse the existing instance, matching the behaviour in CI.
+
+## Contract Tests
+
+This workflow runs only when pull requests touch third-party client code (address providers, Stripe/OpenAI integrations, or SendGrid email hooks) or the `contracts/` directory. It executes the MSW-backed contract suite and uploads the generated `contracts/generated` payloads as artifacts.
+
+### Required Status Checks
+
+Add `Contract Tests / contract-tests` to the branch protection rules for `main` so merges are gated on the contract suite.
+
+### Local Development
+
+Run the contract suite locally before opening a PR that updates any third-party integration:
+
+```
+pnpm test:contracts
+```
