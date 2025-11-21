@@ -1,16 +1,10 @@
-import { CustomCheckbox, SearchSelect, type SearchSelectOption } from '@app/ui'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Card, Label, Separator, Slider, Text, XStack, YStack } from 'tamagui'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { ParentSkill } from '../types/profile-skills-types'
+import { SkillProficiencySelector } from './skills/SkillProficiencySelector'
+import { SkillSearchForm } from './skills/SkillSearchForm'
 
-/**
- * Parent skill from search (multi-taxonomy format)
- */
-export interface ParentSkill {
-  id: string
-  name: string
-  code: string
-  depth: number
-}
+// Re-export ParentSkill type for backwards compatibility
+export type { ParentSkill } from '../types/profile-skills-types'
 
 /**
  * Props for InlineSkillSearch
@@ -31,22 +25,13 @@ export interface InlineSkillSearchProps {
   existingSkillIds?: string[]
   /** External term injected from parent (e.g., chip selection) */
   externalSearchTerm?: string | null
+  /** Unique identifier for external search term */
+  externalSearchId?: string | null
   /** Preferred taxonomy when external term provided */
   externalSearchTaxonomy?: 'csi' | 'onet' | 'both'
   /** Callback when external term has been consumed */
   onConsumeExternalSearchTerm?: () => void
 }
-
-/**
- * Proficiency levels for skills
- */
-const PROFICIENCY_LEVELS = [
-  { value: 1, label: 'Beginner', description: 'Learning the basics' },
-  { value: 2, label: 'Novice', description: 'Some experience' },
-  { value: 3, label: 'Intermediate', description: 'Comfortable with most tasks' },
-  { value: 4, label: 'Advanced', description: 'Highly skilled' },
-  { value: 5, label: 'Expert', description: 'Industry leader' },
-] as const
 
 /**
  * InlineSkillSearch Component
@@ -73,6 +58,7 @@ export function InlineSkillSearch({
   isSearching = false,
   existingSkillIds = [],
   externalSearchTerm,
+  externalSearchId,
   externalSearchTaxonomy,
   onConsumeExternalSearchTerm,
 }: InlineSkillSearchProps) {
@@ -81,7 +67,8 @@ export function InlineSkillSearch({
   const [proficiency, setProficiency] = useState(1)
   const [searchCSI, setSearchCSI] = useState(true)
   const [searchONET, setSearchONET] = useState(false)
-  const lastExternalTermRef = useRef<string | null>(null)
+  const [searchInputValue, setSearchInputValue] = useState('')
+  const lastProcessedSearchKeyRef = useRef<string | null>(null)
 
   // Handle search with taxonomy filtering
   const handleSearch = useCallback(
@@ -108,11 +95,16 @@ export function InlineSkillSearch({
 
   // Apply external search term when provided (e.g., suggestion chip)
   useEffect(() => {
-    if (!externalSearchTerm || externalSearchTerm === lastExternalTermRef.current) {
+    if (!externalSearchTerm) {
+      return
+    }
+    const searchKey = externalSearchId ?? externalSearchTerm
+    if (lastProcessedSearchKeyRef.current === searchKey) {
       return
     }
 
-    lastExternalTermRef.current = externalSearchTerm
+    lastProcessedSearchKeyRef.current = searchKey
+
     if (externalSearchTaxonomy === 'onet') {
       setSearchCSI(false)
       setSearchONET(true)
@@ -128,8 +120,14 @@ export function InlineSkillSearch({
       setSearchONET(true)
     }
 
-    onConsumeExternalSearchTerm?.()
-  }, [externalSearchTerm, externalSearchTaxonomy, onConsumeExternalSearchTerm])
+    setSearchInputValue(externalSearchTerm)
+
+    const timeoutId = setTimeout(() => {
+      onConsumeExternalSearchTerm?.()
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
+  }, [externalSearchId, externalSearchTerm, externalSearchTaxonomy, onConsumeExternalSearchTerm])
 
   // Handle skill selection
   const handleSkillSelect = useCallback((skill: ParentSkill, taxonomy: string) => {
@@ -155,219 +153,33 @@ export function InlineSkillSearch({
     setProficiency(1) // Reset to default (Beginner)
   }, [])
 
-  // Get current proficiency level details
-  const currentLevel = useMemo(
-    () => PROFICIENCY_LEVELS.find((level) => level.value === proficiency),
-    [proficiency]
-  )
-
   // If a skill is selected, show proficiency selector
   if (selectedSkill) {
     return (
-      <YStack gap="$4">
-        <Text fontWeight="600" fontSize="$4">
-          Set Proficiency Level
-        </Text>
-
-        {/* Selected Skill */}
-        <Card bordered bg="$color3">
-          <Card.Header>
-            <YStack gap="$1">
-              <Text fontSize="$4" fontWeight="600">
-                {selectedSkill.name}
-              </Text>
-              {selectedSkill.code && (
-                <Text fontSize="$2" color="$color10">
-                  {selectedSkill.code} ({selectedTaxonomy.toUpperCase()})
-                </Text>
-              )}
-            </YStack>
-          </Card.Header>
-        </Card>
-
-        <Separator />
-
-        {/* Proficiency Slider */}
-        <YStack gap="$3">
-          <Text fontWeight="600">Proficiency</Text>
-
-          <Slider
-            value={[proficiency]}
-            onValueChange={(value) => setProficiency(value[0])}
-            min={1}
-            max={5}
-            step={1}
-            size="$3"
-          >
-            <Slider.Track bg="$color4" height={6}>
-              <Slider.TrackActive bg="$green9" />
-            </Slider.Track>
-            <Slider.Thumb index={0} circular size="$1" />
-          </Slider>
-
-          {/* Current Level Display */}
-          <Card bordered bg="$color3">
-            <Card.Header>
-              <XStack justify="space-between" items="center">
-                <YStack>
-                  <Text fontWeight="600" fontSize="$4" color="$green9">
-                    {currentLevel?.label}
-                  </Text>
-                  <Text fontSize="$2" color="$color11">
-                    {currentLevel?.description}
-                  </Text>
-                </YStack>
-                <Text fontSize="$8" fontWeight="bold" color="$green9">
-                  {proficiency}
-                </Text>
-              </XStack>
-            </Card.Header>
-          </Card>
-
-          {/* Level Guide */}
-          <YStack gap="$2">
-            {PROFICIENCY_LEVELS.map((level) => (
-              <XStack
-                key={level.value}
-                gap="$2"
-                items="center"
-                opacity={proficiency === level.value ? 1 : 0.5}
-              >
-                <Text fontWeight="600" minW={30}>
-                  {level.value}
-                </Text>
-                <Text flex={1} fontSize="$2">
-                  {level.label} - {level.description}
-                </Text>
-              </XStack>
-            ))}
-          </YStack>
-        </YStack>
-
-        {/* Actions */}
-        <XStack gap="$3">
-          <Button flex={1} variant="outlined" onPress={handleCancel}>
-            Cancel
-          </Button>
-          <Button flex={1} themeInverse onPress={handleAddSkill}>
-            Add Skill
-          </Button>
-        </XStack>
-      </YStack>
+      <SkillProficiencySelector
+        skill={selectedSkill}
+        taxonomy={selectedTaxonomy}
+        proficiency={proficiency}
+        onProficiencyChange={setProficiency}
+        onAdd={handleAddSkill}
+        onCancel={handleCancel}
+      />
     )
   }
 
-  // Handle skill selection from SearchSelect
-  const handleChange = useCallback(
-    (value: ParentSkill | ParentSkill[] | null) => {
-      if (value && !Array.isArray(value)) {
-        // Determine taxonomy from skill code (CSI codes are numeric, O*NET have dashes)
-        const taxonomy = value.code.includes('-') ? 'onet' : 'csi'
-        handleSkillSelect(value, taxonomy)
-      }
-    },
-    [handleSkillSelect]
-  )
-
-  // Custom render function for skill results
-  const renderOption = useCallback(
-    (
-      option: SearchSelectOption<ParentSkill>,
-      _state: { isActive: boolean; isSelected: boolean; index: number }
-    ) => {
-      const skill = option.raw
-      const isExisting = existingSkillIds.includes(skill.id)
-      // Determine taxonomy from skill code (CSI codes are numeric, O*NET have dashes)
-      const taxonomy = skill.code.includes('-') ? 'onet' : 'csi'
-      return (
-        <Card
-          size="$4"
-          bordered
-          borderColor={isExisting ? '$blue9' : undefined}
-          borderWidth={isExisting ? 2 : 1}
-          pressStyle={{ scale: 0.98, bg: '$color5' }}
-          animation="quick"
-        >
-          <Card.Header>
-            <XStack justify="space-between" items="center">
-              <YStack flex={1}>
-                <Text fontSize="$4" fontWeight="600">
-                  {skill.name}
-                </Text>
-                {skill.code && (
-                  <Text fontSize="$2" color="$color10">
-                    {skill.code} ({taxonomy.toUpperCase()})
-                  </Text>
-                )}
-              </YStack>
-              {isExisting && (
-                <Text fontSize="$2" color="$blue9" fontWeight="600">
-                  Added
-                </Text>
-              )}
-            </XStack>
-          </Card.Header>
-        </Card>
-      )
-    },
-    [existingSkillIds]
-  )
-
   // Show search interface
   return (
-    <YStack gap="$4">
-      <XStack justify="space-between" items="center">
-        <Text fontWeight="600" fontSize="$4">
-          Search for Skills
-        </Text>
-
-        {/* Taxonomy Checkboxes */}
-        <XStack gap="$3" items="center">
-          <XStack gap="$2" items="center">
-            <CustomCheckbox
-              checked={searchCSI}
-              onCheckedChange={(checked) => setSearchCSI(checked)}
-              aria-label="Filter CSI taxonomy"
-              testID="search-csi"
-            />
-            <Label fontSize="$2" onPress={() => setSearchCSI((prev) => !prev)}>
-              CSI
-            </Label>
-          </XStack>
-
-          <XStack gap="$2" items="center">
-            <CustomCheckbox
-              checked={searchONET}
-              onCheckedChange={(checked) => setSearchONET(checked)}
-              aria-label="Filter O*NET taxonomy"
-              testID="search-onet"
-            />
-            <Label fontSize="$2" onPress={() => setSearchONET((prev) => !prev)}>
-              O*NET
-            </Label>
-          </XStack>
-        </XStack>
-      </XStack>
-
-      {/* SearchSelect Component */}
-      <SearchSelect<ParentSkill>
-        mode="single"
-        onSearch={handleSearch}
-        onChange={handleChange}
-        getOptionLabel={(skill: ParentSkill) => skill.name}
-        getOptionValue={(skill: ParentSkill) => skill.id}
-        getOptionDescription={(skill: ParentSkill) => skill.code || undefined}
-        placeholder="Search for a skill (e.g., Concrete, Plumbing)..."
-        minSearchLength={2}
-        debounceMs={300}
-        isLoading={isSearching}
-        renderOption={renderOption}
-        inputValue={externalSearchTerm || undefined}
-        strings={{
-          noResults: 'No skills found',
-          minCharacters: (count: number) => `Type at least ${count} characters to search`,
-        }}
-      />
-    </YStack>
+    <SkillSearchForm
+      searchInputValue={searchInputValue}
+      onInputChange={setSearchInputValue}
+      searchCSI={searchCSI}
+      onSearchCSIChange={setSearchCSI}
+      searchONET={searchONET}
+      onSearchONETChange={setSearchONET}
+      onSearch={handleSearch}
+      onSkillSelect={handleSkillSelect}
+      isSearching={isSearching}
+      existingSkillIds={existingSkillIds}
+    />
   )
 }

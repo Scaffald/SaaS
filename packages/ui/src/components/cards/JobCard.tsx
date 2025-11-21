@@ -283,17 +283,19 @@ export const JobCard = memo(
             <CardBadges badges={badges} isSelected={isSelected} maxVisible={5} />
           )}
 
-          {/* Actions */}
-          <CardActions
-            actions={[
-              {
-                label: hasApplied ? 'View Application' : 'View Details',
-                onPress: onViewDetails,
-                variant: 'primary',
-              },
-            ]}
-            isSelected={isSelected}
-          />
+          {/* Actions - Only show when card is used for selection, not navigation */}
+          {onSelect && (
+            <CardActions
+              actions={[
+                {
+                  label: hasApplied ? 'View Application' : 'View Details',
+                  onPress: onViewDetails,
+                  variant: 'primary',
+                },
+              ]}
+              isSelected={isSelected}
+            />
+          )}
         </SelectableCard>
       )
     }

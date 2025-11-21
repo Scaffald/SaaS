@@ -1,23 +1,15 @@
 import { api } from '@app/core/utils/api'
 import { ConfirmationDialog, DashboardWidget } from '@app/ui'
-import { Award, Sparkles } from '@tamagui/lucide-icons'
+import { Award } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { TRPCClientError } from '@trpc/client'
 import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
 import { ProfileResultCard, ProfileResultsPanel } from './components'
+import { SkillCompletionProgress } from './components/skills/SkillCompletionProgress'
+import { SkillGuidanceWidget } from './components/skills/SkillGuidanceWidget'
+import { getProficiencyLabel } from './constants/proficiency-levels'
 import { useProfileSkillsContext } from './profile-skills-context'
-
-/**
- * Proficiency level display helper
- */
-const PROFICIENCY_LABELS = {
-  1: 'Beginner',
-  2: 'Novice',
-  3: 'Intermediate',
-  4: 'Advanced',
-  5: 'Expert',
-} as const
 
 /**
  * Profile Skills Right Component
@@ -200,80 +192,17 @@ export function ProfileSkillsRight() {
       />
       <DashboardWidget>
         <YStack gap="$3">
-          <YStack p="$4" gap="$3" bg="$blue2" borderWidth={1} borderColor="$blue5" rounded="$4">
-            <XStack gap="$3" items="center">
-              <Sparkles size={20} color="$blue10" />
-              <YStack gap="$1" flex={1}>
-                <Text fontWeight="600" color="$blue11">
-                  {hasMinimumSkills
-                    ? `Great! You've added ${skillCount} skill${skillCount === 1 ? '' : 's'}.`
-                    : 'Experts recommend adding at least 5 skills to your profile.'}
-                </Text>
-                <Text fontSize="$2" color="$blue11">
-                  Add role-specific, safety, and leadership skills to improve your match rate.
-                </Text>
-              </YStack>
-            </XStack>
+          <SkillCompletionProgress
+            skillCount={skillCount}
+            hasMinimumSkills={hasMinimumSkills}
+            completionPercent={completionPercent}
+          />
 
-            <YStack gap="$2">
-              <XStack justify="space-between" items="center">
-                <Text fontSize="$2" color="$blue11">
-                  Skill section completeness
-                </Text>
-                <Text fontSize="$2" fontWeight="600" color="$blue11">
-                  {completionPercent}%
-                </Text>
-              </XStack>
-              <Progress value={completionPercent} max={100} bg="$blue3" size="$2">
-                <Progress.Indicator bg={completionPercent >= 100 ? '$green10' : '$blue9'} />
-              </Progress>
-            </YStack>
-          </YStack>
-
-          <YStack gap="$3">
-            <YStack gap="$2">
-              <Text fontWeight="600">Commonly added skills in {industryDisplayName}:</Text>
-              <XStack gap="$2" flexWrap="wrap">
-                {skillGuidance.recommended.map((suggestion) => (
-                  <Button
-                    key={suggestion.label}
-                    size="$2"
-                    variant="outlined"
-                    borderColor="$blue6"
-                    bg="$blue1"
-                    onPress={() => handleSuggestionSelect(suggestion)}
-                  >
-                    {suggestion.label}
-                  </Button>
-                ))}
-              </XStack>
-            </YStack>
-
-            <YStack gap="$2">
-              <Text fontWeight="600">Users in {industryDisplayName} often add:</Text>
-              <XStack gap="$2" flexWrap="wrap">
-                {skillGuidance.examples.map((suggestion) => (
-                  <Button
-                    key={suggestion.label}
-                    size="$2"
-                    variant="outlined"
-                    bg="$color2"
-                    onPress={() => handleSuggestionSelect(suggestion)}
-                  >
-                    {suggestion.label}
-                  </Button>
-                ))}
-              </XStack>
-            </YStack>
-
-            <YStack gap="$1">
-              {skillGuidance.tips.map((tip) => (
-                <Text key={tip} fontSize="$2" color="$color11">
-                  • {tip}
-                </Text>
-              ))}
-            </YStack>
-          </YStack>
+          <SkillGuidanceWidget
+            industryDisplayName={industryDisplayName}
+            skillGuidance={skillGuidance}
+            onSuggestionSelect={handleSuggestionSelect}
+          />
         </YStack>
       </DashboardWidget>
 
@@ -328,9 +257,7 @@ export function ProfileSkillsRight() {
                         </Text>
                         <Text fontWeight="600" fontSize="$3">
                           {skill.proficiency_level &&
-                            PROFICIENCY_LABELS[
-                              skill.proficiency_level as keyof typeof PROFICIENCY_LABELS
-                            ]}{' '}
+                            getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)
                         </Text>
                       </YStack>

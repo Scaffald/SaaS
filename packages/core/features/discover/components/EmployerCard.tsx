@@ -1,7 +1,7 @@
 import { DiscoverCard, extractPlainText } from '@app/ui'
 import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
 
 export interface Employer {
   id: string
@@ -93,13 +93,6 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
             </XStack>
           )}
         </YStack>
-
-        {/* Actions */}
-        <XStack gap="$2" pt="$2">
-          <Button flex={1} size="$3" theme="info" onPress={() => onViewDetails(employer)}>
-            View Details
-          </Button>
-        </XStack>
       </YStack>
     </DiscoverCard>
   )

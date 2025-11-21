@@ -1,11 +1,11 @@
 import { RouteBuilder } from '@app/core/constants/routes'
 import { DiscoverCard } from '@app/ui'
-import { Award, BadgeCheck, Clock3, DollarSign, ExternalLink, Star } from '@tamagui/lucide-icons'
+import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { Button, Paragraph, SizableText, Text, XStack } from 'tamagui'
+import { Paragraph, SizableText, Text, XStack } from 'tamagui'
 
 import type { TalentProfile } from '../types'
 
@@ -33,10 +33,6 @@ export const ResultCard = memo(
           message: 'Please try again.',
         })
       }
-    }
-
-    const handleViewFullProfile = () => {
-      handleCardPress()
     }
 
     return (
@@ -149,16 +145,6 @@ export const ResultCard = memo(
             </Text>
           )}
         </XStack>
-
-        <Button
-          mt="$2"
-          theme="info"
-          size="$2"
-          iconAfter={ExternalLink}
-          onPress={handleViewFullProfile}
-        >
-          View Full Profile
-        </Button>
       </DiscoverCard>
     )
   })

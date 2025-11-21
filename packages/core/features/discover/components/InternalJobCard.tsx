@@ -3,7 +3,7 @@ import { Chip, DiscoverCard, extractPlainText } from '@app/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -186,11 +186,6 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   const remoteOption = formatRemoteOption(job.remote_option)
   const postedTime = formatRelativeTime(job.posted_at || job.created_at)
   const hasInquiryLink = Boolean(hasApplied && applicationId)
-  const buttonLabel = hasInquiryLink
-    ? 'View Inquiry'
-    : hasApplied
-      ? 'View Application'
-      : 'View Details'
 
   // Extract plain text from description (handles both string and rich text JSON)
   const descriptionText =
@@ -200,8 +195,16 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         ? extractPlainText(job.description as JSONContent)
         : ''
 
+  const handleCardPress = () => {
+    if (hasInquiryLink && applicationId) {
+      router.push(RouteBuilder.dashboardApplicationInquiry(applicationId))
+      return
+    }
+    router.push(RouteBuilder.discoverJobDetail(job.id))
+  }
+
   return (
-    <DiscoverCard onPress={() => router.push(RouteBuilder.discoverJobDetail(job.id))} p="$4">
+    <DiscoverCard onPress={handleCardPress} p="$4">
       <YStack gap="$3">
         {/* Header */}
         <YStack gap="$2">
@@ -316,22 +319,6 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
             )}
           </XStack>
         ) : null}
-
-        {/* Action button */}
-        <Button
-          size="$3"
-          theme="info"
-          onPress={() => {
-            if (hasInquiryLink && applicationId) {
-              router.push(RouteBuilder.dashboardApplicationInquiry(applicationId))
-              return
-            }
-            router.push(RouteBuilder.discoverJobDetail(job.id))
-          }}
-          mt="$2"
-        >
-          {buttonLabel}
-        </Button>
       </YStack>
     </DiscoverCard>
   )
