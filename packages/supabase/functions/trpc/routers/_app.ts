@@ -8,6 +8,7 @@ import { cmsRouter } from './cms.router.ts'
 import { connectionsRouter } from './connections.router.ts'
 import { employersRouter } from './employers.router.ts'
 import { feedbackRouter } from './feedback.router.ts'
+import { followsRouter } from './follows.router.ts'
 import { idVerificationRouter } from './id-verification.router.ts'
 import { inquiriesRouter } from './inquiries.router.ts'
 import { jobsRouter } from './jobs.router.ts'
@@ -60,6 +61,7 @@ export const appRouter = t.router({
   personalityAssessment: personalityAssessmentRouter,
   resume: resumeRouter,
   feedback: feedbackRouter,
+  follows: followsRouter,
   backgroundChecks: backgroundChecksRouter,
   workLogs: workLogsRouter,
   teams: teamsRouter,
