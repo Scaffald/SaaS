@@ -227,40 +227,19 @@ export const profileViewsRouter = t.router({
         throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { data, error } = await ctx.supabase
+      // First, get profile views with basic data
+      const { data: views, error: viewsError } = await ctx.supabase
         .schema('engagement')
         .from('profile_views')
-        .select(
-          `
-          id,
-          viewed_at,
-          viewer_role_type,
-          viewer:viewer_user_id(
-            id,
-            display_name,
-            username,
-            avatar_url,
-            headline,
-            industry_id,
-            industries:industry_id(
-              id,
-              name
-            )
-          ),
-          viewer_industry:viewer_industry_id(
-            id,
-            name
-          )
-        `
-        )
+        .select('id, viewed_at, viewer_user_id, viewer_role_type, viewer_industry_id')
         .eq('viewed_user_id', ctx.user.id)
         .order('viewed_at', { ascending: false })
         .range(input.offset, input.offset + input.limit - 1)
 
-      if (error) {
+      if (viewsError) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to fetch profile views: ${error.message}`,
+          message: `Failed to fetch profile views: ${viewsError.message}`,
         })
       }
 
@@ -271,13 +250,82 @@ export const profileViewsRouter = t.router({
         .select('*', { count: 'exact', head: true })
         .eq('viewed_user_id', ctx.user.id)
 
+      if (!views || views.length === 0) {
+        return {
+          views: [],
+          total: count || 0,
+        }
+      }
+
+      // Extract unique viewer user IDs and industry IDs
+      const viewerUserIds = [...new Set(views.map((v) => v.viewer_user_id).filter(Boolean))]
+      const industryIds = [...new Set(views.map((v) => v.viewer_industry_id).filter(Boolean))]
+
+      // Fetch viewer user data
+      const usersMap = new Map()
+      if (viewerUserIds.length > 0) {
+        const { data: users, error: usersError } = await ctx.supabase
+          .schema('core')
+          .from('users')
+          .select(
+            `
+            id,
+            display_name,
+            username,
+            avatar_url,
+            headline,
+            industry_id,
+            industries:industry_id(
+              id,
+              name
+            )
+          `
+          )
+          .in('id', viewerUserIds)
+
+        if (usersError) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to fetch viewer users: ${usersError.message}`,
+          })
+        }
+
+        // Create users map
+        users?.forEach((user) => {
+          usersMap.set(user.id, user)
+        })
+      }
+
+      // Fetch industry data
+      const industriesMap = new Map()
+      if (industryIds.length > 0) {
+        const { data: industries, error: industriesError } = await ctx.supabase
+          .schema('core')
+          .from('industries')
+          .select('id, name')
+          .in('id', industryIds)
+
+        if (industriesError) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to fetch industries: ${industriesError.message}`,
+          })
+        }
+
+        // Create industries map
+        industries?.forEach((industry) => {
+          industriesMap.set(industry.id, industry)
+        })
+      }
+
+      // Join the data
       return {
-        views: (data || []).map((view) => ({
+        views: views.map((view) => ({
           id: view.id,
           viewed_at: view.viewed_at,
-          viewer: view.viewer,
+          viewer: view.viewer_user_id ? usersMap.get(view.viewer_user_id) || null : null,
           viewer_role_type: view.viewer_role_type,
-          viewer_industry: view.viewer_industry,
+          viewer_industry: view.viewer_industry_id ? industriesMap.get(view.viewer_industry_id) || null : null,
         })),
         total: count || 0,
       }

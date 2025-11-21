@@ -1073,15 +1073,25 @@ async function upsertSkills(
     return
   }
 
+  // Only include skills that have at least one match (CSI or ONet)
+  // Skills must be mapped to an existing taxonomy entry to satisfy the constraint
   const inserts = skills
-    .filter((skill) => skill.name)
-    .map((skill) => ({
-      user_id: userId,
-      skill_taxonomy: skill.csiMatch ? 'csi' : 'onet',
-      csi_skill_id: skill.csiMatch?.id ?? null,
-      onet_occupation_id: skill.onetMatch?.id ?? null,
-      proficiency_level: 3,
-    }))
+    .filter((skill) => {
+      // Must have a name and at least one match
+      return skill.name && (skill.csiMatch?.id || skill.onetMatch?.id)
+    })
+    .map((skill) => {
+      // Prefer CSI match if available, otherwise use ONet match
+      // We know at least one exists due to the filter above
+      const hasCsiMatch = !!skill.csiMatch?.id
+      return {
+        user_id: userId,
+        skill_taxonomy: hasCsiMatch ? 'csi' : 'onet',
+        csi_skill_id: hasCsiMatch ? skill.csiMatch!.id : null,
+        onet_occupation_id: hasCsiMatch ? null : skill.onetMatch!.id,
+        proficiency_level: 3,
+      }
+    })
 
   if (inserts.length === 0) {
     return

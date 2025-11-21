@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, spacing } from '@app/ui'
+import { ToggleCard, UIButton as Button, spacing } from '@app/ui'
 import {
   AlertCircle,
   CheckCircle2,
@@ -777,15 +777,11 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           disabled={isSaving}
         />
         {skills.map((skill, index) => (
-          <SelectableCard
+          <ToggleCard
             key={`${skill.name}-${index}`}
             checked={skillSelections[index]}
             onCheckedChange={(value) => skillSelections.set(index, value)}
             title={skill.name}
-            subtitle={
-              skill.confidence ? `Confidence: ${(skill.confidence * 100).toFixed(0)}%` : undefined
-            }
-            details={[]}
           />
         ))}
       </YStack>

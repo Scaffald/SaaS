@@ -32,24 +32,26 @@ export default function EditJobPage() {
     )
   }
 
+  const job = data.job as Record<string, unknown>
+
   return (
     <JobForm
       mode="edit"
       jobId={id}
       initialData={{
-        title: data.job.title,
-        description: data.job.description || '',
-        organization_id: data.job.organization_id,
-        assigned_team_id: data.job.assigned_team_id || null,
-        primary_team_id: data.job.primary_team_id || null,
-        team_ids: data.job.team_ids || [],
-        employment_type: data.job.employment_type || undefined,
-        remote_option: data.job.remote_option || undefined,
-        location: data.job.location || undefined,
-        pay_range_min_cents: data.job.pay_range_min_cents || undefined,
-        pay_range_max_cents: data.job.pay_range_max_cents || undefined,
-        pay_range_type: data.job.pay_range_type || undefined,
-        position_level: data.job.position_level || undefined,
+        title: (job.title as string) || '',
+        description: (job.description as string) || '',
+        organization_id: job.organization_id as string,
+        assigned_team_id: (job.assigned_team_id as string | null) || null,
+        primary_team_id: (job.primary_team_id as string | null) || null,
+        team_ids: (job.team_ids as string[]) || [],
+        employment_type: (job.employment_type as string) || undefined,
+        remote_option: (job.remote_option as string) || undefined,
+        location: (job.location as string) || undefined,
+        pay_range_min_cents: (job.pay_range_min_cents as number) || undefined,
+        pay_range_max_cents: (job.pay_range_max_cents as number) || undefined,
+        pay_range_type: (job.pay_range_type as string) || undefined,
+        position_level: (job.position_level as string) || undefined,
       }}
     />
   )
