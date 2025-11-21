@@ -7,6 +7,7 @@ import { backgroundChecksRouter } from './background-checks.router.ts'
 import { cmsRouter } from './cms.router.ts'
 import { connectionsRouter } from './connections.router.ts'
 import { employersRouter } from './employers.router.ts'
+import { engagementRouter } from './engagement.router.ts'
 import { feedbackRouter } from './feedback.router.ts'
 import { followsRouter } from './follows.router.ts'
 import { idVerificationRouter } from './id-verification.router.ts'
@@ -50,6 +51,7 @@ export const appRouter = t.router({
   jobs: jobsRouter,
   applications: applicationsRouter,
   employers: employersRouter,
+  engagement: engagementRouter,
   organizations: organizationsRouter,
   workers: workersRouter,
   userProfile: userProfileRouter,
