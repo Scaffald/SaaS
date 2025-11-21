@@ -243,6 +243,33 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
   window.matchMedia = vi.fn().mockImplementation(() => mockMatchMediaResult)
 }
 
+const issueLinkPattern = /(https?:\/\/|#\d+)/
+const wrapSkipWithIssueCheck = (skipFn: typeof it.skip): typeof it.skip =>
+  ((...args: Parameters<typeof it.skip>) => {
+    const [title] = args
+    const label = typeof title === 'string' ? title : ''
+    if (!issueLinkPattern.test(label)) {
+      throw new Error('Skipped tests must include an issue link (e.g., #123 or https://...).')
+    }
+
+    return skipFn(...args)
+  }) as typeof it.skip
+
+const patchedIt = Object.assign(
+  ((...args: Parameters<typeof it>) => it(...args)) as typeof it,
+  it,
+  { skip: wrapSkipWithIssueCheck(it.skip) },
+)
+
+const patchedTest = Object.assign(
+  ((...args: Parameters<typeof test>) => test(...args)) as typeof test,
+  test,
+  { skip: wrapSkipWithIssueCheck(test.skip) },
+)
+
+;(globalThis as { it: typeof it }).it = patchedIt
+;(globalThis as { test: typeof test }).test = patchedTest
+
 afterEach(() => {
   cleanupReact()
   cleanupReactNative()
