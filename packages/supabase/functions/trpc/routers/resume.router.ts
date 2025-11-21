@@ -889,6 +889,12 @@ async function upsertEmploymentPreferences(
   userId: string,
   data: z.infer<typeof profileEmploymentInputSchema>,
 ): Promise<void> {
+  // Convert hourly_rate (dollars) to hourly_rate_cents for database storage
+  const hourlyRateCents =
+    data.hourly_rate !== undefined && data.hourly_rate !== null
+      ? Math.round(data.hourly_rate * 100)
+      : null;
+
   const { error } = await supabase
     .schema("core")
     .from("profile")
@@ -898,7 +904,7 @@ async function upsertEmploymentPreferences(
       open_to_travel: data.open_to_travel ?? null,
       travel_distance_miles: data.travel_distance_miles ?? null,
       availability: data.availability ?? null,
-      hourly_rate: data.hourly_rate ?? null,
+      hourly_rate_cents: hourlyRateCents,
       us_resident: data.us_resident ?? null,
       authorized_countries: data.authorized_countries ?? null,
       us_passport: data.us_passport ?? null,

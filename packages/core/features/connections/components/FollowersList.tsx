@@ -108,7 +108,7 @@ export function FollowersList() {
           minHeight="$15"
         >
           <Text fontWeight="600">No followers yet</Text>
-          <Text color="$color11" ta="center">
+          <Text color="$color11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No followers match your search.'
               : 'You don\'t have any followers yet. Build your profile to attract followers.'}

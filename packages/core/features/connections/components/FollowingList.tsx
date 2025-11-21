@@ -42,7 +42,7 @@ export function FollowingList() {
 
   const handleUnfollow = async (_followId: string, userId: string) => {
     if (confirm('Are you sure you want to unfollow this user?')) {
-      await unfollowMutation.mutateAsync({ userId })
+      await unfollowMutation.mutateAsync({ targetUserId: userId })
     }
   }
 
@@ -150,7 +150,7 @@ export function FollowingList() {
           minHeight="$15"
         >
           <Text fontWeight="600">Not following anyone yet</Text>
-          <Text color="$color11" ta="center">
+          <Text color="$color11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No users match your search.'
               : 'You\'re not following anyone yet. Discover workers and start following them.'}
