@@ -4,12 +4,12 @@ import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { ProfileCertificationsHighlightProvider } from '@app/core/features/profile/profile-certifications-highlight-context'
 import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
+import { ProfileSkillsSection } from '@app/core/features/profile/components/ProfileSkillsSection'
 import {
   EducationWidget,
   ExperienceWidget,
   GeneralInfoWidget,
   PreferencesWidget,
-  SkillsWidget,
 } from '@app/core/features/profile/widgets'
 import { useUser } from '@app/core/utils/useUser'
 import { YStack } from 'tamagui'
@@ -38,7 +38,7 @@ export default function ProfileIndexScreen() {
         }
         rightContent={
           <YStack gap="$4">
-            <SkillsWidget userId={user.id} showEdit />
+            <ProfileSkillsSection userId={user.id} showEdit />
             <IdVerificationWidget />
             <ProfileCertificationsRight />
             <PreferencesWidget showEdit />

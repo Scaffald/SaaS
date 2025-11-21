@@ -50,7 +50,7 @@ export const officeStorageRouter = t.router({
       })
     }
 
-    const usageRows: UsageRow[] = (usageData ?? []).map((row) => ({
+    const usageRows: UsageRow[] = (usageData ?? []).map((row: { user_id: string; total_bytes: number; work_log_photos_bytes: number; portfolio_photos_bytes: number; certification_files_bytes: number; storage_limit_bytes: number; updated_at: string; [key: string]: unknown }) => ({
       user_id: row.user_id,
       total_bytes: row.total_bytes,
       work_log_photos_bytes: row.work_log_photos_bytes,
@@ -122,7 +122,7 @@ export const officeStorageRouter = t.router({
         })
       }
 
-      usersLookup = new Map((usersData ?? []).map((user) => [user.id, user]))
+      usersLookup = new Map((usersData ?? []).map((user: { id: string; display_name?: string | null; username?: string | null; [key: string]: unknown }) => [user.id, user]))
     }
 
     const topUsers = topUsersSource.map((row) => {

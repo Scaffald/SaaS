@@ -86,11 +86,11 @@ export async function enrichUserSkills(
   }
 
   const csiMap = new Map<string, MasterformatRow>(
-    (csiResult.data ?? []).map((row) => [row.id, row])
+    (csiResult.data ?? []).map((row: MasterformatRow) => [row.id, row])
   )
 
   const onetMap = new Map<string, OnetOccupationRow>(
-    (onetResult.data ?? []).map((row) => [normaliseOnetCode(row.onetsoc_code), row])
+    (onetResult.data ?? []).map((row: OnetOccupationRow) => [normaliseOnetCode(row.onetsoc_code), row])
   )
 
   const tradeMap = new Map<string, TradeRow>()

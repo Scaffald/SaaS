@@ -623,7 +623,7 @@ export const accountDeletionRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row) => ({
+        items: (data ?? []).map((row: { id: string; deleted_user_id: string; deleted_organization_id: string | null; deletion_type: string; status: string; payment_data_anonymized: boolean; stripe_customer_deleted: boolean; stripe_payment_methods_deleted: boolean; stripe_cleanup_errors?: string[] | null; completed_at: string | null; error_message: string | null; created_at: string; [key: string]: unknown }) => ({
           id: row.id,
           deletedUserId: row.deleted_user_id,
           deletedOrganizationId: row.deleted_organization_id,

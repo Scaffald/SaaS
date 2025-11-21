@@ -637,14 +637,14 @@ async function matchSkillTaxonomies(
     supabase
       .schema("data")
       .rpc("search_masterformat", { search_term: trimmed })
-      .then((res) => res.data as Array<Record<string, unknown>> | null)
+      .then((res: { data: Array<Record<string, unknown>> | null; error?: unknown; [key: string]: unknown }) => res.data as Array<Record<string, unknown>> | null)
       .catch((error: unknown) => {
         console.warn("[resume] CSI search failed", error);
         return null;
       }),
     supabase
       .rpc("onet.search_occupations", { search_term: trimmed })
-      .then((res) => res.data as Array<Record<string, unknown>> | null)
+      .then((res: { data: Array<Record<string, unknown>> | null; error?: unknown; [key: string]: unknown }) => res.data as Array<Record<string, unknown>> | null)
       .catch((error: unknown) => {
         console.warn("[resume] O*NET search failed", error);
         return null;

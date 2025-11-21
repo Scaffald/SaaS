@@ -1686,7 +1686,7 @@ export const officeRouter = t.router({
           .schema('core')
           .from('job_skills')
           .insert(
-            skills.map((skill) => ({
+            skills.map((skill: { skill_taxonomy?: string | null; csi_skill_id?: string | null; onet_occupation_id?: string | null; [key: string]: unknown }) => ({
               job_id: newJob.id,
               skill_taxonomy: skill.skill_taxonomy,
               csi_skill_id: skill.csi_skill_id,
@@ -1707,7 +1707,7 @@ export const officeRouter = t.router({
           .schema('core')
           .from('job_team_assignments')
           .insert(
-            teamAssignments.map((assignment) => ({
+            teamAssignments.map((assignment: { team_id: string; is_primary?: boolean | null; role_key?: string | null; organization_id: string; [key: string]: unknown }) => ({
               job_id: newJob.id,
               team_id: assignment.team_id,
               is_primary: assignment.is_primary,
@@ -1794,7 +1794,7 @@ export const officeRouter = t.router({
       }
 
       // Transform data to include industry_name
-      const organizations = (data ?? []).map((org) => ({
+      const organizations = (data ?? []).map((org: { industry?: { name?: string | null } | null; [key: string]: unknown }) => ({
         ...org,
         industry_name: org.industry?.name || null,
       }))
@@ -2891,7 +2891,7 @@ export const officeRouter = t.router({
         })
       }
 
-      const jobIds = (jobs ?? []).map((j) => j.id as string).filter(Boolean)
+      const jobIds = (jobs ?? []).map((j: { id: string; [key: string]: unknown }) => j.id as string).filter(Boolean)
 
       // If no jobs found, return empty result
       if (jobIds.length === 0) {
@@ -2907,7 +2907,7 @@ export const officeRouter = t.router({
       }
 
       // Apply job_id filter if provided
-      const filteredJobIds = input.job_id ? jobIds.filter((id) => id === input.job_id) : jobIds
+      const filteredJobIds = input.job_id ? jobIds.filter((id: string) => id === input.job_id) : jobIds
 
       if (filteredJobIds.length === 0) {
         return {
@@ -2976,7 +2976,7 @@ export const officeRouter = t.router({
       }
 
       // Transform data to match expected output format
-      const applications = (data ?? []).map((app) => {
+      const applications = (data ?? []).map((app: { id: string; job?: unknown; candidate?: unknown; answers?: unknown; [key: string]: unknown }) => {
         const job = app.job as {
           id: string
           title: string | null

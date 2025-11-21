@@ -186,7 +186,7 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment) =>
+      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -318,7 +318,7 @@ export const idVerificationRouter = t.router({
       })
     }
 
-    return (data ?? []).map((row) => ({
+    return (data ?? []).map((row: { id: string; name: string; description: string | null; price_cents: number; metadata?: Record<string, unknown> | null; [key: string]: unknown }) => ({
       id: row.id,
       name: row.name,
       description: row.description,
@@ -349,7 +349,7 @@ export const idVerificationRouter = t.router({
 
       const pricingList = pricingRows ?? []
       const selectedPricing: PricingRow | undefined = input.pricingId
-        ? pricingList.find((row) => row.id === input.pricingId)
+        ? pricingList.find((row: PricingRow) => row.id === input.pricingId)
         : pricingList[0]
 
       if (!selectedPricing) {

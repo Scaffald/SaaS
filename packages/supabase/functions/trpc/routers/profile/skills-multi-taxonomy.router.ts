@@ -84,7 +84,7 @@ export const skillsMultiTaxonomyRouter = t.router({
 
     // Enrich with skill details
     const enrichedSkills = await Promise.all(
-      (data || []).map(async (skill) => {
+      (data || []).map(async (skill: { skill_taxonomy?: string | null; csi_skill_id?: string | null; [key: string]: unknown }) => {
         if (skill.skill_taxonomy === 'csi' && skill.csi_skill_id) {
           const { data: csiData } = await supabase
             .schema('data')

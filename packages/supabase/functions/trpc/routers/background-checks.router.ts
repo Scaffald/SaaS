@@ -3140,7 +3140,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row) => {
+      return (data ?? []).map((row: { id: string; status?: string | null; user_id: string; organization_id: string; job_id?: string | null; requested_by_user_id?: string | null; summary?: unknown; findings?: unknown; status_history?: unknown; created_at: string; updated_at: string; invited_at?: string | null; completed_at?: string | null; worker?: unknown; organization?: unknown; requester?: unknown; [key: string]: unknown }) => {
         const workerRecord = (row.worker ?? null) as {
           id?: string | null
           display_name?: string | null
@@ -3350,7 +3350,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row) => {
+      return (data ?? []).map((row: { id: string; background_check_id: string; user_id: string; dispute_reason?: string | null; dispute_details?: string | null; supporting_documents?: unknown; status?: string | null; created_at: string; updated_at: string; resolved_at?: string | null; resolved_by_user_id?: string | null; background_check?: unknown; [key: string]: unknown }) => {
         const backgroundCheckRecord = (row.background_check ?? null) as {
           id?: string | null
           status?: string | null
@@ -3472,7 +3472,7 @@ export const backgroundChecksRouter = t.router({
     const packageTotals: Record<string, number> = {}
     let completedCount = 0
     let durationSumDays = 0
-    ;(checks ?? []).forEach((record) => {
+    ;(checks ?? []).forEach((record: { status?: string | null; created_at?: string | null; completed_at?: string | null; package?: { display_name?: string | null; slug?: string | null } | null; [key: string]: unknown }) => {
       const status = record.status ?? 'unknown'
       statusTotals[status] = (statusTotals[status] ?? 0) + 1
 
@@ -3492,7 +3492,7 @@ export const backgroundChecksRouter = t.router({
     })
 
     const disputeTotals: Record<string, number> = {}
-    ;(disputes ?? []).forEach((record) => {
+    ;(disputes ?? []).forEach((record: { status?: string | null; [key: string]: unknown }) => {
       const status = record.status ?? 'unknown'
       disputeTotals[status] = (disputeTotals[status] ?? 0) + 1
     })
@@ -3569,7 +3569,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row) => {
+      return (data ?? []).map((row: { id: string; background_check_id: string; accessed_by_user_id: string; accessed_at: string; background_check?: unknown; actor?: unknown; [key: string]: unknown }) => {
         const backgroundCheckRecord = (row.background_check ?? null) as {
           id?: string | null
           status?: string | null

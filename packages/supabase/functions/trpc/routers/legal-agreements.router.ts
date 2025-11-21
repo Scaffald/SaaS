@@ -207,7 +207,7 @@ export const legalAgreementsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row) => ({
+        items: (data ?? []).map((row: { id: string; organization_id: string; worker_user_id: string; application_id: string | null; success_fee_id: string | null; agreement_version: number; agreement_text: string; terms_accepted: boolean; anti_circumvention_accepted: boolean; status: string; agreed_at: string | null; violated_at: string | null; violation_reason: string | null; created_at: string; updated_at: string; [key: string]: unknown }) => ({
           id: row.id,
           organizationId: row.organization_id,
           workerUserId: row.worker_user_id,
@@ -359,7 +359,7 @@ export const legalAgreementsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row) => ({
+        items: (data ?? []).map((row: { id: string; reported_by_user_id: string; reported_by?: { display_name?: string; email?: string } | null; organization_id: string; organization?: { name?: string } | null; worker_user_id: string; worker?: { display_name?: string; email?: string } | null; hire_agreement_id: string | null; hire_agreement?: { status?: string } | null; violation_type: string; description: string; status: string; created_at: string; updated_at: string; [key: string]: unknown }) => ({
           id: row.id,
           reportedByUserId: row.reported_by_user_id,
           reportedByName:

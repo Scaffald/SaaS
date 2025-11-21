@@ -153,7 +153,7 @@ export const mapRouter = t.router({
             }
             // Filter by bounds in memory
             const filtered = (data || []).filter(
-              (org) =>
+              (org: { longitude: number; latitude: number; [key: string]: unknown }) =>
                 org.longitude >= bounds.west &&
                 org.longitude <= bounds.east &&
                 org.latitude >= bounds.south &&

@@ -1098,7 +1098,7 @@ export const personalityAssessmentRouter = t.router({
         })
       }
 
-      return (data || []).map((item) => ({
+      return (data || []).map((item: { id: string; archetypes?: { name?: string } | null; confidence_score?: number | null; assessment_date?: string | null; [key: string]: unknown }) => ({
         id: item.id,
         archetype: (item.archetypes as { name: string } | null)?.name || null,
         confidence: item.confidence_score,

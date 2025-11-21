@@ -71,7 +71,7 @@ export const profileEducationRouter = t.router({
 
     // Fetch university names for records that have university_id
     const educationData = await Promise.all(
-      (data || []).map(async (edu) => {
+      (data || []).map(async (edu: { university_id?: string | null; [key: string]: unknown }) => {
         if (edu.university_id) {
           const { data: university } = await supabase
             .schema('data')
@@ -160,7 +160,7 @@ export const profileEducationRouter = t.router({
           })
         }
 
-        const existingIds = new Set((existingEducation || []).map((e) => e.id))
+        const existingIds = new Set((existingEducation || []).map((e: { id: string; [key: string]: unknown }) => e.id))
         const inputIds = new Set(
           input.education_entries.filter((e) => e.id).map((e) => e.id as string)
         )

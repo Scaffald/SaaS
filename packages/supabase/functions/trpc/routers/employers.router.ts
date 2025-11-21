@@ -432,7 +432,7 @@ export const employersRouter = t.router({
           throw new Error(`Failed to fetch owned organizations: ${ownedError.message}`)
         }
 
-        ownedOrgs?.forEach((org) => {
+        ownedOrgs?.forEach((org: { id: string; [key: string]: unknown }) => {
           organizationAccumulator.set(org.id, org as EmployerRecord)
         })
 
@@ -448,8 +448,8 @@ export const employersRouter = t.router({
 
         const memberOrgIds =
           teamMemberships
-            ?.map((entry) => entry.teams?.organization_id)
-            .filter((id): id is string => Boolean(id)) ?? []
+            ?.map((entry: { teams?: { organization_id?: string | null } | null; [key: string]: unknown }) => entry.teams?.organization_id)
+            .filter((id: string | null | undefined): id is string => Boolean(id)) ?? []
 
         if (memberOrgIds.length > 0) {
           const { data: memberOrgs, error: memberError } = await applyFilters(
@@ -460,7 +460,7 @@ export const employersRouter = t.router({
             throw new Error(`Failed to fetch member organizations: ${memberError.message}`)
           }
 
-          memberOrgs?.forEach((org) => {
+          memberOrgs?.forEach((org: { id: string; [key: string]: unknown }) => {
             organizationAccumulator.set(org.id, org as EmployerRecord)
           })
         }

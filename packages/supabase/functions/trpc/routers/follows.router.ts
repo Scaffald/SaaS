@@ -288,7 +288,7 @@ export const followsRouter = t.router({
     }
 
     // Create a map of user ID to user data
-    const usersMap = new Map((users || []).map((user) => [user.id, user]))
+    const usersMap = new Map((users || []).map((user: { id: string; [key: string]: unknown }) => [user.id, user]))
 
     // Transform to include follower user info
     return follows

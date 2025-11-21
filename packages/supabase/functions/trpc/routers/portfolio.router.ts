@@ -213,7 +213,7 @@ export const portfolioRouter = t.router({
       const results = await Promise.all(updatePromises)
 
       // Check for errors
-      const errors = results.filter((result) => result.error)
+      const errors = results.filter((result: { error?: unknown; [key: string]: unknown }) => result.error)
       if (errors.length > 0) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

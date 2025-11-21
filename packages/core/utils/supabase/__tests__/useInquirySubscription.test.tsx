@@ -63,14 +63,14 @@ describe('useInquirySubscription', () => {
     expect(supabaseMock.channel).toHaveBeenCalledWith('inquiry-sections-inquiry-123')
     expect(supabaseMock.channel).toHaveBeenCalledWith('inquiry-capability-inquiry-123')
 
-    channelMocks.forEach((channel) => {
+    channelMocks.forEach((channel: ReturnType<typeof createMockChannel>) => {
       channel.trigger()
     })
 
     expect(invalidateSpy).toHaveBeenCalledTimes(4)
 
     unmount()
-    channelMocks.forEach((channel) => {
+    channelMocks.forEach((channel: ReturnType<typeof createMockChannel>) => {
       expect(channel.unsubscribe).toHaveBeenCalled()
     })
   })

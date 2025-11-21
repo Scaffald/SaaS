@@ -90,7 +90,7 @@ export const officeProfilesRouter = t.router({
 
       const rows = data ?? []
       const filteredRows = input.query
-        ? rows.filter((row) => {
+        ? rows.filter((row: { users?: { display_name?: string | null; email?: string | null } | null; profile?: { first_name?: string | null; last_name?: string | null } | null; [key: string]: unknown }) => {
             const displayName = row.users?.display_name ?? ''
             const email = row.users?.email ?? ''
             const firstName = row.profile?.first_name ?? ''
@@ -102,7 +102,7 @@ export const officeProfilesRouter = t.router({
       const total = filteredRows.length
       const paginatedRows = filteredRows.slice(input.offset, input.offset + input.limit)
 
-      const userIds = paginatedRows.map((row) => row.user_id)
+      const userIds = paginatedRows.map((row: { user_id: string; [key: string]: unknown }) => row.user_id)
       const completionScores =
         userIds.length > 0
           ? await ctx.supabaseAdmin
@@ -120,10 +120,10 @@ export const officeProfilesRouter = t.router({
       }
 
       const scoreMap = new Map(
-        (completionScores.data ?? []).map((entry) => [entry.user_id, entry.completion_score])
+        (completionScores.data ?? []).map((entry: { user_id: string; completion_score: number }) => [entry.user_id, entry.completion_score])
       )
 
-      const items = paginatedRows.map((row) => {
+      const items = paginatedRows.map((row: { user_id: string; ui_preferences?: unknown; nudge_history?: unknown; users?: { display_name?: string | null; email?: string | null; headline?: string | null; created_at?: string | null } | null; profile?: { first_name?: string | null; last_name?: string | null; location?: string | null } | null; prerequisites_completed_at?: string | null; [key: string]: unknown }) => {
         const uiPreferences = parseUIPreferences(row.ui_preferences)
         const nudgeHistory = parseNudgeHistory(row.nudge_history)
         const markedAt = uiPreferences.ghost_profile_marked_at ?? null

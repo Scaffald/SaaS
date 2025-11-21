@@ -65,7 +65,7 @@ export const newsRouter = t.router({
 
       // Sort and limit after fetching (Supabase doesn't support limit with joins easily)
       const sorted = (data || [])
-        .sort((a, b) => {
+        .sort((a: { pub_date: string | Date; [key: string]: unknown }, b: { pub_date: string | Date; [key: string]: unknown }) => {
           const dateA = a.pub_date instanceof Date ? a.pub_date : new Date(a.pub_date)
           const dateB = b.pub_date instanceof Date ? b.pub_date : new Date(b.pub_date)
           return dateB.getTime() - dateA.getTime()
@@ -73,7 +73,7 @@ export const newsRouter = t.router({
         .slice(0, input.limit)
 
       // Transform to match NewsItem format expected by frontend
-      return sorted.map((article) => {
+      return sorted.map((article: { id: string; title?: string | null; description?: string | null; link?: string | null; pub_date: string | Date; image_url?: string | null; source_name?: string | null; cached_at?: string | null; feed_id?: string | null; feed?: unknown; [key: string]: unknown }) => {
         // Ensure pub_date is converted to a Date object
         const pubDate =
           article.pub_date instanceof Date ? article.pub_date : new Date(article.pub_date)

@@ -375,7 +375,7 @@ export const officeUniversitiesRouter = t.router({
     // Get country count
     const { data: countries } = await supabase.schema('data').from('universities').select('country')
 
-    const uniqueCountries = new Set(countries?.map((c) => c.country) || [])
+    const uniqueCountries = new Set(countries?.map((c: { country?: string | null; [key: string]: unknown }) => c.country) || [])
 
     // Get universities with user education links
     const { count: usedCount } = await supabase

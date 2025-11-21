@@ -1,13 +1,11 @@
 import { ROUTES } from '@app/core/constants/routes'
-import { ConnectionFollowButtons } from '@app/core/features/connections/components/ConnectionFollowButtons'
+import { ProfileSkillsSection } from '@app/core/features/profile/components/ProfileSkillsSection'
 import {
   CertificationsWidget,
   EducationWidget,
   ExperienceWidget,
   GeneralInfoWidget,
   ReviewsWidget,
-  SoftSkillsRadarWidget,
-  TechnicalSkillsWidget,
 } from '@app/core/features/profile/widgets'
 import { useSessionContext } from '@app/core/utils/supabase/useSessionContext'
 import { api } from '@app/core/utils/api'
@@ -281,11 +279,12 @@ export function DiscoverWorkerProfileScreen({
 
   const leftColumn = (
     <YStack gap="$4">
-      {/* Connection and Follow Buttons */}
-      {!isOwnProfile && (
-        <ConnectionFollowButtons targetUserId={safeUserId} isOwnProfile={isOwnProfile} />
-      )}
-      <GeneralInfoWidget userId={safeUserId} showEdit={false} />
+      <GeneralInfoWidget
+        userId={safeUserId}
+        showEdit={false}
+        showButtons={!isOwnProfile}
+        isOwnProfile={isOwnProfile}
+      />
       <ExperienceWidget userId={safeUserId} showEdit={false} />
       <EducationWidget userId={safeUserId} showEdit={false} />
     </YStack>
@@ -293,8 +292,7 @@ export function DiscoverWorkerProfileScreen({
 
   const rightColumn = (
     <YStack gap="$4">
-      <SoftSkillsRadarWidget userId={safeUserId} showEdit={false} />
-      <TechnicalSkillsWidget userId={safeUserId} showEdit={false} />
+      <ProfileSkillsSection userId={safeUserId} showEdit={false} />
       <CertificationsWidget userId={safeUserId} showEdit={false} />
       <ReviewsWidget userId={safeUserId} showEdit />
     </YStack>

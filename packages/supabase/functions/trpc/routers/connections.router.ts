@@ -492,7 +492,7 @@ export const connectionsRouter = t.router({
     }
 
     // Transform to include the other user's info
-    return (data || []).map((conn) => {
+    return (data || []).map((conn: { requester_user_id: string; addressee?: unknown; requester?: unknown; id: string; status: string; created_at: string; decided_at?: string | null; [key: string]: unknown }) => {
       const otherUser = conn.requester_user_id === ctx.user.id ? conn.addressee : conn.requester
       return {
         id: conn.id,
@@ -573,13 +573,13 @@ export const connectionsRouter = t.router({
     }
 
     return {
-      sent: (sentData || []).map((conn) => ({
+      sent: (sentData || []).map((conn: { id: string; status: string; created_at: string; addressee?: unknown; [key: string]: unknown }) => ({
         id: conn.id,
         status: conn.status,
         created_at: conn.created_at,
         user: conn.addressee,
       })),
-      received: (receivedData || []).map((conn) => ({
+      received: (receivedData || []).map((conn: { id: string; status: string; created_at: string; requester?: unknown; [key: string]: unknown }) => ({
         id: conn.id,
         status: conn.status,
         created_at: conn.created_at,

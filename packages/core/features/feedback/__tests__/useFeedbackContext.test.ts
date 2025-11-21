@@ -110,7 +110,7 @@ describe('useFeedbackContext', () => {
     }
 
     Dimensions.get = (
-      vi.fn<[('screen' | 'window')], ScaledSize>((type) =>
+      vi.fn<[('screen' | 'window')], ScaledSize>((type: 'screen' | 'window') =>
         type === 'screen' ? screenSize : windowSize,
       ) as unknown
     ) as typeof Dimensions.get

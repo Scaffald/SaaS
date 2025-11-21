@@ -117,7 +117,7 @@ export const profileExperienceRouter = t.router({
     }
 
     // Transform data to prefer location_structured, fallback to location TEXT
-    return (data || []).map((exp) => ({
+    return (data || []).map((exp: { location_structured?: string | null; location?: string | null; [key: string]: unknown }) => ({
       ...exp,
       location: exp.location_structured || exp.location || null,
     }))

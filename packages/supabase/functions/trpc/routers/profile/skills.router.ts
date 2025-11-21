@@ -964,7 +964,7 @@ export const profileSkillsRouter = t.router({
       `)
       .eq('user_id', user.id)
 
-    const skills = (skillsData || []).map((us) => {
+    const skills = (skillsData || []).map((us: { skills?: unknown; [key: string]: unknown }) => {
       // Handle both object and array cases from Supabase typing
       const skillsRelation = us.skills as
         | { id: string; name: string }

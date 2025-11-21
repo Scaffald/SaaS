@@ -7,6 +7,7 @@ export { ProfileEmptyState } from './ProfileEmptyState'
 export { ProfileFormPanel } from './ProfileFormPanel'
 export { ProfileResultCard } from './ProfileResultCard'
 export { ProfileResultsPanel } from './ProfileResultsPanel'
+export { ProfileSkillsSection } from './ProfileSkillsSection'
 export { SoftSkillsCategoryTabs } from './SoftSkillsCategoryTabs'
 export type {
   SoftSkill,

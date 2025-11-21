@@ -42,7 +42,7 @@ export const profileCertificationsRouter = t.router({
           .eq('user_id', user.id)
           .eq('is_active', true)
 
-        const existingCertIds = new Set(userCerts?.map((uc) => uc.certification_id) || [])
+        const existingCertIds = new Set(userCerts?.map((uc: { certification_id: string; [key: string]: unknown }) => uc.certification_id) || [])
 
         // Build base query for all depth levels
         let query = supabase
@@ -178,7 +178,7 @@ export const profileCertificationsRouter = t.router({
       }
 
       // Get catalog details for all certifications
-      const certIds = userCerts.map((uc) => uc.certification_id)
+      const certIds = userCerts.map((uc: { certification_id: string; [key: string]: unknown }) => uc.certification_id)
       const { data: catalogCerts, error: catalogError } = await supabase
         .schema('data')
         .from('certifications')
@@ -193,7 +193,7 @@ export const profileCertificationsRouter = t.router({
       }
 
       // Create lookup map
-      const catalogMap = new Map(catalogCerts?.map((c) => [c.id, c]) || [])
+      const catalogMap = new Map(catalogCerts?.map((c: { id: string; [key: string]: unknown }) => [c.id, c]) || [])
 
       // Organize by depth
       const depth0: unknown[] = []
@@ -685,7 +685,7 @@ export const profileCertificationsRouter = t.router({
           .ilike('hierarchy_path', `${topLevelCatalog.hierarchy_path}%`)
           .neq('id', input.top_level_id)
 
-        const descendantIds = descendants?.map((d) => d.id) || []
+        const descendantIds = descendants?.map((d: { id: string; [key: string]: unknown }) => d.id) || []
         const allIdsToRemove = [input.top_level_id, ...descendantIds]
 
         const { data: affectedCerts, error: countError } = await supabase

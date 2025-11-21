@@ -102,8 +102,8 @@ export const buildTalentProfilesQuery = (options: TalentProfilesQueryOptions = {
     }
 
     const profileIds = profiles
-      .map((profile: { id: string }) => profile.id)
-      .filter((id): id is string => typeof id === 'string' && id.length > 0)
+      .map((profile: { id: string | null }) => profile.id)
+      .filter((id: string | null): id is string => typeof id === 'string' && id.length > 0)
 
     let badgeMap = new Map<string, VerificationBadgeRow>()
     if (profileIds.length > 0) {
