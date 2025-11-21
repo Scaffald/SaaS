@@ -122,7 +122,7 @@ Important namespaces:
 
 ### Deployments
 
-- Run `pnpm check` prior to commits (mirrors CI).
+- Run `pnpm test:local` prior to commits (lint + changed-file Vitest coverage without blocking on known Expo/Supabase issues).
 - Apply Supabase migrations with workspace commands (`pnpm supa migration:up`).
 - Redeploy edge functions whenever notification payloads change.
 

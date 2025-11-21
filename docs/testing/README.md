@@ -2,6 +2,15 @@
 
 This directory tracks the evolving Vitest rollout for REQ-172. It now captures the latest coverage snapshot, how to reproduce the new suites, and the open items that still block `pnpm check`/`pnpm test` from succeeding end-to-end.
 
+## Default Local Command Set (preferred for day-to-day work)
+
+| Purpose | Command | Notes |
+| --- | --- | --- |
+| Lint + changed-file unit tests | `pnpm test:local` | Runs `turbo lint`, then `vitest run --changed` to execute suites tied to files you touched. Use this before pushing branches. |
+| Add watch while iterating | `pnpm test:local:watch` | Starts from a clean lint, then keeps `vitest --changed --watch` running for quick feedback. Stop the watcher once you are ready to commit. |
+
+These defaults avoid the known Expo/Supabase blockers while still exercising the suites most likely to regress with your edits. Fall back to `pnpm test:unit` (or the targeted commands below) whenever you need full coverage for a package.
+
 ---
 
 ## Coverage Snapshot — 2025‑11‑11

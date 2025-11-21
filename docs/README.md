@@ -139,6 +139,7 @@ pnpm ios              # Run iOS app
 pnpm android          # Run Android app
 
 # Code Quality
+pnpm test:local      # Lint + changed-file Vitest suites (run before committing)
 pnpm check            # Format, lint, typecheck (same as CI)
 pnpm build            # Build all packages
 
@@ -154,7 +155,7 @@ pnpm supa:generate    # Generate TypeScript types
 - **Routes**: Type-safe route constants (no string literals)
 - **Components**: Tamagui for UI, Bento for complex patterns
 - **Validation**: Zod schemas for all data
-- **Testing**: Run `pnpm check` before committing
+- **Testing**: Run `pnpm test:local` before committing (adds lint + changed-file Vitest coverage)
 
 ---
 

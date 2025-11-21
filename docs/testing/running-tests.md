@@ -12,6 +12,7 @@ This guide translates the Vitest tooling introduced for REQ-172 into practical w
 
 | Scenario | Command | Notes |
 | --- | --- | --- |
+| Default local loop (lint + changed suites) | `pnpm test:local` | Runs `turbo lint` followed by `vitest run --changed` so you only execute the suites tied to files you touched. Run this before every commit. |
 | Full preflight (formatting, linting, type check) | `pnpm check` | Mirrors the CI `turbo check` pipeline. ⚠️ **Currently fails** because Expo teams screens still have invalid Tamagui props and Supabase helpers require typed Deno imports. |
 | Complete test stack | `pnpm test` | Runs `pnpm check`, then all Vitest suites, followed by Supabase Deno endpoint tests.⚠️ Blocked for the same reasons as `pnpm check`. |
 | Vitest across the monorepo | `pnpm test:unit` | Uses the shared configuration defined in `vitest.config.ts`. |

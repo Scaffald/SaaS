@@ -68,6 +68,8 @@
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
+    "test:local": "pnpm lint && pnpm vitest run --changed",
+    "test:local:watch": "pnpm lint && pnpm vitest --changed --watch",
     "generate": "turbo gen",
     "test:build": "pnpm build && echo '✅ All packages built successfully'",
     "test:lint": "pnpm lint:fix && pnpm typecheck && pnpm check-deps",
