@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { softSkillsUpdateSchema } from '@app/schemas/profile/soft-skills.schema'
+import { softSkillsUpdateSchema } from '../../../_shared/profile-schemas.ts'
 import {
   addUserSkillInputSchema,
   getSkillChildrenInputSchema,

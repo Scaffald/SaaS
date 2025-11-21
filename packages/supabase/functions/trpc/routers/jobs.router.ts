@@ -5,7 +5,7 @@ import {
   applicationCreateSchema,
   applicationWithdrawSchema,
 } from '../../_shared/application-schemas.ts'
-import { jobSoftSkillRequirementSchema } from '@app/schemas/profile/soft-skills.schema'
+import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas.ts'
 import { JOB_SKILLS_SELECT, transformJobSkills } from '../../_shared/skill-helpers.ts'
 import { protectedProcedure, t } from '../middleware.ts'
 
