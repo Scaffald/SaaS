@@ -9,6 +9,43 @@ import { officeStorageRouter } from './office/storage.router.ts'
 import { officeUniversitiesRouter } from './office/universities.router.ts'
 import { officeTeamsRouter } from './teams.router.ts'
 
+const RESERVED_ORGANIZATION_SLUGS = new Set([
+  'admin',
+  'api',
+  'auth',
+  'dashboard',
+  'office',
+  'settings',
+  'profile',
+  'user',
+  'users',
+  'org',
+  'organization',
+  'organizations',
+  'job',
+  'jobs',
+  'about',
+  'contact',
+  'help',
+  'support',
+  'terms',
+  'privacy',
+  'legal',
+  'login',
+  'logout',
+  'signup',
+  'sign-in',
+  'sign-up',
+  'register',
+  'forgot-password',
+  'reset-password',
+])
+
+const ORGANIZATION_SLUG_PATTERN = /^[a-z0-9-]+$/
+const MAX_ORGANIZATION_SLUG_LENGTH = 120
+
+type OrganizationSlugValidationReason = 'format' | 'reserved'
+
 /**
  * Office router - super admin only operations
  */
@@ -17,6 +54,77 @@ export const officeRouter = t.router({
   profiles: officeProfilesRouter,
   teams: officeTeamsRouter,
   storage: officeStorageRouter,
+  /**
+   * Check organization slug availability before creation/update.
+   */
+  checkOrganizationSlug: officeProcedure
+    .input(
+      z.object({
+        slug: z.string().min(1, 'Vanity URL is required').max(120, 'Vanity URL must be 120 characters or fewer'),
+        organizationId: z.string().uuid().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const normalizedSlug = normalizeOrganizationSlugInput(input.slug)
+      const validation = validateOrganizationSlug(normalizedSlug)
+
+      if (!validation.valid) {
+        return {
+          available: false,
+          reason: validation.reason ?? 'format',
+          message:
+            validation.reason === 'reserved'
+              ? 'This vanity URL is reserved for internal routes.'
+              : 'Vanity URL must be 3-120 characters, lowercase letters, numbers, and single hyphens.',
+          suggestions: [],
+          slug: normalizedSlug,
+        }
+      }
+
+      const {
+        data: existing,
+        error: existingError,
+      } = await ctx.supabaseAdmin
+        .schema('core')
+        .from('organizations')
+        .select('id')
+        .eq('slug', normalizedSlug)
+        .maybeSingle()
+
+      if (existingError && existingError.code !== 'PGRST116') {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to check slug availability: ${existingError.message}`,
+        })
+      }
+
+      if (existing && existing.id !== input.organizationId) {
+        const { data: similar } = await ctx.supabaseAdmin
+          .schema('core')
+          .from('organizations')
+          .select('slug')
+          .like('slug', `${normalizedSlug}%`)
+          .limit(10)
+
+        const suggestions = getOrganizationSlugSuggestions(
+          normalizedSlug,
+          (similar || []).map((org) => org.slug || '').filter((slug): slug is string => Boolean(slug))
+        )
+
+        return {
+          available: false,
+          reason: 'taken' as const,
+          message: 'An organization with this vanity URL already exists.',
+          suggestions,
+          slug: normalizedSlug,
+        }
+      }
+
+      return {
+        available: true,
+        slug: normalizedSlug,
+      }
+    }),
   /**
    * List all users
    * Returns paginated list of users with basic profile info
@@ -2939,3 +3047,72 @@ export const officeRouter = t.router({
       }
     }),
 })
+
+function normalizeOrganizationSlugInput(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, MAX_ORGANIZATION_SLUG_LENGTH)
+}
+
+function validateOrganizationSlug(
+  slug: string
+): { valid: boolean; reason?: OrganizationSlugValidationReason } {
+  if (!slug) {
+    return { valid: false, reason: 'format' }
+  }
+
+  if (slug.length < 3 || slug.length > MAX_ORGANIZATION_SLUG_LENGTH) {
+    return { valid: false, reason: 'format' }
+  }
+
+  if (!ORGANIZATION_SLUG_PATTERN.test(slug)) {
+    return { valid: false, reason: 'format' }
+  }
+
+  if (slug.includes('--') || slug.startsWith('-') || slug.endsWith('-')) {
+    return { valid: false, reason: 'format' }
+  }
+
+  if (RESERVED_ORGANIZATION_SLUGS.has(slug)) {
+    return { valid: false, reason: 'reserved' }
+  }
+
+  return { valid: true }
+}
+
+function getOrganizationSlugSuggestions(baseSlug: string, existingSlugs: string[]): string[] {
+  const suggestions: string[] = []
+  const existingSet = new Set(existingSlugs.map((s) => s.toLowerCase()))
+
+  for (let i = 2; i <= 6; i++) {
+    const candidate = `${baseSlug}-${i}`
+    if (!existingSet.has(candidate) && validateOrganizationSlug(candidate).valid) {
+      suggestions.push(candidate)
+      if (suggestions.length >= 3) {
+        return suggestions
+      }
+    }
+  }
+
+  const suffixes = ['team', 'group', 'hq', 'inc', 'llc']
+  for (const suffix of suffixes) {
+    if (suggestions.length >= 3) break
+    const candidate = `${baseSlug}-${suffix}`
+    if (!existingSet.has(candidate) && validateOrganizationSlug(candidate).valid) {
+      suggestions.push(candidate)
+    }
+  }
+
+  if (suggestions.length < 3) {
+    const candidate = baseSlug.replace(/-/g, '')
+    if (validateOrganizationSlug(candidate).valid && !existingSet.has(candidate)) {
+      suggestions.push(candidate)
+    }
+  }
+
+  return suggestions.slice(0, 3)
+}

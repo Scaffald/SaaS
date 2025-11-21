@@ -10,6 +10,8 @@ interface DiscoverJobsLeftProps {
   selectedIndustries: string[]
   selectedJobTypes: string[]
   jobSource?: 'all' | 'internal' | 'external'
+  minSoftSkillsMatch?: number | null
+  sortBy?: 'relevance' | 'match_score'
 }
 
 type MixedJob = { type: 'external'; job: ExternalJob } | { type: 'internal'; job: InternalJob }
@@ -23,8 +25,14 @@ export function DiscoverJobsLeft({
   selectedIndustries,
   selectedJobTypes,
   jobSource = 'all',
+  minSoftSkillsMatch,
+  sortBy,
 }: DiscoverJobsLeftProps) {
-  // Fetch external jobs
+  // Check if soft skills filter is active
+  const useSoftSkillsFilter = (minSoftSkillsMatch !== null && minSoftSkillsMatch > 0) || sortBy === 'match_score'
+  const shouldUseSoftSkillsMatch = useSoftSkillsFilter && (jobSource === 'all' || jobSource === 'internal')
+
+  // Fetch external jobs (not affected by soft skills filter)
   const { data: externalData, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
     undefined,
     {
@@ -32,7 +40,22 @@ export function DiscoverJobsLeft({
     }
   )
 
-  // Fetch internal jobs
+  // Fetch internal jobs with soft skills match if filter is active
+  const { data: softSkillsMatchData, isLoading: isLoadingSoftSkillsMatch } =
+    api.jobs.getJobsWithSoftSkillsMatch.useQuery(
+      {
+        minMatchScore: minSoftSkillsMatch ?? undefined,
+        sortBy: sortBy === 'match_score' ? 'match_score' : undefined,
+        limit: 100,
+        offset: 0,
+      },
+      {
+        enabled: shouldUseSoftSkillsMatch,
+      },
+    )
+
+  // Fetch regular internal jobs - always fetch to get full job data
+  // If soft skills filter is active, we'll filter client-side using matching job IDs
   const { data: internalData, isLoading: internalLoading } = api.jobs.getPublishedJobs.useQuery(
     {
       search: searchQuery,
@@ -49,7 +72,14 @@ export function DiscoverJobsLeft({
   )
 
   const externalJobs = externalData?.jobs || []
-  const internalJobs = internalData?.jobs || []
+  let internalJobs = internalData?.jobs || []
+  const matchingJobs = softSkillsMatchData?.jobs || []
+
+  // If soft skills filter is active, filter internal jobs to only matching ones
+  if (shouldUseSoftSkillsMatch && matchingJobs.length > 0) {
+    const matchingJobIds = new Set(matchingJobs.map((j) => j.jobId))
+    internalJobs = internalJobs.filter((job: InternalJob) => matchingJobIds.has(job.id))
+  }
 
   // Create a set of job IDs user has applied to
   type ApplicationSummary = { job_id?: string | null; id?: string }
@@ -67,13 +97,34 @@ export function DiscoverJobsLeft({
     }
   }
 
-  const isLoading = externalLoading || internalLoading
+  const isLoading = externalLoading || internalLoading || (shouldUseSoftSkillsMatch && isLoadingSoftSkillsMatch)
 
   // Combine and filter both job types
   const mixedJobs: MixedJob[] = [
     ...externalJobs.map((job: ExternalJob): MixedJob => ({ type: 'external', job })),
     ...internalJobs.map((job: InternalJob): MixedJob => ({ type: 'internal', job })),
   ]
+
+  // If soft skills sort is active, sort internal jobs by match score
+  if (sortBy === 'match_score' && shouldUseSoftSkillsMatch && matchingJobs.length > 0) {
+    const matchScoresByJobId = new Map<string, number>()
+    for (const matchJob of matchingJobs) {
+      if (matchJob.matchScore !== null && matchJob.matchScore !== undefined) {
+        matchScoresByJobId.set(matchJob.jobId, matchJob.matchScore)
+      }
+    }
+
+    // Sort mixed jobs: internal jobs by match score (descending), external jobs by date
+    mixedJobs.sort((a, b) => {
+      if (a.type === 'internal' && b.type === 'internal') {
+        const aScore = matchScoresByJobId.get(a.job.id) ?? 0
+        const bScore = matchScoresByJobId.get(b.job.id) ?? 0
+        return bScore - aScore // Descending order
+      }
+      // Keep external jobs in their original order (newest first)
+      return 0
+    })
+  }
 
   const filteredJobs = mixedJobs.filter((item) => {
     const job = item.job
@@ -134,6 +185,20 @@ export function DiscoverJobsLeft({
     return true
   })
 
+  // Handle soft skills assessment required state
+  if (shouldUseSoftSkillsMatch && softSkillsMatchData?.needsSelfAssessment) {
+    return (
+      <YStack flex={1} items="center" justify="center" p="$4" gap="$3">
+        <Text fontSize="$6" fontWeight="600" color="$color12">
+          Complete Your Assessment
+        </Text>
+        <Text fontSize="$4" color="$color11" textAlign="center">
+          Complete your soft skills assessment to filter and sort jobs by match score.
+        </Text>
+      </YStack>
+    )
+  }
+
   if (isLoading) {
     return (
       <YStack flex={1} p="$4">
@@ -149,7 +214,9 @@ export function DiscoverJobsLeft({
           No jobs found
         </Text>
         <Text fontSize="$4" color="$color11">
-          Try adjusting your filters or search query
+          {shouldUseSoftSkillsMatch
+            ? 'No jobs match your soft skills filter criteria'
+            : 'Try adjusting your filters or search query'}
         </Text>
       </YStack>
     )

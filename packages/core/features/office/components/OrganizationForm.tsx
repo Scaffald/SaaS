@@ -1,5 +1,7 @@
+import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
 import { OrganizationDeletionPanel } from '@app/core/features/organizations/components/OrganizationDeletionPanel'
 import { api } from '@app/core/utils/api'
+import { isSlugValid } from '@app/core/utils/slugify'
 import { supabase } from '@app/core/utils/supabase/client'
 import { organizationCreateSchema } from '@app/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,11 +24,21 @@ interface OrganizationFormProps {
   initialData?: Partial<OrganizationFormData>
 }
 
+type SlugAvailabilityState =
+  | { state: 'idle' }
+  | { state: 'checking' }
+  | { state: 'available' }
+  | { state: 'invalid'; message: string }
+  | { state: 'taken'; message: string; suggestions?: string[] }
+  | { state: 'error'; message: string }
+
 export function OrganizationForm({ mode, organizationId, initialData }: OrganizationFormProps) {
   const router = useRouter()
   const toast = useToastController()
+  const utils = api.useUtils()
   const [isLoading, setIsLoading] = useState(false)
   const [industries, setIndustries] = useState<Array<{ id: string; name: string }>>([])
+  const [slugStatus, setSlugStatus] = useState<SlugAvailabilityState>({ state: 'idle' })
 
   // Fetch industries from Supabase
   useEffect(() => {
@@ -68,6 +80,13 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       locations: [{ name: '', address: {} }],
     },
   })
+  const slugValue = watch('slug') || ''
+  const initialSlug = initialData?.slug?.toLowerCase() ?? ''
+  const slugNeedsValidation =
+    Boolean(slugValue) && (mode === 'create' || slugValue.toLowerCase() !== initialSlug)
+  const _slugAvailabilityBlocksSubmit =
+    slugNeedsValidation &&
+    (slugStatus.state === 'checking' || slugStatus.state === 'invalid' || slugStatus.state === 'taken')
 
   // Reset form when initialData changes (for edit mode)
   useEffect(() => {
@@ -76,21 +95,81 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     }
   }, [initialData, reset])
 
-  // Auto-generate slug from name
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-  }
-
   const handleNameChange = (value: string) => {
     setValue('name', value, { shouldValidate: true })
     // Only auto-generate slug in create mode if slug is empty
-    if (mode === 'create' && !watch('slug')) {
-      setValue('slug', generateSlug(value))
+    if (mode === 'create' && !slugValue) {
+      setValue('slug', normalizeOrganizationSlug(value))
     }
   }
+
+  useEffect(() => {
+    if (!slugValue) {
+      setSlugStatus({ state: 'idle' })
+      return
+    }
+
+    const normalizedSlug = slugValue.toLowerCase()
+    const slugMatchesOriginal = mode === 'edit' && normalizedSlug === initialSlug
+
+    if (slugMatchesOriginal) {
+      setSlugStatus({ state: 'available' })
+      return
+    }
+
+    if (!isSlugValid(normalizedSlug)) {
+      setSlugStatus({
+        state: 'invalid',
+        message:
+          'Vanity URL must be 3-50 characters, lowercase letters, numbers, and single hyphens. Reserved words are not allowed.',
+      })
+      return
+    }
+
+    let isCancelled = false
+    setSlugStatus({ state: 'checking' })
+    const timeoutId = setTimeout(async () => {
+      try {
+        const result = await utils.office.checkOrganizationSlug.fetch({
+          slug: normalizedSlug,
+          organizationId,
+        })
+
+        if (isCancelled) return
+
+        if (result.available) {
+          setSlugStatus({ state: 'available' })
+          return
+        }
+
+        const reason = result.reason ?? 'taken'
+        const fallbackMessage =
+          reason === 'reserved'
+            ? 'This vanity URL is reserved for internal routes.'
+            : reason === 'format'
+              ? 'Vanity URL must be 3-50 characters, lowercase letters, numbers, and single hyphens.'
+              : 'An organization with this vanity URL already exists.'
+
+        setSlugStatus({
+          state: reason === 'format' ? 'invalid' : 'taken',
+          message: result.message ?? fallbackMessage,
+          suggestions: result.suggestions,
+        })
+      } catch (error) {
+        if (isCancelled) return
+        console.error('Failed to check slug availability', error)
+        setSlugStatus({
+          state: 'error',
+          message: 'Unable to verify vanity URL availability. Please try again.',
+        })
+      }
+    }, 400)
+
+    return () => {
+      isCancelled = true
+      clearTimeout(timeoutId)
+    }
+  }, [slugValue, utils, organizationId, mode, initialSlug])
 
   const createMutation = api.office.createOrganization.useMutation({
     onSuccess: () => {

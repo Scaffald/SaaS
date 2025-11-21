@@ -11,6 +11,8 @@ export function DiscoverJobsScreen() {
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([])
   const [jobSource, setJobSource] = useState<'all' | 'internal' | 'external'>('all')
+  const [minSoftSkillsMatch, setMinSoftSkillsMatch] = useState<number | null>(null)
+  const [sortBy, setSortBy] = useState<'relevance' | 'match_score'>('relevance')
 
   return {
     left: (
@@ -19,6 +21,8 @@ export function DiscoverJobsScreen() {
         selectedIndustries={selectedIndustries}
         selectedJobTypes={selectedJobTypes}
         jobSource={jobSource}
+        minSoftSkillsMatch={minSoftSkillsMatch}
+        sortBy={sortBy}
       />
     ),
     right: (
@@ -28,6 +32,10 @@ export function DiscoverJobsScreen() {
         onJobTypesChange={setSelectedJobTypes}
         jobSource={jobSource}
         onJobSourceChange={setJobSource}
+        minSoftSkillsMatch={minSoftSkillsMatch}
+        onMinSoftSkillsMatchChange={setMinSoftSkillsMatch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
       />
     ),
   }

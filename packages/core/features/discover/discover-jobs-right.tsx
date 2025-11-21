@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@app/ui'
-import { Filter, Search, X } from '@tamagui/lucide-icons'
+import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@app/ui'
+import { Filter, Search, SortAsc, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 
@@ -10,6 +10,10 @@ interface DiscoverJobsRightProps {
   onJobTypesChange: (types: string[]) => void
   jobSource: 'all' | 'internal' | 'external'
   onJobSourceChange: (source: 'all' | 'internal' | 'external') => void
+  minSoftSkillsMatch: number | null
+  onMinSoftSkillsMatchChange: (match: number | null) => void
+  sortBy: 'relevance' | 'match_score'
+  onSortByChange: (sort: 'relevance' | 'match_score') => void
 }
 
 /**
@@ -22,6 +26,10 @@ export function DiscoverJobsRight({
   onJobTypesChange,
   jobSource,
   onJobSourceChange,
+  minSoftSkillsMatch,
+  onMinSoftSkillsMatchChange,
+  sortBy,
+  onSortByChange,
 }: DiscoverJobsRightProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([])
@@ -31,6 +39,12 @@ export function DiscoverJobsRight({
   const { data: filterData, isLoading: filtersLoading } = api.jobs.getFilterOptions.useQuery()
   const INDUSTRIES = filterData?.industries || []
   const JOB_TYPES = filterData?.jobTypes || []
+
+  // Check if user has soft skills assessment
+  const { data: softSkillsData } = api.profile.skills.getSoftSkills.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000,
+  })
+  const hasSoftSkillsAssessment = (softSkillsData?.skills.length ?? 0) > 0
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value)
@@ -59,13 +73,19 @@ export function DiscoverJobsRight({
     setSearchQuery('')
     setSelectedIndustries([])
     setSelectedJobTypes([])
+    onMinSoftSkillsMatchChange(null)
+    onSortByChange('relevance')
     onSearchChange('')
     onIndustriesChange([])
     onJobTypesChange([])
   }
 
   const hasActiveFilters =
-    searchQuery || selectedIndustries.length > 0 || selectedJobTypes.length > 0
+    searchQuery ||
+    selectedIndustries.length > 0 ||
+    selectedJobTypes.length > 0 ||
+    minSoftSkillsMatch !== null ||
+    sortBy !== 'relevance'
 
   if (filtersLoading) {
     return (
@@ -210,6 +230,71 @@ export function DiscoverJobsRight({
           </DashboardWidget>
         )}
 
+        {/* Soft Skills Match Filter - Only for internal jobs */}
+        {hasSoftSkillsAssessment && jobSource !== 'external' && (
+          <DashboardWidget>
+            <YStack gap="$3">
+              <XStack items="center" justify="space-between">
+                <Text fontSize="$4" fontWeight="600" color="$color12">
+                  Soft Skills Match
+                </Text>
+                {minSoftSkillsMatch !== null && (
+                  <Button
+                    size="$2"
+                    variant="outlined"
+                    onPress={() => onMinSoftSkillsMatchChange(null)}
+                    icon={X}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </XStack>
+
+              <RangeSliderCard
+                title="Minimum Match Score"
+                description="Show only jobs with soft skills match above this threshold"
+                value={minSoftSkillsMatch ?? 0}
+                onValueChange={(value) => {
+                  onMinSoftSkillsMatchChange(value > 0 ? value : null)
+                }}
+                min={0}
+                max={100}
+                step={5}
+                formatValue={(v) => `${v}%`}
+                formatMin={() => '0%'}
+                formatMax={() => '100%'}
+              />
+            </YStack>
+          </DashboardWidget>
+        )}
+
+        {/* Sort Options */}
+        {jobSource !== 'external' && (
+          <DashboardWidget>
+            <YStack gap="$3">
+              <XStack items="center" gap="$2">
+                <SortAsc size={18} color="$color10" />
+                <Text fontSize="$4" fontWeight="600" color="$color12">
+                  Sort By
+                </Text>
+              </XStack>
+
+              <ResponsiveSelect
+                value={sortBy}
+                onValueChange={(value) => {
+                  onSortByChange(value as 'relevance' | 'match_score')
+                }}
+                options={[
+                  { value: 'relevance', label: 'Relevance' },
+                  { value: 'match_score', label: 'Best Soft Skills Match', disabled: !hasSoftSkillsAssessment },
+                ]}
+                placeholder="Sort jobs by..."
+                label="Sort"
+              />
+            </YStack>
+          </DashboardWidget>
+        )}
+
         {/* Active Filters Summary */}
         {hasActiveFilters && (
           <DashboardWidget>
@@ -247,6 +332,28 @@ export function DiscoverJobsRight({
                   </Text>
                   <Text fontSize="$3" color="$blue11" fontWeight="600">
                     {selectedJobTypes.length}
+                  </Text>
+                </XStack>
+              )}
+
+              {minSoftSkillsMatch !== null && (
+                <XStack items="center" gap="$2">
+                  <Text fontSize="$3" color="$color11">
+                    Min Match:
+                  </Text>
+                  <Text fontSize="$3" color="$blue11" fontWeight="600">
+                    {minSoftSkillsMatch}%
+                  </Text>
+                </XStack>
+              )}
+
+              {sortBy !== 'relevance' && (
+                <XStack items="center" gap="$2">
+                  <Text fontSize="$3" color="$color11">
+                    Sort:
+                  </Text>
+                  <Text fontSize="$3" color="$blue11" fontWeight="600">
+                    {sortBy === 'match_score' ? 'Best Match' : sortBy}
                   </Text>
                 </XStack>
               )}
