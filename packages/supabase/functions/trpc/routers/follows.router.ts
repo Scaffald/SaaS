@@ -236,45 +236,68 @@ export const followsRouter = t.router({
       throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 
-    const { data, error } = await ctx.supabase
+    // First, get the follow relationships
+    const { data: follows, error: followsError } = await ctx.supabase
       .schema('core')
       .from('follows')
-      .select(
-        `
-        id,
-        created_at,
-        follower:follower_id(
-          id,
-          display_name,
-          username,
-          avatar_url,
-          headline,
-          industry_id,
-          industries:industry_id(
-            id,
-            name
-          )
-        )
-      `
-      )
+      .select('id, created_at, follower_id')
       .eq('followee_type', 'user')
       .eq('followee_id', ctx.user.id)
       .eq('follower_type', 'user')
       .order('created_at', { ascending: false })
 
-    if (error) {
+    if (followsError) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to fetch followers: ${error.message}`,
+        message: `Failed to fetch followers: ${followsError.message}`,
       })
     }
 
+    if (!follows || follows.length === 0) {
+      return []
+    }
+
+    // Extract follower user IDs
+    const followerIds = follows.map((follow) => follow.follower_id)
+
+    // Fetch user data for followers
+    const { data: users, error: usersError } = await ctx.supabase
+      .schema('core')
+      .from('users')
+      .select(
+        `
+        id,
+        display_name,
+        username,
+        avatar_url,
+        headline,
+        industry_id,
+        industries:industry_id(
+          id,
+          name
+        )
+      `
+      )
+      .in('id', followerIds)
+
+    if (usersError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to fetch follower users: ${usersError.message}`,
+      })
+    }
+
+    // Create a map of user ID to user data
+    const usersMap = new Map((users || []).map((user) => [user.id, user]))
+
     // Transform to include follower user info
-    return (data || []).map((follow) => ({
-      id: follow.id,
-      created_at: follow.created_at,
-      user: follow.follower,
-    }))
+    return follows
+      .map((follow) => ({
+        id: follow.id,
+        created_at: follow.created_at,
+        user: usersMap.get(follow.follower_id) || null,
+      }))
+      .filter((follow) => follow.user !== null) // Filter out any missing users
   }),
 
   /**
@@ -285,45 +308,68 @@ export const followsRouter = t.router({
       throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 
-    const { data, error } = await ctx.supabase
+    // First, get the follow relationships
+    const { data: follows, error: followsError } = await ctx.supabase
       .schema('core')
       .from('follows')
-      .select(
-        `
-        id,
-        created_at,
-        followee:followee_id(
-          id,
-          display_name,
-          username,
-          avatar_url,
-          headline,
-          industry_id,
-          industries:industry_id(
-            id,
-            name
-          )
-        )
-      `
-      )
+      .select('id, created_at, followee_id')
       .eq('follower_type', 'user')
       .eq('follower_id', ctx.user.id)
       .eq('followee_type', 'user')
       .order('created_at', { ascending: false })
 
-    if (error) {
+    if (followsError) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: `Failed to fetch following: ${error.message}`,
+        message: `Failed to fetch following: ${followsError.message}`,
       })
     }
 
+    if (!follows || follows.length === 0) {
+      return []
+    }
+
+    // Extract followee user IDs
+    const followeeIds = follows.map((follow) => follow.followee_id)
+
+    // Fetch user data for followees
+    const { data: users, error: usersError } = await ctx.supabase
+      .schema('core')
+      .from('users')
+      .select(
+        `
+        id,
+        display_name,
+        username,
+        avatar_url,
+        headline,
+        industry_id,
+        industries:industry_id(
+          id,
+          name
+        )
+      `
+      )
+      .in('id', followeeIds)
+
+    if (usersError) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to fetch followee users: ${usersError.message}`,
+      })
+    }
+
+    // Create a map of user ID to user data
+    const usersMap = new Map((users || []).map((user) => [user.id, user]))
+
     // Transform to include followee user info
-    return (data || []).map((follow) => ({
-      id: follow.id,
-      created_at: follow.created_at,
-      user: follow.followee,
-    }))
+    return follows
+      .map((follow) => ({
+        id: follow.id,
+        created_at: follow.created_at,
+        user: usersMap.get(follow.followee_id) || null,
+      }))
+      .filter((follow) => follow.user !== null) // Filter out any missing users
   }),
 })
 

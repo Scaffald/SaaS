@@ -604,46 +604,142 @@ export const reviewsRouter = t.router({
    */
   getBySubject: publicProcedure.input(getReviewsBySubjectSchema).query(
     async ({ ctx, input }) => {
-      const { data, error } = await ctx.supabase
-        .schema("core")
-        .from("reviews")
-        .select(`
-        id,
-        rating,
-        body,
-        created_at,
-        review_category_ratings (
-          category,
-          rating
-        )
-      `)
-        .eq("subject_id", input.subjectId)
-        .eq("subject_type", input.subjectType)
-        .order("created_at", { ascending: false });
+      try {
+        console.log("[reviews.getBySubject] Starting query", {
+          subjectId: input.subjectId,
+          subjectType: input.subjectType,
+          status: input.status,
+        });
 
-      if (error) {
+        const { data, error } = await ctx.supabase
+          .schema("core")
+          .from("reviews")
+          .select(`
+          id,
+          rating,
+          body,
+          created_at,
+          review_category_ratings (
+            category,
+            rating
+          )
+        `)
+          .eq("subject_id", input.subjectId)
+          .eq("subject_type", input.subjectType)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("[reviews.getBySubject] Query error", {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint,
+          });
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch reviews",
+            cause: error,
+          });
+        }
+
+        console.log("[reviews.getBySubject] Query successful", {
+          reviewCount: data?.length || 0,
+          sampleReview: data?.[0]
+            ? {
+              id: data[0].id,
+              hasCategoryRatings: !!data[0].review_category_ratings,
+              categoryRatingsType: typeof data[0].review_category_ratings,
+              categoryRatingsLength: Array.isArray(
+                  data[0].review_category_ratings,
+                )
+                ? data[0].review_category_ratings.length
+                : "not an array",
+            }
+            : null,
+        });
+
+        // Map the response to match UI expectations
+        // - body → comment
+        // - rating → reaction (recommendation: -1 or 1)
+        // - review_category_ratings is already included as an array
+        const mappedReviews = (data || []).map((review: {
+          id: string;
+          rating: number | null;
+          body: string | null;
+          created_at: string;
+          review_category_ratings?:
+            | Array<{ category: string; rating: number }>
+            | null;
+        }) => {
+          try {
+            // Ensure review_category_ratings is always an array
+            let categoryRatings: Array<{ category: string; rating: number }> =
+              [];
+            if (review.review_category_ratings) {
+              if (Array.isArray(review.review_category_ratings)) {
+                categoryRatings = review.review_category_ratings;
+              } else {
+                console.warn(
+                  "[reviews.getBySubject] Unexpected category ratings format",
+                  {
+                    reviewId: review.id,
+                    type: typeof review.review_category_ratings,
+                    value: review.review_category_ratings,
+                  },
+                );
+              }
+            }
+
+            return {
+              id: review.id,
+              created_at: review.created_at,
+              comment: review.body,
+              reaction: review.rating,
+              review_category_ratings: categoryRatings,
+            };
+          } catch (mapError) {
+            console.error("[reviews.getBySubject] Error mapping review", {
+              reviewId: review.id,
+              error: mapError instanceof Error
+                ? mapError.message
+                : String(mapError),
+            });
+            throw mapError;
+          }
+        });
+
+        console.log("[reviews.getBySubject] Mapping complete", {
+          mappedCount: mappedReviews.length,
+        });
+
+        // Apply status filter if provided (for future use when status field is added)
+        // For now, return all reviews as the status field doesn't exist yet
+        return mappedReviews;
+      } catch (error) {
+        console.error("[reviews.getBySubject] Unhandled error", {
+          error: error instanceof Error
+            ? {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+              cause: error.cause,
+            }
+            : error,
+          input,
+        });
+
+        // Re-throw TRPCError as-is
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        // Wrap other errors
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to fetch reviews",
           cause: error,
         });
       }
-
-      // Map the response to match UI expectations
-      // - body → comment
-      // - rating → reaction (recommendation: -1 or 1)
-      // - review_category_ratings is already included as an array
-      const mappedReviews = (data || []).map((review) => ({
-        id: review.id,
-        created_at: review.created_at,
-        comment: review.body,
-        reaction: review.rating,
-        review_category_ratings: review.review_category_ratings || [],
-      }));
-
-      // Apply status filter if provided (for future use when status field is added)
-      // For now, return all reviews as the status field doesn't exist yet
-      return mappedReviews;
     },
   ),
 
