@@ -1,4 +1,4 @@
-import { DASHBOARD_ROUTES, OFFICE_ROUTES } from '@app/core/constants/routes'
+import { ROUTES } from '@app/core/constants/routes'
 
 /**
  * Normalizes a path string by cleaning up query parameters, tabs routes, and extra slashes
@@ -20,13 +20,13 @@ export const isActivePath = (pathname: string, href: string) => {
   }
 
   // Special case for dashboard: only match exact path or /dashboard/index
-  const dashboardPath = DASHBOARD_ROUTES.INDEX.path
+  const dashboardPath = ROUTES.DASHBOARD.path
   if (href === dashboardPath) {
     return pathname === dashboardPath || pathname === `${dashboardPath}/index`
   }
 
   // Special case for office: match exact path or child paths
-  const officePath = OFFICE_ROUTES.INDEX.path
+  const officePath = ROUTES.OFFICE.path
   if (href === officePath) {
     return (
       pathname === officePath ||
