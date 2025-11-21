@@ -13,9 +13,9 @@ The static web application is hosted on AWS using S3 for storage and CloudFront 
 
 | Environment | Branch | Bucket | Domain | DNS Setup |
 |------------|--------|--------|--------|-----------|
-| **Development** | `dev` | `scaffald-app-dev` | `dev.scaffald.com` | Yes (pending cert validation) |
+| **Development** | `main` | `scaffald-app-dev` | `dev.scaffald.com` | Yes (pending cert validation) |
 | **Preview** | `preview` | `scaffald-app-preview` | `preview.scaffald.com` | Yes (pending cert validation) |
-| **Production** | `main` | `scaffald-app-prod` | `app.scaffald.com` | Yes (pending cert validation) |
+| **Production** | `staging` | `scaffald-app-prod` | `app.scaffald.com` | Yes (pending cert validation) |
 
 ### Infrastructure Components
 
@@ -103,9 +103,9 @@ The script will auto-detect bucket and distribution ID if not set, based on the 
 
 GitHub Actions automatically deploys to the correct environment based on branch:
 
-- **`dev` branch** → Development environment
+- **`main` branch** → Development environment
 - **`preview` branch** → Preview environment  
-- **`main` branch** → Production environment
+- **`staging` branch** → Production environment
 
 Required GitHub Secrets:
 - `AWS_ACCESS_KEY_ID`
