@@ -1,4 +1,4 @@
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { TEAM_VISIBILITIES, teamRoleKeySchema } from '@app/schemas'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -123,7 +123,7 @@ export function OfficeTeamsList() {
   const columns = useMemo(() => createColumns(router), [router])
 
   const handleRowEdit = (team: TeamRow) => {
-    router.push(RouteBuilder.officeTeamsEdit(team.id))
+    router.push(buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, { id: team.id }))
   }
 
   const handleRowDelete = async (team: TeamRow) => {

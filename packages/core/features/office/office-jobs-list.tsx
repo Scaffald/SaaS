@@ -1,4 +1,4 @@
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { OfficeLayout, ResponsiveSelect } from '@app/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
@@ -225,7 +225,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const columns = createColumns(router)
 
   const handleRowEdit = (job: Job) => {
-    router.push(RouteBuilder.officeJobsEdit(job.id))
+    router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
   }
 
   const handleRowDelete = async (job: Job) => {

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES } from '@app/core/constants/routes'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { ToggleSwitch } from '@app/ui'
@@ -280,7 +280,7 @@ export function WorkLogDetailScreen() {
         <Paragraph color="$color10" style={{ textAlign: 'center' }}>
           This work log may have been deleted or you no longer have access.
         </Paragraph>
-        <Button size="$4" onPress={() => router.replace(RouteBuilder.dashboardWorkLogs())}>
+        <Button size="$4" onPress={() => router.replace(ROUTES.DASHBOARD.WORK_LOGS.path)}>
           Back to work logs
         </Button>
       </YStack>

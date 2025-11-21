@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { formatDateRange } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { useAdaptiveLoading } from '@app/core/utils/useAdaptiveLoading'
@@ -121,7 +121,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
     if (!userId) return
 
     try {
-      router.push(RouteBuilder.discoverWorkerDetail(userId))
+      router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: userId }))
       onOpenChange(false)
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)
@@ -134,7 +134,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
   const handleOpenInNewTab = () => {
     if (!userId) return
     if (typeof window !== 'undefined') {
-      window.open(RouteBuilder.dashboardUser(userId), '_blank')
+      window.open(buildPath(ROUTES.DASHBOARD.USER, { userId }), '_blank')
     }
   }
 

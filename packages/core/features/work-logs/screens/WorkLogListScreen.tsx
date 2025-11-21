@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from '@tamagui/lucide-icons'
@@ -70,7 +70,7 @@ export function WorkLogListScreen() {
           <Button
             size="$4"
             icon={Plus}
-            onPress={() => router.push(RouteBuilder.dashboardWorkLogCreate())}
+            onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path())}
           >
             New Work Log
           </Button>
@@ -120,7 +120,7 @@ export function WorkLogListScreen() {
             <Text color="$color10">Loading work logs…</Text>
           </YStack>
         ) : items.length === 0 ? (
-          <EmptyState onCreate={() => router.push(RouteBuilder.dashboardWorkLogCreate())} />
+          <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path())} />
         ) : (
           <YStack gap="$3" pb="$6">
             {items.map((item) => (
@@ -130,7 +130,7 @@ export function WorkLogListScreen() {
                 pressStyle={{ borderColor: '$color8' }}
                 borderColor="$color6"
                 borderWidth={1}
-                onPress={() => router.push(RouteBuilder.dashboardWorkLogDetail(item.id))}
+                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))}
               >
                 <YStack gap="$3" p="$3">
                   <XStack justify="space-between" items="center">
@@ -202,7 +202,7 @@ export function WorkLogListScreen() {
                     <Button
                       size="$3"
                       variant="outlined"
-                      onPress={() => router.push(RouteBuilder.dashboardWorkLogDetail(item.id))}
+                      onPress={() => router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))}
                     >
                       View Details
                     </Button>

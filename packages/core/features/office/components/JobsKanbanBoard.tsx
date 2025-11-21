@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import { DraggableCard, DroppableColumn } from '@app/ui'
@@ -104,7 +104,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
   }
 
   const handleJobPress = (job: Job) => {
-    router.push(RouteBuilder.officeJobsEdit(job.id))
+    router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
   }
 
   // Find active job for drag overlay

@@ -1,4 +1,4 @@
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { OfficeLayout, ResponsiveSelect } from '@app/ui'
@@ -121,7 +121,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
   const projects = data?.projects || []
 
   const _handleRowEdit = (project: Project) => {
-    router.push(RouteBuilder.projectEdit(project.id))
+    router.push(buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id }))
   }
 
   const _getItemName = (project: Project) => project.name
@@ -215,7 +215,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                         size="$2"
                         icon={Pencil}
                         onPress={() => {
-                          router.push(RouteBuilder.projectEdit(project.id))
+                          router.push(buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id }))
                         }}
                       >
                         Edit

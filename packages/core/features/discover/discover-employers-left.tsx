@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useRouter } from 'expo-router'
 import { ScrollView, Spinner, Text, YStack } from 'tamagui'
 import { type Employer, EmployerCard } from './components/EmployerCard'
@@ -16,7 +16,7 @@ export function DiscoverEmployersLeft({ employers, isLoading }: DiscoverEmployer
   const router = useRouter()
 
   const handleViewDetails = (employer: Employer) => {
-    router.push(RouteBuilder.dashboardEmployer(employer.id))
+    router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id: employer.id }))
   }
 
   if (isLoading) {

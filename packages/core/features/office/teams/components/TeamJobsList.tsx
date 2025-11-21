@@ -1,4 +1,4 @@
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import type { AppRouter } from '@app/supabase/client-types'
 import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -173,7 +173,7 @@ export function TeamJobsList({
                 <Button
                   size="$3"
                   variant="outlined"
-                  onPress={() => router.push(RouteBuilder.officeJobsEdit(job.id))}
+                  onPress={() => router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))}
                   accessibilityLabel={`View job ${job.title}`}
                   width="100%"
                   $md={{ width: undefined }}

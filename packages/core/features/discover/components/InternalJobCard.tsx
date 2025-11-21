@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { Chip, DiscoverCard, extractPlainText } from '@app/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
@@ -197,10 +197,10 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
 
   const handleCardPress = () => {
     if (hasInquiryLink && applicationId) {
-      router.push(RouteBuilder.dashboardApplicationInquiry(applicationId))
+      router.push(buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId }))
       return
     }
-    router.push(RouteBuilder.discoverJobDetail(job.id))
+    router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id: job.id }))
   }
 
   return (

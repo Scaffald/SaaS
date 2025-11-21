@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { DiscoverCard } from '@app/ui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -26,7 +26,7 @@ export const ResultCard = memo(
 
       // Navigate to detail page
       try {
-        router.push(RouteBuilder.discoverWorkerDetail(profile.id))
+        router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: profile.id }))
       } catch (navigationError) {
         console.error('Failed to navigate to worker profile', navigationError)
         toast.show('Unable to load profile', {

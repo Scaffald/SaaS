@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import { Button, SkeletonCard, Text, YStack } from '@app/ui'
@@ -54,7 +54,7 @@ export function InquiryOverviewWidget() {
           </Text>
           <Button
             size="$3"
-            onPress={() => router.push(RouteBuilder.dashboardApplicationInquiry(application.id))}
+            onPress={() => router.push(buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId: application.id }))}
           >
             View Inquiry
           </Button>

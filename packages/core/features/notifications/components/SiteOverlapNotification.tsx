@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { AlertTriangle, MapPin, MessageSquare, X } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Button, Card, Text, XStack, YStack } from 'tamagui'
@@ -44,7 +44,7 @@ export function SiteOverlapNotification({
   const handleAdjustBoundaries = () => {
     // Navigate to site editor (would need to determine which project/site to edit)
     // For now, navigate to projects list
-    router.push(RouteBuilder.projectDetail(siteId)) // Using siteId as placeholder - would need project context
+    router.push(buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL, { id: siteId })) // Using siteId as placeholder - would need project context
   }
 
   const handleDismiss = () => {

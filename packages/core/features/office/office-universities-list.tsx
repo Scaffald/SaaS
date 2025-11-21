@@ -1,4 +1,4 @@
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { Text } from '@app/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
@@ -69,7 +69,7 @@ export function OfficeUniversitiesList() {
   const columns = createColumns()
 
   const handleRowEdit = (university: University) => {
-    router.push(RouteBuilder.officeUniversitiesEdit(university.id))
+    router.push(buildPath(ROUTES.OFFICE.CMS.UNIVERSITIES.EDIT, { id: university.id }))
   }
 
   const handleRowDelete = async (university: University) => {

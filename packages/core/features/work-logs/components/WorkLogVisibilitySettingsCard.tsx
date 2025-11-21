@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'
 
@@ -138,7 +138,7 @@ export function WorkLogVisibilitySettingsCard() {
                     <Button
                       size="$3"
                       variant="outlined"
-                      onPress={() => router.push(RouteBuilder.dashboardWorkLogDetail(item.id))}
+                      onPress={() => router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))}
                     >
                       View details
                     </Button>

@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import { CheckCircle, Clock, Users, XCircle } from '@tamagui/lucide-icons'
@@ -174,7 +174,7 @@ export function TeamInvitationsWidget() {
         <Button
           variant="outlined"
           size="$2"
-          onPress={() => router.push(RouteBuilder.dashboardTeamsInvitations())}
+          onPress={() => router.push(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)}
         >
           Manage
         </Button>

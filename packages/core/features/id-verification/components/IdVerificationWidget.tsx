@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { UIButton as Button, DashboardWidget } from '@app/ui'
 import { useRouter } from 'expo-router'
@@ -35,7 +35,7 @@ export function IdVerificationWidget() {
         <Button
           size="$3"
           theme="blue"
-          onPress={() => router.push(RouteBuilder.dashboardProfileIdVerification())}
+          onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path)}
         >
           Manage verification
         </Button>

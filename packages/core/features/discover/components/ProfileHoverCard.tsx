@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 import { Briefcase, Building2, ExternalLink, MapPin, User } from '@tamagui/lucide-icons'
@@ -66,9 +66,9 @@ export function ProfileHoverCard({
 
   const profileUrl =
     pinType === 'worker'
-      ? RouteBuilder.discoverWorkerDetail(pinId)
+      ? buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: pinId })
       : pinType === 'organization'
-        ? RouteBuilder.dashboardEmployer(pinId)
+        ? buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id: pinId })
         : null
 
   const handleOpenProfile = () => {

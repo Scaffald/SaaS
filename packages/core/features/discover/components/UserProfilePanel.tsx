@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 import { ExternalLink, MapPin, User, X } from '@tamagui/lucide-icons'
@@ -54,7 +54,7 @@ export function UserProfilePanel({
     if (!userId) return
 
     try {
-      router.push(RouteBuilder.discoverWorkerDetail(userId))
+      router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id: userId }))
       onOpenChange(false)
     } catch (navigationError) {
       console.error('Failed to navigate to worker profile', navigationError)

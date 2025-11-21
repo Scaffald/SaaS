@@ -1,4 +1,4 @@
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { TableColumnVisibilityOption } from '@app/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
@@ -96,7 +96,7 @@ export function OfficeUsersList({ showHeader = true }: OfficeUsersListProps = {}
   const columns = createColumns()
 
   const handleRowEdit = (user: User) => {
-    router.push(RouteBuilder.officeUsersEdit(user.id))
+    router.push(buildPath(ROUTES.OFFICE.CMS.WORKERS.EDIT, { id: user.id }))
   }
 
   const handleRowDelete = async (user: User) => {

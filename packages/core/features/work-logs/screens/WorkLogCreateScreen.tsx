@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
@@ -30,7 +30,7 @@ export function WorkLogCreateScreen() {
             toast.show('Work log saved', {
               message: 'You can review or edit this entry at any time.',
             })
-            router.replace(RouteBuilder.dashboardWorkLogDetail(workLogId))
+            router.replace(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId }))
           }}
         />
 

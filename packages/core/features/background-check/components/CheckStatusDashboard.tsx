@@ -1,4 +1,4 @@
-import { RouteBuilder } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
@@ -63,7 +63,7 @@ export function CheckStatusDashboard() {
   }, [checksQuery.data, activeFilter])
 
   const handleStartNewCheck = () => {
-    router.push(RouteBuilder.dashboardBackgroundCheckInitiate())
+    router.push(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.INITIATE.path)
   }
 
   const handleViewDetails = (check: BackgroundCheckSummary) => {
@@ -72,7 +72,7 @@ export function CheckStatusDashboard() {
 
   const handleRenew = (check: BackgroundCheckSummary) => {
     setSelectedCheckId(check.id)
-    router.push(RouteBuilder.dashboardBackgroundCheckInitiate())
+    router.push(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.INITIATE.path)
   }
 
   const handleDisputeNavigation = (check: BackgroundCheckSummary) => {
@@ -80,7 +80,7 @@ export function CheckStatusDashboard() {
       setDisputeCheck(check)
       return
     }
-    const disputePath = RouteBuilder.dashboardBackgroundCheckDispute(check.id)
+    const disputePath = buildPath(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.DISPUTE, { checkId: check.id })
     router.push(disputePath)
   }
 
