@@ -181,9 +181,7 @@ export function ConnectionFollowButtons({
   }
 
   const handleUnfollow = () => {
-    if (followStatus.followId) {
-      unfollowMutation.mutate({ followId: followStatus.followId })
-    }
+    unfollowMutation.mutate({ targetUserId })
   }
 
   // Determine connection button state
