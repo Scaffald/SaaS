@@ -71,10 +71,12 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
         shared_with_organization_ids: nextOrganizationIds,
       },
       {
-        onError: (error: Error) => {
+        onError: (error: unknown) => {
           setSharePublicly(previousShare)
           setOrganizationIds(previousOrganizations)
-          Alert.alert('Could not update privacy settings', error.message ?? 'Please try again.')
+          const message =
+            error instanceof Error ? error.message : 'Could not update privacy settings. Please try again.'
+          Alert.alert('Could not update privacy settings', message)
         },
       }
     )

@@ -19,9 +19,10 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
         message: 'Inquiry reminder settings updated successfully',
       })
     },
-    onError: (error: Error) => {
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Failed to save settings'
       toast.show('Failed to save settings', {
-        message: error.message,
+        message,
       })
     },
   })

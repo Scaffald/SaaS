@@ -86,6 +86,9 @@ export function IPIPAssessmentWizard() {
   const completedDomains = getCompletedDomainsCount(answersCount)
   const completionScore = Math.round((progress / 120) * 100)
 
+  // Convert TRPC error to Error type
+  const queryError = error ? new Error(error.message ?? 'Failed to load assessment status.') : null
+
   // Show domain completion UI
   if (completedDomain) {
     return (
@@ -95,7 +98,7 @@ export function IPIPAssessmentWizard() {
         currentStep="questions"
         completionScore={completionScore}
         isLoading={isLoading}
-        error={error}
+        error={queryError}
         showNext={false}
       >
         <YStack
@@ -138,7 +141,7 @@ export function IPIPAssessmentWizard() {
       currentStep="questions"
       completionScore={completionScore}
       isLoading={isLoading}
-      error={error}
+      error={queryError}
       showNext={false}
     >
       <IPIPTestStep

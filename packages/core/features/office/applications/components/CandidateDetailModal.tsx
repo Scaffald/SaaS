@@ -157,8 +157,9 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         })
       }
     },
-    onError: (error: Error) => {
-      toast.show('Unable to assign application', { message: error.message })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Unable to assign application'
+      toast.show('Unable to assign application', { message })
     },
   })
 

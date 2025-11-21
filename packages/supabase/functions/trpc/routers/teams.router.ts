@@ -1655,16 +1655,26 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           .optional()
       )
       .query(async ({ ctx, input }) => {
-        const { supabaseAdmin, user } = ctx
+        const { supabaseAdmin, supabase, user } = ctx
 
         if (!user) {
           throw new TRPCError({ code: 'UNAUTHORIZED' })
         }
 
+        // Use supabaseAdmin if available, otherwise fall back to regular client
+        const client = supabaseAdmin ?? supabase
+
+        if (!client) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Database client not available',
+          })
+        }
+
         const normalizedEmail = user.email ? user.email.trim().toLowerCase() : null
         const status = input?.status ?? 'pending'
 
-        let query = supabaseAdmin
+        let query = client
           .schema('core')
           .from('team_invitations')
           .select(

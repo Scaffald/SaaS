@@ -370,8 +370,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       onSuccess?.()
       router.back()
     },
-    onError: (error: Error) => {
-      toast.show(`Error: ${error.message}`, { variant: 'error' })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show(`Error: ${message}`, { variant: 'error' })
     },
   })
 
@@ -381,8 +382,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       onSuccess?.()
       router.back()
     },
-    onError: (error: Error) => {
-      toast.show(`Error: ${error.message}`, { variant: 'error' })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show(`Error: ${message}`, { variant: 'error' })
     },
   })
 

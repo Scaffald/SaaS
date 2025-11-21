@@ -41,8 +41,9 @@ export const useApplicationStatusChange = (): UseApplicationStatusChangeReturn =
       // Invalidate applications query to refetch
       utils.applications.getUserApplications.invalidate()
     },
-    onError: (err: Error) => {
-      setError(err)
+    onError: (err: unknown) => {
+      const error = err instanceof Error ? err : new Error(String(err))
+      setError(error)
     },
     onSettled: () => {
       setIsChanging(false)

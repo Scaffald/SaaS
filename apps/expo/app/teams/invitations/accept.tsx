@@ -31,9 +31,13 @@ export default function AcceptTeamInvitationScreen() {
         setStatus('declined')
       }
     },
-    onError: (error: Error) => {
+    onError: (error: unknown) => {
       console.error('[teams] Invitation response failed', error)
-      setErrorMessage(error.message || 'Unable to process invitation. Please try again later.')
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unable to process invitation. Please try again later.'
+      setErrorMessage(message)
       setStatus('error')
     },
   })

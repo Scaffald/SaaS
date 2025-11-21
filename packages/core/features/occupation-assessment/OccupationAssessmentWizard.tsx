@@ -80,7 +80,7 @@ export function OccupationAssessmentWizard() {
       currentStep="current"
       completionScore={status?.isCompleted ? 100 : 0}
       isLoading={isLoading}
-      error={error}
+      error={error ? new Error(error.message ?? 'Failed to load assessment status.') : null}
       showNext={false}
     >
       <YStack gap="$4" width="100%" maxW={800} mx="auto">

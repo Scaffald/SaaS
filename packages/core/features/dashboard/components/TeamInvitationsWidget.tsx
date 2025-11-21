@@ -140,8 +140,9 @@ export function TeamInvitationsWidget() {
       })
       void invitationsQuery.refetch()
     },
-    onError: (error: Error) => {
-      toast.show('Unable to respond', { message: error.message })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
+      toast.show('Unable to respond', { message })
     },
   })
 
