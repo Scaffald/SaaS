@@ -1,9 +1,8 @@
-import { SaveStatusIndicator, SavingModal, SkeletonForm } from '@app/ui'
+import { ResponsiveSelect, SaveStatusIndicator, SavingModal, SkeletonForm } from '@app/ui'
 import { Check } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import { InlineSkillSearch, ProfileFormPanel } from './components'
-import { MinimalIndustrySelect } from './components/skills/MinimalIndustrySelect'
 import { useSaveStatus } from './hooks/useSaveStatus'
 import { useProfileSkillsContext } from './profile-skills-context'
 
@@ -71,17 +70,19 @@ export function ProfileSkillsLeft() {
 
       {/* Industry Selector */}
       <YStack gap="$2">
-        <Text fontWeight="600">Primary Industry *</Text>
-        <Text fontSize="$2" color="$color11">
-          Select your industry to search for relevant skills
-        </Text>
-        <MinimalIndustrySelect
+        <ResponsiveSelect
           value={selectedIndustryId || ''}
           onValueChange={handleIndustryChange}
           placeholder="Select an industry"
-          testID="primary-industry-select-trigger"
+          label="Primary Industry *"
           options={industryOptions}
+          disabled={isLoadingIndustries}
+          testID="primary-industry-select-trigger"
+          sheetTitle="Select Industry"
         />
+        <Text fontSize="$2" color="$color11">
+          Select your industry to search for relevant skills
+        </Text>
       </YStack>
 
       <Separator />

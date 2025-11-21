@@ -1,4 +1,4 @@
-import { Search, X } from '@tamagui/lucide-icons'
+import { X } from '@tamagui/lucide-icons'
 import { useCallback, useEffect, useState } from 'react'
 import { Button, Card, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 import type { ParentSkill } from '../../types/profile-skills-types'
@@ -111,15 +111,11 @@ export function SimpleSkillAutocomplete({
             if (text.length >= 2) setShowResults(true)
           }}
           placeholder={placeholder}
-          pl={40}
           pr={40}
           size="$4"
           borderColor="$borderColor"
           focusStyle={{ borderColor: '$blue9' }}
         />
-        <YStack position="absolute" l={12} t={0} b={0} justify="center" pointerEvents="none">
-          <Search size={16} color="$color11" />
-        </YStack>
 
         {value.length > 0 && (
           <Button
