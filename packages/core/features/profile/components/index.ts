@@ -12,3 +12,4 @@ export type {
   SoftSkill,
   SoftSkillCategory,
 } from './SoftSkillsCategoryTabs'
+export { SoftSkillsRatingForm } from './SoftSkillsRatingForm'

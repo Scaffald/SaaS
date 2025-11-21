@@ -1,6 +1,5 @@
 import { type FC, useMemo } from 'react'
 import { Tab, TabGroup } from '@app/ui'
-import { Text, View, XStack } from 'tamagui'
 
 export type SoftSkillCategory = 'reliability' | 'collaboration' | 'professionalism' | 'technical'
 
