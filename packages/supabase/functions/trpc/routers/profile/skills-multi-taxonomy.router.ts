@@ -10,13 +10,6 @@ import { protectedProcedure, t } from '../../middleware.ts'
  */
 
 // Input schemas
-const searchSkillsInputSchema = z.object({
-  query: z.string().min(1),
-  industrySlug: z.string(),
-  taxonomy: z.enum(['csi', 'onet', 'both']).optional(),
-  limit: z.number().optional(),
-})
-
 const addSkillInputSchema = z.object({
   taxonomy: z.enum(['csi', 'onet']),
   skillId: z.string(), // UUID for CSI, code for O*NET
@@ -58,93 +51,6 @@ export const skillsMultiTaxonomyRouter = t.router({
 
     return { industries: data || [] }
   }),
-
-  /**
-   * Search skills based on industry
-   * - Construction: Can search both CSI and O*NET
-   * - Other industries: O*NET only
-   */
-  searchSkills: protectedProcedure
-    .input(searchSkillsInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx
-      const isConstruction = input.industrySlug === 'construction'
-
-      // Determine which taxonomies to search
-      let taxonomies: string[] = []
-      if (input.taxonomy === 'both' || !input.taxonomy) {
-        taxonomies = isConstruction ? ['csi', 'onet'] : ['onet']
-      } else if (input.taxonomy === 'csi') {
-        if (!isConstruction) {
-          throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'CSI skills are only available for the construction industry',
-          })
-        }
-        taxonomies = ['csi']
-      } else {
-        taxonomies = ['onet']
-      }
-
-      const results: Array<{
-        taxonomy: string
-        skill_id: string
-        code: string
-        display_code: string
-        name: string
-        description: string | null
-        hierarchy_level: number | null
-      }> = []
-
-      // Search CSI if applicable
-      if (taxonomies.includes('csi')) {
-        const { data: csiData, error: csiError } = await supabase
-          .schema('data')
-          .rpc('search_masterformat', {
-            search_term: input.query,
-          })
-
-        if (!csiError && csiData) {
-          results.push(
-            ...csiData.slice(0, input.limit || 20).map((item: any) => ({
-              taxonomy: 'csi',
-              skill_id: item.id,
-              code: item.code_key,
-              display_code: item.code_display,
-              name: item.name,
-              description: null,
-              hierarchy_level: item.depth,
-            }))
-          )
-        }
-      }
-
-      // Search O*NET
-      if (taxonomies.includes('onet')) {
-        const { data: onetData, error: onetError } = await supabase.rpc('onet.search_occupations', {
-          search_term: input.query,
-        })
-
-        if (!onetError && onetData) {
-          results.push(
-            ...onetData.slice(0, input.limit || 20).map((item: any) => ({
-              taxonomy: 'onet',
-              skill_id: item.onetsoc_code,
-              code: item.onetsoc_code,
-              display_code: item.onetsoc_code,
-              name: item.title,
-              description: item.description,
-              hierarchy_level: null,
-            }))
-          )
-        }
-      }
-
-      return {
-        skills: results.slice(0, input.limit || 20),
-        availableTaxonomies: taxonomies,
-      }
-    }),
 
   /**
    * Get user's skills with details from both taxonomies

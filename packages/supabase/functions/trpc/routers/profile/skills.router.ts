@@ -6,7 +6,6 @@ import {
   profileSkillsInputSchema,
   removeUserSkillInputSchema,
   searchParentSkillsInputSchema,
-  searchSkillsInputSchema,
   updateUserSkillInputSchema,
   // @ts-expect-error - Deno requires .ts extension
 } from '../../../_shared/schemas/consolidated.ts'
@@ -83,31 +82,6 @@ export const profileSkillsRouter = t.router({
       }
 
       return { children: data || [] }
-    }),
-
-  /**
-   * DEPRECATED: Search skills with hierarchy (use searchParentSkills instead)
-   * Kept for backwards compatibility
-   */
-  searchSkills: protectedProcedure
-    .input(searchSkillsInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { supabase } = ctx
-
-      const { data, error } = await supabase.rpc('search_skills_with_hierarchy', {
-        p_query: input.query,
-        p_industry_id: input.industryId,
-        p_limit: input.limit || 20,
-      })
-
-      if (error) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: `Failed to search skills: ${error.message}`,
-        })
-      }
-
-      return { skills: data || [] }
     }),
 
   /**
