@@ -2,7 +2,11 @@ import { describe, expect, it, beforeEach, vi } from 'vitest'
 
 const { mockUseQuery } = vi.hoisted(() => ({ mockUseQuery: vi.fn() }))
 
-const { supabaseMock } = vi.hoisted(() => ({ supabaseMock: { schema: vi.fn() } }))
+const { supabaseMock } = vi.hoisted(() => ({
+  supabaseMock: {
+    schema: vi.fn(() => ({ rpc: vi.fn(), from: vi.fn() })),
+  },
+}))
 
 vi.mock('@tanstack/react-query', () => ({
   useQuery: (config: unknown) => mockUseQuery(config),
@@ -32,6 +36,7 @@ const createTalentQueryBuilder = (data: unknown[] | null, error: { message: stri
   builder.gte = vi.fn(() => builder)
   builder.lte = vi.fn(() => builder)
   builder.limit = vi.fn(() => builder)
+   builder.in = vi.fn(() => builder)
   builder.then = (resolve: (value: { data: unknown[] | null; error: { message: string } | null }) => void) =>
     Promise.resolve({ data, error }).then(resolve)
   builder.catch = (reject: (reason: unknown) => void) =>
@@ -59,12 +64,14 @@ describe('discovery data hooks', () => {
         remote_option: null,
         location: 'Charlotte, NC',
         address: { latitude: 35.22, longitude: -80.84 },
+        longitude: -80.84,
+        latitude: 35.22,
         pay_range_min_cents: 3000,
         pay_range_max_cents: 5000,
         pay_range_type: 'hourly',
         status: 'open',
         position_level: 'mid',
-        organizations: { name: 'Acme Co' },
+        organization_name: 'Acme Co',
       },
       {
         id: 'job-2',
@@ -74,18 +81,19 @@ describe('discovery data hooks', () => {
         remote_option: null,
         location: 'Raleigh, NC',
         address: { latitude: 36.0, longitude: -77.0 },
+        longitude: -77,
+        latitude: 36,
         pay_range_min_cents: null,
         pay_range_max_cents: null,
         pay_range_type: null,
         status: 'open',
         position_level: null,
-        organizations: { name: 'NC Painters' },
+        organization_name: 'NC Painters',
       },
     ]
 
-    const jobBuilder = createJobQueryBuilder(jobs)
-    const fromMock = vi.fn(() => jobBuilder)
-    supabaseMock.schema.mockReturnValue({ from: fromMock })
+    const rpcMock = vi.fn().mockResolvedValue({ data: jobs, error: null })
+    supabaseMock.schema.mockReturnValue({ rpc: rpcMock })
 
     const bounds = { north: 35.5, south: 35.0, east: -80.5, west: -81.0 }
 
@@ -93,16 +101,15 @@ describe('discovery data hooks', () => {
     const result = await config.queryFn()
 
     expect(mockUseQuery).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ['map-jobs', bounds] }))
-    expect(jobBuilder.limit).toHaveBeenCalledWith(500)
-    expect(result).toEqual([
-      expect.objectContaining({ id: 'job-1', coordinates: [-80.84, 35.22], organization_name: 'Acme Co' }),
-    ])
+    expect(result).toHaveLength(1)
+    expect(result[0].id).toBe('job-1')
+    expect(result[0].coordinates).toEqual([-80.84, 35.22])
+    expect(result[0].organization_name).toBe('Acme Co')
   })
 
   it('throws when job fetch encounters an error', async () => {
-    const jobBuilder = createJobQueryBuilder(null, { message: 'boom' })
-    const fromMock = vi.fn(() => jobBuilder)
-    supabaseMock.schema.mockReturnValue({ from: fromMock })
+    const rpcMock = vi.fn().mockResolvedValue({ data: null, error: { message: 'boom' } })
+    supabaseMock.schema.mockReturnValue({ rpc: rpcMock })
 
     const config = useJobs() as any
     await expect(config.queryFn()).rejects.toThrow('Failed to fetch jobs: boom')

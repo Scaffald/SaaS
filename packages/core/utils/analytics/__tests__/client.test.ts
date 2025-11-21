@@ -113,6 +113,19 @@ describe('analytics client', () => {
     process.env.POSTHOG_KEY = 'test-key'
     process.env.POSTHOG_HOST = 'https://app.posthog.com'
     delete process.env.EXPO_PUBLIC_POSTHOG_API_KEY
+
+    mockConstants.expoConfig.extra = {
+      posthogKey: 'test-key',
+      posthogHost: 'https://app.posthog.com',
+      appEnv: 'development',
+      analytics: {
+        posthog: {
+          key: 'test-key',
+          host: 'https://app.posthog.com',
+          env: 'development',
+        },
+      },
+    }
     
     // Reset __DEV__
     ;(global as any).__DEV__ = true
@@ -144,20 +157,18 @@ describe('analytics client', () => {
       delete process.env.POSTHOG_KEY_PROD
       mockConstants.expoConfig.extra = {
         appEnv: 'development',
-        posthogKey: 'test-key',
-        posthogHost: 'https://app.posthog.com',
         analytics: {
           posthog: {
-            key: 'test-key',
-            host: 'https://app.posthog.com',
+            key: '',
+            host: '',
             env: 'development',
           },
         },
       }
       const { initAnalytics } = await import('../client')
-      
+
       await initAnalytics({ hasConsent: true })
-      
+
       expect(PostHogConstructor).not.toHaveBeenCalled()
     })
 

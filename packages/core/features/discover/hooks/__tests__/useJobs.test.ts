@@ -1,11 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-const mockFrom = vi.hoisted(() => vi.fn())
-const mockSelect = vi.hoisted(() => vi.fn())
-const mockEq = vi.hoisted(() => vi.fn())
-const mockLimit = vi.hoisted(() => vi.fn())
+const mockRpc = vi.hoisted(() => vi.fn())
 const mockSchema = vi.hoisted(() => vi.fn())
-const mockReturns = vi.hoisted(() => vi.fn())
 
 const mockSupabaseClient = vi.hoisted(() => ({
   schema: mockSchema,
@@ -34,28 +30,18 @@ describe('buildJobsQuery', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    mockReturns.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: [],
       error: null,
     })
-    mockLimit.mockReturnThis()
-    mockEq.mockReturnThis()
-    mockSelect.mockReturnValue({
-      eq: mockEq,
-      limit: mockLimit,
-      returns: mockReturns,
-    })
-    mockFrom.mockReturnValue({
-      select: mockSelect,
-    })
     mockSchema.mockReturnValue({
-      from: mockFrom,
+      rpc: mockRpc,
     })
   })
 
-  it('filters by status="open"', async () => {
+  it('calls the jobs RPC', async () => {
     await runJobsQuery({ bounds: mockBounds })
-    expect(mockEq).toHaveBeenCalledWith('status', 'open')
+    expect(mockRpc).toHaveBeenCalledWith('get_jobs_with_coords')
   })
 
   it('filters jobs by bounds in memory', async () => {
@@ -67,6 +53,8 @@ describe('buildJobsQuery', () => {
         employment_type: 'full-time',
         remote_option: 'hybrid',
         location: 'Boston, MA',
+        longitude: -71.0589,
+        latitude: 42.3601,
         address: {
           longitude: -71.0589,
           latitude: 42.3601,
@@ -78,7 +66,7 @@ describe('buildJobsQuery', () => {
         pay_range_type: 'annual',
         status: 'open',
         position_level: 'mid',
-        organizations: { name: 'Acme Corp' },
+        organization_name: 'Acme Corp',
       },
       {
         id: 'job-2',
@@ -87,20 +75,19 @@ describe('buildJobsQuery', () => {
         employment_type: null,
         remote_option: null,
         location: 'New York, NY',
-        address: {
-          longitude: -100,
-          latitude: 50,
-        },
+        longitude: -100,
+        latitude: 50,
+        address: null,
         pay_range_min_cents: null,
         pay_range_max_cents: null,
         pay_range_type: null,
         status: 'open',
         position_level: null,
-        organizations: null,
+        organization_name: null,
       },
     ]
 
-    mockReturns.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: mockJobs,
       error: null,
     })
@@ -111,8 +98,28 @@ describe('buildJobsQuery', () => {
   })
 
   it('enforces limit of 500', async () => {
-    await runJobsQuery({ bounds: mockBounds, limit: 1000 })
-    expect(mockLimit).toHaveBeenCalledWith(500)
+    const mockJobs = Array.from({ length: 600 }, (_, index) => ({
+      id: `job-${index}`,
+      title: `Job ${index}`,
+      organization_id: 'org-1',
+      employment_type: null,
+      remote_option: null,
+      location: null,
+      longitude: mockBounds.west,
+      latitude: mockBounds.south,
+      address: null,
+      pay_range_min_cents: null,
+      pay_range_max_cents: null,
+      pay_range_type: null,
+      status: 'open',
+      position_level: null,
+      organization_name: null,
+    }))
+
+    mockRpc.mockResolvedValue({ data: mockJobs, error: null })
+
+    const jobs = await runJobsQuery({ bounds: mockBounds, limit: 1000 })
+    expect(jobs).toHaveLength(500)
   })
 
   it('transforms jobs correctly', async () => {
@@ -123,6 +130,8 @@ describe('buildJobsQuery', () => {
       employment_type: 'full-time',
       remote_option: 'hybrid',
       location: 'Boston, MA',
+      longitude: -71.0589,
+      latitude: 42.3601,
       address: {
         longitude: -71.0589,
         latitude: 42.3601,
@@ -134,10 +143,10 @@ describe('buildJobsQuery', () => {
       pay_range_type: 'annual',
       status: 'open',
       position_level: 'mid',
-      organizations: { name: 'Acme Corp' },
+      organization_name: 'Acme Corp',
     }
 
-    mockReturns.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: [mockJob],
       error: null,
     })
@@ -160,6 +169,8 @@ describe('buildJobsQuery', () => {
       employment_type: null,
       remote_option: null,
       location: null,
+      longitude: -71.0589,
+      latitude: 42.3601,
       address: {
         longitude: -71.0589,
         latitude: 42.3601,
@@ -169,10 +180,10 @@ describe('buildJobsQuery', () => {
       pay_range_type: null,
       status: 'open',
       position_level: null,
-      organizations: null,
+      organization_name: null,
     }
 
-    mockReturns.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: [mockJob],
       error: null,
     })
@@ -190,6 +201,8 @@ describe('buildJobsQuery', () => {
         employment_type: null,
         remote_option: null,
         location: null,
+        longitude: -71.0589,
+        latitude: 42.3601,
         address: {
           longitude: -71.0589,
           latitude: 42.3601,
@@ -199,7 +212,7 @@ describe('buildJobsQuery', () => {
         pay_range_type: null,
         status: 'open',
         position_level: null,
-        organizations: null,
+        organization_name: null,
       },
       {
         id: 'job-2',
@@ -208,17 +221,19 @@ describe('buildJobsQuery', () => {
         employment_type: null,
         remote_option: null,
         location: null,
+        longitude: null,
+        latitude: null,
         address: null,
         pay_range_min_cents: null,
         pay_range_max_cents: null,
         pay_range_type: null,
         status: 'open',
         position_level: null,
-        organizations: null,
+        organization_name: null,
       },
     ]
 
-    mockReturns.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: mockJobs,
       error: null,
     })
@@ -229,10 +244,9 @@ describe('buildJobsQuery', () => {
   })
 
   it('handles database errors', async () => {
-    const error = { message: 'Database error' }
-    mockReturns.mockResolvedValue({
+    mockRpc.mockResolvedValue({
       data: null,
-      error,
+      error: { message: 'Database error' },
     })
 
     await expect(runJobsQuery({ bounds: mockBounds })).rejects.toThrow(
@@ -241,10 +255,7 @@ describe('buildJobsQuery', () => {
   })
 
   it('returns empty array for no results', async () => {
-    mockReturns.mockResolvedValue({
-      data: [],
-      error: null,
-    })
+    mockRpc.mockResolvedValue({ data: null, error: null })
 
     const jobs = await runJobsQuery({ bounds: mockBounds })
     expect(jobs).toEqual([])

@@ -1061,6 +1061,7 @@ describe('ProfileEmploymentLeft', () => {
     press(passportSwitch)
 
     const saveButton = getByRole('button', { name: /save changes/i }) as HTMLButtonElement
+    await waitFor(() => expect(saveButton.getAttribute('aria-disabled')).not.toBe('true'))
     press(saveButton)
 
     await waitFor(() => expect(mockMutateAsync).toHaveBeenCalledTimes(1), { timeout: 1500 })

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useEffect } from 'react'
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 
 const STORAGE_KEY = '@map_state'
@@ -365,6 +366,9 @@ describe('MapStateProvider', () => {
 
     const Consumer = () => {
       const { state, updateFilters } = useMapState()
+      useEffect(() => {
+        updateFilters({ showJobs: true })
+      }, [])
       return (
         <div>
           <span data-testid="jobs">{String(state.activeFilters.showJobs)}</span>

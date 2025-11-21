@@ -8,6 +8,12 @@ const updateOrganizationMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMuta
 const getOrganizationQueryMock = vi.hoisted(() => ({ data: undefined, isLoading: false, useQuery: vi.fn() }))
 const getProjectsWithOverridesQueryMock = vi.hoisted(() => ({ data: undefined, isLoading: false, useQuery: vi.fn() }))
 const updateLocationVisibilityMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), isPending: false, useMutation: vi.fn() }))
+const getPaymentMethodQueryMock = vi.hoisted(() => ({ data: null, isLoading: false, useQuery: vi.fn() }))
+const deletePaymentMethodMock = vi.hoisted(() => ({ mutate: vi.fn(), isLoading: false, useMutation: vi.fn() }))
+const getAccountCreditsQueryMock = vi.hoisted(() => ({ data: null, isLoading: false, useQuery: vi.fn() }))
+const getCreditLedgerQueryMock = vi.hoisted(() => ({ data: [], isLoading: false, useQuery: vi.fn() }))
+const depositCreditsMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), isPending: false, useMutation: vi.fn() }))
+const requestDeletionMock = vi.hoisted(() => ({ mutate: vi.fn(), isPending: false, useMutation: vi.fn() }))
 const toastMock = vi.hoisted(() => ({ show: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ push: vi.fn() }))
 
@@ -21,6 +27,28 @@ vi.mock('@app/core/utils/api', () => ({
       getOrganization: { useQuery: getOrganizationQueryMock.useQuery },
       getProjectsWithOverrides: { useQuery: getProjectsWithOverridesQueryMock.useQuery },
       updateLocationVisibility: { useMutation: updateLocationVisibilityMock.useMutation },
+    },
+    payments: {
+      getPaymentMethod: {
+        useQuery: (...args: unknown[]) => getPaymentMethodQueryMock.useQuery(...args),
+      },
+      deletePaymentMethod: {
+        useMutation: (...args: unknown[]) => deletePaymentMethodMock.useMutation(...args),
+      },
+      getAccountCredits: {
+        useQuery: (...args: unknown[]) => getAccountCreditsQueryMock.useQuery(...args),
+      },
+      getCreditLedger: {
+        useQuery: (...args: unknown[]) => getCreditLedgerQueryMock.useQuery(...args),
+      },
+      depositCredits: {
+        useMutation: (...args: unknown[]) => depositCreditsMock.useMutation(...args),
+      },
+    },
+    accountDeletion: {
+      requestOrganizationDeletion: {
+        useMutation: (...args: unknown[]) => requestDeletionMock.useMutation(...args),
+      },
     },
   },
 }))
@@ -40,6 +68,17 @@ vi.mock('@app/core/utils/supabase/client', () => ({
     }),
   },
 }))
+
+vi.mock('@app/core/features/organizations/components/OrganizationDeletionPanel', () => ({
+  OrganizationDeletionPanel: () => <div data-testid="organization-deletion" />,
+}))
+
+getPaymentMethodQueryMock.useQuery.mockReturnValue({
+  data: null,
+  isLoading: false,
+  refetch: vi.fn(),
+})
+deletePaymentMethodMock.useMutation.mockReturnValue({ mutate: vi.fn(), isPending: false })
 
 vi.mock('./OrganizationLocationsInput', () => ({
   OrganizationLocationsInput: ({ onChange }: { onChange: (value: unknown) => void }) => (
@@ -99,6 +138,7 @@ vi.mock('@app/ui', () => ({
     </button>
   ),
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+  useToast: () => ({ show: vi.fn() }),
   AddressAutocomplete: ({ value, onChange, onAddressSelect }: { value?: string; onChange: (value: string) => void; onAddressSelect: (result: Record<string, unknown>) => void }) => (
     <div>
       <input
@@ -207,7 +247,12 @@ vi.mock('tamagui', async () => {
 vi.mock('@tamagui/lucide-icons', () => ({
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,
+  CreditCard: () => <span data-testid="credit-card-icon" />,
+  DollarSign: () => <span data-testid="dollar-icon" />,
+  AlertTriangle: () => <span data-testid="alert-icon" />,
   Plus: () => <span data-testid="plus-icon" />,
+  Trash2: () => <span data-testid="trash-icon" />,
+  TrendingUp: () => <span data-testid="trending-up-icon" />,
   X: () => <span data-testid="x-icon" />,
 }))
 
@@ -226,6 +271,16 @@ describe('OrganizationForm', () => {
     getOrganizationQueryMock.useQuery.mockReturnValue({ data: undefined, isLoading: false })
     getProjectsWithOverridesQueryMock.useQuery.mockReturnValue({ data: undefined, isLoading: false })
     updateLocationVisibilityMock.useMutation.mockReturnValue({ mutateAsync: updateLocationVisibilityMock.mutateAsync, isPending: false })
+    getPaymentMethodQueryMock.useQuery.mockReturnValue({ data: null, isLoading: false, refetch: vi.fn() })
+    deletePaymentMethodMock.useMutation.mockReturnValue({ mutate: vi.fn(), isPending: false })
+    getAccountCreditsQueryMock.useQuery.mockReturnValue({
+      data: { balance_cents: 0, currency: 'usd' },
+      isLoading: false,
+      refetch: vi.fn(),
+    })
+    getCreditLedgerQueryMock.useQuery.mockReturnValue({ data: { items: [] }, isLoading: false, refetch: vi.fn() })
+    depositCreditsMock.useMutation.mockReturnValue({ mutateAsync: vi.fn(), isPending: false })
+    requestDeletionMock.useMutation.mockReturnValue({ mutate: vi.fn(), isPending: false })
     toastMock.show.mockReset()
     routerMock.push.mockReset()
   })

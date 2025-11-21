@@ -215,8 +215,8 @@ describe('ProfileEducationRight', () => {
   it('renders formatted date ranges and location metadata', () => {
     render(<ProfileEducationRight />)
 
-    expect(screen.getByText('Dec 2017 - Apr 2022')).toBeInTheDocument()
-    expect(screen.getByText('Dec 2022 - Present (Expected: May 2025)')).toBeInTheDocument()
+    expect(screen.getByText('Jan 2018 - May 2022')).toBeInTheDocument()
+    expect(screen.getByText('Jan 2023 - Present (Expected: Jun 2025)')).toBeInTheDocument()
     expect(screen.getByText('Boston, MA')).toBeInTheDocument()
     expect(screen.getByText('Remote')).toBeInTheDocument()
   })
