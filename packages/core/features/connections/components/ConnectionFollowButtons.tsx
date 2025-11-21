@@ -239,7 +239,7 @@ export function ConnectionFollowButtons({
             <Button
               size="$4"
               icon={UserCheck}
-              theme="green"
+              theme="success"
               variant="outlined"
               disabled={isConnectionMutating}
               flex={1}
@@ -250,7 +250,7 @@ export function ConnectionFollowButtons({
               size="$4"
               icon={UserMinus}
               variant="outlined"
-              theme="red"
+              theme="error"
               onPress={handleRemoveConnection}
               disabled={isConnectionMutating}
             >
@@ -276,7 +276,7 @@ export function ConnectionFollowButtons({
             <Button
               size="$4"
               icon={CheckCircle2}
-              theme="green"
+              theme="success"
               onPress={handleAcceptRequest}
               disabled={isConnectionMutating}
               flex={1}
@@ -287,7 +287,7 @@ export function ConnectionFollowButtons({
               size="$4"
               icon={X}
               variant="outlined"
-              theme="red"
+              theme="error"
               onPress={handleDeclineRequest}
               disabled={isConnectionMutating}
             >
@@ -315,7 +315,7 @@ export function ConnectionFollowButtons({
             size="$4"
             icon={isFollowMutating ? Loader2 : followStatus.isFollowing ? UserMinus : UserPlus}
             variant={followStatus.isFollowing ? 'outlined' : 'outlined'}
-            theme={followStatus.isFollowing ? 'red' : 'blue'}
+            theme={followStatus.isFollowing ? 'error' : 'blue'}
             onPress={followStatus.isFollowing ? handleUnfollow : handleFollow}
             disabled={isFollowMutating || followStatus.isLoading}
             flex={1}

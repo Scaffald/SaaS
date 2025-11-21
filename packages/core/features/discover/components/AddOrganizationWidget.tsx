@@ -101,7 +101,7 @@ export function AddOrganizationWidget() {
     })
   }
 
-  const isSubmitting = createOrganizationRequestMutation.isLoading
+  const isSubmitting = createOrganizationRequestMutation.isPending
 
   return (
     <DashboardWidget gap="$4">

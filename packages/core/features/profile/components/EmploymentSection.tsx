@@ -1,3 +1,7 @@
+import {
+  USPassportToggle,
+  USResidentToggle,
+} from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
 import {
   UIButton as Button,
@@ -5,10 +9,9 @@ import {
   DashboardWidget,
   LocationListInput,
   RangeSliderCard,
-  ToggleCard,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Car, Flag, MapPin, Plane, Shield } from '@tamagui/lucide-icons'
+import { Calendar, Car, Plane, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -232,10 +235,7 @@ export function EmploymentSection({
             name="us_resident"
             control={control}
             render={({ field }) => (
-              <ToggleCard
-                icon={<Flag size="$2" color="$color11" />}
-                title="US Resident"
-                description="I am a resident of the United States"
+              <USResidentToggle
                 checked={field.value || false}
                 onCheckedChange={field.onChange}
                 disabled={readOnly}
@@ -246,10 +246,7 @@ export function EmploymentSection({
             name="us_passport"
             control={control}
             render={({ field }) => (
-              <ToggleCard
-                icon={<MapPin size="$2" color="$color11" />}
-                title="US Passport"
-                description="I have a valid United States passport"
+              <USPassportToggle
                 checked={field.value || false}
                 onCheckedChange={field.onChange}
                 disabled={readOnly}

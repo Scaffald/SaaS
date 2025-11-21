@@ -1,4 +1,5 @@
 import { ROUTES } from '@app/core/constants/routes'
+import { OpenToTravelToggle } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
 import { ToggleCard, UIButton as Button, spacing } from '@app/ui'
 import {
@@ -842,11 +843,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           Employment Preferences
         </Text>
         <Paragraph color="$color11">
-          Tell us about your ideal working conditions. We’ll update your profile with these
+          Tell us about your ideal working conditions. We'll update your profile with these
           preferences.
         </Paragraph>
-        <CheckboxRow
-          label="Open to travel"
+        <OpenToTravelToggle
           checked={employmentForm.openToTravel}
           onCheckedChange={(checked) =>
             setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))
@@ -968,27 +968,6 @@ function EmptyState({ message }: { message: string }) {
     <YStack gap="$2" bg="$gray3" p="$3" rounded="$4">
       <Text color="$color11">{message}</Text>
     </YStack>
-  )
-}
-
-function CheckboxRow({
-  label,
-  checked,
-  onCheckedChange,
-}: {
-  label: string
-  checked: boolean
-  onCheckedChange: (next: boolean) => void
-}) {
-  return (
-    <XStack gap="$2" items="center">
-      <Checkbox
-        size="$3"
-        checked={checked}
-        onCheckedChange={(value) => onCheckedChange(value === true)}
-      />
-      <Text>{label}</Text>
-    </XStack>
   )
 }
 

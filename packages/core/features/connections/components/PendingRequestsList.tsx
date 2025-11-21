@@ -197,7 +197,7 @@ export function PendingRequestsList() {
                 size="$2"
                 circular
                 icon={CheckCircle2}
-                theme="green"
+                theme="success"
                 onPress={() => handleAccept(request.id)}
                 disabled={isLoading}
               />
