@@ -28,3 +28,7 @@ export {
   type IndividualSkillRadarChartProps,
   type VersionHistoryItem,
 } from './IndividualSkillRadarChart'
+export {
+  SoftSkillsRadarGrid,
+  type SoftSkillsRadarGridProps,
+} from './SoftSkillsRadarGrid'

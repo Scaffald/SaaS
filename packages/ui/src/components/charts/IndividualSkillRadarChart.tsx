@@ -115,7 +115,7 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
             fontSize={config.titleSize}
             fontWeight="600"
             color="$color12"
-            textAlign="center"
+            ta="center"
             numberOfLines={2}
           >
             {skillName}
