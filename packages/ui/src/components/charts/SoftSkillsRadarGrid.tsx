@@ -9,7 +9,6 @@ import { Text, View, XStack, YStack } from 'tamagui'
 export interface SoftSkillsRadarGridProps {
   skills: SoftSkill[]
   activeCategory: SoftSkillCategory
-  onCategoryChange: (category: SoftSkillCategory) => void
   isLoading?: boolean
   onSkillPress?: (skillId: string) => void
 }
@@ -28,7 +27,6 @@ export interface SoftSkillsRadarGridProps {
  *
  * @param skills - Array of all soft skills
  * @param activeCategory - Currently active category to filter
- * @param onCategoryChange - Callback when category changes
  * @param isLoading - Whether data is loading
  * @param onSkillPress - Optional callback when a skill chart is pressed
  * @returns JSX element
@@ -46,7 +44,6 @@ export interface SoftSkillsRadarGridProps {
 export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   skills,
   activeCategory,
-  onCategoryChange,
   isLoading = false,
   onSkillPress,
 }) => {
@@ -84,10 +81,10 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   if (filteredSkills.length === 0) {
     return (
       <YStack gap="$4" p="$4" items="center" justify="center" minH={300}>
-        <Text fontSize="$5" fontWeight="600" color="$color11" ta="center">
+        <Text fontSize="$5" fontWeight="600" color="$color11">
           No skills in this category
         </Text>
-        <Text fontSize="$3" color="$color10" ta="center">
+        <Text fontSize="$3" color="$color10">
           Skills will appear here once they're added to this category.
         </Text>
       </YStack>
@@ -95,25 +92,25 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   }
 
   return (
-      <YStack gap="$4" p="$4">
-        <XStack
-          flexWrap="wrap"
-          gap="$3"
-          $md={{
-            gap: '$4',
-          }}
-        >
-          {filteredSkills.map((skill) => (
-            <View
-              key={skill.id}
-              width="100%"
-              $md={{
-                width: '48%',
-              }}
-              $lg={{
-                width: '31%',
-              }}
-            >
+    <YStack gap="$4" p="$4">
+      <XStack
+        flexWrap="wrap"
+        gap="$3"
+        $md={{
+          gap: '$4',
+        }}
+      >
+        {filteredSkills.map((skill) => (
+          <View
+            key={skill.id}
+            width="100%"
+            $md={{
+              width: '48%',
+            }}
+            $lg={{
+              width: '31%',
+            }}
+          >
             <IndividualSkillRadarChart
               skillName={skill.name}
               selfRating={skill.selfRating}

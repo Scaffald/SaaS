@@ -80,13 +80,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   }
 
   return (
-    <>
-      <ResponsiveModal
-        open={open}
-        onOpenChange={onOpenChange}
-        title={job?.title || 'Job Details'}
-        size="medium"
-      >
+    <ResponsiveModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={job?.title || 'Job Details'}
+      size="medium"
+    >
         {isLoading ? (
           <YStack py="$8" items="center" justify="center">
             <Spinner size="large" color="$blue10" />
@@ -230,7 +229,6 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             </Button>
           </>
         )}
-      </ResponsiveModal>
-    </>
+    </ResponsiveModal>
   )
 }

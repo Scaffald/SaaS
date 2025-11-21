@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { ArrowDown, ArrowUp, Minus } from '@tamagui/lucide-icons'
-import { Circle, Svg, Text as SvgText } from 'react-native-svg'
+import { Circle, Svg } from 'react-native-svg'
 import { Card, Text, View, XStack, YStack } from 'tamagui'
 
 export interface VersionHistoryItem {
@@ -111,13 +111,7 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
       <YStack gap="$2" items="center">
         {/* Skill Name */}
         <XStack gap="$2" items="center" justify="center" flexWrap="wrap">
-          <Text
-            fontSize={config.titleSize}
-            fontWeight="600"
-            color="$color12"
-            ta="center"
-            numberOfLines={2}
-          >
+          <Text fontSize={config.titleSize} fontWeight="600" color="$color12" numberOfLines={2}>
             {skillName}
           </Text>
           {trend && (
