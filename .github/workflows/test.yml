@@ -40,8 +40,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Detect API layer changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            api:
+              - 'packages/supabase/functions/**'
+              - 'packages/supabase/tests/**'
+              - 'packages/supabase/types.ts'
+              - 'packages/core/utils/api.ts'
+              - 'packages/core/utils/supabase/**'
+              - 'packages/core/features/payments/**'
+
       - name: Start Supabase
         id: supabase-start
+        if: steps.changes.outputs.api == 'true'
         run: |
           pnpm supa start > supabase.log 2>&1 &
           echo "SUPABASE_PID=$!" >> "$GITHUB_ENV"
@@ -57,8 +71,12 @@ jobs:
           exit 1
         shell: bash
 
-      - name: Run tests
-        run: pnpm test
+      - name: Run unit and integration tests
+        run: pnpm test:vitest
+
+      - name: Run Supabase API suites
+        if: steps.changes.outputs.api == 'true'
+        run: pnpm test:api
 
       - name: Upload coverage artifact
         if: always()
@@ -83,7 +101,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Stop Supabase
-        if: always()
+        if: steps.changes.outputs.api == 'true'
         run: |
           if [ -n "${SUPABASE_PID:-}" ]; then
             pnpm supa stop || true
