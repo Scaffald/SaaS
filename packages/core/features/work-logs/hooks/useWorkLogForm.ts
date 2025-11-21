@@ -246,19 +246,25 @@ export const useWorkLogForm = ({
   }, [form]);
 
   const createWorkLogMutation = api.workLogs.create.useMutation({
-    onError: (error: Error) => {
+    onError: (error) => {
+      const message = error instanceof Error
+        ? error.message
+        : "Failed to save work log draft.";
       setAutoSaveStatus({
         state: "error",
-        message: error.message ?? "Failed to save work log draft.",
+        message,
       });
     },
   });
 
   const updateWorkLogMutation = api.workLogs.update.useMutation({
-    onError: (error: Error) => {
+    onError: (error) => {
+      const message = error instanceof Error
+        ? error.message
+        : "Failed to update work log draft.";
       setAutoSaveStatus({
         state: "error",
-        message: error.message ?? "Failed to update work log draft.",
+        message,
       });
     },
   });

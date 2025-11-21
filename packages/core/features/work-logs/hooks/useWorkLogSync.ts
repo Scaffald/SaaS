@@ -18,6 +18,9 @@ import { loadSyncSettings, saveSyncSettings } from '../utils/offline-storage'
 const WORK_LOG_PHOTO_BUCKET = 'work-log-photos'
 const BASE_RETRY_DELAY_MS = 5000
 const MAX_RETRY_DELAY_MS = 5 * 60 * 1000
+const ALLOWED_PHOTO_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
+
+type PhotoMimeType = (typeof ALLOWED_PHOTO_MIME_TYPES)[number]
 
 type FileSystemModule = typeof import('expo-file-system/legacy')
 
@@ -42,6 +45,30 @@ const computeBackoffDelay = (retryCount: number) => {
 
 const createSyncError = (error: unknown): Error =>
   error instanceof Error ? error : new Error(String(error))
+
+const extractWorkLogIdFromResponse = (input: unknown): string | null => {
+  if (!input || typeof input !== 'object') {
+    return null
+  }
+
+  if (typeof (input as { id?: unknown }).id === 'string') {
+    return (input as { id: string }).id
+  }
+
+  const workLogCandidate = (input as { workLog?: unknown }).workLog
+  if (workLogCandidate && typeof workLogCandidate === 'object' && typeof (workLogCandidate as { id?: unknown }).id === 'string') {
+    return (workLogCandidate as { id: string }).id
+  }
+
+  return null
+}
+
+const normalizePhotoMimeType = (value: unknown): PhotoMimeType => {
+  if (typeof value === 'string' && (ALLOWED_PHOTO_MIME_TYPES as readonly string[]).includes(value)) {
+    return value as PhotoMimeType
+  }
+  return 'image/jpeg'
+}
 
 interface UseWorkLogSyncOptions {
   offlineWorkLogs: OfflineWorkLog[]
@@ -134,18 +161,23 @@ export const useWorkLogSync = ({
     async (entry: OfflineWorkLog) => {
       const FileSystem = await ensureFileSystemModule()
       const payload = entry.payload
-      let remoteWorkLogId: string
+      let remoteWorkLogId: string | null = null
 
       if (payload.kind === 'create') {
         const created = await createWorkLogMutation.mutateAsync(payload.input)
-        remoteWorkLogId = created.id
+        remoteWorkLogId = extractWorkLogIdFromResponse(created)
       } else {
         const updated = await updateWorkLogMutation.mutateAsync(payload.input)
-        remoteWorkLogId = payload.input.workLogId ?? updated.workLog?.id ?? updated.id
+        remoteWorkLogId =
+          payload.input.workLogId ?? extractWorkLogIdFromResponse(updated)
       }
 
       if (!entry.photos.length) {
         return
+      }
+
+      if (!remoteWorkLogId) {
+        throw new Error('Unable to resolve remote work log identifier.')
       }
 
       if (!FileSystem) {
@@ -162,11 +194,13 @@ export const useWorkLogSync = ({
         })
         const fileBuffer = Uint8Array.from(Buffer.from(base64, 'base64'))
 
+        const contentType = normalizePhotoMimeType(photo.mimeType)
+
         const uploadRequest = await uploadPhotoMutation.mutateAsync({
           workLogId: remoteWorkLogId,
           fileName: photo.fileName,
           fileSizeBytes: photo.size,
-          contentType: photo.mimeType,
+          contentType,
           caption: photo.caption ?? undefined,
           photoType: photo.photoType ?? undefined,
           displayOrder: photo.displayOrder ?? undefined,
@@ -183,7 +217,7 @@ export const useWorkLogSync = ({
         const { error: uploadError } = await supabase.storage
           .from(WORK_LOG_PHOTO_BUCKET)
           .uploadToSignedUrl(uploadPath, uploadRequest.token, fileBuffer, {
-            contentType: photo.mimeType,
+            contentType,
             upsert: false,
           })
 

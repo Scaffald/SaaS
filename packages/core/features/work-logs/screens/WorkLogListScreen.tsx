@@ -67,11 +67,7 @@ export function WorkLogListScreen() {
               verification.
             </Paragraph>
           </YStack>
-          <Button
-            size="$4"
-            icon={Plus}
-            onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path())}
-          >
+          <Button size="$4" icon={Plus} onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}>
             New Work Log
           </Button>
         </XStack>
@@ -120,7 +116,7 @@ export function WorkLogListScreen() {
             <Text color="$color10">Loading work logs…</Text>
           </YStack>
         ) : items.length === 0 ? (
-          <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path())} />
+          <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)} />
         ) : (
           <YStack gap="$3" pb="$6">
             {items.map((item) => (
@@ -180,12 +176,12 @@ export function WorkLogListScreen() {
                     <MetricPill
                       icon={MessagesSquare}
                       label="Comments"
-                      value={String(item.commentCount)}
+                      value={`${item.commentCount ?? 0}`}
                     />
                     <MetricPill
                       icon={DownloadCloud}
                       label="Photos"
-                      value={String(item.photoCount)}
+                      value={`${item.photoCount ?? 0}`}
                     />
                   </XStack>
 

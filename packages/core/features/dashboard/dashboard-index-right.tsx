@@ -1,4 +1,4 @@
-import { TeamInvitationsWidget } from '@app/core/features/dashboard/components'
+import { ProfileActivityWidget, TeamInvitationsWidget } from '@app/core/features/dashboard/components'
 import { NewsWidget } from '@app/core/features/news'
 import { DashboardWidget, StackedCards } from '@app/ui'
 import { H4, Text, YStack } from 'tamagui'
@@ -55,6 +55,7 @@ const profileTipCards = [
 export function DashboardIndexRight() {
   return (
     <YStack gap="$4">
+      <ProfileActivityWidget />
       <StackedCards
         cards={profileTipCards}
         interval={8000}

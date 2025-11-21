@@ -11,8 +11,9 @@ import {
 } from '@app/core/features/profile/widgets'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
-import { useLocalSearchParams } from 'expo-router'
-import { useMemo } from 'react'
+import { getOrCreateSessionId } from '@app/core/utils/sessionId'
+import { useLocalSearchParams, usePathname } from 'expo-router'
+import { useEffect, useMemo } from 'react'
 import { YStack } from 'tamagui'
 
 /**
@@ -45,6 +46,41 @@ export default function UserProfilePage() {
 
   // Determine if viewing own profile
   const isOwnProfile = currentUserId === id
+
+  // Profile view tracking
+  const recordViewMutation = api.profileViews.recordView.useMutation()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    // Track profile view automatically
+    const trackProfileView = async () => {
+      // Don't track own profile views
+      if (!id || isOwnProfile || !currentUserId) {
+        return
+      }
+
+      try {
+        // Get or create session ID for deduplication
+        const sessionId = await getOrCreateSessionId()
+
+        // Get referrer URL (current pathname)
+        const referrerUrl = pathname || undefined
+
+        // Record view (fire-and-forget, don't wait for response)
+        recordViewMutation.mutate({
+          viewedUserId: id,
+          sessionId,
+          referrerUrl,
+        })
+      } catch (error) {
+        // Silent error handling - don't block page load
+        console.warn('Failed to track profile view:', error)
+      }
+    }
+
+    trackProfileView()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isOwnProfile, currentUserId, pathname])
 
   const breadcrumbs = useMemo<DashboardBreadcrumbSegment[]>(
     () => [

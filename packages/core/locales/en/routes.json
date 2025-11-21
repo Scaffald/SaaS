@@ -71,6 +71,9 @@
       "title": "Applications",
       "inquiry": "Inquiry"
     },
+    "connections": {
+      "title": "Connections"
+    },
     "user": "User Profile",
     "assessments": {
       "title": "Assessments",

@@ -3,6 +3,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'
+import { buildSkillLookup } from '../utils/data-normalizers'
 import { ToggleSwitch } from '@app/ui'
 import {
   Activity,
@@ -24,12 +25,6 @@ import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 
 const isUuid = (value: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
-
-interface ExplicitSkillRecord {
-  id?: string | null
-  name?: string | null
-  display_name?: string | null
-}
 
 interface CollaboratorRecord {
   id?: string
@@ -235,25 +230,7 @@ export function WorkLogDetailScreen() {
 
   const photos = (workLog?.photos as Array<Record<string, unknown>> | undefined) ?? []
 
-  const skillsLookup = useMemo(() => {
-    const map = new Map<string, string>()
-    const explicitSkills = skillsQuery.data?.explicitSkills as ExplicitSkillRecord[] | undefined
-    if (Array.isArray(explicitSkills)) {
-      for (const skill of explicitSkills) {
-        const id = typeof skill.id === 'string' ? skill.id : null
-        const name =
-          typeof skill.name === 'string'
-            ? skill.name
-            : typeof skill.display_name === 'string'
-              ? skill.display_name
-              : null
-        if (id && name) {
-          map.set(id, name)
-        }
-      }
-    }
-    return map
-  }, [skillsQuery.data?.explicitSkills])
+  const skillsLookup = useMemo(() => buildSkillLookup(skillsQuery.data), [skillsQuery.data])
 
   const skillNames = useMemo(() => {
     if (!Array.isArray(workLog?.skills_used)) {

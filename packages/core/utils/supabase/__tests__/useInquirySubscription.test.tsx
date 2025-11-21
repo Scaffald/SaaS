@@ -1,11 +1,7 @@
 import type React from 'react'
 import { renderHook } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { describe, expect, it, vi } from 'vitest'
-
-import type { Mock } from 'vitest'
-
-const channelMocks: Array<ReturnType<typeof createMockChannel>> = []
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest'
 
 function createMockChannel(name: string) {
   const callbacks: Array<() => void> = []
@@ -29,6 +25,8 @@ function createMockChannel(name: string) {
   channelMocks.push(channel)
   return channel
 }
+
+const channelMocks: Array<ReturnType<typeof createMockChannel>> = []
 
 const supabaseMock = {
   channel: vi.fn((name: string) => createMockChannel(name)),

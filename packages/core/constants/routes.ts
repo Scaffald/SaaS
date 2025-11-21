@@ -344,6 +344,12 @@ const ROUTES_CONFIG = {
         exact: true,
       },
     },
+    CONNECTIONS: {
+      path: "/dashboard/connections",
+      titleKey: "routes.dashboard.connections.title",
+      protected: true,
+      exact: true,
+    },
     USER: {
       path: "/dashboard/users/:userId",
       titleKey: "routes.dashboard.user",

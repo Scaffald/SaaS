@@ -58,22 +58,23 @@ CREATE INDEX IF NOT EXISTS idx_profile_views_viewer_history
   ON engagement.profile_views (viewer_user_id, viewed_at DESC)
   WHERE viewer_user_id IS NOT NULL;
 
--- Partial index for 30-day analytics (recent views only)
-CREATE INDEX IF NOT EXISTS idx_profile_views_viewed_user_30d
-  ON engagement.profile_views (viewed_user_id)
-  WHERE viewed_at > NOW() - INTERVAL '30 days';
+    -- Index for 30-day analytics queries (composite index for common query pattern)
+    -- Note: Partial index with NOW() is not supported, so we use a composite index instead
+    CREATE INDEX IF NOT EXISTS idx_profile_views_viewed_user_30d
+      ON engagement.profile_views (viewed_user_id, viewed_at DESC);
 
--- =========================================================
--- Unique constraint to prevent duplicate views within same session/day
--- =========================================================
-CREATE UNIQUE INDEX IF NOT EXISTS idx_profile_views_dedupe
-  ON engagement.profile_views (
-    COALESCE(viewer_user_id, '00000000-0000-0000-0000-000000000000'::uuid),
-    viewed_user_id,
-    COALESCE(session_id, ''),
-    DATE(viewed_at)
-  )
-  WHERE viewer_user_id IS NOT NULL OR session_id IS NOT NULL;
+    -- =========================================================
+    -- Unique constraint to prevent duplicate views within same session/day
+    -- =========================================================
+    -- Note: Using date_trunc with AT TIME ZONE to make it immutable for index
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_profile_views_dedupe
+      ON engagement.profile_views (
+        COALESCE(viewer_user_id, '00000000-0000-0000-0000-000000000000'::uuid),
+        viewed_user_id,
+        COALESCE(session_id, ''),
+        date_trunc('day', viewed_at AT TIME ZONE 'UTC')
+      )
+      WHERE viewer_user_id IS NOT NULL OR session_id IS NOT NULL;
 
 -- =========================================================
 -- RLS Policies
@@ -163,10 +164,10 @@ CREATE INDEX IF NOT EXISTS idx_activity_events_target
   ON engagement.activity_events (target_type, target_id, occurred_at DESC)
   WHERE target_type IS NOT NULL AND target_id IS NOT NULL;
 
--- Partial index for recent patterns (90-day window)
-CREATE INDEX IF NOT EXISTS idx_activity_events_user_type_recent
-  ON engagement.activity_events (user_id, event_type)
-  WHERE occurred_at > NOW() - INTERVAL '90 days';
+    -- Index for recent activity queries (composite index for common query pattern)
+    -- Note: Partial index with NOW() is not supported, so we use a composite index instead
+    CREATE INDEX IF NOT EXISTS idx_activity_events_user_type_recent
+      ON engagement.activity_events (user_id, event_type, occurred_at DESC);
 
 -- =========================================================
 -- RLS Policies for activity_events

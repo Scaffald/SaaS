@@ -2,7 +2,17 @@ import React from 'react'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
-const MockSessionContext = React.createContext(null)
+type SessionContextValue = {
+  session: { id: string } | null
+  error: unknown
+  isLoading: boolean
+  supabaseClient: { client: boolean }
+  signOut: () => Promise<void> | void
+  clearAuth: () => Promise<void> | void
+  refreshSession: () => Promise<void> | void
+} | null
+
+const MockSessionContext = React.createContext<SessionContextValue>(null)
 
 vi.mock('../client', () => ({
   supabase: { client: true },

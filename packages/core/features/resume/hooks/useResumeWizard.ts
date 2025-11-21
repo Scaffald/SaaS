@@ -71,12 +71,13 @@ export function useResumeWizard(resumeId: string) {
   const handleSaveSection = async (
     section: ResumeWizardSection,
     data: unknown,
-    mergeStrategy: ResumeMergeStrategy = "replace",
+    mergeStrategy?: ResumeMergeStrategy,
   ) => {
+    const strategy = mergeStrategy ?? "replace";
     await saveSectionMutation.mutateAsync({
       section,
       data,
-      mergeStrategy: { mode: mergeStrategy },
+      mergeStrategy: { mode: strategy },
       wizardState: {
         resumeId,
         currentStep: currentIndex,
