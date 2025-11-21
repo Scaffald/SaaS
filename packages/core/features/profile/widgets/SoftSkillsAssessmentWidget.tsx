@@ -1,6 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
-import { RadarChart } from '@app/ui/src/components/charts/RadarChart'
+import { DashboardWidget, Heading, LoadingState, RadarChart, spacing, UIButton } from '@app/ui'
 import { useRouter } from 'expo-router'
 import { type FC, useMemo } from 'react'
 import { Text, View, XStack, YStack } from 'tamagui'
