@@ -5,7 +5,7 @@ import { YStack } from 'tamagui'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
-import { ProfileSnapshotWidget } from '../profile/widgets'
+import { ProfileSnapshotWidget, SoftSkillsAssessmentWidget } from '../profile/widgets'
 import { RIASECAssessmentWidget } from '../riasec-assessment'
 
 /**
@@ -39,6 +39,7 @@ export function DashboardIndexLeft() {
       {/* <ResumeImportWidget /> */}
       {/* <ProfileCompletionExperience /> */}
       <ProfileSnapshotWidget />
+      <SoftSkillsAssessmentWidget />
       <InquiryOverviewWidget />
       <IPIPAssessmentWidget />
       <RIASECAssessmentWidget />
