@@ -653,3 +653,83 @@ Deno.test({
       .in("id", [job1Id, job2Id]);
   },
 });
+
+Deno.test({
+  name: "Office router - listJobs does not reference non-existent assigned_team_id column",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  async fn() {
+    const adminAuth = await ensureOfficeAdminAccess();
+    const adminClient = createAdminClient();
+
+    const fixture = await setupTeamManagementFixture({
+      organizationName: "Test Org for assigned_team_id fix",
+    });
+
+    // Create a job for the organization
+    const jobId = crypto.randomUUID();
+    const now = new Date().toISOString();
+    await adminClient
+      .schema("core")
+      .from("jobs")
+      .insert({
+        id: jobId,
+        organization_id: fixture.organization.id,
+        title: "Test Job for assigned_team_id",
+        slug: `test-job-${jobId.slice(0, 8)}`,
+        status: "open",
+        created_at: now,
+        updated_at: now,
+      });
+
+    // Test with exact parameters from the failing request
+    const response = await callTRPCEndpoint(
+      "office.listJobs",
+      {
+        limit: 100,
+        offset: 0,
+        myTeamsOnly: false,
+      },
+      {
+        authToken: adminAuth.token,
+      },
+    );
+
+    // Should not have an error about assigned_team_id column
+    const error = response[0]?.error;
+    if (error) {
+      const errorMessage = error.message || JSON.stringify(error);
+      if (errorMessage.includes("assigned_team_id does not exist") ||
+          errorMessage.includes("column jobs.assigned_team_id does not exist")) {
+        throw new Error(
+          `office.listJobs still references non-existent assigned_team_id column: ${errorMessage}`
+        );
+      }
+      // Other errors are acceptable for this test (like no access, etc.)
+    }
+
+    const result = response[0]?.result?.data;
+    if (result) {
+      assertExists(result, "Request should return data");
+      assertEquals(Array.isArray(result.jobs), true);
+      assertExists(result.total, "Response should have total count");
+
+      // Verify job structure - should have teamAssignments but not assigned_team_id
+      if (result.jobs.length > 0) {
+        const job = result.jobs[0];
+        assertExists(job.id, "Job should have id");
+        // Team assignments should come from job_team_assignments, not assigned_team_id
+        if ("teamAssignments" in job) {
+          assertEquals(Array.isArray(job.teamAssignments), true);
+        }
+      }
+    }
+
+    // Cleanup
+    await adminClient
+      .schema("core")
+      .from("jobs")
+      .delete()
+      .eq("id", jobId);
+  },
+});

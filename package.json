@@ -59,6 +59,7 @@
     "supa:news:import": "pnpm env-local pnpm --filter @app/supabase seed:news-import",
     "supa:news:feeds": "pnpm env-local pnpm --filter @app/supabase seed:news-feeds",
     "supa:functions:prod": "pnpm supa:prod functions deploy trpc --project-ref qmfmpcyxsihhfttvqpbw",
+    "supa:functions:preview": "pnpm supa:preview functions deploy trpc --project-ref rxcbcxkzielwojunbtph",
     "supa:preview": "pnpm env-preview pnpx supabase --workdir packages",
     "supa:db:push": "pnpm supa db push --linked",
     "supa:db:push:prod": "pnpm env-prod pnpx supabase --workdir packages db push --linked",

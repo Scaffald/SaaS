@@ -403,7 +403,6 @@ export const officeRouter = t.router({
         pay_range_type,
         posted_at,
         created_at,
-        assigned_team_id,
         updated_at,
         organization:organizations!organization_id(id, name, slug),
         team:teams(id, name, organization_id),

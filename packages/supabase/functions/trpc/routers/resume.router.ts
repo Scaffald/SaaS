@@ -1,7 +1,6 @@
 import { Buffer } from "node:buffer";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
-import { extractRawText } from "mammoth";
 import { z } from "zod";
 import type { Database } from "../../_shared/database.types.ts";
 import { extractTextFromPdf as sharedExtractTextFromPdf } from "@app/trpc/utils";
@@ -32,6 +31,16 @@ const RESUME_SECTIONS = [
 ] as const;
 
 type ResumeSection = (typeof RESUME_SECTIONS)[number];
+
+// Lazy loading for large packages to reduce bundle size
+let mammothModule: typeof import("mammoth") | null = null;
+
+async function getMammoth(): Promise<typeof import("mammoth")> {
+  if (!mammothModule) {
+    mammothModule = await import("mammoth");
+  }
+  return mammothModule;
+}
 
 const uploadResumeInputSchema = z.object({
   fileData: z.string().min(1, "File payload is required"),
@@ -381,7 +390,8 @@ async function downloadResumeFile(
 
 async function extractTextFromDocLike(bytes: Uint8Array): Promise<string> {
   try {
-    const result = await extractRawText({ buffer: Buffer.from(bytes) });
+    const mammoth = await getMammoth();
+    const result = await mammoth.extractRawText({ buffer: Buffer.from(bytes) });
     if (result.value.trim().length > 0) {
       return result.value;
     }

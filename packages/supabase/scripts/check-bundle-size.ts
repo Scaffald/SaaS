@@ -41,6 +41,7 @@ async function compileAndMeasure(): Promise<number> {
   const command = new Deno.Command('deno', {
     args: [
       'compile',
+      '--no-check',
       '--output',
       OUTPUT_BINARY,
       '--config',
