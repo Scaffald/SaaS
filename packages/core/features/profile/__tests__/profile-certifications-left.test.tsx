@@ -203,9 +203,6 @@ const apiMock = vi.hoisted(() => {
               isPending: false,
             }),
           },
-          addTopLevelCertification: {
-            useMutation: noopMutation,
-          },
           addCategoryCertification: {
             useMutation: noopMutation,
           },
