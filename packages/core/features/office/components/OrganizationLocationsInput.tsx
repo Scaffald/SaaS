@@ -1,10 +1,10 @@
-import { useMemo, useCallback, useRef, useEffect } from 'react'
-import { randomUUID } from 'expo-crypto'
-import { YStack, XStack, Text, Button, Input } from 'tamagui'
-import { Plus, X } from '@tamagui/lucide-icons'
-import { AddressAutocomplete } from '@app/ui'
-import type { AddressResult } from '@app/ui'
 import type { OrganizationLocation } from '@app/schemas'
+import type { AddressResult } from '@app/ui'
+import { AddressAutocomplete } from '@app/ui'
+import { Plus, X } from '@tamagui/lucide-icons'
+import { randomUUID } from 'expo-crypto'
+import { useCallback, useEffect, useRef } from 'react'
+import { Button, Input, Text, XStack, YStack } from 'tamagui'
 
 interface OrganizationLocationsInputProps {
   value: OrganizationLocation[]

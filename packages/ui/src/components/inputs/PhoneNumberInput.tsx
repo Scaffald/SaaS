@@ -1,18 +1,19 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { XStack, YStack, Text, Select, Input, Adapt, Sheet, useMedia } from 'tamagui'
-import { FieldError } from '../FieldError'
-import {
-  COUNTRIES,
-  type Country,
-  findCountryByCode,
-  getDefaultCountry,
-} from '../../config/countries'
 import {
   formatPhoneNumber,
   getE164Format,
   getPhoneRegionCode,
   isValidPhoneNumber,
 } from '@app/schemas/common/phone'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Adapt, Input, Select, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import {
+  COUNTRIES,
+  type Country,
+  findCountryByCode,
+  getDefaultCountry,
+} from '../../config/countries'
+import { FieldError } from '../FieldError'
+import { Sheet } from '../sheets/Sheet'
 
 const DEBOUNCE_DELAY_MS = 500
 const PHONE_INVALID_MESSAGE = 'Please enter a valid phone number'
@@ -66,8 +67,10 @@ export const PhoneNumberInput = ({
   storeFormatted = false,
   countries = COUNTRIES,
 }: PhoneNumberInputProps) => {
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
+  // Use window dimensions for conditional rendering
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width } = useWindowDimensions()
+  const isMobile = width <= 800
 
   // Helper function to format phone number for display
   const formatPhoneForDisplay = useCallback((phoneValue: string, countryCode: string) => {

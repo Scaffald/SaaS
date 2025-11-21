@@ -1,5 +1,5 @@
-import { Paragraph, Spinner, Text, View, YStack } from 'tamagui'
 import { useTranslation } from '@app/core/utils/useTranslation'
+import { Paragraph, Spinner, Text, View, YStack } from 'tamagui'
 
 interface SuccessViewProps {
   isVisible: boolean

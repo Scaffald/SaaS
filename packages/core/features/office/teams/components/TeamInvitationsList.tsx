@@ -1,27 +1,25 @@
-import type { ReactNode } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { api } from '@app/core/utils/api'
+import { TEAM_INVITATION_STATUSES } from '@app/schemas'
+import type { AppRouter } from '@app/supabase/client-types'
+import { Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { ReactNode } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { ResponsiveSelect } from '@app/ui'
 import {
   Button,
   Card,
-  Select,
+  type GetThemeValueForKey,
   Spinner,
   Text,
   XStack,
   YStack,
-  useMedia,
-  type GetThemeValueForKey,
-} from 'tamagui';
-import { Check, ChevronDown, Clock, RefreshCw, XCircle } from '@tamagui/lucide-icons';
-import { useToastController } from '@tamagui/toast';
-import type { AppRouter } from '@app/supabase/client-types';
-import type { inferRouterOutputs } from '@trpc/server';
+} from 'tamagui'
 
-import { api } from '@app/core/utils/api';
-import { TEAM_INVITATION_STATUSES } from '@app/schemas';
-
-type InvitationsListOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list'];
-type InvitationRecord = NonNullable<InvitationsListOutput['invitations']>[number];
-type InvitationStatus = (typeof TEAM_INVITATION_STATUSES)[number];
+type InvitationsListOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']
+type InvitationRecord = NonNullable<InvitationsListOutput['invitations']>[number]
+type InvitationStatus = (typeof TEAM_INVITATION_STATUSES)[number]
 
 const STATUS_LABELS: Record<InvitationStatus, string> = {
   pending: 'Pending',
@@ -29,7 +27,7 @@ const STATUS_LABELS: Record<InvitationStatus, string> = {
   declined: 'Declined',
   expired: 'Expired',
   revoked: 'Revoked',
-};
+}
 
 const STATUS_COLORS: Record<InvitationStatus, GetThemeValueForKey<'color'>> = {
   pending: '$orange10',
@@ -37,19 +35,21 @@ const STATUS_COLORS: Record<InvitationStatus, GetThemeValueForKey<'color'>> = {
   declined: '$red10',
   expired: '$color11',
   revoked: '$color11',
-};
-
-interface TeamInvitationsListProps {
-  teamId: string;
-  refreshKey?: number;
-  headerAction?: ReactNode;
 }
 
-export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamInvitationsListProps) {
-  const toast = useToastController();
-  const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending');
-  const media = useMedia();
-  const isSmallScreen = media.sm; // sm = maxWidth: 800px
+interface TeamInvitationsListProps {
+  teamId: string
+  refreshKey?: number
+  headerAction?: ReactNode
+}
+
+export function TeamInvitationsList({
+  teamId,
+  refreshKey,
+  headerAction,
+}: TeamInvitationsListProps) {
+  const toast = useToastController()
+  const [statusFilter, setStatusFilter] = useState<InvitationStatus | 'all'>('pending')
 
   const invitationsQuery = api.teams.invitations.list.useQuery(
     {
@@ -58,117 +58,105 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
     },
     {
       enabled: Boolean(teamId),
-    },
-  );
+    }
+  )
 
   const resendMutation = api.teams.invitations.resend.useMutation({
     onSuccess: () => {
-      toast.show('Invitation resent', { message: 'The invitation email has been resent.' });
-      void invitationsQuery.refetch();
+      toast.show('Invitation resent', { message: 'The invitation email has been resent.' })
+      void invitationsQuery.refetch()
     },
     onError: (error: Error) => {
-      toast.show('Unable to resend invitation', { message: error.message });
+      toast.show('Unable to resend invitation', { message: error.message })
     },
-  });
+  })
 
   const cancelMutation = api.teams.invitations.cancel.useMutation({
     onSuccess: () => {
-      toast.show('Invitation cancelled', { message: 'The invitation can no longer be accepted.' });
-      void invitationsQuery.refetch();
+      toast.show('Invitation cancelled', { message: 'The invitation can no longer be accepted.' })
+      void invitationsQuery.refetch()
     },
     onError: (error: Error) => {
-      toast.show('Unable to cancel invitation', { message: error.message });
+      toast.show('Unable to cancel invitation', { message: error.message })
     },
-  });
+  })
 
   useEffect(() => {
     if (!invitationsQuery.isFetched) {
-      return;
+      return
     }
-    void invitationsQuery.refetch();
-  }, [refreshKey]);
+    void invitationsQuery.refetch()
+  }, [refreshKey])
 
   const invitations = useMemo<InvitationRecord[]>(() => {
-    return (invitationsQuery.data?.invitations ?? []) as InvitationRecord[];
-  }, [invitationsQuery.data?.invitations]);
+    return (invitationsQuery.data?.invitations ?? []) as InvitationRecord[]
+  }, [invitationsQuery.data?.invitations])
 
   const isLoading =
     invitationsQuery.isLoading ||
     invitationsQuery.isFetching ||
     resendMutation.isPending ||
-    cancelMutation.isPending;
+    cancelMutation.isPending
 
   const handleResend = async (invitationId: string) => {
-    await resendMutation.mutateAsync({ invitationId, teamId });
-  };
+    await resendMutation.mutateAsync({ invitationId, teamId })
+  }
 
   const handleCancel = async (invitationId: string) => {
-    await cancelMutation.mutateAsync({ invitationId, teamId });
-  };
+    await cancelMutation.mutateAsync({ invitationId, teamId })
+  }
 
   return (
-    <YStack gap="$4" px={isSmallScreen ? '$3' : undefined}>
+    <YStack gap="$4" px="$3" $md={{ px: undefined }}>
       <XStack
         justify="space-between"
-        items={isSmallScreen ? 'flex-start' : 'center'}
+        items="flex-start"
         flexWrap="wrap"
         gap="$3"
-        flexDirection={isSmallScreen ? 'column' : 'row'}
+        flexDirection="column"
         width="100%"
+        $md={{
+          items: 'center',
+          flexDirection: 'row',
+        }}
       >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Invitations
         </Text>
         <XStack
           gap="$2"
-          items={isSmallScreen ? 'flex-start' : 'center'}
-          flexDirection={isSmallScreen ? 'column' : 'row'}
-          width={isSmallScreen ? '100%' : undefined}
+          items="flex-start"
+          flexDirection="column"
+          width="100%"
+          $md={{
+            items: 'center',
+            flexDirection: 'row',
+            width: undefined,
+          }}
         >
           {headerAction}
-          <YStack width={isSmallScreen ? '100%' : undefined}>
-            <Select
-              native
+          <YStack width="100%" $md={{ width: undefined }}>
+            <ResponsiveSelect
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as InvitationStatus | 'all')}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger
-                iconAfter={ChevronDown}
-                accessibilityLabel="Filter invitations by status"
-                accessibilityHint="Opens a menu of invitation statuses"
-                flex={1}
-              >
-                <Select.Value placeholder="Filter status">
-                  {statusFilter === 'all'
-                    ? 'All statuses'
-                    : STATUS_LABELS[statusFilter as InvitationStatus]}
-                </Select.Value>
-              </Select.Trigger>
-              <Select.Content zIndex={1000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Status</Select.Label>
-                    <Select.Item value="all" index={0}>
-                      <Select.ItemText>All statuses</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                    {TEAM_INVITATION_STATUSES.map((status, index) => (
-                      <Select.Item key={status} value={status} index={index + 1}>
-                        <Select.ItemText>{STATUS_LABELS[status]}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder={
+                statusFilter === 'all'
+                  ? 'All statuses'
+                  : STATUS_LABELS[statusFilter as InvitationStatus]
+              }
+              options={[
+                { value: 'all', label: 'All statuses' },
+                ...TEAM_INVITATION_STATUSES.map((status) => ({
+                  value: status,
+                  label: STATUS_LABELS[status],
+                })),
+              ]}
+              triggerProps={{
+                accessibilityLabel: 'Filter invitations by status',
+                accessibilityHint: 'Opens a menu of invitation statuses',
+                flex: 1,
+              }}
+            />
           </YStack>
         </XStack>
       </XStack>
@@ -178,53 +166,56 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
           <Spinner size="large" />
           <Text color="$color11">Loading invitations…</Text>
         </YStack>
-    ) : invitations.length === 0 ? (
-        <YStack gap="$2" borderWidth={1} borderColor="$borderColor" rounded="$4" p="$4" bg="$color2">
+      ) : invitations.length === 0 ? (
+        <YStack
+          gap="$2"
+          borderWidth={1}
+          borderColor="$borderColor"
+          rounded="$4"
+          p="$4"
+          bg="$color2"
+        >
           <Text fontWeight="600">No invitations yet</Text>
           <Text color="$color11">
-            Invite teammates to collaborate on hiring. Invitations will appear here with their status.
+            Invite teammates to collaborate on hiring. Invitations will appear here with their
+            status.
           </Text>
         </YStack>
       ) : (
         <YStack gap="$3">
           {invitations.map((invitation) => {
-            const statusLabel = STATUS_LABELS[invitation.status as InvitationStatus] ?? invitation.status;
-            const statusColor =
-              STATUS_COLORS[invitation.status as InvitationStatus] ?? '$color11';
+            const statusLabel =
+              STATUS_LABELS[invitation.status as InvitationStatus] ?? invitation.status
+            const statusColor = STATUS_COLORS[invitation.status as InvitationStatus] ?? '$color11'
 
-            const sentAt = invitation.sentAt
-              ? new Date(invitation.sentAt).toLocaleString()
-              : null;
+            const sentAt = invitation.sentAt ? new Date(invitation.sentAt).toLocaleString() : null
             const expiresAt = invitation.expiresAt
               ? new Date(invitation.expiresAt).toLocaleDateString()
-              : null;
+              : null
 
             const lastDeliveryMetadata =
-              (invitation.metadata as Record<string, unknown> | null)?.lastDelivery ?? null;
+              (invitation.metadata as Record<string, unknown> | null)?.lastDelivery ?? null
             const lastDelivery =
               lastDeliveryMetadata && typeof lastDeliveryMetadata === 'object'
                 ? (lastDeliveryMetadata as Record<string, unknown>)
-                : null;
+                : null
 
             const lastDeliveryStatus =
               invitation.lastDeliveryStatus ??
-              (typeof lastDelivery?.status === 'string' ? (lastDelivery.status as string) : null);
-            const lastDeliveryAt =
-              invitation.sentAt
-                ? new Date(invitation.sentAt).toLocaleString()
-                : typeof lastDelivery?.updatedAt === 'string'
-                  ? new Date(lastDelivery.updatedAt as string).toLocaleString()
-                  : null;
+              (typeof lastDelivery?.status === 'string' ? (lastDelivery.status as string) : null)
+            const lastDeliveryAt = invitation.sentAt
+              ? new Date(invitation.sentAt).toLocaleString()
+              : typeof lastDelivery?.updatedAt === 'string'
+                ? new Date(lastDelivery.updatedAt as string).toLocaleString()
+                : null
             const deliveryChannels =
               invitation.lastDeliveryChannels ??
-              (Array.isArray(lastDelivery?.channels)
-                ? (lastDelivery.channels as string[])
-                : null);
+              (Array.isArray(lastDelivery?.channels) ? (lastDelivery.channels as string[]) : null)
             const lastDeliveryError =
               invitation.lastDeliveryError ??
-              (typeof lastDelivery?.error === 'string' ? (lastDelivery.error as string) : null);
+              (typeof lastDelivery?.error === 'string' ? (lastDelivery.error as string) : null)
 
-            const isPending = invitation.status === 'pending';
+            const isPending = invitation.status === 'pending'
 
             return (
               <Card
@@ -244,8 +235,8 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                       {invitation.email
                         ? invitation.email
                         : invitation.invitedUserId
-                        ? `Existing member (${invitation.invitedUserId})`
-                        : 'Invitation'}
+                          ? `Existing member (${invitation.invitedUserId})`
+                          : 'Invitation'}
                     </Text>
                     <XStack gap="$2" items="center">
                       <Clock size={16} color="$color11" />
@@ -262,8 +253,12 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  flexDirection={isSmallScreen ? 'column' : 'row'}
-                  items={isSmallScreen ? 'stretch' : 'center'}
+                  flexDirection="column"
+                  items="stretch"
+                  $md={{
+                    flexDirection: 'row',
+                    items: 'center',
+                  }}
                 >
                   <Text fontSize="$3" color="$color11">
                     Role:
@@ -297,8 +292,12 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  flexDirection={isSmallScreen ? 'column' : 'row'}
-                  items={isSmallScreen ? 'stretch' : 'center'}
+                  flexDirection="column"
+                  items="stretch"
+                  $md={{
+                    flexDirection: 'row',
+                    items: 'center',
+                  }}
                 >
                   <Text fontSize="$3" color="$color11">
                     Type:
@@ -310,10 +309,15 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
 
                 <XStack
                   gap="$2"
-                  justify={isSmallScreen ? 'flex-start' : 'flex-end'}
+                  justify="flex-start"
                   flexWrap="wrap"
-                  flexDirection={isSmallScreen ? 'column' : 'row'}
-                  items={isSmallScreen ? 'stretch' : 'center'}
+                  flexDirection="column"
+                  items="stretch"
+                  $md={{
+                    justify: 'flex-end',
+                    flexDirection: 'row',
+                    items: 'center',
+                  }}
                 >
                   <Button
                     size="$2"
@@ -322,7 +326,8 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleResend(invitation.id)}
                     accessibilityLabel={`Resend invitation to ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    width={isSmallScreen ? '100%' : undefined}
+                    width="100%"
+                    $md={{ width: undefined }}
                   >
                     Resend
                   </Button>
@@ -334,18 +339,17 @@ export function TeamInvitationsList({ teamId, refreshKey, headerAction }: TeamIn
                     disabled={!isPending || isLoading}
                     onPress={() => void handleCancel(invitation.id)}
                     accessibilityLabel={`Cancel invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'}`}
-                    width={isSmallScreen ? '100%' : undefined}
+                    width="100%"
+                    $md={{ width: undefined }}
                   >
                     Cancel
                   </Button>
                 </XStack>
               </Card>
-            );
+            )
           })}
         </YStack>
       )}
     </YStack>
-  );
+  )
 }
-
-

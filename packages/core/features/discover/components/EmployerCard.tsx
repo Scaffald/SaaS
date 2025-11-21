@@ -1,7 +1,7 @@
-import { Card, XStack, YStack, Text, Button } from 'tamagui'
-import { Building2, MapPin, Users, ExternalLink } from '@tamagui/lucide-icons'
+import { DiscoverCard, extractPlainText } from '@app/ui'
+import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
-import { extractPlainText } from '@app/ui'
+import { Text, XStack, YStack } from 'tamagui'
 
 export interface Employer {
   id: string
@@ -35,16 +35,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
   const location = employer.address?.street || employer.address?.zipCode || 'Location not specified'
 
   return (
-    <Card
-      elevate
-      bordered
-      p="$4"
-      bg="$background"
-      hoverStyle={{ bg: '$backgroundHover', borderColor: '$borderColorHover' }}
-      pressStyle={{ bg: '$backgroundPress' }}
-      cursor="pointer"
-      onPress={() => onViewDetails(employer)}
-    >
+    <DiscoverCard onPress={() => onViewDetails(employer)}>
       <YStack gap="$3">
         {/* Header */}
         <XStack justify="space-between" items="flex-start" gap="$3">
@@ -102,14 +93,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
             </XStack>
           )}
         </YStack>
-
-        {/* Actions */}
-        <XStack gap="$2" pt="$2">
-          <Button flex={1} size="$3" theme="info" onPress={() => onViewDetails(employer)}>
-            View Details
-          </Button>
-        </XStack>
       </YStack>
-    </Card>
+    </DiscoverCard>
   )
 }

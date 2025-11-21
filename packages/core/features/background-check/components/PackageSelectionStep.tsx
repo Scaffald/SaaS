@@ -1,8 +1,7 @@
+import type { AppRouter } from '@app/supabase/client-types'
+import type { inferRouterOutputs } from '@trpc/server'
 import { memo } from 'react'
 import { Button, Card, ScrollView, Text, XStack, YStack } from 'tamagui'
-
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckPackage = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -77,8 +76,8 @@ const PackageCard = memo(function PackageCard({
         </YStack>
       </YStack>
     </Card>
-  );
-});
+  )
+})
 
 export const PackageSelectionStep = memo(function PackageSelectionStep({
   packages,
@@ -124,12 +123,7 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
         </YStack>
       </ScrollView>
 
-      <Button
-        size="$4"
-        theme="blue"
-        disabled={!hasSelection}
-        onPress={onContinue}
-      >
+      <Button size="$4" theme="blue" disabled={!hasSelection} onPress={onContinue}>
         Continue
       </Button>
     </YStack>

@@ -1,10 +1,10 @@
-import { YStack, ScrollView, Text, Spinner, type YStackProps } from 'tamagui'
 import { DashboardWidget } from '@app/ui'
-import type React from 'react'
+import type { ComponentType, ReactNode } from 'react'
+import { ScrollView, Spinner, Text, YStack, type YStackProps } from 'tamagui'
 
 interface ProfileResultsPanelProps extends YStackProps {
   /** Child content for results */
-  children?: React.ReactNode
+  children?: ReactNode
   /** Title for the results section */
   title?: string
   /** Whether data is loading */
@@ -12,7 +12,7 @@ interface ProfileResultsPanelProps extends YStackProps {
   /** Whether results are empty */
   isEmpty?: boolean
   /** Empty state icon */
-  emptyIcon?: React.ComponentType<{ size?: number; color?: string }>
+  emptyIcon?: ComponentType<{ size?: number; color?: string }>
   /** Empty state message */
   emptyMessage?: string
   /** Whether to show scrollbar */

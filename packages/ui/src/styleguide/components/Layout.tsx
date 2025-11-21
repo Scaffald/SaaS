@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { useMemo, useState } from 'react'
+
 import { Slot, usePathname } from 'expo-router'
+import { useMemo, useState } from 'react'
 import { ScrollView, Theme, View, XStack, YStack } from 'tamagui'
 import { APPROVAL_COUNT } from '../data'
 import { FLAT_NAV_ITEMS, NAV_SECTIONS } from '../navigation'

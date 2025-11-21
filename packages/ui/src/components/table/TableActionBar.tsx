@@ -1,6 +1,6 @@
+import { Plus, SlidersHorizontal } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { Button, Input, Paragraph, Separator, XStack, YStack } from 'tamagui'
-import { Plus, SlidersHorizontal } from '@tamagui/lucide-icons'
 
 export interface TableActionBarProps {
   /**

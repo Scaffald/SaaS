@@ -7,14 +7,14 @@
  * Task 19: Implement WCAG 2.1 AA Accessibility Compliance
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
-  assertFormLabels,
-  assertHeadingHierarchy,
   assertFocusIndicators,
-  assertImageAltText,
+  assertFormLabels,
   assertHasAriaLabel,
   assertHasRole,
+  assertHeadingHierarchy,
+  assertImageAltText,
 } from '../infrastructure/playwright/helpers/accessibility'
 
 /**
@@ -117,4 +117,3 @@ test.describe('WCAG 2.1 AA Compliance Testing', () => {
     })
   }
 })
-

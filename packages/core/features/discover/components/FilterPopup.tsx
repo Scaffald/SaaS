@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Button, ScrollView, AnimatePresence, Label } from 'tamagui'
-import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
 import { ToggleSwitch } from '@app/ui'
+import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { AnimatePresence, Button, Label, ScrollView, Text, XStack, YStack } from 'tamagui'
 
 type FilterPopupProps = {
   isOpen: boolean

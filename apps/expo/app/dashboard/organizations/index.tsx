@@ -1,9 +1,9 @@
-import { useLocalSearchParams } from 'expo-router'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { Paragraph, YStack } from 'tamagui'
-import { OrganizationMembersPanel } from '@app/core/features/organizations/components/OrganizationMembersPanel'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { OrganizationDocumentsPanel } from '@app/core/features/organizations/components/OrganizationDocumentsPanel'
+import { OrganizationMembersPanel } from '@app/core/features/organizations/components/OrganizationMembersPanel'
 import { OrganizationSettingsPanel } from '@app/core/features/organizations/components/OrganizationSettingsPanel'
+import { useLocalSearchParams } from 'expo-router'
+import { Paragraph, YStack } from 'tamagui'
 
 export default function DashboardOrganizationsPage() {
   const params = useLocalSearchParams<{ organizationId?: string }>()
@@ -23,21 +23,20 @@ export default function DashboardOrganizationsPage() {
   )
 
   return (
-    <DashboardLayout
+    <DashboardPage
+      showBreadcrumb={false}
       leftContent={mainContent}
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$3">
-            <Paragraph color="$color10">
-              Use the organization menu to switch between teams you manage. The members panel shows
-              current collaborators and pending invitations.
-            </Paragraph>
-            <Paragraph color="$color10">
-              Document uploads respect storage limits—check the storage widget in settings for usage
-              details.
-            </Paragraph>
-          </YStack>
-        </QuickLinksSidebar>
+        <YStack gap="$3">
+          <Paragraph color="$color10">
+            Use the organization menu to switch between teams you manage. The members panel shows
+            current collaborators and pending invitations.
+          </Paragraph>
+          <Paragraph color="$color10">
+            Document uploads respect storage limits—check the storage widget in settings for usage
+            details.
+          </Paragraph>
+        </YStack>
       }
     />
   )

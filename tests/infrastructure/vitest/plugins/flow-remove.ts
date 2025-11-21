@@ -1,10 +1,10 @@
 import { extname } from 'node:path'
 
 import flowRemoveTypes from 'flow-remove-types'
-import type { UserConfig } from 'vitest/config'
+import type { PluginOption } from 'vite'
 
 type Matcher = RegExp | ((path: string) => boolean)
-type VitePlugin = NonNullable<UserConfig['plugins']>[number]
+type VitePlugin = PluginOption
 
 export interface FlowRemoveTypesPluginOptions {
   include?: Matcher[]
@@ -28,7 +28,7 @@ export function flowRemoveTypesPlugin({
   return {
     name: 'flow-remove-types',
     enforce: 'pre',
-    transform(code, id) {
+    transform(code: string, id: string) {
       if (process.env.VITEST !== 'true') {
         return null
       }
@@ -62,4 +62,3 @@ function shouldTransform(path: string, include: Matcher[], exclude: Matcher[]): 
 function matches(matcher: Matcher, path: string): boolean {
   return typeof matcher === 'function' ? matcher(path) : matcher.test(path)
 }
-

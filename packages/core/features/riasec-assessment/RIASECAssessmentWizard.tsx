@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react'
-import { Button, YStack, Text } from 'tamagui'
-import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
+import { ROUTES } from '@app/core/constants/routes'
 import { AssessmentWizard } from '@app/core/features/assessments'
 import { RiasecQuickAssessment } from '@app/core/features/career-assessment/components/RiasecQuickAssessment'
-import { api } from '@app/core/utils/api'
-import { ROUTES } from '@app/core/constants/routes'
 import {
   careerAssessmentDefaults,
   type RiasecScores,
 } from '@app/core/features/career-assessment/config/career-assessment-schema'
+import { api } from '@app/core/utils/api'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Button, YStack } from 'tamagui'
 
 /**
  * RIASECAssessmentWizard - Standalone wizard for RIASEC Career Interests
@@ -53,7 +53,9 @@ export function RIASECAssessmentWizard() {
     })
   }
 
-  const allRated = Object.values(scores).every((score) => typeof score === 'number' && score >= 1 && score <= 5)
+  const allRated = Object.values(scores).every(
+    (score) => typeof score === 'number' && score >= 1 && score <= 5
+  )
 
   return (
     <AssessmentWizard
@@ -72,7 +74,7 @@ export function RIASECAssessmentWizard() {
           onChange={setScores}
           disabled={saveMutation.isPending}
         />
-        
+
         <Button
           size="$5"
           themeInverse
@@ -85,4 +87,3 @@ export function RIASECAssessmentWizard() {
     </AssessmentWizard>
   )
 }
-

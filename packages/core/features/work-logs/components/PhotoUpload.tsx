@@ -1,11 +1,13 @@
+import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@app/ui'
+import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { randomUUID } from 'expo-crypto'
 import { useCallback, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { randomUUID } from 'expo-crypto'
 import {
   Button,
   Checkbox,
   Input,
-  Select,
   Separator,
   Spinner,
   Text,
@@ -13,14 +15,9 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
-import { UploadSurface, type UploadSelection } from '@app/ui'
-
+import { type UploadCandidate, usePhotoUpload } from '../hooks/usePhotoUpload'
 import type { WorkLogPhotoType } from '../types/photos'
 import { PhotoGallery } from './PhotoGallery'
-import { usePhotoUpload, type UploadCandidate } from '../hooks/usePhotoUpload'
 
 type PhotoCategory = Exclude<WorkLogPhotoType, null>
 
@@ -285,22 +282,15 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                 onChangeText={setCaption}
                 multiline
               />
-              <Select
+              <ResponsiveSelect
                 value={photoType}
                 onValueChange={(value) => setPhotoType(value as PhotoCategory)}
-                disablePreventBodyScroll
-              >
-                <Select.Trigger>
-                  <Select.Value placeholder="Choose photo type" />
-                </Select.Trigger>
-                <Select.Content>
-                  {PHOTO_TYPE_OPTIONS.map((option, index) => (
-                    <Select.Item key={option.value} value={option.value} index={index}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select>
+                placeholder="Choose photo type"
+                options={PHOTO_TYPE_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+              />
               <XStack gap="$2" items="center">
                 <Checkbox
                   checked={showOnProfile}

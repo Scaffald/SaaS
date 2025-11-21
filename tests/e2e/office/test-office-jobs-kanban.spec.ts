@@ -8,7 +8,7 @@
  * - Quick actions menu
  */
 
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { navigateToOfficeRoute } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
@@ -82,7 +82,7 @@ test.describe('Office • Jobs Kanban Board Structure', () => {
   })
 
   test('displays correct column labels', async ({ page }: { page: Page }) => {
-    const pageContent = await page.locator('#root').textContent() || ''
+    const pageContent = (await page.locator('#root').textContent()) || ''
 
     expect(pageContent).toMatch(/draft/i)
     expect(pageContent).toMatch(/open/i)
@@ -117,11 +117,16 @@ test.describe('Office • Jobs Kanban Board Structure', () => {
 
   test('displays empty column message when no jobs', async ({ page }: { page: Page }) => {
     // Check if any column is empty
-    const columns = [JOB_KANBAN_COLUMNS.DRAFT, JOB_KANBAN_COLUMNS.OPEN, JOB_KANBAN_COLUMNS.PAUSED, JOB_KANBAN_COLUMNS.CLOSED]
+    const columns = [
+      JOB_KANBAN_COLUMNS.DRAFT,
+      JOB_KANBAN_COLUMNS.OPEN,
+      JOB_KANBAN_COLUMNS.PAUSED,
+      JOB_KANBAN_COLUMNS.CLOSED,
+    ]
 
     for (const status of columns) {
       const column = await getKanbanColumn(page, status)
-      const columnContent = await column.textContent() || ''
+      const columnContent = (await column.textContent()) || ''
 
       // If column shows "0" or "No jobs", it's handling empty state
       if (columnContent.includes('0') || columnContent.toLowerCase().includes('no')) {
@@ -272,4 +277,3 @@ test.describe('Office • Jobs Kanban View Toggle', () => {
     }
   })
 })
-

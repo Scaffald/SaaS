@@ -1,7 +1,6 @@
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
 import { memo, useEffect } from 'react'
 import { Button, Text, YStack } from 'tamagui'
-
-import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
 
 import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
 

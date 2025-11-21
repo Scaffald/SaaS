@@ -1,5 +1,5 @@
-import type { ReactNode, ComponentProps } from 'react'
-import { Card, useTheme, useMedia, type CardProps } from 'tamagui'
+import type { ComponentProps, ReactNode } from 'react'
+import { Card, type CardProps, useTheme } from 'tamagui'
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 import { spacing } from '../../config/spacing'
@@ -54,9 +54,7 @@ export const DashboardWidget = ({
   gap?: string
   elevated?: boolean
 } & Omit<CardProps, 'children'>) => {
-  const media = useMedia()
   const theme = useTheme()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   // Determine if we're in dark mode by checking background color
   const isDark = theme.background.val.includes('8%') // Simple dark mode detection
@@ -81,12 +79,13 @@ export const DashboardWidget = ({
   return (
     <Card
       boxShadow={shadow}
-      p={isSmallScreen ? spacing.xs : spacing.lg}
+      p="$6"
+      $md={{ p: '$2' }}
       gap={gap}
       rounded={borderRadius['3xl']}
-      bg="$background"
-      borderWidth={1}
-      borderColor="$borderColor"
+      bg="$gray1"
+      borderWidth={0}
+      borderColor="transparent"
       animation="quick"
       hoverStyle={{
         boxShadow: shadowHover,

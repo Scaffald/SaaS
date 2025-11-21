@@ -1,8 +1,8 @@
-import { Card, XStack, YStack, Text, Button, Separator } from 'tamagui'
-import { Building2, MapPin, Clock, DollarSign, ExternalLink } from '@tamagui/lucide-icons'
-import { Linking } from 'react-native'
-import { useRouter } from 'expo-router'
 import { RouteBuilder } from '@app/core/constants/routes'
+import { DiscoverCard } from '@app/ui'
+import { Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { Button, Separator, Text, XStack, YStack } from 'tamagui'
 
 export interface ExternalJob {
   id: string
@@ -69,21 +69,12 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
   const primaryIndustry = job.industries?.[0]?.industry_name
 
   return (
-    <Card
-      elevate
-      bordered
+    <DiscoverCard
+      variant={job.featured ? 'info' : 'neutral'}
+      isSelected={job.featured}
+      interactive={false}
       p="$4"
       gap="$3"
-      hoverStyle={{
-        borderColor: '$blue8',
-        scale: 1.01,
-      }}
-      pressStyle={{
-        scale: 0.99,
-      }}
-      animation="quick"
-      bg={job.featured ? '$blue2' : '$background'}
-      borderColor={job.featured ? '$blue6' : '$color5'}
     >
       {/* Header */}
       <XStack gap="$3" items="flex-start">
@@ -202,6 +193,6 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
           View Details
         </Button>
       </XStack>
-    </Card>
+    </DiscoverCard>
   )
 }

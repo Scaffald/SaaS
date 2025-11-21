@@ -7,11 +7,11 @@
  * REQ-11: Responsive Layout Improvements
  */
 
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import {
-  assertNoHorizontalScroll,
   assertElementVisible,
   assertFormResponsive,
+  assertNoHorizontalScroll,
   getViewportCategory,
 } from '../../infrastructure/playwright/helpers/helpers/responsive'
 
@@ -31,7 +31,11 @@ test.describe('Responsive Authentication Flow', () => {
     test.describe(`on ${viewport.name} (${viewport.width}x${viewport.height})`, () => {
       test.use({ viewport: { width: viewport.width, height: viewport.height } })
 
-      test('auth page renders correctly without horizontal scroll', async ({ page }: { page: Page }) => {
+      test('auth page renders correctly without horizontal scroll', async ({
+        page,
+      }: {
+        page: Page
+      }) => {
         await page.goto('/auth')
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(1000) // Allow animations to settle
@@ -40,7 +44,7 @@ test.describe('Responsive Authentication Flow', () => {
         await assertNoHorizontalScroll(page)
 
         // Verify page content is visible
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
       })
 
@@ -52,7 +56,10 @@ test.describe('Responsive Authentication Flow', () => {
         // Verify email input is visible
         const emailInput = page.getByPlaceholder(/email/i).or(page.getByRole('textbox')).first()
         await emailInput.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {})
-        await assertElementVisible(page, 'input[type="email"], input[placeholder*="email" i], textbox')
+        await assertElementVisible(
+          page,
+          'input[type="email"], input[placeholder*="email" i], textbox'
+        )
 
         // Verify submit button is visible
         const submitButton = page.getByRole('button', { name: /send magic link|sign in/i })
@@ -65,11 +72,7 @@ test.describe('Responsive Authentication Flow', () => {
         await page.waitForTimeout(1000)
 
         // Find the form element (could be a form tag or container)
-        const formSelectors = [
-          'form',
-          '[role="form"]',
-          'div:has(input[type="email"])',
-        ]
+        const formSelectors = ['form', '[role="form"]', 'div:has(input[type="email"])']
 
         let formFound = false
         for (const selector of formSelectors) {
@@ -101,7 +104,7 @@ test.describe('Responsive Authentication Flow', () => {
 
         if (buttonBox) {
           const category = getViewportCategory(page)
-          
+
           // On mobile, buttons should meet 44px touch target minimum
           if (category === 'mobile') {
             expect(buttonBox.height).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
@@ -144,7 +147,7 @@ test.describe('Responsive Authentication Flow', () => {
 
         // Fill with invalid email
         await emailInput.fill('not-an-email')
-        
+
         // Try to submit
         const submitButton = page.getByRole('button', { name: /send magic link|sending/i })
         await submitButton.click()
@@ -153,8 +156,8 @@ test.describe('Responsive Authentication Flow', () => {
         await page.waitForTimeout(2000)
 
         // Check for validation message (should be visible and within viewport)
-        const pageContent = await page.locator('body').textContent() || ''
-        const hasValidationMessage = 
+        const pageContent = (await page.locator('body').textContent()) || ''
+        const hasValidationMessage =
           pageContent.toLowerCase().includes('invalid') ||
           pageContent.toLowerCase().includes('valid email') ||
           pageContent.toLowerCase().includes('please enter')
@@ -178,9 +181,12 @@ test.describe('Responsive Authentication Flow', () => {
         if (inputBox && buttonBox) {
           // Elements should not overlap vertically
           // Button should be below input, or they should be side-by-side on larger screens
-          const verticalOverlap = inputBox.y < buttonBox.y + buttonBox.height && inputBox.y + inputBox.height > buttonBox.y
-          const horizontalOverlap = inputBox.x < buttonBox.x + buttonBox.width && inputBox.x + inputBox.width > buttonBox.x
-          
+          const verticalOverlap =
+            inputBox.y < buttonBox.y + buttonBox.height &&
+            inputBox.y + inputBox.height > buttonBox.y
+          const horizontalOverlap =
+            inputBox.x < buttonBox.x + buttonBox.width && inputBox.x + inputBox.width > buttonBox.x
+
           // If they overlap both ways, that's a problem
           if (verticalOverlap && horizontalOverlap) {
             // On mobile, they should stack vertically
@@ -201,9 +207,10 @@ test.describe('Responsive Authentication Flow', () => {
         await assertNoHorizontalScroll(page)
 
         // Check that critical elements are visible
-        const pageContent = await page.locator('body').textContent() || ''
-        const hasSignIn = pageContent.toLowerCase().includes('sign in') || 
-                          pageContent.toLowerCase().includes('welcome')
+        const pageContent = (await page.locator('body').textContent()) || ''
+        const hasSignIn =
+          pageContent.toLowerCase().includes('sign in') ||
+          pageContent.toLowerCase().includes('welcome')
         expect(hasSignIn).toBe(true)
       })
     })
@@ -211,7 +218,11 @@ test.describe('Responsive Authentication Flow', () => {
 
   // Cross-viewport consistency tests
   test.describe('Cross-viewport consistency', () => {
-    test('authentication flow works consistently across all viewports', async ({ page }: { page: Page }) => {
+    test('authentication flow works consistently across all viewports', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       const testEmail = 'test@example.com'
 
       for (const viewport of viewports) {
@@ -237,4 +248,3 @@ test.describe('Responsive Authentication Flow', () => {
     })
   })
 })
-

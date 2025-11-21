@@ -1,11 +1,11 @@
-import { YStack, XStack, Text, Button } from '@app/ui'
-import { Card, Avatar, Separator, type GetThemeValueForKey } from 'tamagui'
-import { Check, MessageSquare } from '@tamagui/lucide-icons'
-import { ComparisonField } from './ComparisonField'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
-import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import type { AppRouter } from '@app/supabase/client-types'
+import { Button, Text, XStack, YStack } from '@app/ui'
+import { Check, MessageSquare } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
+import { Avatar, Card, type GetThemeValueForKey, Separator } from 'tamagui'
+import { ComparisonField } from './ComparisonField'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 
 export type InquiryComparisonRecord = NonNullable<
@@ -97,16 +97,14 @@ export function ComparisonColumn({
   // Format working hours
   const formatWorkingHours = () => {
     if (!inquiry.working_hours_start || !inquiry.working_hours_end) return 'Not specified'
-    const timezone = inquiry.working_hours_timezone
-      ? ` (${inquiry.working_hours_timezone})`
-      : ''
+    const timezone = inquiry.working_hours_timezone ? ` (${inquiry.working_hours_timezone})` : ''
     return `${inquiry.working_hours_start} - ${inquiry.working_hours_end}${timezone}`
   }
 
   // Get section acceptance status
   const getSectionStatus = (sectionName: string) => {
     const section = sections.find(
-      (sectionItem: SectionRecord) => sectionItem.section_name === sectionName,
+      (sectionItem: SectionRecord) => sectionItem.section_name === sectionName
     )
     return {
       accepted: !!section?.accepted_by,
@@ -197,7 +195,11 @@ export function ComparisonColumn({
                     ○
                   </Text>
                 )}
-                <Text fontSize="$1" color={status.accepted ? '$green11' : '$gray11'} fontWeight="600">
+                <Text
+                  fontSize="$1"
+                  color={status.accepted ? '$green11' : '$gray11'}
+                  fontWeight="600"
+                >
                   {sectionName}
                 </Text>
                 {commentCount > 0 && (
@@ -280,7 +282,8 @@ export function ComparisonColumn({
           <XStack items="center" gap="$1" mt="$1">
             <MessageSquare size={14} color="$blue11" />
             <Text fontSize="$2" color="$blue11">
-              {getCommentCount('employment')} comment{getCommentCount('employment') !== 1 ? 's' : ''}
+              {getCommentCount('employment')} comment
+              {getCommentCount('employment') !== 1 ? 's' : ''}
             </Text>
           </XStack>
         )}
@@ -373,9 +376,7 @@ export function ComparisonColumn({
           }
           isDifferent={highlightDifferences.has('willingToTravel')}
           description={
-            inquiry.travel_distance_miles
-              ? `${inquiry.travel_distance_miles} miles`
-              : undefined
+            inquiry.travel_distance_miles ? `${inquiry.travel_distance_miles} miles` : undefined
           }
         />
         <ComparisonField
@@ -409,10 +410,7 @@ export function ComparisonColumn({
         variant="outlined"
         onPress={() =>
           router.push(
-            ROUTES.OFFICE_APPLICATION_INQUIRY.path.replace(
-              ':applicationId',
-              inquiry.application_id
-            )
+            ROUTES.OFFICE.APPLICATIONS.INQUIRY.path.replace(':applicationId', inquiry.application_id)
           )
         }
       >
@@ -437,7 +435,7 @@ const statusColors: Record<string, GetThemeValueForKey<'color'>> = {
 function StatusBadge({ label }: { label: string }) {
   return (
     <XStack px="$2" py="$1" bg="$color3" rounded="$3" items="center" gap="$1">
-          <Text fontSize="$2" color={statusColors[label] ?? '$color11'} fontWeight="600">
+      <Text fontSize="$2" color={statusColors[label] ?? '$color11'} fontWeight="600">
         {label.replace(/_/g, ' ')}
       </Text>
     </XStack>
@@ -453,4 +451,3 @@ function SubtleBadge({ label }: { label: string }) {
     </XStack>
   )
 }
-

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { Text, XStack, YStack, Progress, TextArea } from 'tamagui'
 import { Clock } from '@tamagui/lucide-icons'
+import { useEffect, useState } from 'react'
+import { Progress, Text, TextArea, YStack } from 'tamagui'
 
 export interface CooldownStepProps {
   cooldownEndTime: string // ISO timestamp when cooldown ends
@@ -40,7 +40,7 @@ export function CooldownStep({
   useEffect(() => {
     // Calculate time remaining
     const updateTimer = () => {
-      const now = new Date().getTime()
+      const now = Date.now()
       const endTime = new Date(cooldownEndTime).getTime()
       const remaining = Math.max(0, Math.ceil((endTime - now) / 1000))
 

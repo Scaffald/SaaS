@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Button, Separator, Text, XStack, YStack, Checkbox } from 'tamagui'
+import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@app/schemas'
 import { Check, Edit3, FileText } from '@tamagui/lucide-icons'
-import type { ScreeningAnswers, CustomQuestionAnswer, AttachmentMetadata } from '@app/schemas'
+import { useState } from 'react'
+import { Button, Checkbox, Separator, Text, XStack, YStack } from 'tamagui'
 
 export interface ReviewStepProps {
   /**
@@ -219,11 +219,7 @@ export function ReviewStep({
 
         <YStack gap="$4">
           {attachments.resume ? (
-            <DocumentRow
-              type="Resume"
-              metadata={attachments.resume}
-              required
-            />
+            <DocumentRow type="Resume" metadata={attachments.resume} required />
           ) : (
             <Text fontSize="$3" color="$color10">
               Resume: Not provided
@@ -231,11 +227,7 @@ export function ReviewStep({
           )}
 
           {attachments.cover_letter ? (
-            <DocumentRow
-              type="Cover Letter"
-              metadata={attachments.cover_letter}
-              required={false}
-            />
+            <DocumentRow type="Cover Letter" metadata={attachments.cover_letter} required={false} />
           ) : (
             <Text fontSize="$3" color="$color10">
               Cover Letter: Not provided
@@ -243,17 +235,20 @@ export function ReviewStep({
           )}
 
           {attachments.portfolio && (
-            <DocumentRow
-              type="Portfolio"
-              metadata={attachments.portfolio}
-              required={false}
-            />
+            <DocumentRow type="Portfolio" metadata={attachments.portfolio} required={false} />
           )}
         </YStack>
       </YStack>
 
       {/* Submission Consent */}
-      <YStack gap="$3" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$3"
+        p="$4"
+        bg="$background"
+        rounded="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <XStack gap="$3" items="flex-start">
           <Checkbox
             checked={hasConsent}
@@ -322,9 +317,7 @@ function DocumentRow({
   metadata: AttachmentMetadata
   required: boolean
 }) {
-  const uploadedDate = metadata.uploaded_at
-    ? new Date(metadata.uploaded_at)
-    : null
+  const uploadedDate = metadata.uploaded_at ? new Date(metadata.uploaded_at) : null
   const formattedDate = uploadedDate
     ? uploadedDate.toLocaleDateString('en-US', {
         month: 'short',

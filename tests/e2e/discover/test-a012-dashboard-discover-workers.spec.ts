@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/discover/workers', () => {
@@ -8,8 +8,12 @@ test.describe('Admin • /dashboard/discover/workers', () => {
     test.setTimeout(60000)
   })
 
-  test('navigates to worker discovery page and page loads correctly', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('navigates to worker discovery page and page loads correctly', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to worker discovery route
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
@@ -19,12 +23,12 @@ test.describe('Admin • /dashboard/discover/workers', () => {
     expect(page.url()).toContain('/dashboard/discover/workers')
 
     // Verify page content loaded
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
   test('displays page header with correct title', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -33,63 +37,65 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays worker result count', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
     // Verify result count is displayed (exploration found "29 results")
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
     expect(pageText).toMatch(/\d+ results?/)
   })
 
   test('displays worker cards with correct structure', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify worker information elements are present
     // Exploration found workers like "Eric Wong", "Aaron Cook", "Taleiysa Jones"
-    const hasWorkerNames = pageText.includes('Eric Wong') ||
-                          pageText.includes('Aaron Cook') ||
-                          pageText.includes('Taleiysa Jones')
+    const hasWorkerNames =
+      pageText.includes('Eric Wong') ||
+      pageText.includes('Aaron Cook') ||
+      pageText.includes('Taleiysa Jones')
 
     expect(hasWorkerNames).toBe(true)
   })
 
   test('displays worker card with experience information', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify experience indicator is present (exploration found "0 years")
     expect(pageText).toMatch(/\d+ years?/)
   })
 
   test('displays worker card with location information', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify location information is present (exploration found "Boston, Massachusetts, United States", etc.)
-    const hasLocation = pageText.includes('Massachusetts') ||
-                       pageText.includes('United States') ||
-                       pageText.includes(', ')
+    const hasLocation =
+      pageText.includes('Massachusetts') ||
+      pageText.includes('United States') ||
+      pageText.includes(', ')
 
     expect(hasLocation).toBe(true)
   })
 
   test('displays worker profile scores', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify profile score is present (exploration found "★ 10" pattern)
     // Check for numeric score value
@@ -99,18 +105,18 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays professional titles for workers', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify professional titles are present (exploration found "Skilled Trades Professional")
     expect(pageText).toContain('Skilled Trades Professional')
   })
 
   test('displays search input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -123,23 +129,24 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays filter controls', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify filter-related content is present
-    const hasFilterContent = pageText.includes('filter') ||
-                            pageText.includes('Filter') ||
-                            pageText.includes('skill') ||
-                            pageText.includes('Skill')
+    const hasFilterContent =
+      pageText.includes('filter') ||
+      pageText.includes('Filter') ||
+      pageText.includes('skill') ||
+      pageText.includes('Skill')
 
     expect(hasFilterContent).toBe(true)
   })
 
   test('has interactive buttons for UI controls', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -149,7 +156,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays multiple worker cards in scrollable list', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -162,11 +169,11 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('page contains expected content keywords', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify key content areas identified in exploration
     expect(pageText.toLowerCase()).toContain('worker')
@@ -174,7 +181,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('UI element inventory matches expected structure', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -190,7 +197,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('verifies responsive layout for mobile optimization', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -204,7 +211,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('displays navigation elements in header', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
@@ -222,17 +229,18 @@ test.describe('Admin • /dashboard/discover/workers', () => {
       }
     })
 
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
     // Filter out known acceptable errors (cookie consent, loading issues, etc.)
-    const criticalErrors = consoleErrors.filter(err =>
-      !err.includes('cookie') &&
-      !err.includes('Cookie') &&
-      !err.includes('consent') &&
-      !err.includes('Failed to load resource') &&
-      !err.includes('404')
+    const criticalErrors = consoleErrors.filter(
+      (err) =>
+        !err.includes('cookie') &&
+        !err.includes('Cookie') &&
+        !err.includes('consent') &&
+        !err.includes('Failed to load resource') &&
+        !err.includes('404')
     )
 
     // Should have minimal critical JavaScript errors (allow up to 2 non-critical warnings)
@@ -240,7 +248,7 @@ test.describe('Admin • /dashboard/discover/workers', () => {
   })
 
   test('page maintains layout stability during loading', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(1000)
 
@@ -258,8 +266,12 @@ test.describe('Admin • /dashboard/discover/workers', () => {
     expect(heightDiff).toBeLessThan(2000)
   })
 
-  test('can access worker discovery from dashboard navigation', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('can access worker discovery from dashboard navigation', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     // Already on /dashboard after signInAsAdmin
 
     // Navigate to worker discovery
@@ -270,23 +282,30 @@ test.describe('Admin • /dashboard/discover/workers', () => {
     expect(page.url()).toContain('/dashboard/discover/workers')
 
     // Verify page loaded with content
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
     expect(pageText.length).toBeGreaterThan(100)
   })
 
   test('displays worker cards with consistent structure', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/workers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Each worker card should have: name, title, experience, location, score
     // Verify multiple components are present
-    const hasName = pageText.includes('Eric Wong') || pageText.includes('Aaron Cook') || pageText.includes('worker')
-    const hasTitle = pageText.includes('Skilled Trades Professional') || pageText.includes('Professional')
+    const hasName =
+      pageText.includes('Eric Wong') ||
+      pageText.includes('Aaron Cook') ||
+      pageText.includes('worker')
+    const hasTitle =
+      pageText.includes('Skilled Trades Professional') || pageText.includes('Professional')
     const hasExperience = /\d+ years?/.test(pageText)
-    const hasLocation = pageText.includes('Massachusetts') || pageText.includes('United States') || pageText.includes(',')
+    const hasLocation =
+      pageText.includes('Massachusetts') ||
+      pageText.includes('United States') ||
+      pageText.includes(',')
 
     // At least 2 of 4 card components should be present (relaxed for varying data)
     const presentComponents = [hasName, hasTitle, hasExperience, hasLocation].filter(Boolean).length

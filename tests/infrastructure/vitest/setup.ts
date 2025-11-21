@@ -1,37 +1,63 @@
 import '@testing-library/jest-dom/vitest'
 
-import React from 'react'
-import { afterEach, it, test, vi } from 'vitest'
 import { cleanup as cleanupReact } from '@testing-library/react'
 import { cleanup as cleanupReactNative } from '@testing-library/react-native'
+import React from 'react'
+import { afterEach, vi } from 'vitest'
 
 process.env.EXPO_PUBLIC_SUPABASE_URL ??= 'http://127.0.0.1:54321'
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??= 'test-anon-key'
 
+const originalCreateElement = React.createElement
+
+const normalizeTestIdProp = <T extends Record<string, unknown> | null | undefined>(props: T): T => {
+  if (!props || typeof props !== 'object') {
+    return props
+  }
+
+  const maybeTestId = (props as Record<string, unknown>).testID
+  const hasDataTestId = 'data-testid' in (props as Record<string, unknown>)
+
+  if (typeof maybeTestId === 'string' && maybeTestId.length > 0) {
+    const { testID: _ignored, ...rest } = props as Record<string, unknown>
+
+    return {
+      ...rest,
+      ...(hasDataTestId ? {} : { 'data-testid': maybeTestId }),
+    } as T
+  }
+
+  return props
+}
+
+React.createElement = ((type, props, ...children) => {
+  return originalCreateElement(type, normalizeTestIdProp(props), ...children)
+}) as typeof React.createElement
+
 const createComponent =
   (tag: string) =>
   ({ children, ...props }: Record<string, unknown>) =>
-    React.createElement(tag, props, children)
+    React.createElement(tag, normalizeTestIdProp(props), children)
 
 const createPrimitive = (tag: string) =>
   React.forwardRef((props: Record<string, unknown>, ref: React.Ref<HTMLElement>) =>
-    React.createElement(tag, { ref, ...props }, props.children),
+    React.createElement(tag, normalizeTestIdProp({ ref, ...props }), props.children)
   )
 
 const ButtonMock = React.forwardRef(
   (
     { onPress, children, ...props }: Record<string, unknown> & { onPress?: () => void },
-    ref: React.Ref<HTMLButtonElement>,
+    ref: React.Ref<HTMLButtonElement>
   ) =>
     React.createElement(
       'button',
       {
         ref,
-        ...props,
+        ...normalizeTestIdProp(props),
         onClick: typeof onPress === 'function' ? onPress : props.onClick,
       },
-      children,
-    ),
+      children
+    )
 )
 
 const SelectMock = Object.assign(createPrimitive('select'), {
@@ -51,7 +77,8 @@ const SheetMock = Object.assign(createPrimitive('div'), {
 })
 
 const DialogMock = Object.assign(createPrimitive('div'), {
-  Portal: ({ children }: { children: React.ReactNode }) => React.createElement(React.Fragment, null, children),
+  Portal: ({ children }: { children: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children),
   Overlay: createPrimitive('div'),
   Content: createPrimitive('div'),
   Close: createPrimitive('button'),
@@ -107,7 +134,7 @@ vi.mock('@tamagui/lucide-icons', () => {
         }
         return IconMock('icon')
       },
-    },
+    }
   )
 })
 
@@ -172,6 +199,34 @@ vi.mock('expo-modules-core', () => ({
     },
   },
 }))
+
+// Mock @app/ui components - provide ResponsiveSelect mock
+vi.mock('@app/ui', async () => {
+  const ResponsiveSelectMock = Object.assign(createPrimitive('select'), {
+    Trigger: createPrimitive('button'),
+    Value: createPrimitive('span'),
+    Content: createPrimitive('div'),
+    Viewport: createPrimitive('div'),
+    Item: createPrimitive('div'),
+    ItemText: createPrimitive('span'),
+    ItemIndicator: createPrimitive('span'),
+  })
+
+  try {
+    const mod = await vi.importActual<typeof import('@app/ui')>('@app/ui')
+    return {
+      ...mod,
+      ResponsiveSelect: ResponsiveSelectMock,
+    }
+  } catch (error) {
+    // If importActual fails, return a minimal mock with ResponsiveSelect
+    console.warn('Failed to importActual @app/ui, using minimal mock:', error)
+    return {
+      __esModule: true as const,
+      ResponsiveSelect: ResponsiveSelectMock,
+    }
+  }
+})
 
 if (typeof window !== 'undefined' && !window.matchMedia) {
   const mockMatchMediaResult = {

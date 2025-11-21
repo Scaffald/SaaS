@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useAddressDebounce, useAddressDebouncedCallback } from './useDebounce'
-import { useGeocodingProvider } from './useGeocodingProvider'
 import type {
   AddressResult,
   GeocodingProvider,
@@ -8,6 +6,8 @@ import type {
   SearchOptions,
   UseAddressAutocompleteReturn,
 } from '../types'
+import { useAddressDebounce } from './useDebounce'
+import { useGeocodingProvider } from './useGeocodingProvider'
 
 interface UseAddressAutocompleteOptions {
   /** Provider configuration */
@@ -66,12 +66,11 @@ export function useAddressAutocomplete(
 
   const provider = externalProvider || hookProvider
   const abortControllerRef = useRef<AbortController | null>(null)
-  const mounted = useRef(false)
+  const mounted = useRef(true)
   const lastRequest = useRef<unknown>(undefined)
 
   // Mounted tracking
   useEffect(() => {
-    mounted.current = true
     return () => {
       mounted.current = false
     }
@@ -130,7 +129,11 @@ export function useAddressAutocomplete(
         }
 
         if (!mounted.current) return
-        setResults(searchResults)
+        const limitedResults =
+          typeof maxResults === 'number' && maxResults > 0
+            ? searchResults.slice(0, maxResults)
+            : searchResults
+        setResults(limitedResults)
         setError(null)
       } catch (err: unknown) {
         // Don't show error for aborted requests or if unmounted/stale
@@ -173,10 +176,17 @@ export function useAddressAutocomplete(
   }, [debouncedQuery])
 
   // Manual search function
-  const search = useCallback((searchQuery: string) => {
-    if (!mounted.current) return
-    setQuery(searchQuery)
-  }, [])
+  const search = useCallback(
+    (searchQuery: string) => {
+      if (!mounted.current) return
+      setQuery(searchQuery)
+
+      if (debounceMs === 0) {
+        void performSearch(searchQuery)
+      }
+    },
+    [debounceMs, performSearch]
+  )
 
   // Clear results function
   const clearResults = useCallback(() => {

@@ -18,9 +18,8 @@ interface InitAnalyticsOptions {
 
 const DEFAULT_POSTHOG_HOST = 'https://app.posthog.com'
 const EXTRA_CONFIG = (Constants.expoConfig?.extra ?? {}) as Record<string, unknown>
-const ANALYTICS_EXTRA = (
-  (EXTRA_CONFIG as { analytics?: { posthog?: Record<string, unknown> } }).analytics?.posthog ?? {}
-) as Record<string, unknown>
+const ANALYTICS_EXTRA = ((EXTRA_CONFIG as { analytics?: { posthog?: Record<string, unknown> } })
+  .analytics?.posthog ?? {}) as Record<string, unknown>
 const APP_ENV: AnalyticsEnvironment =
   (ANALYTICS_EXTRA.env as AnalyticsEnvironment) ??
   (EXTRA_CONFIG.appEnv as AnalyticsEnvironment) ??
@@ -28,23 +27,28 @@ const APP_ENV: AnalyticsEnvironment =
   'development'
 
 // SECURITY: Only use EXPO_PUBLIC variables - non-public env vars should never be in client bundle
+// Prioritize EXPO_PUBLIC_POSTHOG_API_KEY directly from process.env, then fall back to config values
 const POSTHOG_KEY =
+  process.env.EXPO_PUBLIC_POSTHOG_API_KEY ??
   (EXTRA_CONFIG.posthogKey as string | undefined) ??
   (ANALYTICS_EXTRA.key as string | undefined) ??
-  process.env.EXPO_PUBLIC_POSTHOG_API_KEY ??
   ''
 
+// Prioritize EXPO_PUBLIC_POSTHOG_HOST directly from process.env, then fall back to config values
 const POSTHOG_HOST =
+  process.env.EXPO_PUBLIC_POSTHOG_HOST ??
   (EXTRA_CONFIG.posthogHost as string | undefined) ??
   (ANALYTICS_EXTRA.host as string | undefined) ??
-  process.env.EXPO_PUBLIC_POSTHOG_HOST ??
   DEFAULT_POSTHOG_HOST
 
 const CHANNEL = (Updates.channel ||
   (ANALYTICS_EXTRA.channel as AnalyticsEnvironment | undefined) ||
   APP_ENV) as AnalyticsEnvironment
 const RUNTIME_VERSION =
-  Updates.runtimeVersion || Constants.expoConfig?.runtimeVersion || Constants.expoConfig?.version || 'unknown'
+  Updates.runtimeVersion ||
+  Constants.expoConfig?.runtimeVersion ||
+  Constants.expoConfig?.version ||
+  'unknown'
 const APP_VERSION = (Constants.expoConfig?.version ?? '0.0.0').toString()
 const IOS_BUNDLE_IDENTIFIER = Constants.expoConfig?.ios?.bundleIdentifier
 const ANDROID_PACKAGE = Constants.expoConfig?.android?.package
@@ -123,6 +127,14 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
   }
 
   if (!isAnalyticsAvailable()) {
+    console.log('[analytics debug] unavailable', {
+      POSTHOG_KEY,
+      POSTHOG_HOST,
+      APP_ENV,
+      CHANNEL,
+      IS_WEB,
+      isAllowedEnvironment,
+    })
     console.warn('[analytics] PostHog key or host not configured; analytics disabled.')
     return
   }
@@ -135,9 +147,14 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
   }
 
   if (!isAllowedEnvironment) {
+    console.log('[analytics debug] disallowed environment', {
+      APP_ENV,
+      CHANNEL,
+      __DEV__,
+    })
     if (debug) {
       console.info(
-        `[analytics] Skipping PostHog init for env=${APP_ENV}, channel=${CHANNEL}, dev=${__DEV__} (environment not allowed)`,
+        `[analytics] Skipping PostHog init for env=${APP_ENV}, channel=${CHANNEL}, dev=${__DEV__} (environment not allowed)`
       )
     }
     return
@@ -161,6 +178,7 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
     await instance.optIn()
 
     client = instance
+    console.log('[analytics debug] client initialized', Boolean(client))
   } catch (error) {
     console.error('[analytics] Failed to initialize PostHog', error)
     client = null
@@ -186,11 +204,15 @@ export const capture = (event: string, properties?: EventProperties) => {
 
 export const captureEvent = <TName extends AnalyticsEventName>(
   event: TName,
-  properties: AnalyticsEventProperties<TName>,
+  properties: AnalyticsEventProperties<TName>
 ) => {
-  if (!hasActiveClient() || !client) return false
+  if (!hasActiveClient() || !client) {
+    console.log('[analytics debug] capture aborted', { hasClient: Boolean(client) })
+    return false
+  }
   const validation = validateEventProperties(event, properties)
   if (!validation.success) {
+    console.log('[analytics debug] validation failed', { event, properties, error: validation.error })
     console.warn('[analytics] Invalid event payload', event, validation.error.flatten())
     return false
   }
@@ -223,4 +245,3 @@ export const shutdownAnalytics = async (timeoutMs?: number) => {
   await client.shutdown(timeoutMs)
   client = null
 }
-

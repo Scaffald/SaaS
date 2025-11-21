@@ -1,36 +1,26 @@
+import { useToastController } from '@tamagui/toast'
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
-  type ReactNode,
 } from 'react'
-import { useToastController } from '@tamagui/toast'
-import { api } from '@app/core/utils/api'
-import type { ParentSkill } from './components/InlineSkillSearch'
+import type { ParentSkill, PendingSearch } from './types/profile-skills-types'
 import { getSkillGuidanceForIndustry, type SkillSuggestion } from './constants/skill-guidance'
-import { invalidateProfileQueries } from './utils/profile-sync'
-import {
-  completeProfileSync,
-  failProfileSync,
-  resetProfileSyncError,
-  startProfileSync,
-} from './utils/profile-sync-store'
+import { useProfileSkillsQueries } from './hooks/useProfileSkillsQueries'
+import { useProfileSkillsMutations } from './hooks/useProfileSkillsMutations'
 
-type PendingSearch = { term: string; taxonomy: 'csi' | 'onet' | 'both' }
+const createPendingSearchId = () =>
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
-interface ProfileIndustry {
-  id: string
-  name: string
-  slug: string
-}
+const DEFAULT_INDUSTRY_SLUG = 'construction'
 
 interface ProfileSkillsContextValue {
   isLoadingIndustries: boolean
-  industries: ProfileIndustry[]
+  industries: ReturnType<typeof useProfileSkillsQueries>['industries']
   selectedIndustryId: string
   selectedIndustrySlug: string
   industryDisplayName: string
@@ -55,8 +45,6 @@ interface ProfileSkillsContextValue {
   isRemovingSkill: boolean
 }
 
-const DEFAULT_INDUSTRY_SLUG = 'construction'
-
 const ProfileSkillsContext = createContext<ProfileSkillsContextValue | null>(null)
 
 interface ProfileSkillsProviderProps {
@@ -65,204 +53,70 @@ interface ProfileSkillsProviderProps {
 
 export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) {
   const toast = useToastController()
-  const utils = api.useContext()
-  const [selectedIndustryId, setSelectedIndustryId] = useState<string>('')
   const [pendingSearch, setPendingSearch] = useState<PendingSearch | null>(null)
 
-  const { data: industriesData, isLoading: isLoadingIndustries } =
-    api.profile.skillsMultiTaxonomy.getIndustries.useQuery()
-  const { data: primaryIndustryData } =
-    api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
+  // Use extracted hooks
+  const queries = useProfileSkillsQueries()
+  const mutations = useProfileSkillsMutations()
 
-  const userSkillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
+  // Destructure stable values to prevent infinite loops
+  // Extract callbacks separately to ensure they have stable references
+  const {
+    isLoadingIndustries,
+    industries,
+    selectedIndustryId,
+    selectedIndustrySlug,
+    existingSkillIds,
+    skillCount,
+    hasMinimumSkills,
+    completionPercent,
+    setSelectedIndustryId,
+  } = queries
 
-  // Store skill details for optimistic updates (accessed in onMutate)
-  const pendingSkillDetailsRef = useRef<ParentSkill | null>(null)
+  // Extract mutations and callbacks - use refs to access mutations to prevent recreation
+  const updateIndustryMutationRef = useRef(mutations.updateIndustryMutation)
+  updateIndustryMutationRef.current = mutations.updateIndustryMutation
 
-  // Remove skill mutation (for tracking status only - actual removal is in profile-skills-right.tsx)
-  const removeSkillMutation = api.profile.skillsMultiTaxonomy.removeSkill.useMutation({
-    onSuccess: async () => {
-      await utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()
-    },
-  })
+  const searchSkillsMutationRef = useRef(mutations.searchSkillsMutation)
+  searchSkillsMutationRef.current = mutations.searchSkillsMutation
 
-  const addSkillMutation = api.profile.skillsMultiTaxonomy.addSkill.useMutation({
-    async onMutate(variables: { taxonomy: 'csi' | 'onet'; skillId: string; proficiencyLevel: number }) {
-      resetProfileSyncError()
-      startProfileSync()
+  const selectSkill = mutations.selectSkill
+  const isSearchingSkills = mutations.isSearchingSkills
+  const isAddingSkill = mutations.isAddingSkill
+  const isRemovingSkill = mutations.isRemovingSkill
 
-      // Cancel outgoing refetches to avoid overwriting optimistic update
-      await utils.profile.skillsMultiTaxonomy.getUserSkills.cancel()
-
-      // Snapshot previous value for rollback
-      const previousSkills =
-        utils.profile.skillsMultiTaxonomy.getUserSkills.getData()
-
-      // Get skill details from ref (set by selectSkill before mutation)
-      const skillDetails = pendingSkillDetailsRef.current
-
-      // Optimistically update cache
-      if (skillDetails) {
-        utils.profile.skillsMultiTaxonomy.getUserSkills.setData(
-          undefined,
-          (old: { skills: unknown[] } | undefined) => {
-            if (!old) return old
-            const tempId = `temp-${Date.now()}`
-            const newSkill = {
-              id: tempId,
-              skill_details: {
-                name: skillDetails.name,
-                display_code: skillDetails.code,
-                hierarchy_level: skillDetails.depth,
-              },
-              proficiency_level: variables.proficiencyLevel,
-              csi_skill_id: variables.taxonomy === 'csi' ? variables.skillId : null,
-              onet_occupation_id:
-                variables.taxonomy === 'onet' ? variables.skillId : null,
-              created_at: new Date().toISOString(),
-            }
-            return {
-              ...old,
-              skills: [newSkill, ...(old.skills || [])],
-            }
-          }
-        )
-        // Clear ref after use
-        pendingSkillDetailsRef.current = null
-      }
-
-      return { previousSkills }
-    },
-    onError: (error: Error, _variables: unknown, context: { previousSkills?: unknown } | undefined) => {
-      // Rollback optimistic update
-      if (context?.previousSkills !== undefined) {
-        utils.profile.skillsMultiTaxonomy.getUserSkills.setData(
-          undefined,
-          context.previousSkills
-        )
-      }
-      // Clear ref on error
-      pendingSkillDetailsRef.current = null
-      toast.show('Error', {
-        message: error.message || 'Failed to add skill',
-      })
-      failProfileSync()
-    },
-    onSuccess: async () => {
-      toast.show('Skill Added', {
-        message: 'Skill has been added to your profile!',
-      })
-      // Invalidate to get real server data (replaces temporary ID)
-      await utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()
-      completeProfileSync()
-    },
-    onSettled: (_data: unknown, error: unknown) => {
-      if (!error) {
-        completeProfileSync()
-      }
-    },
-  })
-
-  const updateIndustryMutation =
-    api.profile.skillsMultiTaxonomy.updatePrimaryIndustry.useMutation({
-    onMutate: () => {
-      resetProfileSyncError()
-      startProfileSync()
-    },
-    onSuccess: async () => {
-      toast.show('Industry Updated', {
-        message: 'Your primary industry has been updated',
-      })
-      await invalidateProfileQueries(utils)
-    },
-    onError: (error: Error) => {
-      toast.show('Error', {
-        message: error.message || 'Failed to update industry',
-      })
-      failProfileSync()
-    },
-    onSettled: (_data: unknown, error: unknown) => {
-      if (!error) {
-        completeProfileSync()
-      }
-    },
-  })
-
-  const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
-
-  useEffect(() => {
-    if (primaryIndustryData?.primary_industry_id && !selectedIndustryId) {
-      setSelectedIndustryId(primaryIndustryData.primary_industry_id)
-    }
-  }, [primaryIndustryData, selectedIndustryId])
-
-  const industries: ProfileIndustry[] = useMemo(() => {
-    if (!industriesData?.industries) {
-      return []
-    }
-
-    return industriesData.industries
-      .filter((industry: unknown): industry is ProfileIndustry => {
-        if (!industry || typeof industry !== 'object') {
-          return false
-        }
-        const candidate = industry as {
-          id?: unknown
-          name?: unknown
-          slug?: unknown
-        }
-        return (
-          typeof candidate.id === 'string' &&
-          typeof candidate.name === 'string' &&
-          typeof candidate.slug === 'string'
-        )
-      })
-      .map((industry: ProfileIndustry) => ({
-        id: industry.id,
-        name: industry.name,
-        slug: industry.slug,
-      }))
-  }, [industriesData])
-
-  const selectedIndustrySlug = useMemo(() => {
-    const matchingIndustry = industries.find(
-      (industry: ProfileIndustry) => industry.id === selectedIndustryId
-    )
-    return matchingIndustry?.slug ?? DEFAULT_INDUSTRY_SLUG
-  }, [industries, selectedIndustryId])
-
-  const industryDisplayName = useMemo(
-    () =>
-      selectedIndustrySlug
-        .split('-')
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' '),
-    [selectedIndustrySlug]
-  )
-
-  const skillGuidance = useMemo(
-    () => getSkillGuidanceForIndustry(selectedIndustrySlug),
-    [selectedIndustrySlug]
-  )
-
-  const skillCount = userSkillsQuery.data?.skills?.length ?? 0
-  const hasMinimumSkills = skillCount >= 5
-  const completionPercent = Math.min(Math.round((skillCount / 5) * 100), 100)
-
+  // Handle industry change - use ref to access mutation to prevent callback recreation
+  // Prevent infinite loops by only updating if value actually changed
   const handleIndustryChange = useCallback(
     async (industryId: string) => {
-      setSelectedIndustryId(industryId)
-      await updateIndustryMutation.mutateAsync({
-        industryId,
-      })
+      // Don't do anything if the value hasn't changed
+      if (industryId === selectedIndustryId) {
+        return
+      }
+
+      try {
+        // Update state first for immediate UI feedback
+        setSelectedIndustryId(industryId)
+        // Then update on server
+        await updateIndustryMutationRef.current.mutateAsync({
+          industryId,
+        })
+      } catch (error) {
+        // Rollback state on error
+        console.error('Failed to update industry:', error)
+        // Optionally rollback to previous value
+        // But for now, just let the error be handled by the mutation's onError
+      }
     },
-    [updateIndustryMutation]
+    [setSelectedIndustryId, selectedIndustryId] // Include selectedIndustryId to check for changes
   )
 
+  // Handle suggestion select
   const handleSuggestionSelect = useCallback(
     (suggestion: SkillSuggestion) => {
       const searchTerm = suggestion.searchTerm ?? suggestion.label
       setPendingSearch({
+        id: createPendingSearchId(),
         term: searchTerm,
         taxonomy: suggestion.taxonomy,
       })
@@ -278,6 +132,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     setPendingSearch(null)
   }, [])
 
+  // Search skills function - use ref to access mutation to prevent callback recreation
   const searchSkills = useCallback(
     async (query: string, taxonomies: string[]): Promise<ParentSkill[]> => {
       if (!selectedIndustryId || taxonomies.length === 0) {
@@ -288,7 +143,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
         const allResults: ParentSkill[] = []
 
         for (const taxonomy of taxonomies) {
-          const result = await searchSkillsMutation.mutateAsync({
+          const result = await searchSkillsMutationRef.current.mutateAsync({
             query,
             industrySlug: taxonomy === 'csi' ? DEFAULT_INDUSTRY_SLUG : selectedIndustrySlug,
             limit: 20,
@@ -317,55 +172,72 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
         return []
       }
     },
-    [selectedIndustryId, selectedIndustrySlug, searchSkillsMutation]
+    [selectedIndustryId, selectedIndustrySlug] // Only depends on primitive values
   )
 
-  const selectSkill = useCallback(
-    async (
-      skillId: string,
-      proficiency: number,
-      taxonomy: string,
-      skillDetails?: ParentSkill
-    ) => {
-      // Store skill details in ref for optimistic update
-      if (skillDetails) {
-        pendingSkillDetailsRef.current = skillDetails
-      }
-      await addSkillMutation.mutateAsync({
-        taxonomy,
-        skillId,
-        proficiencyLevel: proficiency,
-      })
-    },
-    [addSkillMutation]
+  // Derived state
+  const industryDisplayName = useMemo(
+    () =>
+      selectedIndustrySlug
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' '),
+    [selectedIndustrySlug]
   )
 
-  const existingSkillIds =
-    userSkillsQuery.data?.skills.map((skill: { id: string; csi_skill_id: string | null; onet_occupation_id: string | null }) =>
-      skill.csi_skill_id || skill.onet_occupation_id || skill.id
-    ) || []
+  const skillGuidance = useMemo(
+    () => getSkillGuidanceForIndustry(selectedIndustrySlug),
+    [selectedIndustrySlug]
+  )
 
-  const value: ProfileSkillsContextValue = {
-    isLoadingIndustries,
-    industries,
-    selectedIndustryId,
-    selectedIndustrySlug,
-    industryDisplayName,
-    handleIndustryChange,
-    skillGuidance,
-    skillCount,
-    hasMinimumSkills,
-    completionPercent,
-    handleSuggestionSelect,
-    pendingSearch,
-    clearPendingSearch,
-    searchSkills,
-    selectSkill,
-    isSearchingSkills: searchSkillsMutation.isPending,
-    existingSkillIds,
-    isAddingSkill: addSkillMutation.isPending,
-    isRemovingSkill: removeSkillMutation.isPending,
-  }
+  // Memoize context value - use primitive values and stable callbacks
+  // Boolean values like isAddingSkill might change frequently but shouldn't cause loops
+  const value: ProfileSkillsContextValue = useMemo(
+    () => ({
+      isLoadingIndustries,
+      industries,
+      selectedIndustryId,
+      selectedIndustrySlug,
+      industryDisplayName,
+      handleIndustryChange,
+      skillGuidance,
+      skillCount,
+      hasMinimumSkills,
+      completionPercent,
+      handleSuggestionSelect,
+      pendingSearch,
+      clearPendingSearch,
+      searchSkills,
+      selectSkill,
+      isSearchingSkills,
+      existingSkillIds,
+      isAddingSkill,
+      isRemovingSkill,
+    }),
+    [
+      isLoadingIndustries,
+      industries,
+      selectedIndustryId,
+      selectedIndustrySlug,
+      industryDisplayName,
+      handleIndustryChange,
+      skillGuidance,
+      skillCount,
+      hasMinimumSkills,
+      completionPercent,
+      handleSuggestionSelect,
+      pendingSearch,
+      clearPendingSearch,
+      searchSkills,
+      selectSkill,
+      isSearchingSkills,
+      existingSkillIds,
+      // Include boolean values - they should only change when mutations start/stop
+      // If they're causing loops, something else is triggering mutations repeatedly
+      isAddingSkill,
+      isRemovingSkill,
+    ]
+  )
 
   return <ProfileSkillsContext.Provider value={value}>{children}</ProfileSkillsContext.Provider>
 }
@@ -378,4 +250,3 @@ export function useProfileSkillsContext(): ProfileSkillsContextValue {
 
   return context
 }
-

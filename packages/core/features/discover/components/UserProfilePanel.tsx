@@ -1,10 +1,10 @@
-import { YStack, XStack, Text, Button, Card, Avatar, Spinner } from 'tamagui'
-import { MapPin, X, ExternalLink, User } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
-import { api } from '@app/core/utils/api'
 import { RouteBuilder } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import { ExternalLink, MapPin, User, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { Avatar, Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type PreviewSkill = {
   csiSkillId?: string | null
@@ -43,7 +43,7 @@ export function UserProfilePanel({
   // Fetch lightweight preview data
   const { data: preview, isLoading } = api.userProfile.getPreview.useQuery(
     { userId: userId || '' },
-    { enabled: !!userId && open },
+    { enabled: !!userId && open }
   )
 
   if (!open || !userId) {
@@ -197,12 +197,7 @@ export function UserProfilePanel({
 
           {/* Action Button */}
           <XStack gap="$2" pt="$2">
-            <Button
-              flex={1}
-              theme="info"
-              onPress={handleViewProfile}
-              icon={ExternalLink}
-            >
+            <Button flex={1} theme="info" onPress={handleViewProfile} icon={ExternalLink}>
               View Profile
             </Button>
           </XStack>
@@ -211,4 +206,3 @@ export function UserProfilePanel({
     </Card>
   )
 }
-

@@ -1,22 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Input, Avatar, H4, AnimatePresence, ScrollView, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { generalProfileSchema, type GeneralProfileFormData, generalProfileDefaults } from './config'
-import { UIButton as Button, PhoneNumberInput, SkeletonForm } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, AvatarImagePicker, RichTextEditor, plainTextToTipTap, ConfirmationDialog } from '@app/ui'
-import type { JSONContent } from '@tiptap/core'
 import { isValidPhoneNumber } from '@app/schemas/common/phone'
+import {
+  AvatarImagePicker,
+  UIButton as Button,
+  ConfirmationDialog,
+  DashboardWidget,
+  PhoneNumberInput,
+  plainTextToTipTap,
+  RichTextEditor,
+  SkeletonForm,
+} from '@app/ui'
+import { useSafeToast } from '@app/core/hooks/useSafeToast'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { JSONContent } from '@tiptap/core'
+import { useEffect, useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
@@ -34,36 +42,37 @@ export function ProfileGeneralLeft() {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<GeneralProfileFormData | null>(null)
-  const toast = useToastController()
+  const toast = useSafeToast()
   const utils = api.useContext()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update profile data
-  const {
-    data: profileData,
-    isLoading: isLoadingProfile,
-  } = api.profile.getGeneral.useQuery()
-  const updateProfileMutation = api.profile.updateGeneral.useMutation({
+  const { data: profileData, isLoading: isLoadingProfile } = api.profile.general.getGeneral.useQuery()
+  const updateProfileMutation = api.profile.general.updateGeneral.useMutation({
     async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
       resetProfileSyncError()
       startProfileSync()
-      await utils.profile.getGeneral.cancel()
-      const previousGeneral = utils.profile.getGeneral.getData()
-      utils.profile.getGeneral.setData(undefined, (current: GeneralProfileFormData | undefined) => ({
-        ...(current ?? {}),
-        ...input,
-      }))
+      await utils.profile.general.getGeneral.cancel()
+      const previousGeneral = utils.profile.general.getGeneral.getData()
+      utils.profile.general.getGeneral.setData(
+        undefined,
+        (current: GeneralProfileFormData | undefined) => ({
+          ...(current ?? {}),
+          ...input,
+        })
+      )
       return { previousGeneral }
     },
     onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
       console.error('Error saving profile:', error)
       if (context?.previousGeneral) {
-        utils.profile.getGeneral.setData(undefined, context.previousGeneral)
+        utils.profile.general.getGeneral.setData(undefined, context.previousGeneral)
       }
       failProfileSync()
       toast.show('Error', {
-        message: error instanceof Error ? error.message : 'Failed to save profile. Please try again.',
+        message:
+          error instanceof Error ? error.message : 'Failed to save profile. Please try again.',
       })
     },
     onSuccess: () => {
@@ -79,7 +88,7 @@ export function ProfileGeneralLeft() {
     },
   })
 
-  const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
+  const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
     onMutate: () => {
       resetProfileSyncError()
       startProfileSync()
@@ -165,6 +174,21 @@ export function ProfileGeneralLeft() {
       errors: errors,
     })
   }, [isDirty, errors])
+
+  // Browser navigation guard - prevent data loss on page close/navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = '' // Required for Chrome
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
 
   const onSubmit = async (data: GeneralProfileFormData) => {
     console.log('🟢 Form submission started')
@@ -267,11 +291,16 @@ export function ProfileGeneralLeft() {
                   value={field.value}
                   onChangeText={field.onChange}
                   borderColor={errors.first_name ? '$red8' : '$borderColor'}
+                  aria-label="First name"
+                  accessibilityLabel="First name"
+                  aria-required="true"
+                  aria-invalid={!!errors.first_name}
+                  aria-describedby={errors.first_name ? 'first_name-error' : undefined}
                 />
               )}
             />
             {errors.first_name && (
-              <Text color="$red10" fontSize="$2">
+              <Text id="first_name-error" color="$red10" fontSize="$2" role="alert">
                 {errors.first_name.message}
               </Text>
             )}
@@ -288,11 +317,16 @@ export function ProfileGeneralLeft() {
                   value={field.value}
                   onChangeText={field.onChange}
                   borderColor={errors.last_name ? '$red8' : '$borderColor'}
+                  aria-label="Last name"
+                  accessibilityLabel="Last name"
+                  aria-required="true"
+                  aria-invalid={!!errors.last_name}
+                  aria-describedby={errors.last_name ? 'last_name-error' : undefined}
                 />
               )}
             />
             {errors.last_name && (
-              <Text color="$red10" fontSize="$2">
+              <Text id="last_name-error" color="$red10" fontSize="$2" role="alert">
                 {errors.last_name.message}
               </Text>
             )}

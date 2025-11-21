@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type RouterInputs = inferRouterInputs<AppRouter>
 type RouterOutputs = inferRouterOutputs<AppRouter>
@@ -65,7 +64,7 @@ const DEFAULT_CONSENT: ConsentDetails = {
 }
 
 function serializeConsent(
-  consent: ConsentDetails,
+  consent: ConsentDetails
 ): RouterInputs['backgroundChecks']['requestCheck']['consent'] | undefined {
   if (!consent.acceptsDisclosure) {
     return undefined
@@ -123,7 +122,7 @@ export function useBackgroundCheckForm() {
 
   const selectedPackage = useMemo(() => {
     return packagesQuery.data?.find(
-      (pkg: BackgroundCheckPackage) => pkg.id === state.selectedPackageId,
+      (pkg: BackgroundCheckPackage) => pkg.id === state.selectedPackageId
     )
   }, [packagesQuery.data, state.selectedPackageId])
 
@@ -157,9 +156,7 @@ export function useBackgroundCheckForm() {
       consent: {
         ...prev.consent,
         ...consent,
-        signedAt: consent.signature
-          ? new Date().toISOString()
-          : prev.consent.signedAt,
+        signedAt: consent.signature ? new Date().toISOString() : prev.consent.signedAt,
       },
     }))
   }, [])
@@ -167,9 +164,7 @@ export function useBackgroundCheckForm() {
   const upsertDocument = useCallback((document: DocumentDraft) => {
     setState((prev) => {
       const existingIndex = prev.documents.findIndex(
-        (item) =>
-          item.storagePath === document.storagePath ||
-          (item.id && item.id === document.id),
+        (item) => item.storagePath === document.storagePath || (item.id && item.id === document.id)
       )
       const nextDocuments = [...prev.documents]
       if (existingIndex >= 0) {
@@ -221,7 +216,7 @@ export function useBackgroundCheckForm() {
       const result = await createUploadUrlMutation.mutateAsync(input)
       return result
     },
-    [createUploadUrlMutation],
+    [createUploadUrlMutation]
   )
 
   const recordDocumentMetadata = useCallback(
@@ -240,7 +235,7 @@ export function useBackgroundCheckForm() {
       }
       return result
     },
-    [addDocumentMetadataMutation, upsertDocument],
+    [addDocumentMetadataMutation, upsertDocument]
   )
 
   const createPaymentSession = useCallback(async () => {
@@ -272,7 +267,8 @@ export function useBackgroundCheckForm() {
 
     const response = await requestCheckMutation.mutateAsync({
       package_id: state.selectedPackageId,
-      tier: (selectedPackage.slug as string | undefined) ??
+      tier:
+        (selectedPackage.slug as string | undefined) ??
         (selectedPackage.display_name as string | undefined) ??
         'custom',
       paid_by: 'worker',
@@ -282,7 +278,16 @@ export function useBackgroundCheckForm() {
 
     setPaymentSession(response)
     return response
-  }, [paymentSession, requestCheckMutation, selectedPackage, state.consent, state.documents, state.metadata, state.selectedPackageId, state.payment.paidBy])
+  }, [
+    paymentSession,
+    requestCheckMutation,
+    selectedPackage,
+    state.consent,
+    state.documents,
+    state.metadata,
+    state.selectedPackageId,
+    state.payment.paidBy,
+  ])
 
   const confirmPaymentSession = useCallback(
     async (paymentIntentId: string) => {
@@ -317,7 +322,7 @@ export function useBackgroundCheckForm() {
         setIsSubmitting(false)
       }
     },
-    [confirmPaymentMutation, paymentSession],
+    [confirmPaymentMutation, paymentSession]
   )
 
   return {

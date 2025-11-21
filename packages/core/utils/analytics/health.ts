@@ -11,4 +11,3 @@ export const getAnalyticsHealthSnapshot = async () => {
     distinctId: client?.getDistinctId?.() ?? null,
   }
 }
-

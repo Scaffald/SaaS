@@ -301,7 +301,7 @@ generalProfileSchema = z.object({
     .max(50, "Last name too long"),
   
   about: z.string()
-    .max(500, "About section must be 500 characters or less")
+    .max(1500, "About section must be 1500 characters or less")
     .optional(),
   
   phone: phoneNumberSchema

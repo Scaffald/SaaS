@@ -1,11 +1,11 @@
-import { useState, useMemo } from 'react'
-import { YStack, XStack, Text, Input, Button } from '@app/ui'
-import { Avatar } from 'tamagui'
-import { Send, MessageSquare } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
 import { useUser } from '@app/core/utils/useUser'
 import type { InquirySectionName } from '@app/schemas'
+import { Button, Input, Text, XStack, YStack } from '@app/ui'
+import { MessageSquare, Send } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useMemo, useState } from 'react'
+import { Avatar } from 'tamagui'
 
 interface InquiryCommentThreadProps {
   inquiryId: string
@@ -74,8 +74,7 @@ export function InquiryCommentThread({
     if (!currentUser) return []
     return comments.filter(
       (comment) =>
-        comment.sender_id !== currentUser.id &&
-        !comment.read_by?.includes(currentUser.id)
+        comment.sender_id !== currentUser.id && !comment.read_by?.includes(currentUser.id)
     )
   }, [comments, currentUser])
 
@@ -109,8 +108,7 @@ export function InquiryCommentThread({
               currentUser &&
               comment.sender_id !== currentUser.id &&
               !comment.read_by?.includes(currentUser.id)
-            const isFromCurrentUser =
-              currentUser && comment.sender_id === currentUser.id
+            const isFromCurrentUser = currentUser && comment.sender_id === currentUser.id
 
             return (
               <XStack
@@ -193,4 +191,3 @@ export function InquiryCommentThread({
     </YStack>
   )
 }
-

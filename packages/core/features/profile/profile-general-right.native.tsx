@@ -1,5 +1,5 @@
-import { YStack, Text, H3, H4, isWeb } from 'tamagui'
-import { DashboardWidget, StackedCards } from '@app/ui'
+import { DashboardWidget } from '@app/ui'
+import { H3, Text, YStack } from 'tamagui'
 
 /**
  * Profile General Right Component

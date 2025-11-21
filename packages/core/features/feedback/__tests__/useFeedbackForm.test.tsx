@@ -1,11 +1,7 @@
+import { FEEDBACK_MAX_LENGTH, FEEDBACK_MIN_LENGTH } from '@app/schemas/feedback/feedback.schema'
 import { act, renderHook } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { Platform } from 'react-native'
-
-import {
-  FEEDBACK_MAX_LENGTH,
-  FEEDBACK_MIN_LENGTH,
-} from '@app/schemas/feedback/feedback.schema'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useFeedbackForm } from '../hooks/useFeedbackForm'
 
 describe('useFeedbackForm', () => {
@@ -72,5 +68,3 @@ describe('useFeedbackForm', () => {
     expect(result.current.screenshot).toBeNull()
   })
 })
-
-

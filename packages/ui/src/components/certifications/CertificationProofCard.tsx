@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { Card, YStack, XStack, Text, Button, Input } from 'tamagui'
-import { Upload, Link as LinkIcon, X, ExternalLink } from '@tamagui/lucide-icons'
+import { ExternalLink, Link as LinkIcon, Upload, X } from '@tamagui/lucide-icons'
+import { type ChangeEvent, useState } from 'react'
+import { Button, Card, Input, Text, XStack, YStack } from 'tamagui'
 
 interface CertificationProofCardProps {
   certificationTitle: string
@@ -27,7 +27,7 @@ export function CertificationProofCard({
   const [urlInput, setUrlInput] = useState(proofValue || '')
   const [uploading, setUploading] = useState(false)
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 

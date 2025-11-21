@@ -46,11 +46,7 @@ export const SKILL_GUIDANCE_BY_INDUSTRY: Record<string, SkillGuidance> = {
       { label: 'Heavy Equipment Operation', taxonomy: 'csi' },
       { label: 'Cost Estimating', taxonomy: 'onet' },
     ],
-    tips: [
-      'Focus on skills that improve safety and productivity on site.',
-      'Pair field skills with project management abilities to stand out.',
-      'Refresh older skills if codes or standards have changed recently.',
-    ],
+    tips: [],
   },
   electrical: {
     recommended: [
@@ -118,4 +114,3 @@ export const getSkillGuidanceForIndustry = (industrySlug: string | undefined): S
 
   return SKILL_GUIDANCE_BY_INDUSTRY[industrySlug] ?? defaultGuidance
 }
-

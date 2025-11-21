@@ -1,11 +1,12 @@
-import { YStack, ScrollView, Text, XStack, Button, H2, Separator } from '@app/ui'
-import { Card } from 'tamagui'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { GeneralProfileSection, EmploymentSection } from '@app/core/features/profile/components'
 import { ProfileSkillsLeft, ProfileSkillsProvider } from '@app/core/features/profile'
-import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
-import { ProfileEducationLeft } from '@app/core/features/profile/profile-education-left'
+import { EmploymentSection, GeneralProfileSection } from '@app/core/features/profile/components'
+import { ProfileCertificationsHighlightProvider } from '@app/core/features/profile/profile-certifications-highlight-context'
 import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
+import { ProfileEducationLeft } from '@app/core/features/profile/profile-education-left'
+import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
+import { Button, H2, ScrollView, Separator, Text, XStack, YStack } from '@app/ui'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Card } from 'tamagui'
 
 export default function EditUserPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -107,7 +108,9 @@ export default function EditUserPage() {
               certifications. Full multi-user support coming soon.
             </Text>
           </Card>
-          <ProfileCertificationsLeft />
+          <ProfileCertificationsHighlightProvider>
+            <ProfileCertificationsLeft />
+          </ProfileCertificationsHighlightProvider>
         </YStack>
       </YStack>
     </ScrollView>

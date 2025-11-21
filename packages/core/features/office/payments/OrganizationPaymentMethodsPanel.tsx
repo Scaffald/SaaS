@@ -1,78 +1,75 @@
-import { useState } from "react";
-import { Button, Card, Spinner, Text, XStack, YStack } from "tamagui";
-import { CreditCard, Plus, Trash2 } from "@tamagui/lucide-icons";
-import { useToastController } from "@tamagui/toast";
-
-import { api } from "@app/core/utils/api";
-import { SetupIntentForm } from "./SetupIntentForm";
+import { api } from '@app/core/utils/api'
+import { CreditCard, Plus, Trash2 } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useState } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { SetupIntentForm } from './SetupIntentForm'
 
 type OrganizationPaymentMethodsPanelProps = {
-  organizationId: string;
-};
+  organizationId: string
+}
 
 const formatCardBrand = (brand: string | null | undefined): string => {
-  if (!brand) return "Card";
-  return brand.charAt(0).toUpperCase() + brand.slice(1);
-};
+  if (!brand) return 'Card'
+  return brand.charAt(0).toUpperCase() + brand.slice(1)
+}
 
 const formatExpiry = (month: number | null, year: number | null): string => {
-  if (!month || !year) return "";
-  return `${String(month).padStart(2, "0")}/${String(year).slice(-2)}`;
-};
+  if (!month || !year) return ''
+  return `${String(month).padStart(2, '0')}/${String(year).slice(-2)}`
+}
 
 export function OrganizationPaymentMethodsPanel({
   organizationId,
 }: OrganizationPaymentMethodsPanelProps) {
-  const toast = useToastController();
-  const [showAddForm, setShowAddForm] = useState(false);
+  const toast = useToastController()
+  const [showAddForm, setShowAddForm] = useState(false)
 
   const paymentMethodQuery = api.payments.getPaymentMethod.useQuery(
     { organizationId },
     {
       enabled: Boolean(organizationId),
       staleTime: 60_000,
-    },
-  );
+    }
+  )
 
   const deleteMutation = api.payments.deletePaymentMethod.useMutation({
     onSuccess: () => {
-      toast.show("Payment method removed", {
-        message: "The payment method has been removed successfully.",
-      });
-      paymentMethodQuery.refetch();
-      setShowAddForm(false);
+      toast.show('Payment method removed', {
+        message: 'The payment method has been removed successfully.',
+      })
+      paymentMethodQuery.refetch()
+      setShowAddForm(false)
     },
     onError: (error: Error) => {
-      toast.show("Failed to remove payment method", {
+      toast.show('Failed to remove payment method', {
         message: error.message,
-        type: "error",
-      });
+        type: 'error',
+      })
     },
-  });
+  })
 
-  const paymentMethod = paymentMethodQuery.data;
+  const paymentMethod = paymentMethodQuery.data
 
   const handleDelete = () => {
-    if (!paymentMethod?.id) return;
+    if (!paymentMethod?.id) return
 
     if (
-      !confirm(
-        "Are you sure you want to remove this payment method? This action cannot be undone.",
-      )
+      !confirm('Are you sure you want to remove this payment method? This action cannot be undone.')
     ) {
-      return;
+      return
     }
 
-    deleteMutation.mutate({ organizationPaymentMethodId: paymentMethod.id });
-  };
+    deleteMutation.mutate({ organizationPaymentMethodId: paymentMethod.id })
+  }
 
   const handleAddSuccess = () => {
-    toast.show("Payment method added", {
-      message: "The payment method has been saved successfully.",
-    });
-    paymentMethodQuery.refetch();
-    setShowAddForm(false);
-  };
+    toast.show('Payment method added', {
+      message: 'The payment method has been saved successfully.',
+    })
+    paymentMethodQuery.refetch()
+    setShowAddForm(false)
+  }
 
   if (paymentMethodQuery.isLoading) {
     return (
@@ -82,7 +79,7 @@ export function OrganizationPaymentMethodsPanel({
           <Text color="$color11">Loading payment method…</Text>
         </YStack>
       </Card>
-    );
+    )
   }
 
   return (
@@ -92,12 +89,7 @@ export function OrganizationPaymentMethodsPanel({
           Payment Method
         </Text>
         {!showAddForm && !paymentMethod && (
-          <Button
-            size="$3"
-            theme="blue"
-            icon={Plus}
-            onPress={() => setShowAddForm(true)}
-          >
+          <Button size="$3" theme="blue" icon={Plus} onPress={() => setShowAddForm(true)}>
             Add Payment Method
           </Button>
         )}
@@ -136,9 +128,7 @@ export function OrganizationPaymentMethodsPanel({
               </XStack>
               <Text fontSize="$2" color="$color10">
                 Expires {formatExpiry(paymentMethod.expMonth, paymentMethod.expYear)}
-                {paymentMethod.billingName
-                  ? ` • ${paymentMethod.billingName}`
-                  : ""}
+                {paymentMethod.billingName ? ` • ${paymentMethod.billingName}` : ''}
               </Text>
             </YStack>
             <Button
@@ -153,12 +143,7 @@ export function OrganizationPaymentMethodsPanel({
               Remove
             </Button>
           </XStack>
-          <Button
-            size="$3"
-            variant="outlined"
-            icon={Plus}
-            onPress={() => setShowAddForm(true)}
-          >
+          <Button size="$3" variant="outlined" icon={Plus} onPress={() => setShowAddForm(true)}>
             Replace Payment Method
           </Button>
         </YStack>
@@ -173,6 +158,5 @@ export function OrganizationPaymentMethodsPanel({
         </YStack>
       )}
     </Card>
-  );
+  )
 }
-

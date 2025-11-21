@@ -1,9 +1,9 @@
-import { YStack } from 'tamagui'
-import { memo } from 'react'
 import type { RefObject } from 'react'
-import type { TalentProfile } from '../types'
-import type { OrganizationMapPin } from '../hooks/useOrganizations'
+import { memo } from 'react'
+import { YStack } from 'tamagui'
 import type { JobMapPin } from '../hooks/useJobs'
+import type { OrganizationMapPin } from '../hooks/useOrganizations'
+import type { TalentProfile } from '../types'
 import { ResultList, type ResultListRef } from './ResultList'
 
 interface ResultsRailProps {
@@ -40,9 +40,9 @@ export const ResultsRail = memo(function ResultsRail({
       px="$3"
       overflow="hidden"
       animation="quick"
-      // Hide on mobile ($sm and below), show on desktop ($gtSm)
+      // Hide on mobile ($sm and below), show on desktop ($md)
       $sm={{ display: 'none' }}
-      $gtSm={{ display: 'flex' }}
+      $md={{ display: 'flex' }}
       x={isVisible ? 0 : 320}
       opacity={isVisible ? 1 : 0}
       bg="$color2"

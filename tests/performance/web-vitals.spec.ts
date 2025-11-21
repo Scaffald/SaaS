@@ -12,12 +12,11 @@
  * Task 5: Optimize Web Performance and Core Web Vitals
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
-  measureWebVitals,
   assertWebVitalsTargets,
+  measureWebVitals,
   PERFORMANCE_TARGETS,
-  type WebVitalsMetrics,
 } from '../infrastructure/playwright/helpers/performance'
 
 /**
@@ -61,10 +60,9 @@ test.describe('Core Web Vitals Testing', () => {
         const metrics = await measureWebVitals(page)
 
         if (metrics.fcp !== undefined) {
-          expect(
-            metrics.fcp,
-            `FCP should be < ${PERFORMANCE_TARGETS.FCP}ms`
-          ).toBeLessThan(PERFORMANCE_TARGETS.FCP)
+          expect(metrics.fcp, `FCP should be < ${PERFORMANCE_TARGETS.FCP}ms`).toBeLessThan(
+            PERFORMANCE_TARGETS.FCP
+          )
         }
       })
 
@@ -75,10 +73,9 @@ test.describe('Core Web Vitals Testing', () => {
         const metrics = await measureWebVitals(page)
 
         if (metrics.lcp !== undefined) {
-          expect(
-            metrics.lcp,
-            `LCP should be < ${PERFORMANCE_TARGETS.LCP}ms`
-          ).toBeLessThan(PERFORMANCE_TARGETS.LCP)
+          expect(metrics.lcp, `LCP should be < ${PERFORMANCE_TARGETS.LCP}ms`).toBeLessThan(
+            PERFORMANCE_TARGETS.LCP
+          )
         }
       })
 
@@ -89,10 +86,9 @@ test.describe('Core Web Vitals Testing', () => {
         const metrics = await measureWebVitals(page)
 
         if (metrics.cls !== undefined) {
-          expect(
-            metrics.cls,
-            `CLS should be < ${PERFORMANCE_TARGETS.CLS}`
-          ).toBeLessThan(PERFORMANCE_TARGETS.CLS)
+          expect(metrics.cls, `CLS should be < ${PERFORMANCE_TARGETS.CLS}`).toBeLessThan(
+            PERFORMANCE_TARGETS.CLS
+          )
         }
       })
 
@@ -103,10 +99,9 @@ test.describe('Core Web Vitals Testing', () => {
         const metrics = await measureWebVitals(page)
 
         if (metrics.tti !== undefined) {
-          expect(
-            metrics.tti,
-            `TTI should be < ${PERFORMANCE_TARGETS.TTI}ms`
-          ).toBeLessThan(PERFORMANCE_TARGETS.TTI)
+          expect(metrics.tti, `TTI should be < ${PERFORMANCE_TARGETS.TTI}ms`).toBeLessThan(
+            PERFORMANCE_TARGETS.TTI
+          )
         }
       })
 
@@ -116,7 +111,7 @@ test.describe('Core Web Vitals Testing', () => {
 
         // Trigger first input
         const firstClickable = page.locator('a, button, input, select').first()
-        if (await firstClickable.count() > 0) {
+        if ((await firstClickable.count()) > 0) {
           await firstClickable.click()
           await page.waitForTimeout(1000)
         }
@@ -124,13 +119,11 @@ test.describe('Core Web Vitals Testing', () => {
         const metrics = await measureWebVitals(page)
 
         if (metrics.fid !== undefined) {
-          expect(
-            metrics.fid,
-            `FID should be < ${PERFORMANCE_TARGETS.FID}ms`
-          ).toBeLessThan(PERFORMANCE_TARGETS.FID)
+          expect(metrics.fid, `FID should be < ${PERFORMANCE_TARGETS.FID}ms`).toBeLessThan(
+            PERFORMANCE_TARGETS.FID
+          )
         }
       })
     })
   }
 })
-

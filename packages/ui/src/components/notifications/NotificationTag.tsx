@@ -1,6 +1,6 @@
-import { Theme, XStack, Text } from 'tamagui'
-import type { ThemeName, SpaceTokens, FontSizeTokens, ColorTokens, XStackProps } from 'tamagui'
 import type { ComponentProps } from 'react'
+import type { ColorTokens, FontSizeTokens, SpaceTokens, ThemeName, XStackProps } from 'tamagui'
+import { Text, Theme, XStack } from 'tamagui'
 
 const badgeSizing: Record<
   'sm' | 'md',

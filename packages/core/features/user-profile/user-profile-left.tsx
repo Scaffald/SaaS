@@ -1,17 +1,17 @@
-import { useState } from 'react'
-import { ScrollView, YStack, Spinner, Text, XStack, Button } from 'tamagui'
-import { ResponsiveModal } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
-import { UserProfileHeader } from './user-profile-header'
-import { UserProfileAbout } from './user-profile-about'
-import { UserProfileSkills } from './user-profile-skills'
-import { UserProfileCertifications } from './user-profile-certifications'
-import { UserProfileExperience } from './user-profile-experience'
-import { UserProfileEducation } from './user-profile-education'
-import { ReviewWizard } from '../reviews/components/ReviewWizard'
-import { useAdaptiveProfileSync, resetProfileSyncError } from '../profile/utils/profile-sync-store'
+import { ResponsiveModal } from '@app/ui'
 import { AlertTriangle, CheckCircle } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { resetProfileSyncError, useAdaptiveProfileSync } from '../profile/utils/profile-sync-store'
+import { ReviewWizard } from '../reviews/components/ReviewWizard'
+import { UserProfileAbout } from './user-profile-about'
+import { UserProfileCertifications } from './user-profile-certifications'
+import { UserProfileEducation } from './user-profile-education'
+import { UserProfileExperience } from './user-profile-experience'
+import { UserProfileHeader } from './user-profile-header'
+import { UserProfileSkills } from './user-profile-skills'
 
 interface UserProfileLeftProps {
   userId: string
@@ -92,18 +92,10 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
               rounded="$4"
               borderWidth={1}
               bg={
-                syncStatus === 'syncing'
-                  ? '$blue3'
-                  : syncStatus === 'error'
-                    ? '$red3'
-                    : '$green3'
+                syncStatus === 'syncing' ? '$blue3' : syncStatus === 'error' ? '$red3' : '$green3'
               }
               borderColor={
-                syncStatus === 'syncing'
-                  ? '$blue6'
-                  : syncStatus === 'error'
-                    ? '$red7'
-                    : '$green6'
+                syncStatus === 'syncing' ? '$blue6' : syncStatus === 'error' ? '$red7' : '$green6'
               }
               gap="$1"
               style={{ maxWidth: 200 }}
@@ -135,12 +127,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 </Text>
               </XStack>
               {syncStatus === 'error' && (
-                <Button
-                  size="$2"
-                  variant="outlined"
-                  onPress={resetProfileSyncError}
-                  mt="$2"
-                >
+                <Button size="$2" variant="outlined" onPress={resetProfileSyncError} mt="$2">
                   Dismiss
                 </Button>
               )}

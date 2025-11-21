@@ -1,8 +1,7 @@
-import React from 'react'
-import { YStack, Spinner, Text } from 'tamagui'
+import { Spinner, Text, YStack } from 'tamagui'
 import { ChecklistHeader } from './ChecklistHeader'
-import { ChecklistProgress } from './ChecklistProgress'
 import { ChecklistList } from './ChecklistList'
+import { ChecklistProgress } from './ChecklistProgress'
 import type { ChecklistProps } from './types'
 
 /**

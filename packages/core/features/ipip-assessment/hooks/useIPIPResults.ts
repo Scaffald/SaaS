@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
-import { api } from '@app/core/utils/api'
-import { getScore, getResults } from '@app/core/features/personality-assessment/lib/ipip'
-import { normalizeScores } from '../utils/scoreNormalizer'
 import type { IPIPAnswer, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
+import { getResults, getScore } from '@app/core/features/personality-assessment/lib/ipip'
+import { api } from '@app/core/utils/api'
+import { useMemo } from 'react'
+import { normalizeScores } from '../utils/scoreNormalizer'
 
 const RESULTS_STALE_TIME_MS = 1000 * 60 * 5 // 5 minutes
 const RESULTS_CACHE_TIME_MS = 1000 * 60 * 30 // 30 minutes
@@ -138,4 +138,3 @@ export function useIPIPResults(): IPIPResultsData {
     narrativeError,
   }
 }
-

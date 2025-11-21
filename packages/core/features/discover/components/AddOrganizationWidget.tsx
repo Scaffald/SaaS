@@ -1,21 +1,19 @@
-import { useMemo, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
-import { DashboardWidget } from '@app/ui'
-import { AlertTriangle, ArrowRight, Building2, CheckCircle2, Loader2, Pencil } from '@tamagui/lucide-icons'
-import {
-  Button,
-  Input,
-  Label,
-  Separator,
-  Stack,
-  Text,
-  XStack,
-  YStack,
-} from 'tamagui'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
+import { DashboardWidget } from '@app/ui'
+import {
+  AlertTriangle,
+  ArrowRight,
+  Building2,
+  CheckCircle2,
+  Loader2,
+  Pencil,
+} from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Button, Input, Label, Separator, Stack, Text, XStack, YStack } from 'tamagui'
 import { normalizeOrganizationSlug } from '../utils/normalizeOrganizationSlug'
 
 const MIN_QUERY_LENGTH = 2
@@ -77,20 +75,22 @@ export function AddOrganizationWidget() {
     candidateSlug.length === 0 ||
     Boolean(submittedRequest)
 
-  const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation({
-    onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
-      setSubmittedRequest(request)
-      toast.show('Request submitted', {
-        message:
-          'Thanks for the submission! Our team will review your organization and follow up shortly.',
-      })
-    },
-    onError: (error: { message?: string }) => {
-      toast.show('Unable to submit organization', {
-        message: error.message ?? 'Please try again in a moment.',
-      })
-    },
-  })
+  const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation(
+    {
+      onSuccess: ({ request }: { request: SubmissionSummaryProps['request'] }) => {
+        setSubmittedRequest(request)
+        toast.show('Request submitted', {
+          message:
+            'Thanks for the submission! Our team will review your organization and follow up shortly.',
+        })
+      },
+      onError: (error: { message?: string }) => {
+        toast.show('Unable to submit organization', {
+          message: error.message ?? 'Please try again in a moment.',
+        })
+      },
+    }
+  )
 
   const handleCreatePress = () => {
     if (!isQueryReady || candidateSlug.length === 0) return
@@ -138,7 +138,7 @@ export function AddOrganizationWidget() {
           request={submittedRequest}
           onAddDetails={() =>
             router.push({
-              pathname: ROUTES.DASHBOARD_ORGANIZATIONS_CREATE.path,
+              pathname: ROUTES.DASHBOARD.ORGANIZATIONS.CREATE.path,
               params: {
                 name: submittedRequest.name ?? trimmedQuery,
                 slug: submittedRequest.slug,
@@ -306,5 +306,3 @@ function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
     </YStack>
   )
 }
-
-

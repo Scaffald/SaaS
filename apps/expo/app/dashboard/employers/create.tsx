@@ -1,10 +1,10 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { Building2, Info } from '@tamagui/lucide-icons'
-import { Button, Separator, Text, XStack, YStack } from 'tamagui'
-import { OrganizationRequestForm } from '@app/core/features/organizations/components/OrganizationRequestForm'
-import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
 import { ROUTES } from '@app/core/constants/routes'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
+import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
+import { OrganizationRequestForm } from '@app/core/features/organizations/components/OrganizationRequestForm'
+import { Building2, Info } from '@tamagui/lucide-icons'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Button, Separator, Text, XStack, YStack } from 'tamagui'
 
 export default function DashboardOrganizationCreatePage() {
   const router = useRouter()
@@ -58,17 +58,12 @@ export default function DashboardOrganizationCreatePage() {
       <Button
         size="$3"
         variant="outlined"
-        onPress={() => router.replace(ROUTES.DASHBOARD_DISCOVER_EMPLOYERS.path)}
+        onPress={() => router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)}
       >
         Back to Discover
       </Button>
     </YStack>
   )
 
-  return (
-    <DashboardLayout
-      leftContent={form}
-      rightContent={<QuickLinksSidebar>{sidebar}</QuickLinksSidebar>}
-    />
-  )
+  return <DashboardPage showBreadcrumb={false} leftContent={form} rightContent={sidebar} />
 }

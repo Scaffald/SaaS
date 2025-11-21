@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Select, Adapt, Sheet, Separator, Button, Spinner } from 'tamagui'
-import { ChevronDown, Check } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import { ProfileFormPanel, InlineSkillSearch } from './components'
-import { SaveStatusIndicator, SavingModal, SkeletonForm, type SaveStatus } from '@app/ui'
+import { ResponsiveSelect, SaveStatusIndicator, SavingModal, SkeletonForm } from '@app/ui'
+import { Check } from '@tamagui/lucide-icons'
+import { useMemo } from 'react'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { InlineSkillSearch, ProfileFormPanel } from './components'
+import { useSaveStatus } from './hooks/useSaveStatus'
 import { useProfileSkillsContext } from './profile-skills-context'
-import { api } from '@app/core/utils/api'
 
 /**
  * Profile Skills Left Component
@@ -27,121 +26,29 @@ export function ProfileSkillsLeft() {
     isRemovingSkill,
   } = useProfileSkillsContext()
 
-  const _router = useRouter()
-  const utils = api.useUtils()
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
-  const [lastSavedAt, setLastSavedAt] = useState<Date | undefined>()
-  const [saveError, setSaveError] = useState<string | undefined>()
-  const [saveButtonState, setSaveButtonState] = useState<'idle' | 'saving' | 'saved'>('idle')
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [saveModalError, setSaveModalError] = useState<string | undefined>()
+  // Use save status hook
+  const {
+    saveStatus,
+    lastSavedAt,
+    saveError,
+    saveButtonState,
+    isSaving,
+    saveModalError,
+    handleRetrySave,
+    handleForceSave,
+    setSaveModalError,
+    setIsSaving,
+  } = useSaveStatus(isAddingSkill, isRemovingSkill)
 
-  // Track unsaved changes
-  useEffect(() => {
-    setHasUnsavedChanges(isAddingSkill || isRemovingSkill)
-  }, [isAddingSkill, isRemovingSkill])
-
-  // Track save status from context mutation
-  useEffect(() => {
-    if (isAddingSkill || isRemovingSkill) {
-      setSaveStatus('saving')
-      setSaveError(undefined)
-    }
-  }, [isAddingSkill, isRemovingSkill])
-
-  // Track successful saves by monitoring when mutations complete
-  useEffect(() => {
-    if (!isAddingSkill && !isRemovingSkill && saveStatus === 'saving') {
-      setSaveStatus('saved')
-      setLastSavedAt(new Date())
-      setTimeout(() => {
-        setSaveStatus('idle')
-      }, 3000)
-    }
-  }, [isAddingSkill, isRemovingSkill, saveStatus])
-
-  // Browser navigation guard
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault()
-        e.returnValue = '' // Required for Chrome
-      }
-    }
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [hasUnsavedChanges])
-  
-  // Handle forced save before navigation
-  const handleForcedSave = async (): Promise<boolean> => {
-    if (!hasUnsavedChanges) return true
-
-    setIsSaving(true)
-    setSaveModalError(undefined)
-
-    try {
-      // Wait for pending mutations to complete with timeout
-      await Promise.race([
-        new Promise<void>((resolve) => {
-          const checkInterval = setInterval(() => {
-            if (!isAddingSkill && !isRemovingSkill) {
-              clearInterval(checkInterval)
-              resolve()
-            }
-          }, 100)
-        }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Save timeout')), 5000)
-        ),
-      ])
-      setIsSaving(false)
-      return true
-    } catch (error) {
-      setIsSaving(false)
-      setSaveModalError(
-        error instanceof Error ? error.message : 'Failed to save changes'
-      )
-      return false
-    }
-  }
-
-  // Handle retry save
-  const handleRetrySave = async () => {
-    const success = await handleForcedSave()
-    if (success) {
-      setSaveModalError(undefined)
-    }
-  }
-
-  // Handle force save
-  const handleForceSave = async () => {
-    setSaveStatus('saving')
-    setSaveButtonState('saving')
-    setSaveError(undefined)
-
-    try {
-      // Force refetch to sync with server
-      await utils.profile.skillsMultiTaxonomy.getUserSkills.refetch()
-      setSaveStatus('saved')
-      setSaveButtonState('saved')
-      setLastSavedAt(new Date())
-      
-      // Reset button state after 2 seconds
-      setTimeout(() => {
-        setSaveButtonState('idle')
-      }, 2000)
-      
-      // Reset save status after 3 seconds
-      setTimeout(() => {
-        setSaveStatus('idle')
-      }, 3000)
-    } catch (error) {
-      setSaveStatus('error')
-      setSaveButtonState('idle')
-      setSaveError(error instanceof Error ? error.message : 'Failed to save')
-    }
-  }
+  // Memoize options to prevent unnecessary re-renders
+  const industryOptions = useMemo(
+    () =>
+      industries.map((industry) => ({
+        value: industry.id,
+        label: industry.name,
+      })),
+    [industries]
+  )
 
   if (isLoadingIndustries) {
     return (
@@ -158,72 +65,24 @@ export function ProfileSkillsLeft() {
       {/* Header with Save Status Indicator */}
       <XStack justify="space-between" items="center" mb="$2">
         <YStack flex={1} />
-        <SaveStatusIndicator
-          status={saveStatus}
-          lastSavedAt={lastSavedAt}
-          error={saveError}
-        />
+        <SaveStatusIndicator status={saveStatus} lastSavedAt={lastSavedAt} error={saveError} />
       </XStack>
 
       {/* Industry Selector */}
       <YStack gap="$2">
-        <Text fontWeight="600">Primary Industry *</Text>
+        <ResponsiveSelect
+          value={selectedIndustryId || ''}
+          onValueChange={handleIndustryChange}
+          placeholder="Select an industry"
+          label="Primary Industry *"
+          options={industryOptions}
+          disabled={isLoadingIndustries}
+          testID="primary-industry-select-trigger"
+          sheetTitle="Select Industry"
+        />
         <Text fontSize="$2" color="$color11">
           Select your industry to search for relevant skills
         </Text>
-        <Select value={selectedIndustryId} onValueChange={handleIndustryChange} size="$4">
-          <Select.Trigger
-            width="100%"
-            iconAfter={ChevronDown}
-            cursor="pointer"
-            hoverStyle={{
-              borderColor: '$borderColorHover',
-              bg: '$backgroundHover',
-            }}
-            data-testid="primary-industry-select-trigger"
-          >
-            <Select.Value placeholder="Select an industry" />
-          </Select.Trigger>
-
-          <Adapt when="sm" platform="touch">
-            <Sheet
-              native
-              modal
-              dismissOnSnapToBottom
-              animationConfig={{
-                type: 'spring',
-                damping: 20,
-                mass: 1.2,
-                stiffness: 250,
-              }}
-            >
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay
-                animation="lazy"
-                enterStyle={{ opacity: 0 }}
-                exitStyle={{ opacity: 0 }}
-              />
-            </Sheet>
-          </Adapt>
-
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              {industries.map((industry, index) => {
-                return (
-                  <Select.Item key={industry.id} value={industry.id} index={index}>
-                    <Select.ItemText>{industry.name}</Select.ItemText>
-                  </Select.Item>
-                )
-              })}
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
       </YStack>
 
       <Separator />
@@ -241,6 +100,7 @@ export function ProfileSkillsLeft() {
           onSelectSkill={selectSkill}
           isSearching={isSearchingSkills}
           existingSkillIds={existingSkillIds}
+          externalSearchId={pendingSearch?.id}
           externalSearchTerm={pendingSearch?.term ?? null}
           externalSearchTaxonomy={pendingSearch?.taxonomy}
           onConsumeExternalSearchTerm={clearPendingSearch}

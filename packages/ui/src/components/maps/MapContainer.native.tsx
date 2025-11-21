@@ -1,11 +1,11 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { View, Text } from 'tamagui'
-import type { MapContainerProps, MapContainerRef } from './types'
-import { MapFallback } from './MapFallback'
-import type { MapView, Camera, PointAnnotation } from '@rnmapbox/maps'
-import MapboxGL from '@rnmapbox/maps'
 import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
+import type { MapView } from '@rnmapbox/maps'
+import MapboxGL from '@rnmapbox/maps'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { Text, View } from 'tamagui'
+import { MapFallback } from './MapFallback'
 import { getMapStyleUrl } from './mapboxStyleConfig'
+import type { MapContainerProps, MapContainerRef } from './types'
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, onMapReady, style }, ref) => {
@@ -23,7 +23,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
         // Native implementation would require calling native methods
         console.warn('flyTo not yet implemented for native')
       },
-      centerOnPin: (_pinId: string) => {
+      centerOnPin: (_pinId: string, _options?: { preserveZoom?: boolean }) => {
         // Native implementation would require calling native methods
         console.warn('centerOnPin not yet implemented for native')
       },
@@ -34,6 +34,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       setCardOverlay: (_pinId: string | null, _content: HTMLElement | null) => {
         // Not supported on native platform (HTML elements don't exist in native)
         console.warn('setCardOverlay not supported on native')
+      },
+      getContainerRect: () => {
+        // Not available on native
+        return null
       },
     }))
 

@@ -7,13 +7,13 @@
  * REQ-11: Responsive Layout Improvements
  */
 
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
 import {
-  assertNoHorizontalScroll,
   assertFormResponsive,
+  assertNoHorizontalScroll,
   getViewportCategory,
 } from '../../infrastructure/playwright/helpers/helpers/responsive'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Define all Priority 1 viewports from REQ-11 spec
 const viewports = [
@@ -47,22 +47,27 @@ test.describe('Responsive Profile Editing', () => {
       })
 
       for (const section of profileSections) {
-        test(`${section.name} form displays correctly without horizontal scroll`, async ({ page }: { page: Page }) => {
+        test(`${section.name} form displays correctly without horizontal scroll`, async ({
+          page,
+        }: {
+          page: Page
+        }) => {
           await page.goto(section.path)
           await page.waitForLoadState('networkidle')
           await page.waitForTimeout(3000)
 
           // Wait for loading to complete
-          await page.waitForFunction(
-            () => !document.body.textContent?.includes('Loading...'),
-            { timeout: 10000 }
-          ).catch(() => {})
+          await page
+            .waitForFunction(() => !document.body.textContent?.includes('Loading...'), {
+              timeout: 10000,
+            })
+            .catch(() => {})
 
           // Verify no horizontal scrolling required
           await assertNoHorizontalScroll(page)
 
           // Verify page content is visible
-          const pageContent = await page.locator('body').textContent() || ''
+          const pageContent = (await page.locator('body').textContent()) || ''
           expect(pageContent.length).toBeGreaterThan(0)
         })
 
@@ -99,7 +104,11 @@ test.describe('Responsive Profile Editing', () => {
           }
         })
 
-        test(`${section.name} form fields are visible and accessible`, async ({ page }: { page: Page }) => {
+        test(`${section.name} form fields are visible and accessible`, async ({
+          page,
+        }: {
+          page: Page
+        }) => {
           await page.goto(section.path)
           await page.waitForLoadState('networkidle')
           await page.waitForTimeout(3000)
@@ -113,12 +122,18 @@ test.describe('Responsive Profile Editing', () => {
             const maxChecks = Math.min(inputCount, 10)
             for (let i = 0; i < maxChecks; i++) {
               const input = inputs.nth(i)
-              await expect(input).toBeVisible({ timeout: 5000 }).catch(() => {})
+              await expect(input)
+                .toBeVisible({ timeout: 5000 })
+                .catch(() => {})
             }
           }
         })
 
-        test(`${section.name} form stacks vertically on mobile`, async ({ page }: { page: Page }) => {
+        test(`${section.name} form stacks vertically on mobile`, async ({
+          page,
+        }: {
+          page: Page
+        }) => {
           await page.goto(section.path)
           await page.waitForLoadState('networkidle')
           await page.waitForTimeout(3000)
@@ -144,12 +159,12 @@ test.describe('Responsive Profile Editing', () => {
                 // Allow some tolerance for side-by-side layouts on very small forms
                 // But generally, input2 should be below input1
                 const isStacked = box2.y >= box1.y + box1.height * 0.5 // Allow 50% overlap tolerance
-                
+
                 // If not stacked, they should at least not overlap significantly
-                const significantOverlap = 
-                  box1.x < box2.x + box2.width * 0.8 && 
+                const significantOverlap =
+                  box1.x < box2.x + box2.width * 0.8 &&
                   box1.x + box1.width * 0.8 > box2.x &&
-                  box1.y < box2.y + box2.height * 0.8 && 
+                  box1.y < box2.y + box2.height * 0.8 &&
                   box1.y + box1.height * 0.8 > box2.y
 
                 // Either stacked or not significantly overlapping
@@ -191,7 +206,11 @@ test.describe('Responsive Profile Editing', () => {
           }
         })
 
-        test(`${section.name} page content fits within viewport`, async ({ page }: { page: Page }) => {
+        test(`${section.name} page content fits within viewport`, async ({
+          page,
+        }: {
+          page: Page
+        }) => {
           await page.goto(section.path)
           await page.waitForLoadState('networkidle')
           await page.waitForTimeout(3000)
@@ -200,7 +219,7 @@ test.describe('Responsive Profile Editing', () => {
           await assertNoHorizontalScroll(page)
 
           // Verify section heading or content is visible
-          const pageContent = await page.locator('body').textContent() || ''
+          const pageContent = (await page.locator('body').textContent()) || ''
           expect(pageContent.length).toBeGreaterThan(0)
         })
       }
@@ -213,7 +232,11 @@ test.describe('Responsive Profile Editing', () => {
       await signInAsAdmin(page)
     })
 
-    test('profile forms work consistently across all viewports', async ({ page }: { page: Page }) => {
+    test('profile forms work consistently across all viewports', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       for (const viewport of viewports) {
         await page.setViewportSize({ width: viewport.width, height: viewport.height })
 
@@ -231,11 +254,10 @@ test.describe('Responsive Profile Editing', () => {
           const inputCount = await inputs.count()
 
           // At minimum, page should load (inputs may be 0 if form not loaded yet)
-          const pageContent = await page.locator('body').textContent() || ''
+          const pageContent = (await page.locator('body').textContent()) || ''
           expect(pageContent.length).toBeGreaterThan(0)
         }
       }
     })
   })
 })
-

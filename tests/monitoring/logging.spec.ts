@@ -7,7 +7,7 @@
  * Task 21: Implement Enhanced Logging and Observability
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Logging and Observability Testing', () => {
   test('structured logging is operational', async ({ page }) => {
@@ -51,16 +51,23 @@ test.describe('Logging and Observability Testing', () => {
 
     // Get performance metrics
     const metrics = await page.evaluate(() => {
-      const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+      const navigationEntry = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming
       return {
         loadTime: navigationEntry ? navigationEntry.loadEventEnd - navigationEntry.fetchStart : 0,
-        domContentLoaded: navigationEntry ? navigationEntry.domContentLoadedEventEnd - navigationEntry.fetchStart : 0,
+        domContentLoaded: navigationEntry
+          ? navigationEntry.domContentLoadedEventEnd - navigationEntry.fetchStart
+          : 0,
       }
     })
 
     // Performance metrics should be measurable
     expect(metrics.loadTime, 'Load time should be measurable').toBeGreaterThan(0)
-    expect(metrics.domContentLoaded, 'DOM content loaded time should be measurable').toBeGreaterThan(0)
+    expect(
+      metrics.domContentLoaded,
+      'DOM content loaded time should be measurable'
+    ).toBeGreaterThan(0)
   })
 
   test('request duration is logged', async ({ page }) => {
@@ -81,4 +88,3 @@ test.describe('Logging and Observability Testing', () => {
     expect(requestTimes.length, 'Request durations should be logged').toBeGreaterThan(0)
   })
 })
-

@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { supabase } from './client'
 
 /**
@@ -28,7 +28,7 @@ export function useInquirySubscription(inquiryId: string | null) {
           queryClient.invalidateQueries({
             queryKey: [['inquiries', 'getByApplication']],
           })
-        },
+        }
       )
       .subscribe()
 
@@ -48,7 +48,7 @@ export function useInquirySubscription(inquiryId: string | null) {
           queryClient.invalidateQueries({
             queryKey: [['inquiries', 'getByApplication']],
           })
-        },
+        }
       )
       .subscribe()
 
@@ -68,7 +68,7 @@ export function useInquirySubscription(inquiryId: string | null) {
           queryClient.invalidateQueries({
             queryKey: [['inquiries', 'getByApplication']],
           })
-        },
+        }
       )
       .subscribe()
 
@@ -88,7 +88,7 @@ export function useInquirySubscription(inquiryId: string | null) {
           queryClient.invalidateQueries({
             queryKey: [['inquiries', 'getByApplication']],
           })
-        },
+        }
       )
       .subscribe()
 
@@ -100,4 +100,3 @@ export function useInquirySubscription(inquiryId: string | null) {
     }
   }, [inquiryId, queryClient])
 }
-

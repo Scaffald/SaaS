@@ -1,20 +1,22 @@
 import {
-  YStack,
-  XStack,
-  DataTable,
-  Input,
   Button,
+  DataTable,
   H2,
+  Input,
+  OfficeLayout,
   TableActionBar,
-  TableAddRecordModal,
-  TableColumnVisibilityModal,
   type TableActionBarProps,
+  TableAddRecordModal,
   type TableAddRecordModalProps,
+  TableColumnVisibilityModal,
   type TableColumnVisibilityModalProps,
+  XStack,
+  YStack,
 } from '@app/ui'
-import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
-import type { Dispatch, SetStateAction } from 'react'
+import type { BreadcrumbItem } from '@app/ui'
 import { Plus } from '@tamagui/lucide-icons'
+import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
+import type { Dispatch, ReactNode, SetStateAction } from 'react'
 
 interface OfficeActionBarConfig {
   bar: TableActionBarProps
@@ -53,6 +55,22 @@ interface OfficePageLayoutProps<TData> {
   columnVisibility?: VisibilityState
   onColumnVisibilityChange?: (updater: Updater<VisibilityState>) => void
   hideHeader?: boolean
+  /** When true, wraps the layout with OfficeLayout (adds tabs + right column) */
+  wrapWithOfficeLayout?: boolean
+  /** Slot for right column content when wrapWithOfficeLayout is true */
+  rightContent?: ReactNode
+  /** Breadcrumb visibility override for wrapped layout */
+  showBreadcrumb?: boolean
+  /** Custom breadcrumb items when wrapped */
+  breadcrumbItems?: BreadcrumbItem[]
+  /** Override auto breadcrumb generation when wrapped */
+  autoGenerateBreadcrumbs?: boolean
+  /** Optional content rendered before the built-in header block */
+  beforeContent?: ReactNode
+  /** Optional content rendered after the data table */
+  afterContent?: ReactNode
+  /** Optional children rendered between the action bar/search and the table */
+  children?: ReactNode
 }
 
 export function OfficePageLayout<TData>({
@@ -79,9 +97,18 @@ export function OfficePageLayout<TData>({
   columnVisibility,
   onColumnVisibilityChange,
   hideHeader = false,
+  wrapWithOfficeLayout = false,
+  rightContent,
+  showBreadcrumb,
+  breadcrumbItems,
+  autoGenerateBreadcrumbs,
+  beforeContent,
+  afterContent,
+  children,
 }: OfficePageLayoutProps<TData>) {
-  return (
+  const content = (
     <YStack flex={1} p="$4" gap="$4">
+      {beforeContent}
       {!hideHeader && (
         <XStack justify="space-between" items="center">
           <H2>{title}</H2>
@@ -107,6 +134,8 @@ export function OfficePageLayout<TData>({
         <Input placeholder={searchPlaceholder} value={searchValue} onChangeText={onSearchChange} />
       )}
 
+      {children}
+
       <DataTable
         columns={columns}
         data={data}
@@ -123,6 +152,23 @@ export function OfficePageLayout<TData>({
         columnVisibility={columnVisibility}
         onColumnVisibilityChange={onColumnVisibilityChange}
       />
+
+      {afterContent}
     </YStack>
   )
+
+  if (wrapWithOfficeLayout) {
+    return (
+      <OfficeLayout
+        leftContent={content}
+        rightContent={rightContent}
+        showBreadcrumb={showBreadcrumb}
+        breadcrumbItems={breadcrumbItems}
+        autoGenerateBreadcrumbs={autoGenerateBreadcrumbs}
+        leftContainerProps={{ flex: 1 }}
+      />
+    )
+  }
+
+  return content
 }

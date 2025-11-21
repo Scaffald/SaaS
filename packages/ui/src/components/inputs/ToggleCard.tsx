@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Text, View, YStack, AnimatePresence, styled, type ThemeName, XStack } from 'tamagui'
+import { AnimatePresence, styled, Text, type ThemeName, View, XStack, YStack } from 'tamagui'
 import { ToggleSwitch } from './ToggleSwitch'
 
 export interface ToggleCardProps {
@@ -78,7 +78,7 @@ export function ToggleCard({
   onCheckedChange,
   expandedContent,
   disabled = false,
-  width = 300,
+  width,
   theme,
   testID,
   cardPressDisabled = false,
@@ -90,7 +90,14 @@ export function ToggleCard({
   }
 
   return (
-    <YStack {...(typeof width === 'number' ? { width } : { flex: 1, minWidth: 0 })} testID={testID}>
+    <YStack
+      {...(width
+        ? typeof width === 'number'
+          ? { width }
+          : { flex: 1, minWidth: 0 }
+        : { flex: 1, minWidth: 0 })}
+      testID={testID}
+    >
       <XStack
         flexDirection="row"
         borderColor="$borderColor"
@@ -99,6 +106,8 @@ export function ToggleCard({
         py="$3"
         $sm={{ mx: '$0' }}
         rounded="$3"
+        borderBottomLeftRadius={checked && expandedContent ? 0 : undefined}
+        borderBottomRightRadius={checked && expandedContent ? 0 : undefined}
         flex={1}
         height="auto"
         items="center"
@@ -153,10 +162,15 @@ export function ToggleCard({
               key="expanded-content"
               open={checked}
               borderColor="$borderColor"
-              rounded="$3"
+              borderWidth={1}
+              borderTopWidth={0}
+              borderBottomLeftRadius="$3"
+              borderBottomRightRadius="$3"
+              borderTopRightRadius={0}
+              borderTopLeftRadius={0}
               px="$4"
               py="$3"
-              bg="$background"
+              bg="$color1"
               enterStyle={{
                 opacity: 0,
                 maxH: 0,

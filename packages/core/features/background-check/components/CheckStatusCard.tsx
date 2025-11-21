@@ -1,11 +1,11 @@
-import { memo, useMemo } from 'react'
+import { formatDate } from '@app/core/features/profile/utils/date-formatting'
+import { DashboardWidget } from '@app/ui'
 import { AlertTriangle, Eye, RefreshCcw } from '@tamagui/lucide-icons'
+import { memo, useMemo } from 'react'
 import { Button, Progress, Text, XStack, YStack } from 'tamagui'
 
-import { DashboardWidget } from '@app/ui'
-import { formatDate } from '@app/core/features/profile/utils/date-formatting'
-
 import {
+  type BackgroundCheckSummary,
   daysUntilExpiration,
   getStatusMetadata,
   getStatusProgress,
@@ -13,7 +13,6 @@ import {
   hasExpired,
   isRenewalEligible,
   shouldShowExpirationWarning,
-  type BackgroundCheckSummary,
 } from './status.utils'
 
 interface CheckStatusCardProps {
@@ -46,7 +45,9 @@ export const CheckStatusCard = memo(function CheckStatusCard({
   }, [check.metadata])
 
   const packageLabel =
-    check.package?.display_name ?? check.package?.slug?.replace(/-/g, ' ').toUpperCase() ?? 'Background Check'
+    check.package?.display_name ??
+    check.package?.slug?.replace(/-/g, ' ').toUpperCase() ??
+    'Background Check'
 
   const renewalEligible = isRenewalEligible(check.status, check.expires_at)
 
@@ -90,7 +91,9 @@ export const CheckStatusCard = memo(function CheckStatusCard({
                   {expired
                     ? `Expired ${formatDate(check.expires_at)}`
                     : `Expires ${formatDate(check.expires_at)}${
-                        daysRemaining !== null && daysRemaining >= 0 ? ` (${daysRemaining} days)` : ''
+                        daysRemaining !== null && daysRemaining >= 0
+                          ? ` (${daysRemaining} days)`
+                          : ''
                       }`}
                 </Text>
               </XStack>
@@ -143,4 +146,3 @@ export const CheckStatusCard = memo(function CheckStatusCard({
     </DashboardWidget>
   )
 })
-

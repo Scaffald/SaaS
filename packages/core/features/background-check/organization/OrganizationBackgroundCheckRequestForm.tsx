@@ -1,16 +1,16 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
+import { api } from '@app/core/utils/api'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
+import type { AppRouter } from '@app/supabase/client-types'
+import { CircleAlert } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Input, Label, Select, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown, CircleAlert } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-
-import type { AppRouter } from '@app/supabase/client-types'
-import { ROUTES } from '@app/core/constants/routes'
-import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
-import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Input, Label, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -150,7 +150,7 @@ export function OrganizationBackgroundCheckRequestForm() {
           organization_id: orgId,
         })
         router.replace({
-          pathname: ROUTES.OFFICE_ATS_CHECKS.path,
+          pathname: ROUTES.OFFICE.ATS.CHECKS.path,
           params: { organizationId: orgId },
         })
       } else if (record?.organization_id) {
@@ -190,7 +190,8 @@ export function OrganizationBackgroundCheckRequestForm() {
     try {
       const response = await requestPaymentMutation.mutateAsync({
         package_id: selectedPackage.id,
-        tier: getPackageTier(selectedPackage) ??
+        tier:
+          getPackageTier(selectedPackage) ??
           (selectedPackage.slug as string | undefined) ??
           (selectedPackage.display_name as string | undefined) ??
           'custom',
@@ -255,84 +256,44 @@ export function OrganizationBackgroundCheckRequestForm() {
         <YStack gap="$3">
           <YStack gap="$2">
             <Label htmlFor="org-select">Organization</Label>
-            <Select
+            <ResponsiveSelect
               id="org-select"
               value={organizationId ?? ''}
               onValueChange={(value) => {
                 setOrganizationId(value)
                 setSelectedJobId(null)
               }}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger iconAfter={ChevronDown}>
-                <Select.Value
-                  placeholder={
-                    organizationId
-                      ? (organizations.find((org) => org.id === organizationId)?.name ??
-                        'Select organization')
-                      : 'Select organization'
-                  }
-                />
-              </Select.Trigger>
-              <Select.Content zIndex={200_000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Organizations</Select.Label>
-                    {organizations.map((org, index) => (
-                      <Select.Item key={org.id as string} value={org.id as string} index={index}>
-                        <Select.ItemText>
-                          {(org.name as string) ?? 'Untitled organization'}
-                        </Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder={
+                organizationId
+                  ? (organizations.find((org) => org.id === organizationId)?.name ??
+                    'Select organization')
+                  : 'Select organization'
+              }
+              label="Organization"
+              options={organizations.map((org) => ({
+                value: org.id as string,
+                label: (org.name as string) ?? 'Untitled organization',
+              }))}
+            />
           </YStack>
 
           <YStack gap="$2">
             <Label htmlFor="package-select">Background check package</Label>
-            <Select
+            <ResponsiveSelect
               id="package-select"
               value={selectedPackageId ?? ''}
               onValueChange={(value) => setSelectedPackageId(value)}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger iconAfter={ChevronDown}>
-                <Select.Value
-                  placeholder={
-                    selectedPackage
-                      ? `${selectedPackage.display_name} (${formatCurrency(selectedPackage.retail_cost_cents)})`
-                      : 'Select package'
-                  }
-                />
-              </Select.Trigger>
-              <Select.Content zIndex={200_000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Packages</Select.Label>
-                    {packages.map((pkg, index) => (
-                      <Select.Item key={pkg.id} value={pkg.id} index={index}>
-                        <Select.ItemText>
-                          {pkg.display_name} · {formatCurrency(pkg.retail_cost_cents)}
-                        </Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder={
+                selectedPackage
+                  ? `${selectedPackage.display_name} (${formatCurrency(selectedPackage.retail_cost_cents)})`
+                  : 'Select package'
+              }
+              label="Background check package"
+              options={packages.map((pkg) => ({
+                value: pkg.id,
+                label: `${pkg.display_name} · ${formatCurrency(pkg.retail_cost_cents)}`,
+              }))}
+            />
             {selectedPackage?.description ? (
               <Text fontSize="$2" color="$color10">
                 {selectedPackage.description}
@@ -349,108 +310,54 @@ export function OrganizationBackgroundCheckRequestForm() {
               onChangeText={setWorkerSearch}
               autoCapitalize="none"
             />
-            <Select
+            <ResponsiveSelect
               value={selectedWorkerId ?? ''}
               onValueChange={(value) => setSelectedWorkerId(value)}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger iconAfter={ChevronDown}>
-                <Select.Value
-                  placeholder={
-                    selectedWorker
-                      ? (selectedWorker.name ??
-                        `${selectedWorker.first_name ?? ''} ${selectedWorker.last_name ?? ''}`.trim())
-                      : workersQuery.isLoading
-                        ? 'Loading workers…'
-                        : 'Select worker'
-                  }
-                />
-              </Select.Trigger>
-              <Select.Content zIndex={200_000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Workers</Select.Label>
-                    {workers.length === 0 ? (
-                      <Select.Item value="placeholder" disabled index={0}>
-                        <Select.ItemText>No workers found</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ) : (
-                      workers.map((worker, index) => {
-                        const fullName =
-                          `${worker.first_name ?? ''} ${worker.last_name ?? ''}`.trim()
-                        const displayName =
-                          worker.name ??
-                          (fullName.length > 0 ? fullName : worker.id.substring(0, 8))
-                        return (
-                          <Select.Item
-                            key={worker.id as string}
-                            value={worker.id as string}
-                            index={index}
-                          >
-                            <Select.ItemText>{displayName}</Select.ItemText>
-                            <Select.ItemIndicator>
-                              <Check size={16} />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                        )
-                      })
-                    )}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder={
+                selectedWorker
+                  ? (selectedWorker.name ??
+                    `${selectedWorker.first_name ?? ''} ${selectedWorker.last_name ?? ''}`.trim())
+                  : workersQuery.isLoading
+                    ? 'Loading workers…'
+                    : 'Select worker'
+              }
+              label="Worker"
+              options={
+                workers.length === 0
+                  ? [{ value: 'placeholder', label: 'No workers found', disabled: true }]
+                  : workers.map((worker) => {
+                      const fullName = `${worker.first_name ?? ''} ${worker.last_name ?? ''}`.trim()
+                      const displayName =
+                        worker.name ?? (fullName.length > 0 ? fullName : worker.id.substring(0, 8))
+                      return {
+                        value: worker.id as string,
+                        label: displayName,
+                      }
+                    })
+              }
+            />
           </YStack>
 
           <YStack gap="$2">
             <Label htmlFor="job-select">Related job (optional)</Label>
-            <Select
+            <ResponsiveSelect
               id="job-select"
               value={selectedJobId ?? ''}
               onValueChange={(value) => setSelectedJobId(value || null)}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger iconAfter={ChevronDown}>
-                <Select.Value
-                  placeholder={
-                    selectedJob
-                      ? (selectedJob.title ?? `Job ${selectedJob.id.substring(0, 8)}`)
-                      : 'Select job'
-                  }
-                />
-              </Select.Trigger>
-              <Select.Content zIndex={200_000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Open jobs</Select.Label>
-                    <Select.Item value="" index={0}>
-                      <Select.ItemText>Not tied to a job</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                    {jobs.map((job, index) => (
-                      <Select.Item
-                        key={job.id as string}
-                        value={job.id as string}
-                        index={index + 1}
-                      >
-                        <Select.ItemText>{(job.title as string) ?? 'Untitled job'}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder={
+                selectedJob
+                  ? (selectedJob.title ?? `Job ${selectedJob.id.substring(0, 8)}`)
+                  : 'Select job'
+              }
+              label="Related job (optional)"
+              options={[
+                { value: '', label: 'Not tied to a job' },
+                ...jobs.map((job) => ({
+                  value: job.id as string,
+                  label: (job.title as string) ?? 'Untitled job',
+                })),
+              ]}
+            />
           </YStack>
 
           <YStack gap="$2">

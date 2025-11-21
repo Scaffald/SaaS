@@ -1,25 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Controller, type Control, useForm } from 'react-hook-form'
+import { api } from '@app/core/utils/api'
+import { useDebounce } from '@app/core/utils/useDebounce'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { Info } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { type Control, Controller, useForm } from 'react-hook-form'
+import { ResponsiveSelect } from '@app/ui'
 import {
-  Adapt,
   Button,
   Card,
-  Select,
   Separator,
-  Sheet,
   Spinner,
   Switch,
   Text,
   XStack,
   YStack,
 } from 'tamagui'
-import { Check, ChevronDown, Info } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
-import { api } from '@app/core/utils/api'
-import { useDebounce } from '@app/core/utils/useDebounce'
+import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
 
 const DEFAULT_SETTINGS = {
@@ -75,7 +72,7 @@ export function TeamSettingsForm({
   const utils = api.useUtils()
 
   const [metadataState, setMetadataState] = useState<Record<string, unknown>>(
-    () => (metadata ?? {}) as Record<string, unknown>,
+    () => (metadata ?? {}) as Record<string, unknown>
   )
   const [status, setStatus] = useState<SaveStatus>('idle')
 
@@ -88,7 +85,7 @@ export function TeamSettingsForm({
 
   const initialValues = useMemo(
     () => resolveSettings(metadataState, fallbackRoleId),
-    [metadataState, fallbackRoleId],
+    [metadataState, fallbackRoleId]
   )
 
   const {
@@ -165,14 +162,7 @@ export function TeamSettingsForm({
       teamId,
       metadata: nextMetadata,
     })
-  }, [
-    canEdit,
-    debouncedValues,
-    isDirty,
-    metadataState,
-    teamId,
-    updateMutation,
-  ])
+  }, [canEdit, debouncedValues, isDirty, metadataState, teamId, updateMutation])
 
   const handleReset = () => {
     if (!canEdit) {
@@ -225,8 +215,7 @@ export function TeamSettingsForm({
     }
   })()
 
-  const statusColor =
-    status === 'error' ? '$red10' : status === 'saved' ? '$green10' : '$color11'
+  const statusColor = status === 'error' ? '$red10' : status === 'saved' ? '$green10' : '$color11'
 
   return (
     <Card p="$4" borderWidth={1} borderColor="$borderColor" gap="$4" bg="$color2">
@@ -240,9 +229,7 @@ export function TeamSettingsForm({
         </Text>
       </YStack>
 
-      {!canEdit ? (
-        <PermissionBanner />
-      ) : null}
+      {!canEdit ? <PermissionBanner /> : null}
 
       <Separator />
 
@@ -258,50 +245,20 @@ export function TeamSettingsForm({
             control={control}
             name="defaultRoleId"
             render={({ field }) => (
-              <Select
+              <ResponsiveSelect
                 value={field.value ?? 'none'}
                 onValueChange={(value: string) => field.onChange(value === 'none' ? null : value)}
-              >
-                <Select.Trigger
-                  iconAfter={ChevronDown}
-                  disabled={!canEdit || updateMutation.isPending || isLoadingRoles}
-                >
-                  <Select.Value placeholder="Select a role" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Roles</Select.Label>
-                      <Select.Item value="none" index={0}>
-                        <Select.ItemText>Use organization default</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                      {roles.map((role, index) => (
-                        <Select.Item key={role.id} value={role.id} index={index + 1}>
-                          <Select.ItemText>{role.name}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+                placeholder="Select a role"
+                label="Default role for new members"
+                disabled={!canEdit || updateMutation.isPending || isLoadingRoles}
+                options={[
+                  { value: 'none', label: 'Use organization default' },
+                  ...roles.map((role) => ({
+                    value: role.id,
+                    label: role.name,
+                  })),
+                ]}
+              />
             )}
           />
         </YStack>
@@ -385,35 +342,36 @@ export function TeamSettingsForm({
 
 function resolveSettings(
   metadata: Record<string, unknown>,
-  fallbackRoleId: string | null | undefined,
+  fallbackRoleId: string | null | undefined
 ): TeamSettingsFormValues {
   const settings = (metadata.settings as Partial<TeamSettingsFormValues> | undefined) ?? {}
   return {
     defaultRoleId:
       typeof settings.defaultRoleId === 'string'
         ? settings.defaultRoleId
-        : fallbackRoleId ?? DEFAULT_SETTINGS.defaultRoleId,
+        : (fallbackRoleId ?? DEFAULT_SETTINGS.defaultRoleId),
     notifications: {
-      newMember: Boolean(settings.notifications?.newMember ?? DEFAULT_SETTINGS.notifications.newMember),
+      newMember: Boolean(
+        settings.notifications?.newMember ?? DEFAULT_SETTINGS.notifications.newMember
+      ),
       memberRemoved: Boolean(
-        settings.notifications?.memberRemoved ?? DEFAULT_SETTINGS.notifications.memberRemoved,
+        settings.notifications?.memberRemoved ?? DEFAULT_SETTINGS.notifications.memberRemoved
       ),
       jobAssigned: Boolean(
-        settings.notifications?.jobAssigned ?? DEFAULT_SETTINGS.notifications.jobAssigned,
+        settings.notifications?.jobAssigned ?? DEFAULT_SETTINGS.notifications.jobAssigned
       ),
       applicationAssigned: Boolean(
         settings.notifications?.applicationAssigned ??
-          DEFAULT_SETTINGS.notifications.applicationAssigned,
+          DEFAULT_SETTINGS.notifications.applicationAssigned
       ),
     },
     jobAssignment: {
       autoAssignApplications: Boolean(
         settings.jobAssignment?.autoAssignApplications ??
-          DEFAULT_SETTINGS.jobAssignment.autoAssignApplications,
+          DEFAULT_SETTINGS.jobAssignment.autoAssignApplications
       ),
       requireApproval: Boolean(
-        settings.jobAssignment?.requireApproval ??
-          DEFAULT_SETTINGS.jobAssignment.requireApproval,
+        settings.jobAssignment?.requireApproval ?? DEFAULT_SETTINGS.jobAssignment.requireApproval
       ),
     },
   }
@@ -488,4 +446,3 @@ function PermissionBanner() {
     </XStack>
   )
 }
-

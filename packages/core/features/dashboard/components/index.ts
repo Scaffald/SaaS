@@ -1,3 +1,1 @@
-export { TeamInvitationsWidget, TeamInvitationList } from './TeamInvitationsWidget'
-
-
+export { TeamInvitationList, TeamInvitationsWidget } from './TeamInvitationsWidget'

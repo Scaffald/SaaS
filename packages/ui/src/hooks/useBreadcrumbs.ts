@@ -1,6 +1,7 @@
-import { useState, useCallback, useMemo } from 'react'
+import { ROUTES, matchesRoute, flattenRoutes, type RouteConfig } from '@app/core/constants/routes'
+import { useTranslation } from '@app/core/utils/useTranslation'
 import { usePathname } from 'expo-router'
-import { ROUTES, matchesRoute, type RouteConfig } from '@app/core/constants/routes'
+import { useCallback, useMemo, useState } from 'react'
 import type { BreadcrumbItem, BreadcrumbSibling } from '../components/Breadcrumb'
 
 export interface UseBreadcrumbsOptions {
@@ -81,17 +82,28 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
   const { autoGenerate = false, customItems } = options
   const pathname = usePathname()
   const [manualItems, setManualItems] = useState<BreadcrumbItem[] | null>(null)
+  const { t, locale } = useTranslation()
+  const translateRoute = useCallback(
+    (route?: RouteConfig | null) => {
+      if (!route) {
+        return ''
+      }
+      return t(route.titleKey)
+    },
+    [locale, t]
+  )
 
   // Find matching route for a given path
   const findMatchingRoute = useCallback((path: string): RouteConfig | null => {
+    const allRoutes = flattenRoutes()
     // Try exact match first
-    const exactMatch = Object.values(ROUTES).find((route) => route.path === path)
+    const exactMatch = allRoutes.find((route) => route.path === path)
     if (exactMatch) {
       return exactMatch
     }
 
     // Try dynamic route match
-    const dynamicMatch = Object.values(ROUTES).find((route) => matchesRoute(path, route))
+    const dynamicMatch = allRoutes.find((route) => matchesRoute(path, route))
     if (dynamicMatch) {
       return dynamicMatch
     }
@@ -155,7 +167,8 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
       const siblings: BreadcrumbSibling[] = []
       const parentPath = pathSegments.slice(0, -1).join('/')
 
-      for (const route of Object.values(ROUTES)) {
+      const allRoutes = flattenRoutes()
+      for (const route of allRoutes) {
         // Skip dynamic routes with parameters (they're not true siblings)
         if (route.path.includes(':')) {
           continue
@@ -180,7 +193,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
         }
 
         siblings.push({
-          label: route.title,
+          label: translateRoute(route),
           href: route.path,
           isActive: false,
         })
@@ -188,12 +201,13 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
       return siblings
     },
-    [findMatchingRoute]
+    [findMatchingRoute, translateRoute]
   )
 
   // Find all routes sharing a common parent path (for intermediate segments)
   const findRoutesAtPath = useCallback((parentPath: string): RouteConfig[] => {
-    return Object.values(ROUTES).filter((route) => {
+    const allRoutes = flattenRoutes()
+    return allRoutes.filter((route) => {
       // Skip dynamic routes
       if (route.path.includes(':')) {
         return false
@@ -216,9 +230,11 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
         // Check if dashboard route exists
         const dashboardRoute = findMatchingRoute('/dashboard')
         if (dashboardRoute) {
-          return [{ label: dashboardRoute.title, href: dashboardRoute.path, isActive: true }]
+          return [
+            { label: translateRoute(dashboardRoute), href: dashboardRoute.path, isActive: true },
+          ]
         }
-        return [{ label: 'Dashboard', href: '/dashboard', isActive: true }]
+        return [{ label: t(ROUTES.DASHBOARD.titleKey), href: '/dashboard', isActive: true }]
       }
 
       const segments = path.split('/').filter(Boolean)
@@ -229,11 +245,11 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
         const dashboardRoute = findMatchingRoute('/dashboard')
         if (dashboardRoute) {
           items.push({
-            label: dashboardRoute.title,
+            label: translateRoute(dashboardRoute),
             href: dashboardRoute.path,
           })
         } else {
-          items.push({ label: 'Dashboard', href: '/dashboard' })
+          items.push({ label: t(ROUTES.DASHBOARD.titleKey), href: '/dashboard' })
         }
       }
       // Note: We don't add Home for dashboard routes - Dashboard is the apex
@@ -242,6 +258,12 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
       let currentPath = ''
       segments.forEach((segment, index) => {
         currentPath += `/${segment}`
+
+        // Skip duplicate Dashboard entry when already added as apex
+        if (segments[0] === 'dashboard' && index === 0) {
+          return
+        }
+
         const isLast = index === segments.length - 1
 
         // Capitalize first letter and replace hyphens with spaces
@@ -261,7 +283,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
       return items
     },
-    [findMatchingRoute]
+    [findMatchingRoute, t, translateRoute]
   )
 
   // Generate breadcrumbs from route configuration
@@ -314,7 +336,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
                     // Find siblings at this intermediate level
                     const siblingRoutes = findRoutesAtPath(intermediatePath)
                     const siblings: BreadcrumbSibling[] = siblingRoutes.map((r) => ({
-                      label: r.title,
+                      label: translateRoute(r),
                       href: r.path,
                       isActive: false,
                     }))
@@ -366,7 +388,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
 
           // Add current route (no siblings - simplified breadcrumbs)
           items.push({
-            label: route.title,
+            label: translateRoute(route),
             href: currentPath,
             isActive: isLast,
             siblings: undefined,
@@ -379,12 +401,16 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             const dashboardRoute = findMatchingRoute('/dashboard')
             if (dashboardRoute) {
               items.push({
-                label: dashboardRoute.title,
+                label: translateRoute(dashboardRoute),
                 href: dashboardRoute.path,
                 isActive: path === '/',
               })
             } else {
-              items.push({ label: 'Dashboard', href: '/dashboard', isActive: path === '/' })
+              items.push({
+                label: t(ROUTES.DASHBOARD.titleKey),
+                href: '/dashboard',
+                isActive: path === '/',
+              })
             }
             return
           }
@@ -394,7 +420,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             const dashboardRoute = findMatchingRoute('/dashboard')
             if (dashboardRoute && !visitedPaths.has('/dashboard')) {
               items.push({
-                label: dashboardRoute.title,
+                label: translateRoute(dashboardRoute),
                 href: dashboardRoute.path,
               })
               visitedPaths.add('/dashboard')
@@ -415,13 +441,13 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
             .join(' ')
 
           // For intermediate segments (not terminal), find siblings
-          let segmentSiblings: BreadcrumbSibling[] | undefined = undefined
+          let segmentSiblings: BreadcrumbSibling[] | undefined
           if (!isLast) {
             const siblingRoutes = findRoutesAtPath(currentPath)
             segmentSiblings =
               siblingRoutes.length > 0
                 ? siblingRoutes.map((r) => ({
-                    label: r.title,
+                    label: translateRoute(r),
                     href: r.path,
                     isActive: false,
                   }))
@@ -458,12 +484,12 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
         if (!hasDashboard && dashboardRoute) {
           // Insert Dashboard at the beginning
           items.unshift({
-            label: dashboardRoute.title,
+            label: translateRoute(dashboardRoute),
             href: dashboardRoute.path,
           })
         } else if (!hasDashboard) {
           // Fallback if route not found
-          items.unshift({ label: 'Dashboard', href: '/dashboard' })
+          items.unshift({ label: t(ROUTES.DASHBOARD.titleKey), href: '/dashboard' })
         }
 
         // Ensure Dashboard is not active unless we're on the dashboard page
@@ -481,6 +507,7 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
       getSiblingRoutes,
       generateBreadcrumbsFromPath,
       findRoutesAtPath,
+      translateRoute,
     ]
   )
 

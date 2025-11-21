@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const styledCalls = vi.hoisted(() => [] as Array<Record<string, unknown>>)
 const platformState = vi.hoisted(() => ({ OS: 'web' }))
@@ -33,18 +33,40 @@ vi.mock('tamagui', () => {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     ...rest
-  }: MockViewProps) => (
-    <div
-      data-testid={testID}
-      role={role}
-      aria-checked={ariaChecked}
-      aria-disabled={ariaDisabled}
-      onClick={onPress}
-      {...(rest as Record<string, string | number | boolean | undefined>)}
-    >
-      {children}
-    </div>
-  )
+  }: MockViewProps) => {
+    const effectiveRole = role || 'checkbox'
+    const isCheckbox = effectiveRole === 'checkbox'
+
+    const isDisabled = ariaDisabled === true
+
+    if (onPress) {
+      return (
+        <button
+          type="button"
+          data-testid={testID}
+          role={effectiveRole}
+          {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
+          disabled={isDisabled}
+          onClick={onPress}
+          {...(rest as Record<string, string | number | boolean | undefined>)}
+        >
+          {children}
+        </button>
+      )
+    }
+
+    // For non-interactive elements, return a plain div
+    return (
+      <div
+        data-testid={testID}
+        role={effectiveRole}
+        {...(isCheckbox ? { 'aria-checked': ariaChecked, 'aria-disabled': ariaDisabled } : {})}
+        {...(rest as Record<string, string | number | boolean | undefined>)}
+      >
+        {children}
+      </div>
+    )
+  }
 
   const styled = (Component: (props: any) => ReactNode, config: Record<string, unknown>) => {
     styledCalls.push(config)

@@ -1,6 +1,6 @@
-import { memo, forwardRef } from 'react'
+import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { YStack, useTheme } from 'tamagui'
+import { useTheme, YStack } from 'tamagui'
 import { borderRadius } from '../../config/radii'
 import { cardShadows } from '../../config/shadows'
 import { spacing } from '../../config/spacing'

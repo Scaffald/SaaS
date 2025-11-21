@@ -1,6 +1,6 @@
-import { PieChart as GiftedPieChart } from 'react-native-gifted-charts'
-import { View, useTheme } from 'tamagui'
 import type { ReactNode } from 'react'
+import { PieChart as GiftedPieChart } from 'react-native-gifted-charts'
+import { View } from 'tamagui'
 
 export interface PieChartData {
   value: number

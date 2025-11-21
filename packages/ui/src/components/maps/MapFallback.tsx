@@ -1,5 +1,5 @@
-import { View, Text, YStack } from 'tamagui'
 import type { ViewStyle } from 'react-native'
+import { Text, View, YStack } from 'tamagui'
 
 interface MapFallbackProps {
   pinsCount: number

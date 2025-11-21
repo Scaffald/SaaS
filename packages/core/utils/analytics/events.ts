@@ -35,17 +35,23 @@ export const eventSchemas = {
     job_id: z.string(),
     url: z.string().nullable().optional(),
   }),
+  map_profile_hover_card_opened: z.object({
+    pin_type: z.enum(['worker', 'organization']),
+    recentered: z.boolean(),
+    trigger: z.literal('click'),
+    viewport: z.enum(['desktop', 'mobile']),
+    reason: z.enum(['edge', 'forced']).optional(),
+  }),
 } as const
 
 export type AnalyticsEventName = keyof typeof eventSchemas
 
-export type AnalyticsEventProperties<TName extends AnalyticsEventName = AnalyticsEventName> = z.infer<
-  (typeof eventSchemas)[TName]
->
+export type AnalyticsEventProperties<TName extends AnalyticsEventName = AnalyticsEventName> =
+  z.infer<(typeof eventSchemas)[TName]>
 
 export const validateEventProperties = <TName extends AnalyticsEventName>(
   name: TName,
-  properties: unknown,
+  properties: unknown
 ) => {
   const schema = eventSchemas[name]
   return schema.safeParse(properties)
@@ -53,8 +59,7 @@ export const validateEventProperties = <TName extends AnalyticsEventName>(
 
 export const assertValidEventProperties = <TName extends AnalyticsEventName>(
   name: TName,
-  properties: unknown,
+  properties: unknown
 ) => {
   return eventSchemas[name].parse(properties)
 }
-

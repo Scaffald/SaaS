@@ -1,22 +1,21 @@
-import { useState } from 'react'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { api } from '@app/core/utils/api'
+import { type BulkInquiryInput, bulkInquirySchema } from '@app/schemas'
 import {
-  YStack,
-  XStack,
-  Text,
-  Input,
   Button,
+  CustomCheckbox,
+  Input,
   ScrollView,
   Separator,
-  CustomCheckbox,
+  Sheet,
+  Text,
+  XStack,
+  YStack,
 } from '@app/ui'
-import { Sheet, Select, TextArea } from 'tamagui'
-import { Check } from '@tamagui/lucide-icons'
-import { Progress } from 'tamagui'
-import { api } from '@app/core/utils/api'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
-import { bulkInquirySchema, type BulkInquiryInput } from '@app/schemas'
+import { useState } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { Progress, TextArea } from 'tamagui'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {
@@ -121,11 +120,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
     },
   })
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-  } = form
+  const { control, handleSubmit, watch } = form
 
   const watchedValues = watch()
   const isSubmitting = createBulk.isPending
@@ -133,7 +128,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
   const onSubmit = handleSubmit(async (data) => {
     await createBulk.mutateAsync({
       applicationIds,
-        inquiryData: data as BulkInquiryInput,
+      inquiryData: data as BulkInquiryInput,
     })
   })
 
@@ -224,8 +219,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
   return (
     <Sheet modal open={open} onOpenChange={handleClose}>
-      <>
-        <Sheet.Frame>
+      <Sheet.Frame>
           <FormProvider {...form}>
             <YStack p="$4" flex={1}>
               <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
@@ -481,7 +475,9 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                           theme="blue"
                           $sm={{ height: 48, flex: 1 }}
                         >
-                          {isSubmitting ? 'Sending...' : `Send to ${applicationIds.length} Candidates`}
+                          {isSubmitting
+                            ? 'Sending...'
+                            : `Send to ${applicationIds.length} Candidates`}
                         </Button>
                       </XStack>
                     </YStack>
@@ -502,10 +498,8 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
               </XStack>
             </YStack>
           </FormProvider>
-        </Sheet.Frame>
-        <Sheet.Overlay />
-      </>
+      </Sheet.Frame>
+      <Sheet.Overlay />
     </Sheet>
   )
 }
-

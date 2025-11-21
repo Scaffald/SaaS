@@ -1,16 +1,16 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 export const resumeFileTypeEnum = z.enum([
-  "application/pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-]);
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+])
 
 export const resumeParseInputSchema = z.object({
   fileName: z.string().min(1),
   fileType: resumeFileTypeEnum,
   fileSize: z.number().int().positive(),
   fileBase64: z.string().min(1),
-});
+})
 
 const generalEntrySchema = z.object({
   id: z.string().optional(),
@@ -21,7 +21,7 @@ const generalEntrySchema = z.object({
   email: z.string().optional(),
   phone: z.string().optional(),
   confidence_score: z.number().min(0).max(100).optional(),
-});
+})
 
 const experienceEntrySchema = z.object({
   id: z.string().optional(),
@@ -33,7 +33,7 @@ const experienceEntrySchema = z.object({
   location: z.string().optional(),
   summary: z.string().optional(),
   confidence_score: z.number().min(0).max(100).optional(),
-});
+})
 
 const educationEntrySchema = z.object({
   id: z.string().optional(),
@@ -42,14 +42,14 @@ const educationEntrySchema = z.object({
   start_date: z.string().optional().nullable(),
   end_date: z.string().optional().nullable(),
   confidence_score: z.number().min(0).max(100).optional(),
-});
+})
 
 const skillEntrySchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1),
   taxonomy: z.string().optional(),
   confidence_score: z.number().min(0).max(100).optional(),
-});
+})
 
 const certificationEntrySchema = z.object({
   id: z.string().optional(),
@@ -58,7 +58,7 @@ const certificationEntrySchema = z.object({
   issue_date: z.string().optional().nullable(),
   credential_id: z.string().optional(),
   confidence_score: z.number().min(0).max(100).optional(),
-});
+})
 
 export const importPayloadSchema = z.object({
   general: z.array(generalEntrySchema).default([]),
@@ -66,28 +66,27 @@ export const importPayloadSchema = z.object({
   education: z.array(educationEntrySchema).default([]),
   skills: z.array(skillEntrySchema).default([]),
   certifications: z.array(certificationEntrySchema).default([]),
-});
+})
 
 export const importMetadataSchema = z.object({
   version: z.literal(1),
-  source: z.enum(["resume", "json"]),
+  source: z.enum(['resume', 'json']),
   storedAt: z.string(),
   expiresAt: z.string(),
   payload: importPayloadSchema,
-});
+})
 
 export const saveImportDataInputSchema = z.object({
-  source: z.enum(["resume", "json"]),
+  source: z.enum(['resume', 'json']),
   payload: importPayloadSchema,
-});
+})
 
 export const validateJsonInputSchema = z.object({
   payload: importPayloadSchema,
-});
+})
 
-export const clearImportDataInputSchema = z.object({});
+export const clearImportDataInputSchema = z.object({})
 
-export type ResumeParseInput = z.infer<typeof resumeParseInputSchema>;
-export type ImportPayload = z.infer<typeof importPayloadSchema>;
-export type ImportMetadata = z.infer<typeof importMetadataSchema>;
-
+export type ResumeParseInput = z.infer<typeof resumeParseInputSchema>
+export type ImportPayload = z.infer<typeof importPayloadSchema>
+export type ImportMetadata = z.infer<typeof importMetadataSchema>

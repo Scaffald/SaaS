@@ -1,43 +1,42 @@
-import { useRouter } from "expo-router";
-import { Button, Paragraph, Spinner, Text, XStack, YStack } from "tamagui";
-import { useToastController } from "@tamagui/toast";
+import { RouteBuilder } from '@app/core/constants/routes'
+import { formatDate } from '@app/core/features/profile/utils/date-formatting'
+import { api } from '@app/core/utils/api'
 
-import { DashboardWidget, ToggleSwitch } from "@app/ui";
-import { RouteBuilder } from "@app/core/constants/routes";
-import { formatDate } from "@app/core/features/profile/utils/date-formatting";
-import { api } from "@app/core/utils/api";
-import { getStatusColor, getStatusLabel } from "../utils/status-formatting";
-import type { WorkLogListItem } from "../schemas";
+import { DashboardWidget, ToggleSwitch } from '@app/ui'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
+import type { WorkLogListItem } from '../schemas'
+import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 
 export function WorkLogVisibilitySettingsCard() {
-  const router = useRouter();
-  const toast = useToastController();
-  const trpcUtils = api.useContext();
+  const router = useRouter()
+  const toast = useToastController()
+  const trpcUtils = api.useContext()
 
   const listQuery = api.workLogs.list.useQuery(
     {
       pageSize: 10,
-      sortField: "updated_at",
-      sortDirection: "desc",
+      sortField: 'updated_at',
+      sortDirection: 'desc',
     },
-    { staleTime: 30_000 },
-  );
+    { staleTime: 30_000 }
+  )
 
-  const updateProfileVisibilityMutation =
-    api.workLogs.updateProfileVisibility.useMutation({
-      onSuccess: async () => {
-        toast.show("Visibility updated");
-        await trpcUtils.workLogs.list.invalidate();
-      },
-      onError: (error: unknown) => {
-        const message = error instanceof Error ? error.message : undefined;
-        toast.show("Unable to update visibility", {
-          message: message ?? "Please try again.",
-        });
-      },
-    });
+  const updateProfileVisibilityMutation = api.workLogs.updateProfileVisibility.useMutation({
+    onSuccess: async () => {
+      toast.show('Visibility updated')
+      await trpcUtils.workLogs.list.invalidate()
+    },
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : undefined
+      toast.show('Unable to update visibility', {
+        message: message ?? 'Please try again.',
+      })
+    },
+  })
 
-  const items: WorkLogListItem[] = listQuery.data?.items ?? [];
+  const items: WorkLogListItem[] = listQuery.data?.items ?? []
 
   return (
     <DashboardWidget>
@@ -62,8 +61,8 @@ export function WorkLogVisibilitySettingsCard() {
         ) : (
           <YStack gap="$3">
             {items.map((item) => {
-              const isVerified = item.status === "verified";
-              const statusColor = getStatusColor(item.status);
+              const isVerified = item.status === 'verified'
+              const statusColor = getStatusColor(item.status)
               return (
                 <YStack
                   key={item.id}
@@ -77,11 +76,9 @@ export function WorkLogVisibilitySettingsCard() {
                 >
                   <XStack justify="space-between" items="center">
                     <YStack gap="$1" flex={1}>
-                      <Text fontWeight="700">
-                        {item.project?.name ?? "Work Log"}
-                      </Text>
+                      <Text fontWeight="700">{item.project?.name ?? 'Work Log'}</Text>
                       <Text color="$color10">
-                        {item.logDate ? formatDate(item.logDate) : "Date not recorded"}
+                        {item.logDate ? formatDate(item.logDate) : 'Date not recorded'}
                       </Text>
                     </YStack>
                     <Text color={statusColor as never} fontWeight="600">
@@ -98,22 +95,20 @@ export function WorkLogVisibilitySettingsCard() {
                     </YStack>
                     <ToggleSwitch
                       checked={item.showOnProfile}
-                      disabled={
-                        !isVerified || updateProfileVisibilityMutation.isLoading
-                      }
+                      disabled={!isVerified || updateProfileVisibilityMutation.isLoading}
                       onCheckedChange={(checked) => {
                         if (!isVerified && checked) {
-                          toast.show("Pending verification", {
+                          toast.show('Pending verification', {
                             message:
-                              "Work logs must be verified before they can appear on your profile.",
-                          });
-                          return;
+                              'Work logs must be verified before they can appear on your profile.',
+                          })
+                          return
                         }
                         updateProfileVisibilityMutation.mutate({
                           workLogId: item.id,
                           showOnProfile: checked,
-                          visibility: checked ? "public" : "private",
-                        });
+                          visibility: checked ? 'public' : 'private',
+                        })
                       }}
                       testID={`profile-visibility-toggle-${item.id}`}
                     />
@@ -128,15 +123,12 @@ export function WorkLogVisibilitySettingsCard() {
                     </YStack>
                     <ToggleSwitch
                       checked={item.showDateRangeOnProfile}
-                      disabled={
-                        !item.showOnProfile ||
-                        updateProfileVisibilityMutation.isLoading
-                      }
+                      disabled={!item.showOnProfile || updateProfileVisibilityMutation.isLoading}
                       onCheckedChange={(checked) => {
                         updateProfileVisibilityMutation.mutate({
                           workLogId: item.id,
                           showDateRangeOnProfile: checked,
-                        });
+                        })
                       }}
                       testID={`date-range-toggle-${item.id}`}
                     />
@@ -146,19 +138,17 @@ export function WorkLogVisibilitySettingsCard() {
                     <Button
                       size="$3"
                       variant="outlined"
-                      onPress={() =>
-                        router.push(RouteBuilder.dashboardWorkLogDetail(item.id))}
+                      onPress={() => router.push(RouteBuilder.dashboardWorkLogDetail(item.id))}
                     >
                       View details
                     </Button>
                   </XStack>
                 </YStack>
-              );
+              )
             })}
           </YStack>
         )}
       </YStack>
     </DashboardWidget>
-  );
+  )
 }
-

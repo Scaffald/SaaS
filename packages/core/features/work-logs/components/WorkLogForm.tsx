@@ -1,73 +1,65 @@
-import { useMemo, useState } from "react";
-import { Platform } from "react-native";
-import { FormProvider, Controller } from "react-hook-form";
+import { MapPin, Plus, Save } from '@tamagui/lucide-icons'
+import { useMemo, useState } from 'react'
+import { Controller, FormProvider } from 'react-hook-form'
+import { Platform } from 'react-native'
 import {
-  YStack,
-  XStack,
-  Text,
-  Input,
   Button,
-  Separator,
-  ScrollView,
-  Spinner,
   Checkbox,
-} from "tamagui";
-import { Plus, MapPin, Save } from "@tamagui/lucide-icons";
-
-import type { CreateWorkLogInput } from "../schemas";
-import { ProjectSelector } from "./ProjectSelector";
-import { TimeEntryInput } from "./TimeEntryInput";
-import {
-  useWorkLogForm,
-  type UseWorkLogFormOptions,
-} from "../hooks/useWorkLogForm";
-import { PhotoUpload } from "./PhotoUpload";
+  Input,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
+import { PhotoUpload } from './PhotoUpload'
+import { ProjectSelector } from './ProjectSelector'
+import { TimeEntryInput } from './TimeEntryInput'
 
 const getDateInputProps = () => {
-  if (Platform.OS === "web") {
-    return { type: "date" as const };
+  if (Platform.OS === 'web') {
+    return { type: 'date' as const }
   }
   return {
-    inputMode: "numeric" as const,
-    keyboardType: "numbers-and-punctuation" as const,
-  };
-};
+    inputMode: 'numeric' as const,
+    keyboardType: 'numbers-and-punctuation' as const,
+  }
+}
 
 const deriveSkillId = (skill: Record<string, unknown>): string | null => {
-  if (typeof skill.skill_id === "string") {
-    return skill.skill_id;
+  if (typeof skill.skill_id === 'string') {
+    return skill.skill_id
   }
-  if (typeof skill.id === "string") {
-    return skill.id;
+  if (typeof skill.id === 'string') {
+    return skill.id
   }
-  return null;
-};
+  return null
+}
 
 const deriveSkillName = (skill: Record<string, unknown>): string => {
   const candidates = [
-    typeof skill.skill_name === "string" ? skill.skill_name : null,
-    typeof skill.name === "string" ? skill.name : null,
-    typeof skill.display_name === "string" ? skill.display_name : null,
-  ].filter((value): value is string => !!value && value.trim().length > 0);
+    typeof skill.skill_name === 'string' ? skill.skill_name : null,
+    typeof skill.name === 'string' ? skill.name : null,
+    typeof skill.display_name === 'string' ? skill.display_name : null,
+  ].filter((value): value is string => !!value && value.trim().length > 0)
 
   if (candidates.length > 0) {
-    return candidates[0].trim();
+    return candidates[0].trim()
   }
 
-  return "Unnamed Skill";
-};
+  return 'Unnamed Skill'
+}
 
 export interface WorkLogFormProps extends UseWorkLogFormOptions {
   /**
    * Label for the primary submit button.
    */
-  submitLabel?: string;
+  submitLabel?: string
 }
 
-export function WorkLogForm({
-  submitLabel = "Save Work Log",
-  ...options
-}: WorkLogFormProps) {
+export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkLogFormProps) {
   const {
     form,
     timeEntryFields,
@@ -86,45 +78,43 @@ export function WorkLogForm({
     skillsQuery,
     pendingOfflineDraft,
     workLogId,
-  } = useWorkLogForm(options);
+  } = useWorkLogForm(options)
 
   const {
     control,
     watch,
     setValue,
     formState: { errors },
-  } = form;
+  } = form
 
-  const tasksCompleted = watch("tasksCompleted") ?? [];
-  const selectedSkills = watch("skillsUsed") ?? [];
+  const tasksCompleted = watch('tasksCompleted') ?? []
+  const selectedSkills = watch('skillsUsed') ?? []
 
-  const [taskDraft, setTaskDraft] = useState("");
+  const [taskDraft, setTaskDraft] = useState('')
 
   const projectData = projectOptionsQuery.data ?? {
     organizations: [],
     projects: [],
-  };
+  }
 
   const projectError =
-    projectOptionsQuery.error instanceof Error
-      ? projectOptionsQuery.error.message
-      : null;
+    projectOptionsQuery.error instanceof Error ? projectOptionsQuery.error.message : null
 
   const tasksWithKeys = useMemo(() => {
-    const counts = new Map<string, number>();
+    const counts = new Map<string, number>()
     return tasksCompleted.map((task, index) => {
-      const current = counts.get(task) ?? 0;
-      counts.set(task, current + 1);
+      const current = counts.get(task) ?? 0
+      counts.set(task, current + 1)
       return {
         task,
         key: `${task}-${current}`,
         index,
-      };
-    });
-  }, [tasksCompleted]);
+      }
+    })
+  }, [tasksCompleted])
 
   const skillOptions = useMemo(() => {
-    const explicit = (skillsQuery.data?.explicitSkills ?? []) as Array<Record<string, unknown>>;
+    const explicit = (skillsQuery.data?.explicitSkills ?? []) as Array<Record<string, unknown>>
     return explicit
       .map((skill) => ({
         id: deriveSkillId(skill),
@@ -132,37 +122,37 @@ export function WorkLogForm({
       }))
       .filter(
         (skill): skill is { id: string; name: string } =>
-          typeof skill.id === "string" && skill.id.length > 0,
-      );
-  }, [skillsQuery.data?.explicitSkills]);
+          typeof skill.id === 'string' && skill.id.length > 0
+      )
+  }, [skillsQuery.data?.explicitSkills])
 
   const addTask = () => {
-    const trimmed = taskDraft.trim();
+    const trimmed = taskDraft.trim()
     if (!trimmed) {
-      return;
+      return
     }
-    setValue("tasksCompleted", [...tasksCompleted, trimmed]);
-    setTaskDraft("");
-  };
+    setValue('tasksCompleted', [...tasksCompleted, trimmed])
+    setTaskDraft('')
+  }
 
   const removeTask = (index: number) => {
-    const nextTasks = tasksCompleted.filter((_, taskIndex) => taskIndex !== index);
-    setValue("tasksCompleted", nextTasks);
-  };
+    const nextTasks = tasksCompleted.filter((_, taskIndex) => taskIndex !== index)
+    setValue('tasksCompleted', nextTasks)
+  }
 
   const toggleSkill = (skillId: string, checked: boolean) => {
     if (checked) {
       if (selectedSkills.includes(skillId)) {
-        return;
+        return
       }
-      setValue("skillsUsed", [...selectedSkills, skillId]);
+      setValue('skillsUsed', [...selectedSkills, skillId])
     } else {
       setValue(
-        "skillsUsed",
-        selectedSkills.filter((id) => id !== skillId),
-      );
+        'skillsUsed',
+        selectedSkills.filter((id) => id !== skillId)
+      )
     }
-  };
+  }
 
   return (
     <FormProvider {...form}>
@@ -195,7 +185,7 @@ export function WorkLogForm({
                   disabled={projectOptionsQuery.isLoading}
                   helperText={
                     errors.projectId?.message ??
-                    "Projects are filtered to the organizations you belong to."
+                    'Projects are filtered to the organizations you belong to.'
                   }
                 />
               )}
@@ -210,11 +200,7 @@ export function WorkLogForm({
               control={control}
               name="logDate"
               render={({ field }) => (
-                <Input
-                  {...field}
-                  {...getDateInputProps()}
-                  placeholder="YYYY-MM-DD"
-                />
+                <Input {...field} {...getDateInputProps()} placeholder="YYYY-MM-DD" />
               )}
             />
             {errors.logDate?.message && (
@@ -229,12 +215,7 @@ export function WorkLogForm({
               <Text fontWeight="600" fontSize="$4">
                 Time Entries
               </Text>
-              <Button
-                size="$3"
-                icon={Plus}
-                onPress={addTimeEntry}
-                variant="outlined"
-              >
+              <Button size="$3" icon={Plus} onPress={addTimeEntry} variant="outlined">
                 Add Entry
               </Button>
             </XStack>
@@ -324,11 +305,7 @@ export function WorkLogForm({
                   <Text flex={1} fontSize="$3">
                     {task}
                   </Text>
-                  <Button
-                    size="$2"
-                    variant="outlined"
-                    onPress={() => removeTask(index)}
-                  >
+                  <Button size="$2" variant="outlined" onPress={() => removeTask(index)}>
                     Remove
                   </Button>
                 </XStack>
@@ -366,9 +343,7 @@ export function WorkLogForm({
                 <XStack key={skill.id} gap="$2" items="center">
                   <Checkbox
                     checked={selectedSkills.includes(skill.id)}
-                    onCheckedChange={(next) =>
-                      toggleSkill(skill.id, next === true)
-                    }
+                    onCheckedChange={(next) => toggleSkill(skill.id, next === true)}
                   />
                   <Text fontSize="$3">{skill.name}</Text>
                 </XStack>
@@ -390,7 +365,7 @@ export function WorkLogForm({
                 variant="outlined"
                 disabled={location.isLoading}
               >
-                {location.isLoading ? "Capturing…" : "Capture Location"}
+                {location.isLoading ? 'Capturing…' : 'Capture Location'}
               </Button>
               {location.error && (
                 <Text fontSize="$3" color="$red10">
@@ -399,7 +374,7 @@ export function WorkLogForm({
               )}
             </XStack>
 
-            {form.watch("gpsCapture") && (
+            {form.watch('gpsCapture') && (
               <YStack
                 borderWidth={1}
                 borderColor="$borderColor"
@@ -412,12 +387,12 @@ export function WorkLogForm({
                   Captured Location
                 </Text>
                 <Text fontSize="$3">
-                  Latitude: {form.watch("gpsCapture")?.latitude}, Longitude:{" "}
-                  {form.watch("gpsCapture")?.longitude}
+                  Latitude: {form.watch('gpsCapture')?.latitude}, Longitude:{' '}
+                  {form.watch('gpsCapture')?.longitude}
                 </Text>
-                {form.watch("gpsCapture")?.accuracyMeters && (
+                {form.watch('gpsCapture')?.accuracyMeters && (
                   <Text fontSize="$3">
-                    Accuracy: {form.watch("gpsCapture")?.accuracyMeters} meters
+                    Accuracy: {form.watch('gpsCapture')?.accuracyMeters} meters
                   </Text>
                 )}
               </YStack>
@@ -434,28 +409,28 @@ export function WorkLogForm({
             <Text fontWeight="600" fontSize="$4">
               Draft Status
             </Text>
-            {autoSaveStatus.state === "saving" && (
+            {autoSaveStatus.state === 'saving' && (
               <Text fontSize="$3" color="$color10">
                 Saving draft…
               </Text>
             )}
-            {autoSaveStatus.state === "saved" && (
+            {autoSaveStatus.state === 'saved' && (
               <Text fontSize="$3" color="$green10">
-                {autoSaveStatus.message ?? "Draft saved"}{" "}
+                {autoSaveStatus.message ?? 'Draft saved'}{' '}
                 {autoSaveStatus.savedAt
                   ? new Date(autoSaveStatus.savedAt).toLocaleTimeString()
-                  : ""}
+                  : ''}
               </Text>
             )}
-            {autoSaveStatus.state === "error" && (
+            {autoSaveStatus.state === 'error' && (
               <Text fontSize="$3" color="$red10">
-                {autoSaveStatus.message ?? "Auto-save encountered an error."}
+                {autoSaveStatus.message ?? 'Auto-save encountered an error.'}
               </Text>
             )}
-            {autoSaveStatus.state === "invalid" && (
+            {autoSaveStatus.state === 'invalid' && (
               <Text fontSize="$3" color="$orange10">
                 {autoSaveStatus.message ??
-                  "Form is incomplete. Fill in required fields to auto-save."}
+                  'Form is incomplete. Fill in required fields to auto-save.'}
               </Text>
             )}
             {pendingOfflineDraft && (
@@ -466,11 +441,10 @@ export function WorkLogForm({
           </YStack>
 
           <Button icon={Save} size="$5" onPress={() => submit()} disabled={isSubmitting}>
-            {isSubmitting ? "Saving…" : submitLabel}
+            {isSubmitting ? 'Saving…' : submitLabel}
           </Button>
         </YStack>
       </ScrollView>
     </FormProvider>
-  );
+  )
 }
-

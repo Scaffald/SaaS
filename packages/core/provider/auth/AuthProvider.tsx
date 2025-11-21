@@ -1,11 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import NetInfo from '@react-native-community/netinfo'
-import { supabase } from '@app/core/utils/supabase/client'
-import { createContext, useEffect, useState, type ReactNode, useCallback, useRef } from 'react'
-import type { Session } from '@supabase/auth-js'
 import { getGlobalQueryClient } from '@app/core/provider/react-query'
-import { clearAllAuthStorage } from '@app/core/utils/auth/clearAuthStorage'
-import { useCookieConsent } from '@app/ui'
 import {
   alias as aliasAnalyticsUser,
   getAnalyticsClient,
@@ -14,6 +7,13 @@ import {
   shutdownAnalytics,
 } from '@app/core/utils/analytics/client'
 import { captureEventWithQueue, flushQueue } from '@app/core/utils/analytics/queue'
+import { clearAllAuthStorage } from '@app/core/utils/auth/clearAuthStorage'
+import { supabase } from '@app/core/utils/supabase/client'
+import { useCookieConsent } from '@app/ui'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import NetInfo from '@react-native-community/netinfo'
+import type { Session } from '@supabase/auth-js'
+import { createContext, type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 import { AuthStateChangeHandler } from './AuthStateChangeHandler'
 

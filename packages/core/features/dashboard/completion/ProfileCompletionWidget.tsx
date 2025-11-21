@@ -1,7 +1,6 @@
-import React from 'react'
+import type { ChecklistItemType } from '@app/ui'
 import { Checklist, DashboardWidget } from '@app/ui'
 import { useProfileCompletion } from './useProfileCompletion'
-import type { ChecklistItemType } from '@app/ui'
 
 export interface ProfileCompletionWidgetProps {
   onNavigate: (route: string) => void

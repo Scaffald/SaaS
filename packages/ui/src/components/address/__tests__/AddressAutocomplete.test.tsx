@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AddressAutocomplete } from '../AddressAutocomplete'
 import type { AddressResult } from '../types'
 
@@ -39,18 +39,8 @@ vi.mock('tamagui', () => {
     }
   )
 
-  const PopoverRoot = ({ children, open, onOpenChange }: any) => (
-    <div
-      data-testid="popover"
-      data-open={open}
-      onClick={() => onOpenChange?.(!open)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onOpenChange?.(!open)
-        }
-      }}
-    >
+  const PopoverRoot = ({ children, open, onOpenChange: _onOpenChange }: any) => (
+    <div data-testid="popover" data-open={open}>
       {children}
     </div>
   )

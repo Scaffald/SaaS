@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { Checkbox, Input, Paragraph, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { api } from '@app/core/utils/api'
+import { UIButton as Button, spacing } from '@app/ui'
 import {
   AlertCircle,
   CheckCircle2,
@@ -8,14 +7,25 @@ import {
   SkipForward,
   UploadCloud,
 } from '@tamagui/lucide-icons'
-import { UIButton as Button, spacing } from '@app/ui'
-import { api } from '@app/core/utils/api'
+import { useRouter } from 'expo-router'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  useResumeWizard,
+  Checkbox,
+  Input,
+  Paragraph,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { useResumeWizardContext } from '../context/ResumeWizardProvider'
+import {
   type ResumeMergeStrategy,
   type ResumeWizardSection,
+  useResumeWizard,
 } from '../hooks/useResumeWizard'
-import { ProgressIndicator } from './ProgressIndicator'
 import { MergeComparisonView } from './MergeComparisonView'
 
 interface ResumeWizardProps {
@@ -86,8 +96,8 @@ const OPENAI_DISABLED_MESSAGE =
 
 export function ResumeWizard({ resumeId }: ResumeWizardProps) {
   const router = useRouter()
+  const wizardController = useResumeWizardContext()
   const {
-    steps,
     currentIndex,
     currentStep,
     parsedData: rawParsedData,
@@ -95,19 +105,18 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
     wizard,
     isLoading,
     isSaving,
-    setCurrentIndex,
     goPrevious,
     saveSection,
     skipSection,
-  } = useResumeWizard(resumeId)
+  } = wizardController ?? useResumeWizard(resumeId)
 
-  const generalProfileQuery = api.profile.getGeneral.useQuery(undefined, {
+  const generalProfileQuery = api.profile.general.getGeneral.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  const experienceQuery = api.profile.getExperience.useQuery(undefined, {
+  const experienceQuery = api.profile.experience.getExperience.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
-  const educationQuery = api.profile.getEducation.useQuery(undefined, {
+  const educationQuery = api.profile.education.getEducation.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
   const skillsQuery = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery(undefined, {
@@ -119,7 +128,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       refetchOnWindowFocus: false,
     }
   )
-  const employmentQuery = api.profile.getEmployment.useQuery(undefined, {
+  const employmentQuery = api.profile.employment.getEmployment.useQuery(undefined, {
     refetchOnWindowFocus: false,
   })
 
@@ -331,7 +340,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       .filter((error) => !(aiParsingDisabled && error.message.includes(OPENAI_DISABLED_MESSAGE)))
   }, [aiParsingDisabled, currentStep.id, errors])
 
-  const completedSteps = wizard?.completedSteps ?? []
+  const _completedSteps = wizard?.completedSteps ?? []
 
   const updateMergeStrategy = useCallback(
     (section: ResumeWizardSection, strategy: ResumeMergeStrategy) => {
@@ -538,17 +547,10 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           Resume Import
         </Text>
         <Text color="$color11">
-          Review each section parsed from your resume. Make edits or skip sections you don’t want to
+          Review each section parsed from your resume. Make edits or skip sections you don't want to
           import.
         </Text>
       </YStack>
-
-      <ProgressIndicator
-        steps={steps}
-        currentIndex={currentIndex}
-        completedSteps={completedSteps}
-        onStepChange={setCurrentIndex}
-      />
 
       {hasExistingProfileData ? (
         <YStack gap="$2" bg="$blue3" p="$3" rounded="$4">

@@ -8,9 +8,12 @@
  * - Edit mode functionality
  */
 
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { navigateToOfficeRoute } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
-import { generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import {
+  generateJobData,
+  generateTestId,
+} from '../../infrastructure/playwright/helpers/helpers/office-test-data'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -98,13 +101,17 @@ test.describe('Office • Jobs Form - Location & Work Settings', () => {
 
   test('should display location input field', async ({ page }: { page: Page }) => {
     // Location field should be visible (might be AddressForm component)
-    const locationField = page.locator('input[aria-label*="location" i], input[placeholder*="location" i]').first()
+    const locationField = page
+      .locator('input[aria-label*="location" i], input[placeholder*="location" i]')
+      .first()
     await expect(locationField).toBeVisible({ timeout: 5000 })
   })
 
   test('should allow entering location', async ({ page }: { page: Page }) => {
     const testData = generateJobData()
-    const locationField = page.locator('input[aria-label*="location" i], input[placeholder*="location" i]').first()
+    const locationField = page
+      .locator('input[aria-label*="location" i], input[placeholder*="location" i]')
+      .first()
     await locationField.fill(testData.location)
     await page.waitForTimeout(500)
     // Verify location was entered
@@ -134,13 +141,21 @@ test.describe('Office • Jobs Form - Form Actions', () => {
     await expect(cancelButton).toBeVisible({ timeout: 5000 })
   })
 
-  test('should disable save buttons when required fields are empty', async ({ page }: { page: Page }) => {
+  test('should disable save buttons when required fields are empty', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     const saveDraftButton = page.locator('[data-testid="job-save-draft-button"]')
     const isDisabled = await saveDraftButton.isDisabled()
     expect(isDisabled).toBe(true)
   })
 
-  test('should enable save draft when required fields are filled', async ({ page }: { page: Page }) => {
+  test('should enable save draft when required fields are filled', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await selectFirstOrganization(page)
 
     const testData = generateJobData()
@@ -279,4 +294,3 @@ test.describe('Office • Jobs Form - Edit Mode', () => {
     await expect(jobTitle).toBeVisible({ timeout: 10000 })
   })
 })
-

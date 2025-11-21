@@ -1,5 +1,6 @@
-import { Dialog, XStack, YStack, Text } from 'tamagui'
+import { XStack } from 'tamagui'
 import { Button, type ButtonProps } from '../buttons/Button'
+import { Dialog } from './Dialog'
 
 interface ConfirmationDialogProps {
   open: boolean
@@ -63,31 +64,8 @@ export function ConfirmationDialog({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-        <Dialog.Content
-          bordered
-          elevate
-          key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-          gap="$4"
-          width={500}
-        >
+        <Dialog.Overlay key="overlay" />
+        <Dialog.Content key="content" width={500}>
           <Dialog.Title>{title}</Dialog.Title>
           <Dialog.Description>{message}</Dialog.Description>
           <XStack gap="$3" items="center" justify="flex-end">

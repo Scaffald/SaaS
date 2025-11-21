@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, Spinner, Text, YStack } from 'tamagui'
-import { AlertTriangle, CheckCircle, LogIn, XCircle } from '@tamagui/lucide-icons'
-
-import { api } from '@app/core/utils/api'
 import { useAuth } from '@app/core/provider/auth/useAuth'
-import type { inferRouterOutputs } from '@trpc/server'
+import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { AlertTriangle, CheckCircle, LogIn, XCircle } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { Link, useLocalSearchParams, useRouter } from 'expo-router'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Card, Spinner, Text, YStack } from 'tamagui'
 
 type InvitationAction = 'accept' | 'decline'
 type RespondInvitationOutput = inferRouterOutputs<AppRouter>['teams']['respondToInvitation']

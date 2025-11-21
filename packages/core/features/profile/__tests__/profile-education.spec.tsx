@@ -1,5 +1,5 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native'
 import * as React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react-native'
 import { describe, expect, it, vi } from 'vitest'
 
 type EducationEntry = {
@@ -85,7 +85,7 @@ describe('ProfileEducationLeft', () => {
       () => {
         expect(mockSaveEducationCall).toHaveBeenCalledTimes(1)
       },
-      { timeout: 1000 },
+      { timeout: 1000 }
     )
   })
 })
@@ -110,7 +110,7 @@ describe('EducationEntryEditModal', () => {
       () => {
         expect(mockSaveEducationCall).toHaveBeenCalled()
       },
-      { timeout: 1000 },
+      { timeout: 1000 }
     )
   })
 })
@@ -144,10 +144,8 @@ describe('ProfileEducationRight', () => {
     fireEvent.press(screen.getAllByText('Delete')[1])
 
     await waitFor(
-      () =>
-        expect(mockDeleteEducationCall).toHaveBeenCalledWith({ educationId: 'entry-2' }),
-      { timeout: 1000 },
+      () => expect(mockDeleteEducationCall).toHaveBeenCalledWith({ educationId: 'entry-2' }),
+      { timeout: 1000 }
     )
   })
 })
-

@@ -1,31 +1,21 @@
-import {
-  Button,
-  H2,
-  LoadingOverlay,
-  Paragraph,
-  Text,
-  YStack,
-  isWeb,
-  Input,
-  Form,
-} from '@app/ui'
-import { useUser } from '@app/core/utils/useUser'
 import { ScaffaldLogo } from '@app/core/assets'
-import { useEffect, useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import type { AuthChangeEvent } from '@supabase/auth-js'
-import { supabase } from '@app/core/utils/supabase/client'
-import { z } from 'zod'
-import { SocialLogin } from './components/SocialLogin'
+import { i18n } from '@app/core/locales'
 import { captureEvent } from '@app/core/utils/analytics/client'
 import { captureEventWithQueue } from '@app/core/utils/analytics/queue'
 import { api } from '@app/core/utils/api'
-import { TRPCClientError } from '@trpc/client'
-import { useTranslation } from '@app/core/utils/useTranslation'
 import { translateError } from '@app/core/utils/errors/translateError'
-import { i18n } from '@app/core/locales'
+import { supabase } from '@app/core/utils/supabase/client'
+import { useTranslation } from '@app/core/utils/useTranslation'
+import { useUser } from '@app/core/utils/useUser'
 import { applyZodErrorMap } from '@app/core/utils/zodErrorMap'
+import { Button, Form, Input, LoadingOverlay, Paragraph, YStack } from '@app/ui'
+import type { AuthChangeEvent } from '@supabase/auth-js'
+import { TRPCClientError } from '@trpc/client'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { SocialLogin } from './components/SocialLogin'
 
 applyZodErrorMap()
 
@@ -72,7 +62,9 @@ export const LoginScreen = () => {
     }
 
     const normalizedEmail = trimmedEmail.toLowerCase()
-    const emailDomain = normalizedEmail.includes('@') ? normalizedEmail.split('@')[1] ?? 'unknown' : 'unknown'
+    const emailDomain = normalizedEmail.includes('@')
+      ? (normalizedEmail.split('@')[1] ?? 'unknown')
+      : 'unknown'
 
     try {
       const redirectTo = process.env.EXPO_PUBLIC_URL
@@ -97,7 +89,11 @@ export const LoginScreen = () => {
       console.error('Error sending magic link:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       const errorCode =
-        error instanceof TRPCClientError ? error.data?.code ?? error.name : error instanceof Error ? error.name : 'unknown'
+        error instanceof TRPCClientError
+          ? (error.data?.code ?? error.name)
+          : error instanceof Error
+            ? error.name
+            : 'unknown'
 
       captureEvent('auth_magic_link_failed', {
         email_domain: emailDomain || null,
@@ -112,13 +108,10 @@ export const LoginScreen = () => {
         })
         return
       }
-      form.setError(
-        'email',
-        {
-          type: 'custom',
-          message: translateError(error),
-        }
-      )
+      form.setError('email', {
+        type: 'custom',
+        message: translateError(error),
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -148,9 +141,9 @@ export const LoginScreen = () => {
             />
 
             {form.formState.errors.email && (
-              <Text color="$red10" fontSize="$2">
+              <Paragraph color="$red10" fontSize="$2">
                 {form.formState.errors.email.message}
-              </Text>
+              </Paragraph>
             )}
 
             <Button
@@ -169,9 +162,7 @@ export const LoginScreen = () => {
             </Button>
 
             <SocialLogin />
-            <Paragraph text="center">
-              {t('auth.login.socialDescription')}
-            </Paragraph>
+            <Paragraph text="center">{t('auth.login.socialDescription')}</Paragraph>
           </YStack>
         </Form>
       </YStack>

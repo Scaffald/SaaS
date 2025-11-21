@@ -20,7 +20,7 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
     // If the completion form isn't present, return quickly (with short timeout)
     const gateVisible = await Promise.race([
       page.getByText(/complete profile|privacy policy|terms of service/i).isVisible(),
-      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 2000))
+      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 2000)),
     ]).catch(() => false)
     if (!gateVisible) {
       // Profile might already be complete, wait a bit for page to settle
@@ -34,8 +34,12 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
   }
 
   // Fill common fields defensively; ignore failures to keep this resilient
-  try { await page.getByPlaceholder(/first name/i).fill('Test') } catch {}
-  try { await page.getByPlaceholder(/last name/i).fill('User') } catch {}
+  try {
+    await page.getByPlaceholder(/first name/i).fill('Test')
+  } catch {}
+  try {
+    await page.getByPlaceholder(/last name/i).fill('User')
+  } catch {}
 
   // Address: either full address field or switch to individual editors if present
   try {
@@ -43,7 +47,9 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
   } catch {}
 
   // Roles: click label text to toggle custom checkbox implementations
-  try { await page.getByText(/worker seeking employment|keeping options open/i).click() } catch {}
+  try {
+    await page.getByText(/worker seeking employment|keeping options open/i).click()
+  } catch {}
 
   // Industry: open combobox and select first option
   try {
@@ -53,11 +59,17 @@ export async function ensureProfileComplete(page: Page): Promise<void> {
   } catch {}
 
   // Privacy/Terms: click the text labels
-  try { await page.getByText(/privacy policy/i).click() } catch {}
-  try { await page.getByText(/terms of service/i).click() } catch {}
+  try {
+    await page.getByText(/privacy policy/i).click()
+  } catch {}
+  try {
+    await page.getByText(/terms of service/i).click()
+  } catch {}
 
   // Submit
-  try { await page.getByRole('button', { name: /complete profile|continue|submit/i }).click() } catch {}
+  try {
+    await page.getByRole('button', { name: /complete profile|continue|submit/i }).click()
+  } catch {}
 
   // Wait briefly for navigation/state change (don't wait for networkidle - pages may never finish loading)
   await page.waitForTimeout(500)
@@ -82,7 +94,7 @@ export async function ensureAdminProfileComplete(page: Page): Promise<void> {
     // If the completion form isn't present, return quickly
     const gateVisible = await Promise.race([
       page.getByText(/complete profile|privacy policy|terms of service/i).isVisible(),
-      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 2000))
+      new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 2000)),
     ]).catch(() => false)
     if (!gateVisible) {
       await page.waitForTimeout(500)
@@ -94,8 +106,12 @@ export async function ensureAdminProfileComplete(page: Page): Promise<void> {
   }
 
   // Fill common fields defensively
-  try { await page.getByPlaceholder(/first name/i).fill('Admin') } catch {}
-  try { await page.getByPlaceholder(/last name/i).fill('User') } catch {}
+  try {
+    await page.getByPlaceholder(/first name/i).fill('Admin')
+  } catch {}
+  try {
+    await page.getByPlaceholder(/last name/i).fill('User')
+  } catch {}
 
   // Address
   try {
@@ -103,7 +119,9 @@ export async function ensureAdminProfileComplete(page: Page): Promise<void> {
   } catch {}
 
   // Roles: For admin, likely different role selection
-  try { await page.getByText(/employer hiring workers|worker seeking employment/i).click() } catch {}
+  try {
+    await page.getByText(/employer hiring workers|worker seeking employment/i).click()
+  } catch {}
 
   // Industry: open combobox and select first option
   try {
@@ -113,11 +131,17 @@ export async function ensureAdminProfileComplete(page: Page): Promise<void> {
   } catch {}
 
   // Privacy/Terms
-  try { await page.getByText(/privacy policy/i).click() } catch {}
-  try { await page.getByText(/terms of service/i).click() } catch {}
+  try {
+    await page.getByText(/privacy policy/i).click()
+  } catch {}
+  try {
+    await page.getByText(/terms of service/i).click()
+  } catch {}
 
   // Submit
-  try { await page.getByRole('button', { name: /complete profile|continue|submit/i }).click() } catch {}
+  try {
+    await page.getByRole('button', { name: /complete profile|continue|submit/i }).click()
+  } catch {}
 
   await page.waitForTimeout(500)
 }

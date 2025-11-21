@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Button } from 'tamagui'
-import { ThumbsUp, ThumbsDown } from '@tamagui/lucide-icons'
+import { ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
+import { Button, Text, XStack, YStack } from 'tamagui'
 
 interface ReviewStep8RecommendationProps {
   recommendation: boolean | null

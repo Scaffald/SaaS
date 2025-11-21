@@ -1,38 +1,35 @@
-import { useState, useEffect, useCallback } from 'react'
-import {
-  YStack,
-  XStack,
-  Text,
-  Input,
-  Button,
-  Spinner,
-  ScrollView,
-  AddressForm,
-  CustomCheckbox,
-} from '@app/ui'
-import { Adapt, Sheet, Select, Card } from 'tamagui'
-import type { AddressResult } from '@app/ui'
-import type { JSONContent } from '@tiptap/core'
-import { RichTextEditor } from '@app/ui/components/rich-text'
-import { plainTextToTipTap, extractPlainText } from '@app/ui/components/rich-text'
 import { api } from '@app/core/utils/api'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
+import type { AddressResult } from '@app/ui'
+import {
+  AddressForm,
+  Button,
+  Input,
+  ResponsiveSelect,
+  ScrollView,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from '@app/ui'
+import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@app/ui/components/rich-text'
+import { Eye, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
-import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { Check, ChevronDown, X, Eye, Calendar } from '@tamagui/lucide-icons'
-import { Switch } from 'tamagui'
+import { useCallback, useEffect, useState } from 'react'
+import { Card, Switch } from 'tamagui'
 import { JobPreviewModal } from './JobPreviewModal'
 import {
+  ApplicationProcessSection,
   ApplicationScreeningSection,
   AutoRejectionSection,
-  ScoreThresholdSection,
-  JobMetadataSection,
-  EnhancedRequirementsSection,
   CompensationBenefitsSection,
-  ApplicationProcessSection,
-  LocationSchedulingSection,
-  DistributionVisibilitySection,
   ComplianceAnalyticsSection,
+  DistributionVisibilitySection,
+  EnhancedRequirementsSection,
+  JobMetadataSection,
+  LocationSchedulingSection,
+  ScoreThresholdSection,
 } from './job-form-sections'
 
 type JobFormData = {
@@ -161,7 +158,6 @@ type JobFormProps = {
   onSuccess?: () => void
 }
 
-
 export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const router = useRouter()
   const toast = useToastController()
@@ -259,7 +255,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       organizationId: formData.organization_id || undefined,
       includeArchived: false,
     },
-    { enabled: teamsQueryEnabled },
+    { enabled: teamsQueryEnabled }
   )
   const teams = (teamsData?.teams ?? []) as Array<{ id: string; name: string | null }>
 
@@ -308,12 +304,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     setFormData((prev) => {
       const currentTeamIds = prev.team_ids ?? []
       const filtered = currentTeamIds.filter((id) => availableIds.has(id))
-      const nextAssigned = prev.assigned_team_id && availableIds.has(prev.assigned_team_id)
-        ? prev.assigned_team_id
-        : null
-      const nextPrimary = prev.primary_team_id && availableIds.has(prev.primary_team_id)
-        ? prev.primary_team_id
-        : null
+      const nextAssigned =
+        prev.assigned_team_id && availableIds.has(prev.assigned_team_id)
+          ? prev.assigned_team_id
+          : null
+      const nextPrimary =
+        prev.primary_team_id && availableIds.has(prev.primary_team_id) ? prev.primary_team_id : null
 
       if (
         filtered.length === currentTeamIds.length &&
@@ -351,10 +347,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   useEffect(() => {
     setFormData((prev) => {
-      if (
-        prev.assigned_team_id === primaryTeamId &&
-        prev.primary_team_id === primaryTeamId
-      ) {
+      if (prev.assigned_team_id === primaryTeamId && prev.primary_team_id === primaryTeamId) {
         return prev
       }
 
@@ -466,7 +459,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   // Skills and certifications handlers
   const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
-  const { data: primaryIndustryData } = api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
+  const { data: primaryIndustryData } =
+    api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
   const searchCertificationsQuery = api.office.searchCertifications.useQuery(
     { query: '', limit: 50 },
     { enabled: false }
@@ -483,11 +477,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           taxonomy: 'both',
           limit: 25,
         })
-        return result.skills.map((skill: { skill_id: string; name: string; display_code?: string; code?: string }) => ({
-          id: skill.skill_id,
-          name: skill.name,
-          code: skill.display_code || skill.code || skill.skill_id,
-        }))
+        return result.skills.map(
+          (skill: { skill_id: string; name: string; display_code?: string; code?: string }) => ({
+            id: skill.skill_id,
+            name: skill.name,
+            code: skill.display_code || skill.code || skill.skill_id,
+          })
+        )
       } catch (error) {
         console.error('Failed to search skills', error)
         return []
@@ -839,44 +835,17 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Organization Selector */}
         <YStack gap="$2">
           <Text fontWeight="600">Organization *</Text>
-          <Select
-            data-testid="job-organization-select"
+          <ResponsiveSelect
+            testID="job-organization-select"
             value={formData.organization_id}
             onValueChange={(value: string) => setFormData({ ...formData, organization_id: value })}
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value placeholder="Select organization" />
-            </Select.Trigger>
-
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Organizations</Select.Label>
-                  {organizations.map((org: Organization, i: number) => (
-                    <Select.Item key={org.id} index={i} value={org.id}>
-                      <Select.ItemText>{org.name}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="Select organization"
+            label="Organization"
+            options={organizations.map((org: Organization) => ({
+              value: org.id,
+              label: org.name,
+            }))}
+          />
         </YStack>
 
         {/* Details Section */}
@@ -960,7 +929,10 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           </YStack>
 
           {/* Minimum Elevate Score */}
-          <ScoreThresholdSection minimumScore={formData.minimum_score} onUpdate={handleScoreUpdate} />
+          <ScoreThresholdSection
+            minimumScore={formData.minimum_score}
+            onUpdate={handleScoreUpdate}
+          />
 
           {/* Elevate Teams */}
           <YStack gap="$2">
@@ -978,7 +950,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 No teams available for this organization.
               </Text>
             ) : (
-              <Select
+              <ResponsiveSelect
                 value={primaryTeamId || ''}
                 onValueChange={(value: string) => {
                   if (value) {
@@ -986,38 +958,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     toggleTeamSelection(value, true)
                   }
                 }}
-              >
-                <Select.Trigger iconAfter={ChevronDown}>
-                  <Select.Value placeholder="Select one" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    <Select.Group>
-                      <Select.Label>Teams</Select.Label>
-                      {teams.map((team, i) => (
-                        <Select.Item key={team.id} index={i} value={team.id}>
-                          <Select.ItemText>{team.name ?? 'Untitled Team'}</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+                placeholder="Select one"
+                label="Primary Team"
+                options={teams.map((team) => ({
+                  value: team.id,
+                  label: team.name ?? 'Untitled Team',
+                }))}
+              />
             )}
             <Text fontSize="$2" color="$color10">
               Not visible on job posting
@@ -1181,7 +1128,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         />
 
         {/* Schedule Publish Section */}
-        <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+        <YStack
+          gap="$3"
+          p="$4"
+          bg="$color2"
+          rounded="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
           <XStack gap="$3" items="center" justify="space-between">
             <YStack flex={1} gap="$1">
               <Text fontSize="$4" fontWeight="600" color="$color12">
@@ -1259,20 +1213,15 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         </YStack>
 
         {/* Actions */}
-        <XStack 
-          gap="$3" 
-          pt="$4"
-          $sm={{ flexDirection: 'column' }}
-          $gtSm={{ flexDirection: 'row' }}
-        >
-          <Button 
-            data-testid="job-cancel-button" 
-            flex={1} 
-            variant="outlined" 
-            onPress={() => router.back()} 
+        <XStack gap="$3" pt="$4" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
+          <Button
+            data-testid="job-cancel-button"
+            flex={1}
+            variant="outlined"
+            onPress={() => router.back()}
             disabled={isLoading}
             $sm={{ height: 44, width: '100%' }}
-            $gtSm={{ height: undefined, width: undefined }}
+            $md={{ height: undefined, width: undefined }}
           >
             Cancel
           </Button>
@@ -1284,7 +1233,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               onPress={() => setPreviewOpen(true)}
               disabled={isLoading || !formData.title || !formData.organization_id}
               $sm={{ height: 44 }}
-              $gtSm={{ height: undefined }}
+              $md={{ height: undefined }}
             >
               Preview
             </Button>
@@ -1303,7 +1252,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 extractPlainText(formData.description).trim().length === 0)
             }
             $sm={{ height: 44, width: '100%' }}
-            $gtSm={{ height: undefined, width: undefined }}
+            $md={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
             {!isLoading && 'Save as Draft'}
@@ -1323,18 +1272,14 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                 new Date(formData.scheduled_publish_at) <= new Date())
             }
             $sm={{ height: 44, width: '100%' }}
-            $gtSm={{ height: undefined, width: undefined }}
+            $md={{ height: undefined, width: undefined }}
           >
             {isLoading && <Spinner />}
             {!isLoading && (formData.scheduled_publish_at ? 'Schedule' : 'Post')}
           </Button>
         </XStack>
         {jobId && (
-          <JobPreviewModal
-            jobId={jobId}
-            open={previewOpen}
-            onOpenChange={setPreviewOpen}
-          />
+          <JobPreviewModal jobId={jobId} open={previewOpen} onOpenChange={setPreviewOpen} />
         )}
       </YStack>
     </ScrollView>

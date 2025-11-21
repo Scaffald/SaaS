@@ -61,15 +61,14 @@ test.describe('Profile education management', () => {
 
       const normalizedEntries =
         input.education_entries?.map((entry, index) => {
-          const hasCatalog = typeof entry.university_id === 'string' && entry.university_id.length > 0
+          const hasCatalog =
+            typeof entry.university_id === 'string' && entry.university_id.length > 0
           const id =
-            typeof entry.id === 'string' && entry.id.length > 0
-              ? entry.id
-              : `entry-${index + 1}`
+            typeof entry.id === 'string' && entry.id.length > 0 ? entry.id : `entry-${index + 1}`
           const degreeType =
             entry.degree_type === 'Other'
-              ? (entry.custom_degree_type as string | undefined) ?? 'Other'
-              : (entry.degree_type as string | undefined) ?? null
+              ? ((entry.custom_degree_type as string | undefined) ?? 'Other')
+              : ((entry.degree_type as string | undefined) ?? null)
 
           return {
             ...entry,
@@ -125,7 +124,7 @@ test.describe('Profile education management', () => {
     await page.goto('/dashboard/profile/education')
 
     await expect(
-      page.getByRole('heading', { name: 'Education Background', exact: true }),
+      page.getByRole('heading', { name: 'Education Background', exact: true })
     ).toBeVisible()
 
     await page.getByText("Can't find your institution? Enter it manually").click()
@@ -162,4 +161,3 @@ test.describe('Profile education management', () => {
     await expect(page.getByText(/Start date is required/)).toBeVisible()
   })
 })
-

@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
-import { Button, ScrollView, Text, XStack, YStack, Spinner } from 'tamagui'
 import { AlertCircle, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
+import type { ReactNode } from 'react'
+import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 
 export interface AssessmentWizardProps {

@@ -1,8 +1,8 @@
-import { useState, useCallback, useRef, type DragEvent } from 'react'
-import { Button, Text, XStack, YStack, Progress } from 'tamagui'
-import { ArrowLeft, FileText, Upload, X, CheckCircle2 } from '@tamagui/lucide-icons'
-import type { AttachmentMetadata } from '@app/schemas'
 import { api } from '@app/core/utils/api'
+import type { AttachmentMetadata } from '@app/schemas'
+import { ArrowLeft, CheckCircle2, Upload, X } from '@tamagui/lucide-icons'
+import { type DragEvent, useCallback, useRef, useState } from 'react'
+import { Button, Progress, Text, XStack, YStack } from 'tamagui'
 
 type AttachmentType = 'resume' | 'cover_letter' | 'portfolio'
 
@@ -234,14 +234,11 @@ export function AttachmentsStep({
   /**
    * Handle drag and drop
    */
-  const handleDragOver = useCallback(
-    (type: AttachmentType, e: DragEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      dragOverRefs.current[type] = true
-    },
-    []
-  )
+  const handleDragOver = useCallback((type: AttachmentType, e: DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragOverRefs.current[type] = true
+  }, [])
 
   const handleDragLeave = useCallback((type: AttachmentType) => {
     dragOverRefs.current[type] = false
@@ -387,7 +384,9 @@ export function AttachmentsStep({
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
-                borderColor={errors.resume ? '$red9' : dragOverRefs.current.resume ? '$blue9' : '$borderColor'}
+                borderColor={
+                  errors.resume ? '$red9' : dragOverRefs.current.resume ? '$blue9' : '$borderColor'
+                }
                 borderStyle="dashed"
                 bg={dragOverRefs.current.resume ? '$blue2' : '$background'}
                 items="center"
@@ -395,7 +394,8 @@ export function AttachmentsStep({
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
               >
-                <div
+                <section
+                  aria-label="Resume upload drop zone"
                   onDragOver={(e) => handleDragOver('resume', e)}
                   onDragLeave={() => handleDragLeave('resume')}
                   onDrop={(e) => handleDrop('resume', e)}
@@ -410,7 +410,7 @@ export function AttachmentsStep({
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
-                </div>
+                </section>
               </YStack>
             </label>
             <input
@@ -511,7 +511,13 @@ export function AttachmentsStep({
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
-                borderColor={errors.cover_letter ? '$red9' : dragOverRefs.current.cover_letter ? '$blue9' : '$borderColor'}
+                borderColor={
+                  errors.cover_letter
+                    ? '$red9'
+                    : dragOverRefs.current.cover_letter
+                      ? '$blue9'
+                      : '$borderColor'
+                }
                 borderStyle="dashed"
                 bg={dragOverRefs.current.cover_letter ? '$blue2' : '$background'}
                 items="center"
@@ -519,7 +525,8 @@ export function AttachmentsStep({
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
               >
-                <div
+                <section
+                  aria-label="Cover letter upload drop zone"
                   onDragOver={(e) => handleDragOver('cover_letter', e)}
                   onDragLeave={() => handleDragLeave('cover_letter')}
                   onDrop={(e) => handleDrop('cover_letter', e)}
@@ -534,7 +541,7 @@ export function AttachmentsStep({
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
-                </div>
+                </section>
               </YStack>
             </label>
             <input
@@ -635,7 +642,13 @@ export function AttachmentsStep({
                 p="$6"
                 rounded="$4"
                 borderWidth={2}
-                borderColor={errors.portfolio ? '$red9' : dragOverRefs.current.portfolio ? '$blue9' : '$borderColor'}
+                borderColor={
+                  errors.portfolio
+                    ? '$red9'
+                    : dragOverRefs.current.portfolio
+                      ? '$blue9'
+                      : '$borderColor'
+                }
                 borderStyle="dashed"
                 bg={dragOverRefs.current.portfolio ? '$blue2' : '$background'}
                 items="center"
@@ -643,7 +656,8 @@ export function AttachmentsStep({
                 cursor="pointer"
                 hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
               >
-                <div
+                <section
+                  aria-label="Portfolio upload drop zone"
                   onDragOver={(e) => handleDragOver('portfolio', e)}
                   onDragLeave={() => handleDragLeave('portfolio')}
                   onDrop={(e) => handleDrop('portfolio', e)}
@@ -658,7 +672,7 @@ export function AttachmentsStep({
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
-                </div>
+                </section>
               </YStack>
             </label>
             <input

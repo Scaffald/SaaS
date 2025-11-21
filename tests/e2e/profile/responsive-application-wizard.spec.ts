@@ -7,14 +7,14 @@
  * REQ-11: Responsive Layout Improvements
  */
 
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
 import {
-  assertNoHorizontalScroll,
   assertFormResponsive,
   assertModalResponsive,
+  assertNoHorizontalScroll,
   getViewportCategory,
 } from '../../infrastructure/playwright/helpers/helpers/responsive'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Define all Priority 1 viewports from REQ-11 spec
 const viewports = [
@@ -45,7 +45,9 @@ test.describe('Responsive Application Wizard', () => {
 
         // Try to find and click on first job card/link to open wizard
         // Job links might be in various formats: button, link, card
-        const jobLinks = page.locator('a[href*="/jobs/"], button:has-text(/view|apply|details/i), [role="link"]:has-text(/apply/i)')
+        const jobLinks = page.locator(
+          'a[href*="/jobs/"], button:has-text(/view|apply|details/i), [role="link"]:has-text(/apply/i)'
+        )
         const linkCount = await jobLinks.count()
 
         if (linkCount > 0) {
@@ -56,10 +58,11 @@ test.describe('Responsive Application Wizard', () => {
           await page.waitForTimeout(3000)
 
           // Wait for application wizard to load
-          await page.waitForFunction(
-            () => !document.body.textContent?.includes('Loading...'),
-            { timeout: 10000 }
-          ).catch(() => {})
+          await page
+            .waitForFunction(() => !document.body.textContent?.includes('Loading...'), {
+              timeout: 10000,
+            })
+            .catch(() => {})
 
           // Verify no horizontal scrolling required
           await assertNoHorizontalScroll(page)
@@ -84,11 +87,11 @@ test.describe('Responsive Application Wizard', () => {
           await page.waitForTimeout(3000)
 
           // Look for wizard indicators (ProgressIndicator, step labels)
-          const pageContent = await page.locator('body').textContent() || ''
-          
+          const pageContent = (await page.locator('body').textContent()) || ''
+
           // Application wizard typically shows step labels like "Screening", "Documents", "Review"
           // Or progress indicators
-          const hasWizardContent = 
+          const hasWizardContent =
             pageContent.toLowerCase().includes('screening') ||
             pageContent.toLowerCase().includes('review') ||
             pageContent.toLowerCase().includes('documents') ||
@@ -100,7 +103,11 @@ test.describe('Responsive Application Wizard', () => {
         }
       })
 
-      test('form fields are visible and usable without horizontal scroll', async ({ page }: { page: Page }) => {
+      test('form fields are visible and usable without horizontal scroll', async ({
+        page,
+      }: {
+        page: Page
+      }) => {
         await page.goto('/dashboard/discover/jobs')
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(2000)
@@ -144,7 +151,7 @@ test.describe('Responsive Application Wizard', () => {
               // Verify first input is visible and accessible
               const firstInput = inputs.first()
               await expect(firstInput).toBeVisible({ timeout: 5000 })
-              
+
               // Verify no horizontal scroll
               await assertNoHorizontalScroll(page)
             }
@@ -152,7 +159,11 @@ test.describe('Responsive Application Wizard', () => {
         }
       })
 
-      test('navigation buttons are reachable and properly sized', async ({ page }: { page: Page }) => {
+      test('navigation buttons are reachable and properly sized', async ({
+        page,
+      }: {
+        page: Page
+      }) => {
         await page.goto('/dashboard/discover/jobs')
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(2000)
@@ -167,7 +178,9 @@ test.describe('Responsive Application Wizard', () => {
           await page.waitForTimeout(3000)
 
           // Look for navigation buttons (Continue, Previous, Submit, Cancel, etc.)
-          const navButtons = page.locator('button:has-text(/continue|previous|submit|cancel|next|back/i)')
+          const navButtons = page.locator(
+            'button:has-text(/continue|previous|submit|cancel|next|back/i)'
+          )
           const buttonCount = await navButtons.count()
 
           if (buttonCount > 0) {
@@ -224,8 +237,8 @@ test.describe('Responsive Application Wizard', () => {
             await page.waitForTimeout(2000)
 
             // Look for validation messages (error text, validation indicators)
-            const pageContent = await page.locator('body').textContent() || ''
-            const hasValidation = 
+            const pageContent = (await page.locator('body').textContent()) || ''
+            const hasValidation =
               pageContent.toLowerCase().includes('required') ||
               pageContent.toLowerCase().includes('invalid') ||
               pageContent.toLowerCase().includes('error') ||
@@ -253,7 +266,9 @@ test.describe('Responsive Application Wizard', () => {
           await page.waitForTimeout(3000)
 
           // Look for progress indicator (step indicators, progress bar, step numbers)
-          const progressIndicators = page.locator('[role="progressbar"], [aria-label*="step" i], [class*="progress" i], [class*="step" i]')
+          const progressIndicators = page.locator(
+            '[role="progressbar"], [aria-label*="step" i], [class*="progress" i], [class*="step" i]'
+          )
           const progressCount = await progressIndicators.count()
 
           // Progress indicator may or may not be present, but if present, should be visible
@@ -263,7 +278,7 @@ test.describe('Responsive Application Wizard', () => {
           }
 
           // At minimum, verify page loaded
-          const pageContent = await page.locator('body').textContent() || ''
+          const pageContent = (await page.locator('body').textContent()) || ''
           expect(pageContent.length).toBeGreaterThan(0)
         }
       })
@@ -286,7 +301,7 @@ test.describe('Responsive Application Wizard', () => {
           await assertNoHorizontalScroll(page)
 
           // Verify content is visible
-          const pageContent = await page.locator('body').textContent() || ''
+          const pageContent = (await page.locator('body').textContent()) || ''
           expect(pageContent.length).toBeGreaterThan(0)
         } else {
           // Even with no jobs, verify page doesn't have horizontal scroll
@@ -302,7 +317,11 @@ test.describe('Responsive Application Wizard', () => {
       await signInAsAdmin(page)
     })
 
-    test('application wizard works consistently across all viewports', async ({ page }: { page: Page }) => {
+    test('application wizard works consistently across all viewports', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       for (const viewport of viewports) {
         await page.setViewportSize({ width: viewport.width, height: viewport.height })
         await page.goto('/dashboard/discover/jobs')
@@ -318,7 +337,9 @@ test.describe('Responsive Application Wizard', () => {
 
         if (linkCount > 0) {
           await jobLinks.first().click()
-          await page.waitForURL(/\/dashboard\/discover\/jobs\/.+/, { timeout: 10000 }).catch(() => {})
+          await page
+            .waitForURL(/\/dashboard\/discover\/jobs\/.+/, { timeout: 10000 })
+            .catch(() => {})
           await page.waitForLoadState('networkidle')
           await page.waitForTimeout(3000)
 
@@ -329,4 +350,3 @@ test.describe('Responsive Application Wizard', () => {
     })
   })
 })
-

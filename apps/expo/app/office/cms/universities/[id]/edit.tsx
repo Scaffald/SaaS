@@ -1,8 +1,8 @@
-import { YStack, Spinner } from '@app/ui'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
 import { OfficeUniversitiesForm } from '@app/core/features/office/office-universities-form'
+import { api } from '@app/core/utils/api'
+import { Spinner, YStack } from '@app/ui'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 export default function EditUniversityPage() {
   const router = useRouter()
@@ -41,7 +41,7 @@ export default function EditUniversityPage() {
     <OfficeUniversitiesForm
       selectedUniversity={data.university}
       onUniversitySaved={() => {
-        router.push(ROUTES.OFFICE_CMS_UNIVERSITIES.path)
+        router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.path)
       }}
       onCancel={() => {
         router.back()

@@ -1,10 +1,10 @@
-import { type ReactNode, useMemo, useState } from 'react'
-import { Button, Select, Spinner, Text, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown, RefreshCw } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { RefreshCw } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { type ReactNode, useMemo, useState } from 'react'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface TeamAnalyticsSummaryProps {
   teamId: string
@@ -63,7 +63,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
     },
     {
       keepPreviousData: true,
-    },
+    }
   )
 
   const metrics = (analyticsQuery.data?.metrics ?? []) as TeamDailyMetric[]
@@ -73,8 +73,8 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
     ? Math.round(
         metrics.reduce(
           (sum: number, day: TeamDailyMetric) => sum + Number(day.members?.active ?? 0),
-          0,
-        ) / metrics.length,
+          0
+        ) / metrics.length
       )
     : undefined
 
@@ -84,7 +84,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
 
   const totalApplicationsReviewed = metrics.reduce(
     (sum: number, day: TeamDailyMetric) => sum + Number(day.applications?.reviewed ?? 0),
-    0,
+    0
   )
 
   const reviewTimeSamples = metrics
@@ -93,7 +93,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
   const avgTimeToFirstReviewSeconds = reviewTimeSamples.length
     ? Math.round(
         reviewTimeSamples.reduce((sum: number, value: number) => sum + value, 0) /
-          reviewTimeSamples.length,
+          reviewTimeSamples.length
       )
     : null
 
@@ -115,39 +115,16 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
           Analytics summary
         </Text>
         <XStack gap="$2" items="center" flexWrap="wrap">
-          <Select
+          <ResponsiveSelect
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown} size="$2">
-              <Select.Value placeholder="Select range">
-                {RANGE_OPTIONS.find((option) => option.value === range)?.label ??
-                  'Select range'}
-              </Select.Value>
-            </Select.Trigger>
-            <Select.Content zIndex={1000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Time range</Select.Label>
-                  {RANGE_OPTIONS.map((option, index) => (
-                    <Select.Item
-                      key={option.value}
-                      value={String(option.value)}
-                      index={index}
-                    >
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="Select range"
+            size="$2"
+            options={RANGE_OPTIONS.map((option) => ({
+              value: String(option.value),
+              label: option.label,
+            }))}
+          />
           <Button
             size="$2"
             variant="outlined"
@@ -175,12 +152,8 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       ) : (
         <YStack gap="$3">
           <XStack gap="$3" flexWrap="wrap">
-            <StatTile label="Active members (avg)">
-              {formatNumber(membersActiveAvg)}
-            </StatTile>
-            <StatTile label="Active jobs (latest)">
-              {formatNumber(jobsActiveLatest)}
-            </StatTile>
+            <StatTile label="Active members (avg)">{formatNumber(membersActiveAvg)}</StatTile>
+            <StatTile label="Active jobs (latest)">{formatNumber(jobsActiveLatest)}</StatTile>
             <StatTile label="Applications reviewed">
               {formatNumber(totalApplicationsReviewed)}
             </StatTile>
@@ -228,5 +201,3 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
     </YStack>
   )
 }
-
-

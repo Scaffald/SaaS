@@ -1,19 +1,13 @@
-import { useState, useCallback } from 'react'
-import { YStack, XStack, Text, Input, Image, H4 } from 'tamagui'
-import { Plus, Edit3, ArrowUp, ArrowDown, Image as ImageIcon } from '@tamagui/lucide-icons'
-import {
-  UIButton,
-  ImageUpload,
-  RichTextEditor,
-  extractPlainText,
-  plainTextToTipTap,
-} from '@app/ui'
-import { ProfileFormPanel, ProfileResultsPanel, ProfileResultCard } from '../components'
 import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
-import type { ProfileWidgetProps } from './types'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import { extractPlainText, ImageUpload, plainTextToTipTap, RichTextEditor, UIButton } from '@app/ui'
+import { ArrowDown, ArrowUp, Edit3, Image as ImageIcon, Plus } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
 import type { JSONContent } from '@tiptap/core'
+import { useCallback, useState } from 'react'
+import { H4, Image, Input, Text, XStack, YStack } from 'tamagui'
+import { ProfileFormPanel, ProfileResultCard, ProfileResultsPanel } from '../components'
+import type { ProfileWidgetProps } from './types'
 
 type PortfolioDescription = JSONContent | string | null
 
@@ -95,7 +89,7 @@ const getErrorMessage = (error: unknown, fallback: string): string => {
 }
 
 const normalizePortfolioDescription = (
-  description: PortfolioDescription | unknown,
+  description: PortfolioDescription | unknown
 ): PortfolioDescription => {
   if (typeof description === 'string' || description === null) {
     return description
@@ -153,9 +147,7 @@ const parsePortfolioItems = (data: unknown): PortfolioItem[] => {
  * @param showEdit - Whether to show edit actions (always true for manager)
  * @param variant - Display variant (always 'full' for manager)
  */
-export function PortfolioManager({
-  userId,
-}: ProfileWidgetProps) {
+export function PortfolioManager({ userId }: ProfileWidgetProps) {
   const toast = useToastController()
   const [editingId, setEditingId] = useState<string | null>(null)
   const [isAdding, setIsAdding] = useState(false)
@@ -165,7 +157,7 @@ export function PortfolioManager({
   const utils = api.useUtils()
   const { data: rawPortfolioItems, isLoading } = api.portfolio.list.useQuery(
     userId ? { userId } : undefined,
-    { enabled: !!userId },
+    { enabled: !!userId }
   )
   const portfolioItems = parsePortfolioItems(rawPortfolioItems)
 
@@ -233,19 +225,16 @@ export function PortfolioManager({
   })
 
   // Handle edit
-  const handleEdit = useCallback(
-    (item: PortfolioItem) => {
-      setEditingId(item.id)
-      setFormData({
-        title: item.title,
-        description: normalizeDescriptionForEditor(item.description),
-        imageUrl: item.image_url || null,
-        filePath: item.file_path || null,
-      })
-      setIsAdding(false)
-    },
-    [],
-  )
+  const handleEdit = useCallback((item: PortfolioItem) => {
+    setEditingId(item.id)
+    setFormData({
+      title: item.title,
+      description: normalizeDescriptionForEditor(item.description),
+      imageUrl: item.image_url || null,
+      filePath: item.file_path || null,
+    })
+    setIsAdding(false)
+  }, [])
 
   // Handle cancel
   const handleCancel = useCallback(() => {
@@ -289,7 +278,7 @@ export function PortfolioManager({
         deleteMutation.mutate({ id })
       }
     },
-    [deleteMutation],
+    [deleteMutation]
   )
 
   // Handle reorder
@@ -302,7 +291,7 @@ export function PortfolioManager({
       }))
       reorderMutation.mutate({ items })
     },
-    [portfolioItems, reorderMutation],
+    [portfolioItems, reorderMutation]
   )
 
   const handleMoveDown = useCallback(
@@ -314,7 +303,7 @@ export function PortfolioManager({
       }))
       reorderMutation.mutate({ items })
     },
-    [portfolioItems, reorderMutation],
+    [portfolioItems, reorderMutation]
   )
 
   // Handle image upload via ImageUpload component
@@ -369,7 +358,7 @@ export function PortfolioManager({
         })
       }
     },
-    [editingId, toast, uploadImageMutation],
+    [editingId, toast, uploadImageMutation]
   )
 
   const isEditing = editingId !== null || isAdding
@@ -478,11 +467,7 @@ export function PortfolioManager({
             return (
               <ProfileResultCard
                 key={item.id}
-                onRemove={
-                  deleteMutation.isPending
-                    ? undefined
-                    : () => handleDelete(item.id)
-                }
+                onRemove={deleteMutation.isPending ? undefined : () => handleDelete(item.id)}
                 removeDisabled={deleteMutation.isPending}
                 actions={
                   <XStack gap="$2">
@@ -541,4 +526,3 @@ export function PortfolioManager({
     </>
   )
 }
-

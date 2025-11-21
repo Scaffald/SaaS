@@ -13,7 +13,7 @@
  * Web-based tests validate that the web version performs well as a baseline.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Test pages that should work well on mobile
@@ -60,13 +60,18 @@ test.describe('Native App Performance Testing', () => {
 
     // Verify that JavaScript bundle loads efficiently
     const jsLoadTime = await page.evaluate(() => {
-      const scripts = performance.getEntriesByType('resource').filter(
-        (entry) => (entry as PerformanceResourceTiming).initiatorType === 'script'
-      ) as PerformanceResourceTiming[]
+      const scripts = performance
+        .getEntriesByType('resource')
+        .filter(
+          (entry) => (entry as PerformanceResourceTiming).initiatorType === 'script'
+        ) as PerformanceResourceTiming[]
 
       if (scripts.length === 0) return 0
 
-      const totalTime = scripts.reduce((sum, script) => sum + (script.responseEnd - script.fetchStart), 0)
+      const totalTime = scripts.reduce(
+        (sum, script) => sum + (script.responseEnd - script.fetchStart),
+        0
+      )
       return Math.round(totalTime / scripts.length)
     })
 
@@ -99,13 +104,18 @@ test.describe('Native App Performance Testing', () => {
     const apiStart = Date.now()
 
     // Trigger an API call by interacting with the page
-    const responsePromise = page.waitForResponse((response) => {
-      return response.url().includes('/api/') || response.url().includes('/trpc/')
-    }, { timeout: 5000 }).catch(() => null)
+    const responsePromise = page
+      .waitForResponse(
+        (response) => {
+          return response.url().includes('/api/') || response.url().includes('/trpc/')
+        },
+        { timeout: 5000 }
+      )
+      .catch(() => null)
 
     // Click something that might trigger an API call
     const clickable = page.locator('button, a').first()
-    if (await clickable.count() > 0) {
+    if ((await clickable.count()) > 0) {
       await clickable.click().catch(() => {})
     }
 
@@ -130,4 +140,3 @@ test.describe('Native App Performance Testing', () => {
  * These tests provide a web-based proxy for native performance.
  * Full native testing should be done manually or via CI/CD on actual devices.
  */
-

@@ -1,9 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
-import type { ReactNode } from 'react'
-import { Animated, Easing } from 'react-native'
-import { LinearGradient } from '@tamagui/linear-gradient'
-import { Text, XStack, YStack } from 'tamagui'
-import { DashboardWidget, type BreadcrumbItem } from '@app/ui'
+import { ROUTES } from '@app/core/constants/routes'
 import {
   CertificationsWidget,
   EducationWidget,
@@ -12,9 +7,14 @@ import {
   ReviewsWidget,
   SkillsWidget,
 } from '@app/core/features/profile/widgets'
+import { useSessionContext } from '@app/core/utils/supabase/useSessionContext'
 import { api } from '@app/core/utils/api'
-import { useAuth } from '@app/core/provider/auth/useAuth'
-import { ROUTES } from '@app/core/constants/routes'
+import { type BreadcrumbItem, DashboardWidget } from '@app/ui'
+import { LinearGradient } from '@tamagui/linear-gradient'
+import type { ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
+import { Animated, Easing } from 'react-native'
+import { Text, XStack, YStack } from 'tamagui'
 
 const SHIMMER_WIDTH = 220
 
@@ -183,7 +183,7 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
 function createSkeletonLayout(): DiscoverWorkerProfileScreenResult {
   const skeletonBreadcrumbs: BreadcrumbItem[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
+    { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
     { label: 'Loading…', isActive: true },
   ]
 
@@ -198,7 +198,7 @@ export function DiscoverWorkerProfileScreen({
   userId,
 }: DiscoverWorkerProfileScreenOptions): DiscoverWorkerProfileScreenResult {
   const safeUserId = typeof userId === 'string' ? userId : null
-  const { session } = useAuth()
+  const { session } = useSessionContext()
   const currentUserId = session?.user?.id
 
   const generalInfoQuery = api.profile.widgets.getGeneralInfo.useQuery(
@@ -211,7 +211,7 @@ export function DiscoverWorkerProfileScreen({
 
   const baseBreadcrumbs: BreadcrumbItem[] = [
     { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
+    { label: 'Workers', href: ROUTES.DASHBOARD.DISCOVER.WORKERS.path },
   ]
 
   if (!safeUserId) {
@@ -299,4 +299,3 @@ export function DiscoverWorkerProfileScreen({
     breadcrumbItems,
   }
 }
-

@@ -11,15 +11,15 @@
  * Only testing LIST and EDIT functionality.
  */
 
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
 import {
   navigateToOfficeRoute,
   OFFICE_ROUTES,
-  waitForPageLoad,
   waitForNavigation,
+  waitForPageLoad,
   waitForRootContent,
 } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -31,7 +31,7 @@ test.describe('Office • Users Management', () => {
 
   test.describe('Users List Page', () => {
     test('navigates to users list and loads correctly', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
 
       // Verify URL
@@ -41,24 +41,24 @@ test.describe('Office • Users Management', () => {
       await waitForPageLoad(page)
 
       // Check for page title
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent).toMatch(/users/i)
     })
 
     test('displays users table with data', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
       // Check for table headers
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent).toMatch(/first name/i)
       expect(pageContent).toMatch(/last name/i)
       expect(pageContent).toMatch(/user id/i)
     })
 
     test('displays search input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -68,7 +68,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays edit button for users', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -83,7 +83,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays delete button for users', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -103,7 +103,7 @@ test.describe('Office • Users Management', () => {
 
   test.describe('Search Functionality', () => {
     test('search field accepts text input', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -115,12 +115,12 @@ test.describe('Office • Users Management', () => {
     })
 
     test('search filters users by first name', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
       // Get initial user count
-      const initialContent = await page.locator('#root').textContent() || ''
+      const initialContent = (await page.locator('#root').textContent()) || ''
 
       // Search for a specific term that won't match
       const searchInput = page.getByPlaceholder(/search users/i)
@@ -128,12 +128,12 @@ test.describe('Office • Users Management', () => {
       await page.waitForTimeout(500)
 
       // Should show "no users found" or similar
-      const afterSearchContent = await page.locator('#root').textContent() || ''
+      const afterSearchContent = (await page.locator('#root').textContent()) || ''
       expect(afterSearchContent).toMatch(/no users found|no results/i)
     })
 
     test('search filters users by last name', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -144,12 +144,12 @@ test.describe('Office • Users Management', () => {
       await page.waitForTimeout(500)
 
       // Should show no results
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent).toMatch(/no users found|no results/i)
     })
 
     test('clearing search shows all users', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -164,7 +164,7 @@ test.describe('Office • Users Management', () => {
       await page.waitForTimeout(300)
 
       // Should show users again (or empty state)
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     })
   })
@@ -175,7 +175,7 @@ test.describe('Office • Users Management', () => {
 
   test.describe('Edit User Flow', () => {
     test('navigates to edit page from list', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -197,7 +197,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays edit page with correct title', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -210,7 +210,7 @@ test.describe('Office • Users Management', () => {
         await waitForPageLoad(page)
 
         // Check for page heading
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/edit user profile/i)
       } else {
         test.skip()
@@ -218,7 +218,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays General Information section', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -230,7 +230,7 @@ test.describe('Office • Users Management', () => {
         await waitForNavigation(page)
         await waitForPageLoad(page)
 
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/general information/i)
       } else {
         test.skip()
@@ -238,7 +238,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays Employment Preferences section', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -250,7 +250,7 @@ test.describe('Office • Users Management', () => {
         await waitForNavigation(page)
         await waitForPageLoad(page)
 
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/employment preferences/i)
       } else {
         test.skip()
@@ -258,7 +258,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays profile form fields with labels', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -271,7 +271,7 @@ test.describe('Office • Users Management', () => {
         await waitForPageLoad(page)
 
         // Check for form field labels
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
 
         // General Information fields
         expect(pageContent).toMatch(/first name/i)
@@ -285,7 +285,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('allows entering first name', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -311,7 +311,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('allows entering last name', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -337,7 +337,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('back button returns to users list', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -369,7 +369,7 @@ test.describe('Office • Users Management', () => {
 
   test.describe('Form Validation', () => {
     test('marks first name as required field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -382,7 +382,7 @@ test.describe('Office • Users Management', () => {
         await waitForPageLoad(page)
 
         // Check for asterisk or required indicator
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/first name\s*\*/i)
       } else {
         test.skip()
@@ -390,7 +390,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('marks last name as required field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -403,7 +403,7 @@ test.describe('Office • Users Management', () => {
         await waitForPageLoad(page)
 
         // Check for asterisk or required indicator
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/last name\s*\*/i)
       } else {
         test.skip()
@@ -411,7 +411,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('validates first name max length (50 characters)', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -435,7 +435,7 @@ test.describe('Office • Users Management', () => {
         // Either it's truncated to 50 or an error is shown
         if (value.length > 50) {
           // Check for error message
-          const pageContent = await page.locator('#root').textContent() || ''
+          const pageContent = (await page.locator('#root').textContent()) || ''
           expect(pageContent).toMatch(/maximum|50|characters/i)
         } else {
           expect(value.length).toBeLessThanOrEqual(50)
@@ -452,12 +452,12 @@ test.describe('Office • Users Management', () => {
 
   test.describe('Pagination', () => {
     test('displays page size controls if many users exist', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
       // Check for pagination controls (may not exist if < 50 users)
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
 
       // Pagination controls may appear if there are many items
       // This test just verifies the page loads without errors
@@ -465,7 +465,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('default page size is 50 users per page', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -484,7 +484,7 @@ test.describe('Office • Users Management', () => {
 
   test.describe('Profile Sections Display', () => {
     test('displays Skills & Expertise section', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -496,7 +496,7 @@ test.describe('Office • Users Management', () => {
         await waitForNavigation(page)
         await waitForPageLoad(page)
 
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/skills.*expertise/i)
       } else {
         test.skip()
@@ -504,7 +504,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays Work Experience section', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -516,7 +516,7 @@ test.describe('Office • Users Management', () => {
         await waitForNavigation(page)
         await waitForPageLoad(page)
 
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/work experience/i)
       } else {
         test.skip()
@@ -524,7 +524,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays Education section', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -536,7 +536,7 @@ test.describe('Office • Users Management', () => {
         await waitForNavigation(page)
         await waitForPageLoad(page)
 
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/education/i)
       } else {
         test.skip()
@@ -544,7 +544,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays Certifications section', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -556,7 +556,7 @@ test.describe('Office • Users Management', () => {
         await waitForNavigation(page)
         await waitForPageLoad(page)
 
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/certifications/i)
       } else {
         test.skip()
@@ -564,7 +564,7 @@ test.describe('Office • Users Management', () => {
     })
 
     test('displays warning notes for multi-user sections', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 
@@ -577,7 +577,7 @@ test.describe('Office • Users Management', () => {
         await waitForPageLoad(page)
 
         // Check for warning notes about multi-user support
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toMatch(/note:|⚠️/i)
         expect(pageContent).toMatch(/multi-user|full.*support/i)
       } else {
@@ -592,7 +592,7 @@ test.describe('Office • Users Management', () => {
 
   test.describe('User Creation Not Available', () => {
     test('does not display "Create User" button', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.USERS)
       await waitForPageLoad(page)
 

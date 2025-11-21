@@ -99,8 +99,13 @@ vi.mock('tamagui', () => {
   }: {
     source?: { uri?: string }
   } & Record<string, unknown>) => (
-    // biome-ignore lint/a11y/useAltText: Test mock, decorative
-    <img src={source?.uri} data-testid="portfolio-image" alt="" aria-hidden="true" {...rest} />
+    <img
+      src={source?.uri}
+      data-testid="portfolio-image"
+      alt=""
+      aria-hidden="true"
+      {...rest}
+    />
   )
 
   const Card = ({
@@ -111,9 +116,9 @@ vi.mock('tamagui', () => {
     children?: ReactNode
     onPress?: () => void
   } & Record<string, unknown>) => (
-    <div data-testid="portfolio-card" onClick={onPress} {...rest}>
+    <button type="button" data-testid="portfolio-card" onClick={onPress} {...rest}>
       {children}
-    </div>
+    </button>
   )
 
   const H4 = ({
@@ -123,9 +128,7 @@ vi.mock('tamagui', () => {
     children?: ReactNode
   } & Record<string, unknown>) => <h4 {...rest}>{children}</h4>
 
-  const Spinner = (props: Record<string, unknown>) => (
-    <div data-testid="spinner" {...props} />
-  )
+  const Spinner = (props: Record<string, unknown>) => <div data-testid="spinner" {...props} />
 
   return {
     YStack: Stack,
@@ -215,7 +218,7 @@ describe('PortfolioGallery', () => {
       const images = screen.getAllByTestId('portfolio-image')
       expect(images[1]).toHaveAttribute(
         'src',
-        'https://storage.example.com/portfolio/portfolio/user-123/item-2.jpg',
+        'https://storage.example.com/portfolio/portfolio/user-123/item-2.jpg'
       )
     })
 
@@ -390,4 +393,3 @@ describe('PortfolioGallery', () => {
     })
   })
 })
-

@@ -1,16 +1,20 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
+  "root": true,
   "files": {
-    "ignore": [
-      "**/node_modules/**",
-      "**/build/**",
-      "**/.vscode/**",
-      "**/.tamagui/**",
-      "**/ios/**",
-      "**/android/**",
-      "**/*.test.ts",
-      "**/*.css",
-      "packages/fonts/types/index.d.ts"
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/build",
+      "!**/.vscode",
+      "!**/.tamagui",
+      "!**/ios",
+      "!**/android",
+      "!**/*.test.ts",
+      "!**/*.css",
+      "!**/packages/fonts/types/index.d.ts",
+      "!**/coverage",
+      "!**/.turbo"
     ]
   },
   "formatter": {
@@ -19,9 +23,7 @@
     "indentWidth": 2,
     "lineWidth": 100
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
@@ -67,9 +69,9 @@
   },
   "overrides": [
     {
-      "include": [
-        "packages/core/features/profile/profile-skills-left.tsx",
-        "packages/supabase/functions/_shared/client-types.ts"
+      "includes": [
+        "**/packages/core/features/profile/profile-skills-left.tsx",
+        "**/packages/supabase/functions/_shared/client-types.ts"
       ],
       "linter": {
         "rules": {
@@ -80,7 +82,10 @@
       }
     },
     {
-      "include": ["packages/supabase/functions/**/*.ts", "packages/supabase/functions/**/*.tsx"],
+      "includes": [
+        "**/packages/supabase/functions/**/*.ts",
+        "**/packages/supabase/functions/**/*.tsx"
+      ],
       "linter": {
         "rules": {
           "style": {

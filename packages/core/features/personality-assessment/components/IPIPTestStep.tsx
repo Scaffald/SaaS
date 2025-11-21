@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react'
-import { Button, Text, XStack, YStack, Progress } from 'tamagui'
 import {
-  getQuestions,
+  DOMAIN_NAMES,
+  getCurrentDomain,
+  getDomainProgress,
+  getQuestionIndexInDomain,
+  isLastQuestionInDomain,
+  QUESTIONS_PER_DOMAIN,
+} from '@app/core/features/ipip-assessment/utils/domainGrouping'
+import { useEffect, useState } from 'react'
+import { Button, Progress, Text, XStack, YStack } from 'tamagui'
+import {
   getChoices,
-  type IPIPQuestion,
+  getQuestions,
   type IPIPAnswer,
   type IPIPChoice,
   type IPIPDomain,
+  type IPIPQuestion,
 } from '../lib/ipip'
-import {
-  getCurrentDomain,
-  getQuestionIndexInDomain,
-  isLastQuestionInDomain,
-  getDomainProgress,
-  DOMAIN_NAMES,
-  QUESTIONS_PER_DOMAIN,
-} from '@app/core/features/ipip-assessment/utils/domainGrouping'
 
 export interface IPIPTestStepProps {
   initialAnswers: IPIPAnswer[]
@@ -104,7 +104,7 @@ export function IPIPTestStep({
     setAnswers(newAnswers)
 
     const nextIndex = currentIndex + 1
-      const _isDomainComplete = isLastQuestionInDomain(currentIndex) && currentDomain
+    const _isDomainComplete = isLastQuestionInDomain(currentIndex) && currentDomain
 
     // Check if domain is complete (24 questions answered for this domain)
     if (currentDomain && questionIndexInDomain === QUESTIONS_PER_DOMAIN - 1) {

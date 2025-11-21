@@ -1,19 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  Button,
-  Input,
-  Select,
-  Spinner,
-  Switch,
-  Text,
-  XStack,
-  YStack,
-} from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
 import { api } from '@app/core/utils/api'
+import { ResponsiveSelect } from '@app/ui'
 import { useDebounce } from '@app/core/utils/useDebounce'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Button, Input, Switch, Text, XStack, YStack } from 'tamagui'
 
 const WORKLOAD_STRATEGIES = [
   { value: 'manual', label: 'Manual assignment' },
@@ -79,15 +69,15 @@ export function TeamAutomationSettings({
         : 'manual',
       workloadSettings: {
         maxActiveAssignments: Number(
-          (workloadSettings as Record<string, unknown> | undefined)?.maxActiveAssignments ?? 10,
+          (workloadSettings as Record<string, unknown> | undefined)?.maxActiveAssignments ?? 10
         ),
         maxPendingAssignments: Number(
-          (workloadSettings as Record<string, unknown> | undefined)?.maxPendingAssignments ?? 15,
+          (workloadSettings as Record<string, unknown> | undefined)?.maxPendingAssignments ?? 15
         ),
       },
       analyticsRefreshIntervalMinutes: Math.min(
         Math.max(analyticsRefreshIntervalMinutes || 60, 5),
-        1440,
+        1440
       ),
     }),
     [
@@ -97,7 +87,7 @@ export function TeamAutomationSettings({
       workloadStrategy,
       workloadSettings,
       analyticsRefreshIntervalMinutes,
-    ],
+    ]
   )
 
   const [formState, setFormState] = useState<FormState>(initialState)
@@ -151,7 +141,10 @@ export function TeamAutomationSettings({
     })
   }, [debouncedFormState, teamId, canEdit, updateMutation])
 
-  const handleWorkloadSettingChange = (key: 'maxActiveAssignments' | 'maxPendingAssignments', value: number) => {
+  const handleWorkloadSettingChange = (
+    key: 'maxActiveAssignments' | 'maxPendingAssignments',
+    value: number
+  ) => {
     setFormState((prev) => ({
       ...prev,
       workloadSettings: {
@@ -164,7 +157,7 @@ export function TeamAutomationSettings({
   const handleRangeInput = (
     updater: (value: number) => void,
     value: string,
-    { min, max, fallback }: { min: number; max: number; fallback: number },
+    { min, max, fallback }: { min: number; max: number; fallback: number }
   ) => {
     const parsed = Number.parseInt(value, 10)
     if (Number.isNaN(parsed)) {
@@ -192,9 +185,7 @@ export function TeamAutomationSettings({
           label="Allow members to join without an invite"
           description="Let anyone with the link join the team without approval."
           value={formState.allowSelfJoin}
-          onValueChange={(next) =>
-            setFormState((prev) => ({ ...prev, allowSelfJoin: next }))
-          }
+          onValueChange={(next) => setFormState((prev) => ({ ...prev, allowSelfJoin: next }))}
           disabled={!canEdit || updateMutation.isPending}
         />
 
@@ -202,9 +193,7 @@ export function TeamAutomationSettings({
           label="Automatically assign incoming jobs"
           description="When enabled, new jobs are automatically assigned to this team."
           value={formState.autoAssignJobs}
-          onValueChange={(next) =>
-            setFormState((prev) => ({ ...prev, autoAssignJobs: next }))
-          }
+          onValueChange={(next) => setFormState((prev) => ({ ...prev, autoAssignJobs: next }))}
           disabled={!canEdit || updateMutation.isPending}
         />
 
@@ -224,7 +213,7 @@ export function TeamAutomationSettings({
                     invitationExpirationDays: value,
                   })),
                 text,
-                { min: 1, max: 90, fallback: DEFAULT_FORM_STATE.invitationExpirationDays },
+                { min: 1, max: 90, fallback: DEFAULT_FORM_STATE.invitationExpirationDays }
               )
             }
           />
@@ -237,34 +226,18 @@ export function TeamAutomationSettings({
           <Text fontSize="$4" fontWeight="600">
             Workload strategy
           </Text>
-          <Select
+          <ResponsiveSelect
             value={formState.workloadStrategy}
             onValueChange={(value: string) =>
               setFormState((prev) => ({ ...prev, workloadStrategy: value }))
             }
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown} disabled={!canEdit || updateMutation.isPending}>
-              <Select.Value placeholder="Choose workload strategy" />
-            </Select.Trigger>
-            <Select.Content zIndex={1000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Strategies</Select.Label>
-                  {WORKLOAD_STRATEGIES.map((option, index) => (
-                    <Select.Item key={option.value} value={option.value} index={index}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="Choose workload strategy"
+            disabled={!canEdit || updateMutation.isPending}
+            options={WORKLOAD_STRATEGIES.map((option) => ({
+              value: option.value,
+              label: option.label,
+            }))}
+          />
           <Text fontSize="$3" color="$color10">
             Choose how work should be distributed when new applications arrive.
           </Text>
@@ -285,7 +258,7 @@ export function TeamAutomationSettings({
                   handleRangeInput(
                     (value) => handleWorkloadSettingChange('maxActiveAssignments', value),
                     text,
-                    { min: 1, max: 50, fallback: 10 },
+                    { min: 1, max: 50, fallback: 10 }
                   )
                 }
               />
@@ -302,7 +275,7 @@ export function TeamAutomationSettings({
                   handleRangeInput(
                     (value) => handleWorkloadSettingChange('maxPendingAssignments', value),
                     text,
-                    { min: 1, max: 100, fallback: 15 },
+                    { min: 1, max: 100, fallback: 15 }
                   )
                 }
               />
@@ -329,7 +302,7 @@ export function TeamAutomationSettings({
                     analyticsRefreshIntervalMinutes: value,
                   })),
                 text,
-                { min: 5, max: 1440, fallback: DEFAULT_FORM_STATE.analyticsRefreshIntervalMinutes },
+                { min: 5, max: 1440, fallback: DEFAULT_FORM_STATE.analyticsRefreshIntervalMinutes }
               )
             }
           />
@@ -388,5 +361,3 @@ function SettingsToggle({
     </XStack>
   )
 }
-
-

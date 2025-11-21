@@ -41,7 +41,15 @@ vi.mock('@app/ui', () => {
   return {
     MonthYearPicker,
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-    UIButton: ({ children, onPress, disabled }: { children: React.ReactNode; onPress?: () => void; disabled?: boolean }) => (
+    UIButton: ({
+      children,
+      onPress,
+      disabled,
+    }: {
+      children: React.ReactNode
+      onPress?: () => void
+      disabled?: boolean
+    }) => (
       <button type="button" onClick={onPress} disabled={disabled}>
         {children}
       </button>
@@ -112,8 +120,12 @@ describe('Profile Experience Improvements', () => {
     }
 
     const { container } = render(<ExperienceForm />)
-    const endDatePicker = container.querySelector('[data-testid="end-date-picker"]') as HTMLInputElement
-    const checkbox = container.querySelector('[data-testid="currently-working"]') as HTMLInputElement
+    const endDatePicker = container.querySelector(
+      '[data-testid="end-date-picker"]'
+    ) as HTMLInputElement
+    const checkbox = container.querySelector(
+      '[data-testid="currently-working"]'
+    ) as HTMLInputElement
 
     // Initially not disabled
     expect(endDatePicker.disabled).toBe(false)
@@ -179,17 +191,20 @@ describe('Profile Experience Improvements', () => {
       () => {
         expect(screen.getByTestId('date-error')).toBeInTheDocument()
       },
-      { timeout: 1000 },
+      { timeout: 1000 }
     )
   })
 
   it('should calculate total years of experience from entries', () => {
-    const calculateTotalExperience = (entries: Array<{ start_date: string; end_date: string | null; is_current: boolean }>) => {
+    const calculateTotalExperience = (
+      entries: Array<{ start_date: string; end_date: string | null; is_current: boolean }>
+    ) => {
       let totalMonths = 0
       for (const entry of entries) {
         const start = new Date(entry.start_date)
         const end = entry.is_current ? new Date() : new Date(entry.end_date || Date.now())
-        const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())
+        const months =
+          (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())
         totalMonths += months
       }
       const years = Math.floor(totalMonths / 12)
@@ -209,4 +224,3 @@ describe('Profile Experience Improvements', () => {
     expect(typeof total.months).toBe('number')
   })
 })
-

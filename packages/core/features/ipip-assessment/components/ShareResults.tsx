@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react'
-import { Button, Text, XStack, YStack, Switch, Separator } from 'tamagui'
-import { Copy, Share2, X, Calendar, Lock } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
 import { copyToClipboard } from '@app/core/utils/clipboard'
+import { Calendar, Copy, Lock, Share2, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useMemo, useState } from 'react'
+import { Button, Separator, Switch, Text, XStack, YStack } from 'tamagui'
 
 export interface ShareResultsProps {
   isComplete: boolean
@@ -24,10 +24,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
   const generateShareToken = api.personalityAssessment.generateShareToken.useMutation({
     onSuccess: (data: { token: string }) => {
       // Build share URL
-      const baseUrl =
-        typeof window !== 'undefined' && window.location
-          ? window.location.origin
-          : ''
+      const baseUrl = typeof window !== 'undefined' && window.location ? window.location.origin : ''
       const shareUrl = `${baseUrl}/dashboard/assessments/ipip/shared/${data.token}`
       setShareLink(shareUrl)
       toast.show('Share link created!', {
@@ -109,7 +106,9 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
 
     if (!isOnCooldown) return null
 
-    const daysRemaining = Math.ceil((availableDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    const daysRemaining = Math.ceil(
+      (availableDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    )
     const hoursRemaining = Math.ceil((availableDate.getTime() - now.getTime()) / (1000 * 60 * 60))
 
     return {
@@ -154,8 +153,8 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           </Text>
         </XStack>
         <Text fontSize="$3" color="$color11">
-          Create a shareable link to your personality assessment results. You control what's
-          visible and can revoke access at any time.
+          Create a shareable link to your personality assessment results. You control what's visible
+          and can revoke access at any time.
         </Text>
       </YStack>
 
@@ -338,4 +337,3 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     </YStack>
   )
 }
-

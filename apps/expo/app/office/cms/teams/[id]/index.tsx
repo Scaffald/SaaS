@@ -1,6 +1,14 @@
-import type { ComponentType } from 'react'
-import { useMemo, useState } from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import {
+  TeamInvitationsList,
+  TeamInviteModal,
+  TeamJobsList,
+  TeamMembersList,
+  TeamOverviewCard,
+} from '@app/core/features/office/teams'
+import { api } from '@app/core/utils/api'
+import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
+import type { AppRouter } from '@app/supabase/client-types'
 import {
   ArrowLeft,
   BarChart3,
@@ -10,19 +18,10 @@ import {
   UserPlus,
 } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import type { ComponentType } from 'react'
+import { useMemo, useState } from 'react'
 import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
-
-import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
-import {
-  TeamInviteModal,
-  TeamInvitationsList,
-  TeamJobsList,
-  TeamMembersList,
-  TeamOverviewCard,
-} from '@app/core/features/office/teams'
-import { api } from '@app/core/utils/api'
-import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
-import type { AppRouter } from '@app/supabase/client-types'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -107,7 +106,7 @@ export default function OfficeTeamDetailPage() {
         title="Team not specified"
         description="Provide a team identifier to view details."
         actionLabel="Back to teams"
-        onAction={() => router.replace(ROUTES.OFFICE_CMS_TEAMS.path)}
+        onAction={() => router.replace(ROUTES.OFFICE.CMS.TEAMS.path)}
       />
     )
   }
@@ -182,7 +181,7 @@ export default function OfficeTeamDetailPage() {
           icon={Briefcase}
           onPress={() =>
             router.push({
-              pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+              pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
               params: { teamId: team.id },
             })
           }
@@ -203,7 +202,7 @@ export default function OfficeTeamDetailPage() {
               size="$2"
               variant="outlined"
               icon={ArrowLeft}
-              onPress={() => router.push(ROUTES.OFFICE_CMS_TEAMS.path)}
+              onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
             >
               Back to teams
             </Button>
@@ -247,7 +246,7 @@ export default function OfficeTeamDetailPage() {
               }}
               onCreateJob={() =>
                 router.push({
-                  pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+                  pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                   params: { teamId: team.id },
                 })
               }

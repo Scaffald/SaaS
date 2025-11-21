@@ -1,11 +1,11 @@
-import { memo, forwardRef } from 'react'
+import { Building, MapPin, Users } from '@tamagui/lucide-icons'
+import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Text, XStack } from 'tamagui'
-import { Building, MapPin, Users } from '@tamagui/lucide-icons'
-import { SelectableCard } from './SelectableCard'
+import { CardActions } from './CardActions'
 import { CardHeader } from './CardHeader'
 import { CardMetadata } from './CardMetadata'
-import { CardActions } from './CardActions'
+import { SelectableCard } from './SelectableCard'
 import type { MetadataItem } from './types'
 
 /**

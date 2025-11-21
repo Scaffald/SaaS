@@ -1,25 +1,24 @@
-import type { ReactNode } from 'react'
-import { useState, useRef } from 'react'
-import { Button, Input, ScrollView, Text, View, XGroup, isWeb } from 'tamagui'
+import { RowActionOverlay } from '@app/core/features/office/components/RowActionOverlay'
 import {
   ChevronDown,
-  ChevronUp,
-  ChevronsUpDown,
   ChevronFirst,
   ChevronLast,
   ChevronLeft,
   ChevronRight,
+  ChevronsUpDown,
+  ChevronUp,
 } from '@tamagui/lucide-icons'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
   flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
 } from '@tanstack/react-table'
+import { useRef, useState } from 'react'
+import { Button, Input, isWeb, ScrollView, Text, View, XGroup } from 'tamagui'
 import { Table } from './TableParts'
-import { RowActionOverlay } from '@app/core/features/office/components/RowActionOverlay'
 
 const HEADER_ROW_HEIGHT = 48
 

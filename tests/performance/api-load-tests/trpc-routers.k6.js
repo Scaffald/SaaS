@@ -11,8 +11,8 @@
  * Note: Update the baseURL to match your environment
  */
 
-import http from 'k6/http'
 import { check, sleep } from 'k6'
+import http from 'k6/http'
 import { Rate } from 'k6/metrics'
 
 // Custom metrics
@@ -133,7 +133,6 @@ export function setup() {
 /**
  * Teardown function (runs once after all VUs)
  */
-export function teardown(data) {
+export function teardown() {
   console.log('Load test complete!')
 }
-

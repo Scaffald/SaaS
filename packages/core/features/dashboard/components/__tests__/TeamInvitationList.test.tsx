@@ -59,12 +59,7 @@ describe('TeamInvitationList', () => {
     const user = userEvent.setup()
     const onRespond = vi.fn()
 
-    render(
-      <TeamInvitationList
-        invitations={[invitation]}
-        onRespond={onRespond}
-      />,
-    )
+    render(<TeamInvitationList invitations={[invitation]} onRespond={onRespond} />)
 
     expect(screen.getByText(/Sent/i)).toBeVisible()
 
@@ -83,12 +78,7 @@ describe('TeamInvitationList', () => {
       acceptedAt: new Date().toISOString(),
     }
 
-    render(
-      <TeamInvitationList
-        invitations={[acceptedInvitation]}
-        onRespond={vi.fn()}
-      />,
-    )
+    render(<TeamInvitationList invitations={[acceptedInvitation]} onRespond={vi.fn()} />)
 
     expect(screen.getByText(/accepted/i)).toBeInTheDocument()
   })
@@ -101,12 +91,7 @@ describe('TeamInvitationList', () => {
       expiresAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
     }
 
-    render(
-      <TeamInvitationList
-        invitations={[expiredInvitation]}
-        onRespond={vi.fn()}
-      />,
-    )
+    render(<TeamInvitationList invitations={[expiredInvitation]} onRespond={vi.fn()} />)
 
     expect(screen.getByText(/expired/i)).toBeInTheDocument()
   })
@@ -117,5 +102,3 @@ describe('TeamInvitationList', () => {
     expect(screen.getByText('No pending invitations')).toBeInTheDocument()
   })
 })
-
-

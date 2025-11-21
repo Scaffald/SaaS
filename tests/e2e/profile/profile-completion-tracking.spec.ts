@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test'
 import * as fs from 'node:fs'
+import { expect, test } from '@playwright/test'
 
 const userAuthFile = 'tests/.auth/user.json'
 
@@ -38,19 +38,39 @@ test.describe('Profile Completion Tracking - E2E', () => {
       fulfillJson(route, {
         completionPercentage,
         sectionProgress: [
-          { id: 'general', title: 'General', completed: completedSections.includes('general'), weight: 20, missingFields: [] },
-          { id: 'skills', title: 'Skills', completed: completedSections.includes('skills'), weight: 20, missingFields: [] },
-          { id: 'experience', title: 'Experience', completed: completedSections.includes('experience'), weight: 20, missingFields: [] },
+          {
+            id: 'general',
+            title: 'General',
+            completed: completedSections.includes('general'),
+            weight: 20,
+            missingFields: [],
+          },
+          {
+            id: 'skills',
+            title: 'Skills',
+            completed: completedSections.includes('skills'),
+            weight: 20,
+            missingFields: [],
+          },
+          {
+            id: 'experience',
+            title: 'Experience',
+            completed: completedSections.includes('experience'),
+            weight: 20,
+            missingFields: [],
+          },
         ],
         milestoneBadges: [],
-        incompleteSections: ['general', 'skills', 'experience'].filter((s) => !completedSections.includes(s)),
+        incompleteSections: ['general', 'skills', 'experience'].filter(
+          (s) => !completedSections.includes(s)
+        ),
         nudgeStatus: {
           shouldPrompt: completionPercentage < 50,
           lastDismissedAt: null,
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -63,7 +83,10 @@ test.describe('Profile Completion Tracking - E2E', () => {
     await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
-    const percentageText = await page.getByText(/20%|completion/i).isVisible().catch(() => false)
+    const percentageText = await page
+      .getByText(/20%|completion/i)
+      .isVisible()
+      .catch(() => false)
     expect(percentageText || true).toBeTruthy()
   })
 
@@ -91,15 +114,21 @@ test.describe('Profile Completion Tracking - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(2000)
 
     // Check for milestone badges
-    const milestone25 = await page.getByText(/25% complete|25% milestone/i).isVisible().catch(() => false)
-    const milestone50 = await page.getByText(/50% complete|50% milestone/i).isVisible().catch(() => false)
+    const milestone25 = await page
+      .getByText(/25% complete|25% milestone/i)
+      .isVisible()
+      .catch(() => false)
+    const milestone50 = await page
+      .getByText(/50% complete|50% milestone/i)
+      .isVisible()
+      .catch(() => false)
 
     // At least one milestone should be visible
     expect(milestone25 || milestone50 || true).toBeTruthy()
@@ -113,8 +142,20 @@ test.describe('Profile Completion Tracking - E2E', () => {
         completionPercentage: 42,
         sectionProgress: [
           { id: 'general', title: 'General Info', completed: true, weight: 20, missingFields: [] },
-          { id: 'skills', title: 'Skills', completed: false, weight: 20, missingFields: ['skill1'] },
-          { id: 'experience', title: 'Experience', completed: false, weight: 20, missingFields: ['jobTitle'] },
+          {
+            id: 'skills',
+            title: 'Skills',
+            completed: false,
+            weight: 20,
+            missingFields: ['skill1'],
+          },
+          {
+            id: 'experience',
+            title: 'Experience',
+            completed: false,
+            weight: 20,
+            missingFields: ['jobTitle'],
+          },
         ],
         milestoneBadges: [
           { id: '25', threshold: 25, achieved: true, reachedAt: new Date().toISOString() },
@@ -126,7 +167,7 @@ test.describe('Profile Completion Tracking - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -149,8 +190,20 @@ test.describe('Profile Completion Tracking - E2E', () => {
         completionPercentage: 20,
         sectionProgress: [
           { id: 'general', title: 'General Info', completed: true, weight: 20, missingFields: [] },
-          { id: 'skills', title: 'Skills', completed: false, weight: 20, missingFields: ['skill1', 'skill2'] },
-          { id: 'experience', title: 'Experience', completed: false, weight: 20, missingFields: ['jobTitle'] },
+          {
+            id: 'skills',
+            title: 'Skills',
+            completed: false,
+            weight: 20,
+            missingFields: ['skill1', 'skill2'],
+          },
+          {
+            id: 'experience',
+            title: 'Experience',
+            completed: false,
+            weight: 20,
+            missingFields: ['jobTitle'],
+          },
         ],
         milestoneBadges: [],
         incompleteSections: ['skills', 'experience'],
@@ -160,15 +213,21 @@ test.describe('Profile Completion Tracking - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(2000)
 
     // Check for incomplete sections in UI
-    const skillsVisible = await page.getByText(/skills/i).isVisible().catch(() => false)
-    const experienceVisible = await page.getByText(/experience/i).isVisible().catch(() => false)
+    const skillsVisible = await page
+      .getByText(/skills/i)
+      .isVisible()
+      .catch(() => false)
+    const experienceVisible = await page
+      .getByText(/experience/i)
+      .isVisible()
+      .catch(() => false)
 
     // At least one incomplete section should be mentioned
     expect(skillsVisible || experienceVisible || true).toBeTruthy()
@@ -192,7 +251,7 @@ test.describe('Profile Completion Tracking - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.route(/\/trpc\/profile\.getPersonalizedBenefits/, (route) =>
@@ -211,7 +270,7 @@ test.describe('Profile Completion Tracking - E2E', () => {
         incompleteSections: ['skills'],
         userTypes: ['worker'],
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -242,7 +301,7 @@ test.describe('Profile Completion Tracking - E2E', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -257,4 +316,3 @@ test.describe('Profile Completion Tracking - E2E', () => {
     expect(nudgeVisible || true).toBeTruthy()
   })
 })
-

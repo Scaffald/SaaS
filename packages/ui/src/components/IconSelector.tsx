@@ -1,7 +1,7 @@
-import { useState, useMemo, type ComponentType } from 'react'
-import { Input, YStack, Text, ScrollView, XStack, Button } from 'tamagui'
-import { Search, X, ChevronDown } from '@tamagui/lucide-icons'
 import * as LucideIcons from '@tamagui/lucide-icons'
+import { ChevronDown, Search, X } from '@tamagui/lucide-icons'
+import { type ComponentType, useMemo, useState } from 'react'
+import { Button, Input, ScrollView, Text, XStack, YStack } from 'tamagui'
 
 // Icon names that can be used (subset of Lucide icons)
 const ICON_NAMES = [
@@ -137,7 +137,7 @@ export function IconSelector({ value, onChange, disabled }: IconSelectorProps) {
             <XStack flexWrap="wrap" gap="$1" p="$2">
               {filteredIcons.map((iconName) => {
                 const IconComponent = (
-                  LucideIcons as Record<string, React.ComponentType<{ size?: number }>>
+                  LucideIcons as Record<string, ComponentType<{ size?: number }>>
                 )[iconName]
                 const isSelected = iconName === value
 

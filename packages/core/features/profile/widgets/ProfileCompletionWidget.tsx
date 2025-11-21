@@ -1,10 +1,10 @@
-import { YStack, XStack, Text, Button, Progress, H4 } from 'tamagui'
-import { DashboardWidget } from '@app/ui'
 import { useProfileCompletion } from '@app/core/features/dashboard/completion/useProfileCompletion'
-import { useRouter } from 'expo-router'
-import { CheckCircle, Circle, ChevronRight } from '@tamagui/lucide-icons'
+import { DashboardWidget } from '@app/ui'
+import { CheckCircle, ChevronRight, Circle } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
+import { Button, H4, Progress, Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -83,24 +83,24 @@ export function ProfileCompletionWidget({
               </Text>
             )}
           </XStack>
-          <Progress
-            value={completionData.completionPercentage}
-            max={100}
-            bg="$color4"
-            size="$1"
-          >
+          <Progress value={completionData.completionPercentage} max={100} bg="$color4" size="$1">
             <Progress.Indicator
               animation="bouncy"
-              bg={
-                completionData.completionPercentage === 100 ? '$green10' : '$blue10'
-              }
+              bg={completionData.completionPercentage === 100 ? '$green10' : '$blue10'}
             />
           </Progress>
         </YStack>
 
         {/* Next Steps */}
         {variant === 'full' && nextIncompleteItem && (
-          <YStack gap="$3" p="$3" bg="$color3" rounded="$3" borderWidth={1} borderColor="$borderColor">
+          <YStack
+            gap="$3"
+            p="$3"
+            bg="$color3"
+            rounded="$3"
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
             <Text fontSize="$3" fontWeight="600" color="$color12">
               Next Step
             </Text>
@@ -199,4 +199,3 @@ export function ProfileCompletionWidget({
     </DashboardWidget>
   )
 }
-

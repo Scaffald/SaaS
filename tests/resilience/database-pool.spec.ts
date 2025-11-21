@@ -7,7 +7,7 @@
  * Task 14: Configure Database Connection Pool and Resilience
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Database Connection Pool Testing', () => {
   test('connection pool limits enforced', async ({ page }) => {
@@ -16,9 +16,7 @@ test.describe('Database Connection Pool Testing', () => {
 
     // Make concurrent requests
     const promises = Array.from({ length: 10 }, () =>
-      page.evaluate(() =>
-        fetch('/api/trpc/dashboard', { method: 'GET' }).catch(() => null)
-      )
+      page.evaluate(() => fetch('/api/trpc/dashboard', { method: 'GET' }).catch(() => null))
     )
 
     const responses = await Promise.all(promises)
@@ -38,7 +36,7 @@ test.describe('Database Connection Pool Testing', () => {
     await page.waitForTimeout(1000)
 
     // Page should load successfully (connections recovered)
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Page should load after connection recovery').toBeGreaterThan(0)
   })
 })
@@ -54,4 +52,3 @@ test.describe('Database Connection Pool Testing', () => {
  * These tests validate API endpoint behavior which reflects database pool behavior.
  * Full database testing should be done via database monitoring tools.
  */
-

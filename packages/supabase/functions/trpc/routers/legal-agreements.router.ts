@@ -1,72 +1,72 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
 
-import type { Context } from "../context.ts";
-import { officeProcedure, protectedProcedure, t } from "../middleware.ts";
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
   if (!ctx.user?.id) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
 
   // Office users have access to all organizations
   const { data: roleCheck } = await ctx.supabaseAdmin
-    .schema("core")
-    .from("role_assignments")
-    .select("role")
-    .eq("user_id", ctx.user.id)
-    .eq("role", "office")
-    .maybeSingle();
+    .schema('core')
+    .from('role_assignments')
+    .select('role')
+    .eq('user_id', ctx.user.id)
+    .eq('role', 'office')
+    .maybeSingle()
 
   if (roleCheck) {
-    return;
+    return
   }
 
   const { data: organization, error: orgError } = await ctx.supabaseAdmin
-    .schema("core")
-    .from("organizations")
-    .select("id, owner_user_id")
-    .eq("id", organizationId)
-    .maybeSingle();
+    .schema('core')
+    .from('organizations')
+    .select('id, owner_user_id')
+    .eq('id', organizationId)
+    .maybeSingle()
 
   if (orgError) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
+      code: 'INTERNAL_SERVER_ERROR',
       message: `Failed to load organization: ${orgError.message}`,
-    });
+    })
   }
 
   if (!organization) {
     throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "Organization not found",
-    });
+      code: 'NOT_FOUND',
+      message: 'Organization not found',
+    })
   }
 
   if (organization.owner_user_id === ctx.user.id) {
-    return;
+    return
   }
 
   const { data: assignment, error: assignmentError } = await ctx.supabaseAdmin
-    .schema("core")
-    .from("role_assignments")
-    .select("scope_org_id")
-    .eq("user_id", ctx.user.id)
-    .eq("scope_org_id", organizationId)
-    .maybeSingle();
+    .schema('core')
+    .from('role_assignments')
+    .select('scope_org_id')
+    .eq('user_id', ctx.user.id)
+    .eq('scope_org_id', organizationId)
+    .maybeSingle()
 
   if (assignmentError) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
+      code: 'INTERNAL_SERVER_ERROR',
       message: `Failed to verify organization access: ${assignmentError.message}`,
-    });
+    })
   }
 
   if (!assignment) {
     throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "You do not have access to this organization",
-    });
+      code: 'FORBIDDEN',
+      message: 'You do not have access to this organization',
+    })
   }
 }
 
@@ -84,49 +84,50 @@ export const legalAgreementsRouter = t.router({
         agreementText: z.string().optional(),
         termsAccepted: z.boolean().default(true),
         antiCircumventionAccepted: z.boolean().default(true),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      await ensureOrganizationAccess(ctx, input.organizationId);
+      await ensureOrganizationAccess(ctx, input.organizationId)
 
       // Get default agreement text if not provided
       const { data: agreementTextData, error: textError } = await ctx.supabaseAdmin
-        .schema("core")
-        .rpc("get_default_hire_agreement_text");
+        .schema('core')
+        .rpc('get_default_hire_agreement_text')
 
       if (textError) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to get agreement text: ${textError.message}`,
-        });
+        })
       }
 
-      const agreementText = input.agreementText ?? agreementTextData ?? "PLACEHOLDER: Legal Agreement Text";
+      const agreementText =
+        input.agreementText ?? agreementTextData ?? 'PLACEHOLDER: Legal Agreement Text'
 
       const { data: agreement, error } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("hire_agreements")
+        .schema('core')
+        .from('hire_agreements')
         .insert({
           organization_id: input.organizationId,
           worker_user_id: input.workerUserId,
           application_id: input.applicationId ?? null,
           success_fee_id: input.successFeeId ?? null,
           agreement_text: agreementText,
-          agreement_version: "1.0",
+          agreement_version: '1.0',
           agreed_by_user_id: ctx.user?.id ?? null,
           terms_accepted: input.termsAccepted,
           anti_circumvention_accepted: input.antiCircumventionAccepted,
         })
-        .select("*")
-        .maybeSingle();
+        .select('*')
+        .maybeSingle()
 
       if (error || !agreement) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: error
             ? `Failed to create hire agreement: ${error.message}`
-            : "Failed to create hire agreement",
-        });
+            : 'Failed to create hire agreement',
+        })
       }
 
       return {
@@ -139,7 +140,7 @@ export const legalAgreementsRouter = t.router({
         status: agreement.status,
         agreedAt: agreement.agreed_at,
         createdAt: agreement.created_at,
-      };
+      }
     }),
 
   /**
@@ -153,56 +154,56 @@ export const legalAgreementsRouter = t.router({
           workerUserId: z.string().uuid().optional(),
           applicationId: z.string().uuid().optional(),
           successFeeId: z.string().uuid().optional(),
-          status: z.enum(["active", "violated", "voided", "disputed"]).optional(),
+          status: z.enum(['active', 'violated', 'voided', 'disputed']).optional(),
           limit: z.number().int().positive().max(100).default(50),
           offset: z.number().int().nonnegative().default(0),
         })
-        .optional(),
+        .optional()
     )
     .query(async ({ ctx, input }) => {
-      const { supabaseAdmin } = ctx;
+      const { supabaseAdmin } = ctx
 
       let query = supabaseAdmin
-        .schema("core")
-        .from("hire_agreements")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1);
+        .schema('core')
+        .from('hire_agreements')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1)
 
       if (input?.organizationId) {
-        await ensureOrganizationAccess(ctx, input.organizationId);
-        query = query.eq("organization_id", input.organizationId);
+        await ensureOrganizationAccess(ctx, input.organizationId)
+        query = query.eq('organization_id', input.organizationId)
       }
 
       if (input?.workerUserId) {
         if (input.workerUserId !== ctx.user?.id) {
           throw new TRPCError({
-            code: "FORBIDDEN",
-            message: "You can only view your own agreements",
-          });
+            code: 'FORBIDDEN',
+            message: 'You can only view your own agreements',
+          })
         }
-        query = query.eq("worker_user_id", input.workerUserId);
+        query = query.eq('worker_user_id', input.workerUserId)
       }
 
       if (input?.applicationId) {
-        query = query.eq("application_id", input.applicationId);
+        query = query.eq('application_id', input.applicationId)
       }
 
       if (input?.successFeeId) {
-        query = query.eq("success_fee_id", input.successFeeId);
+        query = query.eq('success_fee_id', input.successFeeId)
       }
 
       if (input?.status) {
-        query = query.eq("status", input.status);
+        query = query.eq('status', input.status)
       }
 
-      const { data, error, count } = await query;
+      const { data, error, count } = await query
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to load hire agreements: ${error.message}`,
-        });
+        })
       }
 
       return {
@@ -224,7 +225,7 @@ export const legalAgreementsRouter = t.router({
           updatedAt: row.updated_at,
         })),
         totalCount: count ?? 0,
-      };
+      }
     }),
 
   /**
@@ -237,20 +238,20 @@ export const legalAgreementsRouter = t.router({
         workerUserId: z.string().uuid().optional(),
         hireAgreementId: z.string().uuid().optional(),
         violationType: z.enum([
-          "off_platform_hire",
-          "off_platform_communication",
-          "fee_avoidance",
-          "other",
+          'off_platform_hire',
+          'off_platform_communication',
+          'fee_avoidance',
+          'other',
         ]),
         description: z.string().min(10),
         evidenceUrls: z.array(z.string().url()).optional(),
         evidenceNotes: z.string().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       const { data: report, error } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("circumvention_reports")
+        .schema('core')
+        .from('circumvention_reports')
         .insert({
           reported_by_user_id: ctx.user?.id ?? null,
           organization_id: input.organizationId ?? null,
@@ -260,38 +261,38 @@ export const legalAgreementsRouter = t.router({
           description: input.description,
           evidence_urls: input.evidenceUrls ?? [],
           evidence_notes: input.evidenceNotes ?? null,
-          status: "pending",
+          status: 'pending',
         })
-        .select("*")
-        .maybeSingle();
+        .select('*')
+        .maybeSingle()
 
       if (error || !report) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: error
             ? `Failed to create violation report: ${error.message}`
-            : "Failed to create violation report",
-        });
+            : 'Failed to create violation report',
+        })
       }
 
       // If linked to a hire agreement, mark it as violated
       if (input.hireAgreementId) {
         await ctx.supabaseAdmin
-          .schema("core")
-          .from("hire_agreements")
+          .schema('core')
+          .from('hire_agreements')
           .update({
-            status: "violated",
+            status: 'violated',
             violated_at: new Date().toISOString(),
             violation_reason: input.description,
           })
-          .eq("id", input.hireAgreementId);
+          .eq('id', input.hireAgreementId)
       }
 
       return {
         id: report.id,
         status: report.status,
         createdAt: report.created_at,
-      };
+      }
     }),
 
   /**
@@ -302,29 +303,24 @@ export const legalAgreementsRouter = t.router({
       z
         .object({
           status: z
-            .enum(["pending", "under_review", "confirmed", "dismissed", "resolved"])
+            .enum(['pending', 'under_review', 'confirmed', 'dismissed', 'resolved'])
             .optional(),
           violationType: z
-            .enum([
-              "off_platform_hire",
-              "off_platform_communication",
-              "fee_avoidance",
-              "other",
-            ])
+            .enum(['off_platform_hire', 'off_platform_communication', 'fee_avoidance', 'other'])
             .optional(),
           organizationId: z.string().uuid().optional(),
           workerUserId: z.string().uuid().optional(),
           limit: z.number().int().positive().max(100).default(50),
           offset: z.number().int().nonnegative().default(0),
         })
-        .optional(),
+        .optional()
     )
     .query(async ({ ctx, input }) => {
-      const { supabaseAdmin } = ctx;
+      const { supabaseAdmin } = ctx
 
       let query = supabaseAdmin
-        .schema("core")
-        .from("circumvention_reports")
+        .schema('core')
+        .from('circumvention_reports')
         .select(
           `
           *,
@@ -332,34 +328,34 @@ export const legalAgreementsRouter = t.router({
           organization:organizations(id, name),
           worker:users!circumvention_reports_worker_user_id_fkey(id, display_name, email),
           hire_agreement:hire_agreements(id, status)
-        `,
+        `
         )
-        .order("created_at", { ascending: false })
-        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1);
+        .order('created_at', { ascending: false })
+        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1)
 
       if (input?.status) {
-        query = query.eq("status", input.status);
+        query = query.eq('status', input.status)
       }
 
       if (input?.violationType) {
-        query = query.eq("violation_type", input.violationType);
+        query = query.eq('violation_type', input.violationType)
       }
 
       if (input?.organizationId) {
-        query = query.eq("organization_id", input.organizationId);
+        query = query.eq('organization_id', input.organizationId)
       }
 
       if (input?.workerUserId) {
-        query = query.eq("worker_user_id", input.workerUserId);
+        query = query.eq('worker_user_id', input.workerUserId)
       }
 
-      const { data, error, count } = await query;
+      const { data, error, count } = await query
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to load violation reports: ${error.message}`,
-        });
+        })
       }
 
       return {
@@ -367,24 +363,18 @@ export const legalAgreementsRouter = t.router({
           id: row.id,
           reportedByUserId: row.reported_by_user_id,
           reportedByName:
-            (row.reported_by as { display_name?: string; email?: string } | null)
-              ?.display_name ??
-            (row.reported_by as { display_name?: string; email?: string } | null)
-              ?.email ??
+            (row.reported_by as { display_name?: string; email?: string } | null)?.display_name ??
+            (row.reported_by as { display_name?: string; email?: string } | null)?.email ??
             null,
           organizationId: row.organization_id,
-          organizationName:
-            (row.organization as { name?: string } | null)?.name ?? null,
+          organizationName: (row.organization as { name?: string } | null)?.name ?? null,
           workerUserId: row.worker_user_id,
           workerName:
-            (row.worker as { display_name?: string; email?: string } | null)
-              ?.display_name ??
-            (row.worker as { display_name?: string; email?: string } | null)
-              ?.email ??
+            (row.worker as { display_name?: string; email?: string } | null)?.display_name ??
+            (row.worker as { display_name?: string; email?: string } | null)?.email ??
             null,
           hireAgreementId: row.hire_agreement_id,
-          hireAgreementStatus:
-            (row.hire_agreement as { status?: string } | null)?.status ?? null,
+          hireAgreementStatus: (row.hire_agreement as { status?: string } | null)?.status ?? null,
           violationType: row.violation_type,
           description: row.description,
           evidenceUrls: row.evidence_urls ?? [],
@@ -399,7 +389,7 @@ export const legalAgreementsRouter = t.router({
           updatedAt: row.updated_at,
         })),
         totalCount: count ?? 0,
-      };
+      }
     }),
 
   /**
@@ -410,65 +400,69 @@ export const legalAgreementsRouter = t.router({
       z.object({
         reportId: z.string().uuid(),
         status: z
-          .enum(["pending", "under_review", "confirmed", "dismissed", "resolved"])
+          .enum(['pending', 'under_review', 'confirmed', 'dismissed', 'resolved'])
           .optional(),
         reviewNotes: z.string().optional(),
         resolutionAction: z
           .enum([
-            "warning_issued",
-            "fee_collected",
-            "account_suspended",
-            "account_terminated",
-            "no_action",
-            "other",
+            'warning_issued',
+            'fee_collected',
+            'account_suspended',
+            'account_terminated',
+            'no_action',
+            'other',
           ])
           .optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const updateData: Record<string, unknown> = {};
+      const updateData: Record<string, unknown> = {}
 
       if (input.status) {
-        updateData.status = input.status;
-        if (input.status === "under_review" || input.status === "confirmed" || input.status === "dismissed" || input.status === "resolved") {
-          updateData.reviewed_by_user_id = ctx.user?.id ?? null;
-          updateData.reviewed_at = new Date().toISOString();
+        updateData.status = input.status
+        if (
+          input.status === 'under_review' ||
+          input.status === 'confirmed' ||
+          input.status === 'dismissed' ||
+          input.status === 'resolved'
+        ) {
+          updateData.reviewed_by_user_id = ctx.user?.id ?? null
+          updateData.reviewed_at = new Date().toISOString()
         }
-        if (input.status === "resolved") {
-          updateData.resolved_at = new Date().toISOString();
+        if (input.status === 'resolved') {
+          updateData.resolved_at = new Date().toISOString()
         }
       }
 
       if (input.reviewNotes !== undefined) {
-        updateData.review_notes = input.reviewNotes;
+        updateData.review_notes = input.reviewNotes
       }
 
       if (input.resolutionAction !== undefined) {
-        updateData.resolution_action = input.resolutionAction;
+        updateData.resolution_action = input.resolutionAction
       }
 
       const { data: report, error } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("circumvention_reports")
+        .schema('core')
+        .from('circumvention_reports')
         .update(updateData)
-        .eq("id", input.reportId)
-        .select("*")
-        .maybeSingle();
+        .eq('id', input.reportId)
+        .select('*')
+        .maybeSingle()
 
       if (error || !report) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: error
             ? `Failed to update violation report: ${error.message}`
-            : "Violation report not found",
-        });
+            : 'Violation report not found',
+        })
       }
 
       return {
         id: report.id,
         status: report.status,
         updatedAt: report.updated_at,
-      };
+      }
     }),
-});
-
+})

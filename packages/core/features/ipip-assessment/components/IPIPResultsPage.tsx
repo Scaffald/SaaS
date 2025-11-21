@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { Button, Text, Tabs, XStack, YStack } from 'tamagui'
-import { AlertCircle, RefreshCcw } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { NarrativeView } from './NarrativeView'
-import { ChartView } from './ChartView'
-import { ShareResults } from './ShareResults'
+import { api } from '@app/core/utils/api'
+import { AlertCircle, RefreshCcw } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Button, Tabs, Text, XStack, YStack } from 'tamagui'
 import { useIPIPResults } from '../hooks/useIPIPResults'
+import { ChartView } from './ChartView'
+import { NarrativeView } from './NarrativeView'
+import { ShareResults } from './ShareResults'
 
 /**
  * IPIPResultsPage - Main results page with Narrative and Chart views
@@ -83,7 +83,7 @@ export function IPIPResultsPage() {
         <Text fontSize="$4" color="$color10" text="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
-        <Button onPress={() => router.push(ROUTES.DASHBOARD_ASSESSMENT_IPIP.path)}>
+        <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
           Start Assessment
         </Button>
       </YStack>
@@ -202,4 +202,3 @@ export function IPIPResultsPage() {
     </YStack>
   )
 }
-

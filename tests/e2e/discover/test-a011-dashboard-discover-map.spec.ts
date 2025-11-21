@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/discover/map', () => {
   test('navigates to map discovery and page loads correctly', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to map discovery route
     await page.goto('/dashboard/discover/map')
@@ -13,19 +13,18 @@ test.describe('Admin • /dashboard/discover/map', () => {
     expect(page.url()).toContain('/dashboard/discover/map')
 
     // Wait for loading states to complete
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Verify page content loaded
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
   test('displays map search heading', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -34,7 +33,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('renders map canvas element', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -50,7 +49,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('displays worker results sidebar with 35 results', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -59,8 +58,12 @@ test.describe('Admin • /dashboard/discover/map', () => {
     await expect(resultsCount.first()).toBeVisible()
   })
 
-  test('displays worker cards with complete profile information', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('displays worker cards with complete profile information', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -74,11 +77,11 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('displays worker names in result cards', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify at least one worker name from exploration is present
     const hasWorkerNames =
@@ -90,11 +93,11 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('displays location information for workers', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify location patterns (City, State, Country)
     const hasLocationInfo =
@@ -105,8 +108,12 @@ test.describe('Admin • /dashboard/discover/map', () => {
     expect(hasLocationInfo).toBe(true)
   })
 
-  test('displays "View Organization" buttons for worker cards', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('displays "View Organization" buttons for worker cards', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -118,7 +125,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('displays navigation elements (hamburger menu)', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -128,18 +135,18 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('displays notification bell in header', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
-    const pageText = await page.locator('body').textContent() || ''
+    const pageText = (await page.locator('body').textContent()) || ''
 
     // Verify page has loaded with substantial content (notification area should be present)
     expect(pageText.length).toBeGreaterThan(1000)
   })
 
   test('verifies accessibility attributes are present', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -154,8 +161,12 @@ test.describe('Admin • /dashboard/discover/map', () => {
     expect(roleCount).toBeGreaterThan(20)
   })
 
-  test('verifies map interface has multiple map-related elements', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+  test('verifies map interface has multiple map-related elements', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -167,7 +178,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('displays results sidebar with scrollable content', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -181,7 +192,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('verifies page layout maintains two-column structure', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -198,12 +209,15 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('handles cookie consent modal if present', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
     // Check if cookie consent modal is visible
-    const cookieModalVisible = await page.getByText('This site uses cookies').isVisible().catch(() => false)
+    const cookieModalVisible = await page
+      .getByText('This site uses cookies')
+      .isVisible()
+      .catch(() => false)
 
     if (cookieModalVisible) {
       // Verify modal has proper actions
@@ -220,7 +234,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('verifies page responsiveness and layout stability', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -238,7 +252,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('verifies page has substantial DOM elements', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -252,7 +266,7 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('verifies map canvas has reasonable dimensions', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(2000)
 
@@ -267,14 +281,14 @@ test.describe('Admin • /dashboard/discover/map', () => {
   })
 
   test('captures screenshot for visual regression', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     await page.goto('/dashboard/discover/map')
     await page.waitForTimeout(3000) // Wait for map to fully render
 
     // Capture full page screenshot
     await page.screenshot({
       path: '.playwright-mcp/test-a011-dashboard-discover-map.png',
-      fullPage: true
+      fullPage: true,
     })
 
     // Verify screenshot was created

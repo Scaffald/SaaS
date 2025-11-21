@@ -1,20 +1,19 @@
-import { useLocalSearchParams } from 'expo-router'
-import { useNavigation } from '@react-navigation/native'
-import { useEffect, useMemo } from 'react'
-import { YStack } from 'tamagui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import {
-  GeneralInfoWidget,
-  ExperienceWidget,
-  EducationWidget,
-  SkillsWidget,
-  CertificationsWidget,
-  ReviewsWidget,
-} from '@app/core/features/profile/widgets'
-import { api } from '@app/core/utils/api'
-import { useAuth } from '@app/core/provider/auth/useAuth'
 import { ROUTES } from '@app/core/constants/routes'
-import type { BreadcrumbItem } from '@app/ui'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
+import type { DashboardBreadcrumbSegment } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
+import {
+  CertificationsWidget,
+  EducationWidget,
+  ExperienceWidget,
+  GeneralInfoWidget,
+  ReviewsWidget,
+  SkillsWidget,
+} from '@app/core/features/profile/widgets'
+import { useAuth } from '@app/core/provider/auth/useAuth'
+import { api } from '@app/core/utils/api'
+import { useLocalSearchParams } from 'expo-router'
+import { useMemo } from 'react'
+import { YStack } from 'tamagui'
 
 /**
  * Dynamic User Profile Route
@@ -23,7 +22,6 @@ import type { BreadcrumbItem } from '@app/ui'
  */
 export default function UserProfilePage() {
   const { id } = useLocalSearchParams<{ id: string }>()
-  const navigation = useNavigation()
   const { session } = useAuth()
   const currentUserId = session?.user?.id
 
@@ -48,34 +46,9 @@ export default function UserProfilePage() {
   // Determine if viewing own profile
   const isOwnProfile = currentUserId === id
 
-  // Update header title dynamically
-  useEffect(() => {
-    if (isProfileLoading) {
-      navigation.setOptions({
-        title: 'User Profile',
-      })
-      return
-    }
-
-    if (!profileData) {
-      navigation.setOptions({
-        title: 'User Profile',
-      })
-      return
-    }
-
-    // Show "My Profile" for own profile, otherwise show display name
-    const title = isOwnProfile ? 'My Profile' : displayName || 'User Profile'
-    navigation.setOptions({
-      title,
-    })
-  }, [profileData, displayName, isOwnProfile, isProfileLoading, navigation])
-
-  // Build custom breadcrumb items with dynamic user name
-  const breadcrumbItems = useMemo<BreadcrumbItem[]>(
+  const breadcrumbs = useMemo<DashboardBreadcrumbSegment[]>(
     () => [
-      { label: 'Dashboard', href: '/dashboard' },
-      { label: 'Discover Workers', href: ROUTES.DASHBOARD_DISCOVER_WORKERS.path },
+      { route: ROUTES.DASHBOARD.DISCOVER.WORKERS },
       {
         label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
         isActive: true,
@@ -89,8 +62,16 @@ export default function UserProfilePage() {
   }
 
   return (
-    <DashboardLayout
-      breadcrumbItems={breadcrumbItems}
+    <DashboardPage
+      breadcrumbs={breadcrumbs}
+      pageTitle={() => {
+        if (isProfileLoading || !profileData) {
+          return 'User Profile'
+        }
+
+        return isOwnProfile ? 'My Profile' : displayName || 'User Profile'
+      }}
+      pageTitleDeps={[isProfileLoading, profileData, displayName, isOwnProfile]}
       leftContent={
         <YStack gap="$4">
           <GeneralInfoWidget userId={id} showEdit={false} />
@@ -99,13 +80,11 @@ export default function UserProfilePage() {
         </YStack>
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <SkillsWidget userId={id} showEdit={false} />
-            <CertificationsWidget userId={id} showEdit={false} />
-            <ReviewsWidget userId={id} showEdit />
-          </YStack>
-        </QuickLinksSidebar>
+        <YStack gap="$4">
+          <SkillsWidget userId={id} showEdit={false} />
+          <CertificationsWidget userId={id} showEdit={false} />
+          <ReviewsWidget userId={id} showEdit />
+        </YStack>
       }
     />
   )

@@ -1,22 +1,11 @@
+import type { User } from '@supabase/auth-js'
 import { act, cleanup, render } from '@testing-library/react-native'
 import { useEffect } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
-import type { User } from '@supabase/auth-js'
 import { useProtectedRoute } from '../useProtectedRoute'
 
 const mockReplace = vi.hoisted(() => vi.fn())
 let mockSegments: string[] = []
-const useUserMock = vi.hoisted(() => vi.fn<[], MockUseUserState>())
-
-vi.mock('../../useUser', () => ({
-  useUser: useUserMock,
-}))
-
-vi.mock('expo-router', () => ({
-  useRouter: () => ({ replace: mockReplace }),
-  useSegments: () => mockSegments,
-}))
 
 type MockUseUserState = {
   session: unknown
@@ -29,6 +18,19 @@ type MockUseUserState = {
   isLoading: boolean
   isPending: boolean
 }
+
+const useUserMock = vi.hoisted(() => vi.fn()) as ReturnType<typeof vi.fn> & {
+  mockReturnValue: (value: MockUseUserState) => void
+}
+
+vi.mock('../../useUser', () => ({
+  useUser: useUserMock,
+}))
+
+vi.mock('expo-router', () => ({
+  useRouter: () => ({ replace: mockReplace }),
+  useSegments: () => mockSegments,
+}))
 
 const createSupabaseUser = (overrides: Partial<User> = {}): User => ({
   id: 'user-123',

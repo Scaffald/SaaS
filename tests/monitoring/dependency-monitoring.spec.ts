@@ -7,7 +7,7 @@
  * Task 27: Implement Third-Party Dependency Monitoring and SLA Tracking
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Third-Party Dependency Monitoring Testing', () => {
   test('third-party services are monitored', async ({ page }) => {
@@ -57,9 +57,8 @@ test.describe('Third-Party Dependency Monitoring Testing', () => {
     await page.waitForTimeout(2000)
 
     // Third-party requests should respond within SLA (e.g., < 500ms)
-    const avgResponseTime = responseTimes.length > 0
-      ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
-      : 0
+    const avgResponseTime =
+      responseTimes.length > 0 ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length : 0
 
     // Basic check: requests should not be extremely slow
     if (avgResponseTime > 0) {
@@ -79,4 +78,3 @@ test.describe('Third-Party Dependency Monitoring Testing', () => {
  * These tests validate basic infrastructure.
  * Full dependency monitoring should be done via monitoring services.
  */
-

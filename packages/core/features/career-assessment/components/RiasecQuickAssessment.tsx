@@ -1,4 +1,4 @@
-import { YStack, XStack, Text, Slider } from 'tamagui'
+import { Slider, Text, XStack, YStack } from 'tamagui'
 import { RIASEC_DIMENSIONS, type RiasecScores } from '../config/career-assessment-schema'
 
 interface RiasecQuickAssessmentProps {

@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
-import { Controller } from "react-hook-form";
-import { MessageCircle } from "@tamagui/lucide-icons";
-
+import {
+  FEEDBACK_ALLOWED_MIME_TYPES,
+  FEEDBACK_MAX_LENGTH,
+  FEEDBACK_MIN_LENGTH,
+} from '@app/schemas/feedback/feedback.schema'
+import type { UploadSelection } from '@app/ui'
 import {
   Button,
   FieldError,
@@ -15,104 +17,96 @@ import {
   UploadSurface,
   XStack,
   YStack,
-} from "@app/ui";
-import {
-  FEEDBACK_ALLOWED_MIME_TYPES,
-  FEEDBACK_MAX_LENGTH,
-  FEEDBACK_MIN_LENGTH,
-} from "@app/schemas/feedback/feedback.schema";
-import type { UploadSelection } from "@app/ui";
-import { useFeedbackContext } from "./hooks/useFeedbackContext";
+} from '@app/ui'
+import { MessageCircle } from '@tamagui/lucide-icons'
+import { useEffect, useState } from 'react'
+import { Controller } from 'react-hook-form'
+import { useFeedbackContext } from './hooks/useFeedbackContext'
 import {
   type FeedbackFormValues,
   type FeedbackScreenshotSource,
   useFeedbackForm,
-} from "./hooks/useFeedbackForm";
-import { useFeedbackSubmit } from "./hooks/useFeedbackSubmit";
+} from './hooks/useFeedbackForm'
+import { useFeedbackSubmit } from './hooks/useFeedbackSubmit'
 
-const INSTRUCTIONS = `Help us improve by providing detailed feedback. For bugs, describe what you expected versus what happened. For feature requests, explain the problem you're trying to solve.`;
+const INSTRUCTIONS = `Help us improve by providing detailed feedback. For bugs, describe what you expected versus what happened. For feature requests, explain the problem you're trying to solve.`
 
-const ACCEPT_TYPES = FEEDBACK_ALLOWED_MIME_TYPES.join(",");
+const ACCEPT_TYPES = FEEDBACK_ALLOWED_MIME_TYPES.join(',')
 
 function formatCharacterCounter(current: number) {
-  return `${current.toLocaleString()} / ${FEEDBACK_MAX_LENGTH.toLocaleString()} characters (${FEEDBACK_MIN_LENGTH.toLocaleString()} minimum)`;
+  return `${current.toLocaleString()} / ${FEEDBACK_MAX_LENGTH.toLocaleString()} characters (${FEEDBACK_MIN_LENGTH.toLocaleString()} minimum)`
 }
 
 function toScreenshotSource(selection: UploadSelection): FeedbackScreenshotSource {
-  if (selection.platform === "web") {
+  if (selection.platform === 'web') {
     return {
-      kind: "web",
+      kind: 'web',
       file: selection.file,
-    };
+    }
   }
 
   return {
-    kind: "native",
+    kind: 'native',
     uri: selection.asset.uri,
-    name: selection.asset.name ?? "feedback-screenshot",
-    mimeType: selection.asset.type ?? "image/png",
+    name: selection.asset.name ?? 'feedback-screenshot',
+    mimeType: selection.asset.type ?? 'image/png',
     size: selection.asset.size,
-  };
+  }
 }
 
 export function FeedbackWidget() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const context = useFeedbackContext();
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const context = useFeedbackContext()
   const { form, characterCount, isBelowMinimum, screenshot, setScreenshot, reset } =
-    useFeedbackForm();
-  const {
-    submitFeedback,
-    isSubmitting,
-    isProcessingQueue,
-    pendingCount,
-    processQueue,
-  } = useFeedbackSubmit();
+    useFeedbackForm()
+  const { submitFeedback, isSubmitting, isProcessingQueue, pendingCount, processQueue } =
+    useFeedbackSubmit()
 
-  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null)
 
   useEffect(() => {
-    if (screenshot?.kind === "web") {
-      const preview = URL.createObjectURL(screenshot.file);
-      setScreenshotPreview(preview);
+    if (screenshot?.kind === 'web') {
+      const preview = URL.createObjectURL(screenshot.file)
+      setScreenshotPreview(preview)
       return () => {
-        URL.revokeObjectURL(preview);
-      };
+        URL.revokeObjectURL(preview)
+      }
     }
 
-    if (screenshot?.kind === "native") {
-      setScreenshotPreview(screenshot.uri);
-      return;
+    if (screenshot?.kind === 'native') {
+      setScreenshotPreview(screenshot.uri)
+      return
     }
 
-    setScreenshotPreview(null);
-  }, [screenshot]);
+    setScreenshotPreview(null)
+  }, [screenshot])
 
   const handleScreenshotSelect = async (selection: UploadSelection) => {
-    setScreenshot(toScreenshotSource(selection));
-  };
+    setScreenshot(toScreenshotSource(selection))
+  }
 
   const handleRemoveScreenshot = () => {
-    setScreenshot(null);
-  };
+    setScreenshot(null)
+  }
 
   const handleSubmit = async (values: FeedbackFormValues) => {
     await submitFeedback({
       formValues: values,
       context,
       screenshotSource: screenshot,
-    });
+    })
     if (!isSubmitting) {
-      reset();
-      setIsModalOpen(false);
+      reset()
+      setIsModalOpen(false)
     }
-  };
+  }
 
   const handleOpenChange = (open: boolean) => {
-    setIsModalOpen(open);
+    setIsModalOpen(open)
     if (!open) {
-      reset();
+      reset()
     }
-  };
+  }
 
   return (
     <>
@@ -125,8 +119,8 @@ export function FeedbackWidget() {
           color="$color1"
           elevation="$4"
           pressStyle={{ scale: 0.97 }}
-          hoverStyle={{ bg: "$blue10" }}
-          focusStyle={{ outlineColor: "$blue8" }}
+          hoverStyle={{ bg: '$blue10' }}
+          focusStyle={{ outlineColor: '$blue8' }}
           onPress={() => setIsModalOpen(true)}
         >
           Feedback
@@ -168,23 +162,23 @@ export function FeedbackWidget() {
                 name="feedbackType"
                 render={({ field: { value, onChange } }) => (
                   <XStack gap="$2">
-                    {(["bug", "feature", "comment"] as const).map((type) => {
-                      const isActive = value === type;
+                    {(['bug', 'feature', 'comment'] as const).map((type) => {
+                      const isActive = value === type
                       return (
                         <Button
                           key={type}
                           size="$3"
-                          theme={isActive ? "blue" : undefined}
-                          variant={isActive ? undefined : "outlined"}
+                          theme={isActive ? 'blue' : undefined}
+                          variant={isActive ? undefined : 'outlined'}
                           onPress={() => onChange(type)}
                         >
-                          {type === "bug"
-                            ? "Bug Report"
-                            : type === "feature"
-                            ? "Feature Request"
-                            : "General Comment"}
+                          {type === 'bug'
+                            ? 'Bug Report'
+                            : type === 'feature'
+                              ? 'Feature Request'
+                              : 'General Comment'}
                         </Button>
-                      );
+                      )
                     })}
                   </XStack>
                 )}
@@ -206,11 +200,11 @@ export function FeedbackWidget() {
                     onChangeText={onChange}
                     placeholder="Describe your feedback in detail..."
                     bg="$color2"
-                    borderColor={isBelowMinimum ? "$red7" : "$color6"}
+                    borderColor={isBelowMinimum ? '$red7' : '$color6'}
                     textAlignVertical="top"
                     focusStyle={{
-                      borderColor: "$blue7",
-                      outlineColor: "$blue7",
+                      borderColor: '$blue7',
+                      outlineColor: '$blue7',
                     }}
                   />
                 )}
@@ -224,7 +218,7 @@ export function FeedbackWidget() {
                       : undefined)
                   }
                 />
-                <Text color={isBelowMinimum ? "$red9" : "$color9"} fontSize="$2">
+                <Text color={isBelowMinimum ? '$red9' : '$color9'} fontSize="$2">
                   {formatCharacterCounter(characterCount)}
                 </Text>
               </XStack>
@@ -237,7 +231,7 @@ export function FeedbackWidget() {
                 maxSizeBytes={5 * 1024 * 1024}
                 onSelect={handleScreenshotSelect}
                 onError={(message) => {
-                  form.setError("feedbackText", { message });
+                  form.setError('feedbackText', { message })
                 }}
               >
                 {({ open, getInputProps, getRootProps, isDragActive, isProcessing }) => (
@@ -251,12 +245,12 @@ export function FeedbackWidget() {
                     justify="center"
                     gap="$2"
                     bg="$color2"
-                    borderColor={isDragActive ? "$blue7" : "$color6"}
+                    borderColor={isDragActive ? '$blue7' : '$color6'}
                     rounded="$4"
                   >
                     <input {...getInputProps()} />
                     <Text fontWeight="600">
-                      {isProcessing ? "Processing..." : "Drag & drop a screenshot"}
+                      {isProcessing ? 'Processing...' : 'Drag & drop a screenshot'}
                     </Text>
                     <Text fontSize="$2" color="$color9">
                       Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
@@ -294,21 +288,15 @@ export function FeedbackWidget() {
                   >
                     <YStack flex={1}>
                       <Text numberOfLines={1} fontWeight="600">
-                        {screenshot.kind === "web"
-                          ? screenshot.file.name
-                          : screenshot.name}
+                        {screenshot.kind === 'web' ? screenshot.file.name : screenshot.name}
                       </Text>
                       <Text fontSize="$2" color="$color9">
-                        {screenshot.kind === "web"
-                          ? screenshot.file.type || "image"
+                        {screenshot.kind === 'web'
+                          ? screenshot.file.type || 'image'
                           : screenshot.mimeType}
                       </Text>
                     </YStack>
-                    <Button
-                      size="$2"
-                      variant="outlined"
-                      onPress={handleRemoveScreenshot}
-                    >
+                    <Button size="$2" variant="outlined" onPress={handleRemoveScreenshot}>
                       Remove
                     </Button>
                   </XStack>
@@ -328,7 +316,7 @@ export function FeedbackWidget() {
                 </Text>
                 <Text fontSize="$2" color="$color10">
                   {context.browserName
-                    ? `${context.browserName} ${context.browserVersion ?? ""}`.trim()
+                    ? `${context.browserName} ${context.browserVersion ?? ''}`.trim()
                     : context.userAgent}
                 </Text>
               </YStack>
@@ -337,11 +325,11 @@ export function FeedbackWidget() {
                 size="$2"
                 variant="outlined"
                 onPress={() => {
-                  void processQueue();
+                  void processQueue()
                 }}
                 disabled={isProcessingQueue}
               >
-                {isProcessingQueue ? "Syncing…" : "Retry Pending"}
+                {isProcessingQueue ? 'Syncing…' : 'Retry Pending'}
               </Button>
             </XStack>
 
@@ -350,13 +338,11 @@ export function FeedbackWidget() {
               disabled={isSubmitting || isBelowMinimum || !form.formState.isValid}
               onPress={form.handleSubmit(handleSubmit)}
             >
-              {isSubmitting ? "Submitting…" : "Submit Feedback"}
+              {isSubmitting ? 'Submitting…' : 'Submit Feedback'}
             </Button>
           </YStack>
         </ScrollView>
       </ResponsiveModal>
     </>
-  );
+  )
 }
-
-

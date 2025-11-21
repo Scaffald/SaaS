@@ -1,12 +1,12 @@
-import { memo, forwardRef } from 'react'
+import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Paragraph, Text, XStack } from 'tamagui'
-import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
-import { SelectableCard } from './SelectableCard'
+import { CardActions } from './CardActions'
+import { CardBadges } from './CardBadges'
 import { CardHeader } from './CardHeader'
 import { CardMetadata } from './CardMetadata'
-import { CardBadges } from './CardBadges'
-import { CardActions } from './CardActions'
+import { SelectableCard } from './SelectableCard'
 import type { BadgeConfig, MetadataItem } from './types'
 
 /**
@@ -283,17 +283,19 @@ export const JobCard = memo(
             <CardBadges badges={badges} isSelected={isSelected} maxVisible={5} />
           )}
 
-          {/* Actions */}
-          <CardActions
-            actions={[
-              {
-                label: hasApplied ? 'View Application' : 'View Details',
-                onPress: onViewDetails,
-                variant: 'primary',
-              },
-            ]}
-            isSelected={isSelected}
-          />
+          {/* Actions - Only show when card is used for selection, not navigation */}
+          {onSelect && (
+            <CardActions
+              actions={[
+                {
+                  label: hasApplied ? 'View Application' : 'View Details',
+                  onPress: onViewDetails,
+                  variant: 'primary',
+                },
+              ]}
+              isSelected={isSelected}
+            />
+          )}
         </SelectableCard>
       )
     }

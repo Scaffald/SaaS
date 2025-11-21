@@ -1,5 +1,5 @@
-import { YStack, Text, XStack } from '@app/ui'
-import { Info, HelpCircle } from '@tamagui/lucide-icons'
+import { Text, XStack, YStack } from '@app/ui'
+import { HelpCircle, Info } from '@tamagui/lucide-icons'
 
 export function InquiryHelpSidebar() {
   return (
@@ -18,8 +18,8 @@ export function InquiryHelpSidebar() {
             Employment Terms
           </Text>
           <Text fontSize="$3" color="$color11">
-            Specify the employment type, schedule, and working hours. Mark fields
-            as non-negotiable to indicate they cannot be changed.
+            Specify the employment type, schedule, and working hours. Mark fields as non-negotiable
+            to indicate they cannot be changed.
           </Text>
         </YStack>
 
@@ -29,8 +29,8 @@ export function InquiryHelpSidebar() {
             Compensation
           </Text>
           <Text fontSize="$3" color="$color11">
-            Enter a single rate or a range (e.g., $30-40). The candidate will see
-            your proposed compensation terms.
+            Enter a single rate or a range (e.g., $30-40). The candidate will see your proposed
+            compensation terms.
           </Text>
         </YStack>
 
@@ -40,8 +40,8 @@ export function InquiryHelpSidebar() {
             Capabilities
           </Text>
           <Text fontSize="$3" color="$color11">
-            Indicate required capabilities such as endurance. The candidate will
-            need to respond to these questions.
+            Indicate required capabilities such as endurance. The candidate will need to respond to
+            these questions.
           </Text>
         </YStack>
 
@@ -51,8 +51,8 @@ export function InquiryHelpSidebar() {
             Additional Terms
           </Text>
           <Text fontSize="$3" color="$color11">
-            Specify any additional requirements such as travel, overtime, or
-            driver's license. Add notes to provide context.
+            Specify any additional requirements such as travel, overtime, or driver's license. Add
+            notes to provide context.
           </Text>
         </YStack>
 
@@ -65,12 +65,11 @@ export function InquiryHelpSidebar() {
             </Text>
           </XStack>
           <Text fontSize="$3" color="$blue11">
-            Fields marked as negotiable can be discussed with the candidate.
-            Non-negotiable fields are fixed and cannot be changed.
+            Fields marked as negotiable can be discussed with the candidate. Non-negotiable fields
+            are fixed and cannot be changed.
           </Text>
         </YStack>
       </YStack>
     </YStack>
   )
 }
-

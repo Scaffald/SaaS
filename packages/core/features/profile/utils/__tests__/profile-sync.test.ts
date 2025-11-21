@@ -8,13 +8,23 @@ const createUtilsMock = () => {
 
   return {
     profile: {
-      getGeneral: makeSection(),
-      getEmployment: makeSection(),
-      getEducation: makeSection(),
-      getEducationLevel: makeSection(),
-      getExperience: makeSection(),
-      getExperienceSummary: makeSection(),
-      getUserSkills: makeSection(),
+      general: {
+        getGeneral: makeSection(),
+      },
+      employment: {
+        getEmployment: makeSection(),
+      },
+      education: {
+        getEducation: makeSection(),
+        getEducationLevel: makeSection(),
+      },
+      experience: {
+        getExperience: makeSection(),
+        getExperienceSummary: makeSection(),
+      },
+      skills: {
+        getUserSkills: makeSection(),
+      },
       skillsMultiTaxonomy: {
         getUserSkills: makeSection(),
       },
@@ -34,13 +44,13 @@ const createUtilsMock = () => {
 }
 
 const collectInvalidateSpies = (utils: ReturnType<typeof createUtilsMock>) => [
-  utils.profile.getGeneral.invalidate,
-  utils.profile.getEmployment.invalidate,
-  utils.profile.getEducation.invalidate,
-  utils.profile.getEducationLevel.invalidate,
-  utils.profile.getExperience.invalidate,
-  utils.profile.getExperienceSummary.invalidate,
-  utils.profile.getUserSkills.invalidate,
+  utils.profile.general.getGeneral.invalidate,
+  utils.profile.employment.getEmployment.invalidate,
+  utils.profile.education.getEducation.invalidate,
+  utils.profile.education.getEducationLevel.invalidate,
+  utils.profile.experience.getExperience.invalidate,
+  utils.profile.experience.getExperienceSummary.invalidate,
+  utils.profile.skills.getUserSkills.invalidate,
   utils.profile.certifications.getUserCertificationTree.invalidate,
   utils.profile.certifications.getTopLevelCertifications.invalidate,
   utils.userProfile.getUserProfile.invalidate,

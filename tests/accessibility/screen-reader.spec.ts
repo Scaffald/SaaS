@@ -10,11 +10,11 @@
  * These tests validate ARIA attributes and semantic HTML that screen readers rely on.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
+  assertFormLabels,
   assertHasAriaLabel,
   assertHasRole,
-  assertFormLabels,
   assertHeadingHierarchy,
 } from '../infrastructure/playwright/helpers/accessibility'
 
@@ -57,7 +57,9 @@ test.describe('Screen Reader Testing', () => {
         await page.goto(path, { waitUntil: 'networkidle' })
 
         // Check for ARIA landmarks
-        const landmarks = await page.locator('[role="main"], [role="navigation"], [role="banner"], [role="contentinfo"]').count()
+        const landmarks = await page
+          .locator('[role="main"], [role="navigation"], [role="banner"], [role="contentinfo"]')
+          .count()
 
         // Page should have at least main landmark
         expect(landmarks, 'Page should have ARIA landmarks').toBeGreaterThan(0)
@@ -175,4 +177,3 @@ test.describe('Screen Reader Testing', () => {
  * 5. Verify error messages are announced
  * 6. Verify dynamic content updates are announced
  */
-

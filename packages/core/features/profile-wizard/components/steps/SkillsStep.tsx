@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useId } from 'react'
+import {
+  InlineSkillSearch,
+  type ParentSkill,
+} from '@app/core/features/profile/components/InlineSkillSearch'
+import { api } from '@app/core/utils/api'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Button, Card, Paragraph, Text, XStack, YStack } from 'tamagui'
-import type { WizardStepComponentProps } from './types'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
-import { InlineSkillSearch, type ParentSkill } from '@app/core/features/profile/components/InlineSkillSearch'
-import { api } from '@app/core/utils/api'
+import type { WizardStepComponentProps } from './types'
 
 interface SearchSkillResult {
   skill_id: string
@@ -36,10 +39,13 @@ export function SkillsStep({
   onStepStateChange,
 }: WizardStepComponentProps<'skills'>) {
   const [skills, setSkills] = useState<SkillEntry[]>(initialData?.skills ?? [])
-  const searchResultsRef = useRef<Map<string, ParentSkill & { taxonomy: SkillEntry['taxonomy'] }>>(new Map())
+  const searchResultsRef = useRef<Map<string, ParentSkill & { taxonomy: SkillEntry['taxonomy'] }>>(
+    new Map()
+  )
 
   const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
-  const { data: primaryIndustryData } = api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
+  const { data: primaryIndustryData } =
+    api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
 
   useEffect(() => {
     if (initialData?.skills) {
@@ -47,7 +53,10 @@ export function SkillsStep({
     }
   }, [initialData])
 
-  const baselineKey = useMemo(() => serializeSkills(initialData?.skills ?? []), [initialData?.skills])
+  const baselineKey = useMemo(
+    () => serializeSkills(initialData?.skills ?? []),
+    [initialData?.skills]
+  )
   const currentKey = useMemo(() => serializeSkills(skills), [skills])
   const isDirty = currentKey !== baselineKey
   const hasMinimumSkills = skills.length >= MIN_SKILLS
@@ -88,18 +97,19 @@ export function SkillsStep({
 
         const parentSkills: ParentSkill[] = result.skills.map(
           (skill: SearchSkillResult): ParentSkill => {
-          const mapped: ParentSkill = {
-            id: skill.skill_id,
-            name: skill.name,
-            code: skill.display_code || skill.code || skill.skill_id,
-            depth: skill.hierarchy_level ?? 0,
+            const mapped: ParentSkill = {
+              id: skill.skill_id,
+              name: skill.name,
+              code: skill.display_code || skill.code || skill.skill_id,
+              depth: skill.hierarchy_level ?? 0,
+            }
+            searchResultsRef.current.set(skill.skill_id, {
+              ...mapped,
+              taxonomy: (skill.taxonomy as SkillEntry['taxonomy']) ?? 'onet',
+            })
+            return mapped
           }
-          searchResultsRef.current.set(skill.skill_id, {
-            ...mapped,
-            taxonomy: (skill.taxonomy as SkillEntry['taxonomy']) ?? 'onet',
-          })
-          return mapped
-        })
+        )
 
         return parentSkills
       } catch (error) {
@@ -107,7 +117,7 @@ export function SkillsStep({
         return []
       }
     },
-    [industrySlug, searchSkillsMutation],
+    [industrySlug, searchSkillsMutation]
   )
 
   const handleSelectSkill = useCallback(
@@ -116,15 +126,13 @@ export function SkillsStep({
       if (!dictionaryEntry) return
 
       const normalizedTaxonomy: SkillEntry['taxonomy'] =
-        taxonomy === 'csi' || taxonomy === 'onet'
-          ? taxonomy
-          : dictionaryEntry.taxonomy ?? 'onet'
+        taxonomy === 'csi' || taxonomy === 'onet' ? taxonomy : (dictionaryEntry.taxonomy ?? 'onet')
 
       setSkills((previous) => {
         const existing = previous.find((skill) => skill.id === skillId)
         if (existing) {
           return previous.map((skill) =>
-            skill.id === skillId ? { ...skill, proficiency, taxonomy: normalizedTaxonomy } : skill,
+            skill.id === skillId ? { ...skill, proficiency, taxonomy: normalizedTaxonomy } : skill
           )
         }
         if (previous.length >= MAX_SKILLS) {
@@ -141,7 +149,7 @@ export function SkillsStep({
         ]
       })
     },
-    [],
+    []
   )
 
   const handleRemoveSkill = useCallback((skillId: string) => {
@@ -184,7 +192,9 @@ export function SkillsStep({
       </YStack>
 
       <YStack gap="$3">
-        <Text fontWeight="600">Selected Skills ({skills.length}/{MAX_SKILLS})</Text>
+        <Text fontWeight="600">
+          Selected Skills ({skills.length}/{MAX_SKILLS})
+        </Text>
         {skills.length === 0 ? (
           <Card bordered bg="$color2">
             <Card.Header>
@@ -233,8 +243,8 @@ export function SkillsStep({
         />
         {skills.length >= MAX_SKILLS && (
           <Paragraph fontSize="$2" color="$color11" aria-live="polite">
-            You&apos;ve reached the maximum of {MAX_SKILLS} skills for the quick wizard. You can add more
-            later from your full profile.
+            You&apos;ve reached the maximum of {MAX_SKILLS} skills for the quick wizard. You can add
+            more later from your full profile.
           </Paragraph>
         )}
       </YStack>
@@ -253,5 +263,3 @@ export function SkillsStep({
     </YStack>
   )
 }
-
-

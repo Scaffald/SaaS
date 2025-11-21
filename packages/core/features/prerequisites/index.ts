@@ -3,11 +3,11 @@
  * User onboarding prerequisites widget and configuration
  */
 
-export { PrerequisiteWidget } from "./PrerequisiteWidget";
 export {
-  prerequisitesDefaults,
   type PrerequisitesFormData,
+  prerequisitesDefaults,
   prerequisitesSchema,
   USER_TYPE_OPTIONS,
   type UserType,
-} from "./config/prerequisites-schema";
+} from './config/prerequisites-schema'
+export { PrerequisiteWidget } from './PrerequisiteWidget'

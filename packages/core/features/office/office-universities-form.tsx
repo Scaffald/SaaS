@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Button, Input, H4, TextArea, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { Plus, Save, X } from '@tamagui/lucide-icons'
-import { DashboardWidget } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, Save, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Button, H4, Input, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { z } from 'zod'
 
 const universitySchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -76,10 +76,11 @@ export function OfficeUniversitiesForm({
       reset()
       onUniversitySaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create university'
       toast.show('Error', {
-        message: error.message || 'Failed to create university',
+        message: errorMessage,
       })
     },
   })
@@ -91,10 +92,11 @@ export function OfficeUniversitiesForm({
       })
       onUniversitySaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update university'
       toast.show('Error', {
-        message: error.message || 'Failed to update university',
+        message: errorMessage,
       })
     },
   })
@@ -364,7 +366,7 @@ export function OfficeUniversitiesForm({
             pt="$4"
             gap="$2"
             $sm={{ flexDirection: 'column' }}
-            $gtSm={{ flexDirection: 'row' }}
+            $md={{ flexDirection: 'row' }}
           >
             {isEditing && (
               <Button
@@ -373,7 +375,7 @@ export function OfficeUniversitiesForm({
                 disabled={isLoading}
                 data-testid="cancel-button"
                 $sm={{ height: 44, width: '100%' }}
-                $gtSm={{ height: undefined, width: undefined }}
+                $md={{ height: undefined, width: undefined }}
               >
                 Cancel
               </Button>
@@ -385,7 +387,7 @@ export function OfficeUniversitiesForm({
               opacity={!isDirty || isLoading ? 0.5 : 1}
               icon={isLoading ? <Spinner /> : isEditing ? Save : Plus}
               $sm={{ height: 44, width: '100%' }}
-              $gtSm={{ height: undefined, width: undefined }}
+              $md={{ height: undefined, width: undefined }}
             >
               {isLoading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
             </Button>

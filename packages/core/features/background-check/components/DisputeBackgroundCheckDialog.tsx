@@ -1,21 +1,13 @@
-import { useEffect, useMemo } from 'react'
-import { AlertTriangle } from '@tamagui/lucide-icons'
-import {
-  Button,
-  Dialog,
-  Separator,
-  Text,
-  XStack,
-  YStack,
-} from 'tamagui'
-
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
-import { getStatusMetadata } from './status.utils'
+import type { AppRouter } from '@app/supabase/client-types'
+import { AlertTriangle } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useEffect, useMemo } from 'react'
+import { Button, Dialog, Separator, Text, XStack, YStack } from 'tamagui'
+import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
-import { useDispute } from '../hooks/useDispute'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
+import { getStatusMetadata } from './status.utils'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckSummary = RouterOutputs['backgroundChecks']['listChecks'][number]
@@ -128,7 +120,8 @@ export function DisputeBackgroundCheckDialog({
                   Expires: {formatDate(check.expires_at)}
                 </Text>
                 <Text fontSize="$2" color="$color10">
-                  Disputes should focus on factual inaccuracies, missing context, or mismatched records.
+                  Disputes should focus on factual inaccuracies, missing context, or mismatched
+                  records.
                 </Text>
               </YStack>
             ) : null}
@@ -170,4 +163,3 @@ export function DisputeBackgroundCheckDialog({
     </Dialog>
   )
 }
-

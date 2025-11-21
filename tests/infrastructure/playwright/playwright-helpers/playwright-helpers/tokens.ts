@@ -38,4 +38,3 @@ export async function readCachedToken(persona: TestPersona): Promise<CachedToken
     return null
   }
 }
-

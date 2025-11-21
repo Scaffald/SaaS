@@ -1,21 +1,30 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Linking } from 'react-native'
-import { CheckCircle2, DownloadCloud, History, RefreshCcw } from '@tamagui/lucide-icons'
-import { Dialog, Input, Label, Select, Separator, Spinner, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button } from '@app/ui'
-
+import { Button, Dialog } from '@app/ui'
+import { CheckCircle2, DownloadCloud, RefreshCcw } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Linking } from 'react-native'
+import { ResponsiveSelect } from '@app/ui'
+import {
+  Input,
+  Label,
+  Separator,
+  Spinner,
+  Switch,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { CheckProgressTracker } from '../components/CheckProgressTracker'
 import {
   BACKGROUND_CHECK_STATUSES,
+  type BackgroundCheckStatus,
   getStatusMetadata,
   getStatusToneColors,
-  type BackgroundCheckStatus,
 } from '../components/status.utils'
-import { CheckProgressTracker } from '../components/CheckProgressTracker'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type AdminCheckSummary = RouterOutputs['backgroundChecks']['adminListChecks'][number]
@@ -32,7 +41,7 @@ type StatusHistoryEntry = {
 }
 
 const STATUS_OPTIONS: BackgroundCheckStatus[] = BACKGROUND_CHECK_STATUSES.filter(
-  (status) => status !== 'disputed',
+  (status) => status !== 'disputed'
 )
 
 interface AdminCheckReviewDialogProps {
@@ -119,7 +128,7 @@ export function AdminCheckReviewDialog({
     {
       enabled: open && Boolean(checkId),
       refetchOnWindowFocus: false,
-    },
+    }
   )
 
   const detailedCheck = detailQuery.data?.check ?? null
@@ -204,8 +213,7 @@ export function AdminCheckReviewDialog({
 
   const privacyMutation = api.backgroundChecks.adminUpdatePrivacy.useMutation()
 
-  const documentDownloadMutation =
-    api.backgroundChecks.adminGetDocumentDownloadUrl.useMutation()
+  const documentDownloadMutation = api.backgroundChecks.adminGetDocumentDownloadUrl.useMutation()
 
   const handlePrivacyUpdate = useCallback(
     (nextSharePublicly: boolean, nextOrgIds: string[]) => {
@@ -239,7 +247,7 @@ export function AdminCheckReviewDialog({
               type: 'error',
             })
           },
-        },
+        }
       )
     },
     [
@@ -249,7 +257,7 @@ export function AdminCheckReviewDialog({
       sharedOrganizations,
       toast,
       utils.backgroundChecks.adminGetCheck,
-    ],
+    ]
   )
 
   const openSignedUrl = useCallback((url: string) => {
@@ -278,10 +286,10 @@ export function AdminCheckReviewDialog({
               type: 'error',
             })
           },
-        },
+        }
       )
     },
-    [documentDownloadMutation, detailedCheck, openSignedUrl, toast],
+    [documentDownloadMutation, detailedCheck, openSignedUrl, toast]
   )
 
   const isPrivacySaving = privacyMutation.isLoading || privacyMutation.isPending
@@ -303,11 +311,7 @@ export function AdminCheckReviewDialog({
 
   const packageLabel = useMemo(() => {
     if (!detailedCheck?.package) return 'Background check'
-    return (
-      detailedCheck.package.display_name ??
-      detailedCheck.package.slug ??
-      'Background check'
-    )
+    return detailedCheck.package.display_name ?? detailedCheck.package.slug ?? 'Background check'
   }, [detailedCheck?.package])
 
   return (
@@ -367,11 +371,7 @@ export function AdminCheckReviewDialog({
                 <Text fontSize="$3" color="$color11">
                   We couldn't load this background check. Please try again.
                 </Text>
-                <Button
-                  size="$3"
-                  variant="outlined"
-                  onPress={() => detailQuery.refetch()}
-                >
+                <Button size="$3" variant="outlined" onPress={() => detailQuery.refetch()}>
                   <XStack gap="$2" items="center">
                     <RefreshCcw size={16} />
                     <Text fontSize="$2">Retry</Text>
@@ -466,35 +466,19 @@ export function AdminCheckReviewDialog({
                 <YStack gap="$3">
                   <YStack gap="$1">
                     <Label>Status</Label>
-                    <Select
+                    <ResponsiveSelect
                       value={status}
                       onValueChange={(value) => setStatus(value as BackgroundCheckStatus)}
-                      disablePreventBodyScroll
-                    >
-                      <Select.Trigger iconAfter={History}>
-                        <Select.Value placeholder="Select status" />
-                      </Select.Trigger>
-                      <Select.Content zIndex={200_000}>
-                        <Select.ScrollUpButton />
-                        <Select.Viewport>
-                          <Select.Group>
-                            <Select.Label>Status</Select.Label>
-                            {STATUS_OPTIONS.map((option, index) => {
-                              const meta = getStatusMetadata(option)
-                              return (
-                                <Select.Item key={option} value={option} index={index}>
-                                  <Select.ItemText>{meta.label}</Select.ItemText>
-                                  <Select.ItemIndicator>
-                                    <CheckCircle2 size={16} />
-                                  </Select.ItemIndicator>
-                                </Select.Item>
-                              )
-                            })}
-                          </Select.Group>
-                        </Select.Viewport>
-                        <Select.ScrollDownButton />
-                      </Select.Content>
-                    </Select>
+                      placeholder="Select status"
+                      label="Status"
+                      options={STATUS_OPTIONS.map((option) => {
+                        const meta = getStatusMetadata(option)
+                        return {
+                          value: option,
+                          label: meta.label,
+                        }
+                      })}
+                    />
                   </YStack>
 
                   <YStack gap="$1">
@@ -604,7 +588,11 @@ export function AdminCheckReviewDialog({
                               onPress={() => handleDownloadDocument(document.id)}
                             >
                               <XStack gap="$2" items="center">
-                                {isDocumentLoading ? <Spinner size="small" /> : <DownloadCloud size={16} />}
+                                {isDocumentLoading ? (
+                                  <Spinner size="small" />
+                                ) : (
+                                  <DownloadCloud size={16} />
+                                )}
                                 <Text fontSize="$2">
                                   {isDocumentLoading ? 'Preparing…' : 'View'}
                                 </Text>
@@ -693,7 +681,7 @@ export function AdminCheckReviewDialog({
                               onPress={() =>
                                 handlePrivacyUpdate(
                                   sharePublicly,
-                                  sharedOrganizations.filter((id) => id !== organizationId),
+                                  sharedOrganizations.filter((id) => id !== organizationId)
                                 )
                               }
                             >
@@ -825,4 +813,3 @@ export function AdminCheckReviewDialog({
     </Dialog>
   )
 }
-

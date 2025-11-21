@@ -1,24 +1,12 @@
-import { useMemo } from 'react'
-import { useToastController } from '@tamagui/toast'
-import { Controller, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Button,
-  Card,
-  Input,
-  Label,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
-import {
-  organizationRequestSchema,
-  type OrganizationRequest,
-} from '@app/schemas'
-import { api } from '@app/core/utils/api'
 import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
+import { api } from '@app/core/utils/api'
+import { type OrganizationRequest, organizationRequestSchema } from '@app/schemas'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle2, Loader2 } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useMemo } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Button, Card, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
 
 interface OrganizationRequestSummary {
   id: string
@@ -35,7 +23,7 @@ interface CreateOrganizationRequestResult {
 type OrganizationRequestFormProps = {
   defaultName?: string
   defaultSlug?: string
-};
+}
 
 /**
  * OrganizationRequestForm
@@ -65,12 +53,11 @@ export function OrganizationRequestForm({
 
   const slugValue = watch('slug')
 
-  const createOrganizationRequestMutation =
-    api.organizations.createOrganizationRequest.useMutation({
+  const createOrganizationRequestMutation = api.organizations.createOrganizationRequest.useMutation(
+    {
       onSuccess: ({ request }: CreateOrganizationRequestResult) => {
         toast.show('Request submitted', {
-          message:
-            'We received your organization details and will follow up after review.',
+          message: 'We received your organization details and will follow up after review.',
         })
         if (request?.slug) {
           setValue('slug', request.slug, { shouldValidate: false })
@@ -81,25 +68,20 @@ export function OrganizationRequestForm({
           message: error.message ?? 'Please try again shortly.',
         })
       },
-    })
+    }
+  )
 
   const onSubmit = handleSubmit((values) => {
     createOrganizationRequestMutation.mutate(values)
   })
 
-  const isSubmitting =
-    createOrganizationRequestMutation.isLoading || formState.isSubmitting
+  const isSubmitting = createOrganizationRequestMutation.isLoading || formState.isSubmitting
   const submissionSucceeded = createOrganizationRequestMutation.isSuccess
 
   return (
     <YStack gap="$4">
       <YStack gap="$2">
-        <Label
-          htmlFor="organization-request-name"
-          fontSize="$3"
-          fontWeight="600"
-          color="$color12"
-        >
+        <Label htmlFor="organization-request-name" fontSize="$3" fontWeight="600" color="$color12">
           Organization Name
         </Label>
         <Controller
@@ -130,12 +112,7 @@ export function OrganizationRequestForm({
       </YStack>
 
       <YStack gap="$2">
-        <Label
-          htmlFor="organization-request-slug"
-          fontSize="$3"
-          fontWeight="600"
-          color="$color12"
-        >
+        <Label htmlFor="organization-request-slug" fontSize="$3" fontWeight="600" color="$color12">
           Preferred Slug
         </Label>
         <Controller
@@ -190,12 +167,7 @@ export function OrganizationRequestForm({
       </YStack>
 
       <YStack gap="$2">
-        <Label
-          htmlFor="organization-request-notes"
-          fontSize="$3"
-          fontWeight="600"
-          color="$color12"
-        >
+        <Label htmlFor="organization-request-notes" fontSize="$3" fontWeight="600" color="$color12">
           Notes for the review team (optional)
         </Label>
         <Controller
@@ -237,13 +209,11 @@ export function OrganizationRequestForm({
             </Text>
           </XStack>
           <Text fontSize="$3" color="$color11">
-            We&apos;ve logged your request. Our team will review it and follow up if we need additional
-            details.
+            We&apos;ve logged your request. Our team will review it and follow up if we need
+            additional details.
           </Text>
         </Card>
       ) : null}
     </YStack>
   )
 }
-
-

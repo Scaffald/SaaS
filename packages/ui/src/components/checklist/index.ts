@@ -1,8 +1,8 @@
 export { Checklist } from './Checklist'
 export { ChecklistHeader } from './ChecklistHeader'
-export { ChecklistProgress } from './ChecklistProgress'
-export { ChecklistList } from './ChecklistList'
 export { ChecklistItem } from './ChecklistItem'
+export { ChecklistList } from './ChecklistList'
+export { ChecklistProgress } from './ChecklistProgress'
 export type {
   ChecklistHeaderProps,
   ChecklistItem as ChecklistItemType,

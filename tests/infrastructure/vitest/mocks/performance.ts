@@ -40,14 +40,18 @@ export function createMockPerformanceTiming() {
 export function setupPerformanceMocks() {
   if (typeof global !== 'undefined') {
     // Mock PerformanceObserver if not available
-    if (typeof (global as unknown as { PerformanceObserver?: unknown }).PerformanceObserver === 'undefined') {
-      (global as unknown as { PerformanceObserver: unknown }).PerformanceObserver = createMockPerformanceObserver()
+    if (
+      typeof (global as unknown as { PerformanceObserver?: unknown }).PerformanceObserver ===
+      'undefined'
+    ) {
+      ;(global as unknown as { PerformanceObserver: unknown }).PerformanceObserver =
+        createMockPerformanceObserver()
     }
 
     // Mock performance.getEntriesByType if not available
     if (typeof performance !== 'undefined') {
       const originalGetEntriesByType = performance.getEntriesByType.bind(performance)
-      performance.getEntriesByType = function (type: string) {
+      performance.getEntriesByType = (type: string) => {
         if (type === 'navigation') {
           return [createMockPerformanceTiming()]
         }
@@ -56,4 +60,3 @@ export function setupPerformanceMocks() {
     }
   }
 }
-

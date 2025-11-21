@@ -1,21 +1,21 @@
-import { YStack, XStack, Text, ScrollView, Spinner, Separator } from 'tamagui'
-import {
-  Building2,
-  MapPin,
-  DollarSign,
-  Briefcase,
-  Clock,
-  Award,
-  Shield,
-  Plane,
-  Home,
-  Heart,
-  Calendar,
-  ExternalLink,
-} from '@tamagui/lucide-icons'
-import { Chip, extractPlainText } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { Chip, extractPlainText } from '@app/ui'
+import {
+  Award,
+  Briefcase,
+  Building2,
+  Calendar,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  Heart,
+  Home,
+  MapPin,
+  Plane,
+  Shield,
+} from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
+import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface DiscoverJobDetailRightProps {
   jobId: string
@@ -442,7 +442,14 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                       return null
                     }
                     return (
-                      <Chip key={skill.id} bg="$blue10" color="$color1" fontSize="$3" px="$3" py="$2">
+                      <Chip
+                        key={skill.id}
+                        bg="$blue10"
+                        color="$color1"
+                        fontSize="$3"
+                        px="$3"
+                        py="$2"
+                      >
                         {label}
                       </Chip>
                     )

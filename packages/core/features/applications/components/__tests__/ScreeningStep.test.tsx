@@ -1,7 +1,7 @@
+import type { ScreeningAnswers } from '@app/schemas'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ScreeningStep } from '../ScreeningStep'
-import type { ScreeningAnswers } from '@app/schemas'
 
 const mockOnAnswersChange = vi.fn()
 const mockOnContinue = vi.fn()
@@ -68,7 +68,7 @@ describe('ScreeningStep', () => {
         {...defaultProps}
         requiredSkills={['Skill 1', 'Skill 2']}
         optionalSkills={['Optional 1']}
-      />,
+      />
     )
 
     expect(screen.getByText('Required skills')).toBeInTheDocument()
@@ -200,4 +200,3 @@ describe('ScreeningStep', () => {
     })
   })
 })
-

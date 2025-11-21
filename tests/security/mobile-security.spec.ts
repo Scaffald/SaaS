@@ -10,7 +10,7 @@
  * Web-based tests validate basic security principles.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Mobile App Security Testing', () => {
   // Test mobile viewport as proxy for mobile app
@@ -34,7 +34,8 @@ test.describe('Mobile App Security Testing', () => {
       const matches = pageContent.match(pattern)
       if (matches) {
         // Check if it's in a comment (okay) or actual code (not okay)
-        const isInComment = pageContent.includes(`/* ${matches[0]}`) || pageContent.includes(`// ${matches[0]}`)
+        const isInComment =
+          pageContent.includes(`/* ${matches[0]}`) || pageContent.includes(`// ${matches[0]}`)
         expect(
           isInComment,
           `API keys should not be exposed in bundle: ${matches[0].substring(0, 20)}...`
@@ -62,7 +63,8 @@ test.describe('Mobile App Security Testing', () => {
     const headers = response?.headers() || {}
 
     // Check for security headers
-    const hasSecurityHeaders = headers['strict-transport-security'] || headers['x-content-type-options']
+    const hasSecurityHeaders =
+      headers['strict-transport-security'] || headers['x-content-type-options']
 
     // Security headers should be present (indicating security measures)
     expect(hasSecurityHeaders, 'Security headers should be present').toBeTruthy()
@@ -94,7 +96,9 @@ test.describe('Mobile App Security Testing', () => {
     // Sensitive data should be encrypted or hashed
     // Note: This is a basic check - actual validation requires inspecting encryption
     expect(
-      sensitiveKeys.length === 0 || localStorageData[sensitiveKeys[0]]?.startsWith('$2') || localStorageData[sensitiveKeys[0]]?.length < 50,
+      sensitiveKeys.length === 0 ||
+        localStorageData[sensitiveKeys[0]]?.startsWith('$2') ||
+        localStorageData[sensitiveKeys[0]]?.length < 50,
       'Sensitive data in localStorage should be encrypted or hashed'
     ).toBeTruthy()
   })
@@ -127,4 +131,3 @@ test.describe('Mobile App Security Testing', () => {
  * These tests provide web-based validation of security principles.
  * Full mobile security testing should be done on actual devices.
  */
-

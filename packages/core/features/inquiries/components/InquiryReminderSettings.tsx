@@ -1,7 +1,7 @@
+import { api } from '@app/core/utils/api'
+import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Button, Card, H4, Input, Separator, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { api } from '@app/core/utils/api'
 
 type InquiryReminderSettingsProps = {
   organizationId: string
@@ -30,7 +30,10 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
   const [reminderDays, setReminderDays] = useState(settings?.reminderDays ?? 3)
 
   // Update local state when settings load
-  if (settings && (reminderEnabled !== settings.reminderEnabled || reminderDays !== settings.reminderDays)) {
+  if (
+    settings &&
+    (reminderEnabled !== settings.reminderEnabled || reminderDays !== settings.reminderDays)
+  ) {
     setReminderEnabled(settings.reminderEnabled)
     setReminderDays(settings.reminderDays)
   }
@@ -85,15 +88,18 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
                 maxLength={2}
               />
               <Text fontSize="$2" color="$color11">
-                Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''} after
-                an inquiry is sent if they haven't responded. Reminders are limited to once every 3 days.
+                Candidates will receive a reminder {reminderDays} day{reminderDays !== 1 ? 's' : ''}{' '}
+                after an inquiry is sent if they haven't responded. Reminders are limited to once
+                every 3 days.
               </Text>
             </YStack>
           )}
 
           <Button
             onPress={handleSave}
-            disabled={updateMutation.isPending || !reminderEnabled || reminderDays < 1 || reminderDays > 14}
+            disabled={
+              updateMutation.isPending || !reminderEnabled || reminderDays < 1 || reminderDays > 14
+            }
             theme="blue"
           >
             {updateMutation.isPending ? 'Saving…' : 'Save Settings'}
@@ -103,4 +109,3 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
     </Card>
   )
 }
-

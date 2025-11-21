@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { YStack, XStack, Input, Text, Button } from 'tamagui'
 import { ChevronDown, ChevronRight } from '@tamagui/lucide-icons'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Button, Input, Text, XStack, YStack } from 'tamagui'
 import { FieldError } from '../FieldError'
 import { AddressAutocomplete } from './AddressAutocomplete'
 import type { AddressFormProps, AddressResult } from './types'

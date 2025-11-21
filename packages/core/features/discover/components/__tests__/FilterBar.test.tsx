@@ -1,17 +1,19 @@
-import type { CSSProperties, ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { CSSProperties, ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
   const mapStyleProps = (props: Record<string, unknown>) => {
-    const styleProps: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
+    const styleProps: Record<string, unknown> = {
+      ...(props.style as Record<string, unknown> | undefined),
+    }
     const passthrough: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(props)) {
       if (key === 'style') continue
-      // Handle responsive props - in test environment, assume $gtSm applies
-      if (key === '$gtSm' && typeof value === 'object' && value !== null) {
+      // Handle responsive props - in test environment, assume $md applies
+      if (key === '$md' && typeof value === 'object' && value !== null) {
         const responsiveProps = value as Record<string, unknown>
         if ('r' in responsiveProps) {
           styleProps.right = responsiveProps.r
@@ -74,7 +76,15 @@ vi.mock('tamagui', async () => {
     return { style: styleProps, passthrough } as const
   }
 
-  const MockButton = ({ children, onPress, ...rest }: { children: ReactNode; onPress?: () => void; style?: CSSProperties }) => {
+  const MockButton = ({
+    children,
+    onPress,
+    ...rest
+  }: {
+    children: ReactNode
+    onPress?: () => void
+    style?: CSSProperties
+  }) => {
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <button type="button" onClick={onPress} style={style} {...passthrough}>

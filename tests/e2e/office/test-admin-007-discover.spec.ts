@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/discover', () => {
   test('explore discover route UI elements', async ({ page }: { page: Page }) => {
     // Sign in as admin
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Navigate to discover route
     await page.goto('/dashboard/discover')
@@ -15,11 +15,11 @@ test.describe('Admin • /dashboard/discover', () => {
     // Take screenshot
     await page.screenshot({
       path: '.playwright-mcp/admin-007-discover-route.png',
-      fullPage: true
+      fullPage: true,
     })
 
     // Verify page loaded
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
 
     // Get current URL
@@ -27,8 +27,8 @@ test.describe('Admin • /dashboard/discover', () => {
     console.log(`Current URL: ${currentURL}`)
 
     // Check for common navigation elements
-    const hasDiscoverLink = await page.locator('text=/discover/i').count() > 0
-    const hasNavigation = await page.locator('[role="navigation"]').count() > 0
+    const hasDiscoverLink = (await page.locator('text=/discover/i').count()) > 0
+    const hasNavigation = (await page.locator('[role="navigation"]').count()) > 0
 
     console.log(`Has Discover link: ${hasDiscoverLink}`)
     console.log(`Has Navigation: ${hasNavigation}`)

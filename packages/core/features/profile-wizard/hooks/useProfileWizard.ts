@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '@app/core/utils/api'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   DEFAULT_WIZARD_PROGRESS,
   PROFILE_WIZARD_STEP_META,
@@ -98,7 +98,7 @@ interface ProfileWizardApi {
       options?: {
         enabled?: boolean
         staleTime?: number
-      },
+      }
     ) => UseQueryLike<ProfileWizardProgressResponse>
   }
   saveStep: {
@@ -135,7 +135,7 @@ export interface UseProfileWizardReturn {
   goNext: () => void
   goBack: () => void
   saveStep: <TStep extends ProfileWizardStepId>(
-    input: SaveStepInput<TStep>,
+    input: SaveStepInput<TStep>
   ) => Promise<ProfileWizardProgressResponse>
   completeWizard: (options?: { celebrate?: boolean }) => Promise<ProfileWizardProgressResponse>
   markStepSkipped: (step: ProfileWizardStepId) => void
@@ -172,7 +172,7 @@ function getAdjacentStep(current: ProfileWizardStepId, direction: 1 | -1): Profi
 
 function mergeProgress(
   response: ProfileWizardProgressResponse | undefined,
-  previousState: WizardState,
+  previousState: WizardState
 ): WizardState {
   if (!response) {
     return previousState
@@ -210,7 +210,8 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
 
     setState((prev) => ({
       ...mergeProgress(data, prev),
-      currentStep: initialStep && PROFILE_WIZARD_STEPS.includes(initialStep) ? initialStep : data.currentStep,
+      currentStep:
+        initialStep && PROFILE_WIZARD_STEPS.includes(initialStep) ? initialStep : data.currentStep,
     }))
   }, [data, initialStep])
 
@@ -261,21 +262,18 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
 
       return result
     },
-    [saveStepMutation, utils],
+    [saveStepMutation, utils]
   )
 
-  const markStepSkipped = useCallback(
-    (step: ProfileWizardStepId) => {
-      setState((prev) => ({
-        ...prev,
-        progress: {
-          ...prev.progress,
-          completedSteps: prev.progress.completedSteps.filter((id) => id !== step),
-        },
-      }))
-    },
-    [],
-  )
+  const markStepSkipped = useCallback((step: ProfileWizardStepId) => {
+    setState((prev) => ({
+      ...prev,
+      progress: {
+        ...prev.progress,
+        completedSteps: prev.progress.completedSteps.filter((id) => id !== step),
+      },
+    }))
+  }, [])
 
   const completeMutation = profileWizardApi.complete.useMutation()
 
@@ -299,7 +297,7 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
 
       return result
     },
-    [completeMutation, utils],
+    [completeMutation, utils]
   )
 
   const refresh = useCallback(async () => {
@@ -324,5 +322,3 @@ export function useProfileWizard(initialStep?: ProfileWizardStepId): UseProfileW
 export function getStepDisplayMeta(step: ProfileWizardStepId) {
   return PROFILE_WIZARD_STEP_META[step]
 }
-
-

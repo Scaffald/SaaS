@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { AttachmentsStep, type Attachments } from '../AttachmentsStep'
-import type { AttachmentMetadata } from '@app/schemas'
+import { type Attachments, AttachmentsStep } from '../AttachmentsStep'
 
 const mockOnAttachmentsChange = vi.fn()
 const mockOnPrevious = vi.fn()
@@ -194,4 +193,3 @@ describe('AttachmentsStep', () => {
     expect(screen.getByText(/Upload Documents/)).toBeInTheDocument()
   })
 })
-

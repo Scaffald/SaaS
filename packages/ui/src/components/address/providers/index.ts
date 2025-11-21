@@ -1,16 +1,16 @@
 export {
   BaseGeocodingProvider,
-  getStateAbbreviation,
-  normalizeComponent,
   generateId,
+  getStateAbbreviation,
   isValidCoordinates,
+  normalizeComponent,
 } from './base'
-export { MapboxProvider } from './mapbox'
 export {
-  createProvider,
   createFromEnvironment,
-  getApiKeyFromEnvironment,
-  validateConfig,
-  getSupportedProviders,
+  createProvider,
   GeocodingService,
+  getApiKeyFromEnvironment,
+  getSupportedProviders,
+  validateConfig,
 } from './factory'
+export { MapboxProvider } from './mapbox'

@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Spinner, H4 } from 'tamagui'
-import { Copy, Check, AlertCircle, Clock } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
-import { isSlugValid, isReservedSlug } from '@app/core/utils/slugify'
 import { copyToClipboard } from '@app/core/utils/clipboard'
+import { isReservedSlug, isSlugValid } from '@app/core/utils/slugify'
 import { UIButton as Button, DashboardWidget } from '@app/ui'
+import { AlertCircle, Check, Clock, Copy } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { H4, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type UpdateSlugResult = {
   success: boolean

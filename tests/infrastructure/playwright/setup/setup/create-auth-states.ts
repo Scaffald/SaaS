@@ -27,36 +27,42 @@ async function createAuthStates() {
     await adminPage.waitForLoadState('domcontentloaded')
 
     // Set the session in localStorage using the CORRECT method
-    await adminPage.evaluate((sessionData) => {
-      // Store session in localStorage with all Supabase keys
-      const keys = Object.keys(localStorage)
+    await adminPage.evaluate(
+      (sessionData) => {
+        // Store session in localStorage with all Supabase keys
+        const keys = Object.keys(localStorage)
 
-      // Find the Supabase auth key (it varies by hostname)
-      let authKey = keys.find(k => k.includes('sb-') && k.includes('-auth-token'))
+        // Find the Supabase auth key (it varies by hostname)
+        let authKey = keys.find((k) => k.includes('sb-') && k.includes('-auth-token'))
 
-      if (!authKey) {
-        // Create the key based on current hostname
-        const hostname = window.location.hostname.replace(/\./g, '-')
-        authKey = `sb-${hostname}-auth-token`
+        if (!authKey) {
+          // Create the key based on current hostname
+          const hostname = window.location.hostname.replace(/\./g, '-')
+          authKey = `sb-${hostname}-auth-token`
+        }
+
+        localStorage.setItem(authKey, JSON.stringify(sessionData))
+        console.log('[SETUP] Stored session in key:', authKey)
+      },
+      {
+        access_token: adminSession.session.access_token,
+        refresh_token: adminSession.session.refresh_token,
+        expires_at: adminSession.session.expires_at,
+        expires_in: adminSession.session.expires_in,
+        token_type: adminSession.session.token_type,
+        user: adminSession.user,
       }
-
-      localStorage.setItem(authKey, JSON.stringify(sessionData))
-      console.log('[SETUP] Stored session in key:', authKey)
-    }, {
-      access_token: adminSession.session.access_token,
-      refresh_token: adminSession.session.refresh_token,
-      expires_at: adminSession.session.expires_at,
-      expires_in: adminSession.session.expires_in,
-      token_type: adminSession.session.token_type,
-      user: adminSession.user,
-    })
+    )
 
     // Reload to let Supabase read the session
     await adminPage.reload({ waitUntil: 'domcontentloaded' })
     await adminPage.waitForTimeout(2000)
 
     // Try navigating to dashboard
-    await adminPage.goto('http://localhost:8081/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await adminPage.goto('http://localhost:8081/dashboard', {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    })
     await adminPage.waitForTimeout(3000)
 
     const adminUrl = adminPage.url()
@@ -86,29 +92,35 @@ async function createAuthStates() {
     await userPage.goto('http://localhost:8081/')
     await userPage.waitForLoadState('domcontentloaded')
 
-    await userPage.evaluate((sessionData) => {
-      const keys = Object.keys(localStorage)
-      let authKey = keys.find(k => k.includes('sb-') && k.includes('-auth-token'))
+    await userPage.evaluate(
+      (sessionData) => {
+        const keys = Object.keys(localStorage)
+        let authKey = keys.find((k) => k.includes('sb-') && k.includes('-auth-token'))
 
-      if (!authKey) {
-        const hostname = window.location.hostname.replace(/\./g, '-')
-        authKey = `sb-${hostname}-auth-token`
+        if (!authKey) {
+          const hostname = window.location.hostname.replace(/\./g, '-')
+          authKey = `sb-${hostname}-auth-token`
+        }
+
+        localStorage.setItem(authKey, JSON.stringify(sessionData))
+      },
+      {
+        access_token: userSession.session.access_token,
+        refresh_token: userSession.session.refresh_token,
+        expires_at: userSession.session.expires_at,
+        expires_in: userSession.session.expires_in,
+        token_type: userSession.session.token_type,
+        user: userSession.user,
       }
-
-      localStorage.setItem(authKey, JSON.stringify(sessionData))
-    }, {
-      access_token: userSession.session.access_token,
-      refresh_token: userSession.session.refresh_token,
-      expires_at: userSession.session.expires_at,
-      expires_in: userSession.session.expires_in,
-      token_type: userSession.session.token_type,
-      user: userSession.user,
-    })
+    )
 
     await userPage.reload({ waitUntil: 'domcontentloaded' })
     await userPage.waitForTimeout(2000)
 
-    await userPage.goto('http://localhost:8081/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await userPage.goto('http://localhost:8081/dashboard', {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    })
     await userPage.waitForTimeout(3000)
 
     await userContext.storageState({ path: 'tests/.auth/user.json' })
@@ -130,29 +142,35 @@ async function createAuthStates() {
     await superPage.goto('http://localhost:8081/')
     await superPage.waitForLoadState('domcontentloaded')
 
-    await superPage.evaluate((sessionData) => {
-      const keys = Object.keys(localStorage)
-      let authKey = keys.find(k => k.includes('sb-') && k.includes('-auth-token'))
+    await superPage.evaluate(
+      (sessionData) => {
+        const keys = Object.keys(localStorage)
+        let authKey = keys.find((k) => k.includes('sb-') && k.includes('-auth-token'))
 
-      if (!authKey) {
-        const hostname = window.location.hostname.replace(/\./g, '-')
-        authKey = `sb-${hostname}-auth-token`
+        if (!authKey) {
+          const hostname = window.location.hostname.replace(/\./g, '-')
+          authKey = `sb-${hostname}-auth-token`
+        }
+
+        localStorage.setItem(authKey, JSON.stringify(sessionData))
+      },
+      {
+        access_token: superSession.session.access_token,
+        refresh_token: superSession.session.refresh_token,
+        expires_at: superSession.session.expires_at,
+        expires_in: superSession.session.expires_in,
+        token_type: superSession.session.token_type,
+        user: superSession.user,
       }
-
-      localStorage.setItem(authKey, JSON.stringify(sessionData))
-    }, {
-      access_token: superSession.session.access_token,
-      refresh_token: superSession.session.refresh_token,
-      expires_at: superSession.session.expires_at,
-      expires_in: superSession.session.expires_in,
-      token_type: superSession.session.token_type,
-      user: superSession.user,
-    })
+    )
 
     await superPage.reload({ waitUntil: 'domcontentloaded' })
     await superPage.waitForTimeout(2000)
 
-    await superPage.goto('http://localhost:8081/dashboard', { waitUntil: 'domcontentloaded', timeout: 30000 })
+    await superPage.goto('http://localhost:8081/dashboard', {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    })
     await superPage.waitForTimeout(3000)
 
     await superContext.storageState({ path: 'tests/.auth/super-admin.json' })

@@ -7,16 +7,16 @@
  * Task 16: Execute OWASP Top Ten Security Validation
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
-  testSQLInjectionPrevention,
-  testXSSPrevention,
-  testCSRFProtection,
+  assertSecurityHeaders,
   testAuthenticationBypass,
   testAuthorizationBypass,
-  testSensitiveDataExposure,
+  testCSRFProtection,
   testInputValidation,
-  assertSecurityHeaders,
+  testSensitiveDataExposure,
+  testSQLInjectionPrevention,
+  testXSSPrevention,
 } from '../infrastructure/playwright/helpers/security'
 
 test.describe('OWASP Top 10 Security Testing', () => {
@@ -37,14 +37,20 @@ test.describe('OWASP Top 10 Security Testing', () => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Look for search inputs or forms
-    const searchInput = page.locator('input[type="search"], input[name*="search"], input[placeholder*="search" i]').first()
+    const searchInput = page
+      .locator('input[type="search"], input[name*="search"], input[placeholder*="search" i]')
+      .first()
     const searchButton = page.locator('button[type="submit"], button:has-text("Search")').first()
 
     const inputCount = await searchInput.count()
     const buttonCount = await searchButton.count()
 
     if (inputCount > 0 && buttonCount > 0) {
-      await testSQLInjectionPrevention(page, 'input[type="search"], input[name*="search"], input[placeholder*="search" i]', 'button[type="submit"], button:has-text("Search")')
+      await testSQLInjectionPrevention(
+        page,
+        'input[type="search"], input[name*="search"], input[placeholder*="search" i]',
+        'button[type="submit"], button:has-text("Search")'
+      )
     }
   })
 
@@ -53,13 +59,19 @@ test.describe('OWASP Top 10 Security Testing', () => {
 
     // Look for text inputs or forms
     const textInput = page.locator('input[type="text"], input[name*="name"], textarea').first()
-    const submitButton = page.locator('button[type="submit"], button:has-text("Save"), button:has-text("Submit")').first()
+    const submitButton = page
+      .locator('button[type="submit"], button:has-text("Save"), button:has-text("Submit")')
+      .first()
 
     const inputCount = await textInput.count()
     const buttonCount = await submitButton.count()
 
     if (inputCount > 0 && buttonCount > 0) {
-      await testXSSPrevention(page, 'input[type="text"], input[name*="name"], textarea', 'button[type="submit"], button:has-text("Save"), button:has-text("Submit")')
+      await testXSSPrevention(
+        page,
+        'input[type="text"], input[name*="name"], textarea',
+        'button[type="submit"], button:has-text("Save"), button:has-text("Submit")'
+      )
     }
   })
 
@@ -94,13 +106,17 @@ test.describe('OWASP Top 10 Security Testing', () => {
     await page.goto('/', { waitUntil: 'networkidle' })
 
     // Basic check: page should load without errors from vulnerable components
-    const bodyText = await page.textContent('body') || ''
-    const hasVulnerabilityErrors = bodyText.toLowerCase().includes('vulnerability') || bodyText.toLowerCase().includes('security warning')
+    const bodyText = (await page.textContent('body')) || ''
+    const hasVulnerabilityErrors =
+      bodyText.toLowerCase().includes('vulnerability') ||
+      bodyText.toLowerCase().includes('security warning')
 
     expect(hasVulnerabilityErrors, 'No vulnerability errors should be visible').toBeFalsy()
   })
 
-  test('A07: Identification and Authentication Failures - Authentication bypass prevention', async ({ page }) => {
+  test('A07: Identification and Authentication Failures - Authentication bypass prevention', async ({
+    page,
+  }) => {
     await testAuthenticationBypass(page, '/dashboard')
   })
 
@@ -116,7 +132,9 @@ test.describe('OWASP Top 10 Security Testing', () => {
     }
   })
 
-  test('A09: Security Logging and Monitoring Failures - Logging infrastructure', async ({ page }) => {
+  test('A09: Security Logging and Monitoring Failures - Logging infrastructure', async ({
+    page,
+  }) => {
     // This test documents that security logging should be implemented
     // Actual security logging validation requires checking:
     // 1. Security event logs
@@ -145,16 +163,21 @@ test.describe('OWASP Top 10 Security Testing', () => {
     await page.goto('/dashboard', { waitUntil: 'networkidle' })
 
     // Look for URL inputs
-    const urlInput = page.locator('input[type="url"], input[name*="url"], input[placeholder*="url" i]').first()
+    const urlInput = page
+      .locator('input[type="url"], input[name*="url"], input[placeholder*="url" i]')
+      .first()
     const urlInputCount = await urlInput.count()
 
     if (urlInputCount > 0) {
       // Test that URL inputs are validated
-      await testInputValidation(page, 'input[type="url"], input[name*="url"], input[placeholder*="url" i]', 'button[type="submit"]')
+      await testInputValidation(
+        page,
+        'input[type="url"], input[name*="url"], input[placeholder*="url" i]',
+        'button[type="submit"]'
+      )
     }
 
     // SSRF prevention should be implemented in backend
     expect(true, 'SSRF prevention should be implemented').toBeTruthy()
   })
 })
-

@@ -1,46 +1,45 @@
 /* c8 ignore file */
 
-import { useQuery } from "@tanstack/react-query";
+import type { Database } from '@app/supabase/types'
+import { useQuery } from '@tanstack/react-query'
 
-import type { Database } from "@app/supabase/types";
+import { supabase } from './supabase/client'
+import { useUser } from './useUser'
 
-import { supabase } from "./supabase/client";
-import { useUser } from "./useUser";
+type TeamMemberRow = Database['core']['Tables']['team_members']['Row']
+type OrganizationRow = Database['core']['Tables']['organizations']['Row']
 
-type TeamMemberRow = Database["core"]["Tables"]["team_members"]["Row"];
-type OrganizationRow = Database["core"]["Tables"]["organizations"]["Row"];
-
-type JoinedTeamMember = Pick<TeamMemberRow, "user_id" | "created_at"> & {
+type JoinedTeamMember = Pick<TeamMemberRow, 'user_id' | 'created_at'> & {
   teams: {
-    organizations: Pick<OrganizationRow, "id" | "name" | "slug"> | null;
-  } | null;
-};
+    organizations: Pick<OrganizationRow, 'id' | 'name' | 'slug'> | null
+  } | null
+}
 
 export type OrganizationMembership = {
-  organization_id: string;
-  organization_name: string;
-  organization_slug: string;
-  user_id: string;
-  role: string;
-  joined_at: string;
-};
+  organization_id: string
+  organization_name: string
+  organization_slug: string
+  user_id: string
+  role: string
+  joined_at: string
+}
 
 export const useOrganizations = () => {
   // Using supabase directly from import
-  const { user } = useUser();
+  const { user } = useUser()
 
   return useQuery({
-    queryKey: ["organizations", user?.id],
+    queryKey: ['organizations', user?.id],
     enabled: !!user?.id,
     queryFn: async (): Promise<OrganizationMembership[]> => {
       if (!user?.id) {
-        return [];
+        return []
       }
 
-      const coreClient = supabase.schema<"core">("core");
+      const coreClient = supabase.schema<'core'>('core')
 
       const { data, error } = await coreClient
-        .from("team_members")
+        .from('team_members')
         .select(`
           user_id,
           created_at,
@@ -52,33 +51,33 @@ export const useOrganizations = () => {
             )
           )
         `)
-        .eq("user_id", user.id);
+        .eq('user_id', user.id)
 
       if (error) {
-        throw new Error(error.message);
+        throw new Error(error.message)
       }
 
-      const memberships = (data ?? []) as JoinedTeamMember[];
+      const memberships = (data ?? []) as JoinedTeamMember[]
 
       return memberships
         .map((item) => {
-          const organization = item.teams?.organizations;
+          const organization = item.teams?.organizations
 
           if (!organization) {
-            return null;
+            return null
           }
 
           return {
             organization_id: organization.id,
-            organization_name: organization.name ?? "",
-            organization_slug: organization.slug ?? "",
+            organization_name: organization.name ?? '',
+            organization_slug: organization.slug ?? '',
             user_id: item.user_id,
-            role: "member",
+            role: 'member',
             joined_at: item.created_at,
-          } satisfies OrganizationMembership;
+          } satisfies OrganizationMembership
         })
         .filter((membership): membership is OrganizationMembership => membership !== null)
-        .sort((a, b) => a.organization_name.localeCompare(b.organization_name));
+        .sort((a, b) => a.organization_name.localeCompare(b.organization_name))
     },
-  });
-};
+  })
+}

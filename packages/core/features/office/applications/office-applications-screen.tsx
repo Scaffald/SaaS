@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react'
-import { YStack, XStack, H2, Button, Text, Spinner } from '@app/ui'
-import { useApplications } from './hooks/useApplications'
-import type { Applications } from './hooks/useApplications'
-import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
-import { ApplicationsFilters } from './components/ApplicationsFilters'
+import { Button, H2, Spinner, Text, XStack, YStack } from '@app/ui'
+import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
+import { ApplicationsFilters } from './components/ApplicationsFilters'
+import { ApplicationsKanbanBoard } from './components/ApplicationsKanbanBoard'
+import type { Applications } from './hooks/useApplications'
+import { useApplications } from './hooks/useApplications'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -12,18 +12,22 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0,
 })
 
-function formatPayRange(
-  minCents?: number | null,
-  maxCents?: number | null,
-  type?: string | null
-) {
+function formatPayRange(minCents?: number | null, maxCents?: number | null, type?: string | null) {
   if (!minCents && !maxCents) return ''
   const label =
     minCents && maxCents
       ? `${currencyFormatter.format(minCents / 100)} - ${currencyFormatter.format(maxCents / 100)}`
-      : currencyFormatter.format(((maxCents ?? minCents) ?? 0) / 100)
+      : currencyFormatter.format((maxCents ?? minCents ?? 0) / 100)
   const suffix =
-    type === 'hourly' ? '/hr' : type === 'salary' ? '/yr' : type === 'contract' ? ' (contract)' : type === 'project' ? ' (project)' : ''
+    type === 'hourly'
+      ? '/hr'
+      : type === 'salary'
+        ? '/yr'
+        : type === 'contract'
+          ? ' (contract)'
+          : type === 'project'
+            ? ' (project)'
+            : ''
   return `${label}${suffix}`
 }
 
@@ -69,7 +73,7 @@ export const OfficeApplicationsScreen = () => {
         pay_range_type?: string | null
         employment_type?: string | null
         organization_id?: string | null
-        target_start_date?: string | null
+        // target_start_date?: string | null // Column doesn't exist in database yet
       } | null
       const assignments = jobInfo?.teamAssignments ?? []
       const primaryAssignment =
@@ -141,7 +145,7 @@ export const OfficeApplicationsScreen = () => {
           payRangeMaxCents: jobInfo?.pay_range_max_cents ?? null,
           payRangeType: jobInfo?.pay_range_type ?? null,
           employmentType: jobInfo?.employment_type ?? null,
-          targetStartDate: jobInfo?.target_start_date ?? null,
+          targetStartDate: null, // target_start_date column doesn't exist in database yet
         },
         organizationId: jobInfo?.organization_id ?? null,
         workerUserId: app.user_id ?? null,

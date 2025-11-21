@@ -1,20 +1,21 @@
+import { ROUTES } from '@app/core/constants/routes'
 import {
   ProfileSkillsLeft,
   ProfileSkillsProvider,
   ProfileSkillsRight,
 } from '@app/core/features/profile'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 
 export default function ProfileSkillsPage() {
   return (
     <ProfileSkillsProvider>
-      <DashboardLayout
+      <ProfilePage
+        breadcrumbs={[
+          { route: ROUTES.DASHBOARD.PROFILE },
+          { route: ROUTES.DASHBOARD.PROFILE.SKILLS },
+        ]}
         leftContent={<ProfileSkillsLeft />}
-        rightContent={
-          <QuickLinksSidebar>
-            <ProfileSkillsRight />
-          </QuickLinksSidebar>
-        }
+        rightContent={<ProfileSkillsRight />}
       />
     </ProfileSkillsProvider>
   )

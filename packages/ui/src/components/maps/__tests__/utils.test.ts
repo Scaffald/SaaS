@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { extractViewportBounds } from '../utils'
+import { describe, expect, it } from 'vitest'
 import type { ViewportBounds } from '../types'
+import { extractViewportBounds } from '../utils'
 
 describe('extractViewportBounds', () => {
   it('extracts viewport bounds from a map instance', () => {
@@ -95,9 +95,9 @@ describe('extractViewportBounds', () => {
   it('handles very small viewport bounds', () => {
     const mockBounds = {
       getNorth: () => 42.3601,
-      getSouth: () => 42.3600,
+      getSouth: () => 42.36,
       getEast: () => -71.0589,
-      getWest: () => -71.0590,
+      getWest: () => -71.059,
     }
 
     const mockMap = {
@@ -108,9 +108,9 @@ describe('extractViewportBounds', () => {
 
     expect(result).toEqual({
       north: 42.3601,
-      south: 42.3600,
+      south: 42.36,
       east: -71.0589,
-      west: -71.0590,
+      west: -71.059,
     })
   })
 
@@ -170,4 +170,3 @@ describe('extractViewportBounds', () => {
     expect(() => extractViewportBounds(mockMap as any)).toThrow('Map bounds are not available')
   })
 })
-

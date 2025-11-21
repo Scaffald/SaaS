@@ -1,7 +1,7 @@
 import { memo } from 'react'
-import { Input, TextArea, XStack, YStack, Text } from 'tamagui'
-import { ConfidenceBadge } from './ConfidenceBadge'
+import { Input, Text, TextArea, XStack, YStack } from 'tamagui'
 import { toConfidenceLevel } from '../utils/importConfidence'
+import { ConfidenceBadge } from './ConfidenceBadge'
 
 export type EditableFieldType = 'text' | 'textarea' | 'date'
 
@@ -47,11 +47,7 @@ export const EditableField = memo(function EditableField({
           style={{ minHeight: 120 }}
         />
       ) : (
-        <Input
-          value={inputValue}
-          onChangeText={onChange}
-          placeholder={placeholder}
-        />
+        <Input value={inputValue} onChangeText={onChange} placeholder={placeholder} />
       )}
 
       {error && (
@@ -62,5 +58,3 @@ export const EditableField = memo(function EditableField({
     </YStack>
   )
 })
-
-

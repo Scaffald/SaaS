@@ -1,5 +1,5 @@
-import { XStack, YStack, Text, Circle } from 'tamagui'
 import { Check } from '@tamagui/lucide-icons'
+import { Circle, Text, XStack, YStack } from 'tamagui'
 
 interface ReviewProgressProps {
   currentStep: number

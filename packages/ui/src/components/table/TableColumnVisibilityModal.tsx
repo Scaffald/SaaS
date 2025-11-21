@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Paragraph, Separator, Text, XStack, YStack } from 'tamagui'
-import { ResponsiveModal } from '../ResponsiveModal'
 import { Checkbox } from '../inputs/Checkbox'
+import { ResponsiveModal } from '../ResponsiveModal'
 
 export interface TableColumnVisibilityOption {
   id: string

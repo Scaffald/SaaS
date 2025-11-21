@@ -1,7 +1,7 @@
 import { SuccessView } from '@app/core/features/auth/components/SuccessView'
+import { useTranslation } from '@app/core/utils/useTranslation'
 import { Stack } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useTranslation } from '@app/core/utils/useTranslation'
 
 export default function Screen() {
   const { t } = useTranslation()

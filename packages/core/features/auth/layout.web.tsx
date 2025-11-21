@@ -1,6 +1,6 @@
+import type { ReactNode } from 'react'
 import { XStack, YStack } from 'tamagui'
 import { WelcomeScreen } from './welcome-screen'
-import type { ReactNode } from 'react'
 
 export type AuthLayoutProps = {
   children?: ReactNode

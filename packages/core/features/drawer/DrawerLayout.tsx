@@ -1,17 +1,14 @@
-import type { ReactNode } from 'react'
-import { Button, useTheme, YStack, Text, XStack, useWindowDimensions } from 'tamagui'
+import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
+import { api } from '@app/core/utils/api'
+import { shadows, type NotificationItem } from '@app/ui'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
-import { NotificationDropdown } from '@app/ui'
-import { UserMenuAvatar } from './UserMenuAvatar'
-import { DrawerMenu } from './DrawerMenu'
-import { api } from '@app/core/utils/api'
-import type { NotificationItem } from '@app/ui'
-import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
-import { FeedbackWidget } from '@app/core/features/feedback'
-import { OfficeFlyout } from '@app/core/features/office-navigation'
-import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
+import { useEffect, useState, type ReactNode } from 'react'
+import { Pressable } from 'react-native'
+import { useTheme, useWindowDimensions, XStack } from 'tamagui'
+import { DrawerContent } from './DrawerContent'
+import { ScaffaldLogo } from '@app/core/assets'
 
 interface DrawerLayoutProps {
   /**
@@ -33,16 +30,12 @@ interface DrawerLayoutProps {
  * Shared drawer layout component used by both dashboard and office sections
  * Provides consistent drawer behavior, styling, and responsive design
  */
-export function DrawerLayout({
-  protectionComponent,
-  children,
-  hideDrawer = false,
-}: DrawerLayoutProps) {
+export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProps) {
   const { width } = useWindowDimensions()
   const theme = useTheme()
   // Permanent drawer when width >= 1024px, front drawer otherwise
   const isSmall = width < 1024
-  const { hasOfficeRole } = useUserRoles()
+  const [isDrawerCollapsed, setIsDrawerCollapsed] = useState(false)
   const { data: preferencesData } = api.notifications.preferences.get.useQuery(undefined, {
     staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
@@ -55,12 +48,12 @@ export function DrawerLayout({
   useNotificationDeviceRegistration(pushEnabled)
 
   // Fetch notifications
-  const { data: notificationsData, isLoading: isLoadingNotifications } =
+  const { data: notificationsData, isLoading: _isLoadingNotifications } =
     api.notifications.list.useQuery({ limit: 25 })
 
   // Fetch unread count
   const { data: unreadCountData } = api.notifications.getUnreadCount.useQuery()
-  const unreadCount = unreadCountData?.count || 0
+  const _unreadCount = unreadCountData?.count || 0
 
   // Mark as read mutation
   const utils = api.useUtils()
@@ -73,7 +66,7 @@ export function DrawerLayout({
   })
 
   // Handle notification click
-  const handleNotificationClick = (notification: NotificationItem) => {
+  const _handleNotificationClick = (notification: NotificationItem) => {
     // Mark as read if unread
     if (!notification.read) {
       markAsReadMutation.mutate({ id: notification.id })
@@ -81,12 +74,12 @@ export function DrawerLayout({
   }
 
   // Handle mark as read
-  const handleMarkAsRead = (notificationId: string) => {
+  const _handleMarkAsRead = (notificationId: string) => {
     markAsReadMutation.mutate({ id: notificationId })
   }
 
   // Transform notifications to match NotificationItem interface
-  const transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
+  const _transformedNotifications: NotificationItem[] = (notificationsData?.items ?? []).map(
     (notification: unknown): NotificationItem => {
       const item = notification as {
         id: string
@@ -121,61 +114,70 @@ export function DrawerLayout({
     }
   )
 
+  useEffect(() => {
+    if (isSmall && isDrawerCollapsed) {
+      setIsDrawerCollapsed(false)
+    }
+  }, [isDrawerCollapsed, isSmall])
+
+  const drawerWidth = isSmall ? undefined : isDrawerCollapsed ? 92 : 300
+
   return (
     <>
       {protectionComponent}
 
       <Drawer
         screenOptions={({ navigation }) => ({
-          headerShown: !hideDrawer,
-          drawerType: hideDrawer ? 'back' : isSmall ? 'front' : 'permanent',
-          swipeEnabled: hideDrawer ? false : isSmall,
-          ...(hideDrawer
-            ? {}
-            : {
-                headerStyle: {
-                  backgroundColor: theme.color2.val,
-                },
-                headerLeftContainerStyle: {},
-                headerTitleStyle: {
-                  color: theme.color12.val,
-                  marginLeft: isSmall ? 0 : 35,
-                },
-                headerLeft: () => (
-                  <Button
-                    borderStyle="unset"
-                    borderWidth={0}
-                    bg="transparent"
-                    display={isSmall ? 'flex' : 'none'}
-                    ml="$4"
-                    px="$4"
-                    height={30}
-                    onPress={() => {
-                      navigation.dispatch(DrawerActions.toggleDrawer())
-                    }}
-                  >
-                    <Menu size={24} />
-                  </Button>
-                ),
-                headerRight: () => (
-                  <XStack gap="$3" items="center" px="$4">
-                    {/* Show OfficeFlyout if user has office role */}
-                    {hasOfficeRole && <OfficeFlyout />}
-                    <NotificationDropdown
-                      notifications={transformedNotifications}
-                      unreadCount={unreadCount}
-                      isLoading={isLoadingNotifications}
-                      onNotificationClick={handleNotificationClick}
-                      onMarkAsRead={handleMarkAsRead}
-                    />
-                    <UserMenuAvatar />
-                  </XStack>
-                ),
-              }),
-          overlayColor: hideDrawer ? 'transparent' : 'rgba(0, 0, 0, 0.15)',
-          drawerStyle: hideDrawer ? { width: 0, display: 'none' } : { width: 300 },
+          drawerType: isSmall ? 'front' : 'permanent',
+          swipeEnabled: isSmall,
+          headerShown: isSmall,
+          headerStyle: {
+            backgroundColor: theme.blue1.val,
+            borderWidth: 0,
+          },
+          headerLeftContainerStyle: {
+            paddingLeft: 20,
+          },
+          headerRightContainerStyle: {
+            paddingRight: 20,
+          },
+          headerTitleStyle: {
+            color: theme.color12.val,
+          },
+          drawerStyle: {
+            backgroundColor: theme.color3.val,
+            borderRightWidth: 0,
+            borderRadius: 0,
+            width: drawerWidth,
+            maxWidth: drawerWidth,
+            minWidth: drawerWidth,
+          },
+          overlayColor: shadows.shadowColor,
+          headerLeft: () => {
+            return isSmall ? (
+              <Pressable
+                onPress={() => {
+                  navigation.dispatch(DrawerActions.toggleDrawer())
+                }}
+              >
+                <Menu size={24} />
+              </Pressable>
+            ) : null
+          },
+          headerRight: () => (
+            <XStack gap="$3" items="center">
+              <ScaffaldLogo height={22} width={22} showWordmark={false} />
+            </XStack>
+          ),
         })}
-        drawerContent={hideDrawer ? () => null : (props) => <DrawerMenu {...props} />}
+        drawerContent={(props) => (
+          <DrawerContent
+            {...props}
+            isCollapsed={!isSmall && isDrawerCollapsed}
+            canCollapse={!isSmall}
+            onToggleCollapse={() => setIsDrawerCollapsed((prev) => !prev)}
+          />
+        )}
       >
         {children}
       </Drawer>

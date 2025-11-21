@@ -1,19 +1,18 @@
-import { useMemo } from "react";
-import { useRouter } from "expo-router";
-import { Text, YStack } from "tamagui";
-
-import { DashboardWidget, UIButton as Button } from "@app/ui";
-import { RouteBuilder } from "@app/core/constants/routes";
-import { api } from "@app/core/utils/api";
-import { IdVerificationBadge } from "./IdVerificationBadge";
+import { RouteBuilder } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { UIButton as Button, DashboardWidget } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { Text, YStack } from 'tamagui'
+import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {
-  const router = useRouter();
+  const router = useRouter()
   const badgeQuery = api.idVerification.getCurrentVerification.useQuery(undefined, {
     staleTime: 60 * 1000,
-  });
+  })
 
-  const status = useMemo(() => deriveStatus(badgeQuery), [badgeQuery]);
+  const status = useMemo(() => deriveStatus(badgeQuery), [badgeQuery])
 
   return (
     <DashboardWidget>
@@ -42,44 +41,44 @@ export function IdVerificationWidget() {
         </Button>
       </YStack>
     </DashboardWidget>
-  );
+  )
 }
 
 type StatusDescriptor = {
-  badgeStatus: "active" | "expired" | "revoked" | null;
-  badgeExpiresAt?: string | null;
-  caption?: string | null;
-  muted?: boolean;
-};
+  badgeStatus: 'active' | 'expired' | 'revoked' | null
+  badgeExpiresAt?: string | null
+  caption?: string | null
+  muted?: boolean
+}
 
 function deriveStatus(
-  badgeQuery: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>,
+  badgeQuery: ReturnType<typeof api.idVerification.getCurrentVerification.useQuery>
 ): StatusDescriptor {
   if (badgeQuery.isLoading) {
     return {
       badgeStatus: null,
-      caption: "Fetching your latest verification status.",
+      caption: 'Fetching your latest verification status.',
       muted: true,
-    };
+    }
   }
 
   if (badgeQuery.isError || !badgeQuery.data) {
     return {
       badgeStatus: null,
-      caption: "Add a verified badge to boost trust with organizations.",
+      caption: 'Add a verified badge to boost trust with organizations.',
       muted: true,
-    };
+    }
   }
 
-  const badge = badgeQuery.data;
+  const badge = badgeQuery.data
   return {
-    badgeStatus: badge.badgeStatus as "active" | "expired" | "revoked",
+    badgeStatus: badge.badgeStatus as 'active' | 'expired' | 'revoked',
     badgeExpiresAt: badge.badgeExpiresAt ?? null,
     caption:
-      badge.badgeStatus === "revoked"
-        ? "Contact support to resolve badge issues."
-        : badge.badgeStatus === "expired"
-          ? "Renew to keep your profile highlighted."
-          : "Renew before expiry to keep this badge active.",
-  };
+      badge.badgeStatus === 'revoked'
+        ? 'Contact support to resolve badge issues.'
+        : badge.badgeStatus === 'expired'
+          ? 'Renew to keep your profile highlighted.'
+          : 'Renew before expiry to keep this badge active.',
+  }
 }

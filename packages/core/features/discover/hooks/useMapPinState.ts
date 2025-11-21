@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
 import type { MapPinType as MapPin } from '@app/ui'
+import { useCallback, useMemo, useRef, useState } from 'react'
 
 /**
  * Pin visibility state types
@@ -115,13 +115,8 @@ export interface UseMapPinStateReturn {
  * updatePinVisibility('pin-123', 'transitioning-out')
  * ```
  */
-export function useMapPinState(
-  options: UseMapPinStateOptions = {}
-): UseMapPinStateReturn {
-  const {
-    transitionDuration = 300,
-    transitionQueueDelay = 50,
-  } = options
+export function useMapPinState(options: UseMapPinStateOptions = {}): UseMapPinStateReturn {
+  const { transitionDuration = 300, transitionQueueDelay = 50 } = options
 
   // Map of pin IDs to their current state
   const [pinStates, setPinStates] = useState<Map<string, PinState>>(new Map())
@@ -179,24 +174,27 @@ export function useMapPinState(
   /**
    * Assign pin to a cluster
    */
-  const setPinCluster = useCallback((pinId: string, clusterId: number | undefined) => {
-    setPinStates((prev) => {
-      const next = new Map(prev)
-      const existing = next.get(pinId)
+  const setPinCluster = useCallback(
+    (pinId: string, clusterId: number | undefined) => {
+      setPinStates((prev) => {
+        const next = new Map(prev)
+        const existing = next.get(pinId)
 
-      if (existing) {
-        const newVisibility: PinVisibilityState = clusterId ? 'hidden' : 'visible'
-        next.set(pinId, {
-          ...existing,
-          clusterId,
-          visibility: newVisibility,
-          opacity: getOpacity(newVisibility),
-        })
-      }
+        if (existing) {
+          const newVisibility: PinVisibilityState = clusterId ? 'hidden' : 'visible'
+          next.set(pinId, {
+            ...existing,
+            clusterId,
+            visibility: newVisibility,
+            opacity: getOpacity(newVisibility),
+          })
+        }
 
-      return next
-    })
-  }, [getOpacity])
+        return next
+      })
+    },
+    [getOpacity]
+  )
 
   /**
    * Queue a transition for a pin
@@ -341,10 +339,7 @@ export function useMapPinState(
   const transitioningPins = useMemo(() => {
     const pins: MapPin[] = []
     for (const state of pinStates.values()) {
-      if (
-        state.visibility === 'transitioning-in' ||
-        state.visibility === 'transitioning-out'
-      ) {
+      if (state.visibility === 'transitioning-in' || state.visibility === 'transitioning-out') {
         pins.push(state.pin)
       }
     }
@@ -363,4 +358,3 @@ export function useMapPinState(
     clearStates,
   }
 }
-

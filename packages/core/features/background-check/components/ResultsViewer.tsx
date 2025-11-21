@@ -1,21 +1,19 @@
+import { formatDate } from '@app/core/features/profile/utils/date-formatting'
+import { api } from '@app/core/utils/api'
+import { AlertTriangle, X as CloseIcon, DownloadCloud } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Alert } from 'react-native'
-import { AlertTriangle, DownloadCloud, X as CloseIcon } from '@tamagui/lucide-icons'
 import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-
-import { api } from '@app/core/utils/api'
-import { formatDate } from '@app/core/features/profile/utils/date-formatting'
-
+import { useDispute } from '../hooks/useDispute'
+import { CheckProgressTracker } from './CheckProgressTracker'
+import { DisputeStatusTracker } from './DisputeStatusTracker'
+import { PrivacyControls } from './PrivacyControls'
 import {
-  getStatusMetadata,
-  getStatusToneColors,
   type BackgroundCheckDocument,
   type BackgroundCheckSummary,
+  getStatusMetadata,
+  getStatusToneColors,
 } from './status.utils'
-import { CheckProgressTracker } from './CheckProgressTracker'
-import { PrivacyControls } from './PrivacyControls'
-import { DisputeStatusTracker } from './DisputeStatusTracker'
-import { useDispute } from '../hooks/useDispute'
 
 interface ResultsViewerProps {
   checkId: string | null
@@ -36,15 +34,10 @@ export const ResultsViewer = memo(function ResultsViewer({
       enabled: Boolean(checkId),
       refetchOnMount: false,
       refetchOnWindowFocus: true,
-    },
+    }
   )
 
-  const {
-    disputes,
-    isLoadingDisputes,
-    hasActiveDispute,
-    refetchDisputes,
-  } = useDispute({
+  const { disputes, isLoadingDisputes, hasActiveDispute, refetchDisputes } = useDispute({
     checkId: checkId ?? null,
     enabled: Boolean(checkId),
   })
@@ -55,7 +48,14 @@ export const ResultsViewer = memo(function ResultsViewer({
 
   if (getCheckQuery.isLoading || getCheckQuery.isFetching) {
     return (
-      <YStack gap="$3" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$3"
+        p="$4"
+        bg="$background"
+        rounded="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <XStack gap="$2" items="center">
           <Spinner size="small" color="$color11" />
           <Text fontSize="$3" color="$color11">
@@ -68,7 +68,14 @@ export const ResultsViewer = memo(function ResultsViewer({
 
   if (getCheckQuery.isError || !getCheckQuery.data?.check) {
     return (
-      <YStack gap="$3" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$3"
+        p="$4"
+        bg="$background"
+        rounded="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <XStack gap="$2" items="center">
           <AlertTriangle size={18} color="$red10" />
           <Text fontSize="$3" color="$red11">
@@ -103,7 +110,14 @@ export const ResultsViewer = memo(function ResultsViewer({
   }
 
   return (
-    <YStack gap="$4" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+    <YStack
+      gap="$4"
+      p="$4"
+      bg="$background"
+      rounded="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
       <XStack justify="space-between" items="center">
         <YStack gap="$1">
           <Text fontSize="$5" fontWeight="600" color="$color12">
@@ -212,7 +226,7 @@ export const ResultsViewer = memo(function ResultsViewer({
             onPress={() =>
               Alert.alert(
                 'Download coming soon',
-                'Downloadable reports will be available once signed report URLs are enabled.',
+                'Downloadable reports will be available once signed report URLs are enabled.'
               )
             }
             disabled={documents.length === 0}
@@ -260,4 +274,3 @@ export const ResultsViewer = memo(function ResultsViewer({
     </YStack>
   )
 })
-

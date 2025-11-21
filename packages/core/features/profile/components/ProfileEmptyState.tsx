@@ -1,6 +1,6 @@
-import { YStack, Text } from 'tamagui'
 import type { IconProps } from '@tamagui/helpers-icon'
 import type { ComponentType } from 'react'
+import { Text, YStack } from 'tamagui'
 
 interface ProfileEmptyStateProps {
   icon: ComponentType<IconProps>

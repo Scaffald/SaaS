@@ -5,7 +5,7 @@
  * WCAG compliance checks, keyboard navigation, and screen reader support.
  */
 
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 // Note: axe-playwright needs to be installed: pnpm add -D axe-playwright @axe-core/playwright
@@ -108,10 +108,7 @@ export async function getA11yViolations(
 /**
  * Assert that an element has proper ARIA label
  */
-export async function assertHasAriaLabel(
-  element: Locator,
-  label?: string
-): Promise<void> {
+export async function assertHasAriaLabel(element: Locator, label?: string): Promise<void> {
   const ariaLabel = await element.getAttribute('aria-label')
   const ariaLabelledBy = await element.getAttribute('aria-labelledby')
 
@@ -128,10 +125,7 @@ export async function assertHasAriaLabel(
 /**
  * Assert that an element has proper role attribute
  */
-export async function assertHasRole(
-  element: Locator,
-  role: string
-): Promise<void> {
+export async function assertHasRole(element: Locator, role: string): Promise<void> {
   const elementRole = await element.getAttribute('role')
   expect(elementRole, `Element should have role="${role}"`).toBe(role)
 }
@@ -269,10 +263,7 @@ export async function assertImageAltText(page: Page): Promise<void> {
  * Test keyboard navigation through page
  * Verifies that all interactive elements are keyboard accessible
  */
-export async function testKeyboardNavigation(
-  page: Page,
-  maxElements = 20
-): Promise<void> {
+export async function testKeyboardNavigation(page: Page, maxElements = 20): Promise<void> {
   const focusable = page.locator(
     'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
   )
@@ -286,10 +277,7 @@ export async function testKeyboardNavigation(
     const focusedElement = page.locator(':focus')
     const focusedCount = await focusedElement.count()
 
-    expect(
-      focusedCount,
-      `Element ${i} should be focusable via Tab navigation`
-    ).toBeGreaterThan(0)
+    expect(focusedCount, `Element ${i} should be focusable via Tab navigation`).toBeGreaterThan(0)
   }
 }
 
@@ -297,10 +285,7 @@ export async function testKeyboardNavigation(
  * Assert that modals trap focus
  * Verifies that focus stays within modal when open
  */
-export async function assertModalFocusTrap(
-  page: Page,
-  modalSelector: string
-): Promise<void> {
+export async function assertModalFocusTrap(page: Page, modalSelector: string): Promise<void> {
   const modal = page.locator(modalSelector)
   await expect(modal).toBeVisible()
 
@@ -322,10 +307,7 @@ export async function assertModalFocusTrap(
       const focusedCount = await focusedInModal.count()
 
       // Focus should always be within modal
-      expect(
-        focusedCount,
-        'Focus should be trapped within modal'
-      ).toBeGreaterThan(0)
+      expect(focusedCount, 'Focus should be trapped within modal').toBeGreaterThan(0)
     }
   }
 }
@@ -334,10 +316,7 @@ export async function assertModalFocusTrap(
  * Assert color contrast ratios meet WCAG AA standards
  * Note: This is a basic check - manual verification recommended
  */
-export async function assertColorContrast(
-  page: Page,
-  elementSelector: string
-): Promise<void> {
+export async function assertColorContrast(page: Page, elementSelector: string): Promise<void> {
   const element = page.locator(elementSelector)
   const styles = await element.evaluate((el) => {
     const computed = window.getComputedStyle(el)
@@ -350,9 +329,10 @@ export async function assertColorContrast(
 
   // Basic validation - element should have color and background
   expect(styles.color, 'Element should have text color').not.toBe('rgba(0, 0, 0, 0)')
-  expect(styles.backgroundColor, 'Element should have background color').not.toBe('rgba(0, 0, 0, 0)')
+  expect(styles.backgroundColor, 'Element should have background color').not.toBe(
+    'rgba(0, 0, 0, 0)'
+  )
 
   // Note: Actual contrast ratio calculation requires color parsing
   // This is a placeholder - full implementation would use a contrast calculation library
 }
-

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('REQ-71: Employer Card Navigation', () => {
@@ -9,17 +9,22 @@ test.describe('REQ-71: Employer Card Navigation', () => {
   })
 
   // Test 1: Click employer card navigates to detail page
-  test('should navigate to employer detail page when card is clicked', async ({ page }: { page: Page }) => {
+  test('should navigate to employer detail page when card is clicked', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Find employer cards
-    const employerCards = page.locator('[data-testid*="employer"], button:has-text("View Details")').first()
+    const employerCards = page
+      .locator('[data-testid*="employer"], button:has-text("View Details")')
+      .first()
     const cardVisible = await employerCards.isVisible().catch(() => false)
 
     if (cardVisible) {
@@ -32,21 +37,24 @@ test.describe('REQ-71: Employer Card Navigation', () => {
       expect(url).toMatch(/\/dashboard\/employers\/[^/]+$/)
     } else {
       // If no cards, verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
 
   // Test 2: Employer detail page displays complete information
-  test('should display complete employer information on detail page', async ({ page }: { page: Page }) => {
+  test('should display complete employer information on detail page', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     // First, try to navigate to an employer detail page
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Try to find and click an employer card
     const viewDetailsButton = page.getByRole('button', { name: 'View Details' }).first()
@@ -57,27 +65,30 @@ test.describe('REQ-71: Employer Card Navigation', () => {
       await page.waitForTimeout(3000)
 
       // Verify detail page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
 
       // Should contain employer-related content
       expect(pageContent.toLowerCase()).toMatch(/employer|company|organization/)
     } else {
       // If no button, just verify employers page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
 
   // Test 3: Back navigation returns to employer list
-  test('should return to employer list when back button is clicked', async ({ page }: { page: Page }) => {
+  test('should return to employer list when back button is clicked', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Try to navigate to detail page
     const viewDetailsButton = page.getByRole('button', { name: 'View Details' }).first()
@@ -96,7 +107,7 @@ test.describe('REQ-71: Employer Card Navigation', () => {
       expect(page.url()).toContain('/dashboard/discover/employers')
     } else {
       // If no button, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
@@ -106,10 +117,9 @@ test.describe('REQ-71: Employer Card Navigation', () => {
     await page.goto('/dashboard/discover/employers', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     const viewDetailsButton = page.getByRole('button', { name: 'View Details' }).first()
     const buttonVisible = await viewDetailsButton.isVisible().catch(() => false)
@@ -121,14 +131,14 @@ test.describe('REQ-71: Employer Card Navigation', () => {
       // URL should contain employer ID
       const url = page.url()
       const employerIdMatch = url.match(/\/employers\/([^/]+)/)
-      
+
       if (employerIdMatch) {
         expect(employerIdMatch[1]).toBeTruthy()
         expect(employerIdMatch[1].length).toBeGreaterThan(0)
       }
     } else {
       // If no button, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
@@ -139,13 +149,12 @@ test.describe('REQ-71: Employer Card Navigation', () => {
     await page.goto('/dashboard/employers/invalid-id-12345', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Page should either show error or redirect, but not crash
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
@@ -176,4 +185,3 @@ test.describe('REQ-71: Employer Card Navigation', () => {
     }
   })
 })
-

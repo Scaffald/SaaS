@@ -1,20 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Spinner, Text, YStack, Paragraph, ScrollView } from 'tamagui'
 import type { ComponentType } from 'react'
-import { ProgressIndicator } from './ProgressIndicator'
-import { WizardSuccessModal } from './WizardSuccessModal'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Button, Paragraph, ScrollView, Spinner, Text, YStack } from 'tamagui'
 import { useProfileWizard, type WizardStepPayloads } from '../hooks/useProfileWizard'
+import { useWizardAutoSave } from '../hooks/useWizardAutoSave'
 import type { ProfileWizardStepId } from '../utils/wizardSteps'
 import { PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
-import { useWizardAutoSave } from '../hooks/useWizardAutoSave'
-import type { WizardStepComponentProps, StepStateChangePayload } from './steps/types'
+import { ProgressIndicator } from './ProgressIndicator'
+import { CertificationsStep } from './steps/CertificationsStep'
+import { EducationStep } from './steps/EducationStep'
+import { EmploymentPrefsStep } from './steps/EmploymentPrefsStep'
+import { ExperienceStep } from './steps/ExperienceStep'
 import { GeneralInfoStep } from './steps/GeneralInfoStep'
 import { SkillsStep } from './steps/SkillsStep'
-import { ExperienceStep } from './steps/ExperienceStep'
-import { CertificationsStep } from './steps/CertificationsStep'
-import { EmploymentPrefsStep } from './steps/EmploymentPrefsStep'
-import { EducationStep } from './steps/EducationStep'
+import type { StepStateChangePayload, WizardStepComponentProps } from './steps/types'
 import { WizardStartScreen } from './WizardStartScreen'
+import { WizardSuccessModal } from './WizardSuccessModal'
 
 interface ProfileWizardProps {
   onSuccess?: () => void
@@ -101,24 +101,20 @@ export function ProfileWizard({
   onViewProfile,
   onUploadResume,
 }: ProfileWizardProps) {
-  const {
-    state,
-    orderedSteps,
-    goBack,
-    goNext,
-    saveStep,
-    completeWizard,
-    isLoading,
-    isError,
-  } = useProfileWizard(initialStep)
+  const { state, orderedSteps, goBack, goNext, saveStep, completeWizard, isLoading, isError } =
+    useProfileWizard(initialStep)
 
-  const [stepSnapshots, setStepSnapshots] = useState<Partial<Record<ProfileWizardStepId, StepSnapshot>>>({})
+  const [stepSnapshots, setStepSnapshots] = useState<
+    Partial<Record<ProfileWizardStepId, StepSnapshot>>
+  >({})
   const [showSuccess, setShowSuccess] = useState(false)
   const [showStartScreen, setShowStartScreen] = useState(false)
   const [hasAcknowledgedStart, setHasAcknowledgedStart] = useState(false)
 
   const currentStep = state.currentStep
-  const StepComponent = STEP_COMPONENTS[currentStep] as ComponentType<WizardStepComponentProps<ProfileWizardStepId>>
+  const StepComponent = STEP_COMPONENTS[currentStep] as ComponentType<
+    WizardStepComponentProps<ProfileWizardStepId>
+  >
   const isLastStep = currentStep === orderedSteps[orderedSteps.length - 1]
 
   const initialDataForStep = useMemo(() => {
@@ -149,7 +145,14 @@ export function ProfileWizard({
       Object.values(state.stepData).some((value) => value && Object.keys(value).length > 0)
 
     setShowStartScreen(!hasProgress)
-  }, [hasAcknowledgedStart, initialStep, isError, isLoading, state.progress.completedSteps, state.stepData])
+  }, [
+    hasAcknowledgedStart,
+    initialStep,
+    isError,
+    isLoading,
+    state.progress.completedSteps,
+    state.stepData,
+  ])
 
   const currentSnapshot = stepSnapshots[currentStep] ?? {
     data: initialDataForStep,
@@ -178,7 +181,7 @@ export function ProfileWizard({
         },
       }))
     },
-    [],
+    []
   )
 
   const handleContinue = useCallback(
@@ -193,14 +196,14 @@ export function ProfileWizard({
         goNext()
       }
     },
-    [saveStep, goNext, completeWizard, onSuccess],
+    [saveStep, goNext, completeWizard, onSuccess]
   )
 
   const handleSaveForLater = useCallback(
     async (step: ProfileWizardStepId, payload: WizardStepPayloads[ProfileWizardStepId]) => {
       await saveStep({ step, data: payload })
     },
-    [saveStep],
+    [saveStep]
   )
 
   const handleSkip = useCallback(
@@ -212,7 +215,7 @@ export function ProfileWizard({
       })
       goNext()
     },
-    [saveStep, goNext],
+    [saveStep, goNext]
   )
 
   const handleBack = useCallback(() => {
@@ -324,9 +327,14 @@ export function ProfileWizard({
             await handleContinue(currentStep, data)
           }}
           onSaveForLater={(payload) => handleSaveForLater(currentStep, payload)}
-          onSkip={PROFILE_WIZARD_STEPS.includes(currentStep) ? () => handleSkip(currentStep) : undefined}
+          onSkip={
+            PROFILE_WIZARD_STEPS.includes(currentStep) ? () => handleSkip(currentStep) : undefined
+          }
           onStepStateChange={(snapshot) =>
-            handleStepStateChange(currentStep, snapshot as StepStateChangePayload<ProfileWizardStepId>)
+            handleStepStateChange(
+              currentStep,
+              snapshot as StepStateChangePayload<ProfileWizardStepId>
+            )
           }
         />
 
@@ -356,5 +364,3 @@ function ButtonRow({ onCancel }: ButtonRowProps) {
     </YStack>
   )
 }
-
-

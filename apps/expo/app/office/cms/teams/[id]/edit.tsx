@@ -1,20 +1,19 @@
-import { useMemo, useState } from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
-
+import {
+  TeamForm,
+  TeamInvitationsList,
+  TeamInviteModal,
+  TeamMembersList,
+} from '@app/core/features/office/teams'
+import { api } from '@app/core/utils/api'
 import {
   type TEAM_INVITATION_POLICIES,
   TEAM_VISIBILITIES,
   teamInvitationPolicySchema,
   teamRoleKeySchema,
 } from '@app/schemas'
-import {
-  TeamForm,
-  TeamMembersList,
-  TeamInviteModal,
-  TeamInvitationsList,
-} from '@app/core/features/office/teams'
-import { api } from '@app/core/utils/api'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export default function EditTeamPage() {
   const router = useRouter()

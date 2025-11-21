@@ -1,9 +1,8 @@
-import * as React from 'react'
-import { render, fireEvent, waitFor, cleanup } from '@testing-library/react-native'
-import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest'
-import type { Mock } from 'vitest'
 import type { EmploymentProfileFormData } from '@app/core/utils/api'
-import type { ReactElement, ReactNode } from 'react'
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react-native'
+import { type ComponentPropsWithoutRef, forwardRef, type ReactElement, type ReactNode } from 'react'
+import type { Mock } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseQuery: Mock<
   [],
@@ -59,22 +58,19 @@ vi.mock('@tamagui/lucide-icons', () => ({
 }))
 
 vi.mock('@app/ui', () => {
-  const React = require('react') as typeof import('react')
-
-  const View = ({
-    children,
-    ...rest
-  }: { children?: React.ReactNode } & Record<string, unknown>) => <div {...rest}>{children}</div>
+  const View = ({ children, ...rest }: { children?: ReactNode } & Record<string, unknown>) => (
+    <div {...rest}>{children}</div>
+  )
 
   const Text = ({
     children,
     ...rest
   }: {
-    children?: React.ReactNode
+    children?: ReactNode
   } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
   type ButtonProps = {
-    children: React.ReactNode
+    children: ReactNode
     onPress?: () => void
     disabled?: boolean
     variant?: string
@@ -82,9 +78,9 @@ vi.mock('@app/ui', () => {
     space?: string
   }
 
-  type ButtonComponent = ((props: ButtonProps) => React.ReactElement | null) & {
-    Text: (props: { children: React.ReactNode }) => React.ReactElement | null
-    Icon: (props: { children: React.ReactNode }) => React.ReactElement | null
+  type ButtonComponent = ((props: ButtonProps) => ReactElement | null) & {
+    Text: (props: { children: ReactNode }) => ReactElement | null
+    Icon: (props: { children: ReactNode }) => ReactElement | null
   }
 
   const Button: ButtonComponent = Object.assign(
@@ -98,14 +94,14 @@ vi.mock('@app/ui', () => {
       </button>
     ),
     {
-      Text: ({ children }: { children: React.ReactNode }) => <Text>{children}</Text>,
-      Icon: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+      Text: ({ children }: { children: ReactNode }) => <Text>{children}</Text>,
+      Icon: ({ children }: { children: ReactNode }) => <View>{children}</View>,
     }
   )
 
   return {
     UIButton: Button,
-    DashboardWidget: ({ children }: { children: React.ReactNode }) => <View>{children}</View>,
+    DashboardWidget: ({ children }: { children: ReactNode }) => <View>{children}</View>,
     CustomCheckbox: ({
       'aria-label': ariaLabel,
       checked,
@@ -128,45 +124,58 @@ vi.mock('@app/ui', () => {
         <Text>{checked ? '✓' : '□'}</Text>
       </label>
     ),
-    ToggleCard: React.forwardRef<
+    ToggleCard: forwardRef<
       HTMLDivElement,
       {
         title: string
         description?: string
         checked: boolean
         onCheckedChange: (checked: boolean) => void
-        expandedContent?: React.ReactNode
+        expandedContent?: ReactNode
         cardPressDisabled?: boolean
         testID?: string
       }
-    >(({ title, description, checked, onCheckedChange, expandedContent, cardPressDisabled = false, testID }, ref) => (
-      <View ref={ref}>
-        <button
-          type="button"
-          aria-label={`${title} card`}
-          data-testid={testID ? `${testID}-card` : undefined}
-          onClick={() => {
-            if (!cardPressDisabled) {
-              onCheckedChange(!checked)
-            }
-          }}
-        >
-          <Text>{title}</Text>
-        </button>
-        <button
-          type="button"
-          role="switch"
-          aria-label={title}
-          aria-checked={checked}
-          data-testid={testID}
-          onClick={() => onCheckedChange(!checked)}
-        >
-          <Text>{checked ? 'On' : 'Off'}</Text>
-        </button>
-        {description ? <Text>{description}</Text> : null}
-        {checked ? expandedContent : null}
-      </View>
-    )),
+    >(
+      (
+        {
+          title,
+          description,
+          checked,
+          onCheckedChange,
+          expandedContent,
+          cardPressDisabled = false,
+          testID,
+        },
+        ref
+      ) => (
+        <View ref={ref}>
+          <button
+            type="button"
+            aria-label={`${title} card`}
+            data-testid={testID ? `${testID}-card` : undefined}
+            onClick={() => {
+              if (!cardPressDisabled) {
+                onCheckedChange(!checked)
+              }
+            }}
+          >
+            <Text>{title}</Text>
+          </button>
+          <button
+            type="button"
+            role="switch"
+            aria-label={title}
+            aria-checked={checked}
+            data-testid={testID}
+            onClick={() => onCheckedChange(!checked)}
+          >
+            <Text>{checked ? 'On' : 'Off'}</Text>
+          </button>
+          {description ? <Text>{description}</Text> : null}
+          {checked ? expandedContent : null}
+        </View>
+      )
+    ),
     LocationListInput: ({
       value = [],
       onChange,
@@ -196,7 +205,7 @@ vi.mock('@app/ui', () => {
       max: _max,
       formatValue,
     }: {
-      icon?: React.ReactNode
+      icon?: ReactNode
       title: string
       description?: string
       value: number
@@ -230,21 +239,19 @@ vi.mock('@app/ui', () => {
 })
 
 vi.mock('tamagui', () => {
-  const React = require('react') as typeof import('react')
+  type DivProps = ComponentPropsWithoutRef<'div'>
 
-  type DivProps = React.ComponentPropsWithoutRef<'div'>
-
-  type TextInputProps = React.ComponentPropsWithoutRef<'input'> & {
+  type TextInputProps = ComponentPropsWithoutRef<'input'> & {
     onChangeText?: (value: string) => void
   }
 
-  const View = React.forwardRef<HTMLDivElement, DivProps>(({ children, ...rest }, ref) => (
+  const View = forwardRef<HTMLDivElement, DivProps>(({ children, ...rest }, ref) => (
     <div ref={ref} {...rest}>
       {children}
     </div>
   ))
 
-  const TextComponent = React.forwardRef<HTMLSpanElement, DivProps>(
+  const TextComponent = forwardRef<HTMLSpanElement, DivProps>(
     ({ children, ...rest }, ref) => (
       <span ref={ref} {...rest}>
         {children}
@@ -253,7 +260,7 @@ vi.mock('tamagui', () => {
   )
   const Text = TextComponent
 
-  const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
+  const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     ({ value, onChangeText, ...props }, ref) => (
       <input
         ref={ref}
@@ -265,7 +272,7 @@ vi.mock('tamagui', () => {
   )
 
   const createView = () =>
-    React.forwardRef<HTMLDivElement, DivProps>(({ children, ...rest }, ref) => (
+    forwardRef<HTMLDivElement, DivProps>(({ children, ...rest }, ref) => (
       <View ref={ref} {...rest}>
         {children}
       </View>
@@ -313,7 +320,7 @@ vi.mock('tamagui', () => {
     min?: number
     max?: number
     step?: number
-    children?: React.ReactNode
+    children?: ReactNode
   }) => (
     <View>
       <button
@@ -334,9 +341,9 @@ vi.mock('tamagui', () => {
       {children}
     </View>
   )
-  Slider.Track = ({ children }: { children?: React.ReactNode }) => <View>{children}</View>
-  Slider.TrackActive = ({ children }: { children?: React.ReactNode }) => <View>{children}</View>
-  Slider.Thumb = ({ children }: { children?: React.ReactNode }) => <View>{children}</View>
+  Slider.Track = ({ children }: { children?: ReactNode }) => <View>{children}</View>
+  Slider.TrackActive = ({ children }: { children?: ReactNode }) => <View>{children}</View>
+  Slider.Thumb = ({ children }: { children?: ReactNode }) => <View>{children}</View>
 
   const Checkbox = ({
     accessibilityLabel,
@@ -347,7 +354,7 @@ vi.mock('tamagui', () => {
     accessibilityLabel?: string
     checked?: boolean
     onCheckedChange: (checked: boolean) => void
-    children?: React.ReactNode
+    children?: ReactNode
   }) => (
     <label>
       <input
@@ -359,9 +366,9 @@ vi.mock('tamagui', () => {
       <View>{children}</View>
     </label>
   )
-  Checkbox.Indicator = ({ children }: { children?: React.ReactNode }) => <View>{children}</View>
+  Checkbox.Indicator = ({ children }: { children?: ReactNode }) => <View>{children}</View>
 
-  const AnimatePresence = ({ children }: { children?: React.ReactNode }) => <>{children}</>
+  const AnimatePresence = ({ children }: { children?: ReactNode }) => <>{children}</>
   const Spinner = () => <Text>Spinner</Text>
 
   return {
@@ -370,12 +377,12 @@ vi.mock('tamagui', () => {
     Text: TextComponent,
     Button,
     Input,
-    H4: ({ children }: { children?: React.ReactNode }) => <Text>{children}</Text>,
+    H4: ({ children }: { children?: ReactNode }) => <Text>{children}</Text>,
     Spinner,
     AnimatePresence,
     Slider,
     Checkbox,
-    Label: ({ children }: { children?: React.ReactNode }) => <Text>{children}</Text>,
+    Label: ({ children }: { children?: ReactNode }) => <Text>{children}</Text>,
   }
 })
 
@@ -451,7 +458,12 @@ vi.mock('@app/core/utils/api', async () => {
   }
 })
 
-import { profileEmploymentDefaults, DRIVERS_LICENSE_OPTIONS, MILITARY_STATUS_OPTIONS, AVAILABILITY_OPTIONS } from '@app/core/utils/api'
+import {
+  AVAILABILITY_OPTIONS,
+  DRIVERS_LICENSE_OPTIONS,
+  MILITARY_STATUS_OPTIONS,
+  profileEmploymentDefaults,
+} from '@app/core/utils/api'
 import { ProfileEmploymentLeft } from '../profile-employment-left'
 
 const renderEmploymentForm = () => render(<ProfileEmploymentLeft />)
@@ -514,7 +526,7 @@ describe('ProfileEmploymentLeft', () => {
 
     const slider = getByRole('slider', { name: /travel slider/i }) as HTMLElement
     expect(slider).toBeInstanceOf(HTMLElement)
-    
+
     // Slider should be visible (travel is always enabled)
     press(slider)
     // Value should change
@@ -615,7 +627,7 @@ describe('ProfileEmploymentLeft', () => {
     // Enable driver's license toggle
     const driversSwitch = getByRole('switch', { name: /driver/i }) as HTMLElement
     press(driversSwitch)
-    
+
     // Note: With mocks, form dirty state detection is limited
     // This test verifies the component structure and that validation logic exists
     // Full validation flow is tested in E2E tests
@@ -830,7 +842,7 @@ describe('ProfileEmploymentLeft', () => {
     // Enable toggle but don't select any classes
     const driversSwitch = getByRole('switch', { name: /driver/i }) as HTMLElement
     press(driversSwitch)
-    
+
     // Note: Full validation flow with form submission is tested in E2E tests
     // This unit test verifies component structure and validation logic exists
     expect(mockMutateAsync).not.toHaveBeenCalled()
@@ -885,7 +897,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     // Test max value (200)
     fireEvent(hourlyRateInput, 'changeText', '200')
     expect(hourlyRateInput.value).toBe('200')
@@ -904,7 +916,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     fireEvent(hourlyRateInput, 'changeText', '45.50')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/)
@@ -940,7 +952,7 @@ describe('ProfileEmploymentLeft', () => {
     // Make form dirty by toggling a switch
     const residentSwitch = getByRole('switch', { name: /us resident/i }) as HTMLElement
     press(residentSwitch)
-    
+
     // Note: Full submission flow is tested in E2E tests
     // This unit test verifies component structure
     // The actual submission test is in the "shows saved values after a successful save" test
@@ -1100,7 +1112,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     fireEvent(hourlyRateInput, 'changeText', '25.50')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/25/)
@@ -1113,7 +1125,7 @@ describe('ProfileEmploymentLeft', () => {
     const { getByPlaceholderText } = renderEmploymentForm()
 
     const hourlyRateInput = getByPlaceholderText(/enter your hourly rate/i) as HTMLInputElement
-    
+
     fireEvent(hourlyRateInput, 'changeText', '45.75')
     // Value may be formatted, so just check it contains the number
     expect(hourlyRateInput.value).toMatch(/45/)

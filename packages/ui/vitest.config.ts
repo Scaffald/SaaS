@@ -1,13 +1,11 @@
-import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
-
+import { fileURLToPath } from 'node:url'
+import { mergeConfig } from 'vitest/config'
 import baseConfig from '../../vitest.config'
-import { mergeConfig, type UserConfig } from 'vitest/config'
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
-const sharedConfig = baseConfig as UserConfig
 
-const packageConfig: UserConfig = {
+const packageConfig = {
   root: workspaceRoot,
   test: {
     include: ['packages/ui/**/*.{test,spec}.{ts,tsx}'],
@@ -21,5 +19,4 @@ const packageConfig: UserConfig = {
   },
 }
 
-export default mergeConfig(sharedConfig, packageConfig)
-
+export default mergeConfig(baseConfig, packageConfig)

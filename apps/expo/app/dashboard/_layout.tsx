@@ -1,12 +1,12 @@
-import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
 import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
-import { Drawer } from 'expo-router/drawer'
-import { YStack, Text, Spinner } from 'tamagui'
-import { useRouter } from 'expo-router'
-import { usePathname } from '@app/core/utils/usePathname'
-import { useEffect } from 'react'
 import { api } from '@app/core/utils/api'
+import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
+import { usePathname } from '@app/core/utils/usePathname'
+import { useRouter } from 'expo-router'
+import { Drawer } from 'expo-router/drawer'
+import { useEffect } from 'react'
+import { Spinner, Text, YStack } from 'tamagui'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
@@ -55,14 +55,10 @@ export default function Layout() {
         <Drawer.Screen name="workers/index" options={{ title: 'Search Workers' }} />
         <Drawer.Screen name="workers/[id]/index" options={{ title: 'Worker Profile' }} />
         <Drawer.Screen name="employers/index" options={{ title: 'Search Employers' }} />
+        <Drawer.Screen name="employers/[id]/index" options={{ title: 'Employer Profile' }} />
         <Drawer.Screen name="jobs/index" options={{ title: 'Search Jobs' }} />
         <Drawer.Screen name="users/[id]/index" options={{ title: 'User Profile' }} />
-        <Drawer.Screen name="profile/general/index" options={{ title: 'General Information' }} />
-        <Drawer.Screen name="profile/education/index" options={{ title: 'Education' }} />
-        <Drawer.Screen name="profile/employment/index" options={{ title: 'Employment' }} />
-        <Drawer.Screen name="profile/experience/index" options={{ title: 'Experience' }} />
-        <Drawer.Screen name="profile/skills/index" options={{ title: 'Skills' }} />
-        <Drawer.Screen name="profile/certifications/index" options={{ title: 'Certifications' }} />
+        <Drawer.Screen name="profile" options={{ title: 'Profile' }} />
         <Drawer.Screen name="assessments/pulse/index" options={{ title: 'Weekly Pulse' }} />
         <Drawer.Screen
           name="assessments/ipip/index"

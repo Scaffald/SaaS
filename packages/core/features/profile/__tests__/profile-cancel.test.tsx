@@ -1,5 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React from 'react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock all profile form components to test cancel behavior pattern
@@ -53,14 +52,27 @@ vi.mock('react-hook-form', () => {
       setValue: vi.fn(),
       getValues: () => ({ name: 'Test User', email: 'test@example.com' }),
     }),
-    Controller: ({ render }: { render: (props: { field: { value: string; onChange: (v: string) => void } }) => React.ReactNode }) =>
-      render({ field: { value: '', onChange: vi.fn() } }),
+    Controller: ({
+      render,
+    }: {
+      render: (props: {
+        field: { value: string; onChange: (v: string) => void }
+      }) => React.ReactNode
+    }) => render({ field: { value: '', onChange: vi.fn() } }),
   }
 })
 
 vi.mock('@app/ui', () => {
   const React = require('react') as typeof import('react')
-  const Button = ({ children, onPress, disabled }: { children: React.ReactNode; onPress?: () => void; disabled?: boolean }) => (
+  const Button = ({
+    children,
+    onPress,
+    disabled,
+  }: {
+    children: React.ReactNode
+    onPress?: () => void
+    disabled?: boolean
+  }) => (
     <button type="button" onClick={onPress} disabled={disabled}>
       {children}
     </button>
@@ -80,8 +92,12 @@ vi.mock('@app/ui', () => {
   }) =>
     open ? (
       <div data-testid="confirmation-dialog">
-        <button type="button" onClick={() => onOpenChange(false)}>{cancelLabel}</button>
-        <button type="button" onClick={onConfirm}>{confirmLabel}</button>
+        <button type="button" onClick={() => onOpenChange(false)}>
+          {cancelLabel}
+        </button>
+        <button type="button" onClick={onConfirm}>
+          {confirmLabel}
+        </button>
       </div>
     ) : null
 
@@ -131,8 +147,12 @@ describe('Profile Cancel Button Pattern', () => {
           </button>
           {showDialog ? (
             <div data-testid="confirmation-dialog">
-              <button type="button" onClick={() => setShowDialog(false)}>Keep Editing</button>
-              <button type="button" onClick={() => setShowDialog(false)}>Discard Changes</button>
+              <button type="button" onClick={() => setShowDialog(false)}>
+                Keep Editing
+              </button>
+              <button type="button" onClick={() => setShowDialog(false)}>
+                Discard Changes
+              </button>
             </div>
           ) : null}
         </>
@@ -158,7 +178,9 @@ describe('Profile Cancel Button Pattern', () => {
 
       return showDialog ? (
         <div data-testid="confirmation-dialog">
-          <button type="button" onClick={() => setShowDialog(false)}>Keep Editing</button>
+          <button type="button" onClick={() => setShowDialog(false)}>
+            Keep Editing
+          </button>
           <button type="button" onClick={handleDiscard} data-testid="discard-button">
             Discard Changes
           </button>
@@ -181,10 +203,16 @@ describe('Profile Cancel Button Pattern', () => {
       const [showDialog, setShowDialog] = React.useState(true)
       return showDialog ? (
         <div data-testid="confirmation-dialog">
-          <button type="button" onClick={() => setShowDialog(false)} data-testid="keep-editing-button">
+          <button
+            type="button"
+            onClick={() => setShowDialog(false)}
+            data-testid="keep-editing-button"
+          >
             Keep Editing
           </button>
-          <button type="button" onClick={() => reset()}>Discard Changes</button>
+          <button type="button" onClick={() => reset()}>
+            Discard Changes
+          </button>
         </div>
       ) : (
         <span>No dialog</span>
@@ -198,4 +226,3 @@ describe('Profile Cancel Button Pattern', () => {
     expect(screen.queryByTestId('confirmation-dialog')).not.toBeInTheDocument()
   })
 })
-

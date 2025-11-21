@@ -9,7 +9,7 @@ export interface SkeletonTextProps {
   /** Height of each line */
   lineHeight?: number | string
   /** Gap between lines */
-  gap?: number | string
+  gap?: Parameters<typeof YStack>[0]['gap']
   /** Whether animation is enabled */
   animated?: boolean
 }
@@ -27,16 +27,14 @@ export const SkeletonText = ({
     if (index === totalLines - 1) {
       // Last line is shorter (60-80% of width)
       return typeof width === 'string' && width.endsWith('%')
-        ? `${Math.floor(Number.parseInt(width) * 0.7)}%`
+        ? `${Math.floor(parseInt(width.slice(0, -1), 10) * 0.7)}%`
         : width
     }
     return width
   }
 
-  const gapValue = typeof gap === 'string' ? (gap.startsWith('$') ? gap : undefined) : gap
   return (
-    // @ts-expect-error - gap prop type mismatch with theme tokens
-    <YStack gap={gapValue} aria-busy="true" aria-label="Loading content">
+    <YStack gap={gap} aria-busy={true} aria-label="Loading content">
       {Array.from({ length: lines }).map((_, index) => (
         <SkeletonBox
           key={`skeleton-text-line-${index}-${lines}`}

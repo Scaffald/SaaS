@@ -1,6 +1,3 @@
-export * from "./useFeedbackContext";
-export * from "./useFeedbackForm";
-export * from "./useFeedbackSubmit";
-
-
-
+export * from './useFeedbackContext'
+export * from './useFeedbackForm'
+export * from './useFeedbackSubmit'

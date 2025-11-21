@@ -1,7 +1,7 @@
+import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@app/schemas'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ReviewStep } from '../ReviewStep'
-import type { ScreeningAnswers, CustomQuestionAnswer, AttachmentMetadata } from '@app/schemas'
 
 const mockOnEdit = vi.fn()
 const mockOnSubmit = vi.fn()
@@ -195,4 +195,3 @@ describe('ReviewStep', () => {
     expect(screen.getByText('Review Your Application')).toBeInTheDocument()
   })
 })
-

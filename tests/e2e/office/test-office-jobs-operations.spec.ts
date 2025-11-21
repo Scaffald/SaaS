@@ -7,9 +7,12 @@
  * - List view filtering and search
  */
 
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { navigateToOfficeRoute } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
-import { generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import {
+  generateJobData,
+  generateTestId,
+} from '../../infrastructure/playwright/helpers/helpers/office-test-data'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -256,4 +259,3 @@ test.describe('Office • Jobs List - View Toggle', () => {
     }
   })
 })
-

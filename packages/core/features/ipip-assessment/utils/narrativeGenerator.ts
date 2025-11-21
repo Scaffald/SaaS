@@ -1,6 +1,5 @@
 import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 import { getResults } from '@app/core/features/personality-assessment/lib/ipip'
-import { DOMAIN_NAMES } from './domainGrouping'
 
 const DOMAIN_ORDER: IPIPDomain[] = ['A', 'E', 'N', 'C', 'O']
 
@@ -44,7 +43,8 @@ export function generateOverallSummary(scores: IPIPScores): string {
   const primaryDomain = topDomains[0]
   const primaryNarrative = narratives[primaryDomain.domain]
   if (primaryNarrative) {
-    const domainResult = primaryNarrative.results?.[primaryDomain.result as 'low' | 'neutral' | 'high']
+    const domainResult =
+      primaryNarrative.results?.[primaryDomain.result as 'low' | 'neutral' | 'high']
     if (domainResult?.text) {
       sentences.push(domainResult.text)
     }
@@ -67,24 +67,28 @@ export function generateOverallSummary(scores: IPIPScores): string {
   const hasHighN = domainScores.find((d) => d.domain === 'N' && d.result === 'high')
   if (hasHighN) {
     sentences.push(
-      'Your elevated neuroticism suggests you may experience stress more intensely, which can drive careful planning and risk awareness.',
+      'Your elevated neuroticism suggests you may experience stress more intensely, which can drive careful planning and risk awareness.'
     )
   }
 
   const hasHighC = domainScores.find((d) => d.domain === 'C' && d.result === 'high')
   if (hasHighC) {
-    sentences.push('Your high conscientiousness indicates strong reliability and methodical approach to your work.')
+    sentences.push(
+      'Your high conscientiousness indicates strong reliability and methodical approach to your work.'
+    )
   }
 
   const hasHighO = domainScores.find((d) => d.domain === 'O' && d.result === 'high')
   if (hasHighO) {
-    sentences.push('Your openness to experience reflects creativity and willingness to explore new ideas and approaches.')
+    sentences.push(
+      'Your openness to experience reflects creativity and willingness to explore new ideas and approaches.'
+    )
   }
 
   // Closing sentence
   if (sentences.length > 0) {
     sentences.push(
-      'Together, these traits shape how you approach challenges, collaborate with others, and contribute to your professional environment.',
+      'Together, these traits shape how you approach challenges, collaborate with others, and contribute to your professional environment.'
     )
   }
 
@@ -95,4 +99,3 @@ export function generateOverallSummary(scores: IPIPScores): string {
 
   return sentences.join(' ')
 }
-

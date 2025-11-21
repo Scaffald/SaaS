@@ -1,10 +1,9 @@
-import { renderHook } from '@testing-library/react'
 import type { IPIPAnswer, IPIPDomain } from '@app/core/features/personality-assessment/lib/ipip'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { useIPIPResults } from '../useIPIPResults'
 import * as scoreModule from '@app/core/features/personality-assessment/lib/ipip/score'
+import { renderHook } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as normalizerModule from '../../utils/scoreNormalizer'
+import { useIPIPResults } from '../useIPIPResults'
 
 const assessmentQueryResult: {
   data:
@@ -23,20 +22,18 @@ const assessmentQueryResult: {
 }
 
 const archetypeQueryResult: {
-  data:
-    | {
-        archetype: string | null
-        confidence: number
-        details: {
-          name: string
-          description: string
-          strengths: string[]
-          work_styles: string
-          team_dynamics: string
-          growth_areas: string[]
-        } | null
-      }
-    | null
+  data: {
+    archetype: string | null
+    confidence: number
+    details: {
+      name: string
+      description: string
+      strengths: string[]
+      work_styles: string
+      team_dynamics: string
+      growth_areas: string[]
+    } | null
+  } | null
   isLoading: boolean
 } = {
   data: null,
@@ -194,5 +191,3 @@ describe('useIPIPResults', () => {
     normalizeSpy.mockRestore()
   })
 })
-
-

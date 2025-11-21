@@ -7,7 +7,7 @@
  * Task 13: Optimize React Query Cache Configuration and Strategies
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('React Query Cache Testing', () => {
   test('cache invalidation works', async ({ page }) => {
@@ -32,7 +32,9 @@ test.describe('React Query Cache Testing', () => {
 
     // Cached requests should be fewer
     // Note: This is a basic check - actual cache validation requires inspecting React Query cache
-    expect(requests.length, 'Cache should reduce duplicate requests').toBeGreaterThanOrEqual(firstRequestCount)
+    expect(requests.length, 'Cache should reduce duplicate requests').toBeGreaterThanOrEqual(
+      firstRequestCount
+    )
   })
 
   test('cache stale time configured', async ({ page }) => {
@@ -72,4 +74,3 @@ test.describe('React Query Cache Testing', () => {
  * These tests validate basic behavior.
  * Full cache validation should be done via React Query DevTools.
  */
-

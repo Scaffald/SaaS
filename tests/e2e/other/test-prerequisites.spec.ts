@@ -1,6 +1,9 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsUser, TEST_USERS } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
+import {
+  signInAsUser,
+  TEST_USERS,
+} from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 /**
  * Test Prerequisites Form Flow
@@ -73,7 +76,7 @@ test.describe('Prerequisites Form', () => {
 
       // Verify error messages appear for required fields
       // Note: Form uses react-hook-form validation, errors appear inline
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
 
       // Check for validation text (may vary based on validation messages)
       expect(pageContent.toLowerCase()).toMatch(/required|must/i)
@@ -104,7 +107,9 @@ test.describe('Prerequisites Form', () => {
     test('allows entering first and last name', async ({ page }: { page: Page }) => {
       await signInWithoutPrerequisites(page)
 
-      await page.getByTestId('prereq-first-name-input').waitFor({ state: 'visible', timeout: 10000 })
+      await page
+        .getByTestId('prereq-first-name-input')
+        .waitFor({ state: 'visible', timeout: 10000 })
 
       // Fill name fields
       const firstName = page.getByTestId('prereq-first-name-input')
@@ -121,7 +126,9 @@ test.describe('Prerequisites Form', () => {
     test('allows selecting user type checkboxes', async ({ page }: { page: Page }) => {
       await signInWithoutPrerequisites(page)
 
-      await page.getByTestId('prereq-user-type-worker-checkbox').waitFor({ state: 'visible', timeout: 10000 })
+      await page
+        .getByTestId('prereq-user-type-worker-checkbox')
+        .waitFor({ state: 'visible', timeout: 10000 })
 
       // Click worker checkbox
       const workerCheckbox = page.getByTestId('prereq-user-type-worker-checkbox')
@@ -159,7 +166,9 @@ test.describe('Prerequisites Form', () => {
     test('allows checking privacy and terms checkboxes', async ({ page }: { page: Page }) => {
       await signInWithoutPrerequisites(page)
 
-      await page.getByTestId('prereq-privacy-checkbox').waitFor({ state: 'visible', timeout: 10000 })
+      await page
+        .getByTestId('prereq-privacy-checkbox')
+        .waitFor({ state: 'visible', timeout: 10000 })
 
       // Click privacy checkbox
       const privacyCheckbox = page.getByTestId('prereq-privacy-checkbox')
@@ -244,7 +253,11 @@ test.describe('Prerequisites Form', () => {
       expect(currentUrl).toContain('/dashboard')
     })
 
-    test.skip('prerequisites form does not appear after completion', async ({ page }: { page: Page }) => {
+    test.skip('prerequisites form does not appear after completion', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // This test would require completing prerequisites in one session
       // and then logging out and back in to verify form doesn't reappear
       // Skipping for now as it requires more complex test setup
@@ -290,7 +303,9 @@ test.describe('Prerequisites Form', () => {
     test('privacy policy link is present', async ({ page }: { page: Page }) => {
       await signInWithoutPrerequisites(page)
 
-      await page.getByTestId('prereq-privacy-checkbox').waitFor({ state: 'visible', timeout: 10000 })
+      await page
+        .getByTestId('prereq-privacy-checkbox')
+        .waitFor({ state: 'visible', timeout: 10000 })
 
       // Verify privacy policy link exists
       const privacyLink = page.getByText('Privacy Policy')
@@ -322,7 +337,9 @@ test.describe('Prerequisites Form', () => {
     test('form fields accept input', async ({ page }: { page: Page }) => {
       await signInWithoutPrerequisites(page)
 
-      await page.getByTestId('prereq-first-name-input').waitFor({ state: 'visible', timeout: 10000 })
+      await page
+        .getByTestId('prereq-first-name-input')
+        .waitFor({ state: 'visible', timeout: 10000 })
 
       // Verify all text inputs accept values
       const firstName = page.getByTestId('prereq-first-name-input')

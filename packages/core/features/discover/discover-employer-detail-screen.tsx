@@ -15,4 +15,3 @@ export function DiscoverEmployerDetailScreen({ employerId }: DiscoverEmployerDet
     right: <DiscoverEmployerDetailRight employerId={employerId} />,
   }
 }
-

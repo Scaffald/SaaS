@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Card } from 'tamagui'
 import { BadgeCheck, Calendar } from '@tamagui/lucide-icons'
+import { Card, Text, XStack, YStack } from 'tamagui'
 
 interface Certification {
   id: string

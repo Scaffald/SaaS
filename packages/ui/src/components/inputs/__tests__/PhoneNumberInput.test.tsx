@@ -1,7 +1,6 @@
-import type { InputHTMLAttributes } from 'react'
 import { act, fireEvent, render, screen } from '@testing-library/react'
+import type { InputHTMLAttributes, ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ReactNode } from 'react'
 
 const selectHandler = vi.hoisted<{ current: (value: string) => void }>(() => ({
   current: () => {},

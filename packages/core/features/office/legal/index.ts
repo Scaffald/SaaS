@@ -1,2 +1,1 @@
-export { OfficeViolationReports } from "./OfficeViolationReports";
-
+export { OfficeViolationReports } from './OfficeViolationReports'

@@ -1,15 +1,14 @@
-import { useMemo, useState } from 'react'
-import { AlertDialog, Avatar, Button, Card, Spinner, Text, TextArea, XStack, YStack, useMedia } from 'tamagui'
+import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { useUser } from '@app/core/utils/useUser'
+import type { AppRouter } from '@app/supabase/client-types'
 import { Crown, LogOut, Plus, UserMinus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
-import { useRouter } from 'expo-router'
-
-import { api } from '@app/core/utils/api'
-import { useTeamFormOptions, type TeamRoleOption } from '../hooks/useTeamFormOptions'
-import type { AppRouter } from '@app/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
-import { useUser } from '@app/core/utils/useUser'
-import { ROUTES } from '@app/core/constants/routes'
+import { useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { AlertDialog, Avatar, Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 import { AddTeamMemberModal } from './AddTeamMemberModal'
 import { RemoveMemberModal } from './RemoveMemberModal'
@@ -45,8 +44,6 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const [leaveReason, setLeaveReason] = useState('')
   const router = useRouter()
   const { user: currentUser } = useUser()
-  const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const membersQuery = api.teams.members.list.useQuery(
     { teamId },
@@ -84,7 +81,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       })
       setLeaveReason('')
       setIsLeaveDialogOpen(false)
-      router.replace(ROUTES.OFFICE_CMS_TEAMS.path)
+      router.replace(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: Error) => {
       toast.show('Unable to leave team', { message: error.message })
@@ -157,13 +154,17 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const workloadErrorMessage = workloadQuery.error?.message ?? null
 
   return (
-    <YStack gap="$4" flex={1} px={isSmallScreen ? '$3' : undefined}>
+    <YStack gap="$4" flex={1} px="$3" $md={{ px: undefined }}>
       <XStack
         justify="space-between"
-        items={isSmallScreen ? 'flex-start' : 'center'}
+        items="flex-start"
         gap="$3"
-        flexDirection={isSmallScreen ? 'column' : 'row'}
+        flexDirection="column"
         width="100%"
+        $md={{
+          items: 'center',
+          flexDirection: 'row',
+        }}
       >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Team members
@@ -175,7 +176,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           color="$color1"
           size="$3"
           accessibilityLabel="Add a new team member"
-          width={isSmallScreen ? '100%' : undefined}
+          width="100%"
+          $md={{ width: undefined }}
         >
           Add Member
         </Button>
@@ -222,16 +224,24 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               >
                 <XStack
                   gap="$3"
-                  items={isSmallScreen ? 'flex-start' : 'center'}
+                  items="flex-start"
                   justify="space-between"
-                  flexDirection={isSmallScreen ? 'column' : 'row'}
+                  flexDirection="column"
                   width="100%"
+                  $md={{
+                    items: 'center',
+                    flexDirection: 'row',
+                  }}
                 >
                   <XStack
                     gap="$3"
                     width="100%"
-                    flexDirection={isSmallScreen ? 'column' : 'row'}
-                    items={isSmallScreen ? 'flex-start' : 'center'}
+                    flexDirection="column"
+                    items="flex-start"
+                    $md={{
+                      flexDirection: 'row',
+                      items: 'center',
+                    }}
                   >
                     <Avatar circular size="$4">
                       <Avatar.Image
@@ -253,19 +263,26 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     gap="$3"
                     flexWrap="wrap"
                     width="100%"
-                    flexDirection={isSmallScreen ? 'column' : 'row'}
-                    justify={isSmallScreen ? 'flex-start' : 'flex-end'}
-                    items={isSmallScreen ? 'stretch' : 'center'}
+                    flexDirection="column"
+                    justify="flex-start"
+                    items="stretch"
+                    $md={{
+                      flexDirection: 'row',
+                      justify: 'flex-end',
+                      items: 'center',
+                    }}
                   >
-                    <TeamMemberRoleSelect
-                      teamId={teamId}
-                      teamMemberId={member.id}
-                      currentRoleId={member.roleId ?? undefined}
-                      roles={roles as TeamRoleOption[]}
-                      disabled={isLoadingRoles}
-                      onRoleChanged={handleRoleChange}
-                      fullWidth={isSmallScreen}
-                    />
+                    <YStack width="100%" $md={{ width: undefined }}>
+                      <TeamMemberRoleSelect
+                        teamId={teamId}
+                        teamMemberId={member.id}
+                        currentRoleId={member.roleId ?? undefined}
+                        roles={roles as TeamRoleOption[]}
+                        disabled={isLoadingRoles}
+                        onRoleChanged={handleRoleChange}
+                        fullWidth={true}
+                      />
+                    </YStack>
                     {canTransferToMember ? (
                       <Button
                         size="$2"
@@ -275,7 +292,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                         onPress={() => void handleTransferOwnership(member)}
                         accessibilityLabel={`Promote ${member.displayName ?? 'this member'} to team owner`}
                         accessibilityHint="Updates the member's permissions and notifies the team"
-                        width={isSmallScreen ? '100%' : undefined}
+                        width="100%"
+                        $md={{ width: undefined }}
                       >
                         Make owner
                       </Button>
@@ -298,7 +316,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                       }
                       accessibilityLabel={`Remove ${member.displayName ?? 'this member'} from the team`}
                       accessibilityHint="Opens a dialog to confirm removal"
-                      width={isSmallScreen ? '100%' : undefined}
+                      width="100%"
+                      $md={{ width: undefined }}
                     >
                       Remove
                     </Button>
@@ -360,7 +379,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           onPress={() => setIsLeaveDialogOpen(true)}
           accessibilityLabel="Open leave team dialog"
           accessibilityHint="Opens a confirmation dialog to leave this team"
-          width={isSmallScreen ? '100%' : undefined}
+          width="100%"
+          $md={{ width: undefined }}
         >
           Leave team
         </Button>

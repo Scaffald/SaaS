@@ -1,4 +1,4 @@
+export { getDefaultFeeds, getFeedsByIndustry } from './config/news-feeds'
+export type { NewsItem, NewsWidgetProps } from './config/types'
+export { useAggregatedNews, useNewsFeed } from './hooks/useNewsFeed'
 export { NewsWidget } from './NewsWidget'
-export type { NewsWidgetProps, NewsItem } from './config/types'
-export { useNewsFeed, useAggregatedNews } from './hooks/useNewsFeed'
-export { getFeedsByIndustry, getDefaultFeeds } from './config/news-feeds'

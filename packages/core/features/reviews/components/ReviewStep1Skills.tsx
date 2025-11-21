@@ -1,4 +1,4 @@
-import { YStack, Text } from 'tamagui'
+import { Text, YStack } from 'tamagui'
 import { StarRating } from './StarRating'
 
 // Mock skills data - will be replaced with real data from API

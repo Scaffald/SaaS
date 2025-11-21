@@ -1,39 +1,29 @@
+import { Check, X } from '@tamagui/lucide-icons'
 import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useMemo,
   type ComponentRef,
-  type CSSProperties,
+  type MouseEvent,
+  type WheelEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
-import { Platform, Image as RNImage, type ImageStyle } from 'react-native'
-import { GestureDetector, Gesture } from 'react-native-gesture-handler'
+import { Platform, Image as RNImage } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import {
-  Dialog,
-  Sheet,
-  XStack,
-  YStack,
-  Text,
   Button,
   Image as TamaguiImage,
-  View,
-  Circle,
-  useMedia,
+  Text,
   useWindowDimensions,
+  View,
+  XStack,
+  YStack,
 } from 'tamagui'
-import {
-  X,
-  Check,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-  FlipHorizontal,
-  FlipVertical,
-} from '@tamagui/lucide-icons'
-
-import { processCroppedImage } from './utils/imageProcessing'
+import { Dialog } from '../dialog/Dialog'
+import { Sheet } from '../sheets/Sheet'
 import { detectMimeTypeFromSrc, getNativeTransform, getWebTransform } from './utils/helpers'
+import { processCroppedImage } from './utils/imageProcessing'
 
 import type { CropRect } from './utils/imageProcessing.types'
 
@@ -72,9 +62,10 @@ export function AvatarCropModal({
   cropSize = 300,
   onError,
 }: AvatarCropModalProps) {
-  const { width, height } = useWindowDimensions() // Keep for actual dimensions (landscape detection)
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
+  // Use window dimensions for conditional rendering and calculations
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width, height } = useWindowDimensions()
+  const isMobile = width <= 800
   const isLandscape = width > height
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
@@ -310,7 +301,7 @@ export function AvatarCropModal({
   }, [imageDimensions, displaySize, cropSize])
 
   const handleWheel = useCallback(
-    (event: React.WheelEvent) => {
+    (event: WheelEvent) => {
       if (Platform.OS !== 'web' || !imageLoaded) return
       event.preventDefault()
 
@@ -325,7 +316,7 @@ export function AvatarCropModal({
   )
 
   const handleMouseDown = useCallback(
-    (event: React.MouseEvent) => {
+    (event: MouseEvent) => {
       if (Platform.OS !== 'web' || !containerRef.current) return
       event.preventDefault()
       setIsDragging(true)
@@ -346,7 +337,7 @@ export function AvatarCropModal({
   )
 
   const handleMouseMove = useCallback(
-    (event: React.MouseEvent) => {
+    (event: MouseEvent) => {
       if (!isDragging || Platform.OS !== 'web' || !containerRef.current) return
       event.preventDefault()
 
@@ -556,8 +547,8 @@ export function AvatarCropModal({
   if (isMobile) {
     return (
       <Sheet modal open={open} onOpenChange={onOpenChange} snapPoints={[90]} dismissOnSnapToBottom>
-        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame bg="$background">
+        <Sheet.Overlay />
+        <Sheet.Frame>
           <Sheet.Handle />
           <XStack
             px="$4"
@@ -772,28 +763,9 @@ export function AvatarCropModal({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay
-          key="overlay"
-          animation="quick"
-          opacity={0.5}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
+        <Dialog.Overlay key="overlay" />
         <Dialog.Content
-          bordered
-          elevate
           key="content"
-          animateOnly={['transform', 'opacity']}
-          animation={[
-            'quick',
-            {
-              opacity: {
-                overshootClamping: true,
-              },
-            },
-          ]}
-          enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-          exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
           gap="$0"
           width={displaySize + 128}
           maxW="90vw"
@@ -851,110 +823,111 @@ export function AvatarCropModal({
 
                 {renderControls()}
 
-                {/* @ts-ignore ref for web drag handling */}
-                <div
-                  ref={containerRef}
-                  style={{
-                    position: 'relative',
-                    width: displaySize,
-                    height: displaySize,
-                    backgroundColor: 'var(--color2)',
-                    borderRadius: 'var(--radius-4)',
-                    overflow: 'hidden',
-                    cursor: isDragging ? 'grabbing' : 'grab',
-                  }}
-                  role="img"
-                  aria-label="Avatar crop area. Drag to reposition and scroll to zoom."
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                  onWheel={handleWheel}
-                >
-                  {imageRef.current && (
-                    <img
-                      src={imageUri}
-                      alt="Crop preview"
+                {Platform.OS === 'web' ? (
+                  <div
+                    ref={containerRef}
+                    style={{
+                      position: 'relative',
+                      width: displaySize,
+                      height: displaySize,
+                      backgroundColor: 'var(--color2)',
+                      borderRadius: 'var(--radius-4)',
+                      overflow: 'hidden',
+                      cursor: isDragging ? 'grabbing' : 'grab',
+                    }}
+                    role="img"
+                    aria-label="Avatar crop area. Drag to reposition and scroll to zoom."
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    onWheel={handleWheel}
+                  >
+                    {imageRef.current && (
+                      <img
+                        src={imageUri}
+                        alt="Crop preview"
+                        style={{
+                          position: 'absolute',
+                          left: formatPixels(cropAreaTopLeft.x - cropPosition.x * scale),
+                          top: formatPixels(cropAreaTopLeft.y - cropPosition.y * scale),
+                          width: scaledImageWidth,
+                          height: scaledImageHeight,
+                          pointerEvents: 'none',
+                          userSelect: 'none',
+                          transition: isDragging ? 'none' : 'left 0.1s ease-out, top 0.1s ease-out',
+                          transform: getWebTransform(
+                            scaledImageWidth,
+                            scaledImageHeight,
+                            flipHorizontal,
+                            flipVertical
+                          ),
+                        }}
+                      />
+                    )}
+
+                    <div
                       style={{
                         position: 'absolute',
-                        left: formatPixels(cropAreaTopLeft.x - cropPosition.x * scale),
-                        top: formatPixels(cropAreaTopLeft.y - cropPosition.y * scale),
-                        width: scaledImageWidth,
-                        height: scaledImageHeight,
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: formatPixels((displaySize - cropDisplaySize) / 2),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
                         pointerEvents: 'none',
-                        userSelect: 'none',
-                        transition: isDragging ? 'none' : 'left 0.1s ease-out, top 0.1s ease-out',
-                        transform: getWebTransform(
-                          scaledImageWidth,
-                          scaledImageHeight,
-                          flipHorizontal,
-                          flipVertical
-                        ),
                       }}
                     />
-                  )}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        width: '100%',
+                        height: formatPixels((displaySize - cropDisplaySize) / 2),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: formatPixels((displaySize - cropDisplaySize) / 2),
+                        left: 0,
+                        width: formatPixels((displaySize - cropDisplaySize) / 2),
+                        height: formatPixels(cropDisplaySize),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: formatPixels((displaySize - cropDisplaySize) / 2),
+                        right: 0,
+                        width: formatPixels((displaySize - cropDisplaySize) / 2),
+                        height: formatPixels(cropDisplaySize),
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        pointerEvents: 'none',
+                      }}
+                    />
 
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: formatPixels((displaySize - cropDisplaySize) / 2),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      height: formatPixels((displaySize - cropDisplaySize) / 2),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: formatPixels((displaySize - cropDisplaySize) / 2),
-                      left: 0,
-                      width: formatPixels((displaySize - cropDisplaySize) / 2),
-                      height: formatPixels(cropDisplaySize),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: formatPixels((displaySize - cropDisplaySize) / 2),
-                      right: 0,
-                      width: formatPixels((displaySize - cropDisplaySize) / 2),
-                      height: formatPixels(cropDisplaySize),
-                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                      pointerEvents: 'none',
-                    }}
-                  />
-
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: '50%',
-                      top: '50%',
-                      width: formatPixels(cropDisplaySize),
-                      height: formatPixels(cropDisplaySize),
-                      transform: 'translate(-50%, -50%)',
-                      border: '2px solid var(--blue10)',
-                      borderRadius: 'var(--radius-2)',
-                      pointerEvents: 'none',
-                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                      zIndex: 10,
-                    }}
-                  />
-                </div>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '50%',
+                        width: formatPixels(cropDisplaySize),
+                        height: formatPixels(cropDisplaySize),
+                        transform: 'translate(-50%, -50%)',
+                        border: '2px solid var(--blue10)',
+                        borderRadius: 'var(--radius-2)',
+                        pointerEvents: 'none',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                        zIndex: 10,
+                      }}
+                    />
+                  </div>
+                ) : null}
 
                 <XStack gap="$3" width="100%">
                   <Dialog.Close asChild>

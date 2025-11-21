@@ -1,6 +1,6 @@
-import { H1, Paragraph, View } from 'tamagui'
-import { Mail } from '@tamagui/lucide-icons'
 import { useTranslation } from '@app/core/utils/useTranslation'
+import { Mail } from '@tamagui/lucide-icons'
+import { H1, Paragraph, View } from 'tamagui'
 
 interface EmailHeaderProps {
   email: string
@@ -19,7 +19,7 @@ export function EmailHeader({ email }: EmailHeaderProps) {
         <Mail size="$1" color="$color12" />
         <Paragraph
           size="$3"
-          $gtSm={{ size: '$4' }}
+          $md={{ size: '$4' }}
           fontWeight="500"
           color="$color12"
           numberOfLines={1}
@@ -29,7 +29,7 @@ export function EmailHeader({ email }: EmailHeaderProps) {
         </Paragraph>
       </View>
 
-      <Paragraph text="center" size="$2" $gtSm={{ size: '$3' }}>
+      <Paragraph text="center" size="$2" $md={{ size: '$3' }}>
         {t('auth.verify.instructions')}
       </Paragraph>
     </View>

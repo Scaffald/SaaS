@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react'
-import { createContext, useContext } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
+import { createContext, useContext } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const SelectChangeContext = createContext<(value: string) => void>(() => {})
@@ -10,26 +10,77 @@ vi.mock('@app/ui', () => ({
   XStack: ({ children }: { children: ReactNode }) => <div data-testid="xstack">{children}</div>,
   YStack: ({ children }: { children: ReactNode }) => <div data-testid="ystack">{children}</div>,
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
-  Button: ({ children, onPress, chromeless: _chromeless, ...rest }: { children: ReactNode; onPress?: () => void; chromeless?: boolean }) => (
+  Button: ({
+    children,
+    onPress,
+    chromeless: _chromeless,
+    ...rest
+  }: {
+    children: ReactNode
+    onPress?: () => void
+    chromeless?: boolean
+  }) => (
     <button type="button" onClick={onPress} {...rest}>
       {children}
     </button>
+  ),
+  ResponsiveSelect: ({
+    value,
+    onValueChange,
+    options,
+    placeholder,
+    'data-testid': dataTestId,
+    testID,
+  }: {
+    value?: string | null
+    onValueChange: (value: string) => void
+    options: Array<{ value: string; label: string }>
+    placeholder?: string
+    'data-testid'?: string
+    testID?: string
+  }) => (
+    <select
+      data-testid={dataTestId ?? testID ?? 'responsive-select'}
+      value={value ?? ''}
+      onChange={(event) => onValueChange(event.target.value)}
+    >
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   ),
 }))
 
 vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
 
-  const SelectRoot = ({ value, onValueChange, children }: { value: string | null; onValueChange: (value: string) => void; children: ReactNode }) => (
+  const SelectRoot = ({
+    value,
+    onValueChange,
+    children,
+  }: {
+    value: string | null
+    onValueChange: (value: string) => void
+    children: ReactNode
+  }) => (
     <SelectChangeContext.Provider value={onValueChange}>
-      <div data-testid="select-root" data-value={value ?? 'null'}>{children}</div>
+      <div data-testid="select-root" data-value={value ?? 'null'}>
+        {children}
+      </div>
     </SelectChangeContext.Provider>
   )
 
   SelectRoot.Trigger = ({ children }: { children: ReactNode }) => <div>{children}</div>
-  SelectRoot.Value = ({ placeholder, children }: { placeholder?: string; children?: ReactNode }) => (
-    <span>{children ?? placeholder ?? ''}</span>
-  )
+  SelectRoot.Value = ({
+    placeholder,
+    children,
+  }: {
+    placeholder?: string
+    children?: ReactNode
+  }) => <span>{children ?? placeholder ?? ''}</span>
   SelectRoot.Content = ({ children }: { children: ReactNode }) => <div>{children}</div>
   SelectRoot.Viewport = ({ children }: { children: ReactNode }) => <div>{children}</div>
   SelectRoot.Group = ({ children }: { children: ReactNode }) => <div>{children}</div>
@@ -40,7 +91,11 @@ vi.mock('tamagui', async () => {
   SelectRoot.Item = ({ value, children }: { value: string; children: ReactNode }) => {
     const onValueChange = useContext(SelectChangeContext)
     return (
-      <button type="button" data-testid={`select-item-${value || 'all'}`} onClick={() => onValueChange(value)}>
+      <button
+        type="button"
+        data-testid={`select-item-${value || 'all'}`}
+        onClick={() => onValueChange(value)}
+      >
         {children}
       </button>
     )
@@ -72,12 +127,15 @@ describe('ApplicationsFilters', () => {
   it('updates filters when job or status changes', async () => {
     const user = userEvent.setup()
 
-    render(<ApplicationsFilters filters={defaultFilters} onFiltersChange={onFiltersChange} jobs={jobs} />)
+    render(
+      <ApplicationsFilters filters={defaultFilters} onFiltersChange={onFiltersChange} jobs={jobs} />
+    )
 
-    await user.click(screen.getByTestId('select-item-job-1'))
+    const selects = screen.getAllByTestId('responsive-select') as HTMLSelectElement[]
+    await user.selectOptions(selects[0], 'job-1')
     expect(onFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, jobId: 'job-1' })
 
-    await user.click(screen.getByTestId('select-item-interview'))
+    await user.selectOptions(selects[1], 'interview')
     expect(onFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, status: 'interview' })
   })
 

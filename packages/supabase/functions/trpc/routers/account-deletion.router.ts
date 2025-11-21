@@ -1,118 +1,118 @@
-import { TRPCError } from "@trpc/server";
-import type Stripe from "stripe";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server'
+import type Stripe from 'stripe'
+import { z } from 'zod'
 
-import type { Context } from "../context.ts";
-import { officeProcedure, protectedProcedure, t } from "../middleware.ts";
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
-const STRIPE_API_VERSION = "2024-06-20";
+const STRIPE_API_VERSION = '2024-06-20'
 
 // Lazy initialization of Stripe to avoid module loading issues
-let StripeClass: typeof import("stripe").default | null = null;
+let StripeClass: typeof import('stripe').default | null = null
 
-async function getStripeClass(): Promise<typeof import("stripe").default> {
+async function getStripeClass(): Promise<typeof import('stripe').default> {
   if (!StripeClass) {
-    const stripeModule = await import("stripe");
-    StripeClass = stripeModule.default;
+    const stripeModule = await import('stripe')
+    StripeClass = stripeModule.default
   }
-  return StripeClass;
+  return StripeClass
 }
 
 async function getStripeHttpClient() {
-  const Stripe = await getStripeClass();
-  return Stripe.createFetchHttpClient();
+  const Stripe = await getStripeClass()
+  return Stripe.createFetchHttpClient()
 }
 
 async function loadStripeClient(ctx: Context): Promise<Stripe> {
-  if (Deno.env.get("STRIPE_MOCK_MODE") === "1") {
-    const Stripe = await getStripeClass();
-    return new Stripe("sk_test_mock", {
+  if (Deno.env.get('STRIPE_MOCK_MODE') === '1') {
+    const Stripe = await getStripeClass()
+    return new Stripe('sk_test_mock', {
       httpClient: await getStripeHttpClient(),
       apiVersion: STRIPE_API_VERSION,
-    });
+    })
   }
 
-  const apiKeySecretId = Deno.env.get("STRIPE_API_KEY_SECRET_ID");
+  const apiKeySecretId = Deno.env.get('STRIPE_API_KEY_SECRET_ID')
   if (!apiKeySecretId) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Stripe API key secret ID not configured",
-    });
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Stripe API key secret ID not configured',
+    })
   }
 
   // In production, fetch from Vault
   // For now, use environment variable fallback
-  const apiKey = Deno.env.get("STRIPE_SECRET_KEY") ?? "sk_test_mock";
+  const apiKey = Deno.env.get('STRIPE_SECRET_KEY') ?? 'sk_test_mock'
 
-  const Stripe = await getStripeClass();
+  const Stripe = await getStripeClass()
   return new Stripe(apiKey, {
     httpClient: await getStripeHttpClient(),
     apiVersion: STRIPE_API_VERSION,
-  });
+  })
 }
 
 async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
   if (!ctx.user?.id) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+    throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
 
   const { data: roleCheck } = await ctx.supabaseAdmin
-    .schema("core")
-    .from("role_assignments")
-    .select("role")
-    .eq("user_id", ctx.user.id)
-    .eq("role", "office")
-    .maybeSingle();
+    .schema('core')
+    .from('role_assignments')
+    .select('role')
+    .eq('user_id', ctx.user.id)
+    .eq('role', 'office')
+    .maybeSingle()
 
   if (roleCheck) {
-    return;
+    return
   }
 
   const { data: organization, error: orgError } = await ctx.supabaseAdmin
-    .schema("core")
-    .from("organizations")
-    .select("id, owner_user_id")
-    .eq("id", organizationId)
-    .maybeSingle();
+    .schema('core')
+    .from('organizations')
+    .select('id, owner_user_id')
+    .eq('id', organizationId)
+    .maybeSingle()
 
   if (orgError) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
+      code: 'INTERNAL_SERVER_ERROR',
       message: `Failed to load organization: ${orgError.message}`,
-    });
+    })
   }
 
   if (!organization) {
     throw new TRPCError({
-      code: "NOT_FOUND",
-      message: "Organization not found",
-    });
+      code: 'NOT_FOUND',
+      message: 'Organization not found',
+    })
   }
 
   if (organization.owner_user_id === ctx.user.id) {
-    return;
+    return
   }
 
   const { data: assignment, error: assignmentError } = await ctx.supabaseAdmin
-    .schema("core")
-    .from("role_assignments")
-    .select("scope_org_id")
-    .eq("user_id", ctx.user.id)
-    .eq("scope_org_id", organizationId)
-    .maybeSingle();
+    .schema('core')
+    .from('role_assignments')
+    .select('scope_org_id')
+    .eq('user_id', ctx.user.id)
+    .eq('scope_org_id', organizationId)
+    .maybeSingle()
 
   if (assignmentError) {
     throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
+      code: 'INTERNAL_SERVER_ERROR',
       message: `Failed to verify organization access: ${assignmentError.message}`,
-    });
+    })
   }
 
   if (!assignment) {
     throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "You do not have access to this organization",
-    });
+      code: 'FORBIDDEN',
+      message: 'You do not have access to this organization',
+    })
   }
 }
 
@@ -124,34 +124,34 @@ export const accountDeletionRouter = t.router({
     .input(
       z.object({
         reason: z.string().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user?.id) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Create deletion record
       const { data: deletion, error: deletionError } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
+        .schema('core')
+        .from('account_deletions')
         .insert({
           deleted_user_id: ctx.user.id,
-          deletion_type: "worker",
+          deletion_type: 'worker',
           requested_by_user_id: ctx.user.id,
           reason: input.reason ?? null,
-          status: "pending",
+          status: 'pending',
         })
-        .select("*")
-        .maybeSingle();
+        .select('*')
+        .maybeSingle()
 
       if (deletionError || !deletion) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: deletionError
             ? `Failed to create deletion record: ${deletionError.message}`
-            : "Failed to create deletion record",
-        });
+            : 'Failed to create deletion record',
+        })
       }
 
       // Start deletion process (async)
@@ -159,25 +159,25 @@ export const accountDeletionRouter = t.router({
       try {
         await ctx.caller.accountDeletion.processWorkerDeletion({
           deletionId: deletion.id,
-        });
+        })
       } catch (error) {
-        console.error("Failed to process worker deletion:", error);
+        console.error('Failed to process worker deletion:', error)
         // Update status to failed
         await ctx.supabaseAdmin
-          .schema("core")
-          .from("account_deletions")
+          .schema('core')
+          .from('account_deletions')
           .update({
-            status: "failed",
-            error_message: error instanceof Error ? error.message : "Unknown error",
+            status: 'failed',
+            error_message: error instanceof Error ? error.message : 'Unknown error',
           })
-          .eq("id", deletion.id);
+          .eq('id', deletion.id)
       }
 
       return {
         id: deletion.id,
         status: deletion.status,
         createdAt: deletion.created_at,
-      };
+      }
     }),
 
   /**
@@ -188,56 +188,56 @@ export const accountDeletionRouter = t.router({
       z.object({
         organizationId: z.string().uuid(),
         reason: z.string().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      await ensureOrganizationAccess(ctx, input.organizationId);
+      await ensureOrganizationAccess(ctx, input.organizationId)
 
       // Create deletion record
       const { data: deletion, error: deletionError } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
+        .schema('core')
+        .from('account_deletions')
         .insert({
           deleted_organization_id: input.organizationId,
-          deletion_type: "organization",
+          deletion_type: 'organization',
           requested_by_user_id: ctx.user?.id ?? null,
           reason: input.reason ?? null,
-          status: "pending",
+          status: 'pending',
         })
-        .select("*")
-        .maybeSingle();
+        .select('*')
+        .maybeSingle()
 
       if (deletionError || !deletion) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: deletionError
             ? `Failed to create deletion record: ${deletionError.message}`
-            : "Failed to create deletion record",
-        });
+            : 'Failed to create deletion record',
+        })
       }
 
       // Start deletion process (async)
       try {
         await ctx.caller.accountDeletion.processOrganizationDeletion({
           deletionId: deletion.id,
-        });
+        })
       } catch (error) {
-        console.error("Failed to process organization deletion:", error);
+        console.error('Failed to process organization deletion:', error)
         await ctx.supabaseAdmin
-          .schema("core")
-          .from("account_deletions")
+          .schema('core')
+          .from('account_deletions')
           .update({
-            status: "failed",
-            error_message: error instanceof Error ? error.message : "Unknown error",
+            status: 'failed',
+            error_message: error instanceof Error ? error.message : 'Unknown error',
           })
-          .eq("id", deletion.id);
+          .eq('id', deletion.id)
       }
 
       return {
         id: deletion.id,
         status: deletion.status,
         createdAt: deletion.created_at,
-      };
+      }
     }),
 
   /**
@@ -247,98 +247,96 @@ export const accountDeletionRouter = t.router({
     .input(
       z.object({
         deletionId: z.string().uuid(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
-        .select("*")
-        .eq("id", input.deletionId)
-        .eq("deletion_type", "worker")
-        .maybeSingle();
+        .schema('core')
+        .from('account_deletions')
+        .select('*')
+        .eq('id', input.deletionId)
+        .eq('deletion_type', 'worker')
+        .maybeSingle()
 
       if (fetchError || !deletion) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Deletion record not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Deletion record not found',
+        })
       }
 
       if (!deletion.deleted_user_id) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Deletion record missing user ID",
-        });
+          code: 'BAD_REQUEST',
+          message: 'Deletion record missing user ID',
+        })
       }
 
       // Update status to in_progress
       await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
+        .schema('core')
+        .from('account_deletions')
         .update({
-          status: "in_progress",
+          status: 'in_progress',
         })
-        .eq("id", input.deletionId);
+        .eq('id', input.deletionId)
 
-      const errors: string[] = [];
+      const errors: string[] = []
 
       // 1. Anonymize payment data
       try {
-        await ctx.supabaseAdmin.rpc("anonymize_worker_payment_data", {
+        await ctx.supabaseAdmin.rpc('anonymize_worker_payment_data', {
           p_worker_user_id: deletion.deleted_user_id,
-        });
+        })
 
         await ctx.supabaseAdmin
-          .schema("core")
-          .from("account_deletions")
+          .schema('core')
+          .from('account_deletions')
           .update({
             payment_data_anonymized: true,
             payment_data_anonymized_at: new Date().toISOString(),
           })
-          .eq("id", input.deletionId);
+          .eq('id', input.deletionId)
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "Unknown error";
-        errors.push(`Payment data anonymization failed: ${errorMsg}`);
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+        errors.push(`Payment data anonymization failed: ${errorMsg}`)
       }
 
       // 2. Cleanup Stripe data (if any)
       try {
-        const stripe = await loadStripeClient(ctx);
+        const stripe = await loadStripeClient(ctx)
 
         // Find Stripe customers for this user
         const { data: transactions } = await ctx.supabaseAdmin
-          .schema("core")
-          .from("payment_transactions")
-          .select("stripe_payment_intent_id")
-          .eq("user_id", deletion.deleted_user_id)
-          .not("stripe_payment_intent_id", "is", null)
-          .limit(10);
+          .schema('core')
+          .from('payment_transactions')
+          .select('stripe_payment_intent_id')
+          .eq('user_id', deletion.deleted_user_id)
+          .not('stripe_payment_intent_id', 'is', null)
+          .limit(10)
 
         // Note: In production, we'd need to track Stripe customer IDs
         // For now, we'll just log that cleanup would be needed
-        const stripeCleanupNeeded = transactions && transactions.length > 0;
+        const stripeCleanupNeeded = transactions && transactions.length > 0
 
         await ctx.supabaseAdmin
-          .schema("core")
-          .from("account_deletions")
+          .schema('core')
+          .from('account_deletions')
           .update({
             stripe_customer_deleted: !stripeCleanupNeeded, // Mark as done if no cleanup needed
-            stripe_customer_deleted_at: stripeCleanupNeeded
-              ? null
-              : new Date().toISOString(),
+            stripe_customer_deleted_at: stripeCleanupNeeded ? null : new Date().toISOString(),
             stripe_payment_methods_deleted: !stripeCleanupNeeded,
             stripe_payment_methods_deleted_at: stripeCleanupNeeded
               ? null
               : new Date().toISOString(),
             stripe_cleanup_errors: stripeCleanupNeeded
-              ? ["Stripe customer cleanup requires manual intervention"]
+              ? ['Stripe customer cleanup requires manual intervention']
               : [],
           })
-          .eq("id", input.deletionId);
+          .eq('id', input.deletionId)
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "Unknown error";
-        errors.push(`Stripe cleanup failed: ${errorMsg}`);
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+        errors.push(`Stripe cleanup failed: ${errorMsg}`)
       }
 
       // 3. Update compliance log
@@ -347,28 +345,28 @@ export const accountDeletionRouter = t.router({
         anonymization_completed: deletion.payment_data_anonymized,
         deleted_at: new Date().toISOString(),
         retention_period_days: 90, // Keep anonymized data for compliance
-      };
+      }
 
       // 4. Mark as completed or partial
-      const finalStatus = errors.length > 0 ? "partial" : "completed";
+      const finalStatus = errors.length > 0 ? 'partial' : 'completed'
 
       await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
+        .schema('core')
+        .from('account_deletions')
         .update({
           status: finalStatus,
           completed_at: new Date().toISOString(),
           compliance_log: complianceLog,
           stripe_cleanup_errors: errors.length > 0 ? errors : null,
-          error_message: errors.length > 0 ? errors.join("; ") : null,
+          error_message: errors.length > 0 ? errors.join('; ') : null,
         })
-        .eq("id", input.deletionId);
+        .eq('id', input.deletionId)
 
       return {
         id: input.deletionId,
         status: finalStatus,
         errors: errors.length > 0 ? errors : undefined,
-      };
+      }
     }),
 
   /**
@@ -378,117 +376,116 @@ export const accountDeletionRouter = t.router({
     .input(
       z.object({
         deletionId: z.string().uuid(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       const { data: deletion, error: fetchError } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
-        .select("*")
-        .eq("id", input.deletionId)
-        .eq("deletion_type", "organization")
-        .maybeSingle();
+        .schema('core')
+        .from('account_deletions')
+        .select('*')
+        .eq('id', input.deletionId)
+        .eq('deletion_type', 'organization')
+        .maybeSingle()
 
       if (fetchError || !deletion) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Deletion record not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Deletion record not found',
+        })
       }
 
       if (!deletion.deleted_organization_id) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Deletion record missing organization ID",
-        });
+          code: 'BAD_REQUEST',
+          message: 'Deletion record missing organization ID',
+        })
       }
 
       await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
+        .schema('core')
+        .from('account_deletions')
         .update({
-          status: "in_progress",
+          status: 'in_progress',
         })
-        .eq("id", input.deletionId);
+        .eq('id', input.deletionId)
 
-      const errors: string[] = [];
+      const errors: string[] = []
 
       // 1. Anonymize payment data
       try {
-        await ctx.supabaseAdmin.rpc("anonymize_organization_payment_data", {
+        await ctx.supabaseAdmin.rpc('anonymize_organization_payment_data', {
           p_organization_id: deletion.deleted_organization_id,
-        });
+        })
 
         await ctx.supabaseAdmin
-          .schema("core")
-          .from("account_deletions")
+          .schema('core')
+          .from('account_deletions')
           .update({
             payment_data_anonymized: true,
             payment_data_anonymized_at: new Date().toISOString(),
           })
-          .eq("id", input.deletionId);
+          .eq('id', input.deletionId)
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "Unknown error";
-        errors.push(`Payment data anonymization failed: ${errorMsg}`);
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+        errors.push(`Payment data anonymization failed: ${errorMsg}`)
       }
 
       // 2. Cleanup Stripe data
       try {
-        const stripe = await loadStripeClient(ctx);
+        const stripe = await loadStripeClient(ctx)
 
         // Get organization's Stripe customer ID
         const { data: org } = await ctx.supabaseAdmin
-          .schema("core")
-          .from("organizations")
-          .select("stripe_customer_id")
-          .eq("id", deletion.deleted_organization_id)
-          .maybeSingle();
+          .schema('core')
+          .from('organizations')
+          .select('stripe_customer_id')
+          .eq('id', deletion.deleted_organization_id)
+          .maybeSingle()
 
         if (org?.stripe_customer_id) {
           try {
             // Delete payment methods
             const paymentMethods = await stripe.paymentMethods.list({
               customer: org.stripe_customer_id,
-            });
+            })
 
             for (const pm of paymentMethods.data) {
-              await stripe.paymentMethods.detach(pm.id);
+              await stripe.paymentMethods.detach(pm.id)
             }
 
             // Delete customer
-            await stripe.customers.del(org.stripe_customer_id);
+            await stripe.customers.del(org.stripe_customer_id)
 
             await ctx.supabaseAdmin
-              .schema("core")
-              .from("account_deletions")
+              .schema('core')
+              .from('account_deletions')
               .update({
                 stripe_customer_deleted: true,
                 stripe_customer_deleted_at: new Date().toISOString(),
                 stripe_payment_methods_deleted: true,
                 stripe_payment_methods_deleted_at: new Date().toISOString(),
               })
-              .eq("id", input.deletionId);
+              .eq('id', input.deletionId)
           } catch (stripeError) {
-            const errorMsg =
-              stripeError instanceof Error ? stripeError.message : "Unknown error";
-            errors.push(`Stripe cleanup failed: ${errorMsg}`);
+            const errorMsg = stripeError instanceof Error ? stripeError.message : 'Unknown error'
+            errors.push(`Stripe cleanup failed: ${errorMsg}`)
           }
         } else {
           // No Stripe customer to clean up
           await ctx.supabaseAdmin
-            .schema("core")
-            .from("account_deletions")
+            .schema('core')
+            .from('account_deletions')
             .update({
               stripe_customer_deleted: true,
               stripe_customer_deleted_at: new Date().toISOString(),
               stripe_payment_methods_deleted: true,
               stripe_payment_methods_deleted_at: new Date().toISOString(),
             })
-            .eq("id", input.deletionId);
+            .eq('id', input.deletionId)
         }
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "Unknown error";
-        errors.push(`Stripe cleanup failed: ${errorMsg}`);
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+        errors.push(`Stripe cleanup failed: ${errorMsg}`)
       }
 
       // 3. Update compliance log
@@ -497,28 +494,28 @@ export const accountDeletionRouter = t.router({
         anonymization_completed: deletion.payment_data_anonymized,
         deleted_at: new Date().toISOString(),
         retention_period_days: 90,
-      };
+      }
 
       // 4. Mark as completed or partial
-      const finalStatus = errors.length > 0 ? "partial" : "completed";
+      const finalStatus = errors.length > 0 ? 'partial' : 'completed'
 
       await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
+        .schema('core')
+        .from('account_deletions')
         .update({
           status: finalStatus,
           completed_at: new Date().toISOString(),
           compliance_log: complianceLog,
           stripe_cleanup_errors: errors.length > 0 ? errors : null,
-          error_message: errors.length > 0 ? errors.join("; ") : null,
+          error_message: errors.length > 0 ? errors.join('; ') : null,
         })
-        .eq("id", input.deletionId);
+        .eq('id', input.deletionId)
 
       return {
         id: input.deletionId,
         status: finalStatus,
         errors: errors.length > 0 ? errors : undefined,
-      };
+      }
     }),
 
   /**
@@ -528,28 +525,28 @@ export const accountDeletionRouter = t.router({
     .input(
       z.object({
         deletionId: z.string().uuid(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
       const { data: deletion, error } = await ctx.supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
-        .select("*")
-        .eq("id", input.deletionId)
-        .maybeSingle();
+        .schema('core')
+        .from('account_deletions')
+        .select('*')
+        .eq('id', input.deletionId)
+        .maybeSingle()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to load deletion status: ${error.message}`,
-        });
+        })
       }
 
       if (!deletion) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Deletion record not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Deletion record not found',
+        })
       }
 
       // Check access
@@ -557,17 +554,17 @@ export const accountDeletionRouter = t.router({
         deletion.deleted_user_id !== ctx.user?.id &&
         deletion.deleted_organization_id &&
         !(await ctx.supabaseAdmin
-          .schema("core")
-          .from("role_assignments")
-          .select("scope_org_id")
-          .eq("user_id", ctx.user?.id ?? "")
-          .eq("scope_org_id", deletion.deleted_organization_id)
+          .schema('core')
+          .from('role_assignments')
+          .select('scope_org_id')
+          .eq('user_id', ctx.user?.id ?? '')
+          .eq('scope_org_id', deletion.deleted_organization_id)
           .maybeSingle())
       ) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You do not have access to this deletion record",
-        });
+          code: 'FORBIDDEN',
+          message: 'You do not have access to this deletion record',
+        })
       }
 
       return {
@@ -581,7 +578,7 @@ export const accountDeletionRouter = t.router({
         completedAt: deletion.completed_at,
         errorMessage: deletion.error_message,
         createdAt: deletion.created_at,
-      };
+      }
     }),
 
   /**
@@ -591,38 +588,38 @@ export const accountDeletionRouter = t.router({
     .input(
       z
         .object({
-          status: z.enum(["pending", "in_progress", "completed", "failed", "partial"]).optional(),
-          deletionType: z.enum(["worker", "organization"]).optional(),
+          status: z.enum(['pending', 'in_progress', 'completed', 'failed', 'partial']).optional(),
+          deletionType: z.enum(['worker', 'organization']).optional(),
           limit: z.number().int().positive().max(100).default(50),
           offset: z.number().int().nonnegative().default(0),
         })
-        .optional(),
+        .optional()
     )
     .query(async ({ ctx, input }) => {
-      const { supabaseAdmin } = ctx;
+      const { supabaseAdmin } = ctx
 
       let query = supabaseAdmin
-        .schema("core")
-        .from("account_deletions")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1);
+        .schema('core')
+        .from('account_deletions')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(input?.offset ?? 0, (input?.offset ?? 0) + (input?.limit ?? 50) - 1)
 
       if (input?.status) {
-        query = query.eq("status", input.status);
+        query = query.eq('status', input.status)
       }
 
       if (input?.deletionType) {
-        query = query.eq("deletion_type", input.deletionType);
+        query = query.eq('deletion_type', input.deletionType)
       }
 
-      const { data, error, count } = await query;
+      const { data, error, count } = await query
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to load deletions: ${error.message}`,
-        });
+        })
       }
 
       return {
@@ -641,7 +638,6 @@ export const accountDeletionRouter = t.router({
           createdAt: row.created_at,
         })),
         totalCount: count ?? 0,
-      };
+      }
     }),
-});
-
+})

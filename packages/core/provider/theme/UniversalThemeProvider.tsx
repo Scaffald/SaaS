@@ -1,9 +1,9 @@
-import { useIsomorphicLayoutEffect } from 'tamagui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { StatusBar } from 'expo-status-bar'
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
+import { useIsomorphicLayoutEffect } from 'tamagui'
 
 type ThemeProviderProps = {
   themes: string[]
@@ -133,7 +133,7 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
   // Native: wrap with React Navigation theme provider and status bar
   return (
     <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />
       {children}
     </ThemeProvider>
   )

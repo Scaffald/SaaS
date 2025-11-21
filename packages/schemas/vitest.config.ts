@@ -1,11 +1,11 @@
-import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
-
+import { fileURLToPath } from 'node:url'
+import type { Config } from 'vitest'
+import { defineConfig, mergeConfig } from 'vitest/config'
 import baseConfig from '../../vitest.config'
-import { defineConfig, mergeConfig, type UserConfig } from 'vitest/config'
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
-const sharedConfig = baseConfig as UserConfig
+const sharedConfig = baseConfig as Config
 
 export default mergeConfig(
   sharedConfig,
@@ -21,5 +21,5 @@ export default mergeConfig(
         { find: '@app/schemas', replacement: resolve(workspaceRoot, 'packages/schemas/src') },
       ],
     },
-  }) as UserConfig
+  }) as Config
 )

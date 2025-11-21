@@ -122,28 +122,15 @@ function StrategyPill({ strategy }: { strategy: ResumeMergeStrategy }) {
       px="$3"
       py="$1"
       rounded="$3"
-      bg={
-        strategy === 'replace'
-          ? '$red3'
-          : strategy === 'append'
-            ? '$blue3'
-            : '$gray3'
-      }
+      bg={strategy === 'replace' ? '$red3' : strategy === 'append' ? '$blue3' : '$gray3'}
     >
       <Text
         fontSize="$2"
         fontWeight="600"
-        color={
-          strategy === 'replace'
-            ? '$red11'
-            : strategy === 'append'
-              ? '$blue11'
-              : '$color11'
-        }
+        color={strategy === 'replace' ? '$red11' : strategy === 'append' ? '$blue11' : '$color11'}
       >
         {STRATEGY_LABELS[strategy]}
       </Text>
     </YStack>
   )
 }
-

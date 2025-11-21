@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const updateJobMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ push: vi.fn() }))
@@ -23,8 +23,12 @@ vi.mock('@app/core/constants/routes', () => ({
 }))
 
 vi.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children }: { children: ReactNode }) => <div data-testid="dnd-context">{children}</div>,
-  DragOverlay: ({ children }: { children: ReactNode }) => <div data-testid="drag-overlay">{children}</div>,
+  DndContext: ({ children }: { children: ReactNode }) => (
+    <div data-testid="dnd-context">{children}</div>
+  ),
+  DragOverlay: ({ children }: { children: ReactNode }) => (
+    <div data-testid="drag-overlay">{children}</div>
+  ),
   PointerSensor: class PointerSensor {},
   useSensor: vi.fn(() => ({})),
   useSensors: vi.fn(() => ({})),
@@ -34,7 +38,15 @@ vi.mock('@app/ui', () => ({
   DroppableColumn: ({ children, id }: { children: ReactNode; id: string }) => (
     <div data-testid={`droppable-column-${id}`}>{children}</div>
   ),
-  DraggableCard: ({ children, id, disabled }: { children: ReactNode; id: string; disabled?: boolean }) => (
+  DraggableCard: ({
+    children,
+    id,
+    disabled,
+  }: {
+    children: ReactNode
+    id: string
+    disabled?: boolean
+  }) => (
     <div data-testid={`draggable-card-${id}`} data-disabled={disabled}>
       {children}
     </div>
@@ -57,17 +69,19 @@ vi.mock('tamagui', () => ({
 
 vi.mock('../JobCard', () => ({
   JobCard: ({ job, onPress }: { job: { id: string; title: string }; onPress?: () => void }) => (
-    <div
+    <button
+      type="button"
       data-testid={`job-card-${job.id}`}
       onClick={onPress}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
           onPress?.()
         }
       }}
     >
       {job.title}
-    </div>
+    </button>
   ),
 }))
 
@@ -300,4 +314,3 @@ describe('JobsKanbanBoard', () => {
     })
   })
 })
-

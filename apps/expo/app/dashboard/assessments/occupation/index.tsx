@@ -1,5 +1,6 @@
 import { OccupationAssessmentWizard } from '@app/core/features/occupation-assessment'
+import { AssessmentsLayout } from '@app/ui'
 
 export default function OccupationAssessmentPage() {
-  return <OccupationAssessmentWizard />
+  return <AssessmentsLayout leftContent={<OccupationAssessmentWizard />} />
 }

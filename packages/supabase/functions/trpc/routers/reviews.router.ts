@@ -1,5 +1,5 @@
-import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { protectedProcedure, publicProcedure, t } from "../middleware.ts";
 
 type MaybeArray<T> = T | T[] | null | undefined;
@@ -37,17 +37,10 @@ const reviewSoftSkillVoteSchema = z.object({
 const reviewAnalyticsRowSchema = z.object({
   rating: z.number().nullable().optional(),
   created_at: z.string(),
-  review_skill_ratings: z
-    .array(reviewSkillRatingSchema)
-    .nullable()
+  review_skill_ratings: z.array(reviewSkillRatingSchema).nullable().optional(),
+  review_category_ratings: z.array(reviewCategoryRatingSchema).nullable()
     .optional(),
-  review_category_ratings: z
-    .array(reviewCategoryRatingSchema)
-    .nullable()
-    .optional(),
-  review_soft_skill_votes: z
-    .array(reviewSoftSkillVoteSchema)
-    .nullable()
+  review_soft_skill_votes: z.array(reviewSoftSkillVoteSchema).nullable()
     .optional(),
 });
 
@@ -144,14 +137,18 @@ export const reviewsRouter = t.router({
    */
   getSoftSkills: publicProcedure
     .input(
-      z.object({
-        category: z.enum([
-          "reliability",
-          "collaboration",
-          "professionalism",
-          "technical",
-        ]).optional(),
-      }).optional(),
+      z
+        .object({
+          category: z
+            .enum([
+              "reliability",
+              "collaboration",
+              "professionalism",
+              "technical",
+            ])
+            .optional(),
+        })
+        .optional(),
     )
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabase
@@ -196,13 +193,16 @@ export const reviewsRouter = t.router({
     }
 
     // Group by category
-    const grouped = data.reduce((acc, skill) => {
-      if (!acc[skill.category]) {
-        acc[skill.category] = [];
-      }
-      acc[skill.category].push(skill);
-      return acc;
-    }, {} as Record<string, typeof data>);
+    const grouped = data.reduce(
+      (acc, skill) => {
+        if (!acc[skill.category]) {
+          acc[skill.category] = [];
+        }
+        acc[skill.category].push(skill);
+        return acc;
+      },
+      {} as Record<string, typeof data>,
+    );
 
     return grouped;
   }),
@@ -261,9 +261,8 @@ export const reviewsRouter = t.router({
   /**
    * Save review draft data (auto-save)
    */
-  saveDraft: protectedProcedure
-    .input(saveDraftSchema)
-    .mutation(async ({ ctx, input }) => {
+  saveDraft: protectedProcedure.input(saveDraftSchema).mutation(
+    async ({ ctx, input }) => {
       // Verify user owns this review
       const { data: review } = await ctx.supabase
         .schema("core")
@@ -300,7 +299,8 @@ export const reviewsRouter = t.router({
       }
 
       return { success: true };
-    }),
+    },
+  ),
 
   /**
    * Get review draft by ID
@@ -331,9 +331,8 @@ export const reviewsRouter = t.router({
   /**
    * Update review progress step
    */
-  updateStep: protectedProcedure
-    .input(updateReviewStepSchema)
-    .mutation(async ({ ctx, input }) => {
+  updateStep: protectedProcedure.input(updateReviewStepSchema).mutation(
+    async ({ ctx, input }) => {
       // Verify user owns this review
       const { data: review } = await ctx.supabase
         .schema("core")
@@ -366,7 +365,8 @@ export const reviewsRouter = t.router({
       }
 
       return { success: true };
-    }),
+    },
+  ),
 
   /**
    * Update skill ratings (technical skills)
@@ -445,19 +445,18 @@ export const reviewsRouter = t.router({
       }
 
       // Upsert category rating
-      const { error } = await ctx.supabase
-        .schema("core")
-        .from("review_category_ratings")
-        .upsert(
-          {
-            review_id: input.reviewId,
-            category: input.category,
-            rating: input.rating,
-          },
-          {
-            onConflict: "review_id,category",
-          },
-        );
+      const { error } = await ctx.supabase.schema("core").from(
+        "review_category_ratings",
+      ).upsert(
+        {
+          review_id: input.reviewId,
+          category: input.category,
+          rating: input.rating,
+        },
+        {
+          onConflict: "review_id,category",
+        },
+      );
 
       if (error) {
         throw new TRPCError({
@@ -571,9 +570,8 @@ export const reviewsRouter = t.router({
    * NOTE: Simplified to work with current schema (no status/progress tracking)
    * Maps recommendation (-1, 0, 1) to rating field
    */
-  submitReview: protectedProcedure
-    .input(submitReviewSchema)
-    .mutation(async ({ ctx, input }) => {
+  submitReview: protectedProcedure.input(submitReviewSchema).mutation(
+    async ({ ctx, input }) => {
       const now = new Date().toISOString();
 
       const { error } = await ctx.supabase
@@ -597,19 +595,28 @@ export const reviewsRouter = t.router({
       // Note: review_progress table doesn't exist in current schema
 
       return { success: true };
-    }),
+    },
+  ),
 
   /**
    * Get reviews by subject (user or organization)
-   * NOTE: Simplified to work with current schema (no status field or related tables yet)
+   * Includes related data: category ratings, skill ratings, and soft skill votes
    */
-  getBySubject: publicProcedure
-    .input(getReviewsBySubjectSchema)
-    .query(async ({ ctx, input }) => {
+  getBySubject: publicProcedure.input(getReviewsBySubjectSchema).query(
+    async ({ ctx, input }) => {
       const { data, error } = await ctx.supabase
         .schema("core")
         .from("reviews")
-        .select("*")
+        .select(`
+        id,
+        rating,
+        body,
+        created_at,
+        review_category_ratings (
+          category,
+          rating
+        )
+      `)
         .eq("subject_id", input.subjectId)
         .eq("subject_type", input.subjectType)
         .order("created_at", { ascending: false });
@@ -622,9 +629,23 @@ export const reviewsRouter = t.router({
         });
       }
 
-      // Note: input.status parameter is ignored for now since status field doesn't exist in current schema
-      return data || [];
-    }),
+      // Map the response to match UI expectations
+      // - body → comment
+      // - rating → reaction (recommendation: -1 or 1)
+      // - review_category_ratings is already included as an array
+      const mappedReviews = (data || []).map((review) => ({
+        id: review.id,
+        created_at: review.created_at,
+        comment: review.body,
+        reaction: review.rating,
+        review_category_ratings: review.review_category_ratings || [],
+      }));
+
+      // Apply status filter if provided (for future use when status field is added)
+      // For now, return all reviews as the status field doesn't exist yet
+      return mappedReviews;
+    },
+  ),
 
   /**
    * Get user's own reviews (drafts and submitted)
@@ -654,10 +675,12 @@ export const reviewsRouter = t.router({
    * Returns comprehensive statistics and breakdowns for visualizations
    */
   getReviewAnalytics: publicProcedure
-    .input(z.object({
-      subjectId: z.string().uuid(),
-      subjectType: z.enum(["user", "organization"]).default("user"),
-    }))
+    .input(
+      z.object({
+        subjectId: z.string().uuid(),
+        subjectType: z.enum(["user", "organization"]).default("user"),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       // Get all reviews for this subject
       const { data: reviews, error: reviewsError } = await ctx.supabase
@@ -697,9 +720,9 @@ export const reviewsRouter = t.router({
         });
       }
 
-      const parsedReviewsResult = z
-        .array(reviewAnalyticsRowSchema)
-        .safeParse(reviews ?? []);
+      const parsedReviewsResult = z.array(reviewAnalyticsRowSchema).safeParse(
+        reviews ?? [],
+      );
 
       if (!parsedReviewsResult.success) {
         console.error(
@@ -721,7 +744,9 @@ export const reviewsRouter = t.router({
       // Calculate overall statistics
       const totalReviews = parsedReviews.length;
       const recommendCount = parsedReviews.filter((r) => r.rating === 1).length;
-      const notRecommendCount = parsedReviews.filter((r) => r.rating === -1).length;
+      const notRecommendCount = parsedReviews.filter((r) =>
+        r.rating === -1
+      ).length;
 
       // Aggregate skill ratings
       const skillRatings = new Map<
@@ -837,12 +862,14 @@ export const reviewsRouter = t.router({
             ? (recommendCount / totalReviews) * 100
             : 0,
         },
-        skills: Array.from(skillRatings.entries()).map(([id, data]) => ({
-          skillId: id,
-          skillName: data.name,
-          averageRating: data.total / data.count,
-          frequency: data.count,
-        })).sort((a, b) => b.frequency - a.frequency),
+        skills: Array.from(skillRatings.entries())
+          .map(([id, data]) => ({
+            skillId: id,
+            skillName: data.name,
+            averageRating: data.total / data.count,
+            frequency: data.count,
+          }))
+          .sort((a, b) => b.frequency - a.frequency),
         categories: Array.from(categoryRatings.entries()).map((
           [category, data],
         ) => ({
@@ -858,8 +885,9 @@ export const reviewsRouter = t.router({
             .sort((a, b) => b.count - a.count)
             .slice(0, 20),
         },
-        timeline: Array.from(timelineData.values())
-          .sort((a, b) => a.month.localeCompare(b.month)),
+        timeline: Array.from(timelineData.values()).sort((a, b) =>
+          a.month.localeCompare(b.month)
+        ),
       };
     }),
 

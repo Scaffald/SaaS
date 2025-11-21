@@ -7,7 +7,7 @@
  * Task 26: Validate Regulatory Compliance (GDPR, CCPA, Employment Laws)
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Employment Law Compliance Testing', () => {
   test('EEOC compliance', async ({ page }) => {
@@ -32,4 +32,3 @@ test.describe('Employment Law Compliance Testing', () => {
     expect(true, 'Data retention policies should be in place').toBeTruthy()
   })
 })
-

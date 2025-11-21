@@ -1,18 +1,26 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Test only the chip rendering logic by extracting it
 // This avoids dependency issues with AddOrganizationWidget
 
 const MockYStack = ({ children, ...rest }: { children?: ReactNode; [key: string]: unknown }) => {
   // Store props for testing - spread all props as attributes
-  return <div data-testid="ystack" {...rest}>{children}</div>
+  return (
+    <div data-testid="ystack" {...rest}>
+      {children}
+    </div>
+  )
 }
 
 const MockXStack = ({ children, ...rest }: { children?: ReactNode; [key: string]: unknown }) => {
-  return <div data-testid="xstack" {...rest}>{children}</div>
+  return (
+    <div data-testid="xstack" {...rest}>
+      {children}
+    </div>
+  )
 }
 
 const MockFilterChip = ({ label, color }: { label: string; color?: string }) => (
@@ -140,7 +148,7 @@ describe('DiscoverEmployersRight - Chip Functionality', () => {
 
     const chip = screen.getByTestId('filter-chip')
     expect(chip).toHaveAttribute('data-color', 'gray')
-    
+
     const wrapper = chip.parentElement
     expect(wrapper).toHaveAttribute('opacity', '0.6')
   })
@@ -159,7 +167,7 @@ describe('DiscoverEmployersRight - Chip Functionality', () => {
 
     const chip = screen.getByTestId('filter-chip')
     const wrapper = chip.parentElement as HTMLElement
-    
+
     await user.click(wrapper)
 
     expect(onIndustriesChange).toHaveBeenCalledTimes(1)
@@ -180,7 +188,7 @@ describe('DiscoverEmployersRight - Chip Functionality', () => {
 
     const chip = screen.getByTestId('filter-chip')
     const wrapper = chip.parentElement as HTMLElement
-    
+
     // Try to click - should not trigger callback due to pointerEvents="none"
     await user.click(wrapper)
 
@@ -279,4 +287,3 @@ describe('DiscoverEmployersRight - Chip Functionality', () => {
     expect(chips[2]).toHaveAttribute('data-color', 'blue')
   })
 })
-

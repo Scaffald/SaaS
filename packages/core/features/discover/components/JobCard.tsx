@@ -1,5 +1,6 @@
-import { Card, XStack, YStack, Text, Button } from 'tamagui'
-import { Briefcase, MapPin, DollarSign, Building2 } from '@tamagui/lucide-icons'
+import { DiscoverCard } from '@app/ui'
+import { Briefcase, Building2, DollarSign, MapPin } from '@tamagui/lucide-icons'
+import { Button, Text, XStack, YStack } from 'tamagui'
 import type { JobMapPin } from '../hooks/useJobs'
 
 type JobCardProps = {
@@ -31,23 +32,7 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
   )
 
   return (
-    <Card
-      elevate={isSelected}
-      bordered
-      bg={isSelected ? '$yellow2' : '$background'}
-      borderColor={isSelected ? '$yellow8' : '$borderColor'}
-      pressStyle={{ scale: 0.98 }}
-      onPress={onPress}
-      animation="quick"
-      p="$3"
-      gap="$3"
-      width="100%"
-      cursor="pointer"
-      hoverStyle={{
-        borderColor: '$yellow6',
-        bg: isSelected ? '$yellow2' : '$color2',
-      }}
-    >
+    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress}>
       {/* Job Title and Organization */}
       <YStack gap="$1">
         <XStack items="center" gap="$2">
@@ -124,6 +109,6 @@ export const JobCard = ({ job, isSelected = false, onPress }: JobCardProps) => {
       >
         View Details
       </Button>
-    </Card>
+    </DiscoverCard>
   )
 }

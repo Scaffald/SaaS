@@ -49,7 +49,7 @@ async function importSupabase() {
   } catch (error) {
     throw new Error(
       'The @supabase/supabase-js package is required to use the test database helpers. Ensure it is installed in the workspace.',
-      { cause: error },
+      { cause: error }
     )
   }
 }
@@ -74,7 +74,7 @@ function withHeaders(headers: Record<string, string>) {
       }
       return accumulator
     },
-    {} as Record<string, string>,
+    {} as Record<string, string>
   )
 }
 
@@ -84,7 +84,7 @@ function hasServiceRoleKey(options: SupabaseTestClientOptions) {
 
 async function createClient(
   options: SupabaseTestClientOptions,
-  serviceRole: boolean,
+  serviceRole: boolean
 ): Promise<SupabaseClient> {
   const { createClient } = await importSupabase()
   const supabaseUrl = resolveUrl(options.supabaseUrl)
@@ -96,7 +96,7 @@ async function createClient(
     throw new Error(
       `Missing ${
         serviceRole ? 'service role' : 'anon'
-      } key for Supabase test helpers. Set SUPABASE_TEST_${serviceRole ? 'SERVICE_ROLE' : 'ANON'}_KEY or SUPABASE_${serviceRole ? 'SERVICE_ROLE' : 'ANON'}_KEY in your environment.`,
+      } key for Supabase test helpers. Set SUPABASE_TEST_${serviceRole ? 'SERVICE_ROLE' : 'ANON'}_KEY or SUPABASE_${serviceRole ? 'SERVICE_ROLE' : 'ANON'}_KEY in your environment.`
     )
   }
 
@@ -133,13 +133,13 @@ async function createClient(
 }
 
 export async function createTestClient(
-  options: SupabaseTestClientOptions = {},
+  options: SupabaseTestClientOptions = {}
 ): Promise<SupabaseClient> {
   return createClient(options, false)
 }
 
 export async function createServiceRoleClient(
-  options: SupabaseTestClientOptions = {},
+  options: SupabaseTestClientOptions = {}
 ): Promise<SupabaseClient> {
   return createClient(options, true)
 }
@@ -147,7 +147,7 @@ export async function createServiceRoleClient(
 async function invokeRpc(
   client: SupabaseClient,
   functionName: string,
-  payload: Record<string, unknown> | undefined,
+  payload: Record<string, unknown> | undefined
 ) {
   const { error } = await client.rpc(functionName, payload ?? {})
   if (error) {
@@ -160,15 +160,13 @@ async function invokeRpc(
   }
 }
 
-export async function resetDatabase(
-  options: DatabaseLifecycleOptions = {},
-): Promise<void> {
+export async function resetDatabase(options: DatabaseLifecycleOptions = {}): Promise<void> {
   if (options.shouldReset === false) {
     return
   }
   if (!hasServiceRoleKey(options)) {
     console.warn(
-      'Skipping Supabase reset step for tests because no service role key is configured.',
+      'Skipping Supabase reset step for tests because no service role key is configured.'
     )
     return
   }
@@ -176,31 +174,25 @@ export async function resetDatabase(
   await invokeRpc(client, options.resetFunction ?? DEFAULT_RESET_FUNCTION, options.rpcPayload)
 }
 
-export async function seedTestData(
-  options: DatabaseLifecycleOptions = {},
-): Promise<void> {
+export async function seedTestData(options: DatabaseLifecycleOptions = {}): Promise<void> {
   if (options.shouldSeed === false) {
     return
   }
   if (!hasServiceRoleKey(options)) {
-    console.warn(
-      'Skipping Supabase seed step for tests because no service role key is configured.',
-    )
+    console.warn('Skipping Supabase seed step for tests because no service role key is configured.')
     return
   }
   const client = await createServiceRoleClient(options)
   await invokeRpc(client, options.seedFunction ?? DEFAULT_SEED_FUNCTION, options.rpcPayload)
 }
 
-export async function cleanupTestData(
-  options: DatabaseLifecycleOptions = {},
-): Promise<void> {
+export async function cleanupTestData(options: DatabaseLifecycleOptions = {}): Promise<void> {
   if (options.shouldCleanup === false) {
     return
   }
   if (!hasServiceRoleKey(options)) {
     console.warn(
-      'Skipping Supabase cleanup step for tests because no service role key is configured.',
+      'Skipping Supabase cleanup step for tests because no service role key is configured.'
     )
     return
   }
@@ -208,17 +200,11 @@ export async function cleanupTestData(
   await invokeRpc(client, options.cleanupFunction ?? DEFAULT_CLEANUP_FUNCTION, options.rpcPayload)
 }
 
-export async function setupTestDatabase(
-  options: DatabaseLifecycleOptions = {},
-): Promise<void> {
+export async function setupTestDatabase(options: DatabaseLifecycleOptions = {}): Promise<void> {
   await resetDatabase(options)
   await seedTestData(options)
 }
 
-export async function teardownTestDatabase(
-  options: DatabaseLifecycleOptions = {},
-): Promise<void> {
+export async function teardownTestDatabase(options: DatabaseLifecycleOptions = {}): Promise<void> {
   await cleanupTestData(options)
 }
-
-

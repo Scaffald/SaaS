@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Spinner } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
+import { useEffect, useState } from 'react'
+import { Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export interface UserSearchProps {
   value?: string // user ID

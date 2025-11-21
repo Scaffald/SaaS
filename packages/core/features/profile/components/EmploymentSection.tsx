@@ -1,19 +1,26 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Spinner, AnimatePresence } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { api } from '@app/core/utils/api'
 import {
-  employmentProfileSchema,
+  UIButton as Button,
+  CustomCheckbox,
+  DashboardWidget,
+  LocationListInput,
+  RangeSliderCard,
+  ToggleCard,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Calendar, Car, Flag, MapPin, Plane, Shield } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import {
+  AVAILABILITY_OPTIONS,
+  DRIVERS_LICENSE_OPTIONS,
   type EmploymentProfileFormData,
   employmentProfileDefaults,
-  DRIVERS_LICENSE_OPTIONS,
+  employmentProfileSchema,
   MILITARY_STATUS_OPTIONS,
-  AVAILABILITY_OPTIONS,
 } from '../config/employment-schema'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, RangeSliderCard } from '@app/ui'
-import { Flag, MapPin, Plane, Car, Shield, Calendar } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
 
 interface EmploymentSectionProps {
   /**
@@ -48,7 +55,7 @@ export function EmploymentSection({
   const useQuery =
     mode === 'admin' && userId
       ? () => api.office.getUserEmployment.useQuery({ userId })
-      : () => api.profile.getEmployment.useQuery()
+      : () => api.profile.employment.getEmployment.useQuery()
 
   const useMutation =
     mode === 'admin' && userId
@@ -70,7 +77,7 @@ export function EmploymentSection({
             },
           })
       : () =>
-          api.profile.updateEmployment.useMutation({
+          api.profile.employment.updateEmployment.useMutation({
             onSuccess: () => {
               toast.show('Employment Updated', {
                 message: 'Your employment preferences have been saved successfully!',
@@ -273,7 +280,7 @@ export function EmploymentSection({
                     setIsExpanded(checked)
                     if (checked) {
                       // Auto-select Class D when toggle is checked
-                      field.onChange(["Class D"])
+                      field.onChange(['Class D'])
                     } else {
                       field.onChange([])
                     }
@@ -315,7 +322,7 @@ export function EmploymentSection({
                               }
                             }}
                           >
-                            {license === "Class D"
+                            {license === 'Class D'
                               ? "Class D (standard driver's license)"
                               : `Class ${license}`}
                           </Text>

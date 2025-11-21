@@ -1,86 +1,82 @@
-import { useState } from "react";
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from "tamagui";
-import { AlertCircle, RefreshCw } from "@tamagui/lucide-icons";
-
-import { api } from "@app/core/utils/api";
-import { NotificationTag } from "@app/ui";
+import { api } from '@app/core/utils/api'
+import { NotificationTag } from '@app/ui'
+import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface NotificationDelivery {
-  id: string;
-  channel: string;
-  status: string;
-  attempts: number;
-  last_error?: string | null;
-  updated_at?: string | null;
+  id: string
+  channel: string
+  status: string
+  attempts: number
+  last_error?: string | null
+  updated_at?: string | null
   notification?: {
-    severity?: "info" | "important" | "critical";
-    title?: string | null;
-    preview?: string | null;
-    message?: string | null;
-  } | null;
+    severity?: 'info' | 'important' | 'critical'
+    title?: string | null
+    preview?: string | null
+    message?: string | null
+  } | null
 }
 
 interface DigestQueueItem {
-  id: string;
-  user_id: string;
-  type: string;
-  bucket: string;
-  count: number;
-  channels?: string[] | null;
-  last_event_at?: string | null;
+  id: string
+  user_id: string
+  type: string
+  bucket: string
+  count: number
+  channels?: string[] | null
+  last_event_at?: string | null
 }
 
 const DELIVERY_STATUSES = [
-  "all",
-  "queued",
-  "sending",
-  "sent",
-  "delivered",
-  "failed",
-  "bounce",
-  "blocked",
-] as const;
+  'all',
+  'queued',
+  'sending',
+  'sent',
+  'delivered',
+  'failed',
+  'bounce',
+  'blocked',
+] as const
 
-type DeliveryStatus = (typeof DELIVERY_STATUSES)[number];
+type DeliveryStatus = (typeof DELIVERY_STATUSES)[number]
 
-const severityThemeMap: Record<
-  "info" | "important" | "critical",
-  "info" | "warning" | "error"
-> = {
-  info: "info",
-  important: "warning",
-  critical: "error",
-};
+const severityThemeMap: Record<'info' | 'important' | 'critical', 'info' | 'warning' | 'error'> = {
+  info: 'info',
+  important: 'warning',
+  critical: 'error',
+}
 
 function formatDate(value: string | null | undefined) {
-  if (!value) return "—";
-  return new Date(value).toLocaleString();
+  if (!value) return '—'
+  return new Date(value).toLocaleString()
 }
 
 function formatChannel(channel: string) {
   switch (channel) {
-    case "email":
-      return "Email";
-    case "sms":
-      return "SMS";
-    case "push":
-      return "Push";
+    case 'email':
+      return 'Email'
+    case 'sms':
+      return 'SMS'
+    case 'push':
+      return 'Push'
     default:
-      return channel;
+      return channel
   }
 }
 
 export function OfficeNotificationsConsole() {
-  const [status, setStatus] = useState<DeliveryStatus>("queued");
+  const [status, setStatus] = useState<DeliveryStatus>('queued')
 
   const deliveriesQuery = api.notifications.admin.deliveries.useQuery({
     status,
     limit: 50,
-  });
-  const digestQuery = api.notifications.admin.digestQueue.useQuery({ limit: 50 });
+  })
+  const digestQuery = api.notifications.admin.digestQueue.useQuery({ limit: 50 })
 
-  const deliveries = (deliveriesQuery.data ?? []) as NotificationDelivery[];
-  const digestItems = (digestQuery.data ?? []) as DigestQueueItem[];
+  const deliveries = (deliveriesQuery.data ?? []) as NotificationDelivery[]
+  const digestItems = (digestQuery.data ?? []) as DigestQueueItem[]
 
   return (
     <YStack gap="$6">
@@ -111,22 +107,22 @@ export function OfficeNotificationsConsole() {
 
         <XStack gap="$2" flexWrap="wrap">
           {DELIVERY_STATUSES.map((value) => {
-            const isActive = status === value;
+            const isActive = status === value
 
             return (
               <Button
                 key={value}
                 size="$2"
-                theme={isActive ? "info" : "gray"}
-                {...(!isActive ? { variant: "outlined" as const } : {})}
+                theme={isActive ? 'info' : 'gray'}
+                {...(!isActive ? { variant: 'outlined' as const } : {})}
                 onPress={() => {
-                  setStatus(value);
-                  deliveriesQuery.refetch();
+                  setStatus(value)
+                  deliveriesQuery.refetch()
                 }}
               >
                 {value.charAt(0).toUpperCase() + value.slice(1)}
               </Button>
-            );
+            )
           })}
         </XStack>
 
@@ -164,28 +160,24 @@ export function OfficeNotificationsConsole() {
             </XStack>
 
             {deliveries.map((delivery, index) => {
-              const notification = delivery.notification;
-              const severity = notification?.severity ?? "info";
-              const tagTheme = severityThemeMap[severity];
+              const notification = delivery.notification
+              const severity = notification?.severity ?? 'info'
+              const tagTheme = severityThemeMap[severity]
 
               return (
-                <YStack key={delivery.id} bg={index % 2 === 0 ? "$color1" : "$color2"} p="$3">
+                <YStack key={delivery.id} bg={index % 2 === 0 ? '$color1' : '$color2'} p="$3">
                   <XStack gap="$3" items="center">
                     <YStack flex={2} gap="$1">
                       <XStack gap="$2" items="center">
                         <Text fontWeight="600" color="$color12" numberOfLines={1}>
-                          {notification?.title ?? "Untitled notification"}
+                          {notification?.title ?? 'Untitled notification'}
                         </Text>
-                        <NotificationTag
-                          size="sm"
-                          themeName={tagTheme}
-                          textColorToken="$color12"
-                        >
+                        <NotificationTag size="sm" themeName={tagTheme} textColorToken="$color12">
                           {severity.toUpperCase()}
                         </NotificationTag>
                       </XStack>
                       <Text fontSize="$2" color="$color10" numberOfLines={2}>
-                        {notification?.preview ?? notification?.message ?? "—"}
+                        {notification?.preview ?? notification?.message ?? '—'}
                       </Text>
                     </YStack>
                     <Text flex={1} color="$color11">
@@ -193,7 +185,7 @@ export function OfficeNotificationsConsole() {
                     </Text>
                     <NotificationTag
                       size="md"
-                      themeName={delivery.status === "failed" ? "error" : "gray"}
+                      themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                       flex={1}
                       justify="center"
                       textColorToken="$color12"
@@ -204,14 +196,14 @@ export function OfficeNotificationsConsole() {
                       {delivery.attempts}
                     </Text>
                     <Text flex={2} color="$color10" numberOfLines={1}>
-                      {delivery.last_error ?? "—"}
+                      {delivery.last_error ?? '—'}
                     </Text>
                     <Text flex={1} color="$color10">
                       {formatDate(delivery.updated_at)}
                     </Text>
                   </XStack>
                 </YStack>
-              );
+              )
             })}
           </YStack>
         )}
@@ -273,7 +265,7 @@ export function OfficeNotificationsConsole() {
                 key={item.id}
                 gap="$3"
                 p="$3"
-                bg={index % 2 === 0 ? "$color1" : "$color2"}
+                bg={index % 2 === 0 ? '$color1' : '$color2'}
                 items="flex-start"
               >
                 <Text flex={1} color="$color11" numberOfLines={1}>
@@ -290,8 +282,8 @@ export function OfficeNotificationsConsole() {
                 </Text>
                 <Text flex={2} color="$color11">
                   {Array.isArray(item.channels) && item.channels.length > 0
-                    ? item.channels.join(", ")
-                    : "—"}
+                    ? item.channels.join(', ')
+                    : '—'}
                 </Text>
                 <Text flex={1} color="$color10">
                   {formatDate(item.last_event_at)}
@@ -302,7 +294,7 @@ export function OfficeNotificationsConsole() {
         )}
       </YStack>
     </YStack>
-  );
+  )
 }
 
 export function OfficeNotificationsConsoleScrollWrapper() {
@@ -310,6 +302,5 @@ export function OfficeNotificationsConsoleScrollWrapper() {
     <ScrollView px="$6" py="$6">
       <OfficeNotificationsConsole />
     </ScrollView>
-  );
+  )
 }
-

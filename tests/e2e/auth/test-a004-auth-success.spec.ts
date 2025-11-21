@@ -1,9 +1,13 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /auth/success', () => {
-  test('shows success page when accessed directly (unauthenticated)', async ({ page }: { page: Page }) => {
+  test('shows success page when accessed directly (unauthenticated)', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     // Navigate to /auth/success without authentication
     // NOTE: We don't use networkidle because this page intentionally stays in loading state
     await page.goto('/auth/success', { waitUntil: 'domcontentloaded' })
@@ -15,7 +19,7 @@ test.describe('Admin • /auth/success', () => {
     await page.waitForTimeout(2000)
 
     // Check for main UI elements
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toContain('Success')
     expect(pageContent).toContain('Code Verified')
     expect(pageContent).toContain('We are logging you in. Please wait...')
@@ -53,18 +57,21 @@ test.describe('Admin • /auth/success', () => {
   // NOTE: Test commented out due to browser context stability issues
   // The authenticated redirect behavior is documented but not yet implemented
   // See ticket description for expected behavior
-  test.skip('shows success page even for authenticated admin (no redirect implemented)', async ({ page }: { page: Page }) => {
+  test.skip('shows success page even for authenticated admin (no redirect implemented)', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     // Sign in as admin (auto-handles profile completion)
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
 
     // Verify we're on dashboard after sign in
     await page.waitForURL('**/dashboard**', { timeout: 15000 })
 
     // Wait for dashboard to load properly
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     // Now try to navigate to /auth/success
@@ -77,7 +84,7 @@ test.describe('Admin • /auth/success', () => {
     expect(page.url()).toContain('/auth/success')
 
     // Verify success page UI is visible
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent).toContain('Code Verified')
     expect(pageContent).toContain('We are logging you in. Please wait...')
 
@@ -129,7 +136,7 @@ test.describe('Admin • /auth/success', () => {
     await expect(codeVerifiedText).toBeVisible({ timeout: 5000 })
 
     // Verify elements are in expected order (top to bottom)
-    const bodyText = await page.locator('body').textContent() || ''
+    const bodyText = (await page.locator('body').textContent()) || ''
     const successIndex = bodyText.indexOf('Success')
     const codeVerifiedIndex = bodyText.indexOf('Code Verified')
     const waitMessageIndex = bodyText.indexOf('We are logging you in')

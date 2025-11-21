@@ -11,6 +11,8 @@ export const PinMarker = ({ color, tooltip }: PinMarkerProps) => {
   return (
     <div
       id="elevate-marker"
+      role="img"
+      aria-label={tooltip || 'Map pin marker'}
       style={{
         transformOrigin: 'bottom',
         transition: 'transform 200ms ease-in-out',

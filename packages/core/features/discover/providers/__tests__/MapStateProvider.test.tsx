@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 const STORAGE_KEY = '@map_state'
 
@@ -55,7 +55,7 @@ describe('MapStateProvider', () => {
 
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ version: 1, timestamp: Date.now(), data: persistedState }),
+      JSON.stringify({ version: 1, timestamp: Date.now(), data: persistedState })
     )
 
     const { MapStateProvider, useMapState } = await setupModule()
@@ -82,7 +82,7 @@ describe('MapStateProvider', () => {
       render(
         <MapStateProvider>
           <Consumer />
-        </MapStateProvider>,
+        </MapStateProvider>
       )
 
       await waitFor(() => {
@@ -98,7 +98,7 @@ describe('MapStateProvider', () => {
 
       expect(setItemSpy).toHaveBeenCalledWith(
         STORAGE_KEY,
-        expect.stringContaining('"showJobs":true'),
+        expect.stringContaining('"showJobs":true')
       )
     } finally {
       setItemSpy.mockRestore()
@@ -122,7 +122,7 @@ describe('MapStateProvider', () => {
           resultsRailVisible: false,
           viewport: null,
         },
-      }),
+      })
     )
 
     const { MapStateProvider, useMapState } = await setupModule()
@@ -142,7 +142,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     await waitFor(() => {
@@ -173,7 +173,7 @@ describe('MapStateProvider', () => {
           resultsRailVisible: false,
           viewport: null,
         },
-      }),
+      })
     )
 
     const { MapStateProvider, useMapState } = await setupModule()
@@ -186,7 +186,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     await waitFor(() => {
@@ -202,9 +202,7 @@ describe('MapStateProvider', () => {
       const { state, updateSearchLocation } = useMapState()
       return (
         <div>
-          <span data-testid="location-label">
-            {state.lastSearchLocation?.label || 'null'}
-          </span>
+          <span data-testid="location-label">{state.lastSearchLocation?.label || 'null'}</span>
           <button
             type="button"
             onClick={() =>
@@ -225,7 +223,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     await waitFor(() => {
@@ -251,9 +249,7 @@ describe('MapStateProvider', () => {
       const { state, updateViewport } = useMapState()
       return (
         <div>
-          <span data-testid="viewport-zoom">
-            {state.viewport?.zoom?.toString() || 'null'}
-          </span>
+          <span data-testid="viewport-zoom">{state.viewport?.zoom?.toString() || 'null'}</span>
           <button
             type="button"
             onClick={() =>
@@ -278,7 +274,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     await waitFor(() => {
@@ -309,7 +305,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     await waitFor(() => {
@@ -332,7 +328,7 @@ describe('MapStateProvider', () => {
           resultsRailVisible: false,
           viewport: null,
         },
-      }),
+      })
     )
 
     const { MapStateProvider, useMapState } = await setupModule()
@@ -345,7 +341,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     // The code doesn't validate version, so it will use the stored state
@@ -379,7 +375,7 @@ describe('MapStateProvider', () => {
       render(
         <MapStateProvider>
           <Consumer />
-        </MapStateProvider>,
+        </MapStateProvider>
       )
 
       await waitFor(() => {
@@ -418,7 +414,7 @@ describe('MapStateProvider', () => {
           resultsRailVisible: false,
           viewport: null,
         },
-      }),
+      })
     )
 
     const { MapStateProvider, useMapState } = await setupModule()
@@ -435,7 +431,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     // Should ignore state at exactly 24 hours (expired)
@@ -453,9 +449,7 @@ describe('MapStateProvider', () => {
       return (
         <div>
           <span data-testid="workers">{String(state.activeFilters.showWorkers)}</span>
-          <span data-testid="organizations">
-            {String(state.activeFilters.showOrganizations)}
-          </span>
+          <span data-testid="organizations">{String(state.activeFilters.showOrganizations)}</span>
           <span data-testid="jobs">{String(state.activeFilters.showJobs)}</span>
           <button type="button" onClick={() => updateFilters({ showWorkers: false })}>
             toggle-workers
@@ -467,7 +461,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     await waitFor(() => {
@@ -515,7 +509,7 @@ describe('MapStateProvider', () => {
     render(
       <MapStateProvider>
         <Consumer />
-      </MapStateProvider>,
+      </MapStateProvider>
     )
 
     // Wait for component to be ready

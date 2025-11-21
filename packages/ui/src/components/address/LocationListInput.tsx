@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
-import { randomUUID } from 'expo-crypto'
-import { YStack, XStack, Text, Button } from 'tamagui'
 import { Plus, X } from '@tamagui/lucide-icons'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Text, XStack, YStack } from 'tamagui'
 import { AddressAutocomplete } from './AddressAutocomplete'
 import type { AddressResult } from './types'
 
@@ -126,7 +125,6 @@ export function LocationListInput({
       <YStack gap="$2">
         {value.length > 0 ? (
           Array.from({ length: fieldCount }, (_, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: Index is stable here since locations don't reorder
             <XStack key={`location-input-${index}`} gap="$2" items="flex-start">
               <YStack flex={1}>
                 <AddressAutocomplete

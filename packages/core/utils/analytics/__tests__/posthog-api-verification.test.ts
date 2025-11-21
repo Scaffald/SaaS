@@ -9,7 +9,7 @@
  * Requires:
  * - POSTHOG_ALL_ACCESS in .env (personal API key)
  * - POSTHOG_PROJECT_ID or EXPO_PUBLIC_POSTHOG_PROJECT in .env
- * - POSTHOG_KEY or EXPO_PUBLIC_POSTHOG_API_KEY in .env (for SDK initialization)
+ * - EXPO_PUBLIC_POSTHOG_API_KEY in .env (for SDK initialization, prioritized)
  * 
  * Run with: POSTHOG_ALL_ACCESS=xxx POSTHOG_PROJECT_ID=xxx pnpm --filter @app/core test --run posthog-api-verification.test.ts
  */
@@ -38,9 +38,10 @@ try {
 
 const POSTHOG_ALL_ACCESS = process.env.POSTHOG_ALL_ACCESS || envVars.POSTHOG_ALL_ACCESS
 const POSTHOG_PROJECT_ID = process.env.POSTHOG_PROJECT_ID || process.env.EXPO_PUBLIC_POSTHOG_PROJECT || envVars.EXPO_PUBLIC_POSTHOG_PROJECT || envVars.POSTHOG_PROJECT_ID
-const POSTHOG_KEY = process.env.POSTHOG_KEY || 
-                    process.env.EXPO_PUBLIC_POSTHOG_API_KEY || 
-                    envVars.EXPO_PUBLIC_POSTHOG_API_KEY || 
+// Prioritize EXPO_PUBLIC_POSTHOG_API_KEY for client SDK tests
+const POSTHOG_KEY = process.env.EXPO_PUBLIC_POSTHOG_API_KEY || 
+                    envVars.EXPO_PUBLIC_POSTHOG_API_KEY ||
+                    process.env.POSTHOG_KEY || 
                     envVars.POSTHOG_KEY ||
                     envVars.POSTHOG_KEY_DEV
 const POSTHOG_HOST = process.env.POSTHOG_HOST || process.env.EXPO_PUBLIC_POSTHOG_HOST || envVars.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'
@@ -271,10 +272,12 @@ describe.skipIf(!shouldRunRealAPITests)('PostHog API verification (REAL API CALL
     vi.resetModules()
     
     process.env.APP_ENV = 'development'
-    process.env.POSTHOG_KEY = POSTHOG_KEY
-    process.env.POSTHOG_HOST = POSTHOG_HOST
+    // Prioritize EXPO_PUBLIC_POSTHOG_API_KEY for client SDK
     process.env.EXPO_PUBLIC_POSTHOG_API_KEY = POSTHOG_KEY
     process.env.EXPO_PUBLIC_POSTHOG_HOST = POSTHOG_HOST
+    // Keep POSTHOG_KEY for backward compatibility in tests
+    process.env.POSTHOG_KEY = POSTHOG_KEY
+    process.env.POSTHOG_HOST = POSTHOG_HOST
     process.env.EXPO_PUBLIC_POSTHOG_PROJECT = POSTHOG_PROJECT_ID
     mockPlatform.OS = 'ios'
     ;(global as any).__DEV__ = true
@@ -449,7 +452,7 @@ describe('PostHog API verification setup', () => {
       console.warn('Current values:')
       console.warn(`  POSTHOG_ALL_ACCESS: ${POSTHOG_ALL_ACCESS ? 'SET' : 'NOT SET'}`)
       console.warn(`  POSTHOG_PROJECT_ID: ${POSTHOG_PROJECT_ID ? POSTHOG_PROJECT_ID : 'NOT SET'}`)
-      console.warn(`  POSTHOG_KEY: ${POSTHOG_KEY ? 'SET' : 'NOT SET'}`)
+      console.warn(`  EXPO_PUBLIC_POSTHOG_API_KEY: ${POSTHOG_KEY ? 'SET' : 'NOT SET'}`)
     } else {
       console.log('PostHog API verification tests ENABLED')
       console.log(`  Project ID: ${POSTHOG_PROJECT_ID}`)

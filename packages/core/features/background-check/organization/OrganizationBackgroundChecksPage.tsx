@@ -1,15 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'expo-router'
-import type { CellContext, ColumnDef } from '@tanstack/react-table'
-import { Button, Label, Select, Spinner, Text, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown, Eye, ExternalLink, RefreshCcw } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { ROUTES } from '@app/core/constants/routes'
-import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { api } from '@app/core/utils/api'
-import type { AppRouter } from '@app/supabase/client-types'
 import { OfficePageLayout } from '@app/core/features/office/components/OfficePageLayout'
+import { api } from '@app/core/utils/api'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
+import type { AppRouter } from '@app/supabase/client-types'
+import { ExternalLink, Eye, RefreshCcw } from '@tamagui/lucide-icons'
+import type { CellContext, ColumnDef } from '@tanstack/react-table'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
+import { useEffect, useMemo, useState } from 'react'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Label, Spinner, Text, XStack, YStack } from 'tamagui'
 
 import { getStatusMetadata } from '../components/status.utils'
 import { OrganizationCheckDetails } from './OrganizationCheckDetails'
@@ -123,7 +123,7 @@ export function OrganizationBackgroundChecksPage() {
   const handleNavigateToRequest = () => {
     if (!selectedOrganizationId) return
     router.push({
-      pathname: ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
+      pathname: ROUTES.OFFICE.ATS.CHECKS.REQUEST.path,
       params: { organizationId: selectedOrganizationId },
     })
   }
@@ -228,45 +228,25 @@ export function OrganizationBackgroundChecksPage() {
       <YStack p="$4" gap="$3">
         <YStack gap="$2">
           <Label htmlFor="office-background-checks-organization">Organization</Label>
-          <Select
+          <ResponsiveSelect
             id="office-background-checks-organization"
             value={selectedOrganizationId ?? ''}
             onValueChange={(value) => {
               setSelectedOrganizationId(value)
               setSelectedCheckId(null)
             }}
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value
-                placeholder={
-                  selectedOrganizationId
-                    ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
-                      'Select organization')
-                    : 'Select organization'
-                }
-              />
-            </Select.Trigger>
-            <Select.Content zIndex={200_000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Organizations</Select.Label>
-                  {organizations.map((org, index) => (
-                    <Select.Item key={org.id as string} value={org.id as string} index={index}>
-                      <Select.ItemText>
-                        {(org.name as string) ?? 'Untitled organization'}
-                      </Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder={
+              selectedOrganizationId
+                ? (organizations.find((org) => org.id === selectedOrganizationId)?.name ??
+                  'Select organization')
+                : 'Select organization'
+            }
+            label="Organization"
+            options={organizations.map((org) => ({
+              value: org.id as string,
+              label: (org.name as string) ?? 'Untitled organization',
+            }))}
+          />
         </YStack>
 
         <XStack gap="$2" justify="flex-end">

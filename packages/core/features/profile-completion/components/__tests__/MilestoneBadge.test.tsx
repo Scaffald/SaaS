@@ -1,10 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { vi } from 'vitest'
 import type { ReactNode } from 'react'
-import { describe, expect, it } from 'vitest'
-
-import { MilestoneBadge } from '../MilestoneBadge'
+import { describe, expect, it, vi } from 'vitest'
 import type { CompletionMilestone } from '../../hooks/useCompletionStatus'
+import { MilestoneBadge } from '../MilestoneBadge'
 
 vi.mock('tamagui', () => {
   const Stack = ({
@@ -156,4 +154,3 @@ describe('MilestoneBadge', () => {
     expect(screen.getByTestId('trophy-icon')).toBeInTheDocument()
   })
 })
-

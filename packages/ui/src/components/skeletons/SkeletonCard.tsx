@@ -1,16 +1,16 @@
-import { YStack, XStack } from 'tamagui'
-import { SkeletonBox } from './SkeletonBox'
-import { SkeletonText } from './SkeletonText'
-import { SkeletonAvatar } from './SkeletonAvatar'
+import { XStack, YStack } from 'tamagui'
 import { borderRadius } from '../../config/radii'
 import { spacing } from '../../config/spacing'
+import { SkeletonAvatar } from './SkeletonAvatar'
+import { SkeletonBox } from './SkeletonBox'
+import { SkeletonText } from './SkeletonText'
 
 export interface SkeletonCardProps {
   /** Variant of the skeleton card */
   variant?: 'job' | 'profile' | 'organization'
 }
 
-export function SkeletonCard({ variant = 'job' }: SkeletonCardProps) {
+export function SkeletonCard({ variant: _variant = 'job' }: SkeletonCardProps) {
   return (
     <YStack
       gap={spacing.md}

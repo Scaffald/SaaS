@@ -1,13 +1,5 @@
-import { useMemo, useState } from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
-import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
-
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { api } from '@app/core/utils/api'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import {
   TeamActivityFeed,
   TeamAnalyticsSummary,
@@ -17,6 +9,13 @@ import {
   TeamMembersList,
   TeamOverviewCard,
 } from '@app/core/features/office/teams'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -117,7 +116,7 @@ export default function DashboardTeamDetailPage() {
 
   if (!teamId) {
     return (
-      <DashboardLayout
+      <DashboardPage
         leftContent={
           <ErrorCard
             title="Missing team identifier"
@@ -128,8 +127,7 @@ export default function DashboardTeamDetailPage() {
         }
         showBreadcrumb
         breadcrumbItems={breadcrumbItems}
-        autoGenerateBreadcrumbs={false}
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
@@ -244,12 +242,11 @@ export default function DashboardTeamDetailPage() {
 
   return (
     <>
-      <DashboardLayout
+      <DashboardPage
         leftContent={mainContent}
         showBreadcrumb
         breadcrumbItems={breadcrumbItems}
-        autoGenerateBreadcrumbs={false}
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
       {team ? (
         <TeamInviteModal

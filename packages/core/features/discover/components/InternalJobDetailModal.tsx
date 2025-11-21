@@ -3,41 +3,42 @@
  * Use the router navigation to /dashboard/discover/jobs/[id] instead.
  * This component is kept for backward compatibility but will be removed in a future version.
  */
-import { useState } from 'react'
-import {
-  Dialog,
-  YStack,
-  XStack,
-  Text,
-  Button,
-  ScrollView,
-  Separator,
-  TextArea,
-  Spinner,
-  Input,
-  Switch,
-  Label,
-} from 'tamagui'
-import {
-  Building2,
-  MapPin,
-  DollarSign,
-  Briefcase,
-  Clock,
-  X,
-  CheckCircle2,
-  Calendar,
-  Award,
-  Shield,
-  Plane,
-  Home,
-  Heart,
-} from '@tamagui/lucide-icons'
-import { Chip } from '@app/ui'
-import type { InternalJob } from './InternalJobCard'
-import { api } from '@app/core/utils/api'
+
 import { ApplicationWizard, QuickApplyModal } from '@app/core/features/applications/components'
 import { getApplicationFlow } from '@app/core/features/applications/utils/getApplicationFlow'
+import { api } from '@app/core/utils/api'
+import { Chip } from '@app/ui'
+import {
+  Award,
+  Briefcase,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  Heart,
+  Home,
+  MapPin,
+  Plane,
+  Shield,
+  X,
+} from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import {
+  Button,
+  Dialog,
+  Input,
+  Label,
+  ScrollView,
+  Separator,
+  Spinner,
+  Switch,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
+import type { InternalJob } from './InternalJobCard'
 
 interface InternalJobDetailModalProps {
   job: InternalJob | null
@@ -540,7 +541,9 @@ export function InternalJobDetailModal({
                       {job.skills.map((skill) => {
                         const label =
                           skill.name ??
-                          (skill.taxonomy ? `${skill.taxonomy.toUpperCase()} ${skill.id}` : skill.id)
+                          (skill.taxonomy
+                            ? `${skill.taxonomy.toUpperCase()} ${skill.id}`
+                            : skill.id)
                         if (!label) {
                           return null
                         }
@@ -563,19 +566,17 @@ export function InternalJobDetailModal({
               )}
 
               {/* Application Section */}
-              {!hasApplied && !showApplicationForm && !showApplicationWizard && !showQuickApplyModal && (
-                <>
-                  <Separator />
-                  <Button
-                    size="$4"
-                    theme="info"
-                    onPress={handleApply}
-                    mt="$2"
-                  >
-                    Apply for this Position
-                  </Button>
-                </>
-              )}
+              {!hasApplied &&
+                !showApplicationForm &&
+                !showApplicationWizard &&
+                !showQuickApplyModal && (
+                  <>
+                    <Separator />
+                    <Button size="$4" theme="info" onPress={handleApply} mt="$2">
+                      Apply for this Position
+                    </Button>
+                  </>
+                )}
 
               {/* Application Wizard (New) */}
               {!hasApplied && showApplicationWizard && (

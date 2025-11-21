@@ -1,0 +1,12 @@
+---
+description: "Never revert tracked files with git checkout or git reset"
+alwaysApply: true
+---
+
+# No File Reverts via Checkout/Reset
+
+- **Do not use** `git checkout -- <path>` or similar variants to discard local changes.
+- **Avoid** `git reset --hard` or `git reset <commit> -- <path>` to drop work-in-progress edits.
+- **Preserve teammate changes** by collaborating via commits or new branches instead of destructive commands.
+- **Use patch/stash workflows** (`git stash`, `git add -p`) when you need to isolate or shelve work.
+- **Ask for help** if you think reverting is necessary—coordinate rather than unilaterally discarding work.

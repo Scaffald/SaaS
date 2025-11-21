@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Input, YStack, Text, ScrollView, Card, XStack } from 'tamagui'
-import { Search, Award } from '@tamagui/lucide-icons'
+import { Award, Search } from '@tamagui/lucide-icons'
+import { useEffect, useMemo, useState } from 'react'
+import { Card, Input, ScrollView, Text, XStack, YStack } from 'tamagui'
 
 interface Certification {
   id: string
@@ -58,9 +58,8 @@ export function CertificationSearch({
 
   const handleSelect = (cert: Certification) => {
     onSelect(cert)
-    // Keep search query active (don't clear) to allow adding multiple certs
-    // setSearchQuery('')
-    // setShowResults(false)
+    setSearchQuery('')
+    setShowResults(false)
   }
 
   const filteredResults = searchResults.filter((cert) => !selectedIds.includes(cert.id))

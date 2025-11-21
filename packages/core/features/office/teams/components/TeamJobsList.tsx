@@ -1,11 +1,10 @@
-import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack, useMedia } from 'tamagui'
-import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
 import type { AppRouter } from '@app/supabase/client-types'
+import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
@@ -29,29 +28,36 @@ export function TeamJobsList({
   onCreateJob,
 }: TeamJobsListProps) {
   const router = useRouter()
-  const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const derivedJobs = useMemo(() => jobs ?? [], [jobs])
   const hasJobs = derivedJobs.length > 0
 
   return (
-    <YStack gap="$3" px={isSmallScreen ? '$3' : undefined}>
+    <YStack gap="$3" px="$3" $md={{ px: undefined }}>
       <XStack
         justify="space-between"
-        items={isSmallScreen ? 'flex-start' : 'center'}
+        items="flex-start"
         flexWrap="wrap"
         gap="$3"
-        flexDirection={isSmallScreen ? 'column' : 'row'}
+        flexDirection="column"
+        $md={{
+          items: 'center',
+          flexDirection: 'row',
+        }}
       >
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           Team jobs
         </Text>
         <XStack
           gap="$2"
-          items={isSmallScreen ? 'flex-start' : 'center'}
-          flexDirection={isSmallScreen ? 'column' : 'row'}
-          width={isSmallScreen ? '100%' : undefined}
+          items="flex-start"
+          flexDirection="column"
+          width="100%"
+          $md={{
+            items: 'center',
+            flexDirection: 'row',
+            width: undefined,
+          }}
         >
           <Button
             size="$2"
@@ -60,7 +66,8 @@ export function TeamJobsList({
             onPress={() => onRefresh?.()}
             disabled={isLoading}
             accessibilityLabel="Refresh assigned jobs list"
-            width={isSmallScreen ? '100%' : undefined}
+            width="100%"
+            $md={{ width: undefined }}
           >
             Refresh
           </Button>
@@ -73,12 +80,13 @@ export function TeamJobsList({
                 return
               }
               router.push({
-                pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+                pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                 params: { teamId },
               })
             }}
             accessibilityLabel="Assign a job to this team"
-            width={isSmallScreen ? '100%' : undefined}
+            width="100%"
+            $md={{ width: undefined }}
           >
             Assign job
           </Button>
@@ -125,7 +133,8 @@ export function TeamJobsList({
                 items="flex-start"
                 gap="$3"
                 flexWrap="wrap"
-                flexDirection={isSmallScreen ? 'column' : 'row'}
+                flexDirection="column"
+                $md={{ flexDirection: 'row' }}
               >
                 <YStack gap="$1" flex={1} width="100%">
                   <Text fontSize="$5" fontWeight="700">
@@ -148,8 +157,12 @@ export function TeamJobsList({
               ) : null}
               <XStack
                 gap="$2"
-                flexDirection={isSmallScreen ? 'column' : 'row'}
-                items={isSmallScreen ? 'stretch' : 'center'}
+                flexDirection="column"
+                items="stretch"
+                $md={{
+                  flexDirection: 'row',
+                  items: 'center',
+                }}
               >
                 <Text fontSize="$3" color="$color10">
                   Updated{' '}
@@ -162,7 +175,8 @@ export function TeamJobsList({
                   variant="outlined"
                   onPress={() => router.push(RouteBuilder.officeJobsEdit(job.id))}
                   accessibilityLabel={`View job ${job.title}`}
-                  width={isSmallScreen ? '100%' : undefined}
+                  width="100%"
+                  $md={{ width: undefined }}
                 >
                   View job
                 </Button>
@@ -186,11 +200,12 @@ export function TeamJobsList({
                 return
               }
               router.push({
-                pathname: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+                pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                 params: { teamId },
               })
             }}
-            width={isSmallScreen ? '100%' : undefined}
+            width="100%"
+            $md={{ width: undefined }}
           >
             Create job
           </Button>

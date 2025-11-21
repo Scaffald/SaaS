@@ -1,13 +1,13 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { officeProcedure, publicProcedure, t } from "../middleware.ts";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
 import {
   type WelcomeSlide,
   welcomeSlideCreateSchema,
   welcomeSlideListSchema,
   welcomeSlideReorderSchema,
   welcomeSlideUpdateSchema,
-} from "../../_shared/cms-schemas.ts";
+} from '../../_shared/cms-schemas.ts'
+import { officeProcedure, publicProcedure, t } from '../middleware.ts'
 
 /**
  * CMS router - Content management operations
@@ -21,22 +21,22 @@ export const cmsRouter = t.router({
    */
   getActiveWelcomeSlides: publicProcedure.query(async ({ ctx }) => {
     const { data, error } = await ctx.supabase
-      .schema("cms")
-      .from("welcome_slides")
-      .select("*")
-      .eq("is_active", true)
-      .order("display_order", { ascending: true });
+      .schema('cms')
+      .from('welcome_slides')
+      .select('*')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true })
 
     if (error) {
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
+        code: 'INTERNAL_SERVER_ERROR',
         message: `Failed to fetch welcome slides: ${error.message}`,
-      });
+      })
     }
 
     return {
       slides: data as WelcomeSlide[],
-    };
+    }
   }),
 
   /**
@@ -47,31 +47,31 @@ export const cmsRouter = t.router({
   listWelcomeSlides: publicProcedure
     .input(welcomeSlideListSchema.optional())
     .query(async ({ ctx, input }) => {
-      const includeInactive = input?.include_inactive ?? false;
+      const includeInactive = input?.include_inactive ?? false
 
       let query = ctx.supabase
-        .schema("cms")
-        .from("welcome_slides")
-        .select("*")
-        .order("display_order", { ascending: true });
+        .schema('cms')
+        .from('welcome_slides')
+        .select('*')
+        .order('display_order', { ascending: true })
 
       // Non-admin users only see active slides
       if (!includeInactive) {
-        query = query.eq("is_active", true);
+        query = query.eq('is_active', true)
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch welcome slides: ${error.message}`,
-        });
+        })
       }
 
       return {
         slides: data as WelcomeSlide[],
-      };
+      }
     }),
 
   /**
@@ -82,20 +82,20 @@ export const cmsRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
-        .schema("cms")
-        .from("welcome_slides")
-        .select("*")
-        .eq("id", input.id)
-        .single();
+        .schema('cms')
+        .from('welcome_slides')
+        .select('*')
+        .eq('id', input.id)
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "NOT_FOUND",
+          code: 'NOT_FOUND',
           message: `Welcome slide not found: ${error.message}`,
-        });
+        })
       }
 
-      return { slide: data as WelcomeSlide };
+      return { slide: data as WelcomeSlide }
     }),
 
   /**
@@ -106,20 +106,20 @@ export const cmsRouter = t.router({
     .input(welcomeSlideCreateSchema)
     .mutation(async ({ ctx, input }) => {
       const { data, error } = await ctx.supabaseAdmin
-        .schema("cms")
-        .from("welcome_slides")
+        .schema('cms')
+        .from('welcome_slides')
         .insert(input)
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to create welcome slide: ${error.message}`,
-        });
+        })
       }
 
-      return { slide: data as WelcomeSlide };
+      return { slide: data as WelcomeSlide }
     }),
 
   /**
@@ -129,24 +129,24 @@ export const cmsRouter = t.router({
   updateWelcomeSlide: officeProcedure
     .input(welcomeSlideUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, ...updateData } = input;
+      const { id, ...updateData } = input
 
       const { data, error } = await ctx.supabaseAdmin
-        .schema("cms")
-        .from("welcome_slides")
+        .schema('cms')
+        .from('welcome_slides')
         .update(updateData)
-        .eq("id", id)
+        .eq('id', id)
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to update welcome slide: ${error.message}`,
-        });
+        })
       }
 
-      return { slide: data as WelcomeSlide };
+      return { slide: data as WelcomeSlide }
     }),
 
   /**
@@ -157,19 +157,19 @@ export const cmsRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       const { error } = await ctx.supabaseAdmin
-        .schema("cms")
-        .from("welcome_slides")
+        .schema('cms')
+        .from('welcome_slides')
         .delete()
-        .eq("id", input.id);
+        .eq('id', input.id)
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to delete welcome slide: ${error.message}`,
-        });
+        })
       }
 
-      return { success: true };
+      return { success: true }
     }),
 
   /**
@@ -181,30 +181,26 @@ export const cmsRouter = t.router({
     .input(welcomeSlideReorderSchema)
     .mutation(async ({ ctx, input }) => {
       // Update each slide's display_order
-      const updates = input.slides.map((
-        slide: { id: string; display_order: number },
-      ) =>
+      const updates = input.slides.map((slide: { id: string; display_order: number }) =>
         ctx.supabaseAdmin
-          .schema("cms")
-          .from("welcome_slides")
+          .schema('cms')
+          .from('welcome_slides')
           .update({ display_order: slide.display_order })
-          .eq("id", slide.id)
-      );
+          .eq('id', slide.id)
+      )
 
-      const results = await Promise.all(updates);
+      const results = await Promise.all(updates)
 
       // Check for any errors
-      const errors = results.filter((result: { error: unknown }) =>
-        result.error
-      );
+      const errors = results.filter((result: { error: unknown }) => result.error)
       if (errors.length > 0) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to reorder slides: ${errors[0].error?.message}`,
-        });
+        })
       }
 
-      return { success: true };
+      return { success: true }
     }),
 
   /**
@@ -219,43 +215,41 @@ export const cmsRouter = t.router({
         fileName: z.string(),
         fileData: z.string(), // base64 encoded file data
         contentType: z.string(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { slideId, fileName, fileData, contentType } = input;
+      const { slideId, fileName, fileData, contentType } = input
 
       // Decode base64 file data
-      const buffer = Uint8Array.from(atob(fileData), (c) => c.charCodeAt(0));
+      const buffer = Uint8Array.from(atob(fileData), (c) => c.charCodeAt(0))
 
       // Construct storage path
-      const storagePath = `welcome-slides/${slideId}/${fileName}`;
+      const storagePath = `welcome-slides/${slideId}/${fileName}`
 
       // Upload to storage
       const { data, error } = await ctx.supabaseAdmin.storage
-        .from("cms-media")
+        .from('cms-media')
         .upload(storagePath, buffer, {
           contentType,
           upsert: true, // Replace if exists
-        });
+        })
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to upload image: ${error.message}`,
-        });
+        })
       }
 
       // Get public URL
       const {
         data: { publicUrl },
-      } = ctx.supabaseAdmin.storage
-        .from("cms-media")
-        .getPublicUrl(storagePath);
+      } = ctx.supabaseAdmin.storage.from('cms-media').getPublicUrl(storagePath)
 
       return {
         path: data.path,
         publicUrl,
-      };
+      }
     }),
 
   /**
@@ -267,23 +261,21 @@ export const cmsRouter = t.router({
       z.object({
         slideId: z.string().uuid(),
         fileName: z.string(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { slideId, fileName } = input;
-      const storagePath = `welcome-slides/${slideId}/${fileName}`;
+      const { slideId, fileName } = input
+      const storagePath = `welcome-slides/${slideId}/${fileName}`
 
-      const { error } = await ctx.supabaseAdmin.storage
-        .from("cms-media")
-        .remove([storagePath]);
+      const { error } = await ctx.supabaseAdmin.storage.from('cms-media').remove([storagePath])
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to delete image: ${error.message}`,
-        });
+        })
       }
 
-      return { success: true };
+      return { success: true }
     }),
-});
+})

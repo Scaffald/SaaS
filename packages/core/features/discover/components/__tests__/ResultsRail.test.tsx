@@ -1,8 +1,8 @@
-import type { CSSProperties, ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import type { CSSProperties, ReactNode } from 'react'
 import { forwardRef } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
 const mockScrollToCard = vi.fn()
 
@@ -69,11 +69,11 @@ vi.mock('../ResultList', () => ({
         onSelect: (id: string) => void
         selectedId: string | null
       },
-      ref,
+      ref
     ) => {
       mockScrollToCard.mockClear()
       if (ref) {
-        (ref as React.MutableRefObject<{ scrollToCard: (id: string) => void } | null>).current = {
+        ;(ref as React.MutableRefObject<{ scrollToCard: (id: string) => void } | null>).current = {
           scrollToCard: mockScrollToCard,
         }
       }
@@ -85,7 +85,7 @@ vi.mock('../ResultList', () => ({
           <div data-testid="selected">{selectedId}</div>
         </div>
       )
-    },
+    }
   ),
 }))
 
@@ -94,25 +94,13 @@ const { ResultsRail } = await import('../ResultsRail')
 describe('ResultsRail', () => {
   it('toggles visibility styles based on isVisible flag', () => {
     const { rerender } = render(
-      <ResultsRail
-        isVisible={false}
-        profiles={[]}
-        selectedId={null}
-        onSelect={vi.fn()}
-      />
+      <ResultsRail isVisible={false} profiles={[]} selectedId={null} onSelect={vi.fn()} />
     )
 
     const containerHidden = screen.getByTestId('y-stack')
     expect(containerHidden.style.opacity).toBe('0')
 
-    rerender(
-      <ResultsRail
-        isVisible
-        profiles={[]}
-        selectedId={null}
-        onSelect={vi.fn()}
-      />
-    )
+    rerender(<ResultsRail isVisible profiles={[]} selectedId={null} onSelect={vi.fn()} />)
 
     const containerVisible = screen.getByTestId('y-stack')
     expect(containerVisible.style.opacity).toBe('1')
@@ -122,14 +110,7 @@ describe('ResultsRail', () => {
     const onSelect = vi.fn()
     const user = userEvent.setup()
 
-    render(
-      <ResultsRail
-        isVisible
-        profiles={[]}
-        selectedId="profile-1"
-        onSelect={onSelect}
-      />
-    )
+    render(<ResultsRail isVisible profiles={[]} selectedId="profile-1" onSelect={onSelect} />)
 
     await user.click(screen.getByText('select-profile'))
     expect(onSelect).toHaveBeenCalledWith('profile-1')
@@ -137,7 +118,9 @@ describe('ResultsRail', () => {
   })
 
   it('exposes ref to allow parent scroll control', () => {
-    const ref = { current: null } as React.MutableRefObject<{ scrollToCard: (id: string) => void } | null>
+    const ref = { current: null } as React.MutableRefObject<{
+      scrollToCard: (id: string) => void
+    } | null>
 
     render(
       <ResultsRail

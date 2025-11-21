@@ -1,19 +1,19 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const createJobMock = vi.hoisted(() => ({ 
-  mutate: vi.fn(), 
-  mutateAsync: vi.fn(), 
+const createJobMock = vi.hoisted(() => ({
+  mutate: vi.fn(),
+  mutateAsync: vi.fn(),
   useMutation: vi.fn(),
-  callbacks: {} as { onSuccess?: () => void; onError?: (error: Error) => void }
+  callbacks: {} as { onSuccess?: () => void; onError?: (error: Error) => void },
 }))
-const updateJobMock = vi.hoisted(() => ({ 
-  mutate: vi.fn(), 
-  mutateAsync: vi.fn(), 
+const updateJobMock = vi.hoisted(() => ({
+  mutate: vi.fn(),
+  mutateAsync: vi.fn(),
   useMutation: vi.fn(),
-  callbacks: {} as { onSuccess?: () => void; onError?: (error: Error) => void }
+  callbacks: {} as { onSuccess?: () => void; onError?: (error: Error) => void },
 }))
 const toastMock = vi.hoisted(() => ({ show: vi.fn() }))
 const routerMock = vi.hoisted(() => ({ back: vi.fn() }))
@@ -25,13 +25,26 @@ const getJobMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
 
 // Mock rich-text before other mocks to ensure it's hoisted
 vi.mock('@app/ui/components/rich-text', () => ({
-  RichTextEditor: ({ value, onChange, 'data-testid': dataTestId, placeholder, disabled }: { value?: unknown; onChange?: (content: unknown) => void; 'data-testid'?: string; placeholder?: string; disabled?: boolean }) => {
+  RichTextEditor: ({
+    value,
+    onChange,
+    'data-testid': dataTestId,
+    placeholder,
+    disabled,
+  }: {
+    value?: unknown
+    onChange?: (content: unknown) => void
+    'data-testid'?: string
+    placeholder?: string
+    disabled?: boolean
+  }) => {
     // Handle both string and JSONContent (TipTap) formats
-    const textValue = typeof value === 'string' 
-      ? value 
-      : (value && typeof value === 'object' && 'type' in value)
-        ? JSON.stringify(value) // For JSONContent, just use a placeholder
-        : ''
+    const textValue =
+      typeof value === 'string'
+        ? value
+        : value && typeof value === 'object' && 'type' in value
+          ? JSON.stringify(value) // For JSONContent, just use a placeholder
+          : ''
     return (
       <textarea
         data-testid={dataTestId}
@@ -42,7 +55,10 @@ vi.mock('@app/ui/components/rich-text', () => ({
       />
     )
   },
-  plainTextToTipTap: (text: string) => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] }),
+  plainTextToTipTap: (text: string) => ({
+    type: 'doc',
+    content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+  }),
   extractPlainText: (content: unknown) => {
     if (typeof content === 'string') return content
     if (content && typeof content === 'object' && 'type' in content) {
@@ -77,9 +93,7 @@ vi.mock('@app/core/utils/api', () => ({
 vi.mock('@app/core/utils/useAllOrganizations', () => ({
   useAllOrganizations: () => ({
     data: {
-      organizations: [
-        { id: 'org-1', name: 'Org One', slug: 'org-one', owner_user_id: null },
-      ],
+      organizations: [{ id: 'org-1', name: 'Org One', slug: 'org-one', owner_user_id: null }],
     },
   }),
 }))
@@ -97,7 +111,19 @@ vi.mock('@app/ui', () => ({
     <div {...rest}>{children}</div>
   ),
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
-  Input: ({ value, onChangeText, 'data-testid': dataTestId, placeholder, disabled }: { value?: string; onChangeText?: (value: string) => void; 'data-testid'?: string; placeholder?: string; disabled?: boolean }) => (
+  Input: ({
+    value,
+    onChangeText,
+    'data-testid': dataTestId,
+    placeholder,
+    disabled,
+  }: {
+    value?: string
+    onChangeText?: (value: string) => void
+    'data-testid'?: string
+    placeholder?: string
+    disabled?: boolean
+  }) => (
     <input
       data-testid={dataTestId}
       placeholder={placeholder}
@@ -106,22 +132,48 @@ vi.mock('@app/ui', () => ({
       disabled={disabled}
     />
   ),
-  Button: ({ children, onPress, disabled, 'data-testid': dataTestId }: { children: ReactNode; onPress?: () => void; disabled?: boolean; 'data-testid'?: string }) => (
+  Button: ({
+    children,
+    onPress,
+    disabled,
+    'data-testid': dataTestId,
+  }: {
+    children: ReactNode
+    onPress?: () => void
+    disabled?: boolean
+    'data-testid'?: string
+  }) => (
     <button type="button" data-testid={dataTestId} disabled={disabled} onClick={onPress}>
       {children}
     </button>
   ),
-  CustomCheckbox: ({ checked, onCheckedChange, 'aria-label': ariaLabel }: { checked?: boolean; onCheckedChange: (next: boolean) => void; 'aria-label'?: string }) => (
+  CustomCheckbox: ({
+    checked,
+    onCheckedChange,
+    'aria-label': ariaLabel,
+  }: {
+    checked?: boolean
+    onCheckedChange: (next: boolean) => void
+    'aria-label'?: string
+  }) => (
     <label>
-      <input type="checkbox" aria-label={ariaLabel} checked={Boolean(checked)} onChange={() => onCheckedChange(!checked)} />
+      <input
+        type="checkbox"
+        aria-label={ariaLabel}
+        checked={Boolean(checked)}
+        onChange={() => onCheckedChange(!checked)}
+      />
     </label>
   ),
-  AddressForm: ({ onChange, onAddressSelect }: { onChange: (value: string) => void; onAddressSelect: (result: Record<string, unknown>) => void }) => (
+  AddressForm: ({
+    onChange,
+    onAddressSelect,
+  }: {
+    onChange: (value: string) => void
+    onAddressSelect: (result: Record<string, unknown>) => void
+  }) => (
     <div>
-      <input
-        aria-label="job-location"
-        onChange={(event) => onChange(event.target.value)}
-      />
+      <input aria-label="job-location" onChange={(event) => onChange(event.target.value)} />
       <button
         type="button"
         onClick={() =>
@@ -141,9 +193,44 @@ vi.mock('@app/ui', () => ({
     </div>
   ),
   Spinner: () => <span>spinner</span>,
-  ResponsiveModal: ({ children, open }: { children: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }) => (
-    open ? <div data-testid="responsive-modal">{children}</div> : null
+  ResponsiveModal: ({
+    children,
+    open,
+  }: {
+    children: ReactNode
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+  }) => (open ? <div data-testid="responsive-modal">{children}</div> : null),
+  ResponsiveSelect: ({
+    value,
+    onValueChange,
+    options,
+    placeholder,
+    'data-testid': dataTestId,
+    testID,
+  }: {
+    value?: string
+    onValueChange: (value: string) => void
+    options: Array<{ value: string; label: string }>
+    placeholder?: string
+    'data-testid'?: string
+    testID?: string
+  }) => (
+    <select
+      data-testid={dataTestId ?? testID ?? 'select'}
+      value={value ?? ''}
+      onChange={(event) => onValueChange(event.target.value)}
+    >
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   ),
+  Sheet: ({ children, open }: { children: ReactNode; open?: boolean }) =>
+    open ? <div data-testid="sheet">{children}</div> : null,
 }))
 
 vi.mock('@tamagui/lucide-icons', () => ({
@@ -158,7 +245,17 @@ const selectChange = { onChange: (_value: string) => {} }
 
 vi.mock('tamagui', async () => {
   const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
-  const TextArea = ({ value, onChangeText, 'data-testid': dataTestId, placeholder }: { value?: string; onChangeText?: (value: string) => void; 'data-testid'?: string; placeholder?: string }) => (
+  const TextArea = ({
+    value,
+    onChangeText,
+    'data-testid': dataTestId,
+    placeholder,
+  }: {
+    value?: string
+    onChangeText?: (value: string) => void
+    'data-testid'?: string
+    placeholder?: string
+  }) => (
     <textarea
       data-testid={dataTestId}
       placeholder={placeholder}
@@ -166,9 +263,23 @@ vi.mock('tamagui', async () => {
       onChange={(event) => onChangeText?.(event.target.value)}
     />
   )
-  const SelectRoot = ({ value, onValueChange, children, 'data-testid': dataTestId }: { value: string; onValueChange: (value: string) => void; children: ReactNode; 'data-testid'?: string }) => {
+  const SelectRoot = ({
+    value,
+    onValueChange,
+    children,
+    'data-testid': dataTestId,
+  }: {
+    value: string
+    onValueChange: (value: string) => void
+    children: ReactNode
+    'data-testid'?: string
+  }) => {
     selectChange.onChange = onValueChange
-    return <div data-testid={dataTestId || 'select'} data-value={value}>{children}</div>
+    return (
+      <div data-testid={dataTestId || 'select'} data-value={value}>
+        {children}
+      </div>
+    )
   }
   SelectRoot.Trigger = ({ children }: { children: ReactNode }) => <div>{children}</div>
   SelectRoot.Value = ({ placeholder }: { placeholder?: string }) => <span>{placeholder}</span>
@@ -179,14 +290,26 @@ vi.mock('tamagui', async () => {
   SelectRoot.ScrollUpButton = () => null
   SelectRoot.ScrollDownButton = () => null
   SelectRoot.Item = ({ value, children }: { value: string; children: ReactNode }) => (
-    <button type="button" data-testid={`select-item-${value}`} onClick={() => selectChange.onChange(value)}>
+    <button
+      type="button"
+      data-testid={`select-item-${value}`}
+      onClick={() => selectChange.onChange(value)}
+    >
       {children}
     </button>
   )
   SelectRoot.ItemText = ({ children }: { children: ReactNode }) => <span>{children}</span>
   SelectRoot.ItemIndicator = ({ children }: { children: ReactNode }) => <span>{children}</span>
 
-  const SwitchRoot = ({ checked, onCheckedChange, disabled }: { checked?: boolean; onCheckedChange?: (checked: boolean) => void; disabled?: boolean }) => (
+  const SwitchRoot = ({
+    checked,
+    onCheckedChange,
+    disabled,
+  }: {
+    checked?: boolean
+    onCheckedChange?: (checked: boolean) => void
+    disabled?: boolean
+  }) => (
     <button
       type="button"
       data-testid="switch"
@@ -231,7 +354,10 @@ vi.mock('../job-form-sections', () => ({
     </button>
   ),
   AutoRejectionSection: ({ onUpdate }: { onUpdate: (data: unknown) => void }) => (
-    <button type="button" onClick={() => onUpdate({ enable_auto_reject: true, auto_reject_criteria: {} })}>
+    <button
+      type="button"
+      onClick={() => onUpdate({ enable_auto_reject: true, auto_reject_criteria: {} })}
+    >
       autoreject-update
     </button>
   ),
@@ -283,30 +409,34 @@ describe('JobForm', () => {
     createJobMock.mutateAsync.mockReset()
     updateJobMock.mutate.mockReset()
     updateJobMock.mutateAsync.mockReset()
-    
+
     // Setup default mutation mocks that store callbacks
     createJobMock.callbacks = {}
     updateJobMock.callbacks = {}
-    
-    createJobMock.useMutation.mockImplementation((options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
-      if (options) {
-        createJobMock.callbacks = options
+
+    createJobMock.useMutation.mockImplementation(
+      (options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
+        if (options) {
+          createJobMock.callbacks = options
+        }
+        createJobMock.mutate.mockImplementation((_data) => {
+          createJobMock.callbacks.onSuccess?.()
+        })
+        return { mutate: createJobMock.mutate, isPending: false }
       }
-      createJobMock.mutate.mockImplementation((_data) => {
-        createJobMock.callbacks.onSuccess?.()
-      })
-      return { mutate: createJobMock.mutate, isPending: false }
-    })
-    
-    updateJobMock.useMutation.mockImplementation((options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
-      if (options) {
-        updateJobMock.callbacks = options
+    )
+
+    updateJobMock.useMutation.mockImplementation(
+      (options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
+        if (options) {
+          updateJobMock.callbacks = options
+        }
+        updateJobMock.mutate.mockImplementation((_data) => {
+          updateJobMock.callbacks.onSuccess?.()
+        })
+        return { mutate: updateJobMock.mutate, isPending: false }
       }
-      updateJobMock.mutate.mockImplementation((_data) => {
-        updateJobMock.callbacks.onSuccess?.()
-      })
-      return { mutate: updateJobMock.mutate, isPending: false }
-    })
+    )
     toastMock.show.mockReset()
     routerMock.back.mockReset()
     onSuccess.mockReset()
@@ -361,13 +491,15 @@ describe('JobForm', () => {
 
     await user.click(screen.getByTestId('job-publish-button'))
 
-    expect(createJobMock.mutate).toHaveBeenCalledWith(expect.objectContaining({
-      title: 'Plumber',
-      description: 'Fix pipes',
-      organization_id: 'org-1',
-      status: 'open',
-      location: 'Charlotte, NC',
-    }))
+    expect(createJobMock.mutate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Plumber',
+        description: 'Fix pipes',
+        organization_id: 'org-1',
+        status: 'open',
+        location: 'Charlotte, NC',
+      })
+    )
   })
 
   describe('Form Section Rendering', () => {
@@ -663,7 +795,9 @@ describe('JobForm', () => {
         organization_id: 'org-1',
       }
 
-      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+      render(
+        <JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />
+      )
 
       const titleInput = screen.getByTestId('job-title-input') as HTMLInputElement
       expect(titleInput.value).toBe('Existing Job')
@@ -677,7 +811,9 @@ describe('JobForm', () => {
         organization_id: 'org-1',
       }
 
-      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+      render(
+        <JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />
+      )
 
       // Wait for form to be populated
       await waitFor(() => {
@@ -692,9 +828,12 @@ describe('JobForm', () => {
       // Wait for form state to update and button to be enabled
       const saveButton = screen.getByTestId('job-save-draft-button')
       // The button should be enabled since title, description, and organization are all set
-      await waitFor(() => {
-        expect(saveButton).not.toBeDisabled()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          expect(saveButton).not.toBeDisabled()
+        },
+        { timeout: 2000 }
+      )
 
       await user.click(saveButton)
 
@@ -749,14 +888,16 @@ describe('JobForm', () => {
       const user = userEvent.setup()
       const error = new Error('Submission failed')
       // Override the mutation to call onError
-      createJobMock.useMutation.mockImplementation((options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
-        if (options) {
-          createJobMock.mutate.mockImplementation(() => {
-            options.onError?.(error)
-          })
+      createJobMock.useMutation.mockImplementation(
+        (options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
+          if (options) {
+            createJobMock.mutate.mockImplementation(() => {
+              options.onError?.(error)
+            })
+          }
+          return { mutate: createJobMock.mutate, isPending: false }
         }
-        return { mutate: createJobMock.mutate, isPending: false }
-      })
+      )
 
       render(<JobForm mode="create" onSuccess={onSuccess} />)
 
@@ -772,7 +913,9 @@ describe('JobForm', () => {
 
       // Wait for async callback
       await waitFor(() => {
-        expect(toastMock.show).toHaveBeenCalledWith('Error: Submission failed', { variant: 'error' })
+        expect(toastMock.show).toHaveBeenCalledWith('Error: Submission failed', {
+          variant: 'error',
+        })
       })
     })
   })
@@ -787,7 +930,9 @@ describe('JobForm', () => {
         employment_type: 'full-time',
       }
 
-      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+      render(
+        <JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />
+      )
 
       const titleInput = screen.getByTestId('job-title-input') as HTMLInputElement
       expect(titleInput.value).toBe('Existing Job Title')
@@ -801,7 +946,9 @@ describe('JobForm', () => {
         organization_id: 'org-1',
       }
 
-      render(<JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />)
+      render(
+        <JobForm mode="edit" jobId="job-123" initialData={initialData} onSuccess={onSuccess} />
+      )
 
       // Wait for form to be populated
       await waitFor(() => {
@@ -816,9 +963,12 @@ describe('JobForm', () => {
       // Wait for form state to update and button to be enabled
       const saveButton = screen.getByTestId('job-save-draft-button')
       // The button should be enabled since title, description, and organization are all set
-      await waitFor(() => {
-        expect(saveButton).not.toBeDisabled()
-      }, { timeout: 2000 })
+      await waitFor(
+        () => {
+          expect(saveButton).not.toBeDisabled()
+        },
+        { timeout: 2000 }
+      )
 
       await user.click(saveButton)
 

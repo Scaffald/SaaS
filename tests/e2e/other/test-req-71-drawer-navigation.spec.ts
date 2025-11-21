@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('REQ-71: Drawer Navigation Arrow Pattern', () => {
@@ -13,13 +13,12 @@ test.describe('REQ-71: Drawer Navigation Arrow Pattern', () => {
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Verify drawer/navigation is present
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 
@@ -28,10 +27,9 @@ test.describe('REQ-71: Drawer Navigation Arrow Pattern', () => {
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Look for navigation links
     const navLinks = page.locator('a[href*="/dashboard"], button[aria-label*="menu" i]')
@@ -46,18 +44,16 @@ test.describe('REQ-71: Drawer Navigation Arrow Pattern', () => {
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(2000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Look for expandable items (items with sub-items)
     const expandableItems = page.locator('button[aria-expanded], [role="button"][aria-expanded]')
     const expandableCount = await expandableItems.count()
 
     // May or may not have expandable items, but page should load
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 })
-

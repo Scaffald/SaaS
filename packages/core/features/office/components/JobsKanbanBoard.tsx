@@ -1,15 +1,15 @@
+import { RouteBuilder } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { DraggableCard, DroppableColumn } from '@app/ui'
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { XStack, YStack, Text, type GetThemeValueForKey } from 'tamagui'
-import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
-import { DroppableColumn, DraggableCard } from '@app/ui'
-import { api } from '@app/core/utils/api'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
+import { type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
 import { JobCard } from './JobCard'
-import { useRouter } from 'expo-router'
-import { RouteBuilder } from '@app/core/constants/routes'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -153,14 +153,7 @@ interface StatusColumnProps {
   isUpdating: boolean
 }
 
-function StatusColumn({
-  status,
-  label,
-  color,
-  jobs,
-  onJobPress,
-  isUpdating,
-}: StatusColumnProps) {
+function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: StatusColumnProps) {
   return (
     <DroppableColumn id={status} items={jobs.map((job) => job.id)}>
       <YStack
@@ -216,4 +209,3 @@ function StatusColumn({
     </DroppableColumn>
   )
 }
-

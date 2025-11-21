@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router'
 import { Home, RefreshCcw } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
 import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
 
 interface ErrorFallbackProps {
@@ -55,4 +55,3 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
     </YStack>
   )
 }
-

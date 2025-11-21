@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { MapboxProvider } from '../mapbox'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ProviderConfig } from '../../types'
 import { GeocodingError } from '../../types'
-import type { ProviderConfig, SearchOptions } from '../../types'
+import { MapboxProvider } from '../mapbox'
 
 // Mock fetch globally
 global.fetch = vi.fn() as typeof fetch
@@ -270,9 +270,7 @@ describe('MapboxProvider', () => {
     })
 
     it('handles network errors', async () => {
-      vi.mocked(global.fetch).mockRejectedValueOnce(
-        new TypeError('Failed to fetch')
-      )
+      vi.mocked(global.fetch).mockRejectedValueOnce(new TypeError('Failed to fetch'))
 
       const provider = new MapboxProvider(mockConfig)
 
@@ -380,15 +378,9 @@ describe('MapboxProvider', () => {
     it('throws error for invalid coordinates', async () => {
       const provider = new MapboxProvider(mockConfig)
 
-      await expect(provider.reverseGeocode(91, 0)).rejects.toThrow(
-        GeocodingError
-      )
-      await expect(provider.reverseGeocode(0, 181)).rejects.toThrow(
-        GeocodingError
-      )
-      await expect(provider.reverseGeocode(NaN, 0)).rejects.toThrow(
-        GeocodingError
-      )
+      await expect(provider.reverseGeocode(91, 0)).rejects.toThrow(GeocodingError)
+      await expect(provider.reverseGeocode(0, 181)).rejects.toThrow(GeocodingError)
+      await expect(provider.reverseGeocode(NaN, 0)).rejects.toThrow(GeocodingError)
     })
 
     it('returns address for valid coordinates', async () => {
@@ -477,9 +469,7 @@ describe('MapboxProvider', () => {
 
       const provider = new MapboxProvider(mockConfig)
 
-      await expect(provider.reverseGeocode(42.3601, -71.0589)).rejects.toThrow(
-        GeocodingError
-      )
+      await expect(provider.reverseGeocode(42.3601, -71.0589)).rejects.toThrow(GeocodingError)
     })
   })
 
@@ -596,4 +586,3 @@ describe('MapboxProvider', () => {
     })
   })
 })
-

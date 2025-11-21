@@ -14,10 +14,17 @@
  * See: docs/testing/UI-BUG-job-create-authorization.md
  */
 
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
+import {
+  navigateToOfficeRoute,
+  OFFICE_ROUTES,
+  waitForPageLoad,
+} from '../../infrastructure/playwright/helpers/helpers/office-navigation'
+import {
+  generateJobData,
+  generateTestId,
+} from '../../infrastructure/playwright/helpers/helpers/office-test-data'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
-import { navigateToOfficeRoute, waitForPageLoad, OFFICE_ROUTES } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
-import { generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -48,7 +55,7 @@ async function selectFirstOrganization(page: Page) {
 test.describe('Office • Jobs Management', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     console.log('Signing in as admin...')
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     console.log('Admin signed in successfully')
   })
 
@@ -316,7 +323,7 @@ test.describe('Office • Jobs Management', () => {
   })
 
   test.describe('Edit Job Flow', () => {
-    let jobId: string | null = null
+    const jobId: string | null = null
     const testData = {
       ...generateJobData(),
       title: `TEST_JOB_EDIT_${generateTestId()}`,

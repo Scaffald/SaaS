@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Button, ToggleSwitch } from '@app/ui'
+import { Button, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { Check, X } from '@tamagui/lucide-icons'
+import { useState } from 'react'
 
 interface CapabilityQuestionInputProps {
   question: string
@@ -50,12 +50,8 @@ export function CapabilityQuestionInput({
         <Text fontSize="$3" color="$color11">
           Toggle answer
         </Text>
-        <ToggleSwitch
-          checked={localValue ?? false}
-          onCheckedChange={handleValueChange}
-        />
+        <ToggleSwitch checked={localValue ?? false} onCheckedChange={handleValueChange} />
       </XStack>
     </YStack>
   )
 }
-

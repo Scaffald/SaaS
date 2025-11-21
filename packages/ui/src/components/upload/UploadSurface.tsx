@@ -1,7 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
-import { Platform } from 'react-native'
+import { type ReactNode, useCallback, useMemo, useState } from 'react'
 import type { DropzoneOptions } from 'react-dropzone'
-
 import { useFilePicker } from '../image-picker/hooks/useFilePicker'
 import type {
   MediaTypeOptionsString,
@@ -44,7 +42,7 @@ export interface UploadSurfaceProps {
   disabled?: boolean
   multiple?: boolean
   dropzoneOptions?: Partial<DropzoneOptions>
-  children: (props: UploadSurfaceChildrenProps) => React.ReactNode
+  children: (props: UploadSurfaceChildrenProps) => ReactNode
 }
 
 const DEFAULT_ACCEPT = '*/*'

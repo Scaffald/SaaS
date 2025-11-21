@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo } from 'react'
-import { XStack, YStack, Text, Button, useMedia } from 'tamagui'
-import { RotateCcw, List } from '@tamagui/lucide-icons'
-import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
+import { AddressAutocomplete } from '@app/ui'
+import { List, RotateCcw } from '@tamagui/lucide-icons'
+import { useCallback, useMemo, useState } from 'react'
+import { Button, Text, XStack, YStack } from 'tamagui'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {
@@ -67,8 +67,6 @@ export const MapFilterBar = ({
   onResultsPress,
   onReset,
 }: MapFilterBarProps) => {
-  const media = useMedia()
-  const isSmallScreen = media.sm
   const [searchQuery, setSearchQuery] = useState('')
 
   // Validate API key
@@ -97,14 +95,10 @@ export const MapFilterBar = ({
       bg="$background"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
-      $sm={{
-        flexDirection: 'column',
-        items: 'stretch',
-      }}
     >
       {/* Search Input */}
       {tokenValidation.valid ? (
-        <YStack flex={1} minW={isSmallScreen ? '100%' : 200} $sm={{ minW: '100%', maxW: '100%' }}>
+        <YStack flex={1} minW={200}>
           <AddressAutocomplete
             value={searchQuery}
             onChange={setSearchQuery}
@@ -129,15 +123,13 @@ export const MapFilterBar = ({
       ) : (
         <YStack
           flex={1}
-          width="100%"
-          minW={isSmallScreen ? '100%' : 200}
+          minW={200}
           bg="$background"
           p="$3"
           rounded="$4"
           borderWidth={1}
           borderColor="$red8"
           gap="$2"
-          $sm={{ minW: '100%', maxW: '100%' }}
         >
           <XStack items="center" gap="$2">
             <Text fontSize="$3" color="$red10" fontWeight="600">
@@ -169,7 +161,6 @@ export const MapFilterBar = ({
         hoverStyle={{ bg: '$backgroundHover' }}
         pressStyle={{ bg: '$backgroundPress' }}
         icon={resultsCount > 0 ? undefined : List}
-        $sm={{ minW: '100%' }}
       >
         {resultsCount > 0 ? (
           <Text fontSize="$4" fontWeight="600">
@@ -191,7 +182,6 @@ export const MapFilterBar = ({
         hoverStyle={{ bg: '$backgroundHover' }}
         pressStyle={{ bg: '$backgroundPress' }}
         aria-label="Reset filters and search"
-        $sm={{ minW: '100%' }}
       />
     </XStack>
   )

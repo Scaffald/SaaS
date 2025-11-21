@@ -1,7 +1,16 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { ChevronRight, ChevronDown } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack, Popover, Sheet, Adapt, ScrollView, useMedia } from 'tamagui'
+import { ChevronRight } from '@tamagui/lucide-icons'
 import { Link, useRouter } from 'expo-router'
+import { Fragment, memo, useCallback, useMemo, useState } from 'react'
+import {
+  Adapt,
+  Popover,
+  ScrollView,
+  Sheet,
+  Text,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from 'tamagui'
 import { Button as UIButton } from './buttons/Button'
 
 export interface BreadcrumbSibling {
@@ -58,7 +67,7 @@ export interface BreadcrumbProps {
  * <Breadcrumb
  *   items={[
  *     { label: 'Dashboard', href: '/dashboard' },
- *     { label: 'Discover Workers', href: '/dashboard/workers' },
+ *     { label: 'Workers', href: '/dashboard/workers' },
  *     { label: 'John Smith', isActive: true },
  *   ]}
  * />
@@ -82,65 +91,66 @@ export interface BreadcrumbProps {
  * />
  * ```
  */
-export const Breadcrumb = React.memo(function Breadcrumb({
+export const Breadcrumb = memo(function Breadcrumb({
   items,
   maxItemsMobile = 2,
   maxItemsDesktop = 4,
   onItemPress,
   showEllipsisDropdown = true,
 }: BreadcrumbProps) {
-  const media = useMedia()
-  const isMobile = media.sm // sm = maxWidth: 800px
+  // Use window dimensions for item calculation logic
+  // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+  const { width } = useWindowDimensions()
+  const isMobile = width <= 800
   const router = useRouter()
   const [ellipsisOpen, setEllipsisOpen] = useState(false)
 
   // Calculate which items to display based on viewport (memoized)
-  const { displayItems, showEllipsis, hiddenItems, hiddenStartIndex, hiddenEndIndex } =
-    useMemo(() => {
-      let displayItems: BreadcrumbItem[]
-      let showEllipsis = false
-      let hiddenStartIndex = -1
-      let hiddenEndIndex = -1
+  const { displayItems, showEllipsis, hiddenItems, hiddenStartIndex } = useMemo(() => {
+    let displayItems: BreadcrumbItem[]
+    let showEllipsis = false
+    let hiddenStartIndex = -1
+    let hiddenEndIndex = -1
 
-      if (isMobile) {
-        // Mobile: show only last N items
-        if (items.length > maxItemsMobile) {
-          displayItems = items.slice(-maxItemsMobile)
-          showEllipsis = true
-          hiddenStartIndex = 0
-          hiddenEndIndex = items.length - maxItemsMobile - 1
-        } else {
-          displayItems = items
-        }
+    if (isMobile) {
+      // Mobile: show only last N items
+      if (items.length > maxItemsMobile) {
+        displayItems = items.slice(-maxItemsMobile)
+        showEllipsis = true
+        hiddenStartIndex = 0
+        hiddenEndIndex = items.length - maxItemsMobile - 1
       } else {
-        // Desktop: show first + last (maxItemsDesktop - 1) items if exceeding threshold
-        if (items.length > maxItemsDesktop) {
-          const visibleCount = maxItemsDesktop
-          const firstItem = items[0]
-          const lastItems = items.slice(-(visibleCount - 1))
-          displayItems = [firstItem, ...lastItems]
-          showEllipsis = true
-          hiddenStartIndex = 1
-          hiddenEndIndex = items.length - (visibleCount - 1) - 1
-        } else {
-          displayItems = items
-        }
+        displayItems = items
       }
-
-      // Get hidden items for ellipsis dropdown
-      const hiddenItems =
-        showEllipsis && hiddenStartIndex >= 0 && hiddenEndIndex >= hiddenStartIndex
-          ? items.slice(hiddenStartIndex, hiddenEndIndex + 1)
-          : []
-
-      return {
-        displayItems,
-        showEllipsis,
-        hiddenItems,
-        hiddenStartIndex,
-        hiddenEndIndex,
+    } else {
+      // Desktop: show first + last (maxItemsDesktop - 1) items if exceeding threshold
+      if (items.length > maxItemsDesktop) {
+        const visibleCount = maxItemsDesktop
+        const firstItem = items[0]
+        const lastItems = items.slice(-(visibleCount - 1))
+        displayItems = [firstItem, ...lastItems]
+        showEllipsis = true
+        hiddenStartIndex = 1
+        hiddenEndIndex = items.length - (visibleCount - 1) - 1
+      } else {
+        displayItems = items
       }
-    }, [items, isMobile, maxItemsMobile, maxItemsDesktop])
+    }
+
+    // Get hidden items for ellipsis dropdown
+    const hiddenItems =
+      showEllipsis && hiddenStartIndex >= 0 && hiddenEndIndex >= hiddenStartIndex
+        ? items.slice(hiddenStartIndex, hiddenEndIndex + 1)
+        : []
+
+    return {
+      displayItems,
+      showEllipsis,
+      hiddenItems,
+      hiddenStartIndex,
+      hiddenEndIndex,
+    }
+  }, [items, isMobile, maxItemsMobile, maxItemsDesktop])
 
   // Handle navigation to hidden item (memoized)
   const handleHiddenItemPress = useCallback(
@@ -249,82 +259,77 @@ export const Breadcrumb = React.memo(function Breadcrumb({
   }
 
   return (
-    <nav aria-label="Breadcrumb navigation">
-      <XStack items="center" gap="$2" flexWrap="wrap">
-        {showEllipsis && showEllipsisDropdown && hiddenItems.length > 0 ? (
-          <>
-            {renderEllipsisDropdown()}
-            <ChevronRight size={12} color="var(--color8)" />
-          </>
-        ) : showEllipsis ? (
-          <>
-            <Text fontSize={12} color="$color10">
-              ...
-            </Text>
-            <ChevronRight size={12} color="var(--color8)" />
-          </>
-        ) : null}
-        {displayItems.map((item, displayIndex) => {
-          // Calculate actual index in original items array
-          let actualIndex: number
-          if (isMobile && showEllipsis) {
-            // Mobile: displayItems are the last N items
-            actualIndex = items.length - displayItems.length + displayIndex
-          } else if (!isMobile && showEllipsis) {
-            // Desktop: first item + last N-1 items
-            if (displayIndex === 0) {
-              actualIndex = 0
-            } else {
-              actualIndex = items.length - (displayItems.length - 1) + (displayIndex - 1)
-            }
+    <XStack items="center" gap="$2" flexWrap="wrap" aria-label="Breadcrumb navigation">
+      {showEllipsis && showEllipsisDropdown && hiddenItems.length > 0 ? (
+        <>
+          {renderEllipsisDropdown()}
+          <ChevronRight size={12} color="var(--color8)" />
+        </>
+      ) : showEllipsis ? (
+        <>
+          <Text fontSize={12} color="$color10">
+            ...
+          </Text>
+          <ChevronRight size={12} color="var(--color8)" />
+        </>
+      ) : null}
+      {displayItems.map((item, displayIndex) => {
+        // Calculate actual index in original items array
+        let actualIndex: number
+        if (isMobile && showEllipsis) {
+          // Mobile: displayItems are the last N items
+          actualIndex = items.length - displayItems.length + displayIndex
+        } else if (!isMobile && showEllipsis) {
+          // Desktop: first item + last N-1 items
+          if (displayIndex === 0) {
+            actualIndex = 0
           } else {
-            actualIndex = displayIndex
+            actualIndex = items.length - (displayItems.length - 1) + (displayIndex - 1)
           }
+        } else {
+          actualIndex = displayIndex
+        }
 
-          const isLast = displayIndex === displayItems.length - 1
-          const isActive = item.isActive ?? isLast
+        const isLast = displayIndex === displayItems.length - 1
+        const isActive = item.isActive ?? isLast
 
-          // Render regular breadcrumb item (no dropdowns - simplified)
-          // Terminal routes (isActive) should not be clickable
-          const isClickable = !isActive && (item.href || onItemPress)
+        // Render regular breadcrumb item (no dropdowns - simplified)
+        // Terminal routes (isActive) should not be clickable
+        const isClickable = !isActive && (item.href || onItemPress)
 
-          const content = (
-            <Text
-              fontSize={12}
-              color={isActive ? '$color11' : '$color10'}
-              fontWeight={isActive ? '600' : '400'}
-              style={{
-                cursor: isClickable ? 'pointer' : 'default',
-              }}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              {item.label}
-            </Text>
-          )
+        const content = (
+          <Text
+            fontSize={12}
+            color={isActive ? '$color11' : '$color10'}
+            fontWeight={isActive ? '600' : '400'}
+            style={{
+              cursor: isClickable ? 'pointer' : 'default',
+            }}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {item.label}
+          </Text>
+        )
 
-          return (
-            <React.Fragment key={`${item.label}-${actualIndex}`}>
-              {isClickable && item.href && !onItemPress ? (
-                <Link href={item.href} asChild>
-                  <XStack pressStyle={{ opacity: 0.7 }} cursor="pointer">
-                    {content}
-                  </XStack>
-                </Link>
-              ) : isClickable && onItemPress ? (
-                <XStack
-                  onPress={() => onItemPress(item, actualIndex)}
-                  pressStyle={{ opacity: 0.7 }}
-                >
+        return (
+          <Fragment key={`${item.label}-${actualIndex}`}>
+            {isClickable && item.href && !onItemPress ? (
+              <Link href={item.href} asChild>
+                <XStack pressStyle={{ opacity: 0.7 }} cursor="pointer">
                   {content}
                 </XStack>
-              ) : (
-                content
-              )}
-              {!isLast && <ChevronRight size={12} color="var(--color8)" />}
-            </React.Fragment>
-          )
-        })}
-      </XStack>
-    </nav>
+              </Link>
+            ) : isClickable && onItemPress ? (
+              <XStack onPress={() => onItemPress(item, actualIndex)} pressStyle={{ opacity: 0.7 }}>
+                {content}
+              </XStack>
+            ) : (
+              content
+            )}
+            {!isLast && <ChevronRight size={12} color="var(--color8)" />}
+          </Fragment>
+        )
+      })}
+    </XStack>
   )
 })

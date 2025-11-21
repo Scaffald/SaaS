@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ResumeImportWidget } from '../ResumeImportWidget'
@@ -22,14 +23,23 @@ vi.mock('@tamagui/lucide-icons', () => ({
 }))
 
 vi.mock('tamagui', () => {
-  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
-  const Stack = ({ children, ...rest }: any) => (
+  interface StackProps {
+    children?: ReactNode
+    [key: string]: unknown
+  }
+
+  interface TextProps {
+    children?: ReactNode
+    [key: string]: unknown
+  }
+
+  const Stack = ({ children, ...rest }: StackProps) => (
     <div data-testid="tamagui-stack" {...rest}>
       {children}
     </div>
   )
-  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
-  const Text = ({ children, ...rest }: any) => (
+
+  const Text = ({ children, ...rest }: TextProps) => (
     <span data-testid="tamagui-text" {...rest}>
       {children}
     </span>
@@ -43,8 +53,7 @@ vi.mock('tamagui', () => {
 })
 
 vi.mock('../ResumeUploadButton', () => ({
-  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
-  ResumeUploadButton: ({ onPress, label }: any) => (
+  ResumeUploadButton: ({ onPress, label }: { onPress?: () => void; label?: string }) => (
     <button type="button" onClick={onPress}>
       {label}
     </button>
@@ -52,13 +61,18 @@ vi.mock('../ResumeUploadButton', () => ({
 }))
 
 vi.mock('../ResumeUploadModal', () => ({
-  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
-  ResumeUploadModal: ({ open, onUploadComplete }: any) =>
+  ResumeUploadModal: ({
+    open,
+    onUploadComplete,
+  }: {
+    open?: boolean
+    onUploadComplete?: (id: string) => void
+  }) =>
     open ? (
       <button
         type="button"
         data-testid="resume-modal"
-        onClick={() => onUploadComplete('resume-generated')}
+        onClick={() => onUploadComplete?.('resume-generated')}
       >
         Complete Upload
       </button>
@@ -76,8 +90,7 @@ vi.mock('@app/core/utils/api', () => ({
 }))
 
 vi.mock('@app/ui', () => ({
-  // biome-ignore lint/suspicious/noExplicitAny: test doubles may receive arbitrary props
-  DashboardWidget: ({ children }: any) => (
+  DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),
   spacing: {
@@ -123,9 +136,8 @@ describe('ResumeImportWidget', () => {
     fireEvent.click(screen.getByTestId('resume-modal'))
 
     expect(pushMock).toHaveBeenCalledWith(
-      '/dashboard/profile/resume/review?resumeId=resume-generated',
+      '/dashboard/profile/resume/review?resumeId=resume-generated'
     )
     expect(screen.queryByTestId('resume-modal')).not.toBeInTheDocument()
   })
 })
-

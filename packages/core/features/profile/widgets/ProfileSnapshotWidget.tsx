@@ -1,8 +1,8 @@
-import { YStack, XStack, Text, H4, Spinner, Avatar, Button, Progress } from 'tamagui'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import { useRouter } from 'expo-router'
+import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
 
 /**
  * ProfileSnapshotWidget
@@ -11,7 +11,7 @@ import { getAvatarUrl } from '@app/core/utils/supabase/storage'
  */
 export function ProfileSnapshotWidget() {
   const router = useRouter()
-  const { data: user } = api.profile.useUser.useQuery()
+  const { data: user } = api.profile.general.useUser.useQuery()
 
   // Fetch all data needed for snapshot
   const { data: generalInfo, isLoading: loadingGeneral } =
@@ -88,12 +88,12 @@ export function ProfileSnapshotWidget() {
   const resolvedYearsOfExperience =
     typeof generalInfo.calculatedYearsOfExperience === 'number'
       ? generalInfo.calculatedYearsOfExperience
-      : generalInfo.years_of_experience ?? 0
+      : (generalInfo.years_of_experience ?? 0)
 
   const formattedYearsOfExperience =
     Number.isFinite(resolvedYearsOfExperience) && resolvedYearsOfExperience % 1 !== 0
       ? resolvedYearsOfExperience.toFixed(1)
-      : resolvedYearsOfExperience ?? 0
+      : (resolvedYearsOfExperience ?? 0)
 
   // Get current role from experience
   const currentRole = experience?.find((exp: Record<string, unknown>) => exp.is_current)
@@ -246,7 +246,7 @@ export function ProfileSnapshotWidget() {
               items="center"
             >
               <Text fontSize="$6" fontWeight="700" color="$blue7">
-                    {formattedYearsOfExperience}
+                {formattedYearsOfExperience}
               </Text>
               <Text fontSize="$1" color="$color11">
                 Years
@@ -268,8 +268,7 @@ export function ProfileSnapshotWidget() {
             </XStack>
             <XStack gap="$2" flexWrap="wrap">
               {topSkills.map((skill: Record<string, unknown>) => {
-                const displayCode =
-                  typeof skill.displayCode === 'string' ? skill.displayCode : null
+                const displayCode = typeof skill.displayCode === 'string' ? skill.displayCode : null
                 const skillName = typeof skill.name === 'string' ? skill.name : 'Skill'
                 const chipLabel =
                   typeof skill.label === 'string'
@@ -279,22 +278,22 @@ export function ProfileSnapshotWidget() {
                       : skillName
 
                 return (
-                <XStack
-                  key={skill.id as string}
-                  bg="$color3"
-                  px="$2.5"
-                  py="$1.5"
-                  rounded="$2"
-                  borderWidth={1}
-                  borderColor={skill.verified ? '$green7' : '$color6'}
-                >
-                  {skill.verified && (
-                    <Text color="$green10" fontSize="$1" mr="$1">
-                      ✓
-                    </Text>
-                  )}
+                  <XStack
+                    key={skill.id as string}
+                    bg="$color3"
+                    px="$2.5"
+                    py="$1.5"
+                    rounded="$2"
+                    borderWidth={1}
+                    borderColor={skill.verified ? '$green7' : '$color6'}
+                  >
+                    {skill.verified && (
+                      <Text color="$green10" fontSize="$1" mr="$1">
+                        ✓
+                      </Text>
+                    )}
                     <Text fontSize="$2">{chipLabel}</Text>
-                </XStack>
+                  </XStack>
                 )
               })}
             </XStack>

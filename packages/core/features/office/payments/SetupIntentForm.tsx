@@ -1,74 +1,62 @@
-import { useMemo, useState } from "react";
-import type { SetupIntent } from "@stripe/stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  Elements,
-  PaymentElement,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js";
-import { Button, Text, XStack, YStack, Spinner } from "@app/ui";
-import { Card } from "tamagui";
-
-import { useStripeConfig } from "@app/core/features/payments/hooks/useStripeConfig";
-import { api } from "@app/core/utils/api";
-import { useToastController } from "@tamagui/toast";
+import { useStripeConfig } from '@app/core/features/payments/hooks/useStripeConfig'
+import { api } from '@app/core/utils/api'
+import { Button, Spinner, Text, XStack, YStack } from '@app/ui'
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+import { useToastController } from '@tamagui/toast'
+import { useMemo, useState } from 'react'
+import { Card } from 'tamagui'
 
 type SetupIntentFormProps = {
-  organizationId: string;
-  onSuccess: () => void;
-  onCancel: () => void;
-};
+  organizationId: string
+  onSuccess: () => void
+  onCancel: () => void
+}
 
-export function SetupIntentForm({
-  organizationId,
-  onSuccess,
-  onCancel,
-}: SetupIntentFormProps) {
-  const toast = useToastController();
-  const config = useStripeConfig(true);
+export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIntentFormProps) {
+  const toast = useToastController()
+  const config = useStripeConfig(true)
 
-  const createSetupIntentMutation = api.payments.createSetupIntent.useMutation();
+  const createSetupIntentMutation = api.payments.createSetupIntent.useMutation()
 
   const stripePromise = useMemo(() => {
-    if (!config.publishableKey) return null;
-    return loadStripe(config.publishableKey);
-  }, [config.publishableKey]);
+    if (!config.publishableKey) return null
+    return loadStripe(config.publishableKey)
+  }, [config.publishableKey])
 
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [isInitializing, setIsInitializing] = useState(false)
 
   const handleInitialize = async () => {
-    setIsInitializing(true);
+    setIsInitializing(true)
     try {
       const result = await createSetupIntentMutation.mutateAsync({
         organizationId,
-      });
-      setClientSecret(result.clientSecret);
+      })
+      setClientSecret(result.clientSecret)
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to initialize payment form";
-      toast.show("Error", { message, type: "error" });
+      const message = error instanceof Error ? error.message : 'Failed to initialize payment form'
+      toast.show('Error', { message, type: 'error' })
     } finally {
-      setIsInitializing(false);
+      setIsInitializing(false)
     }
-  };
+  }
 
   const options = useMemo(() => {
-    if (!clientSecret) return null;
+    if (!clientSecret) return null
     return {
       clientSecret,
       appearance: {
-        theme: "flat" as const,
-        labels: "floating" as const,
+        theme: 'flat' as const,
+        labels: 'floating' as const,
         variables: {
-          colorText: "hsl(206,6%,25%)",
-          colorDanger: "hsl(359,72%,55%)",
-          borderRadius: "8px",
+          colorText: 'hsl(206,6%,25%)',
+          colorDanger: 'hsl(359,72%,55%)',
+          borderRadius: '8px',
         },
       },
-    };
-  }, [clientSecret]);
+    }
+  }, [clientSecret])
 
   if (config.isLoading || !stripePromise) {
     return (
@@ -77,7 +65,7 @@ export function SetupIntentForm({
           Preparing secure payment form…
         </Text>
       </Card>
-    );
+    )
   }
 
   if (!config.publishableKey) {
@@ -87,7 +75,7 @@ export function SetupIntentForm({
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
       </Card>
-    );
+    )
   }
 
   if (!clientSecret) {
@@ -105,19 +93,14 @@ export function SetupIntentForm({
           </Text>
         )}
         <XStack gap="$2">
-          <Button
-            size="$4"
-            theme="blue"
-            onPress={handleInitialize}
-            disabled={isInitializing}
-          >
+          <Button size="$4" theme="blue" onPress={handleInitialize} disabled={isInitializing}>
             {isInitializing ? (
               <XStack gap="$2" items="center">
                 <Spinner size="small" color="white" />
                 <Text>Initializing…</Text>
               </XStack>
             ) : (
-              "Continue"
+              'Continue'
             )}
           </Button>
           <Button size="$4" variant="outlined" onPress={onCancel}>
@@ -125,11 +108,11 @@ export function SetupIntentForm({
           </Button>
         </XStack>
       </YStack>
-    );
+    )
   }
 
   if (!options) {
-    return null;
+    return null
   }
 
   return (
@@ -141,69 +124,57 @@ export function SetupIntentForm({
         testMode={config.testMode}
       />
     </Elements>
-  );
+  )
 }
 
 type InnerProps = SetupIntentFormProps & {
-  testMode: boolean;
-};
+  testMode: boolean
+}
 
-function SetupIntentFormInner({
-  organizationId,
-  onSuccess,
-  onCancel,
-  testMode,
-}: InnerProps) {
-  const stripe = useStripe();
-  const elements = useElements();
-  const savePaymentMethodMutation = api.payments.savePaymentMethod.useMutation();
+function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }: InnerProps) {
+  const stripe = useStripe()
+  const elements = useElements()
+  const savePaymentMethodMutation = api.payments.savePaymentMethod.useMutation()
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const handleSubmit = async () => {
-    if (!stripe || !elements) return;
-    setIsSubmitting(true);
-    setErrorMessage(null);
+    if (!stripe || !elements) return
+    setIsSubmitting(true)
+    setErrorMessage(null)
 
     const { error, setupIntent } = await stripe.confirmSetup({
       elements,
-      redirect: "if_required",
-    });
+      redirect: 'if_required',
+    })
 
     if (error) {
-      setErrorMessage(error.message ?? "Unable to confirm setup. Try again.");
-      setIsSubmitting(false);
-      return;
+      setErrorMessage(error.message ?? 'Unable to confirm setup. Try again.')
+      setIsSubmitting(false)
+      return
     }
 
-    if (
-      setupIntent &&
-      setupIntent.status === "succeeded" &&
-      setupIntent.payment_method
-    ) {
+    if (setupIntent && setupIntent.status === 'succeeded' && setupIntent.payment_method) {
       try {
         await savePaymentMethodMutation.mutateAsync({
           organizationId,
           paymentMethodId:
-            typeof setupIntent.payment_method === "string"
+            typeof setupIntent.payment_method === 'string'
               ? setupIntent.payment_method
               : setupIntent.payment_method.id,
-        });
-        await onSuccess();
+        })
+        await onSuccess()
       } catch (error) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "Failed to save payment method";
-        setErrorMessage(message);
-        setIsSubmitting(false);
+        const message = error instanceof Error ? error.message : 'Failed to save payment method'
+        setErrorMessage(message)
+        setIsSubmitting(false)
       }
     } else {
-      setErrorMessage("Setup did not complete. Please try again.");
-      setIsSubmitting(false);
+      setErrorMessage('Setup did not complete. Please try again.')
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <Card p="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
@@ -244,7 +215,7 @@ function SetupIntentFormInner({
               <Text>Saving…</Text>
             </XStack>
           ) : (
-            "Save Payment Method"
+            'Save Payment Method'
           )}
         </Button>
         <Button size="$4" variant="outlined" onPress={onCancel}>
@@ -252,6 +223,5 @@ function SetupIntentFormInner({
         </Button>
       </XStack>
     </Card>
-  );
+  )
 }
-

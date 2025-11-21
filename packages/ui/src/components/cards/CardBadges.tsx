@@ -34,10 +34,8 @@ export const CardBadges = memo(
         {displayBadges.map((badge) => (
           <Chip
             key={badge.key}
-            // @ts-expect-error - Tamagui type limitations with string union
-            bg={badge.bg ?? '$blue10'}
-            // @ts-expect-error - Tamagui type limitations with string union
-            color={badge.color ?? '$color1'}
+            bg={(badge.bg ?? '$blue10') as any}
+            color={(badge.color ?? '$color1') as any}
             fontSize="$2"
             px="$2"
             py="$1"

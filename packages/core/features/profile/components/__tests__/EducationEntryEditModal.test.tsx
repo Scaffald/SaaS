@@ -1,5 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React from 'react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EducationEntry } from '../../types/education'
@@ -24,7 +23,13 @@ vi.mock('@tamagui/lucide-icons', () => ({
 vi.mock('@app/ui', () => {
   const React = require('react') as typeof import('react')
 
-  const UIButton = ({ children, onPress }: { children?: React.ReactNode; onPress?: () => void }) => (
+  const UIButton = ({
+    children,
+    onPress,
+  }: {
+    children?: React.ReactNode
+    onPress?: () => void
+  }) => (
     <button type="button" onClick={onPress}>
       {children}
     </button>
@@ -130,11 +135,7 @@ vi.mock('@app/ui', () => {
       value?: string
       onChangeText?: (value: string) => void
     } & React.ComponentPropsWithoutRef<'textarea'>) => (
-      <textarea
-        value={value}
-        onChange={(event) => onChangeText?.(event.target.value)}
-        {...rest}
-      />
+      <textarea value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
     ),
     Input: ({
       value = '',
@@ -144,11 +145,7 @@ vi.mock('@app/ui', () => {
       value?: string
       onChangeText?: (value: string) => void
     } & React.ComponentPropsWithoutRef<'input'>) => (
-      <input
-        value={value}
-        onChange={(event) => onChangeText?.(event.target.value)}
-        {...rest}
-      />
+      <input value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
     ),
   }
 })
@@ -158,14 +155,18 @@ vi.mock('tamagui', () => {
 
   const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
+      React.createElement(element, { ref, ...rest }, children)
     )
 
   const SelectContext = React.createContext<((value: string) => void) | null>(null)
 
-  const SelectRoot = ({ children, onValueChange }: { children: React.ReactNode; onValueChange?: (value: string) => void }) => (
-    <SelectContext.Provider value={onValueChange ?? null}>{children}</SelectContext.Provider>
-  )
+  const SelectRoot = ({
+    children,
+    onValueChange,
+  }: {
+    children: React.ReactNode
+    onValueChange?: (value: string) => void
+  }) => <SelectContext.Provider value={onValueChange ?? null}>{children}</SelectContext.Provider>
 
   const SelectItem = ({ value, children }: { value: string; children: React.ReactNode }) => {
     const select = React.useContext(SelectContext)
@@ -201,10 +202,9 @@ vi.mock('tamagui', () => {
       ScrollUpButton: () => null,
       ScrollDownButton: () => null,
     }),
-    Adapt: Object.assign(
-      ({ children }: { children: React.ReactNode }) => <>{children}</>,
-      { Contents: () => <></> },
-    ),
+    Adapt: Object.assign(({ children }: { children: React.ReactNode }) => <>{children}</>, {
+      Contents: () => <></>,
+    }),
     Sheet: SheetRoot,
     Input: ({
       value = '',
@@ -214,11 +214,7 @@ vi.mock('tamagui', () => {
       value?: string
       onChangeText?: (value: string) => void
     } & React.ComponentPropsWithoutRef<'input'>) => (
-      <input
-        value={value}
-        onChange={(event) => onChangeText?.(event.target.value)}
-        {...rest}
-      />
+      <input value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
     ),
     TextArea: ({
       value = '',
@@ -228,11 +224,7 @@ vi.mock('tamagui', () => {
       value?: string
       onChangeText?: (value: string) => void
     } & React.ComponentPropsWithoutRef<'textarea'>) => (
-      <textarea
-        value={value}
-        onChange={(event) => onChangeText?.(event.target.value)}
-        {...rest}
-      />
+      <textarea value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
     ),
     Spinner: () => <div>spinner</div>,
     useWindowDimensions: () => ({ width: 1024, height: 768 }),
@@ -253,7 +245,6 @@ const baseEducationEntry: EducationEntry = {
   description: 'Test description',
   location: 'Remote',
 }
-
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
@@ -316,7 +307,7 @@ const renderModal = (entry: Partial<EducationEntry>) =>
       onOpenChange={vi.fn()}
       educationEntry={{ ...baseEducationEntry, ...entry }}
       onSuccess={vi.fn()}
-    />,
+    />
   )
 
 describe('EducationEntryEditModal', () => {
@@ -339,7 +330,9 @@ describe('EducationEntryEditModal', () => {
     expect(screen.getByPlaceholderText('Search for institution...')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Select from catalog'))
-    expect(screen.getByPlaceholderText('Search for institution...')).toHaveValue('Selected University')
+    expect(screen.getByPlaceholderText('Search for institution...')).toHaveValue(
+      'Selected University'
+    )
 
     fireEvent.click(screen.getByText("Can't find your institution? Enter it manually"))
     expect(screen.getByPlaceholderText('Enter institution name')).toBeInTheDocument()
@@ -354,6 +347,4 @@ describe('EducationEntryEditModal', () => {
     fireEvent.click(screen.getByText('Bachelor Degree'))
     expect(screen.queryByPlaceholderText('Specify degree type')).not.toBeInTheDocument()
   })
-
 })
-

@@ -1,7 +1,6 @@
+import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
-import { Adapt, Sheet, Select, Label } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { Label } from 'tamagui'
 
 interface EnhancedRequirementsSectionProps {
   minimumEducationLevel?: 'none' | 'high_school' | 'associate' | 'bachelor' | 'master' | 'phd'
@@ -87,43 +86,16 @@ export function EnhancedRequirementsSection({
       {/* Minimum Education Level */}
       <YStack gap="$2">
         <Label>Minimum education level</Label>
-        <Select
+        <ResponsiveSelect
           value={localState.minimum_education_level || ''}
           onValueChange={(value) => handleChange('minimum_education_level', value || undefined)}
-        >
-          <Select.Trigger iconAfter={ChevronDown}>
-            <Select.Value placeholder="Select education level" />
-          </Select.Trigger>
-
-          <Adapt when="sm" platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-
-          <Select.Content zIndex={200000}>
-            <Select.ScrollUpButton />
-            <Select.Viewport>
-              <Select.Group>
-                <Select.Label>Education Level</Select.Label>
-                {EDUCATION_LEVELS.map((level, i) => (
-                  <Select.Item key={level.value} index={i} value={level.value}>
-                    <Select.ItemText>{level.label}</Select.ItemText>
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton />
-          </Select.Content>
-        </Select>
+          placeholder="Select education level"
+          label="Minimum education level"
+          options={EDUCATION_LEVELS.map((level) => ({
+            value: level.value,
+            label: level.label,
+          }))}
+        />
       </YStack>
 
       {/* Background Check */}

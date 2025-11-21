@@ -1,16 +1,15 @@
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useToastController } from '@tamagui/toast'
-import { Button, Text, YStack } from 'tamagui'
+import { ROUTES } from '@app/core/constants/routes'
 import { AssessmentWizard } from '@app/core/features/assessments'
 import { IPIPTestStep } from '@app/core/features/personality-assessment/components/IPIPTestStep'
-import { api } from '@app/core/utils/api'
-import { ROUTES } from '@app/core/constants/routes'
 import type { IPIPAnswer, IPIPDomain } from '@app/core/features/personality-assessment/lib/ipip'
+import { api } from '@app/core/utils/api'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import { Button, Text, YStack } from 'tamagui'
 import {
-  getCompletedDomainsCount,
   DOMAIN_NAMES,
-  QUESTIONS_PER_DOMAIN,
+  getCompletedDomainsCount,
 } from './utils/domainGrouping'
 
 interface SaveIPIPProgressResult {

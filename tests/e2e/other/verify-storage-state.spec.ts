@@ -2,7 +2,7 @@
  * Verification test - Does storage state authentication work?
  * This test will tell us if the Storage State approach is viable.
  */
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 // Use the admin storage state
 test.use({ storageState: 'tests/.auth/admin.json' })
@@ -12,7 +12,7 @@ test.describe('Storage State Verification', () => {
     console.log('🔍 Testing storage state authentication...')
 
     // Enable console logging to see auth state
-    page.on('console', msg => console.log(`[BROWSER ${msg.type()}]:`, msg.text()))
+    page.on('console', (msg) => console.log(`[BROWSER ${msg.type()}]:`, msg.text()))
 
     // Navigate to dashboard
     console.log('📍 Navigating to /dashboard...')

@@ -13,6 +13,7 @@
   "profileEducation": "Educación",
   "profileExperience": "Experiencia",
   "assessments": "Evaluaciones",
+  "settings": "Configuración",
   "assessmentsPulse": "Pulso semanal",
   "assessmentsPersonality": "Preguntas de personalidad",
   "assessmentsRiasec": "Intereses profesionales",
@@ -30,4 +31,3 @@
   "notifications": "Notificaciones",
   "styleguide": "Guía de estilo"
 }
-

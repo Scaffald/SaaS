@@ -1,22 +1,12 @@
-import { useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
-import {
-  Button,
-  Select,
-  Separator,
-  Spinner,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-  useMedia,
-} from 'tamagui'
-import { Check, ChevronDown, MessageCircle, Send } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
+import { MessageCircle, Send } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { ReactNode } from 'react'
+import { useMemo, useState } from 'react'
+import { ResponsiveSelect } from '@app/ui'
+import { Button, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type MentionOption = {
   id: string
@@ -49,8 +39,6 @@ export function TeamActivityFeed({
   const [commentBody, setCommentBody] = useState('')
   const [mentions, setMentions] = useState<MentionOption[]>([])
   const [mentionSelection, setMentionSelection] = useState('none')
-  const media = useMedia()
-  const isSmallScreen = media.sm // sm = maxWidth: 800px
 
   const activityQuery = api.teams.analytics.activity.useInfiniteQuery(
     {
@@ -58,9 +46,10 @@ export function TeamActivityFeed({
       pageSize: PAGE_SIZE,
     },
     {
-      getNextPageParam: (lastPage: TeamActivityOutput | undefined) => lastPage?.nextCursor ?? undefined,
+      getNextPageParam: (lastPage: TeamActivityOutput | undefined) =>
+        lastPage?.nextCursor ?? undefined,
       staleTime: 30_000,
-    },
+    }
   )
 
   const postCommentMutation = api.teams.analytics.postComment.useMutation({
@@ -82,16 +71,15 @@ export function TeamActivityFeed({
     return pages
       .flatMap((page: TeamActivityOutput | undefined) => page?.events ?? [])
       .map((event: TeamActivityEvent) => ({
-          ...event,
-          // Ensure payload is an object to simplify downstream use
-          payload:
-            typeof event.payload === 'object' && event.payload !== null ? event.payload : {},
+        ...event,
+        // Ensure payload is an object to simplify downstream use
+        payload: typeof event.payload === 'object' && event.payload !== null ? event.payload : {},
       })) as TeamActivityEvent[]
   }, [activityQuery.data])
 
   const availableMentionOptions = useMemo(
     () => mentionOptions.filter((option) => !mentions.some((item) => item.id === option.id)),
-    [mentionOptions, mentions],
+    [mentionOptions, mentions]
   )
 
   const resolveUserName = (userId?: string | null) => {
@@ -106,7 +94,7 @@ export function TeamActivityFeed({
   }
 
   const renderEventDetails = (
-    event: TeamActivityEvent,
+    event: TeamActivityEvent
   ): { content: ReactNode; accessibilityLabel: string } => {
     const actor = resolveUserName(event.actorUserId)
     const occurredAt = new Date(event.occurredAt).toLocaleString()
@@ -116,9 +104,7 @@ export function TeamActivityFeed({
     switch (event.eventType) {
       case 'discussion.comment': {
         const body = typeof payload.body === 'string' ? payload.body : ''
-        const mentionIds = Array.isArray(payload.mentions)
-          ? (payload.mentions as string[])
-          : []
+        const mentionIds = Array.isArray(payload.mentions) ? (payload.mentions as string[]) : []
         const mentionNames = mentionIds
           .map((id) => resolveUserName(id))
           .filter((name) => Boolean(name))
@@ -136,9 +122,7 @@ export function TeamActivityFeed({
           accessibilityLabel,
           content: (
             <YStack gap="$2">
-              <Text fontWeight="600">
-                {actor} commented
-              </Text>
+              <Text fontWeight="600">{actor} commented</Text>
               {body ? <Text>{body}</Text> : null}
               {mentionNames.length > 0 ? (
                 <Text fontSize="$3" color="$color10">
@@ -226,9 +210,7 @@ export function TeamActivityFeed({
           accessibilityLabel,
           content: (
             <YStack gap="$1">
-              <Text fontWeight="600">
-                {actor} left the team
-              </Text>
+              <Text fontWeight="600">{actor} left the team</Text>
               <Text fontSize="$2" color="$color10">
                 {occurredAt}
               </Text>
@@ -292,13 +274,17 @@ export function TeamActivityFeed({
   const disableSubmit = isPosting || commentBody.trim().length === 0
 
   return (
-    <YStack gap="$4" px={isSmallScreen ? '$3' : undefined}>
+    <YStack gap="$4" px="$3" $md={{ px: undefined }}>
       <XStack
         gap="$2"
-        items={isSmallScreen ? 'flex-start' : 'center'}
+        items="flex-start"
         justify="space-between"
         flexWrap="wrap"
-        flexDirection={isSmallScreen ? 'column' : 'row'}
+        flexDirection="column"
+        $md={{
+          items: 'center',
+          flexDirection: 'row',
+        }}
       >
         <XStack gap="$2" items="center">
           <MessageCircle size={20} accessibilityLabel="Team activity icon" />
@@ -313,7 +299,8 @@ export function TeamActivityFeed({
           disabled={activityQuery.isFetching}
           accessibilityLabel="Refresh team activity feed"
           accessibilityHint="Reloads the most recent team events"
-          width={isSmallScreen ? '100%' : undefined}
+          width="100%"
+          $md={{ width: undefined }}
         >
           Refresh
         </Button>
@@ -342,8 +329,12 @@ export function TeamActivityFeed({
             <XStack
               gap="$2"
               flexWrap="wrap"
-              flexDirection={isSmallScreen ? 'column' : 'row'}
-              items={isSmallScreen ? 'stretch' : 'center'}
+              flexDirection="column"
+              items="stretch"
+              $md={{
+                flexDirection: 'row',
+                items: 'center',
+              }}
             >
               {mentions.map((mention) => (
                 <Button
@@ -352,50 +343,26 @@ export function TeamActivityFeed({
                   variant="outlined"
                   accessibilityLabel={`Remove mention ${mention.label}`}
                   onPress={() => handleRemoveMention(mention.id)}
-                  width={isSmallScreen ? '100%' : undefined}
+                  width="100%"
+                  $md={{ width: undefined }}
                 >
                   @{mention.label}
                 </Button>
               ))}
               {availableMentionOptions.length > 0 ? (
-                <Select
+                <ResponsiveSelect
                   value={mentionSelection}
                   onValueChange={(value) => handleMentionSelection(value)}
-                  disablePreventBodyScroll
-                >
-                  <Select.Trigger
-                    iconAfter={ChevronDown}
-                    size="$2"
-                    width={isSmallScreen ? '100%' : undefined}
-                  >
-                    <Select.Value placeholder="Mention teammate">
-                      {mentionSelection === 'none' ? 'Add mention' : 'Mention added'}
-                    </Select.Value>
-                  </Select.Trigger>
-                  <Select.Content zIndex={1000}>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      <Select.Group>
-                        <Select.Label>Teammates</Select.Label>
-                        <Select.Item value="none" index={0}>
-                          <Select.ItemText>Select teammate</Select.ItemText>
-                          <Select.ItemIndicator>
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        {availableMentionOptions.map((option, index) => (
-                          <Select.Item key={option.id} value={option.id} index={index + 1}>
-                            <Select.ItemText>{option.label}</Select.ItemText>
-                            <Select.ItemIndicator>
-                              <Check size={16} />
-                            </Select.ItemIndicator>
-                          </Select.Item>
-                        ))}
-                      </Select.Group>
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                  placeholder="Mention teammate"
+                  size="$2"
+                  options={[
+                    { value: 'none', label: 'Select teammate' },
+                    ...availableMentionOptions.map((option) => ({
+                      value: option.id,
+                      label: option.label,
+                    })),
+                  ]}
+                />
               ) : null}
             </XStack>
           </YStack>
@@ -411,7 +378,8 @@ export function TeamActivityFeed({
             disabled={disableSubmit}
             accessibilityLabel="Post update"
             accessibilityHint="Shares your message with the team"
-            width={isSmallScreen ? '100%' : undefined}
+            width="100%"
+            $md={{ width: undefined }}
           >
             {isPosting ? <Spinner size="small" color="$color1" /> : 'Post update'}
           </Button>
@@ -462,11 +430,7 @@ export function TeamActivityFeed({
                 accessibilityLabel="Load more activity"
                 accessibilityHint="Loads older team activity events"
               >
-                {activityQuery.isFetchingNextPage ? (
-                  <Spinner size="small" />
-                ) : (
-                  'Load more'
-                )}
+                {activityQuery.isFetchingNextPage ? <Spinner size="small" /> : 'Load more'}
               </Button>
             </XStack>
           ) : null}
@@ -475,5 +439,3 @@ export function TeamActivityFeed({
     </YStack>
   )
 }
-
-

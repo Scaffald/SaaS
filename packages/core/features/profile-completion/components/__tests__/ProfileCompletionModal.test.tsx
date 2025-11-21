@@ -33,11 +33,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Button = ({
     children,
@@ -90,7 +86,7 @@ describe('ProfileCompletionModal', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onDismiss={onDismiss}
-      />,
+      />
     )
 
     expect(screen.getByTestId('responsive-modal')).toBeInTheDocument()
@@ -121,7 +117,7 @@ describe('ProfileCompletionModal', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onDismiss={onDismiss}
-      />,
+      />
     )
 
     expect(screen.getByText('Keep going — you’re close!')).toBeInTheDocument()
@@ -138,5 +134,3 @@ describe('ProfileCompletionModal', () => {
     expect(onDismiss).toHaveBeenCalledTimes(2)
   })
 })
-
-

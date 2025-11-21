@@ -1,12 +1,12 @@
+import { MonthYearPicker, ToggleSwitch } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Input, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Input, Text, XStack, YStack, Paragraph } from 'tamagui'
+import type { ExperienceStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
-import type { ExperienceStepData } from '../../hooks/useProfileWizard'
-import { MonthYearPicker, ToggleSwitch } from '@app/ui'
 
 const experienceSchema = z.object({
   jobTitle: z.string().min(1, 'Job title is required'),
@@ -254,5 +254,3 @@ function toExperienceFormValues(data?: ExperienceStepData | null): ExperienceFor
     summary: data.summary ?? '',
   }
 }
-
-

@@ -50,7 +50,11 @@ vi.mock('tamagui', () => {
   }: {
     children?: ReactNode
     text?: string
-  } & Record<string, unknown>) => <p data-align={text} {...rest}>{children}</p>
+  } & Record<string, unknown>) => (
+    <p data-align={text} {...rest}>
+      {children}
+    </p>
+  )
 
   const Card = ({
     children,
@@ -125,7 +129,7 @@ describe('WizardSuccessModal', () => {
         unlockedBenefits={[]}
         onViewProfile={onViewProfile}
         onContinueEditing={onContinueEditing}
-      />,
+      />
     )
 
     expect(screen.getByTestId('profile-wizard-success-modal')).toBeInTheDocument()
@@ -140,7 +144,7 @@ describe('WizardSuccessModal', () => {
         unlockedBenefits={[]}
         onViewProfile={onViewProfile}
         onContinueEditing={onContinueEditing}
-      />,
+      />
     )
 
     expect(screen.getByText('Benefits Unlocked')).toBeInTheDocument()
@@ -158,7 +162,7 @@ describe('WizardSuccessModal', () => {
         unlockedBenefits={customBenefits}
         onViewProfile={onViewProfile}
         onContinueEditing={onContinueEditing}
-      />,
+      />
     )
 
     expect(screen.getByText('Custom benefit 1')).toBeInTheDocument()
@@ -174,7 +178,7 @@ describe('WizardSuccessModal', () => {
         unlockedBenefits={[]}
         onViewProfile={onViewProfile}
         onContinueEditing={onContinueEditing}
-      />,
+      />
     )
 
     const viewProfileButton = screen.getByText('View My Profile')
@@ -190,7 +194,7 @@ describe('WizardSuccessModal', () => {
         unlockedBenefits={[]}
         onViewProfile={onViewProfile}
         onContinueEditing={onContinueEditing}
-      />,
+      />
     )
 
     const continueButton = screen.getByText('Continue Editing')
@@ -206,7 +210,7 @@ describe('WizardSuccessModal', () => {
         unlockedBenefits={[]}
         onViewProfile={onViewProfile}
         onContinueEditing={onContinueEditing}
-      />,
+      />
     )
 
     expect(screen.getByTestId('trophy-icon')).toBeInTheDocument()
@@ -221,11 +225,10 @@ describe('WizardSuccessModal', () => {
         unlockedBenefits={benefits}
         onViewProfile={onViewProfile}
         onContinueEditing={onContinueEditing}
-      />,
+      />
     )
 
     const starIcons = screen.getAllByTestId('star-icon')
     expect(starIcons).toHaveLength(3)
   })
 })
-

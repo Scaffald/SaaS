@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { Button, H2, Spinner, XStack, YStack, Text } from 'tamagui'
-import { Plus, Pencil, Trash2, Eye, EyeOff } from '@tamagui/lucide-icons'
-import { Link, useRouter } from 'expo-router'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { api } from '@app/core/utils/api'
+import { OfficeLayout } from '@app/ui'
+import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@tamagui/lucide-icons'
+import { Link } from 'expo-router'
+import { useState } from 'react'
+import { Button, H2, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export function OfficeCMSList() {
   const [includeInactive, setIncludeInactive] = useState(false)
@@ -52,12 +52,13 @@ export function OfficeCMSList() {
   }
 
   return (
-    <DashboardLayout
+    <OfficeLayout
+      showBreadcrumb
       leftContent={
         <YStack flex={1} gap="$4">
           <XStack justify="space-between" items="center">
             <H2>Welcome Slides CMS</H2>
-            <Link href={ROUTES.OFFICE_CMS_WELCOME_CREATE.path} asChild>
+            <Link href={ROUTES.OFFICE.CMS.WELCOME_CREATE.path} asChild>
               <Button icon={Plus}>Create Slide</Button>
             </Link>
           </XStack>
@@ -126,7 +127,7 @@ export function OfficeCMSList() {
                         chromeless
                       />
                       <Link
-                        href={ROUTES.OFFICE_CMS_WELCOME_EDIT.path.replace(':id', slide.id)}
+                        href={ROUTES.OFFICE.CMS.WELCOME_EDIT.path.replace(':id', slide.id)}
                         asChild
                       >
                         <Button size="$3" icon={Pencil} chromeless />
@@ -146,7 +147,7 @@ export function OfficeCMSList() {
               {(!data?.slides || data.slides.length === 0) && (
                 <YStack items="center" justify="center" gap="$4" py="$8">
                   <Text opacity={0.5}>No slides found</Text>
-                  <Link href={ROUTES.OFFICE_CMS_WELCOME_CREATE.path} asChild>
+                  <Link href={ROUTES.OFFICE.CMS.WELCOME_CREATE.path} asChild>
                     <Button icon={Plus}>Create First Slide</Button>
                   </Link>
                 </YStack>
@@ -156,20 +157,14 @@ export function OfficeCMSList() {
         </YStack>
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <Text fontSize="$5" fontWeight="bold">
-              About Welcome Slides
-            </Text>
-            <Text>
-              Manage the onboarding slides shown to new users when they first sign in.
-            </Text>
-            <Text>
-              Slides are displayed in order based on the &quot;display_order&quot; value.
-            </Text>
-            <Text>Only active slides are shown to users.</Text>
-          </YStack>
-        </QuickLinksSidebar>
+        <YStack gap="$4">
+          <Text fontSize="$5" fontWeight="bold">
+            About Welcome Slides
+          </Text>
+          <Text>Manage the onboarding slides shown to new users when they first sign in.</Text>
+          <Text>Slides are displayed in order based on the &quot;display_order&quot; value.</Text>
+          <Text>Only active slides are shown to users.</Text>
+        </YStack>
       }
     />
   )

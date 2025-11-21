@@ -1,22 +1,15 @@
-import { useCallback, useState, useEffect, useRef } from 'react'
-import { YStack, XStack, Text, Button, Progress } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { Award, Sparkles } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
-import { ProfileResultsPanel, ProfileResultCard } from './components'
-import { DashboardWidget, ConfirmationDialog } from '@app/ui'
+import { ConfirmationDialog, DashboardWidget } from '@app/ui'
+import { Award } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { TRPCClientError } from '@trpc/client'
+import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'
+import { Text, XStack, YStack } from 'tamagui'
+import { ProfileResultCard, ProfileResultsPanel } from './components'
+import { SkillCompletionProgress } from './components/skills/SkillCompletionProgress'
+import { SkillGuidanceWidget } from './components/skills/SkillGuidanceWidget'
+import { getProficiencyLabel } from './constants/proficiency-levels'
 import { useProfileSkillsContext } from './profile-skills-context'
-
-/**
- * Proficiency level display helper
- */
-const PROFICIENCY_LABELS = {
-  1: 'Beginner',
-  2: 'Novice',
-  3: 'Intermediate',
-  4: 'Advanced',
-  5: 'Expert',
-} as const
 
 /**
  * Profile Skills Right Component
@@ -42,10 +35,8 @@ export function ProfileSkillsRight() {
   const previousSkillsRef = useRef<string[]>([])
 
   // Fetch user's skills
-  const {
-    data: userSkillsData,
-    isLoading: isLoadingSkills,
-  } = api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
+  const { data: userSkillsData, isLoading: isLoadingSkills } =
+    api.profile.skillsMultiTaxonomy.getUserSkills.useQuery()
 
   // React Query utils for cache invalidation
   const utils = api.useUtils()
@@ -54,17 +45,14 @@ export function ProfileSkillsRight() {
   const removeSkillMutation = api.profile.skillsMultiTaxonomy.removeSkill.useMutation({
     onSuccess: async () => {
       // Invalidate cache to trigger automatic refetch
-      await Promise.all([
-        utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate(),
-      ])
+      await Promise.all([utils.profile.skillsMultiTaxonomy.getUserSkills.invalidate()])
       // Clear removing state after cache invalidation
       setRemovingSkillId(null)
       toast.show('Skill Removed', {
         message: 'Skill removed from your profile',
       })
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // Fade skill back in by clearing removing state
       // This triggers the fade-in animation (opacity 0 → 1, height 0 → auto)
       setRemovingSkillId(null)
@@ -73,25 +61,38 @@ export function ProfileSkillsRight() {
       // Match REQ-28 requirements for specific error messages
       let errorMessage = 'Something went wrong. Please try again.'
 
-      // Network errors (connection issues, fetch failures)
-      if (
-        error.message?.includes('fetch') ||
-        error.message?.includes('network') ||
-        error.message?.includes('Failed to fetch') ||
-        error.message?.includes('NetworkError') ||
-        error.code === 'ECONNREFUSED' ||
-        error.code === 'ETIMEDOUT'
-      ) {
-        errorMessage =
-          'Unable to remove skill. Check your connection and try again.'
-      }
-      // Server errors (5xx, internal server errors)
-      else if (
-        error.data?.code === 'INTERNAL_SERVER_ERROR' ||
-        error.data?.code === 'BAD_REQUEST' ||
-        error.data?.httpStatus >= 500
-      ) {
-        errorMessage = 'Failed to remove skill. Please try again.'
+      // Check if error is TRPCClientError
+      if (error instanceof TRPCClientError) {
+        // Network errors (connection issues, fetch failures)
+        if (
+          error.message?.includes('fetch') ||
+          error.message?.includes('network') ||
+          error.message?.includes('Failed to fetch') ||
+          error.message?.includes('NetworkError')
+        ) {
+          errorMessage = 'Unable to remove skill. Check your connection and try again.'
+        }
+        // Server errors (5xx, internal server errors)
+        else if (
+          error.data?.code === 'INTERNAL_SERVER_ERROR' ||
+          error.data?.code === 'BAD_REQUEST' ||
+          (typeof error.data?.httpStatus === 'number' && error.data.httpStatus >= 500)
+        ) {
+          errorMessage = 'Failed to remove skill. Please try again.'
+        } else {
+          errorMessage = error.message || errorMessage
+        }
+      } else if (error instanceof Error) {
+        // Handle generic Error objects
+        if (
+          error.message?.includes('fetch') ||
+          error.message?.includes('network') ||
+          error.message?.includes('Failed to fetch')
+        ) {
+          errorMessage = 'Unable to remove skill. Check your connection and try again.'
+        } else {
+          errorMessage = error.message || errorMessage
+        }
       }
 
       toast.show('Error', {
@@ -101,12 +102,9 @@ export function ProfileSkillsRight() {
   })
 
   // Handle remove skill - opens confirmation modal
-  const handleRemoveSkill = useCallback(
-    (userSkillId: string) => {
-      setConfirmRemoveSkillId(userSkillId)
-    },
-    []
-  )
+  const handleRemoveSkill = useCallback((userSkillId: string) => {
+    setConfirmRemoveSkillId(userSkillId)
+  }, [])
 
   // Handle confirmed removal
   const handleConfirmRemove = useCallback(async () => {
@@ -142,9 +140,7 @@ export function ProfileSkillsRight() {
     const previousSkillIds = previousSkillsRef.current
 
     // Find skills that are new (in current but not in previous)
-    const newSkills = currentSkillIds.filter(
-      (id: string) => !previousSkillIds.includes(id)
-    )
+    const newSkills = currentSkillIds.filter((id: string) => !previousSkillIds.includes(id))
 
     if (newSkills.length > 0) {
       // Highlight the most recently added skill (first in array if sorted by created_at)
@@ -196,89 +192,17 @@ export function ProfileSkillsRight() {
       />
       <DashboardWidget>
         <YStack gap="$3">
-          <YStack
-            p="$4"
-            gap="$3"
-            bg="$blue2"
-            borderWidth={1}
-            borderColor="$blue5"
-            rounded="$4"
-          >
-            <XStack gap="$3" items="center">
-              <Sparkles size={20} color="$blue10" />
-              <YStack gap="$1" flex={1}>
-                <Text fontWeight="600" color="$blue11">
-                  {hasMinimumSkills
-                    ? `Great! You've added ${skillCount} skill${skillCount === 1 ? '' : 's'}.`
-                    : 'Experts recommend adding at least 5 skills to your profile.'}
-                </Text>
-                <Text fontSize="$2" color="$blue11">
-                  Add role-specific, safety, and leadership skills to improve your match rate.
-                </Text>
-              </YStack>
-            </XStack>
+          <SkillCompletionProgress
+            skillCount={skillCount}
+            hasMinimumSkills={hasMinimumSkills}
+            completionPercent={completionPercent}
+          />
 
-            <YStack gap="$2">
-              <XStack justify="space-between" items="center">
-                <Text fontSize="$2" color="$blue11">
-                  Skill section completeness
-                </Text>
-                <Text fontSize="$2" fontWeight="600" color="$blue11">
-                  {completionPercent}%
-                </Text>
-              </XStack>
-              <Progress value={completionPercent} max={100} bg="$blue3" size="$2">
-                <Progress.Indicator
-                  bg={completionPercent >= 100 ? '$green10' : '$blue9'}
-                />
-              </Progress>
-            </YStack>
-          </YStack>
-
-          <YStack gap="$3">
-            <YStack gap="$2">
-              <Text fontWeight="600">Commonly added skills in {industryDisplayName}:</Text>
-              <XStack gap="$2" flexWrap="wrap">
-                {skillGuidance.recommended.map((suggestion) => (
-                  <Button
-                    key={suggestion.label}
-                    size="$2"
-                    variant="outlined"
-                    borderColor="$blue6"
-                    bg="$blue1"
-                    onPress={() => handleSuggestionSelect(suggestion)}
-                  >
-                    {suggestion.label}
-                  </Button>
-                ))}
-              </XStack>
-            </YStack>
-
-            <YStack gap="$2">
-              <Text fontWeight="600">Users in {industryDisplayName} often add:</Text>
-              <XStack gap="$2" flexWrap="wrap">
-                {skillGuidance.examples.map((suggestion) => (
-                  <Button
-                    key={suggestion.label}
-                    size="$2"
-                    variant="outlined"
-                    bg="$color2"
-                    onPress={() => handleSuggestionSelect(suggestion)}
-                  >
-                    {suggestion.label}
-                  </Button>
-                ))}
-              </XStack>
-            </YStack>
-
-            <YStack gap="$1">
-              {skillGuidance.tips.map((tip) => (
-                <Text key={tip} fontSize="$2" color="$color11">
-                  • {tip}
-                </Text>
-              ))}
-            </YStack>
-          </YStack>
+          <SkillGuidanceWidget
+            industryDisplayName={industryDisplayName}
+            skillGuidance={skillGuidance}
+            onSuggestionSelect={handleSuggestionSelect}
+          />
         </YStack>
       </DashboardWidget>
 
@@ -286,7 +210,7 @@ export function ProfileSkillsRight() {
         title="Your Skills"
         isLoading={isLoadingSkills}
         isEmpty={userSkills.length === 0}
-        emptyIcon={Award as React.ComponentType<{ size?: number; color?: string }>}
+        emptyIcon={Award as ComponentType<{ size?: number; color?: string }>}
         emptyMessage="No skills added yet. Use the form on the left to add your first skill."
       >
         <YStack gap="$3">
@@ -311,9 +235,7 @@ export function ProfileSkillsRight() {
                   onRemove={() => handleRemoveSkill(skill.id)}
                   removeDisabled={removeSkillMutation.isPending || removingSkillId === skill.id}
                   isRemoving={removingSkillId === skill.id}
-                  isLoading={
-                    removingSkillId === skill.id || removeSkillMutation.isPending
-                  }
+                  isLoading={removingSkillId === skill.id || removeSkillMutation.isPending}
                   isNew={newSkillId === skill.id}
                 >
                   {/* Skill Name and Code */}
@@ -335,9 +257,7 @@ export function ProfileSkillsRight() {
                         </Text>
                         <Text fontWeight="600" fontSize="$3">
                           {skill.proficiency_level &&
-                            PROFICIENCY_LABELS[
-                              skill.proficiency_level as keyof typeof PROFICIENCY_LABELS
-                            ]}{' '}
+                            getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)
                         </Text>
                       </YStack>

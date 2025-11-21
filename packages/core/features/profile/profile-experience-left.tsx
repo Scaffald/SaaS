@@ -1,35 +1,55 @@
-import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
-import { YStack, XStack, Text, Input, H4, TextArea, Select, Adapt, Sheet, useWindowDimensions, Spinner, Label } from 'tamagui'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Plus,
-  X,
-  ChevronDown,
-  Check,
-  CheckCircle,
-  AlertTriangle,
-} from '@tamagui/lucide-icons'
-import { formatDateRange } from './utils/date-formatting'
-import { randomUUID } from 'expo-crypto'
-import { useExperienceEdit } from './contexts/experience-edit-context'
-import {
-  experienceProfileSchema,
-  type ExperienceProfileFormData,
-  experienceProfileDefaults,
-  createNewExperienceEntry,
-  EMPLOYMENT_TYPE_OPTIONS,
-  CAREER_LEVEL_OPTIONS,
-} from './config'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, ConfirmationDialog, MonthYearPicker } from '@app/ui'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
+import {
+  UIButton as Button,
+  ConfirmationDialog,
+  CustomCheckbox,
+  DashboardWidget,
+  MonthYearPicker,
+  ResponsiveSelect,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { AlertTriangle, Check, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { H4, Input, Label, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  CAREER_LEVEL_OPTIONS,
+  createNewExperienceEntry,
+  EMPLOYMENT_TYPE_OPTIONS,
+  type ExperienceProfileFormData,
+  experienceProfileDefaults,
+  experienceProfileSchema,
+} from './config'
+
+/**
+ * Experience entry from API response
+ * Based on experienceEntrySchema from the router
+ */
+type ExperienceEntry = {
+  id?: string
+  user_id?: string
+  organization_id?: string | null
+  job_title: string
+  company_name: string
+  employment_type?: string | null
+  location?: string | object | null
+  is_remote: boolean
+  start_date?: string | null
+  end_date?: string | null
+  is_current: boolean
+  description?: string | null
+  created_at?: string
+  updated_at?: string
+}
+import { useExperienceEdit } from './contexts/experience-edit-context'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
@@ -52,46 +72,56 @@ interface SaveExperienceContext {
 export function ProfileExperienceLeft() {
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<ExperienceProfileFormData | null>(null)
-  const { width } = useWindowDimensions()
-  const isMobile = width < 640
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
   const { editingEntryId, cancelEditing } = useExperienceEdit()
+  const toast = useToastController()
 
   // Queries
-  const experienceQuery = api.profile.getExperience.useQuery()
-  const experienceSummaryQuery = api.profile.getExperienceSummary.useQuery()
+  const experienceQuery = api.profile.experience.getExperience.useQuery()
+  const experienceSummaryQuery = api.profile.experience.getExperienceSummary.useQuery()
   const utils = api.useContext()
 
   // Mutations
-  const saveExperienceMutation = api.profile.saveExperience.useMutation({
+  const saveExperienceMutation = api.profile.experience.saveExperience.useMutation({
     async onMutate(input: SaveExperienceInput): Promise<SaveExperienceContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
-        utils.profile.getExperience.cancel(),
-        utils.profile.getExperienceSummary.cancel(),
+        utils.profile.experience.getExperience.cancel(),
+        utils.profile.experience.getExperienceSummary.cancel(),
       ])
 
-      const previousExperience = utils.profile.getExperience.getData()
-      const previousSummary = utils.profile.getExperienceSummary.getData()
+      const previousExperience = utils.profile.experience.getExperience.getData()
+      const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
-      utils.profile.getExperience.setData(undefined, input.experience_entries)
-      utils.profile
-        .getExperienceSummary
-        .setData(undefined, { career_level: input.career_level ?? null })
+      utils.profile.experience.getExperience.setData(undefined, input.experience_entries)
+      utils.profile.experience.getExperienceSummary.setData(undefined, {
+        career_level: input.career_level ?? null,
+      })
 
       return { previousExperience, previousSummary }
     },
     onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
       console.error('Error saving experience:', error)
       if (context?.previousExperience) {
-        utils.profile.getExperience.setData(undefined, context.previousExperience)
+        utils.profile.experience.getExperience.setData(undefined, context.previousExperience)
       }
       if (context?.previousSummary) {
-        utils.profile.getExperienceSummary.setData(undefined, context.previousSummary)
+        utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary)
       }
       failProfileSync()
+      toast.show('Error', {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save experience. Please try again.',
+      })
+    },
+    onSuccess: () => {
+      toast.show('Experience Saved', {
+        message: 'Your work experience has been updated successfully!',
+      })
     },
     onSettled: (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
@@ -101,9 +131,10 @@ export function ProfileExperienceLeft() {
     },
   })
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')
-  const [saveBanner, setSaveBanner] = useState<{ type: 'success' | 'error'; message: string } | null>(
-    null
-  )
+  const [saveBanner, setSaveBanner] = useState<{
+    type: 'success' | 'error'
+    message: string
+  } | null>(null)
   const bannerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const buttonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -131,13 +162,12 @@ export function ProfileExperienceLeft() {
     if (experienceQuery.data && experienceSummaryQuery.data) {
       const formData = {
         career_level: experienceSummaryQuery.data.career_level || undefined,
-        // biome-ignore lint/suspicious/noExplicitAny: API response type
-        experience_entries: experienceQuery.data.map((exp: any) => {
+        experience_entries: (experienceQuery.data as ExperienceEntry[]).map((exp) => {
           // Handle location: prefer location_structured, fallback to location TEXT
           // If location is string, keep as string for backward compatibility
           // ControlledAddressForm will handle conversion to structured format on edit
-          const location = exp.location_structured || exp.location || undefined
-          
+          const location = (exp as ExperienceEntry & { location_structured?: unknown }).location_structured || exp.location || undefined
+
           // If location is a string and we need structured format, we'll let ControlledAddressForm handle it
           // For now, keep the raw location value (API already transforms it)
           return {
@@ -159,6 +189,21 @@ export function ProfileExperienceLeft() {
       originalDataRef.current = formData
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
+
+  // Browser navigation guard - prevent data loss on page close/navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = '' // Required for Chrome
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
 
   // Handle edit mode - entries are already loaded in form from API
   // When editingEntryId is set, the entry should already exist in form fields
@@ -224,9 +269,7 @@ export function ProfileExperienceLeft() {
       setSaveBanner({
         type: 'error',
         message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to save changes. Please try again.',
+          error instanceof Error ? error.message : 'Failed to save changes. Please try again.',
       })
     }
   }
@@ -301,48 +344,15 @@ export function ProfileExperienceLeft() {
               name="career_level"
               control={control}
               render={({ field }) => (
-                <Select value={field.value || ''} onValueChange={field.onChange}>
-                  <Select.Trigger iconAfter={ChevronDown}>
-                    <Select.Value placeholder="Select career level" />
-                  </Select.Trigger>
-
-                  <Adapt when={isMobile} platform="touch">
-                    <Sheet
-                      native
-                      modal
-                      dismissOnSnapToBottom
-                      animationConfig={{
-                        type: 'spring',
-                        damping: 20,
-                        mass: 1.2,
-                        stiffness: 250,
-                      }}
-                    >
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay
-                        animation="lazy"
-                        enterStyle={{ opacity: 0 }}
-                        exitStyle={{ opacity: 0 }}
-                      />
-                    </Sheet>
-                  </Adapt>
-
-                  <Select.Content>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      {CAREER_LEVEL_OPTIONS.map((level) => (
-                    <Select.Item key={level} value={level} index={0}>
-                          <Select.ItemText>{level}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                <ResponsiveSelect
+                  value={field.value || ''}
+                  onValueChange={field.onChange}
+                  placeholder="Select career level"
+                  options={CAREER_LEVEL_OPTIONS.map((level) => ({
+                    value: level,
+                    label: level,
+                  }))}
+                />
               )}
             />
           </YStack>
@@ -432,48 +442,15 @@ export function ProfileExperienceLeft() {
                     name={`experience_entries.${index}.employment_type`}
                     control={control}
                     render={({ field }) => (
-                      <Select value={field.value || ''} onValueChange={field.onChange}>
-                        <Select.Trigger iconAfter={ChevronDown}>
-                          <Select.Value placeholder="Select type" />
-                        </Select.Trigger>
-
-                        <Adapt when={isMobile} platform="touch">
-                          <Sheet
-                            native
-                            modal
-                            dismissOnSnapToBottom
-                            animationConfig={{
-                              type: 'spring',
-                              damping: 20,
-                              mass: 1.2,
-                              stiffness: 250,
-                            }}
-                          >
-                            <Sheet.Frame>
-                              <Sheet.ScrollView>
-                                <Adapt.Contents />
-                              </Sheet.ScrollView>
-                            </Sheet.Frame>
-                            <Sheet.Overlay
-                              animation="lazy"
-                              enterStyle={{ opacity: 0 }}
-                              exitStyle={{ opacity: 0 }}
-                            />
-                          </Sheet>
-                        </Adapt>
-
-                        <Select.Content>
-                          <Select.ScrollUpButton />
-                          <Select.Viewport>
-                            {EMPLOYMENT_TYPE_OPTIONS.map((type) => (
-                              <Select.Item key={type} value={type} index={0}>
-                                <Select.ItemText>{type}</Select.ItemText>
-                              </Select.Item>
-                            ))}
-                          </Select.Viewport>
-                          <Select.ScrollDownButton />
-                        </Select.Content>
-                      </Select>
+                      <ResponsiveSelect
+                        value={field.value || ''}
+                        onValueChange={field.onChange}
+                        placeholder="Select type"
+                        options={EMPLOYMENT_TYPE_OPTIONS.map((type) => ({
+                          value: type,
+                          label: type,
+                        }))}
+                      />
                     )}
                   />
                 </YStack>
@@ -636,10 +613,7 @@ export function ProfileExperienceLeft() {
               ) : (
                 <AlertTriangle size={18} color="$red10" />
               )}
-              <Text
-                fontWeight="600"
-                color={saveBanner.type === 'success' ? '$green11' : '$red11'}
-              >
+              <Text fontWeight="600" color={saveBanner.type === 'success' ? '$green11' : '$red11'}>
                 {saveBanner.message}
               </Text>
             </XStack>

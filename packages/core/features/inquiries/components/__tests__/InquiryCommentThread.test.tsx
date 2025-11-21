@@ -80,13 +80,7 @@ describe('InquiryCommentThread', () => {
   })
 
   it('submits a new comment', async () => {
-    render(
-      <InquiryCommentThread
-        inquiryId="inq-123"
-        sectionName="employment"
-        comments={[]}
-      />
-    )
+    render(<InquiryCommentThread inquiryId="inq-123" sectionName="employment" comments={[]} />)
 
     fireEvent.change(screen.getByPlaceholderText('Add a comment...'), {
       target: { value: 'Looking forward to it!' },

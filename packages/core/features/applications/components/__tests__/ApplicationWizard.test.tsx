@@ -46,7 +46,9 @@ vi.mock('../ScreeningStep', () => ({
     onAnswersChange: (answers: unknown) => void
   }) => (
     <div data-testid="screening-step">
-      <button type="button" onClick={onContinue}>Continue Screening</button>
+      <button type="button" onClick={onContinue}>
+        Continue Screening
+      </button>
       <button type="button" onClick={() => onAnswersChange({ current_location: 'New York' })}>
         Update Answers
       </button>
@@ -57,7 +59,9 @@ vi.mock('../ScreeningStep', () => ({
 vi.mock('../CustomQuestionsStep', () => ({
   CustomQuestionsStep: ({ onContinue }: { onContinue: () => void }) => (
     <div data-testid="custom-questions-step">
-      <button type="button" onClick={onContinue}>Continue Questions</button>
+      <button type="button" onClick={onContinue}>
+        Continue Questions
+      </button>
     </div>
   ),
 }))
@@ -65,7 +69,9 @@ vi.mock('../CustomQuestionsStep', () => ({
 vi.mock('../AttachmentsStep', () => ({
   AttachmentsStep: ({ onContinue }: { onContinue: () => void }) => (
     <div data-testid="attachments-step">
-      <button type="button" onClick={onContinue}>Continue Attachments</button>
+      <button type="button" onClick={onContinue}>
+        Continue Attachments
+      </button>
     </div>
   ),
 }))
@@ -73,7 +79,9 @@ vi.mock('../AttachmentsStep', () => ({
 vi.mock('../ReviewStep', () => ({
   ReviewStep: ({ onSubmit }: { onSubmit: () => void }) => (
     <div data-testid="review-step">
-      <button type="button" onClick={onSubmit}>Submit Application</button>
+      <button type="button" onClick={onSubmit}>
+        Submit Application
+      </button>
     </div>
   ),
 }))
@@ -184,4 +192,3 @@ describe('ApplicationWizard', () => {
     expect(screen.getByTestId('save-status')).toBeInTheDocument()
   })
 })
-

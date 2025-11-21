@@ -1,7 +1,6 @@
-import { useMemo } from 'react'
 import { api } from '@app/core/utils/api'
+import { useMemo } from 'react'
 import { calculateReadingTime } from '../utils/rss-parser'
-import type { NewsItem } from '../config/types'
 
 // Note: parseRSSFeed is no longer used but kept for backward compatibility
 // during migration period. It can be removed after confirming no other code uses it.

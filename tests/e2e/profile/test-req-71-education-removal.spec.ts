@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect, type Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('REQ-71: Education Entry Removal', () => {
@@ -9,17 +9,22 @@ test.describe('REQ-71: Education Entry Removal', () => {
   })
 
   // Test 1: Click remove button removes entry from UI immediately
-  test('should remove education entry from UI when remove button is clicked', async ({ page }: { page: Page }) => {
+  test('should remove education entry from UI when remove button is clicked', async ({
+    page,
+  }: {
+    page: Page
+  }) => {
     await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Look for remove buttons
-    const removeButtons = page.locator('button[aria-label*="remove" i], button:has-text("Remove"), button:has-text("×")')
+    const removeButtons = page.locator(
+      'button[aria-label*="remove" i], button:has-text("Remove"), button:has-text("×")'
+    )
     const removeButtonCount = await removeButtons.count()
 
     if (removeButtonCount > 0) {
@@ -39,7 +44,7 @@ test.describe('REQ-71: Education Entry Removal', () => {
       expect(afterCount).toBeLessThanOrEqual(initialCount)
     } else {
       // If no remove buttons, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
@@ -49,10 +54,9 @@ test.describe('REQ-71: Education Entry Removal', () => {
     await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Find remove button
     const removeButtons = page.locator('button[aria-label*="remove" i], button:has-text("Remove")')
@@ -69,11 +73,11 @@ test.describe('REQ-71: Education Entry Removal', () => {
       await page.waitForTimeout(2000)
 
       // Should save successfully (no error)
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     } else {
       // If no remove buttons, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
@@ -83,10 +87,9 @@ test.describe('REQ-71: Education Entry Removal', () => {
     await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     // Find remove button
     const removeButtons = page.locator('button[aria-label*="remove" i], button:has-text("Remove")')
@@ -106,7 +109,7 @@ test.describe('REQ-71: Education Entry Removal', () => {
       expect(afterRemoveDisabled).toBe(false)
     } else {
       // If no remove buttons, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
@@ -116,10 +119,9 @@ test.describe('REQ-71: Education Entry Removal', () => {
     await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     const removeButtons = page.locator('button[aria-label*="remove" i], button:has-text("Remove")')
     const removeButtonCount = await removeButtons.count()
@@ -130,7 +132,9 @@ test.describe('REQ-71: Education Entry Removal', () => {
       await page.waitForTimeout(1000)
 
       // Remove last entry (if still available)
-      const remainingButtons = page.locator('button[aria-label*="remove" i], button:has-text("Remove")')
+      const remainingButtons = page.locator(
+        'button[aria-label*="remove" i], button:has-text("Remove")'
+      )
       const remainingCount = await remainingButtons.count()
 
       if (remainingCount > 0) {
@@ -138,12 +142,12 @@ test.describe('REQ-71: Education Entry Removal', () => {
         await page.waitForTimeout(1000)
 
         // Both removals should work
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
       }
     } else {
       // If not enough buttons, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
@@ -153,10 +157,9 @@ test.describe('REQ-71: Education Entry Removal', () => {
     await page.goto('/dashboard/profile/education', { waitUntil: 'domcontentloaded' })
     await page.waitForTimeout(3000)
 
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
 
     const removeButtons = page.locator('button[aria-label*="remove" i], button:has-text("Remove")')
     const removeButtonCount = await removeButtons.count()
@@ -172,14 +175,13 @@ test.describe('REQ-71: Education Entry Removal', () => {
       await page.waitForTimeout(2000)
 
       // Look for success message (toast or notification)
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       // May show success message or just complete silently
       expect(pageContent.length).toBeGreaterThan(0)
     } else {
       // If no remove buttons, just verify page loaded
-      const pageContent = await page.locator('body').textContent() || ''
+      const pageContent = (await page.locator('body').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     }
   })
 })
-

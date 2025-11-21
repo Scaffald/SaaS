@@ -30,7 +30,7 @@ vi.mock('../../StepNavigation', () => ({
   }) => {
     // Track props for debugging - use global object
     stepNavigationTracker.props.push({ canGoNext, isSaving })
-    
+
     return (
       <div data-testid="step-navigation">
         <button
@@ -138,11 +138,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Button = ({
     children,
@@ -246,7 +242,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText('Electrical Wiring')).toBeInTheDocument()
@@ -265,7 +261,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     // Wait for component to fully render
@@ -274,24 +270,27 @@ describe('SkillsStep', () => {
     })
 
     // Wait for StepNavigation to render
-    await waitFor(() => {
-      expect(screen.getByTestId('step-navigation')).toBeInTheDocument()
-    }, { timeout: 3000 })
-    
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('step-navigation')).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
+
     // Verify the mock is being used
     expect(screen.getByTestId('step-navigation')).toBeInTheDocument()
-    
+
     // Check what props were passed to StepNavigation
     const continueButton = screen.getByTestId('continue-button')
     const canGoNext = continueButton.getAttribute('data-can-go-next')
     const isSaving = continueButton.getAttribute('data-is-saving')
-    
+
     // The component initializes skills with useState(initialData?.skills ?? [])
     // So skills starts as [] immediately, hasMinimumSkills = false, canGoNext = false
     // Verify the props were passed correctly
     expect(canGoNext).toBe('false')
     expect(isSaving).toBe('false')
-    
+
     // The button should be disabled because canGoNext=false
     // disabled={!canGoNext || isSaving} = disabled={!false || false} = disabled={true}
     expect(continueButton).toBeDisabled()
@@ -316,7 +315,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const continueButton = screen.getByTestId('continue-button')
@@ -325,9 +324,7 @@ describe('SkillsStep', () => {
 
   it('displays skills from initial data', () => {
     const initialData = {
-      skills: [
-        { id: 'skill-1', name: 'Test Skill', taxonomy: 'onet' as const, proficiency: 3 },
-      ],
+      skills: [{ id: 'skill-1', name: 'Test Skill', taxonomy: 'onet' as const, proficiency: 3 }],
     }
 
     render(
@@ -340,7 +337,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText('Test Skill')).toBeInTheDocument()
@@ -369,7 +366,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const removeButton = screen.getByRole('button', { name: /remove electrical wiring/i })
@@ -401,7 +398,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText(/You've reached the maximum of 5 skills/i)).toBeInTheDocument()
@@ -427,7 +424,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     // Wait for component to render
@@ -436,21 +433,30 @@ describe('SkillsStep', () => {
     })
 
     // Wait for StepNavigation to render
-    await waitFor(() => {
-      expect(screen.getByTestId('step-navigation')).toBeInTheDocument()
-    }, { timeout: 3000 })
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('step-navigation')).toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
 
     // Wait for the continue button to appear and be enabled
     const continueButton = screen.getByTestId('continue-button')
-    await waitFor(() => {
-      expect(continueButton).not.toBeDisabled()
-    }, { timeout: 3000 })
+    await waitFor(
+      () => {
+        expect(continueButton).not.toBeDisabled()
+      },
+      { timeout: 3000 }
+    )
 
     fireEvent.click(continueButton)
 
-    await waitFor(() => {
-      expect(onContinue).toHaveBeenCalled()
-    }, { timeout: 2000 })
+    await waitFor(
+      () => {
+        expect(onContinue).toHaveBeenCalled()
+      },
+      { timeout: 2000 }
+    )
 
     expect(onContinue).toHaveBeenCalledWith({
       skills: initialData.skills,
@@ -476,7 +482,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const saveButton = screen.getByText('Save & Continue Later')
@@ -500,7 +506,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     await waitFor(() => {
@@ -535,7 +541,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const latestCall = onStepStateChange.mock.calls[onStepStateChange.mock.calls.length - 1]?.[0]
@@ -554,7 +560,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText(/Add 3 more skills/i)).toBeInTheDocument()
@@ -575,7 +581,7 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     expect(screen.getByText(/Great! Add up to 5 skills/i)).toBeInTheDocument()
@@ -599,11 +605,10 @@ describe('SkillsStep', () => {
         onSaveForLater={onSaveForLater}
         onSkip={onSkip}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const existingIds = screen.getByTestId('existing-skill-ids')
     expect(existingIds).toHaveTextContent('skill-1,skill-2')
   })
 })
-

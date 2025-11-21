@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react'
-import { useToastController } from '@tamagui/toast'
-import { AssessmentWizard, AssessmentProgress } from '@app/core/features/assessments'
+import { AssessmentProgress, AssessmentWizard } from '@app/core/features/assessments'
 import { LuscherTestStep } from '@app/core/features/personality-assessment/components/LuscherTestStep'
-import { IntroductionStep, CooldownStep, ResultsStep, ResultsSidebar } from './components'
 import { api } from '@app/core/utils/api'
 import { DashboardLayout } from '@app/ui'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
 import { Text, YStack } from 'tamagui'
+import { CooldownStep, IntroductionStep, ResultsSidebar, ResultsStep } from './components'
 
 type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
 
@@ -194,7 +194,7 @@ export function LuscherTestWizard() {
   const showResultsSidebar = effectiveCurrentStep === 'results'
 
   const railContent = (
-    <YStack gap="$5" p="$2" $gtSm={{ p: '$1' }}>
+    <YStack gap="$5" p="$2" $md={{ p: '$1' }}>
       <YStack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Weekly Pulse
@@ -282,10 +282,5 @@ export function LuscherTestWizard() {
     </AssessmentWizard>
   )
 
-  return (
-    <DashboardLayout
-      leftContent={wizardContent}
-      rightContent={railContent}
-    />
-  )
+  return <DashboardLayout leftContent={wizardContent} rightContent={railContent} />
 }

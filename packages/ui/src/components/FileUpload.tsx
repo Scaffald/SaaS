@@ -1,9 +1,8 @@
-import { useId, useMemo, useState } from 'react'
-import { YStack, XStack, Text, Button, Spinner } from 'tamagui'
-import { Upload, X, AlertCircle } from '@tamagui/lucide-icons'
-
-import { UploadSurface } from './upload/UploadSurface'
+import { AlertCircle, Upload, X } from '@tamagui/lucide-icons'
+import { type MouseEvent, type ReactNode, useId, useMemo, useState } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 import type { UploadSelection } from './upload/UploadSurface'
+import { UploadSurface } from './upload/UploadSurface'
 
 export interface FileUploadProps {
   onFileSelect: (file: File) => void
@@ -13,7 +12,7 @@ export interface FileUploadProps {
   currentFileName?: string
   disabled?: boolean
   error?: string
-  icon?: React.ReactNode
+  icon?: ReactNode
   title?: string
   description?: string
   ctaLabel?: string
@@ -88,7 +87,7 @@ export function FileUpload({
             bg={isDragActive ? '$blue2' : '$background'}
             opacity={disabled ? 0.5 : 1}
             {...(getRootProps({
-              onClick: (event: React.MouseEvent) => event.preventDefault(),
+              onClick: (event: MouseEvent) => event.preventDefault(),
             }) as Record<string, unknown>)}
           >
             <input

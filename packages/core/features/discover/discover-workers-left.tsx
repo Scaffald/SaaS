@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useAuth } from '@app/core/provider/auth/useAuth'
+import { type RefObject, useMemo } from 'react'
 import { YStack } from 'tamagui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
@@ -12,7 +13,7 @@ interface DiscoverWorkersLeftProps {
   selectedCertifications: string[]
   selectedProfileId: string | null
   onSelect: (id: string) => void
-  resultListRef: React.RefObject<ResultListRef | null>
+  resultListRef: RefObject<ResultListRef | null>
 }
 
 /**
@@ -30,11 +31,17 @@ export function DiscoverWorkersLeft({
   resultListRef,
 }: DiscoverWorkersLeftProps) {
   // Fetch workers using the same hook as the map page
-  const { data: talentProfiles = [], isLoading } = useTalentProfiles()
+  const { data: talentProfiles = [], isLoading, error, refetch } = useTalentProfiles()
+  const { session } = useAuth()
+  const currentUserId = session?.user?.id ?? null
 
   // Filter workers based on search and filters
   const filteredProfiles = useMemo(() => {
     return talentProfiles.filter((profile) => {
+      if (currentUserId && profile.id === currentUserId) {
+        return false
+      }
+
       // Search filter - matches name, title, or location
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
@@ -71,7 +78,7 @@ export function DiscoverWorkersLeft({
 
       return true
     })
-  }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications])
+  }, [talentProfiles, searchQuery, minScore, selectedSkills, selectedCertifications, currentUserId])
 
   return (
     <YStack flex={1} overflow="hidden">
@@ -81,6 +88,8 @@ export function DiscoverWorkersLeft({
         selectedId={selectedProfileId}
         onSelect={onSelect}
         isLoading={isLoading}
+        error={error ?? null}
+        onRetry={() => void refetch()}
       />
     </YStack>
   )

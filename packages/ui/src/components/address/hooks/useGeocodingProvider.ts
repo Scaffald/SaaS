@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { GeocodingProvider, ProviderConfig, UseGeocodingProviderReturn } from '../types'
 import { createFromEnvironment, createProvider } from '../providers'
+import type { ProviderConfig, UseGeocodingProviderReturn } from '../types'
 
 /**
  * Hook to create and manage a geocoding provider instance

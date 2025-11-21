@@ -16,4 +16,3 @@ declare module 'vite-tsconfig-paths' {
 declare module 'expo-web-browser' {
   export * from 'expo-web-browser/build/WebBrowser'
 }
-

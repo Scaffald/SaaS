@@ -17,38 +17,35 @@ export const paperMuted = 'hsla(45, 12%, 97%, 1)'
 export const ink = 'hsla(220, 12%, 6%, 1)' // midnight / near-black
 export const inkMuted = 'hsla(220, 10%, 12%, 1)'
 
-const tealLight = [
-  'hsla(191, 100%, 99%, 1)', // 0: Near white (backgrounds)
-  'hsla(191, 60%, 95%, 1)', // 1: Lightest teal
-  'hsla(191, 55%, 89%, 1)', // 2: Very light teal
-  'hsla(191, 52%, 81%, 1)', // 3: Light teal
-  'hsla(191, 50%, 72%, 1)', // 4: Soft teal
-  'hsla(191, 55%, 62%, 1)', // 5: Medium-light teal
-  'hsla(191, 60%, 52%, 1)', // 6: Mid teal
-  'hsla(191, 67%, 42%, 1)', // 7: PRIMARY BRAND COLOR (#239CB2)
-  'hsla(191, 72%, 35%, 1)', // 8: Dark teal
-  'hsla(191, 77%, 28%, 1)', // 9: Darker teal
-  'hsla(191, 82%, 22%, 1)', // 10: Very dark teal
-  'hsla(191, 85%, 15%, 1)', // 11: Deepest teal (text on light bg)
-]
+export const tealLight = {
+  teal1: 'hsla(191, 100%, 99%, 1)', // 0: Near white (backgrounds)
+  teal2: 'hsla(191, 60%, 95%, 1)', // 1: Lightest teal
+  teal3: 'hsla(191, 55%, 89%, 1)', // 2: Very light teal
+  teal4: 'hsla(191, 52%, 81%, 1)', // 3: Light teal
+  teal5: 'hsla(191, 50%, 72%, 1)', // 4: Soft teal
+  teal6: 'hsla(191, 55%, 62%, 1)', // 5: Medium-light teal
+  teal7: 'hsla(191, 60%, 52%, 1)', // 6: Mid teal
+  teal8: 'hsla(191, 67%, 42%, 1)', // 7: PRIMARY BRAND COLOR (#239CB2)
+  teal9: 'hsla(191, 72%, 35%, 1)', // 8: Dark teal
+  teal10: 'hsla(191, 77%, 28%, 1)', // 9: Darker teal
+  teal11: 'hsla(191, 82%, 22%, 1)', // 10: Very dark teal
+  teal12: 'hsla(191, 85%, 15%, 1)', // 11: Deepest teal (text on light bg)
+}
 
-const tealDark = [
-  'hsla(191, 30%, 8%, 1)', // 0: Dark background
-  'hsla(191, 35%, 12%, 1)', // 1: Darkest teal bg
-  'hsla(191, 38%, 18%, 1)', // 2: Very dark teal bg
-  'hsla(191, 40%, 24%, 1)', // 3: Dark teal bg
-  'hsla(191, 45%, 32%, 1)', // 4: Medium-dark teal
-  'hsla(191, 50%, 40%, 1)', // 5: Mid-dark teal
-  'hsla(191, 60%, 50%, 1)', // 6: Mid teal
-  'hsla(191, 67%, 58%, 1)', // 7: PRIMARY (lighter for dark bg)
-  'hsla(191, 70%, 68%, 1)', // 8: Light teal
-  'hsla(191, 65%, 78%, 1)', // 9: Lighter teal
-  'hsla(191, 60%, 88%, 1)', // 10: Very light teal
-  'hsla(191, 55%, 95%, 1)', // 11: Lightest teal (text on dark)
-]
-
-export const primaryLightColor = tealLight[7]
-export const primaryDarkColor = tealDark[7]
+export const tealDark = {
+  teal1: 'hsla(191, 30%, 8%, 1)', // 0: Dark background
+  teal2: 'hsla(191, 35%, 12%, 1)', // 1: Darkest teal bg
+  teal3: 'hsla(191, 38%, 18%, 1)', // 2: Very dark teal bg
+  teal4: 'hsla(191, 40%, 24%, 1)', // 3: Dark teal bg
+  teal5: 'hsla(191, 45%, 32%, 1)', // 4: Medium-dark teal
+  teal6: 'hsla(191, 50%, 40%, 1)', // 5: Mid-dark teal
+  teal7: 'hsla(191, 60%, 50%, 1)', // 6: Mid teal
+  teal8: 'hsla(191, 67%, 58%, 1)', // 7: PRIMARY (lighter for dark bg)
+  teal9: 'hsla(191, 70%, 68%, 1)', // 8: Light teal
+  teal10: 'hsla(191, 65%, 78%, 1)', // 9: Lighter teal
+  teal11: 'hsla(191, 60%, 88%, 1)', // 10: Very light teal
+  teal12: 'hsla(191, 55%, 95%, 1)', // 11: Lightest teal (text on dark)
+}
 
 export const grayLight = {
   gray1: 'hsla(42, 18%, 99%, 1)',
@@ -298,39 +295,10 @@ export const pinkDark = {
 const lightPalette = [lightTransparent, ...Object.values(grayLight), darkTransparent]
 const darkPalette = [darkTransparent, ...Object.values(grayDark), lightTransparent]
 
-/**
- * Shadow definitions for light theme
- * Subtle shadows for professional depth
- */
-const lightShadows = {
-  shadowColor: 'rgba(0,0,0,0.04)',
-  shadowColorHover: 'rgba(0,0,0,0.08)',
-  shadowColorPress: 'rgba(0,0,0,0.16)',
-
-  // Card shadows (use with cardShadows design token)
-  shadow1: 'rgba(0,0,0,0.02)',
-  shadow2: 'rgba(0,0,0,0.04)',
-  shadow3: 'rgba(0,0,0,0.08)',
-  shadow4: 'rgba(0,0,0,0.12)',
-  shadow5: 'rgba(0,0,0,0.16)',
-  shadow6: 'rgba(0,0,0,0.20)',
-}
-
-/**
- * Shadow definitions for dark theme
- * Darker, more prominent shadows
- */
-const darkShadows = {
+export const shadows = {
   shadowColor: 'rgba(0,0,0,0.3)',
   shadowColorHover: 'rgba(0,0,0,0.4)',
   shadowColorPress: 'rgba(0,0,0,0.5)',
-
-  shadow1: 'rgba(0,0,0,0.2)',
-  shadow2: 'rgba(0,0,0,0.3)',
-  shadow3: 'rgba(0,0,0,0.4)',
-  shadow4: 'rgba(0,0,0,0.5)',
-  shadow5: 'rgba(0,0,0,0.6)',
-  shadow6: 'rgba(0,0,0,0.7)',
 }
 
 /**
@@ -359,7 +327,7 @@ const builtThemes = createThemes({
         ...purpleLight,
         ...redLight,
         ...yellowLight,
-        ...lightShadows,
+        ...shadows,
       },
       dark: {
         ...blueDark,
@@ -370,7 +338,7 @@ const builtThemes = createThemes({
         ...purpleDark,
         ...redDark,
         ...yellowDark,
-        ...darkShadows,
+        ...shadows,
       },
     },
   },
@@ -381,8 +349,8 @@ const builtThemes = createThemes({
    */
   accent: {
     palette: {
-      dark: tealDark,
-      light: tealLight,
+      dark: Object.values(tealDark),
+      light: Object.values(tealLight),
     },
   },
 
@@ -393,8 +361,8 @@ const builtThemes = createThemes({
   childrenThemes: {
     primary: {
       palette: {
-        dark: tealDark,
-        light: tealLight,
+        dark: Object.values(tealDark),
+        light: Object.values(tealLight),
       },
     },
     warning: {

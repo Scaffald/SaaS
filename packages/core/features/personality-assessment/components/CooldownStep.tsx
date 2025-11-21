@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
-import { Button, Text, XStack, YStack, Progress } from 'tamagui'
+import { useEffect, useState } from 'react'
+import { Button, Progress, Text, YStack } from 'tamagui'
 import {
-  getQuestions,
   getChoices,
-  type IPIPQuestion,
+  getQuestions,
   type IPIPAnswer,
   type IPIPChoice,
 } from '../lib/ipip'
@@ -46,7 +45,7 @@ export function CooldownStep({
   useEffect(() => {
     // Calculate time remaining
     const updateTimer = () => {
-      const now = new Date().getTime()
+      const now = Date.now()
       const endTime = new Date(cooldownEndTime).getTime()
       const remaining = Math.max(0, Math.ceil((endTime - now) / 1000))
 
@@ -109,12 +108,7 @@ export function CooldownStep({
       {/* Cooldown Timer */}
       <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
         <YStack gap="$2" items="center">
-          <Text
-            fontSize="$6"
-            fontWeight="600"
-            color="$color12"
-            style={{ textAlign: 'center' }}
-          >
+          <Text fontSize="$6" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             Cooldown Period
           </Text>
           <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
@@ -132,12 +126,7 @@ export function CooldownStep({
       {/* IPIP Questions Section */}
       <YStack gap="$4">
         <YStack gap="$2" items="center">
-          <Text
-            fontSize="$5"
-            fontWeight="600"
-            color="$color12"
-            style={{ textAlign: 'center' }}
-          >
+          <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             While you wait, answer some personality questions
           </Text>
           <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>

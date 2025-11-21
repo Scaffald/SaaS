@@ -1,126 +1,126 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { Database } from "../../_shared/database.types.ts";
+import type { Database } from '../../_shared/database.types.ts'
 
-type DbClient = SupabaseClient<Database>;
-type UserSkillRow = Database["core"]["Tables"]["user_skills"]["Row"];
-type MasterformatRow = Database["data"]["Tables"]["masterformat"]["Row"];
-type OnetOccupationRow = Database["onet"]["Tables"]["occupation_data"]["Row"];
-type TradeRow = Database["data"]["Tables"]["trades"]["Row"];
+type DbClient = SupabaseClient<Database>
+type UserSkillRow = Database['core']['Tables']['user_skills']['Row']
+type MasterformatRow = Database['data']['Tables']['masterformat']['Row']
+type OnetOccupationRow = Database['onet']['Tables']['occupation_data']['Row']
+type TradeRow = Database['data']['Tables']['trades']['Row']
 
 export interface EnrichedUserSkill {
-  id: string;
-  taxonomy: "csi" | "onet";
-  csiSkillId: string | null;
-  onetOccupationId: string | null;
-  tradeId: string | null;
-  tradeSlug: string | null;
-  tradeName: string | null;
-  name: string;
-  code: string | null;
-  displayCode: string | null;
-  label: string;
-  taxonomyLabel: "CSI MasterFormat" | "O*NET Occupation";
-  description: string | null;
-  proficiency: number;
-  yearsExperience: number | null;
-  verified: boolean;
-  verifiedAt: string | null;
-  createdAt: string;
-  metadata: Record<string, unknown> | null;
+  id: string
+  taxonomy: 'csi' | 'onet'
+  csiSkillId: string | null
+  onetOccupationId: string | null
+  tradeId: string | null
+  tradeSlug: string | null
+  tradeName: string | null
+  name: string
+  code: string | null
+  displayCode: string | null
+  label: string
+  taxonomyLabel: 'CSI MasterFormat' | 'O*NET Occupation'
+  description: string | null
+  proficiency: number
+  yearsExperience: number | null
+  verified: boolean
+  verifiedAt: string | null
+  createdAt: string
+  metadata: Record<string, unknown> | null
 }
 
-const UNKNOWN_CSI_LABEL = "Unknown CSI Skill";
-const UNKNOWN_ONET_LABEL = "Unknown Occupation";
+const UNKNOWN_CSI_LABEL = 'Unknown CSI Skill'
+const UNKNOWN_ONET_LABEL = 'Unknown Occupation'
 
-const UNKNOWN_DESCRIPTION = "Metadata not available for this skill.";
+const UNKNOWN_DESCRIPTION = 'Metadata not available for this skill.'
 
 function normaliseOnetCode(code: string | null | undefined): string {
-  if (!code) return "";
-  return code.trim();
+  if (!code) return ''
+  return code.trim()
 }
 
 export async function enrichUserSkills(
   supabase: DbClient,
-  skills: UserSkillRow[] | null | undefined,
+  skills: UserSkillRow[] | null | undefined
 ): Promise<EnrichedUserSkill[]> {
   if (!skills || skills.length === 0) {
-    return [];
+    return []
   }
 
   const csiIds = skills
-    .filter((skill) => skill.skill_taxonomy === "csi" && skill.csi_skill_id)
-    .map((skill) => skill.csi_skill_id as string);
+    .filter((skill) => skill.skill_taxonomy === 'csi' && skill.csi_skill_id)
+    .map((skill) => skill.csi_skill_id as string)
 
   const onetIds = skills
-    .filter((skill) => skill.skill_taxonomy === "onet" && skill.onet_occupation_id)
-    .map((skill) => normaliseOnetCode(skill.onet_occupation_id));
+    .filter((skill) => skill.skill_taxonomy === 'onet' && skill.onet_occupation_id)
+    .map((skill) => normaliseOnetCode(skill.onet_occupation_id))
 
   const tradeIds = skills
     .map((skill) => skill.trade_id)
-    .filter((value): value is string => typeof value === "string");
+    .filter((value): value is string => typeof value === 'string')
 
   const [csiResult, onetResult] = await Promise.all([
     csiIds.length > 0
       ? supabase
-        .schema("data")
-        .from("masterformat")
-        .select("id, code_key, code_display, name, depth")
-        .in("id", csiIds)
+          .schema('data')
+          .from('masterformat')
+          .select('id, code_key, code_display, name, depth')
+          .in('id', csiIds)
       : Promise.resolve({ data: [] as MasterformatRow[], error: null }),
     onetIds.length > 0
       ? supabase
-        .schema("onet")
-        .from("occupation_data")
-        .select("onetsoc_code, title, description")
-        .in("onetsoc_code", onetIds)
+          .schema('onet')
+          .from('occupation_data')
+          .select('onetsoc_code, title, description')
+          .in('onetsoc_code', onetIds)
       : Promise.resolve({ data: [] as OnetOccupationRow[], error: null }),
-  ]);
+  ])
 
   if (csiResult.error) {
-    throw new Error(`Failed to load CSI skills: ${csiResult.error.message}`);
+    throw new Error(`Failed to load CSI skills: ${csiResult.error.message}`)
   }
 
   if (onetResult.error) {
-    throw new Error(`Failed to load O*NET occupations: ${onetResult.error.message}`);
+    throw new Error(`Failed to load O*NET occupations: ${onetResult.error.message}`)
   }
 
   const csiMap = new Map<string, MasterformatRow>(
-    (csiResult.data ?? []).map((row) => [row.id, row]),
-  );
+    (csiResult.data ?? []).map((row) => [row.id, row])
+  )
 
   const onetMap = new Map<string, OnetOccupationRow>(
-    (onetResult.data ?? []).map((row) => [normaliseOnetCode(row.onetsoc_code), row]),
-  );
+    (onetResult.data ?? []).map((row) => [normaliseOnetCode(row.onetsoc_code), row])
+  )
 
-  const tradeMap = new Map<string, TradeRow>();
+  const tradeMap = new Map<string, TradeRow>()
   if (tradeIds.length > 0) {
     const { data: tradeRows, error: tradeError } = await supabase
-      .schema("data")
-      .from("trades")
-      .select("id, slug, name")
-      .in("id", tradeIds);
+      .schema('data')
+      .from('trades')
+      .select('id, slug, name')
+      .in('id', tradeIds)
 
     if (tradeError) {
-      throw new Error(`Failed to load trades: ${tradeError.message}`);
+      throw new Error(`Failed to load trades: ${tradeError.message}`)
     }
 
     for (const trade of tradeRows ?? []) {
       if (trade?.id) {
-        tradeMap.set(trade.id, trade);
+        tradeMap.set(trade.id, trade)
       }
     }
   }
 
   return skills.map((skill) => {
-    const taxonomy = skill.skill_taxonomy === "csi" ? "csi" : "onet";
-    const trade = skill.trade_id ? tradeMap.get(skill.trade_id) ?? null : null;
+    const taxonomy = skill.skill_taxonomy === 'csi' ? 'csi' : 'onet'
+    const trade = skill.trade_id ? (tradeMap.get(skill.trade_id) ?? null) : null
 
-    if (taxonomy === "csi") {
-      const csi = csiMap.get(skill.csi_skill_id ?? "");
-      const name = csi?.name ?? UNKNOWN_CSI_LABEL;
-      const displayCode = csi?.code_display ?? null;
-      const label = displayCode ? `${displayCode} · ${name}` : name;
+    if (taxonomy === 'csi') {
+      const csi = csiMap.get(skill.csi_skill_id ?? '')
+      const name = csi?.name ?? UNKNOWN_CSI_LABEL
+      const displayCode = csi?.code_display ?? null
+      const label = displayCode ? `${displayCode} · ${name}` : name
 
       return {
         id: skill.id,
@@ -134,7 +134,7 @@ export async function enrichUserSkills(
         code: csi?.code_key ?? null,
         displayCode,
         label,
-        taxonomyLabel: "CSI MasterFormat",
+        taxonomyLabel: 'CSI MasterFormat',
         description: csi ? `CSI division depth ${csi.depth ?? 0}` : UNKNOWN_DESCRIPTION,
         proficiency: skill.proficiency_level ?? 0,
         yearsExperience: skill.years_experience ?? null,
@@ -142,13 +142,13 @@ export async function enrichUserSkills(
         verifiedAt: skill.verified_at ?? null,
         createdAt: skill.created_at,
         metadata: (skill.metadata ?? {}) as Record<string, unknown>,
-      };
+      }
     }
 
-    const onet = onetMap.get(normaliseOnetCode(skill.onet_occupation_id));
-    const name = onet?.title ?? UNKNOWN_ONET_LABEL;
-    const code = onet?.onetsoc_code ? normaliseOnetCode(onet.onetsoc_code) : null;
-    const label = code ? `${code} · ${name}` : name;
+    const onet = onetMap.get(normaliseOnetCode(skill.onet_occupation_id))
+    const name = onet?.title ?? UNKNOWN_ONET_LABEL
+    const code = onet?.onetsoc_code ? normaliseOnetCode(onet.onetsoc_code) : null
+    const label = code ? `${code} · ${name}` : name
 
     return {
       id: skill.id,
@@ -162,7 +162,7 @@ export async function enrichUserSkills(
       code,
       displayCode: code,
       label,
-      taxonomyLabel: "O*NET Occupation",
+      taxonomyLabel: 'O*NET Occupation',
       description: onet?.description ?? UNKNOWN_DESCRIPTION,
       proficiency: skill.proficiency_level ?? 0,
       yearsExperience: skill.years_experience ?? null,
@@ -170,7 +170,6 @@ export async function enrichUserSkills(
       verifiedAt: skill.verified_at ?? null,
       createdAt: skill.created_at,
       metadata: (skill.metadata ?? {}) as Record<string, unknown>,
-    };
-  });
+    }
+  })
 }
-

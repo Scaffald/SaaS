@@ -1,10 +1,10 @@
-import { YStack, XStack, Text, Button, Separator, Spinner } from 'tamagui'
-import { ResponsiveModal, extractPlainText } from '@app/ui'
-import { MapPin, Building2, Users, Briefcase, ExternalLink } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { extractPlainText, ResponsiveModal } from '@app/ui'
+import { Briefcase, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
+import { useRouter } from 'expo-router'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface OrganizationPreviewModalProps {
   organizationId: string | null
@@ -37,14 +37,14 @@ export function OrganizationPreviewModal({
 
   const handleViewJobs = () => {
     // Navigate to jobs view with organization filter
-    router.push(`${ROUTES.DASHBOARD_DISCOVER_JOBS.path}?org=${organizationId}`)
+    router.push(`${ROUTES.DASHBOARD.DISCOVER.JOBS.path}?org=${organizationId}`)
     onOpenChange(false)
   }
 
   const handleOpenInNewTab = () => {
     if (!organizationId) return
     if (typeof window !== 'undefined') {
-      window.open(`${ROUTES.DASHBOARD_DISCOVER_JOBS.path}?org=${organizationId}`, '_blank')
+      window.open(`${ROUTES.DASHBOARD.DISCOVER.JOBS.path}?org=${organizationId}`, '_blank')
     }
   }
 

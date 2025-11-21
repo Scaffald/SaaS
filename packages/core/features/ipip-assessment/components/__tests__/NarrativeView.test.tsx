@@ -1,12 +1,12 @@
-import { render, screen } from '@testing-library/react'
 import type {
   IPIPResult,
   IPIPResults,
-  IPIPScores,
   IPIPScore,
+  IPIPScores,
 } from '@app/core/features/personality-assessment/lib/ipip'
-import type { NormalizedScores } from '../../utils/scoreNormalizer'
+import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
+import type { NormalizedScores } from '../../utils/scoreNormalizer'
 
 import { NarrativeView } from '../NarrativeView'
 
@@ -93,7 +93,7 @@ describe('NarrativeView', () => {
         narratives={null}
         isComplete={false}
         completedDomains={0}
-      />,
+      />
     )
 
     expect(screen.getByText(/No results available yet/i)).toBeVisible()
@@ -107,16 +107,12 @@ describe('NarrativeView', () => {
         narratives={narratives}
         isComplete={false}
         completedDomains={1}
-      />,
+      />
     )
 
     expect(screen.getByText('Your Personality Profile')).toBeVisible()
-    expect(
-      screen.getByText(/Your high level of Agreeableness indicates empathy/i),
-    ).toBeVisible()
+    expect(screen.getByText(/Your high level of Agreeableness indicates empathy/i)).toBeVisible()
     expect(screen.getByText(/Complete Your Assessment/i)).toBeVisible()
     expect(screen.getAllByText(/Incomplete/i).length).toBeGreaterThan(0)
   })
 })
-
-

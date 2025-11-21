@@ -1,25 +1,25 @@
-export { BarChart, type BarChartProps, type BarChartData } from './BarChart'
-export { LineChart, type LineChartProps, type LineChartData } from './LineChart'
-export { PieChart, type PieChartProps, type PieChartData } from './PieChart'
-export {
-  StackedBarChart,
-  type StackedBarChartProps,
-  type StackedBarChartData,
-} from './StackedBarChart'
-export {
-  RadarChart,
-  type RadarChartProps,
-  type RadarChartData,
-  type RadarChartDataset,
-} from './RadarChart'
+export { BarChart, type BarChartData, type BarChartProps } from './BarChart'
+export { LineChart, type LineChartData, type LineChartProps } from './LineChart'
+export { PieChart, type PieChartData, type PieChartProps } from './PieChart'
 export {
   PopulationPyramid,
-  type PopulationPyramidProps,
   type PopulationPyramidData,
+  type PopulationPyramidProps,
 } from './PopulationPyramid'
 export {
+  RadarChart,
+  type RadarChartData,
+  type RadarChartDataset,
+  type RadarChartProps,
+} from './RadarChart'
+export {
   SkillsChart,
-  type SkillsChartProps,
-  type SkillsChartDataset,
   type SkillsChartDataItem,
+  type SkillsChartDataset,
+  type SkillsChartProps,
 } from './SkillsChart'
+export {
+  StackedBarChart,
+  type StackedBarChartData,
+  type StackedBarChartProps,
+} from './StackedBarChart'

@@ -1,6 +1,7 @@
 // @ts-expect-error - SiteBoundaryDrawer is not exported from @app/ui, using direct import
-import { SiteBoundaryDrawer } from '@app/ui/src/components/map/SiteBoundaryDrawer'
+
 import type { Boundary } from '@app/schemas'
+import { SiteBoundaryDrawer } from '@app/ui/src/components/map/SiteBoundaryDrawer'
 
 export interface SiteBoundaryEditorProps {
   boundary?: Boundary
@@ -25,4 +26,3 @@ export function SiteBoundaryEditor({
     />
   )
 }
-

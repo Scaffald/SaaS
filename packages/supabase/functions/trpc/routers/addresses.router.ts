@@ -1,25 +1,22 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-import { protectedProcedure, t } from "../middleware.ts";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Helper function to geocode address using Mapbox API
  */
-async function geocodeAddress(
-  address: {
-    street?: string;
-    city?: string;
-    state?: string;
-    zip?: string;
-    country?: string;
-  },
-): Promise<{ latitude: number; longitude: number } | null> {
-  const mapboxToken = Deno.env.get("EXPO_PUBLIC_MAPBOX_TOKEN") ||
-    Deno.env.get("MAPBOX_TOKEN");
+async function geocodeAddress(address: {
+  street?: string
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
+}): Promise<{ latitude: number; longitude: number } | null> {
+  const mapboxToken = Deno.env.get('EXPO_PUBLIC_MAPBOX_TOKEN') || Deno.env.get('MAPBOX_TOKEN')
 
   if (!mapboxToken) {
-    console.warn("Mapbox token not found, skipping geocoding");
-    return null;
+    console.warn('Mapbox token not found, skipping geocoding')
+    return null
   }
 
   // Build address string
@@ -29,41 +26,38 @@ async function geocodeAddress(
     address.state,
     address.zip,
     address.country,
-  ].filter(Boolean);
+  ].filter(Boolean)
 
   if (addressParts.length === 0) {
-    return null;
+    return null
   }
 
-  const addressString = addressParts.join(", ");
-  const encodedAddress = encodeURIComponent(addressString);
+  const addressString = addressParts.join(', ')
+  const encodedAddress = encodeURIComponent(addressString)
 
   try {
-    const url =
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&types=address,place`;
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${mapboxToken}&limit=1&types=address,place`
 
-    const response = await fetch(url);
+    const response = await fetch(url)
 
     if (!response.ok) {
-      console.warn(
-        `Mapbox API error: ${response.status} for address "${addressString}"`,
-      );
-      return null;
+      console.warn(`Mapbox API error: ${response.status} for address "${addressString}"`)
+      return null
     }
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (data.features && data.features.length > 0) {
-      const feature = data.features[0];
-      const [longitude, latitude] = feature.center; // Mapbox returns [lng, lat]
+      const feature = data.features[0]
+      const [longitude, latitude] = feature.center // Mapbox returns [lng, lat]
 
-      return { latitude, longitude };
+      return { latitude, longitude }
     }
 
-    return null;
+    return null
   } catch (error) {
-    console.error("Geocoding error:", error);
-    return null;
+    console.error('Geocoding error:', error)
+    return null
   }
 }
 
@@ -89,25 +83,25 @@ export const addressesRouter = t.router({
           longitude: z.number().optional(),
         }),
         property_type: z
-          .enum(["residential", "commercial", "industrial", "mixed_use", "other"])
+          .enum(['residential', 'commercial', 'industrial', 'mixed_use', 'other'])
           .optional(),
         metadata: z.record(z.any()).optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
       // Geocode address if coordinates not provided
-      let latitude = input.address.latitude;
-      let longitude = input.address.longitude;
+      let latitude = input.address.latitude
+      let longitude = input.address.longitude
 
       if (!latitude || !longitude) {
-        const geocoded = await geocodeAddress(input.address);
+        const geocoded = await geocodeAddress(input.address)
         if (geocoded) {
-          latitude = geocoded.latitude;
-          longitude = geocoded.longitude;
+          latitude = geocoded.latitude
+          longitude = geocoded.longitude
         }
       }
 
@@ -116,19 +110,19 @@ export const addressesRouter = t.router({
         ...input.address,
         latitude: latitude || null,
         longitude: longitude || null,
-      };
+      }
 
       // Create PostGIS point if coordinates available
-      let geoPoint: string | null = null;
+      let geoPoint: string | null = null
       if (latitude && longitude) {
-        geoPoint = `POINT(${longitude} ${latitude})`; // PostGIS uses lng lat order
+        geoPoint = `POINT(${longitude} ${latitude})` // PostGIS uses lng lat order
       }
 
       // Note: Containment validation will be done after address is created
 
       const { data: address, error } = await ctx.supabase
-        .schema("core")
-        .from("addresses")
+        .schema('core')
+        .from('addresses')
         .insert({
           site_id: input.site_id || null,
           address: addressData,
@@ -137,36 +131,37 @@ export const addressesRouter = t.router({
           metadata: input.metadata || {},
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to create address: ${error.message}`,
-        });
+        })
       }
 
       // Validate containment after creation if site_id provided
-      let containmentWarning = null;
+      let containmentWarning = null
       if (input.site_id && address.id && geoPoint) {
-        const { data: isContained, error: containmentError } = await ctx.supabase
-          .rpc("validate_address_in_site", {
+        const { data: isContained, error: containmentError } = await ctx.supabase.rpc(
+          'validate_address_in_site',
+          {
             p_address_id: address.id,
             p_site_id: input.site_id,
-          });
+          }
+        )
 
         if (containmentError) {
-          console.warn("Containment validation error:", containmentError);
+          console.warn('Containment validation error:', containmentError)
         } else if (!isContained) {
-          containmentWarning =
-            "Property address may be outside site boundary. Please verify.";
+          containmentWarning = 'Property address may be outside site boundary. Please verify.'
         }
       }
 
       return {
         address,
         containmentWarning,
-      };
+      }
     }),
 
   /**
@@ -189,49 +184,48 @@ export const addressesRouter = t.router({
           })
           .optional(),
         property_type: z
-          .enum(["residential", "commercial", "industrial", "mixed_use", "other"])
+          .enum(['residential', 'commercial', 'industrial', 'mixed_use', 'other'])
           .optional()
           .nullable(),
         metadata: z.record(z.any()).optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user) {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
       }
 
-      const { id, ...updates } = input;
+      const { id, ...updates } = input
 
-      const updateData: any = {};
-      if (updates.site_id !== undefined) updateData.site_id = updates.site_id;
-      if (updates.property_type !== undefined)
-        updateData.property_type = updates.property_type;
-      if (updates.metadata !== undefined) updateData.metadata = updates.metadata;
+      const updateData: any = {}
+      if (updates.site_id !== undefined) updateData.site_id = updates.site_id
+      if (updates.property_type !== undefined) updateData.property_type = updates.property_type
+      if (updates.metadata !== undefined) updateData.metadata = updates.metadata
 
       // Handle address update and re-geocode if needed
       if (updates.address) {
         // Get existing address to merge
         const { data: existing } = await ctx.supabase
-          .schema("core")
-          .from("addresses")
-          .select("address")
-          .eq("id", id)
-          .single();
+          .schema('core')
+          .from('addresses')
+          .select('address')
+          .eq('id', id)
+          .single()
 
         const mergedAddress = {
           ...(existing?.address || {}),
           ...updates.address,
-        };
+        }
 
         // Re-geocode if address changed and no coordinates provided
-        let latitude = mergedAddress.latitude;
-        let longitude = mergedAddress.longitude;
+        let latitude = mergedAddress.latitude
+        let longitude = mergedAddress.longitude
 
         if (!latitude || !longitude) {
-          const geocoded = await geocodeAddress(mergedAddress);
+          const geocoded = await geocodeAddress(mergedAddress)
           if (geocoded) {
-            latitude = geocoded.latitude;
-            longitude = geocoded.longitude;
+            latitude = geocoded.latitude
+            longitude = geocoded.longitude
           }
         }
 
@@ -239,51 +233,50 @@ export const addressesRouter = t.router({
           ...mergedAddress,
           latitude: latitude || null,
           longitude: longitude || null,
-        };
+        }
 
         // Update PostGIS point
         if (latitude && longitude) {
-          updateData.geo = `POINT(${longitude} ${latitude})`;
+          updateData.geo = `POINT(${longitude} ${latitude})`
         } else {
-          updateData.geo = null;
+          updateData.geo = null
         }
       }
 
       const { data: address, error } = await ctx.supabase
-        .schema("core")
-        .from("addresses")
+        .schema('core')
+        .from('addresses')
         .update(updateData)
-        .eq("id", id)
+        .eq('id', id)
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to update address: ${error.message}`,
-        });
+        })
       }
 
       // Validate containment if site_id provided
-      let containmentWarning = null;
+      let containmentWarning = null
       if (updateData.site_id && address.id) {
         const { data: isContained } = await ctx.supabase
-          .rpc("validate_address_in_site", {
+          .rpc('validate_address_in_site', {
             p_address_id: address.id,
             p_site_id: updateData.site_id,
           })
-          .catch(() => ({ data: false }));
+          .catch(() => ({ data: false }))
 
         if (!isContained) {
-          containmentWarning =
-            "Property address may be outside site boundary. Please verify.";
+          containmentWarning = 'Property address may be outside site boundary. Please verify.'
         }
       }
 
       return {
         address,
         containmentWarning,
-      };
+      }
     }),
 
   /**
@@ -293,8 +286,8 @@ export const addressesRouter = t.router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { data: address, error } = await ctx.supabase
-        .schema("core")
-        .from("addresses")
+        .schema('core')
+        .from('addresses')
         .select(
           `
           *,
@@ -313,19 +306,19 @@ export const addressesRouter = t.router({
               organization_id
             )
           )
-        `,
+        `
         )
-        .eq("id", input.id)
-        .single();
+        .eq('id', input.id)
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "NOT_FOUND",
+          code: 'NOT_FOUND',
           message: `Address not found: ${error.message}`,
-        });
+        })
       }
 
-      return { address };
+      return { address }
     }),
 
   /**
@@ -336,23 +329,21 @@ export const addressesRouter = t.router({
       z.object({
         address_id: z.string().uuid(),
         site_id: z.string().uuid(),
-      }),
+      })
     )
     .query(async ({ ctx, input }) => {
-      const { data: isContained, error } = await ctx.supabase
-        .rpc("validate_address_in_site", {
-          p_address_id: input.address_id,
-          p_site_id: input.site_id,
-        });
+      const { data: isContained, error } = await ctx.supabase.rpc('validate_address_in_site', {
+        p_address_id: input.address_id,
+        p_site_id: input.site_id,
+      })
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to validate containment: ${error.message}`,
-        });
+        })
       }
 
-      return { contained: isContained || false };
+      return { contained: isContained || false }
     }),
-});
-
+})

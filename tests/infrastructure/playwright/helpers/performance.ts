@@ -93,7 +93,9 @@ export async function measureWebVitals(page: Page): Promise<WebVitalsMetrics> {
       }).observe({ entryTypes: ['layout-shift'] })
 
       // Measure TTFB (Time to First Byte)
-      const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+      const navigationEntry = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming
       if (navigationEntry) {
         metrics.ttfb = Math.round(navigationEntry.responseStart - navigationEntry.requestStart)
       }
@@ -164,7 +166,9 @@ export async function assertWebVitalsTargets(
  */
 export async function measurePageLoadTime(page: Page): Promise<number> {
   return await page.evaluate(() => {
-    const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+    const navigationEntry = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming
     return navigationEntry
       ? Math.round(navigationEntry.loadEventEnd - navigationEntry.fetchStart)
       : 0
@@ -205,10 +209,7 @@ export async function measureResourceLoadTime(
  */
 export async function waitForPageInteractive(page: Page, timeout = 30000): Promise<void> {
   await page.waitForLoadState('networkidle', { timeout })
-  await page.waitForFunction(
-    () => document.readyState === 'complete',
-    { timeout }
-  )
+  await page.waitForFunction(() => document.readyState === 'complete', { timeout })
 }
 
 /**
@@ -216,11 +217,11 @@ export async function waitForPageInteractive(page: Page, timeout = 30000): Promi
  */
 export async function measureJSExecutionTime(page: Page): Promise<number> {
   return await page.evaluate(() => {
-    const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+    const navigationEntry = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming
     if (navigationEntry) {
-      return Math.round(
-        navigationEntry.domInteractive - navigationEntry.fetchStart
-      )
+      return Math.round(navigationEntry.domInteractive - navigationEntry.fetchStart)
     }
     return 0
   })
@@ -244,4 +245,3 @@ export async function getPerformanceSummary(page: Page): Promise<{
     jsExecutionTime,
   }
 }
-

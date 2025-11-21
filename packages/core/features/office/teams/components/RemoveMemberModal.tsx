@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
-import { Button, Text, TextArea, YStack } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-
 import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Button, Text, TextArea, YStack } from 'tamagui'
 
 interface RemoveMemberModalProps {
   open: boolean
@@ -112,5 +111,3 @@ export function RemoveMemberModal({
     </ResponsiveModal>
   )
 }
-
-

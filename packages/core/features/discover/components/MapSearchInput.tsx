@@ -1,8 +1,8 @@
-import { useState, useCallback, useMemo } from 'react'
-import { XStack, AnimatePresence, YStack, Text } from 'tamagui'
-import { AddressAutocomplete } from '@app/ui'
 import type { AddressResult } from '@app/ui'
+import { AddressAutocomplete } from '@app/ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
+import { useCallback, useMemo, useState } from 'react'
+import { AnimatePresence, Text, XStack, YStack } from 'tamagui'
 
 type MapSearchInputProps = {
   isVisible: boolean
@@ -77,7 +77,7 @@ export const MapSearchInput = ({
           t={100}
           l={0}
           $sm={{ r: 0 }}
-          $gtSm={{ r: railVisible ? 440 : 0 }}
+          $md={{ r: railVisible ? 440 : 0 }}
           z={60}
           animation="quick"
           enterStyle={{ opacity: 0, y: 20 }}

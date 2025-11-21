@@ -1,32 +1,30 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import {
+  TEAM_INVITATION_POLICIES,
+  TEAM_VISIBILITIES,
+  teamCreateBaseSchema,
+  teamCreateSchema,
+  teamRoleKeySchema,
+} from '@app/schemas'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'expo-router'
+import { ResponsiveSelect } from '@app/ui'
 import {
   Button,
   Input,
   Label,
   ScrollView,
-  Select,
   Spinner,
   Text,
   TextArea,
   XStack,
   YStack,
 } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
 import type { z } from 'zod'
-
-import {
-  teamCreateBaseSchema,
-  teamCreateSchema,
-  teamRoleKeySchema,
-  TEAM_INVITATION_POLICIES,
-  TEAM_VISIBILITIES,
-} from '@app/schemas'
-import { ROUTES } from '@app/core/constants/routes'
-import { api } from '@app/core/utils/api'
 
 import { useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
@@ -171,7 +169,7 @@ export function TeamForm({
     onSuccess: (data: { team?: unknown }) => {
       toast.show('Success', { message: 'Team created successfully' })
       onSuccess?.(data?.team)
-      router.push(ROUTES.OFFICE_CMS_TEAMS.path)
+      router.push(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: Error) => {
       toast.show('Error', { message: error.message || 'Failed to create team' })
@@ -182,7 +180,7 @@ export function TeamForm({
     onSuccess: (data: { team?: unknown }) => {
       toast.show('Success', { message: 'Team updated successfully' })
       onSuccess?.(data?.team)
-      router.push(ROUTES.OFFICE_CMS_TEAMS.path)
+      router.push(ROUTES.OFFICE.CMS.TEAMS.path)
     },
     onError: (error: Error) => {
       toast.show('Error', { message: error.message || 'Failed to update team' })
@@ -331,28 +329,17 @@ export function TeamForm({
         render={({ field }) => (
           <YStack gap="$2">
             <Label>Visibility</Label>
-            <Select value={field.value} onValueChange={field.onChange} disablePreventBodyScroll>
-              <Select.Trigger iconAfter={ChevronDown} testID="team-form-visibility">
-                <Select.Value placeholder="Select visibility" />
-              </Select.Trigger>
-              <Select.Content zIndex={200000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Visibility options</Select.Label>
-                    {visibilityOptions.map((option, index) => (
-                      <Select.Item key={option.value} value={option.value} index={index}>
-                        <Select.ItemText>{option.label}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+            <ResponsiveSelect
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder="Select visibility"
+              label="Visibility"
+              testID="team-form-visibility"
+              options={visibilityOptions.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+            />
             {errors.visibility && (
               <Text color="$red10" fontSize="$2">
                 {errors.visibility.message}
@@ -368,28 +355,17 @@ export function TeamForm({
         render={({ field }) => (
           <YStack gap="$2">
             <Label>Invitation Policy</Label>
-            <Select value={field.value} onValueChange={field.onChange} disablePreventBodyScroll>
-              <Select.Trigger iconAfter={ChevronDown} testID="team-form-invitation-policy">
-                <Select.Value placeholder="Select invitation policy" />
-              </Select.Trigger>
-              <Select.Content zIndex={200000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Invitation policy</Select.Label>
-                    {invitationPolicyOptions.map((option, index) => (
-                      <Select.Item key={option.value} value={option.value} index={index}>
-                        <Select.ItemText>{option.label}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+            <ResponsiveSelect
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder="Select invitation policy"
+              label="Invitation Policy"
+              testID="team-form-invitation-policy"
+              options={invitationPolicyOptions.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+            />
             {errors.invitationPolicy && (
               <Text color="$red10" fontSize="$2">
                 {errors.invitationPolicy.message}
@@ -428,7 +404,7 @@ export function TeamForm({
         render={({ field }) => (
           <YStack gap="$2">
             <Label>Default Role</Label>
-            <Select
+            <ResponsiveSelect
               value={field.value ?? ''}
               onValueChange={(value) => {
                 field.onChange(value)
@@ -437,29 +413,14 @@ export function TeamForm({
                   setValue('defaultRoleKey', role.key, { shouldValidate: true })
                 }
               }}
-              disablePreventBodyScroll
-            >
-              <Select.Trigger iconAfter={ChevronDown} testID="team-form-default-role">
-                <Select.Value placeholder="Select default role" />
-              </Select.Trigger>
-              <Select.Content zIndex={200000}>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  <Select.Group>
-                    <Select.Label>Team roles</Select.Label>
-                    {roles.map((role, index) => (
-                      <Select.Item key={role.id} value={role.id} index={index}>
-                        <Select.ItemText>{role.name}</Select.ItemText>
-                        <Select.ItemIndicator>
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+              placeholder="Select default role"
+              label="Default Role"
+              testID="team-form-default-role"
+              options={roles.map((role) => ({
+                value: role.id,
+                label: role.name,
+              }))}
+            />
             {errors.defaultRoleId && (
               <Text color="$red10" fontSize="$2">
                 {errors.defaultRoleId.message as string}

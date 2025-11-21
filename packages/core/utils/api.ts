@@ -1,16 +1,15 @@
+import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
+import type { AppRouter } from "@app/supabase/client-types";
 import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
-import { Platform } from "react-native";
-import type { AppRouter } from "@app/supabase/client-types";
 import { observable } from "@trpc/server/observable";
-
-import { getBaseUrl } from "./getBaseUrl";
-import { supabase } from "./supabase/client";
+import { Platform } from "react-native";
 import { clearAllAuthStorage } from "./auth/clearAuthStorage";
-import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
+import { supabase } from "./supabase/client";
 // Create tRPC React client with proper typing from shared supabase package
-// biome-ignore lint/suspicious/noExplicitAny: Required for cross-environment tRPC compatibility
-export const api = createTRPCReact<AppRouter>() as any;
+// Note: AppRouter is a placeholder type to avoid importing Deno-specific code
+// The actual router types are provided at runtime
+export const api = createTRPCReact<AppRouter>();
 
 // Custom error handling link for session validation
 const sessionValidationLink: TRPCLink<AppRouter> = () => {
@@ -21,8 +20,7 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
         error: async (err) => {
           // Check if this is an UNAUTHORIZED error indicating invalid session
           if (
-            err instanceof TRPCClientError &&
-            err.data?.code === "UNAUTHORIZED"
+            err instanceof TRPCClientError && err.data?.code === "UNAUTHORIZED"
           ) {
             console.log(
               "[tRPC] UNAUTHORIZED error detected - invalid or expired session",
@@ -51,8 +49,7 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
 };
 
 export const createTrpcClient = () =>
-  // biome-ignore lint/suspicious/noExplicitAny: Required for tRPC router compatibility
-  (api as any).createClient({
+  api.createClient({
     links: [
       // Error handling link - detects invalid sessions and signs out
       // This prevents stale sessions after DB resets from causing issues

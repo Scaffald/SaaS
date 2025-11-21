@@ -1,7 +1,7 @@
+import { Button, Input, ResponsiveSelect, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
+import { Plus, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch, Button } from '@app/ui'
-import { Adapt, Sheet, Select, Switch, Card, Label } from 'tamagui'
-import { Plus, X, Check } from '@tamagui/lucide-icons'
+import { Card, Label, Switch } from 'tamagui'
 
 interface CapabilityQuestion {
   name: string
@@ -68,8 +68,13 @@ export function ApplicationProcessSection({
     if (!newQuestion.label || !newQuestion.type) return
 
     // Generate name from label if not provided
-    let name = newQuestion.name || newQuestion.label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')
-    
+    let name =
+      newQuestion.name ||
+      newQuestion.label
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
+
     // Check if name already exists and make it unique
     const existingNames = (localState.inquiry_capability_questions || []).map((q) => q.name)
     if (existingNames.includes(name)) {
@@ -81,7 +86,7 @@ export function ApplicationProcessSection({
       }
       name = uniqueName
     }
-    
+
     const question: CapabilityQuestion = {
       name,
       label: newQuestion.label,
@@ -92,7 +97,7 @@ export function ApplicationProcessSection({
 
     const updated = [...(localState.inquiry_capability_questions || []), question]
     handleChange('inquiry_capability_questions', updated)
-    
+
     setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
     setShowAddQuestionModal(false)
   }
@@ -205,50 +210,47 @@ export function ApplicationProcessSection({
         </YStack>
 
         {/* Existing Questions */}
-        {localState.inquiry_capability_questions && localState.inquiry_capability_questions.length > 0 && (
-          <YStack gap="$2">
-            {localState.inquiry_capability_questions.map((question, index) => (
-              <Card key={question.name} p="$3" gap="$2" bg="$color2">
-                <XStack justify="space-between" items="center">
-                  <YStack flex={1} gap="$1">
-                    <Text fontSize="$4" fontWeight="500">
-                      {question.label}
-                    </Text>
-                    <XStack gap="$2">
-                      <Text fontSize="$2" color="$color11">
-                        Type: {question.type}
+        {localState.inquiry_capability_questions &&
+          localState.inquiry_capability_questions.length > 0 && (
+            <YStack gap="$2">
+              {localState.inquiry_capability_questions.map((question, index) => (
+                <Card key={question.name} p="$3" gap="$2" bg="$color2">
+                  <XStack justify="space-between" items="center">
+                    <YStack flex={1} gap="$1">
+                      <Text fontSize="$4" fontWeight="500">
+                        {question.label}
                       </Text>
-                      {question.unit && (
+                      <XStack gap="$2">
                         <Text fontSize="$2" color="$color11">
-                          Unit: {question.unit}
+                          Type: {question.type}
                         </Text>
-                      )}
-                      {question.required && (
-                        <Text fontSize="$2" color="$blue10" fontWeight="600">
-                          Required
-                        </Text>
-                      )}
-                    </XStack>
-                  </YStack>
-                  <Button
-                    size="$2"
-                    variant="outlined"
-                    icon={X}
-                    onPress={() => handleRemoveQuestion(index)}
-                    aria-label="Remove question"
-                  />
-                </XStack>
-              </Card>
-            ))}
-          </YStack>
-        )}
+                        {question.unit && (
+                          <Text fontSize="$2" color="$color11">
+                            Unit: {question.unit}
+                          </Text>
+                        )}
+                        {question.required && (
+                          <Text fontSize="$2" color="$blue10" fontWeight="600">
+                            Required
+                          </Text>
+                        )}
+                      </XStack>
+                    </YStack>
+                    <Button
+                      size="$2"
+                      variant="outlined"
+                      icon={X}
+                      onPress={() => handleRemoveQuestion(index)}
+                      aria-label="Remove question"
+                    />
+                  </XStack>
+                </Card>
+              ))}
+            </YStack>
+          )}
 
         {/* Add Question Button */}
-        <Button
-          variant="outlined"
-          icon={Plus}
-          onPress={() => setShowAddQuestionModal(true)}
-        >
+        <Button variant="outlined" icon={Plus} onPress={() => setShowAddQuestionModal(true)}>
           Add Capability Question
         </Button>
 
@@ -263,8 +265,7 @@ export function ApplicationProcessSection({
             }
           }}
         >
-          <>
-            <Sheet.Frame p="$4" gap="$4">
+          <Sheet.Frame p="$4" gap="$4">
               <YStack gap="$3">
                 <Text fontSize="$6" fontWeight="600">
                   Add Capability Question
@@ -292,48 +293,21 @@ export function ApplicationProcessSection({
                 {/* Question Type */}
                 <YStack gap="$2">
                   <Label>Question Type *</Label>
-                  <Select
+                  <ResponsiveSelect
                     value={newQuestion.type || 'boolean'}
                     onValueChange={(type) =>
-                      setNewQuestion({ ...newQuestion, type: type as 'boolean' | 'number' | 'text' })
+                      setNewQuestion({
+                        ...newQuestion,
+                        type: type as 'boolean' | 'number' | 'text',
+                      })
                     }
-                  >
-                    <Select.Trigger>
-                      <Select.Value placeholder="Select type" />
-                    </Select.Trigger>
-                    <Adapt when="sm" platform="touch">
-                      <Sheet modal dismissOnSnapToBottom>
-                        <Sheet.Frame>
-                          <Sheet.ScrollView>
-                            <Adapt.Contents />
-                          </Sheet.ScrollView>
-                        </Sheet.Frame>
-                        <Sheet.Overlay />
-                      </Sheet>
-                    </Adapt>
-                    <Select.Content zIndex={200000}>
-                      <Select.Viewport>
-                        <Select.Item value="boolean" index={0}>
-                          <Select.ItemText>Yes/No</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item value="number" index={1}>
-                          <Select.ItemText>Numeric</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                        <Select.Item value="text" index={2}>
-                          <Select.ItemText>Text</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      </Select.Viewport>
-                    </Select.Content>
-                  </Select>
+                    placeholder="Select type"
+                    options={[
+                      { value: 'boolean', label: 'Yes/No' },
+                      { value: 'number', label: 'Numeric' },
+                      { value: 'text', label: 'Text' },
+                    ]}
+                  />
                 </YStack>
 
                 {/* Unit (for number type) */}
@@ -365,7 +339,13 @@ export function ApplicationProcessSection({
                     variant="outlined"
                     onPress={() => {
                       setShowAddQuestionModal(false)
-                      setNewQuestion({ name: '', label: '', type: 'boolean', unit: '', required: false })
+                      setNewQuestion({
+                        name: '',
+                        label: '',
+                        type: 'boolean',
+                        unit: '',
+                        required: false,
+                      })
                     }}
                   >
                     Cancel
@@ -381,7 +361,6 @@ export function ApplicationProcessSection({
               </YStack>
             </Sheet.Frame>
             <Sheet.Overlay />
-          </>
         </Sheet>
       </YStack>
     </YStack>

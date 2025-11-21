@@ -1,13 +1,13 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Text, Tabs, YStack } from 'tamagui'
-import { useState, useMemo } from 'react'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { NarrativeView } from '@app/core/features/ipip-assessment/components/NarrativeView'
 import { ChartView } from '@app/core/features/ipip-assessment/components/ChartView'
-import { getScore, getResults } from '@app/core/features/personality-assessment/lib/ipip'
+import { NarrativeView } from '@app/core/features/ipip-assessment/components/NarrativeView'
 import { normalizeScores } from '@app/core/features/ipip-assessment/utils/scoreNormalizer'
 import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
+import { getResults, getScore } from '@app/core/features/personality-assessment/lib/ipip'
+import { api } from '@app/core/utils/api'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useMemo, useState } from 'react'
+import { Button, Tabs, Text, YStack } from 'tamagui'
 
 /**
  * Shared IPIP Results Page Route

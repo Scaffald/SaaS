@@ -1,18 +1,8 @@
-import { useCallback, useMemo, useState } from 'react'
-import { useToastController } from '@tamagui/toast'
-import {
-  Check,
-  Edit3,
-  PackagePlus,
-  Plus,
-  RefreshCcw,
-  Shield,
-} from '@tamagui/lucide-icons'
-import { Card, Checkbox, Dialog, TextArea } from 'tamagui'
-import type { inferRouterOutputs } from '@trpc/server'
-
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
 import {
   Button,
+  Dialog,
   Input,
   ScrollView,
   Separator,
@@ -21,14 +11,15 @@ import {
   XStack,
   YStack,
 } from '@app/ui'
-import type { AppRouter } from '@app/supabase/client-types'
-import { api } from '@app/core/utils/api'
+import { Check, Edit3, PackagePlus, Plus, RefreshCcw, Shield } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useCallback, useMemo, useState } from 'react'
+import { Card, Checkbox, TextArea } from 'tamagui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
-type AdminPackageRecord =
-  RouterOutputs['backgroundChecks']['adminListPackages'][number]
-type AdminCheckTypeRecord =
-  RouterOutputs['backgroundChecks']['adminListCheckTypes'][number]
+type AdminPackageRecord = RouterOutputs['backgroundChecks']['adminListPackages'][number]
+type AdminCheckTypeRecord = RouterOutputs['backgroundChecks']['adminListCheckTypes'][number]
 
 interface PackageDialogState {
   mode: 'create' | 'edit'
@@ -121,45 +112,25 @@ export function AdminCatalogManager() {
   const toast = useToastController()
   const utils = api.useUtils()
 
-  const packagesQuery = api.backgroundChecks.adminListPackages.useQuery(
-    undefined,
-    {
-      staleTime: 60_000,
-    },
-  )
-  const checkTypesQuery = api.backgroundChecks.adminListCheckTypes.useQuery(
-    undefined,
-    {
-      staleTime: 60_000,
-    },
-  )
+  const packagesQuery = api.backgroundChecks.adminListPackages.useQuery(undefined, {
+    staleTime: 60_000,
+  })
+  const checkTypesQuery = api.backgroundChecks.adminListCheckTypes.useQuery(undefined, {
+    staleTime: 60_000,
+  })
 
   const upsertPackageMutation = api.backgroundChecks.adminUpsertPackage.useMutation()
-  const upsertCheckTypeMutation =
-    api.backgroundChecks.adminUpsertCheckType.useMutation()
-  const setPackageActiveMutation =
-    api.backgroundChecks.adminSetPackageActive.useMutation()
-  const setCheckTypeActiveMutation =
-    api.backgroundChecks.adminSetCheckTypeActive.useMutation()
+  const upsertCheckTypeMutation = api.backgroundChecks.adminUpsertCheckType.useMutation()
+  const setPackageActiveMutation = api.backgroundChecks.adminSetPackageActive.useMutation()
+  const setCheckTypeActiveMutation = api.backgroundChecks.adminSetCheckTypeActive.useMutation()
 
-  const [packageDialog, setPackageDialog] = useState<PackageDialogState | null>(
-    null,
-  )
-  const [checkTypeDialog, setCheckTypeDialog] =
-    useState<CheckTypeDialogState | null>(null)
-  const [packageForm, setPackageForm] = useState<PackageFormState>(
-    emptyPackageForm,
-  )
-  const [checkTypeForm, setCheckTypeForm] = useState<CheckTypeFormState>(
-    emptyCheckTypeForm,
-  )
-  const [selectedPackageTypeIds, setSelectedPackageTypeIds] = useState<
-    Set<string>
-  >(new Set())
+  const [packageDialog, setPackageDialog] = useState<PackageDialogState | null>(null)
+  const [checkTypeDialog, setCheckTypeDialog] = useState<CheckTypeDialogState | null>(null)
+  const [packageForm, setPackageForm] = useState<PackageFormState>(emptyPackageForm)
+  const [checkTypeForm, setCheckTypeForm] = useState<CheckTypeFormState>(emptyCheckTypeForm)
+  const [selectedPackageTypeIds, setSelectedPackageTypeIds] = useState<Set<string>>(new Set())
   const [packageFormError, setPackageFormError] = useState<string | null>(null)
-  const [checkTypeFormError, setCheckTypeFormError] = useState<string | null>(
-    null,
-  )
+  const [checkTypeFormError, setCheckTypeFormError] = useState<string | null>(null)
   const [packageToggleId, setPackageToggleId] = useState<string | null>(null)
   const [checkTypeToggleId, setCheckTypeToggleId] = useState<string | null>(null)
 
@@ -196,9 +167,7 @@ export function AdminCatalogManager() {
         platformCost: String(data.platform_cost_cents),
         retailCost: String(data.retail_cost_cents),
         estimatedCompletionDays:
-          data.estimated_completion_days != null
-            ? String(data.estimated_completion_days)
-            : '',
+          data.estimated_completion_days != null ? String(data.estimated_completion_days) : '',
         metadata: JSON.stringify(data.metadata ?? {}, null, 2),
         componentOverrides: JSON.stringify(data.component_overrides ?? [], null, 2),
         isActive: data.is_active,
@@ -212,10 +181,7 @@ export function AdminCatalogManager() {
     setPackageDialog({ mode, data })
   }
 
-  const openCheckTypeDialog = (
-    mode: 'create' | 'edit',
-    data?: AdminCheckTypeRecord,
-  ) => {
+  const openCheckTypeDialog = (mode: 'create' | 'edit', data?: AdminCheckTypeRecord) => {
     if (mode === 'edit' && data) {
       setCheckTypeForm({
         slug: data.slug,
@@ -223,21 +189,13 @@ export function AdminCatalogManager() {
         description: data.description ?? '',
         category: data.category ?? '',
         providerCode: data.provider_check_code ?? '',
-        validityDays:
-          data.validity_days != null ? String(data.validity_days) : '',
+        validityDays: data.validity_days != null ? String(data.validity_days) : '',
         platformCost: String(data.platform_cost_cents),
-        retailCost:
-          data.retail_cost_cents != null ? String(data.retail_cost_cents) : '',
+        retailCost: data.retail_cost_cents != null ? String(data.retail_cost_cents) : '',
         estimatedCompletionDays:
-          data.estimated_completion_days != null
-            ? String(data.estimated_completion_days)
-            : '',
+          data.estimated_completion_days != null ? String(data.estimated_completion_days) : '',
         requiredDocuments: data.required_documents.join(', '),
-        providerConfiguration: JSON.stringify(
-          data.provider_configuration ?? {},
-          null,
-          2,
-        ),
+        providerConfiguration: JSON.stringify(data.provider_configuration ?? {}, null, 2),
         metadata: JSON.stringify(data.metadata ?? {}, null, 2),
         isActive: data.is_active,
       })
@@ -255,10 +213,7 @@ export function AdminCatalogManager() {
     }))
   }
 
-  const handleCheckTypeFieldChange = (
-    field: keyof CheckTypeFormState,
-    value: string | boolean,
-  ) => {
+  const handleCheckTypeFieldChange = (field: keyof CheckTypeFormState, value: string | boolean) => {
     setCheckTypeForm((prev) => ({
       ...prev,
       [field]: value,
@@ -298,10 +253,7 @@ export function AdminCatalogManager() {
       setPackageFormError('Retail cost must be a non-negative number.')
       return
     }
-    if (
-      estimatedDays != null &&
-      (!Number.isFinite(estimatedDays) || estimatedDays < 0)
-    ) {
+    if (estimatedDays != null && (!Number.isFinite(estimatedDays) || estimatedDays < 0)) {
       setPackageFormError('Estimated completion days must be a positive number.')
       return
     }
@@ -335,13 +287,9 @@ export function AdminCatalogManager() {
         slug: packageForm.slug.trim(),
         display_name: packageForm.displayName.trim(),
         description:
-          packageForm.description.trim().length > 0
-            ? packageForm.description.trim()
-            : null,
+          packageForm.description.trim().length > 0 ? packageForm.description.trim() : null,
         provider_package_code:
-          packageForm.providerCode.trim().length > 0
-            ? packageForm.providerCode.trim()
-            : null,
+          packageForm.providerCode.trim().length > 0 ? packageForm.providerCode.trim() : null,
         platform_cost_cents: Math.round(platformCost),
         retail_cost_cents: Math.round(retailCost),
         estimated_completion_days: estimatedDays,
@@ -356,8 +304,7 @@ export function AdminCatalogManager() {
       })
       resetPackageDialog()
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unable to save package.'
+      const message = error instanceof Error ? error.message : 'Unable to save package.'
       toast.show('Failed to save package', { message })
       setPackageFormError(message)
     }
@@ -381,27 +328,16 @@ export function AdminCatalogManager() {
       setCheckTypeFormError('Platform cost must be a non-negative number.')
       return
     }
-    if (
-      retailCost != null &&
-      (!Number.isFinite(retailCost) || retailCost < 0)
-    ) {
+    if (retailCost != null && (!Number.isFinite(retailCost) || retailCost < 0)) {
       setCheckTypeFormError('Retail cost must be a non-negative number.')
       return
     }
-    if (
-      validityDays != null &&
-      (!Number.isFinite(validityDays) || validityDays <= 0)
-    ) {
+    if (validityDays != null && (!Number.isFinite(validityDays) || validityDays <= 0)) {
       setCheckTypeFormError('Validity days must be a positive number.')
       return
     }
-    if (
-      estimatedDays != null &&
-      (!Number.isFinite(estimatedDays) || estimatedDays < 0)
-    ) {
-      setCheckTypeFormError(
-        'Estimated completion days must be zero or a positive number.',
-      )
+    if (estimatedDays != null && (!Number.isFinite(estimatedDays) || estimatedDays < 0)) {
+      setCheckTypeFormError('Estimated completion days must be zero or a positive number.')
       return
     }
 
@@ -424,10 +360,7 @@ export function AdminCatalogManager() {
 
     try {
       providerConfiguration = checkTypeForm.providerConfiguration.trim()
-        ? (JSON.parse(checkTypeForm.providerConfiguration) as Record<
-            string,
-            unknown
-          >)
+        ? (JSON.parse(checkTypeForm.providerConfiguration) as Record<string, unknown>)
         : {}
     } catch (_error) {
       setCheckTypeFormError('Provider configuration must be valid JSON.')
@@ -438,28 +371,17 @@ export function AdminCatalogManager() {
 
     try {
       await upsertCheckTypeMutation.mutateAsync({
-        id:
-          checkTypeDialog.mode === 'edit'
-            ? checkTypeDialog.data?.id
-            : undefined,
+        id: checkTypeDialog.mode === 'edit' ? checkTypeDialog.data?.id : undefined,
         slug: checkTypeForm.slug.trim(),
         display_name: checkTypeForm.displayName.trim(),
         description:
-          checkTypeForm.description.trim().length > 0
-            ? checkTypeForm.description.trim()
-            : null,
-        category:
-          checkTypeForm.category.trim().length > 0
-            ? checkTypeForm.category.trim()
-            : null,
+          checkTypeForm.description.trim().length > 0 ? checkTypeForm.description.trim() : null,
+        category: checkTypeForm.category.trim().length > 0 ? checkTypeForm.category.trim() : null,
         provider_check_code:
-          checkTypeForm.providerCode.trim().length > 0
-            ? checkTypeForm.providerCode.trim()
-            : null,
+          checkTypeForm.providerCode.trim().length > 0 ? checkTypeForm.providerCode.trim() : null,
         validity_days: validityDays,
         platform_cost_cents: Math.round(platformCost),
-        retail_cost_cents:
-          retailCost != null ? Math.round(retailCost) : null,
+        retail_cost_cents: retailCost != null ? Math.round(retailCost) : null,
         estimated_completion_days: estimatedDays,
         required_documents: requiredDocuments,
         provider_configuration: providerConfiguration,
@@ -472,8 +394,7 @@ export function AdminCatalogManager() {
       })
       resetCheckTypeDialog()
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unable to save check type.'
+      const message = error instanceof Error ? error.message : 'Unable to save check type.'
       toast.show('Failed to save check type', { message })
       setCheckTypeFormError(message)
     }
@@ -488,15 +409,10 @@ export function AdminCatalogManager() {
       })
       await invalidateCatalog()
       toast.show('Package status updated', {
-        message: `${record.display_name} is now ${
-          record.is_active ? 'inactive' : 'active'
-        }.`,
+        message: `${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`,
       })
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unable to update package status.'
+      const message = error instanceof Error ? error.message : 'Unable to update package status.'
       toast.show('Failed to update package', { message })
     } finally {
       setPackageToggleId(null)
@@ -512,15 +428,10 @@ export function AdminCatalogManager() {
       })
       await invalidateCatalog()
       toast.show('Check type status updated', {
-        message: `${record.display_name} is now ${
-          record.is_active ? 'inactive' : 'active'
-        }.`,
+        message: `${record.display_name} is now ${record.is_active ? 'inactive' : 'active'}.`,
       })
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unable to update check type status.'
+      const message = error instanceof Error ? error.message : 'Unable to update check type status.'
       toast.show('Failed to update check type', { message })
     } finally {
       setCheckTypeToggleId(null)
@@ -529,20 +440,13 @@ export function AdminCatalogManager() {
 
   const hasCatalogData = useMemo(
     () => packages.length > 0 || checkTypes.length > 0,
-    [packages.length, checkTypes.length],
+    [packages.length, checkTypes.length]
   )
 
   return (
     <>
       <YStack gap="$4">
-        <Card
-          p="$4"
-          gap="$4"
-          bg="$color2"
-          borderColor="$borderColor"
-          borderWidth={1}
-          rounded="$5"
-        >
+        <Card p="$4" gap="$4" bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$5">
           <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
             <YStack gap="$1">
               <XStack gap="$2" items="center">
@@ -589,9 +493,7 @@ export function AdminCatalogManager() {
           ) : packages.length === 0 ? (
             <YStack gap="$2" py="$4" items="center">
               <Text fontSize="$3" color="$color10">
-                {hasCatalogData
-                  ? 'No packages match the filters.'
-                  : 'No packages configured yet.'}
+                {hasCatalogData ? 'No packages match the filters.' : 'No packages configured yet.'}
               </Text>
               <Button size="$3" onPress={() => openPackageDialog('create')}>
                 Create your first package
@@ -646,9 +548,15 @@ export function AdminCatalogManager() {
                   </XStack>
 
                   <XStack gap="$3" flexWrap="wrap">
-                    <InfoChip label="Platform cost" value={formatCurrency(pkg.platform_cost_cents)} />
+                    <InfoChip
+                      label="Platform cost"
+                      value={formatCurrency(pkg.platform_cost_cents)}
+                    />
                     <InfoChip label="Retail price" value={formatCurrency(pkg.retail_cost_cents)} />
-                    <InfoChip label="Completion target" value={formatDays(pkg.estimated_completion_days)} />
+                    <InfoChip
+                      label="Completion target"
+                      value={formatDays(pkg.estimated_completion_days)}
+                    />
                     <InfoChip label="Status" value={pkg.is_active ? 'Active' : 'Inactive'} />
                   </XStack>
 
@@ -663,8 +571,7 @@ export function AdminCatalogManager() {
                         No check types linked to this package.
                       </Text>
                     ) : (
-                      pkg.components.map(
-                        (component: AdminPackageRecord['components'][number]) => (
+                      pkg.components.map((component: AdminPackageRecord['components'][number]) => (
                         <XStack
                           key={component.id}
                           justify="space-between"
@@ -682,13 +589,18 @@ export function AdminCatalogManager() {
                             </Text>
                             <XStack gap="$2" flexWrap="wrap">
                               <InfoText label="Category" value={component.category ?? 'General'} />
-                              <InfoText label="Completion" value={formatDays(component.estimated_completion_days)} />
-                              <InfoText label="Status" value={component.is_active ? 'Active' : 'Inactive'} />
+                              <InfoText
+                                label="Completion"
+                                value={formatDays(component.estimated_completion_days)}
+                              />
+                              <InfoText
+                                label="Status"
+                                value={component.is_active ? 'Active' : 'Inactive'}
+                              />
                             </XStack>
                           </YStack>
                         </XStack>
-                        ),
-                      )
+                      ))
                     )}
                   </YStack>
                 </Card>
@@ -697,14 +609,7 @@ export function AdminCatalogManager() {
           )}
         </Card>
 
-        <Card
-          p="$4"
-          gap="$4"
-          bg="$color2"
-          borderColor="$borderColor"
-          borderWidth={1}
-          rounded="$5"
-        >
+        <Card p="$4" gap="$4" bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$5">
           <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
             <YStack gap="$1">
               <XStack gap="$2" items="center">
@@ -718,11 +623,7 @@ export function AdminCatalogManager() {
               </Text>
             </YStack>
             <XStack gap="$2" flexWrap="wrap">
-              <Button
-                size="$3"
-                icon={Plus}
-                onPress={() => openCheckTypeDialog('create')}
-              >
+              <Button size="$3" icon={Plus} onPress={() => openCheckTypeDialog('create')}>
                 New check type
               </Button>
             </XStack>
@@ -794,10 +695,19 @@ export function AdminCatalogManager() {
 
                   <XStack gap="$3" flexWrap="wrap">
                     <InfoChip label="Category" value={type.category ?? 'General'} />
-                    <InfoChip label="Platform cost" value={formatCurrency(type.platform_cost_cents)} />
+                    <InfoChip
+                      label="Platform cost"
+                      value={formatCurrency(type.platform_cost_cents)}
+                    />
                     <InfoChip label="Retail price" value={formatCurrency(type.retail_cost_cents)} />
-                    <InfoChip label="Validity" value={type.validity_days ? `${type.validity_days} days` : 'No expiry'} />
-                    <InfoChip label="Completion target" value={formatDays(type.estimated_completion_days)} />
+                    <InfoChip
+                      label="Validity"
+                      value={type.validity_days ? `${type.validity_days} days` : 'No expiry'}
+                    />
+                    <InfoChip
+                      label="Completion target"
+                      value={formatDays(type.estimated_completion_days)}
+                    />
                     <InfoChip label="Status" value={type.is_active ? 'Active' : 'Inactive'} />
                   </XStack>
 
@@ -848,16 +758,12 @@ export function AdminCatalogManager() {
                 <Input
                   placeholder="Display name"
                   value={packageForm.displayName}
-                  onChangeText={(value) =>
-                    handlePackageFieldChange('displayName', value)
-                  }
+                  onChangeText={(value) => handlePackageFieldChange('displayName', value)}
                 />
                 <TextArea
                   placeholder="Description"
                   value={packageForm.description}
-                  onChangeText={(value) =>
-                    handlePackageFieldChange('description', value)
-                  }
+                  onChangeText={(value) => handlePackageFieldChange('description', value)}
                   rows={3}
                 />
 
@@ -869,9 +775,7 @@ export function AdminCatalogManager() {
                     <Input
                       keyboardType="numeric"
                       value={packageForm.platformCost}
-                      onChangeText={(value) =>
-                        handlePackageFieldChange('platformCost', value)
-                      }
+                      onChangeText={(value) => handlePackageFieldChange('platformCost', value)}
                     />
                   </YStack>
                   <YStack flex={1}>
@@ -881,9 +785,7 @@ export function AdminCatalogManager() {
                     <Input
                       keyboardType="numeric"
                       value={packageForm.retailCost}
-                      onChangeText={(value) =>
-                        handlePackageFieldChange('retailCost', value)
-                      }
+                      onChangeText={(value) => handlePackageFieldChange('retailCost', value)}
                     />
                   </YStack>
                   <YStack flex={1}>
@@ -894,10 +796,7 @@ export function AdminCatalogManager() {
                       keyboardType="numeric"
                       value={packageForm.estimatedCompletionDays}
                       onChangeText={(value) =>
-                        handlePackageFieldChange(
-                          'estimatedCompletionDays',
-                          value,
-                        )
+                        handlePackageFieldChange('estimatedCompletionDays', value)
                       }
                     />
                   </YStack>
@@ -906,9 +805,7 @@ export function AdminCatalogManager() {
                 <Input
                   placeholder="Provider package code (optional)"
                   value={packageForm.providerCode}
-                  onChangeText={(value) =>
-                    handlePackageFieldChange('providerCode', value)
-                  }
+                  onChangeText={(value) => handlePackageFieldChange('providerCode', value)}
                   autoCapitalize="none"
                 />
 
@@ -947,10 +844,7 @@ export function AdminCatalogManager() {
                               size="$3"
                               checked={selected}
                               onCheckedChange={(value) =>
-                                handleTogglePackageType(
-                                  type.id,
-                                  value === true,
-                                )
+                                handleTogglePackageType(type.id, value === true)
                               }
                             >
                               <Checkbox.Indicator>
@@ -992,17 +886,13 @@ export function AdminCatalogManager() {
                 <TextArea
                   placeholder="Metadata (JSON)"
                   value={packageForm.metadata}
-                  onChangeText={(value) =>
-                    handlePackageFieldChange('metadata', value)
-                  }
+                  onChangeText={(value) => handlePackageFieldChange('metadata', value)}
                   rows={4}
                 />
                 <TextArea
                   placeholder="Component overrides (JSON array)"
                   value={packageForm.componentOverrides}
-                  onChangeText={(value) =>
-                    handlePackageFieldChange('componentOverrides', value)
-                  }
+                  onChangeText={(value) => handlePackageFieldChange('componentOverrides', value)}
                   rows={4}
                 />
 
@@ -1060,39 +950,29 @@ export function AdminCatalogManager() {
                 <Input
                   placeholder="Slug"
                   value={checkTypeForm.slug}
-                  onChangeText={(value) =>
-                    handleCheckTypeFieldChange('slug', value)
-                  }
+                  onChangeText={(value) => handleCheckTypeFieldChange('slug', value)}
                   autoCapitalize="none"
                 />
                 <Input
                   placeholder="Display name"
                   value={checkTypeForm.displayName}
-                  onChangeText={(value) =>
-                    handleCheckTypeFieldChange('displayName', value)
-                  }
+                  onChangeText={(value) => handleCheckTypeFieldChange('displayName', value)}
                 />
                 <TextArea
                   placeholder="Description"
                   rows={3}
                   value={checkTypeForm.description}
-                  onChangeText={(value) =>
-                    handleCheckTypeFieldChange('description', value)
-                  }
+                  onChangeText={(value) => handleCheckTypeFieldChange('description', value)}
                 />
                 <Input
                   placeholder="Category"
                   value={checkTypeForm.category}
-                  onChangeText={(value) =>
-                    handleCheckTypeFieldChange('category', value)
-                  }
+                  onChangeText={(value) => handleCheckTypeFieldChange('category', value)}
                 />
                 <Input
                   placeholder="Provider check code (optional)"
                   value={checkTypeForm.providerCode}
-                  onChangeText={(value) =>
-                    handleCheckTypeFieldChange('providerCode', value)
-                  }
+                  onChangeText={(value) => handleCheckTypeFieldChange('providerCode', value)}
                   autoCapitalize="none"
                 />
 
@@ -1104,9 +984,7 @@ export function AdminCatalogManager() {
                     <Input
                       keyboardType="numeric"
                       value={checkTypeForm.platformCost}
-                      onChangeText={(value) =>
-                        handleCheckTypeFieldChange('platformCost', value)
-                      }
+                      onChangeText={(value) => handleCheckTypeFieldChange('platformCost', value)}
                     />
                   </YStack>
                   <YStack flex={1}>
@@ -1116,9 +994,7 @@ export function AdminCatalogManager() {
                     <Input
                       keyboardType="numeric"
                       value={checkTypeForm.retailCost}
-                      onChangeText={(value) =>
-                        handleCheckTypeFieldChange('retailCost', value)
-                      }
+                      onChangeText={(value) => handleCheckTypeFieldChange('retailCost', value)}
                     />
                   </YStack>
                   <YStack flex={1}>
@@ -1128,9 +1004,7 @@ export function AdminCatalogManager() {
                     <Input
                       keyboardType="numeric"
                       value={checkTypeForm.validityDays}
-                      onChangeText={(value) =>
-                        handleCheckTypeFieldChange('validityDays', value)
-                      }
+                      onChangeText={(value) => handleCheckTypeFieldChange('validityDays', value)}
                     />
                   </YStack>
                   <YStack flex={1}>
@@ -1141,10 +1015,7 @@ export function AdminCatalogManager() {
                       keyboardType="numeric"
                       value={checkTypeForm.estimatedCompletionDays}
                       onChangeText={(value) =>
-                        handleCheckTypeFieldChange(
-                          'estimatedCompletionDays',
-                          value,
-                        )
+                        handleCheckTypeFieldChange('estimatedCompletionDays', value)
                       }
                     />
                   </YStack>
@@ -1153,9 +1024,7 @@ export function AdminCatalogManager() {
                 <TextArea
                   placeholder="Required documents (comma separated)"
                   value={checkTypeForm.requiredDocuments}
-                  onChangeText={(value) =>
-                    handleCheckTypeFieldChange('requiredDocuments', value)
-                  }
+                  onChangeText={(value) => handleCheckTypeFieldChange('requiredDocuments', value)}
                   rows={2}
                 />
 
@@ -1187,9 +1056,7 @@ export function AdminCatalogManager() {
                 <TextArea
                   placeholder="Metadata (JSON)"
                   value={checkTypeForm.metadata}
-                  onChangeText={(value) =>
-                    handleCheckTypeFieldChange('metadata', value)
-                  }
+                  onChangeText={(value) => handleCheckTypeFieldChange('metadata', value)}
                   rows={4}
                 />
 
@@ -1212,9 +1079,7 @@ export function AdminCatalogManager() {
                       void handleCheckTypeSubmit()
                     }}
                   >
-                    {upsertCheckTypeMutation.isLoading
-                      ? 'Saving…'
-                      : 'Save check type'}
+                    {upsertCheckTypeMutation.isLoading ? 'Saving…' : 'Save check type'}
                   </Button>
                 </XStack>
               </YStack>
@@ -1269,5 +1134,3 @@ function InfoText({ label, value }: InfoTextProps) {
     </XStack>
   )
 }
-
-

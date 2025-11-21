@@ -3,7 +3,7 @@
  * Tests the notification dropdown functionality in the header
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { setupAuth } from '../infrastructure/playwright/setup/auth.setup'
 
 test.describe('Notification Dropdown', () => {
@@ -47,8 +47,11 @@ test.describe('Notification Dropdown', () => {
 
     // At least one section should be visible if there are notifications
     // If no notifications, empty state should be shown
-    const hasNotifications = await page.locator('[role="menuitem"]').count() > 0
-    const hasEmptyState = await page.locator('text=No notifications').isVisible().catch(() => false)
+    const hasNotifications = (await page.locator('[role="menuitem"]').count()) > 0
+    const hasEmptyState = await page
+      .locator('text=No notifications')
+      .isVisible()
+      .catch(() => false)
 
     expect(hasNotifications || hasEmptyState).toBe(true)
   })
@@ -128,4 +131,3 @@ test.describe('Notification Dropdown', () => {
     }
   })
 })
-

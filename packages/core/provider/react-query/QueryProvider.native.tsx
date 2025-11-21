@@ -1,12 +1,12 @@
+import { api, createTrpcClient } from '@app/core/utils/api'
 import NetInfo from '@react-native-community/netinfo'
 import {
-  QueryClient,
-  QueryClientProvider as QueryClientProviderOG,
   focusManager,
   onlineManager,
+  QueryClient,
+  QueryClientProvider as QueryClientProviderOG,
 } from '@tanstack/react-query'
-import { api, createTrpcClient } from '@app/core/utils/api'
-import { useEffect, useState, type ReactNode } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import type { AppStateStatus } from 'react-native'
 import { AppState, Platform } from 'react-native'
 import { setGlobalQueryClient } from './queryClient'

@@ -22,7 +22,7 @@ export const SkeletonAvatar = ({ size = 'medium', animated = true }: SkeletonAva
       height={dimension}
       borderRadius="50%"
       animated={animated}
-      aria-busy="true"
+      aria-busy={true}
       aria-label="Loading avatar"
     />
   )

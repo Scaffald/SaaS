@@ -1,4 +1,4 @@
-import { YStack, Text, H3 } from 'tamagui'
+import { Text, YStack } from 'tamagui'
 
 /**
  * Profile Employment Right Component

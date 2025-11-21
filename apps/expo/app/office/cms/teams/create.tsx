@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { TeamForm } from '@app/core/features/office/teams'
-import { Spinner, Text, YStack, Select, Button, Label } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import type { AppRouter } from '@app/supabase/client-types'
+import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Label, Select, Spinner, Text, YStack } from 'tamagui'
 
 type OfficeOrganizationsOutput = inferRouterOutputs<AppRouter>['office']['getOrganizations']
 type OrganizationOption = OfficeOrganizationsOutput['organizations'][number]

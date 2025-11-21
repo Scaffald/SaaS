@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '@app/core/utils/api'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export interface PersonalizedBenefit {
   id: string
@@ -25,7 +25,7 @@ interface UseCompletionNudgesReturn {
 const SESSION_STORAGE_KEY = 'profile_completion_last_benefit_id'
 
 export function useCompletionNudges(): UseCompletionNudgesReturn {
-  const { data, isLoading, refetch } = api.profile.getPersonalizedBenefits.useQuery(undefined, {
+  const { data, isLoading, refetch } = api.profile.completion.getPersonalizedBenefits.useQuery(undefined, {
     staleTime: 2 * 60 * 1000,
   })
   const benefits = useMemo<PersonalizedBenefit[]>(() => data?.benefits ?? [], [data?.benefits])
@@ -70,7 +70,7 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
       const clampedIndex = Math.max(0, Math.min(index, benefits.length - 1))
       setCurrentIndex(clampedIndex)
     },
-    [benefits],
+    [benefits]
   )
 
   const currentBenefit = benefits.length > 0 ? benefits[currentIndex] : null
@@ -94,4 +94,3 @@ export function useCompletionNudges(): UseCompletionNudgesReturn {
     refetch,
   }
 }
-

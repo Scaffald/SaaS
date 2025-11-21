@@ -1,16 +1,14 @@
-import { useEffect, useMemo } from 'react'
-import { AlertTriangle } from '@tamagui/lucide-icons'
-import type { ReactNode } from 'react'
-import { Button, Separator, Text, XStack, YStack } from 'tamagui'
-
-import type { inferRouterOutputs } from '@trpc/server'
-import type { AppRouter } from '@app/supabase/client-types'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
-
+import type { AppRouter } from '@app/supabase/client-types'
+import { AlertTriangle } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { ReactNode } from 'react'
+import { useEffect, useMemo } from 'react'
+import { Button, Separator, Text, XStack, YStack } from 'tamagui'
+import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
 import { getStatusMetadata } from './status.utils'
-import { useDispute } from '../hooks/useDispute'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckSummary = RouterOutputs['backgroundChecks']['listChecks'][number]
@@ -85,7 +83,12 @@ export function DisputeBackgroundCheckContent({
           </Text>
         </YStack>
         {(renderHeaderAction?.({ isSubmitting, isUploading }) as ReactNode) ?? (
-          <Button size="$2" variant="outlined" disabled={isSubmitting || isUploading} onPress={onClose}>
+          <Button
+            size="$2"
+            variant="outlined"
+            disabled={isSubmitting || isUploading}
+            onPress={onClose}
+          >
             Close
           </Button>
         )}
@@ -149,5 +152,3 @@ export function DisputeBackgroundCheckContent({
     </YStack>
   )
 }
-
-

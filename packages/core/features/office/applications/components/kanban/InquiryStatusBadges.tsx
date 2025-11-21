@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
-import { YStack, XStack, Text } from '@app/ui'
-import { Check, MessageSquare } from '@tamagui/lucide-icons'
 import { useUser } from '@app/core/utils/useUser'
+import { Text, XStack, YStack } from '@app/ui'
+import { Check, MessageSquare } from '@tamagui/lucide-icons'
+import { useMemo } from 'react'
 
 interface InquiryStatusBadgesProps {
   inquiryData: {
@@ -20,9 +20,7 @@ interface InquiryStatusBadgesProps {
   } | null
 }
 
-export function InquiryStatusBadges({
-  inquiryData,
-}: InquiryStatusBadgesProps) {
+export function InquiryStatusBadges({ inquiryData }: InquiryStatusBadgesProps) {
   const { user: currentUser } = useUser()
 
   if (!inquiryData || !currentUser) return null
@@ -38,9 +36,7 @@ export function InquiryStatusBadges({
   // Calculate unread comments
   const unreadComments = useMemo(() => {
     return comments.filter(
-      (c) =>
-        c.sender_id !== currentUser.id &&
-        !c.read_by?.includes(currentUser.id)
+      (c) => c.sender_id !== currentUser.id && !c.read_by?.includes(currentUser.id)
     ).length
   }, [comments, currentUser.id])
 
@@ -55,14 +51,7 @@ export function InquiryStatusBadges({
     <XStack gap="$1" flexWrap="wrap" mt="$2">
       {/* Unread comments badge */}
       {unreadComments > 0 && (
-        <XStack
-          bg="$blue3"
-          px="$2"
-          py="$1"
-          rounded="$2"
-          items="center"
-          gap="$1"
-        >
+        <XStack bg="$blue3" px="$2" py="$1" rounded="$2" items="center" gap="$1">
           <MessageSquare size={12} color="$blue10" />
           <Text fontSize="$1" color="$blue10" fontWeight="500">
             {unreadComments}
@@ -72,14 +61,7 @@ export function InquiryStatusBadges({
 
       {/* All accepted badge */}
       {allAccepted && (
-        <XStack
-          bg="$green9"
-          px="$2"
-          py="$1"
-          rounded="$2"
-          items="center"
-          gap="$1"
-        >
+        <XStack bg="$green9" px="$2" py="$1" rounded="$2" items="center" gap="$1">
           <Check size={12} color="white" />
           <Text fontSize="$1" color="white" fontWeight="600">
             Check completed
@@ -125,4 +107,3 @@ export function InquiryStatusBadges({
     </XStack>
   )
 }
-

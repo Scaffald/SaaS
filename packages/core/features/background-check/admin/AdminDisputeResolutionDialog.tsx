@@ -1,10 +1,14 @@
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { AlertTriangle } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, Gavel } from '@tamagui/lucide-icons'
+import { ResponsiveSelect } from '@app/ui'
 import {
   Button,
   Dialog,
   Label,
-  Select,
   Separator,
   Spinner,
   Text,
@@ -12,11 +16,6 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
-
-import { api } from '@app/core/utils/api'
-import type { AppRouter } from '@app/supabase/client-types'
 
 const RESOLUTION_STATUSES = [
   { value: 'resolved', label: 'Resolved' },
@@ -161,14 +160,24 @@ export function AdminDisputeResolutionDialog({
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Dispute reason
                   </Text>
-                  <TextArea value={dispute.dispute_reason ?? ''} editable={false} rows={3} bg="$color2" />
+                  <TextArea
+                    value={dispute.dispute_reason ?? ''}
+                    editable={false}
+                    rows={3}
+                    bg="$color2"
+                  />
                 </YStack>
 
                 <YStack gap="$2">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Dispute details
                   </Text>
-                  <TextArea value={dispute.dispute_details ?? ''} editable={false} rows={5} bg="$color2" />
+                  <TextArea
+                    value={dispute.dispute_details ?? ''}
+                    editable={false}
+                    rows={5}
+                    bg="$color2"
+                  />
                 </YStack>
 
                 <Separator />
@@ -176,32 +185,19 @@ export function AdminDisputeResolutionDialog({
                 <YStack gap="$3">
                   <YStack gap="$1">
                     <Label htmlFor="dispute-resolution-status">Resolution</Label>
-                    <Select
+                    <ResponsiveSelect
                       id="dispute-resolution-status"
                       value={resolutionStatus}
                       onValueChange={(value) =>
                         setResolutionStatus(value as (typeof RESOLUTION_STATUSES)[number]['value'])
                       }
-                      disablePreventBodyScroll
-                    >
-                      <Select.Trigger iconAfter={Gavel}>
-                        <Select.Value placeholder="Select resolution" />
-                      </Select.Trigger>
-                      <Select.Content zIndex={200_000}>
-                        <Select.ScrollUpButton />
-                        <Select.Viewport>
-                          <Select.Group>
-                            <Select.Label>Resolution status</Select.Label>
-                            {RESOLUTION_STATUSES.map((option, index) => (
-                              <Select.Item key={option.value} value={option.value} index={index}>
-                                <Select.ItemText>{option.label}</Select.ItemText>
-                              </Select.Item>
-                            ))}
-                          </Select.Group>
-                        </Select.Viewport>
-                        <Select.ScrollDownButton />
-                      </Select.Content>
-                    </Select>
+                      placeholder="Select resolution"
+                      label="Resolution"
+                      options={RESOLUTION_STATUSES.map((option) => ({
+                        value: option.value,
+                        label: option.label,
+                      }))}
+                    />
                   </YStack>
 
                   <YStack gap="$1">
@@ -255,4 +251,3 @@ export function AdminDisputeResolutionDialog({
     </Dialog>
   )
 }
-

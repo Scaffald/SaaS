@@ -1,10 +1,10 @@
-import { useRouter, useLocalSearchParams } from 'expo-router'
-import { YStack, Text, Spinner } from 'tamagui'
-import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { CMSSlideForm } from './cms-slide-form'
+import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
+import { OfficeLayout } from '@app/ui'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Spinner, Text, YStack } from 'tamagui'
+import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSEdit() {
   const router = useRouter()
@@ -16,37 +16,40 @@ export function OfficeCMSEdit() {
   const handleSubmit = async (formData: WelcomeSlideCreate | WelcomeSlideUpdate) => {
     // In edit mode, we always have an id, so this is always WelcomeSlideUpdate
     await updateSlide.mutateAsync(formData as WelcomeSlideUpdate)
-    router.push(ROUTES.OFFICE_CMS_WELCOME.path)
+    router.push(ROUTES.OFFICE.CMS.WELCOME.path)
   }
 
   if (isLoading) {
     return (
-      <DashboardLayout
+      <OfficeLayout
+        showBreadcrumb
         leftContent={
           <YStack items="center" justify="center" flex={1}>
             <Spinner size="large" />
           </YStack>
         }
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
 
   if (!data?.slide) {
     return (
-      <DashboardLayout
+      <OfficeLayout
+        showBreadcrumb
         leftContent={
           <YStack gap="$4">
             <Text>Slide not found</Text>
           </YStack>
         }
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
 
   return (
-    <DashboardLayout
+    <OfficeLayout
+      showBreadcrumb
       leftContent={
         <YStack gap="$4">
           <CMSSlideForm
@@ -57,17 +60,15 @@ export function OfficeCMSEdit() {
         </YStack>
       }
       rightContent={
-        <QuickLinksSidebar>
-          <YStack gap="$4">
-            <Text fontSize="$5" fontWeight="bold">
-              Edit Slide
-            </Text>
-            <Text>
-              Update the slide information. Changes will be visible to users immediately if the
-              slide is active.
-            </Text>
-          </YStack>
-        </QuickLinksSidebar>
+        <YStack gap="$4">
+          <Text fontSize="$5" fontWeight="bold">
+            Edit Slide
+          </Text>
+          <Text>
+            Update the slide information. Changes will be visible to users immediately if the slide
+            is active.
+          </Text>
+        </YStack>
       }
     />
   )

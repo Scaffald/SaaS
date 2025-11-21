@@ -7,7 +7,7 @@
  */
 
 // Import the shared placeholder type that mirrors the edge router structure
-import type { AppRouter } from "./app-router-type";
+import type { AppRouter } from './app-router-type'
 
 // Re-export for client usage
-export type { AppRouter };
+export type { AppRouter }

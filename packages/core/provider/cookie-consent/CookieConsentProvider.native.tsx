@@ -1,11 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import type { ReactNode } from 'react'
 import {
   CookieConsentBanner,
-  CookieConsentProvider as UICookieConsentProvider,
   type CookieConsentStorage,
   CookiePreferencesDialog,
+  CookieConsentProvider as UICookieConsentProvider,
 } from '@app/ui'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import type { ReactNode } from 'react'
 
 const STORAGE_KEY = 'scf-cookie-consent'
 const POLICY_VERSION = '1'

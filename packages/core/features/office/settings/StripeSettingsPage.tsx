@@ -1,115 +1,110 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button, Card, Input, Paragraph, Spinner, Switch, Text, XStack, YStack } from "tamagui";
-import { useToastController } from "@tamagui/toast";
-
-import { api } from "@app/core/utils/api";
+import { api } from '@app/core/utils/api'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Card, Input, Paragraph, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
 
 function formatDate(value?: string | null): string | null {
-  if (!value) return null;
+  if (!value) return null
   try {
-    const date = new Date(value);
-    return date.toLocaleString();
+    const date = new Date(value)
+    return date.toLocaleString()
   } catch {
-    return value;
+    return value
   }
 }
 
 export function StripeSettingsPage() {
-  const toast = useToastController();
-  const utils = api.useContext();
+  const toast = useToastController()
+  const utils = api.useContext()
 
   const { data, isLoading } = api.stripeSettings.getSettings.useQuery(undefined, {
     refetchOnWindowFocus: false,
-  });
+  })
 
   const updatePublishableKey = api.stripeSettings.updatePublishableKey.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate();
-      toast.show("Success", { message: "Publishable key updated" });
+      await utils.stripeSettings.getSettings.invalidate()
+      toast.show('Success', { message: 'Publishable key updated' })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : "Failed to update publishable key";
-      toast.show("Error", { message });
+      const message = error instanceof Error ? error.message : 'Failed to update publishable key'
+      toast.show('Error', { message })
     },
-  });
+  })
 
   const updateApiKey = api.stripeSettings.updateApiKey.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate();
-      toast.show("Success", { message: "Secret key stored securely" });
+      await utils.stripeSettings.getSettings.invalidate()
+      toast.show('Success', { message: 'Secret key stored securely' })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : "Failed to store API secret";
-      toast.show("Error", { message });
+      const message = error instanceof Error ? error.message : 'Failed to store API secret'
+      toast.show('Error', { message })
     },
-  });
+  })
 
   const updateWebhookSecret = api.stripeSettings.updateWebhookSecret.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate();
-      toast.show("Success", { message: "Webhook secret stored securely" });
+      await utils.stripeSettings.getSettings.invalidate()
+      toast.show('Success', { message: 'Webhook secret stored securely' })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : "Failed to store webhook secret";
-      toast.show("Error", { message });
+      const message = error instanceof Error ? error.message : 'Failed to store webhook secret'
+      toast.show('Error', { message })
     },
-  });
+  })
 
   const updateTestMode = api.stripeSettings.updateTestMode.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate();
+      await utils.stripeSettings.getSettings.invalidate()
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : "Failed to update mode";
-      toast.show("Error", { message });
+      const message = error instanceof Error ? error.message : 'Failed to update mode'
+      toast.show('Error', { message })
     },
-  });
+  })
 
   const testConnection = api.stripeSettings.testConnection.useMutation({
     onSuccess: async () => {
-      await utils.stripeSettings.getSettings.invalidate();
-      toast.show("Success", { message: "Stripe connection verified" });
+      await utils.stripeSettings.getSettings.invalidate()
+      toast.show('Success', { message: 'Stripe connection verified' })
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : "Stripe connection test failed";
-      toast.show("Error", { message });
+      const message = error instanceof Error ? error.message : 'Stripe connection test failed'
+      toast.show('Error', { message })
     },
-  });
+  })
 
-  const [publishableKey, setPublishableKey] = useState("");
-  const [apiSecret, setApiSecret] = useState("");
-  const [webhookSecret, setWebhookSecret] = useState("");
+  const [publishableKey, setPublishableKey] = useState('')
+  const [apiSecret, setApiSecret] = useState('')
+  const [webhookSecret, setWebhookSecret] = useState('')
 
   useEffect(() => {
     if (data?.publishableKey) {
-      setPublishableKey(data.publishableKey);
+      setPublishableKey(data.publishableKey)
     }
-  }, [data?.publishableKey]);
+  }, [data?.publishableKey])
 
-  const webhookUrl = useMemo(
-    () => data?.webhookEndpointUrl ?? "",
-    [data?.webhookEndpointUrl],
-  );
+  const webhookUrl = useMemo(() => data?.webhookEndpointUrl ?? '', [data?.webhookEndpointUrl])
 
   const handleCopyWebhook = async () => {
-    if (!webhookUrl) return;
-    const canCopy = typeof navigator !== "undefined" &&
-      Boolean(navigator?.clipboard?.writeText);
+    if (!webhookUrl) return
+    const canCopy = typeof navigator !== 'undefined' && Boolean(navigator?.clipboard?.writeText)
 
     if (!canCopy) {
-      toast.show("Error", {
-        message: "Clipboard access is not available on this device.",
-      });
-      return;
+      toast.show('Error', {
+        message: 'Clipboard access is not available on this device.',
+      })
+      return
     }
 
     try {
-      await navigator.clipboard.writeText(webhookUrl);
-      toast.show("Copied", { message: "Webhook endpoint copied to clipboard" });
+      await navigator.clipboard.writeText(webhookUrl)
+      toast.show('Copied', { message: 'Webhook endpoint copied to clipboard' })
     } catch {
-      toast.show("Error", { message: "Unable to copy to clipboard" });
+      toast.show('Error', { message: 'Unable to copy to clipboard' })
     }
-  };
+  }
 
   if (isLoading) {
     return (
@@ -117,7 +112,7 @@ export function StripeSettingsPage() {
         <Spinner size="large" />
         <Text>Loading Stripe settings…</Text>
       </YStack>
-    );
+    )
   }
 
   return (
@@ -156,9 +151,10 @@ export function StripeSettingsPage() {
                 onPress={() =>
                   updatePublishableKey.mutate({
                     publishableKey,
-                  })}
+                  })
+                }
               >
-                {updatePublishableKey.isLoading ? <Spinner /> : "Save Publishable Key"}
+                {updatePublishableKey.isLoading ? <Spinner /> : 'Save Publishable Key'}
               </Button>
             </XStack>
           </YStack>
@@ -192,11 +188,11 @@ export function StripeSettingsPage() {
                   color="$color1"
                   disabled={updateApiKey.isLoading || apiSecret.length < 20}
                   onPress={() => {
-                    updateApiKey.mutate({ secret: apiSecret });
-                    setApiSecret("");
+                    updateApiKey.mutate({ secret: apiSecret })
+                    setApiSecret('')
                   }}
                 >
-                  {updateApiKey.isLoading ? <Spinner /> : "Store API Secret"}
+                  {updateApiKey.isLoading ? <Spinner /> : 'Store API Secret'}
                 </Button>
               </XStack>
               {data?.hasApiKey ? (
@@ -226,11 +222,11 @@ export function StripeSettingsPage() {
                   color="$color1"
                   disabled={updateWebhookSecret.isLoading || webhookSecret.length < 10}
                   onPress={() => {
-                    updateWebhookSecret.mutate({ secret: webhookSecret });
-                    setWebhookSecret("");
+                    updateWebhookSecret.mutate({ secret: webhookSecret })
+                    setWebhookSecret('')
                   }}
                 >
-                  {updateWebhookSecret.isLoading ? <Spinner /> : "Store Webhook Secret"}
+                  {updateWebhookSecret.isLoading ? <Spinner /> : 'Store Webhook Secret'}
                 </Button>
               </XStack>
               {data?.hasWebhookSecret ? (
@@ -280,11 +276,12 @@ export function StripeSettingsPage() {
               onCheckedChange={(checked) =>
                 updateTestMode.mutate({
                   testMode: Boolean(checked),
-                })}
+                })
+              }
             >
               <Switch.Thumb />
             </Switch>
-            <Text>{(data?.testMode ?? true) ? "Test mode" : "Live mode"}</Text>
+            <Text>{(data?.testMode ?? true) ? 'Test mode' : 'Live mode'}</Text>
           </XStack>
         </Card>
 
@@ -301,9 +298,9 @@ export function StripeSettingsPage() {
 
           <YStack gap="$2">
             <Text fontSize="$3" color="$color11">
-              Last test: {formatDate(data?.lastTestedAt) ?? "Never"}
+              Last test: {formatDate(data?.lastTestedAt) ?? 'Never'}
             </Text>
-            {data?.lastTestedStatus === "failed" && data?.lastTestedError ? (
+            {data?.lastTestedStatus === 'failed' && data?.lastTestedError ? (
               <Paragraph size="$3" color="$red10">
                 {data.lastTestedError}
               </Paragraph>
@@ -317,14 +314,13 @@ export function StripeSettingsPage() {
               disabled={testConnection.isLoading || !data?.hasApiKey}
               onPress={() => testConnection.mutate()}
             >
-              {testConnection.isLoading ? <Spinner /> : "Run Connection Test"}
+              {testConnection.isLoading ? <Spinner /> : 'Run Connection Test'}
             </Button>
           </XStack>
         </Card>
       </YStack>
     </YStack>
-  );
+  )
 }
 
-export default StripeSettingsPage;
-
+export default StripeSettingsPage

@@ -1,4 +1,4 @@
-import { XStack, YStack, Text } from '@app/ui'
+import { Text, XStack, YStack } from '@app/ui'
 
 interface ComparisonFieldProps {
   label: string
@@ -9,12 +9,7 @@ interface ComparisonFieldProps {
 
 export function ComparisonField({ label, value, isDifferent, description }: ComparisonFieldProps) {
   return (
-    <YStack
-      bg={isDifferent ? '$yellow2' : 'transparent'}
-      p="$2"
-      rounded="$2"
-      gap="$1"
-    >
+    <YStack bg={isDifferent ? '$yellow2' : 'transparent'} p="$2" rounded="$2" gap="$1">
       <XStack justify="space-between" items="center">
         <Text fontSize="$3" color="$color11">
           {label}
@@ -31,4 +26,3 @@ export function ComparisonField({ label, value, isDifferent, description }: Comp
     </YStack>
   )
 }
-

@@ -1,29 +1,37 @@
-import type React from 'react'
-import { useState, useEffect, useRef } from 'react'
-import { useWindowDimensions } from 'react-native'
-import { YStack, XStack, Text, Input, H4, AnimatePresence, Label, Spinner } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller, useController, type Control } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  api,
-  type EmploymentProfileFormData,
-  DRIVERS_LICENSE_OPTIONS,
-  MILITARY_STATUS_OPTIONS,
   AVAILABILITY_OPTIONS,
+  api,
+  DRIVERS_LICENSE_OPTIONS,
+  type EmploymentProfileFormData,
+  MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
+import {
+  UIButton as Button,
+  ConfirmationDialog,
+  CustomCheckbox,
+  DashboardWidget,
+  LocationListInput,
+  RangeSliderCard,
+  SkeletonForm,
+  ToggleCard,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Calendar, Car, Flag, MapPin, Plane, Shield } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { Platform } from 'react-native'
+import { type Control, Controller, useController, useForm } from 'react-hook-form'
+import { AnimatePresence, Input, Label, Spinner, Text, XStack, YStack } from 'tamagui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard, RangeSliderCard, ConfirmationDialog, SkeletonForm } from '@app/ui'
-import { Flag, MapPin, Plane, DollarSign, Car, Shield, Calendar } from '@tamagui/lucide-icons'
 
 type MultiSelectFieldName = 'drivers_license_classes' | 'military_status' | 'availability'
 
@@ -36,7 +44,7 @@ interface UpdateEmploymentContext {
 interface MultiSelectToggleFieldProps {
   control: Control<EmploymentProfileFormData>
   name: MultiSelectFieldName
-  icon: React.ReactNode
+  icon: ReactNode
   title: string
   description: string
   options: readonly string[]
@@ -144,23 +152,26 @@ export function ProfileEmploymentLeft() {
     data: employmentData,
     isLoading: isLoadingEmployment,
     isFetching: isFetchingEmployment,
-  } = api.profile.getEmployment.useQuery()
-  const updateEmploymentMutation = api.profile.updateEmployment.useMutation({
+  } = api.profile.employment.getEmployment.useQuery()
+  const updateEmploymentMutation = api.profile.employment.updateEmployment.useMutation({
     async onMutate(input: UpdateEmploymentInput): Promise<UpdateEmploymentContext> {
       resetProfileSyncError()
       startProfileSync()
-      await utils.profile.getEmployment.cancel()
-      const previousEmployment = utils.profile.getEmployment.getData()
-      utils.profile.getEmployment.setData(undefined, (current: EmploymentProfileFormData | undefined) => ({
-        ...(current ?? profileEmploymentDefaults),
-        ...input,
-      }))
+      await utils.profile.employment.getEmployment.cancel()
+      const previousEmployment = utils.profile.employment.getEmployment.getData()
+      utils.profile.employment.getEmployment.setData(
+        undefined,
+        (current: EmploymentProfileFormData | undefined) => ({
+          ...(current ?? profileEmploymentDefaults),
+          ...input,
+        })
+      )
       return { previousEmployment }
     },
     onError: (error: unknown, _input: UpdateEmploymentInput, context?: UpdateEmploymentContext) => {
       console.error('Error saving employment:', error)
       if (context?.previousEmployment) {
-        utils.profile.getEmployment.setData(undefined, context.previousEmployment)
+        utils.profile.employment.getEmployment.setData(undefined, context.previousEmployment)
       }
       failProfileSync()
       toast.show('Error', {
@@ -174,7 +185,7 @@ export function ProfileEmploymentLeft() {
       toast.show('Employment Updated', {
         message: 'Your employment preferences have been saved successfully!',
       })
-      await utils.profile.getEmployment.invalidate()
+      await utils.profile.employment.getEmployment.invalidate()
     },
     onSettled: async (_data: { success: boolean } | undefined, error: unknown) => {
       if (!error) {
@@ -220,7 +231,9 @@ export function ProfileEmploymentLeft() {
       return
     }
 
-    const previousSerialized = originalDataRef.current ? JSON.stringify(originalDataRef.current) : null
+    const previousSerialized = originalDataRef.current
+      ? JSON.stringify(originalDataRef.current)
+      : null
     const nextSerialized = JSON.stringify(employmentData)
 
     if (previousSerialized === nextSerialized) {
@@ -230,6 +243,26 @@ export function ProfileEmploymentLeft() {
     reset(employmentData)
     originalDataRef.current = employmentData
   }, [employmentData, isLoadingEmployment, isFetchingEmployment, reset])
+
+  // Browser navigation guard - prevent data loss on page close/navigation
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      return
+    }
+    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') {
+      return
+    }
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = '' // Required for Chrome
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
 
   const onSubmit = async (data: EmploymentProfileFormData) => {
     console.log('✅ Form submission started')
@@ -267,7 +300,7 @@ export function ProfileEmploymentLeft() {
       })
       return
     }
-    
+
     // Always set open_to_travel to true
     data.open_to_travel = true
 

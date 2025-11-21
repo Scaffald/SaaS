@@ -1,14 +1,14 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { translateError } from '@app/core/utils/errors/translateError'
+import { getBaseUrl } from '@app/core/utils/getBaseUrl'
+import { supabase } from '@app/core/utils/supabase/client'
+import { useTranslation } from '@app/core/utils/useTranslation'
+import { CheckCircle2 } from '@tamagui/lucide-icons'
+import { TRPCClientError } from '@trpc/client'
+import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { AnimatePresence, Paragraph, Spinner, View, YStack } from 'tamagui'
-import { CheckCircle2 } from '@tamagui/lucide-icons'
-import { getBaseUrl } from '@app/core/utils/getBaseUrl'
-import { router } from 'expo-router'
-import { ROUTES } from '@app/core/constants/routes'
-import { supabase } from '@app/core/utils/supabase/client'
-import { api } from '@app/core/utils/api'
-import { TRPCClientError } from '@trpc/client'
-import { useTranslation } from '@app/core/utils/useTranslation'
-import { translateError } from '@app/core/utils/errors/translateError'
 
 import { CodeConfirmation } from './CodeConfirmation'
 import { EmailHeader } from './EmailHeader'
@@ -65,7 +65,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
 
         setVerified(true)
         setCodeEntered(true)
-        router.push(ROUTES.AUTH_SUCCESS.path)
+        router.push(ROUTES.AUTH.SUCCESS.path)
       } catch (err) {
         console.error('Error during OTP verification:', err)
         setError(translateError(err))
@@ -114,7 +114,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
         overflow="hidden"
         p="$4"
         px="$3"
-        $gtSm={{ p: '$5', minW: 300 }}
+        $md={{ p: '$5', minW: 300 }}
         width="100%"
         maxW={450}
       >

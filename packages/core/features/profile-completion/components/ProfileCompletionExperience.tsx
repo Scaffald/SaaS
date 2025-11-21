@@ -1,15 +1,16 @@
+import { ROUTES } from '@app/core/constants/routes'
+import { ProfileWizard } from '@app/core/features/profile-wizard/components/ProfileWizard'
+import { api } from '@app/core/utils/api'
+import { Sheet } from '@app/ui'
+import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Sheet, Text, YStack } from 'tamagui'
+import { Button, Text, YStack } from 'tamagui'
+import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
+import { useCompletionNudges } from '../hooks/useCompletionNudges'
+import type { CompletionStatus } from '../hooks/useCompletionStatus'
+import { useCompletionStatus } from '../hooks/useCompletionStatus'
 import { EnhancedProfileCompletionWidget } from './EnhancedProfileCompletionWidget'
 import { ProfileCompletionModal } from './ProfileCompletionModal'
-import { ProfileWizard } from '@app/core/features/profile-wizard/components/ProfileWizard'
-import { useCompletionStatus } from '../hooks/useCompletionStatus'
-import type { CompletionStatus } from '../hooks/useCompletionStatus'
-import { useCompletionNudges } from '../hooks/useCompletionNudges'
-import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
-import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
-import { ROUTES } from '@app/core/constants/routes'
 
 const SESSION_MODAL_KEY = 'profile_completion_modal_dismissed'
 
@@ -25,7 +26,7 @@ export function ProfileCompletionExperience() {
     hasMultiple,
     isLoading: isBenefitLoading,
   } = useCompletionNudges()
-  const dismissNudgeMutation = api.profile.dismissNudge.useMutation()
+  const dismissNudgeMutation = api.profile.completion.dismissNudge.useMutation()
   const [isWizardOpen, setIsWizardOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'first-login' | 'progress-reminder'>(
@@ -112,7 +113,7 @@ export function ProfileCompletionExperience() {
   const handleUploadResume = useCallback(() => {
     dismissModal('opened_import_review')
     setIsWizardOpen(false)
-    router.push(ROUTES.DASHBOARD_PROFILE_IMPORT_REVIEW.path)
+    router.push(ROUTES.DASHBOARD.PROFILE.IMPORT_REVIEW.path)
   }, [dismissModal, router])
 
   const handleWizardClosed = useCallback(() => {
@@ -120,7 +121,7 @@ export function ProfileCompletionExperience() {
   }, [])
 
   const handleViewProfile = useCallback(() => {
-    router.push(ROUTES.DASHBOARD_PROFILE_GENERAL.path)
+    router.push(ROUTES.DASHBOARD.PROFILE.GENERAL.path)
   }, [router])
 
   return (

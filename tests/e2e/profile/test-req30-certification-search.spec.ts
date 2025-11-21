@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { ensureProfileComplete } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/profile'
 
@@ -13,7 +13,9 @@ test.describe('REQ-30 • Certification Search & Immediate Add', () => {
     await page.waitForSelector('text=Certifications & Credentials', { timeout: 15000 })
   })
 
-  test('groups multi-level results and adds certifications with highlight + toast', async ({ page }) => {
+  test('groups multi-level results and adds certifications with highlight + toast', async ({
+    page,
+  }) => {
     const searchInput = page.getByTestId('cert-search-input')
     await searchInput.fill('OSHA')
 
@@ -33,15 +35,21 @@ test.describe('REQ-30 • Certification Search & Immediate Add', () => {
     await targetCard.click()
 
     await expect(searchInput).toHaveValue('OSHA')
-    await expect(page.getByTestId('cert-search-card-2').filter({ hasText: cardTitle })).toHaveCount(0)
+    await expect(page.getByTestId('cert-search-card-2').filter({ hasText: cardTitle })).toHaveCount(
+      0
+    )
 
-    const toastMessage = page.getByText(new RegExp(`${escapeRegExp(cardTitle)} added successfully`, 'i'))
+    const toastMessage = page.getByText(
+      new RegExp(`${escapeRegExp(cardTitle)} added successfully`, 'i')
+    )
     await expect(toastMessage).toBeVisible()
 
     const highlightBadge = page.locator('text=✓ Added to profile').first()
     await expect(highlightBadge).toBeVisible()
 
-    const rightPanelCard = page.getByRole('button', { name: new RegExp(`^${escapeRegExp(cardTitle)}`) }).first()
+    const rightPanelCard = page
+      .getByRole('button', { name: new RegExp(`^${escapeRegExp(cardTitle)}`) })
+      .first()
     await expect(rightPanelCard).toBeVisible()
 
     // Clean up by removing the certification so the test can run repeatedly
@@ -52,4 +60,3 @@ test.describe('REQ-30 • Certification Search & Immediate Add', () => {
     }
   })
 })
-

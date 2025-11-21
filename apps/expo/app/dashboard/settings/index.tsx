@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { ComponentType } from 'react'
-import { useRouter } from 'expo-router'
-import type { Href } from 'expo-router'
-import { YStack, XStack, Text, Spinner, Separator, ScrollView, Label, Input } from 'tamagui'
-import { AlertCircle, Info, ShieldAlert, ExternalLink } from '@tamagui/lucide-icons'
-
-import { api } from '@app/core/utils/api'
-import { UIButton as Button, NotificationTag, ToggleSwitch, type NotificationItem } from '@app/ui'
 import { SiteOverlapNotification } from '@app/core/features/notifications/components/SiteOverlapNotification'
+import { api } from '@app/core/utils/api'
+import { UIButton as Button, type NotificationItem, NotificationTag, ToggleSwitch } from '@app/ui'
+import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
+import type { Href } from 'expo-router'
+import { useRouter } from 'expo-router'
+import type { ComponentType } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Input, Label, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface ApiNotification {
   id: string

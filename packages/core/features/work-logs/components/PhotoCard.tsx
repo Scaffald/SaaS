@@ -1,75 +1,56 @@
-import { useEffect, useMemo, useState } from "react";
-import { Platform } from "react-native";
+import { Edit3, Eye, EyeOff, Tag, Trash2, X } from '@tamagui/lucide-icons'
+import { useEffect, useMemo, useState } from 'react'
+import { Platform } from 'react-native'
+import { ResponsiveSelect } from '@app/ui'
 import {
-  YStack,
-  XStack,
-  Text,
   Button,
   Image,
   Input,
   Separator,
-  Spinner,
   SizableText,
+  Spinner,
+  Text,
   View,
-  Select,
-} from "tamagui";
-import {
-  Eye,
-  EyeOff,
-  Trash2,
-  Edit3,
-  Check,
-  X,
-  Tag,
-} from "@tamagui/lucide-icons";
+  XStack,
+  YStack,
+} from 'tamagui'
 
-import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from "../types/photos";
+import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 
 const PHOTO_TYPE_OPTIONS: Array<{
-  value: Exclude<WorkLogPhotoType, null>;
-  label: string;
+  value: Exclude<WorkLogPhotoType, null>
+  label: string
 }> = [
-  { value: "before", label: "Before" },
-  { value: "progress", label: "Progress" },
-  { value: "after", label: "After" },
-  { value: "general", label: "General" },
-];
+  { value: 'before', label: 'Before' },
+  { value: 'progress', label: 'Progress' },
+  { value: 'after', label: 'After' },
+  { value: 'general', label: 'General' },
+]
 
 const formatBytes = (bytes: number): string => {
-  if (!Number.isFinite(bytes)) return "0 B";
-  if (bytes === 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  const exponent = Math.min(
-    units.length - 1,
-    Math.floor(Math.log(bytes) / Math.log(1024)),
-  );
-  return `${(bytes / 1024 ** exponent).toFixed(exponent === 0 ? 0 : 1)} ${
-    units[exponent]
-  }`;
-};
+  if (!Number.isFinite(bytes)) return '0 B'
+  if (bytes === 0) return '0 B'
+  const units = ['B', 'KB', 'MB', 'GB', 'TB']
+  const exponent = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)))
+  return `${(bytes / 1024 ** exponent).toFixed(exponent === 0 ? 0 : 1)} ${units[exponent]}`
+}
 
 const formatDate = (iso: string | null): string | null => {
-  if (!iso) return null;
-  const date = new Date(iso);
+  if (!iso) return null
+  const date = new Date(iso)
   if (Number.isNaN(date.getTime())) {
-    return null;
+    return null
   }
-  return date.toLocaleString();
-};
+  return date.toLocaleString()
+}
 
 export interface PhotoCardProps {
-  photo: ResolvedWorkLogPhoto;
-  disabled?: boolean;
-  onUpdateCaption?: (photoId: string, caption: string | null) => Promise<void> | void;
-  onUpdatePhotoType?: (
-    photoId: string,
-    photoType: WorkLogPhotoType,
-  ) => Promise<void> | void;
-  onToggleVisibility?: (
-    photoId: string,
-    showOnProfile: boolean,
-  ) => Promise<void> | void;
-  onDelete?: (photoId: string) => Promise<void> | void;
+  photo: ResolvedWorkLogPhoto
+  disabled?: boolean
+  onUpdateCaption?: (photoId: string, caption: string | null) => Promise<void> | void
+  onUpdatePhotoType?: (photoId: string, photoType: WorkLogPhotoType) => Promise<void> | void
+  onToggleVisibility?: (photoId: string, showOnProfile: boolean) => Promise<void> | void
+  onDelete?: (photoId: string) => Promise<void> | void
 }
 
 export function PhotoCard({
@@ -80,75 +61,75 @@ export function PhotoCard({
   onToggleVisibility,
   onDelete,
 }: PhotoCardProps) {
-  const [isEditingCaption, setIsEditingCaption] = useState(false);
-  const [captionDraft, setCaptionDraft] = useState(photo.caption ?? "");
-  const [isSavingCaption, setIsSavingCaption] = useState(false);
-  const [, setIsUpdatingType] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const canToggleVisibility = Boolean(onToggleVisibility);
-  const canEditCaption = Boolean(onUpdateCaption);
-  const canChangeType = Boolean(onUpdatePhotoType);
-  const canDelete = Boolean(onDelete);
+  const [isEditingCaption, setIsEditingCaption] = useState(false)
+  const [captionDraft, setCaptionDraft] = useState(photo.caption ?? '')
+  const [isSavingCaption, setIsSavingCaption] = useState(false)
+  const [, setIsUpdatingType] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const canToggleVisibility = Boolean(onToggleVisibility)
+  const canEditCaption = Boolean(onUpdateCaption)
+  const canChangeType = Boolean(onUpdatePhotoType)
+  const canDelete = Boolean(onDelete)
 
   useEffect(() => {
-    setCaptionDraft(photo.caption ?? "");
-  }, [photo.caption]);
+    setCaptionDraft(photo.caption ?? '')
+  }, [photo.caption])
 
   const typeOption = useMemo(() => {
-    if (!photo.photoType) return null;
-    return PHOTO_TYPE_OPTIONS.find((option) => option.value === photo.photoType) ?? null;
-  }, [photo.photoType]);
+    if (!photo.photoType) return null
+    return PHOTO_TYPE_OPTIONS.find((option) => option.value === photo.photoType) ?? null
+  }, [photo.photoType])
 
   const handleSaveCaption = async () => {
     if (!onUpdateCaption) {
-      setIsEditingCaption(false);
-      return;
+      setIsEditingCaption(false)
+      return
     }
-    setIsSavingCaption(true);
+    setIsSavingCaption(true)
     try {
-      const nextCaption = captionDraft.trim();
-      await onUpdateCaption(photo.id, nextCaption.length ? nextCaption : null);
-      setIsEditingCaption(false);
+      const nextCaption = captionDraft.trim()
+      await onUpdateCaption(photo.id, nextCaption.length ? nextCaption : null)
+      setIsEditingCaption(false)
     } finally {
-      setIsSavingCaption(false);
+      setIsSavingCaption(false)
     }
-  };
+  }
 
   const handleCancelCaption = () => {
-    setCaptionDraft(photo.caption ?? "");
-    setIsEditingCaption(false);
-  };
+    setCaptionDraft(photo.caption ?? '')
+    setIsEditingCaption(false)
+  }
 
   const handleUpdateType = async (nextValue: WorkLogPhotoType) => {
     if (!onUpdatePhotoType) {
-      return;
+      return
     }
-    setIsUpdatingType(true);
+    setIsUpdatingType(true)
     try {
-      await onUpdatePhotoType(photo.id, nextValue);
+      await onUpdatePhotoType(photo.id, nextValue)
     } finally {
-      setIsUpdatingType(false);
+      setIsUpdatingType(false)
     }
-  };
+  }
 
   const handleToggleVisibility = async () => {
     if (!onToggleVisibility) {
-      return;
+      return
     }
-    await onToggleVisibility(photo.id, !photo.showOnProfile);
-  };
+    await onToggleVisibility(photo.id, !photo.showOnProfile)
+  }
 
   const handleDelete = async () => {
     if (!onDelete) {
-      return;
+      return
     }
-    setIsDeleting(true);
+    setIsDeleting(true)
     try {
-      await onDelete(photo.id);
+      await onDelete(photo.id)
     } finally {
-      setIsDeleting(false);
+      setIsDeleting(false)
     }
-  };
+  }
 
   return (
     <YStack
@@ -161,12 +142,7 @@ export function PhotoCard({
     >
       <View position="relative" aspectRatio={4 / 3} bg="$color3">
         {photo.signedUrl ? (
-          <Image
-            source={{ uri: photo.signedUrl }}
-            width="100%"
-            height="100%"
-            resizeMode="cover"
-          />
+          <Image source={{ uri: photo.signedUrl }} width="100%" height="100%" resizeMode="cover" />
         ) : (
           <YStack
             position="absolute"
@@ -195,7 +171,7 @@ export function PhotoCard({
           >
             <Spinner color="white" size="large" />
             <SizableText color="white" size="$3">
-              {isDeleting ? "Removing…" : "Refreshing…"}
+              {isDeleting ? 'Removing…' : 'Refreshing…'}
             </SizableText>
           </YStack>
         )}
@@ -206,7 +182,7 @@ export function PhotoCard({
           <XStack gap="$2" items="center">
             <Tag size={16} color="$color10" />
             <Text fontWeight="600" fontSize="$3">
-              {typeOption?.label ?? "Uncategorized"}
+              {typeOption?.label ?? 'Uncategorized'}
             </Text>
           </XStack>
           <XStack gap="$2">
@@ -218,11 +194,11 @@ export function PhotoCard({
                 disabled={disabled}
                 onPress={handleToggleVisibility}
               >
-                {photo.showOnProfile ? "Public" : "Private"}
+                {photo.showOnProfile ? 'Public' : 'Private'}
               </Button>
             ) : (
               <Text fontSize="$2" color="$color10">
-                {photo.showOnProfile ? "Visible on profile" : "Hidden from profile"}
+                {photo.showOnProfile ? 'Visible on profile' : 'Hidden from profile'}
               </Text>
             )}
             {canDelete ? (
@@ -274,8 +250,8 @@ export function PhotoCard({
             </YStack>
           ) : canEditCaption ? (
             <XStack gap="$2" items="center">
-              <Text flex={1} color={photo.caption ? "$color12" : "$color9"}>
-                {photo.caption ?? "No caption provided."}
+              <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
+                {photo.caption ?? 'No caption provided.'}
               </Text>
               <Button
                 size="$2"
@@ -288,8 +264,8 @@ export function PhotoCard({
               </Button>
             </XStack>
           ) : (
-            <Text flex={1} color={photo.caption ? "$color12" : "$color9"}>
-              {photo.caption ?? "No caption provided."}
+            <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
+              {photo.caption ?? 'No caption provided.'}
             </Text>
           )}
         </YStack>
@@ -301,32 +277,19 @@ export function PhotoCard({
             Photo Type
           </Text>
           {canChangeType ? (
-            <Select
-              value={(photo.photoType ?? "general") as Exclude<WorkLogPhotoType, null>}
-              onValueChange={(value) =>
-                handleUpdateType(value as WorkLogPhotoType)
-              }
-              disablePreventBodyScroll
-            >
-              <Select.Trigger width="100%" disabled={disabled}>
-                <Select.Value placeholder="Choose category" />
-              </Select.Trigger>
-              <Select.Content>
-                {PHOTO_TYPE_OPTIONS.map((option, index) => (
-                  <Select.Item
-                    key={option.value}
-                    value={option.value}
-                    index={index}
-                  >
-                    <Select.ItemText>{option.label}</Select.ItemText>
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select>
+            <ResponsiveSelect
+              value={(photo.photoType ?? 'general') as Exclude<WorkLogPhotoType, null>}
+              onValueChange={(value) => handleUpdateType(value as WorkLogPhotoType)}
+              placeholder="Choose category"
+              disabled={disabled}
+              options={PHOTO_TYPE_OPTIONS.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+              triggerProps={{ width: '100%' }}
+            />
           ) : (
-            <Text color="$color10">
-              {typeOption?.label ?? "Uncategorized"}
-            </Text>
+            <Text color="$color10">{typeOption?.label ?? 'Uncategorized'}</Text>
           )}
         </YStack>
 
@@ -341,17 +304,16 @@ export function PhotoCard({
           </Text>
           {photo.takenAt ? (
             <Text fontSize="$2" color="$color11">
-              Taken: {formatDate(photo.takenAt) ?? "Unknown"}
+              Taken: {formatDate(photo.takenAt) ?? 'Unknown'}
             </Text>
           ) : null}
           {photo.createdAt ? (
             <Text fontSize="$2" color="$color11">
-              Uploaded: {formatDate(photo.createdAt) ?? "Unknown"}
+              Uploaded: {formatDate(photo.createdAt) ?? 'Unknown'}
             </Text>
           ) : null}
         </YStack>
       </YStack>
     </YStack>
-  );
+  )
 }
-

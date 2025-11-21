@@ -1,12 +1,12 @@
-import { memo, forwardRef } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack, YStack, useMedia } from 'tamagui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { SelectableCard } from './SelectableCard'
+import { forwardRef, memo } from 'react'
+import type { TamaguiElement } from 'tamagui'
+import { Paragraph, Text, XStack, useWindowDimensions } from 'tamagui'
+import { CardBadges } from './CardBadges'
 import { CardHeader } from './CardHeader'
 import { CardMetadata } from './CardMetadata'
-import { CardBadges } from './CardBadges'
+import { SelectableCard } from './SelectableCard'
 import type { BadgeConfig, MetadataItem } from './types'
 
 /**
@@ -78,9 +78,10 @@ export const ProfileCard = memo(
       },
       forwardedRef
     ) => {
-      const media = useMedia()
-      // Use responsive numberOfLines: 3 lines on small screens, 2 lines on larger screens
-      const titleNumberOfLines = media.sm ? 3 : 2
+      // Use window dimensions for text truncation behavior
+      // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
+      const dimensions = useWindowDimensions()
+      const titleNumberOfLines = dimensions.width <= 800 ? 3 : 2
       // Build metadata items
       const metadataItems: MetadataItem[] = []
 
@@ -211,12 +212,21 @@ export const ProfileCard = memo(
                   px="$1"
                   py="$0.5"
                   rounded="$8"
-                  // @ts-expect-error - Tamagui type limitations with string union
-                  bg={badgeConfig.bg}
+                  bg={
+                    badgeConfig.bg as typeof badgeConfig.bg extends string
+                      ? typeof badgeConfig.bg
+                      : never
+                  }
                 >
                   {badgeConfig.icon}
-                  {/* @ts-expect-error - Tamagui type limitations with string union */}
-                  <Text fontSize="$1" color={badgeConfig.color}>
+                  <Text
+                    fontSize="$1"
+                    color={
+                      badgeConfig.color as typeof badgeConfig.color extends string
+                        ? typeof badgeConfig.color
+                        : never
+                    }
+                  >
                     {badgeConfig.label}
                   </Text>
                 </XStack>

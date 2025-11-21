@@ -32,10 +32,26 @@ function randomRecentDate(daysAgo = 30): Date {
  */
 export function generateRandomFirstName(): string {
   const firstNames = [
-    'Alex', 'Jordan', 'Taylor', 'Morgan', 'Casey',
-    'Riley', 'Cameron', 'Avery', 'Quinn', 'Sage',
-    'Dakota', 'Reese', 'Skyler', 'Phoenix', 'River',
-    'Rowan', 'Jamie', 'Charlie', 'Blake', 'Drew',
+    'Alex',
+    'Jordan',
+    'Taylor',
+    'Morgan',
+    'Casey',
+    'Riley',
+    'Cameron',
+    'Avery',
+    'Quinn',
+    'Sage',
+    'Dakota',
+    'Reese',
+    'Skyler',
+    'Phoenix',
+    'River',
+    'Rowan',
+    'Jamie',
+    'Charlie',
+    'Blake',
+    'Drew',
   ]
   return randomItem(firstNames)
 }
@@ -45,10 +61,26 @@ export function generateRandomFirstName(): string {
  */
 export function generateRandomLastName(): string {
   const lastNames = [
-    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones',
-    'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
-    'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
-    'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+    'Hernandez',
+    'Lopez',
+    'Gonzalez',
+    'Wilson',
+    'Anderson',
+    'Thomas',
+    'Taylor',
+    'Moore',
+    'Jackson',
+    'Martin',
   ]
   return randomItem(lastNames)
 }
@@ -99,16 +131,30 @@ export function generateRandomAddress(): {
 } {
   const streetNumber = randomInt(100, 9999)
   const streetNames = [
-    'Main St', 'Oak Ave', 'Maple Dr', 'Park Blvd', 'Cedar Ln',
-    'Pine St', 'Elm Ave', 'Washington St', 'Lake Dr', 'Hill Rd',
+    'Main St',
+    'Oak Ave',
+    'Maple Dr',
+    'Park Blvd',
+    'Cedar Ln',
+    'Pine St',
+    'Elm Ave',
+    'Washington St',
+    'Lake Dr',
+    'Hill Rd',
   ]
   const cities = [
-    'Springfield', 'Riverside', 'Fairview', 'Madison', 'Georgetown',
-    'Arlington', 'Salem', 'Franklin', 'Clinton', 'Bristol',
+    'Springfield',
+    'Riverside',
+    'Fairview',
+    'Madison',
+    'Georgetown',
+    'Arlington',
+    'Salem',
+    'Franklin',
+    'Clinton',
+    'Bristol',
   ]
-  const states = [
-    'CA', 'TX', 'FL', 'NY', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI',
-  ]
+  const states = ['CA', 'TX', 'FL', 'NY', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI']
 
   const street = `${streetNumber} ${randomItem(streetNames)}`
   const city = randomItem(cities)
@@ -196,7 +242,7 @@ export function generateJobData(): {
     'High School Diploma',
     'Trade School Certificate',
     'Associate Degree',
-    'Bachelor\'s Degree',
+    "Bachelor's Degree",
   ]
 
   const title = randomItem(titles)
@@ -268,18 +314,9 @@ export function generateUserProfileData(): {
   industry: string
 } {
   const { firstName, lastName } = generateRandomName()
-  const userTypes = randomItem([
-    ['worker'],
-    ['employer'],
-    ['worker', 'employer'],
-  ])
+  const userTypes = randomItem([['worker'], ['employer'], ['worker', 'employer']])
 
-  const industries = [
-    'Construction',
-    'Manufacturing',
-    'Transportation',
-    'Energy & Utilities',
-  ]
+  const industries = ['Construction', 'Manufacturing', 'Transportation', 'Energy & Utilities']
 
   return {
     firstName,
@@ -323,7 +360,9 @@ export function generateApplicationData(): {
 /**
  * Generate test data based on entity type
  */
-export function generateTestData(type: 'organization' | 'job' | 'university' | 'user' | 'application') {
+export function generateTestData(
+  type: 'organization' | 'job' | 'university' | 'user' | 'application'
+) {
   switch (type) {
     case 'organization':
       return generateOrganizationData()
@@ -378,5 +417,5 @@ export function generateTimestamp(): string {
  */
 export async function randomDelay(minMs = 100, maxMs = 500): Promise<void> {
   const delay = randomInt(minMs, maxMs)
-  await new Promise(resolve => setTimeout(resolve, delay))
+  await new Promise((resolve) => setTimeout(resolve, delay))
 }

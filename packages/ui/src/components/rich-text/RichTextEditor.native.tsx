@@ -1,5 +1,5 @@
-import type React from 'react'
-import { TextArea, YStack, Text, XStack } from 'tamagui'
+import type { FC } from 'react'
+import { Text, TextArea, XStack, YStack } from 'tamagui'
 import type { RichTextEditorProps } from './types'
 import { extractPlainText, plainTextToTipTap } from './utils/sanitize'
 
@@ -9,7 +9,7 @@ import { extractPlainText, plainTextToTipTap } from './utils/sanitize'
  * Native currently renders a plain textarea-style input and converts
  * the value to TipTap JSON so the web client can apply rich formatting.
  */
-export const RichTextEditor: React.FC<RichTextEditorProps> = ({
+export const RichTextEditor: FC<RichTextEditorProps> = ({
   value,
   onChange,
   fieldType,
@@ -35,7 +35,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   // Get character limit based on field type
   const getCharacterLimit = (): number => {
     const limits: Record<string, number> = {
-      PROFILE_ABOUT: 500,
+      PROFILE_ABOUT: 1500,
       EXPERIENCE_DESCRIPTION: 1000,
       EDUCATION_DESCRIPTION: 500,
       JOB_DESCRIPTION: 3000,

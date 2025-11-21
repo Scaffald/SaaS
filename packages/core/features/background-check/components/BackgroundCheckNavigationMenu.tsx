@@ -1,7 +1,7 @@
-import { Link, usePathname } from 'expo-router'
 import { ROUTES } from '@app/core/constants/routes'
+import { DashboardWidget, Text, XStack, YStack } from '@app/ui'
 import { ArrowRight } from '@tamagui/lucide-icons'
-import { DashboardWidget, Text, YStack, XStack } from '@app/ui'
+import { Link, usePathname } from 'expo-router'
 
 type BackgroundCheckNavItem = {
   key: string
@@ -15,19 +15,19 @@ const BACKGROUND_CHECK_NAV_ITEMS: BackgroundCheckNavItem[] = [
     key: 'overview',
     title: 'Overview',
     description: 'Monitor organization requests, statuses, and results.',
-    path: ROUTES.OFFICE_ATS_CHECKS.path,
+    path: ROUTES.OFFICE.ATS.CHECKS.path,
   },
   {
     key: 'admin',
     title: 'Admin Review',
     description: 'Review escalated checks and manage compliance workflows.',
-    path: ROUTES.OFFICE_ATS_CHECKS_ADMIN.path,
+    path: ROUTES.OFFICE.ATS.CHECKS.ADMIN.path,
   },
   {
     key: 'request',
     title: 'Request Check',
     description: 'Launch a new background check for an organization member.',
-    path: ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
+    path: ROUTES.OFFICE.ATS.CHECKS.REQUEST.path,
   },
 ]
 

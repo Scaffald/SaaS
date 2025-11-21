@@ -1,5 +1,5 @@
-import { Svg, Path, Defs, LinearGradient, Stop } from 'react-native-svg'
 import type { ViewStyle } from 'react-native'
+import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 
 export interface ScaffaldIconProps {
   size?: number

@@ -10,7 +10,10 @@ test('debug localStorage format', async ({ page }) => {
 
   console.log('\n=== Session from API ===')
   console.log('Access token (first 50 chars):', data.session.access_token.substring(0, 50) + '...')
-  console.log('Refresh token (first 50 chars):', data.session.refresh_token?.substring(0, 50) + '...')
+  console.log(
+    'Refresh token (first 50 chars):',
+    data.session.refresh_token?.substring(0, 50) + '...'
+  )
   console.log('Expires at:', data.session.expires_at)
   console.log('User ID:', data.user.id)
 
@@ -34,7 +37,7 @@ test('debug localStorage format', async ({ page }) => {
       console.log('[SET] Stored in localStorage key:', storageKey)
       console.log('[SET] Data keys:', Object.keys(authData))
     },
-    { session: data.session, user: data.user },
+    { session: data.session, user: data.user }
   )
 
   // Reload page
@@ -74,7 +77,7 @@ test('debug localStorage format', async ({ page }) => {
 
   // Check if Supabase has a session
   const hasSession = await page.evaluate(() => {
-    // @ts-ignore
+    // @ts-expect-error
     return !!window.location.pathname
   })
 

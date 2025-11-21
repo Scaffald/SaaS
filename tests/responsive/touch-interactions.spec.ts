@@ -10,7 +10,7 @@
  * Web-based tests validate basic touch interaction principles.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * Mobile viewports for touch testing
@@ -59,8 +59,14 @@ test.describe('Touch Interaction and Gesture Testing', () => {
 
           if (box) {
             // Touch targets should be at least 44x44px (REQ-198 target)
-            expect(box.width, `Touch target ${i} should be at least 44px wide`).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
-            expect(box.height, `Touch target ${i} should be at least 44px tall`).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
+            expect(
+              box.width,
+              `Touch target ${i} should be at least 44px wide`
+            ).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
+            expect(
+              box.height,
+              `Touch target ${i} should be at least 44px tall`
+            ).toBeGreaterThanOrEqual(40) // Allow 4px tolerance
           }
         }
       })
@@ -116,11 +122,9 @@ test.describe('Touch Interaction and Gesture Testing', () => {
 
         if (buttonCount > 0) {
           // Rapidly tap submit button
-          const startTime = Date.now()
           await submitButton.tap()
           await page.waitForTimeout(50) // Very short delay
           await submitButton.tap()
-          const totalTime = Date.now() - startTime
 
           // If debouncing is working, second tap should be ignored or delayed
           // This is a basic check - actual debouncing validation requires checking request count
@@ -143,4 +147,3 @@ test.describe('Touch Interaction and Gesture Testing', () => {
  * These tests provide web-based validation of touch interaction principles.
  * Full mobile testing should be done on actual devices.
  */
-

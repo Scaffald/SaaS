@@ -1,14 +1,13 @@
+import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { memo, useMemo } from 'react'
 import { Progress, Separator, Text, XStack, YStack } from 'tamagui'
 
-import { formatDate } from '@app/core/features/profile/utils/date-formatting'
-
 import {
+  type BackgroundCheckDetail,
+  type BackgroundCheckStatus,
   getStatusMetadata,
   getStatusProgress,
   getStatusToneColors,
-  type BackgroundCheckDetail,
-  type BackgroundCheckStatus,
 } from './status.utils'
 
 type ComponentStatusRecord = {
@@ -54,12 +53,15 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
         (typeof data.check_type_name === 'string' && data.check_type_name) ||
         (typeof data.display_name === 'string' && data.display_name) ||
         `Component ${index + 1}`
-      const id =
-        (typeof data.check_type_id === 'string' && data.check_type_id.length > 0
+      const id = (
+        typeof data.check_type_id === 'string' && data.check_type_id.length > 0
           ? data.check_type_id
-          : `${index}`) as string
+          : `${index}`
+      ) as string
       const statusValue =
-        typeof data.status === 'string' ? (data.status as BackgroundCheckStatus | string) : undefined
+        typeof data.status === 'string'
+          ? (data.status as BackgroundCheckStatus | string)
+          : undefined
       const completedAtValue =
         typeof data.completed_at === 'string' ? (data.completed_at as string) : undefined
       result.push({
@@ -95,7 +97,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   const statusColors = getStatusToneColors(statusMeta.tone)
   const progress = getStatusProgress(
     status,
-    normalizedComponents.map((component) => ({ status: component.status })),
+    normalizedComponents.map((component) => ({ status: component.status }))
   )
 
   return (
@@ -185,7 +187,12 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
               return (
                 <XStack key={`${entry.status}-${index}`} gap="$3" items="center">
                   <YStack width={10} items="center">
-                    <YStack width={2} flex={1} bg="$color5" opacity={index === normalizedHistory.length - 1 ? 0 : 1} />
+                    <YStack
+                      width={2}
+                      flex={1}
+                      bg="$color5"
+                      opacity={index === normalizedHistory.length - 1 ? 0 : 1}
+                    />
                   </YStack>
                   <YStack
                     flex={1}
@@ -250,4 +257,3 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
     </YStack>
   )
 })
-

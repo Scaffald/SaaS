@@ -1,5 +1,8 @@
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsUser, TEST_USERS } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
+import {
+  signInAsUser,
+  TEST_USERS,
+} from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { PrerequisiteFormHelpers } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/prerequisites'
 
 async function loadPrerequisitesForm(page: Page): Promise<PrerequisiteFormHelpers> {
@@ -68,4 +71,3 @@ test.describe('Profile prerequisites checkboxes', () => {
     expect(await allCheckboxes.count()).toBeGreaterThanOrEqual(5)
   })
 })
-

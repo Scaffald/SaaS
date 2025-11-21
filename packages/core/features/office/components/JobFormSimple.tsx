@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Input, Button, Spinner, ScrollView } from '@app/ui'
-import { TextArea } from 'tamagui'
 import { api } from '@app/core/utils/api'
+import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@app/ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import { TextArea } from 'tamagui'
 
 type JobFormData = {
   title: string

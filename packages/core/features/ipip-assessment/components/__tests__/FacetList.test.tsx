@@ -1,5 +1,8 @@
+import type {
+  IPIPFacetScore,
+  IPIPResultFacets,
+} from '@app/core/features/personality-assessment/lib/ipip'
 import { render, screen } from '@testing-library/react'
-import type { IPIPFacetScore, IPIPResultFacets } from '@app/core/features/personality-assessment/lib/ipip'
 import { describe, expect, it } from 'vitest'
 
 import { FacetList } from '../FacetList'
@@ -33,5 +36,3 @@ describe('FacetList', () => {
     expect(screen.getAllByText('LOW')).toHaveLength(2)
   })
 })
-
-

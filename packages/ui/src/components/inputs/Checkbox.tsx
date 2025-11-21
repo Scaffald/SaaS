@@ -1,6 +1,6 @@
-import { styled, View } from 'tamagui'
 import { Check } from '@tamagui/lucide-icons'
 import { Platform } from 'react-native'
+import { styled, View } from 'tamagui'
 
 export interface CheckboxProps {
   /** Whether the checkbox is checked */

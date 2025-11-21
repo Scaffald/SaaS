@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Card, TextArea, Button } from 'tamagui'
 import { Send } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Button, Card, Text, TextArea, XStack, YStack } from 'tamagui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface MessagesTabProps {

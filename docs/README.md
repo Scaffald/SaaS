@@ -2,16 +2,16 @@
 
 **Welcome to the SCF-Neue documentation!** This directory contains all technical documentation, implementation guides, and feature specifications.
 
-**Last Updated:** October 12, 2025
+**Last Updated:** November 19, 2025
 
 ---
 
 ## 📚 Quick Navigation
 
 ### For New Developers
-1. Start with [Recent Work Summary](./RECENT-WORK-SUMMARY.md) - What's been built recently
-2. Review [Features Documentation](./features/README.md) - All implemented and planned features
-3. Check [Deployment Guides](./deployment/README.md) - Setting up your environment
+1. Review [Features Documentation](./features/README.md) - All implemented and planned features
+2. Check [Deployment Guides](./deployment/README.md) - Setting up your environment
+3. Review [Code Quality Standards](./code-quality/) - TypeScript and linting guidelines
 
 ### For Feature Development
 - [Features Directory](./features/) - Detailed feature specifications and progress
@@ -30,7 +30,6 @@
 ```
 docs/
 ├── README.md (this file)
-├── RECENT-WORK-SUMMARY.md          # Last 2 weeks of work
 │
 ├── features/                        # Feature Documentation
 │   ├── README.md                   # Feature index
@@ -84,13 +83,6 @@ docs/
 ---
 
 ## 📖 Core Documentation
-
-### Recent Work
-- **[RECENT-WORK-SUMMARY.md](./RECENT-WORK-SUMMARY.md)** - Last 2 weeks of development
-  - 5 major features completed
-  - 30+ commits
-  - 8,000+ lines of code
-  - Updated October 12, 2025
 
 ### Features
 - **[Features Index](./features/README.md)** - Complete feature documentation directory
@@ -178,7 +170,6 @@ pnpm supa:generate    # Generate TypeScript types
 ## 🔍 Finding What You Need
 
 ### "I want to..."
-- **Understand recent changes** → [RECENT-WORK-SUMMARY.md](./RECENT-WORK-SUMMARY.md)
 - **Learn about a feature** → [features/README.md](./features/README.md)
 - **Deploy to production** → [deployment/README.md](./deployment/README.md)
 - **Improve code quality** → [code-quality/improvements.md](./code-quality/improvements.md)
@@ -201,7 +192,7 @@ pnpm supa:generate    # Generate TypeScript types
 - **After completing a feature** - Update status and progress
 - **Before starting major work** - Create implementation plan
 - **When fixing bugs** - Document root cause and solution
-- **Monthly** - Update RECENT-WORK-SUMMARY.md
+- **Regularly** - Keep documentation current and remove stale files
 
 ### Documentation Standards
 1. **Use Markdown** for all documentation
@@ -222,7 +213,7 @@ pnpm supa:generate    # Generate TypeScript types
 
 ### For Immediate Work
 1. Review [ATS Roadmap](./features/ats-roadmap.md) for Phase 4B tasks
-2. Check [RECENT-WORK-SUMMARY.md](./RECENT-WORK-SUMMARY.md) for context
+2. Check [Features Documentation](./features/README.md) for current status
 3. Run `pnpm dev` and `pnpm web` to test locally
 
 ### For Planning
@@ -241,5 +232,5 @@ pnpm supa:generate    # Generate TypeScript types
 
 ---
 
-*Documentation last cleaned up: October 12, 2025*  
-*Next review: November 12, 2025*
+*Documentation last cleaned up: November 19, 2025*  
+*Next review: December 19, 2025*

@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProfileEducationLeft } from '../profile-education-left'
@@ -53,10 +52,9 @@ vi.mock('@tamagui/lucide-icons', () => ({
 vi.mock('@app/ui', () => {
   const React = require('react') as typeof import('react')
 
-  const createView =
-    (element = 'div') =>
+  const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
+      React.createElement(element, { ref, ...rest }, children)
     )
 
   const Button = React.forwardRef<
@@ -66,13 +64,7 @@ vi.mock('@app/ui', () => {
       'data-testid'?: string
     }
   >(({ children, onPress, 'data-testid': dataTestId, ...rest }, ref) => (
-    <button
-      ref={ref}
-      type="button"
-      onClick={onPress}
-      data-testid={dataTestId}
-      {...rest}
-    >
+    <button ref={ref} type="button" onClick={onPress} data-testid={dataTestId} {...rest}>
       {children}
     </button>
   ))
@@ -81,22 +73,14 @@ vi.mock('@app/ui', () => {
     HTMLInputElement,
     React.ComponentPropsWithoutRef<'input'> & { onChangeText?: (value: string) => void }
   >(({ onChangeText, ...rest }, ref) => (
-    <input
-      ref={ref}
-      {...rest}
-      onChange={(event) => onChangeText?.(event.target.value)}
-    />
+    <input ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
   ))
 
   const TextArea = React.forwardRef<
     HTMLTextAreaElement,
     React.ComponentPropsWithoutRef<'textarea'> & { onChangeText?: (value: string) => void }
   >(({ onChangeText, ...rest }, ref) => (
-    <textarea
-      ref={ref}
-      {...rest}
-      onChange={(event) => onChangeText?.(event.target.value)}
-    />
+    <textarea ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
   ))
 
   const CustomCheckbox = ({
@@ -199,10 +183,9 @@ vi.mock('@app/ui', () => {
 vi.mock('tamagui', () => {
   const React = require('react') as typeof import('react')
 
-  const createView =
-    (element = 'div') =>
+  const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
+      React.createElement(element, { ref, ...rest }, children)
     )
 
   const Button = React.forwardRef<
@@ -216,11 +199,7 @@ vi.mock('tamagui', () => {
 
   const PopoverRoot = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>
   const PopoverTrigger = ({ children }: { children: React.ReactNode }) => <>{children}</>
-  const PopoverContent = ({
-    children,
-  }: {
-    children: React.ReactNode
-  }) => <div>{children}</div>
+  const PopoverContent = ({ children }: { children: React.ReactNode }) => <div>{children}</div>
 
   const ScrollView = createView()
 
@@ -234,21 +213,13 @@ vi.mock('tamagui', () => {
       HTMLInputElement,
       React.ComponentPropsWithoutRef<'input'> & { onChangeText?: (value: string) => void }
     >(({ onChangeText, ...rest }, ref) => (
-      <input
-        ref={ref}
-        {...rest}
-        onChange={(event) => onChangeText?.(event.target.value)}
-      />
+      <input ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
     )),
     TextArea: React.forwardRef<
       HTMLTextAreaElement,
       React.ComponentPropsWithoutRef<'textarea'> & { onChangeText?: (value: string) => void }
     >(({ onChangeText, ...rest }, ref) => (
-      <textarea
-        ref={ref}
-        {...rest}
-        onChange={(event) => onChangeText?.(event.target.value)}
-      />
+      <textarea ref={ref} {...rest} onChange={(event) => onChangeText?.(event.target.value)} />
     )),
     Button,
     Spinner: () => <div>spinner</div>,
@@ -291,12 +262,12 @@ vi.mock('@app/core/utils/api', () => {
             onSuccess?: (
               result: { success: boolean; education_entries: unknown[] },
               input: Record<string, unknown>,
-              context: unknown,
+              context: unknown
             ) => Promise<void> | void
             onSettled?: (
               result: { success: boolean; education_entries: unknown[] } | undefined,
               error: unknown,
-              context: unknown,
+              context: unknown
             ) => Promise<void> | void
           }) => ({
             mutateAsync: async (input: Record<string, unknown>) => {
@@ -461,14 +432,11 @@ describe('ProfileEducationLeft', () => {
       () => {
         expect(screen.getByText(/Please resolve the following issues/)).toBeInTheDocument()
       },
-      { timeout: 1000 },
+      { timeout: 1000 }
     )
 
     expect(
-      screen.getByText(
-        /Education 1 • End Date: End date is required unless currently enrolled/,
-      ),
+      screen.getByText(/Education 1 • End Date: End date is required unless currently enrolled/)
     ).toBeInTheDocument()
   })
 })
-

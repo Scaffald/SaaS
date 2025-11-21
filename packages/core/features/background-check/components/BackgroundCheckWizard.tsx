@@ -106,7 +106,8 @@ export function BackgroundCheckWizard() {
                 Background Check Submitted
               </Text>
               <Text fontSize="$3" color="$color11">
-                We’ve started your background check request. We’ll notify you when results are ready.
+                We’ve started your background check request. We’ll notify you when results are
+                ready.
               </Text>
             </YStack>
 
@@ -118,8 +119,7 @@ export function BackgroundCheckWizard() {
                 Package: {selectedPackage?.display_name ?? 'Pending'}
               </Text>
               <Text fontSize="$3" color="$color11">
-                Cost: $
-                {state.payment.costCents ? (state.payment.costCents / 100).toFixed(2) : '—'}
+                Cost: ${state.payment.costCents ? (state.payment.costCents / 100).toFixed(2) : '—'}
               </Text>
               <Text fontSize="$3" color="$color11">
                 Payment: {state.payment.paidBy}
@@ -159,7 +159,9 @@ export function BackgroundCheckWizard() {
 
       {submitError && (
         <YStack bg="$red3" p="$3" borderBottomWidth={1} borderBottomColor="$red7">
-          <Text color="$red11">We couldn’t submit your background check: {submitError.message}</Text>
+          <Text color="$red11">
+            We couldn’t submit your background check: {submitError.message}
+          </Text>
         </YStack>
       )}
 

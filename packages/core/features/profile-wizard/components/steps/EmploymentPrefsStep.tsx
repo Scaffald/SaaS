@@ -1,12 +1,13 @@
+import { ControlledAddressForm } from '@app/core/forms'
+import { ResponsiveSelect } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Input, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Input, Select, Text, XStack, YStack, Paragraph, Adapt, Sheet, Button } from 'tamagui'
-import type { WizardStepComponentProps } from './types'
 import type { EmploymentPreferencesStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
-import { ControlledAddressForm } from '@app/core/forms'
+import type { WizardStepComponentProps } from './types'
 
 const employmentSchema = z.object({
   locationPreference: z.string().optional(),
@@ -87,7 +88,8 @@ export function EmploymentPrefsStep({
       locationPreference: normalizeText(values.locationPreference),
       hourlyRate: normalizeText(values.hourlyRate),
       availability: normalizeText(values.availability),
-      remotePreference: (values.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
+      remotePreference:
+        (values.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
     }
 
     onStepStateChange?.({
@@ -102,7 +104,8 @@ export function EmploymentPrefsStep({
       locationPreference: normalizeText(data.locationPreference),
       hourlyRate: normalizeText(data.hourlyRate),
       availability: normalizeText(data.availability),
-      remotePreference: (data.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
+      remotePreference:
+        (data.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
     })
   })
 
@@ -111,7 +114,8 @@ export function EmploymentPrefsStep({
       locationPreference: normalizeText(data.locationPreference),
       hourlyRate: normalizeText(data.hourlyRate),
       availability: normalizeText(data.availability),
-      remotePreference: (data.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
+      remotePreference:
+        (data.remotePreference as EmploymentPreferencesStepData['remotePreference']) ?? null,
     })
   })
 
@@ -126,7 +130,8 @@ export function EmploymentPrefsStep({
           Share your work preferences
         </Text>
         <Paragraph color="$color11">
-          Help employers match you with the right opportunities by adding where, how, and when you prefer to work.
+          Help employers match you with the right opportunities by adding where, how, and when you
+          prefer to work.
         </Paragraph>
       </YStack>
 
@@ -175,30 +180,15 @@ export function EmploymentPrefsStep({
             control={control}
             name="availability"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <Select.Trigger>
-                  <Select.Value placeholder="Select availability" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom animationConfig={{ type: 'spring', damping: 20, mass: 1, stiffness: 250 }}>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView />
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content>
-                  <Select.ScrollUpButton />
-                  <Select.Viewport>
-                    {AVAILABILITY_OPTIONS.map((option, index) => (
-                      <Select.Item key={option.value} value={option.value} index={index}>
-                        <Select.ItemText>{option.label}</Select.ItemText>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                  <Select.ScrollDownButton />
-                </Select.Content>
-              </Select>
+              <ResponsiveSelect
+                value={field.value || ''}
+                onValueChange={field.onChange}
+                placeholder="Select availability"
+                options={AVAILABILITY_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+              />
             )}
           />
         </YStack>
@@ -209,7 +199,12 @@ export function EmploymentPrefsStep({
             control={control}
             name="hourlyRate"
             render={({ field }) => (
-              <Input {...field} placeholder="$35 / hour" keyboardType="numeric" onChangeText={field.onChange} />
+              <Input
+                {...field}
+                placeholder="$35 / hour"
+                keyboardType="numeric"
+                onChangeText={field.onChange}
+              />
             )}
           />
         </YStack>
@@ -221,30 +216,15 @@ export function EmploymentPrefsStep({
           control={control}
           name="remotePreference"
           render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <Select.Trigger>
-                <Select.Value placeholder="Select preferred environment" />
-              </Select.Trigger>
-              <Adapt when="sm" platform="touch">
-                <Sheet modal dismissOnSnapToBottom animationConfig={{ type: 'spring', damping: 20, mass: 1, stiffness: 250 }}>
-                  <Sheet.Frame>
-                    <Sheet.ScrollView />
-                  </Sheet.Frame>
-                  <Sheet.Overlay />
-                </Sheet>
-              </Adapt>
-              <Select.Content>
-                <Select.ScrollUpButton />
-                <Select.Viewport>
-                  {WORK_MODE_OPTIONS.map((option, index) => (
-                    <Select.Item key={option.value} value={option.value} index={index}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                    </Select.Item>
-                  ))}
-                </Select.Viewport>
-                <Select.ScrollDownButton />
-              </Select.Content>
-            </Select>
+            <ResponsiveSelect
+              value={field.value || ''}
+              onValueChange={field.onChange}
+              placeholder="Select preferred environment"
+              options={WORK_MODE_OPTIONS.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+            />
           )}
         />
       </YStack>
@@ -272,10 +252,16 @@ function normalizeText(value?: string | null): string | null {
   return trimmed
 }
 
-function computeDirty(initialData: EmploymentPreferencesStepData | undefined, current: EmploymentPreferencesStepData) {
+function computeDirty(
+  initialData: EmploymentPreferencesStepData | undefined,
+  current: EmploymentPreferencesStepData
+) {
   if (!initialData) {
     return Boolean(
-      current.locationPreference || current.hourlyRate || current.availability || current.remotePreference,
+      current.locationPreference ||
+        current.hourlyRate ||
+        current.availability ||
+        current.remotePreference
     )
   }
 
@@ -287,9 +273,7 @@ function computeDirty(initialData: EmploymentPreferencesStepData | undefined, cu
   )
 }
 
-function toEmploymentFormValues(
-  data?: EmploymentPreferencesStepData | null,
-): EmploymentFormValues {
+function toEmploymentFormValues(data?: EmploymentPreferencesStepData | null): EmploymentFormValues {
   if (!data) {
     return {
       ...DEFAULT_VALUES,
@@ -305,5 +289,3 @@ function toEmploymentFormValues(
     remotePreference: data.remotePreference ?? undefined,
   }
 }
-
-

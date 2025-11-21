@@ -1,8 +1,12 @@
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { WorkLogCreateScreen } from '@app/core/features/work-logs/screens/WorkLogCreateScreen'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 
 export default function WorkLogCreatePage() {
   return (
-    <DashboardLayout leftContent={<WorkLogCreateScreen />} rightContent={<QuickLinksSidebar />} />
+    <DashboardPage
+      showBreadcrumb={false}
+      leftContent={<WorkLogCreateScreen />}
+      rightContent={null}
+    />
   )
 }

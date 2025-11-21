@@ -10,25 +10,25 @@
  * BrainGrid: REQ-63
  */
 
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
 import {
-  waitForKanbanLoad,
-  getKanbanColumn,
-  getKanbanSummary,
   dragApplicationToColumn,
-  verifyApplicationInColumn,
   findApplicationCard,
   getColumnCardCount,
+  getKanbanColumn,
+  getKanbanSummary,
   KANBAN_COLUMNS,
+  verifyApplicationInColumn,
+  waitForKanbanLoad,
 } from '../../infrastructure/playwright/helpers/helpers/kanban-helpers'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
 
 test.describe('Office • /office/applications - Kanban Board', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/super-admin.json)
+    // Authentication handled by storage state (tests/.auth/super-admin.json)
     await page.goto('/office/applications', { waitUntil: 'domcontentloaded' })
     await waitForKanbanLoad(page)
   })
@@ -56,7 +56,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
     })
 
     test('displays correct column labels', async ({ page }: { page: Page }) => {
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
 
       expect(pageContent).toContain('New Applications')
       expect(pageContent).toContain('Screening')
@@ -78,12 +78,16 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       expect(summary).toHaveProperty(KANBAN_COLUMNS.REJECTED)
 
       // Each count should be a non-negative number
-      Object.values(summary).forEach(count => {
+      Object.values(summary).forEach((count) => {
         expect(count).toBeGreaterThanOrEqual(0)
       })
     })
 
-    test('displays application cards with correct data-testid', async ({ page }: { page: Page }) => {
+    test('displays application cards with correct data-testid', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       // Find any application card
       const card = page.locator('[data-testid^="kanban-card-"]').first()
 
@@ -119,7 +123,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       const applicationId = cardId?.replace('kanban-card-', '') || ''
 
       // Get candidate name for verification
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       // Drag to screen column
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.SCREEN, {
@@ -150,7 +154,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       // Find first card in screen column
       const screenColumn = await getKanbanColumn(page, KANBAN_COLUMNS.SCREEN)
       const firstCard = screenColumn.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       // Drag to interview column
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.INTERVIEW, {
@@ -161,7 +165,11 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       await page.waitForTimeout(1000)
 
       // Verify move
-      const isInInterview = await verifyApplicationInColumn(page, candidateName, KANBAN_COLUMNS.INTERVIEW)
+      const isInInterview = await verifyApplicationInColumn(
+        page,
+        candidateName,
+        KANBAN_COLUMNS.INTERVIEW
+      )
       expect(isInInterview).toBe(true)
     })
 
@@ -174,7 +182,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const interviewColumn = await getKanbanColumn(page, KANBAN_COLUMNS.INTERVIEW)
       const firstCard = interviewColumn.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.OFFER, {
         waitForConfirmation: false,
@@ -207,7 +215,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       // Drag to rejected column
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.REJECTED, {
@@ -222,7 +230,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       await expect(modal.first()).toBeVisible()
 
       // Verify modal title
-      const modalContent = await page.locator('#root').textContent() || ''
+      const modalContent = (await page.locator('#root').textContent()) || ''
       expect(modalContent).toMatch(/reject|rejection/i)
     })
 
@@ -240,7 +248,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       // Drag to rejected
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.REJECTED)
@@ -265,7 +273,11 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       await page.waitForTimeout(2000)
 
       // Verify application moved to rejected
-      const isInRejected = await verifyApplicationInColumn(page, candidateName, KANBAN_COLUMNS.REJECTED)
+      const isInRejected = await verifyApplicationInColumn(
+        page,
+        candidateName,
+        KANBAN_COLUMNS.REJECTED
+      )
       expect(isInRejected).toBe(true)
 
       // Verify counts updated
@@ -292,7 +304,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       // Drag to hired
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.HIRED, {
@@ -305,7 +317,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
       const modal = page.getByRole('dialog').or(page.locator('[role="alertdialog"]'))
       await expect(modal.first()).toBeVisible()
 
-      const modalContent = await page.locator('#root').textContent() || ''
+      const modalContent = (await page.locator('#root').textContent()) || ''
       expect(modalContent).toMatch(/hired|hire/i)
     })
 
@@ -323,7 +335,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.HIRED)
 
@@ -346,7 +358,11 @@ test.describe('Office • /office/applications - Kanban Board', () => {
   })
 
   test.describe('Modal Cancel Flow', () => {
-    test('cancels rejection and returns card to original column', async ({ page }: { page: Page }) => {
+    test('cancels rejection and returns card to original column', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       const initialSummary = await getKanbanSummary(page)
 
       let sourceColumn = KANBAN_COLUMNS.NEW
@@ -360,7 +376,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       // Drag to rejected
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.REJECTED)
@@ -402,7 +418,7 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       const column = await getKanbanColumn(page, sourceColumn)
       const firstCard = column.locator('[data-testid^="kanban-card-"]').first()
-      const candidateName = await firstCard.locator('text').first().textContent() || ''
+      const candidateName = (await firstCard.locator('text').first().textContent()) || ''
 
       // Drag to hired
       await dragApplicationToColumn(page, candidateName, KANBAN_COLUMNS.HIRED)
@@ -514,7 +530,8 @@ test.describe('Office • /office/applications - Kanban Board', () => {
 
       // Find card in new location
       const screenColumn = await getKanbanColumn(page, KANBAN_COLUMNS.SCREEN)
-      const movedCard = screenColumn.locator('[data-testid^="kanban-card-"]')
+      const movedCard = screenColumn
+        .locator('[data-testid^="kanban-card-"]')
         .filter({ hasText: beforeName || '' })
         .first()
 

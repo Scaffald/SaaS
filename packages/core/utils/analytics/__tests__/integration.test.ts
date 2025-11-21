@@ -157,8 +157,8 @@ describe('analytics integration', () => {
     vi.resetModules()
     
     process.env.APP_ENV = 'development'
-    process.env.POSTHOG_KEY = 'test-key'
-    process.env.POSTHOG_HOST = 'https://app.posthog.com'
+    process.env.EXPO_PUBLIC_POSTHOG_API_KEY = 'test-key'
+    process.env.EXPO_PUBLIC_POSTHOG_HOST = 'https://app.posthog.com'
     mockPlatform.OS = 'ios'
     ;(global as any).__DEV__ = true
   })
@@ -170,9 +170,10 @@ describe('analytics integration', () => {
 
   describe('event capture', () => {
     test('captures events with correct properties', async () => {
-      const { initAnalytics, captureEvent } = await import('../client')
+      const { initAnalytics, captureEvent, isAnalyticsInitialized } = await import('../client')
       
       await initAnalytics({ hasConsent: true })
+      console.log('analytics initialized?', isAnalyticsInitialized())
       
       const result = captureEvent('user_signed_in', {
         provider: 'email',

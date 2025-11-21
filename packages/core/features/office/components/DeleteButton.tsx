@@ -1,7 +1,9 @@
-import { useState } from 'react'
-import { Button, Dialog, XStack, YStack, Text, Spinner } from 'tamagui'
 import { Trash2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
+import { useState } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+// @ts-expect-error - Dialog is not exported from @app/ui to avoid circular dependency, using direct import
+import { Dialog } from '../../../../ui/src/components/dialog/Dialog'
 
 interface DeleteButtonProps {
   /**
@@ -86,32 +88,8 @@ export function DeleteButton({
 
       <Dialog modal open={isOpen} onOpenChange={setIsOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay
-            key="overlay"
-            animation="quick"
-            opacity={0.5}
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-
-          <Dialog.Content
-            bordered
-            elevate
-            key="content"
-            animateOnly={['transform', 'opacity']}
-            animation={[
-              'quick',
-              {
-                opacity: {
-                  overshootClamping: true,
-                },
-              },
-            ]}
-            enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 }}
-            exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 }}
-            gap="$4"
-            width={500}
-          >
+          <Dialog.Overlay key="overlay" />
+          <Dialog.Content key="content" width={500}>
             <Dialog.Title>Confirm Delete</Dialog.Title>
             <Dialog.Description>
               Are you sure you want to delete <Text fontWeight="600">"{itemName}"</Text>?

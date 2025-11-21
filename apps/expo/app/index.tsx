@@ -1,10 +1,10 @@
-import { useUser } from '@app/core/utils/useUser'
+import { AUTH_ROUTES } from '@app/core/constants/routes'
 import { supabase } from '@app/core/utils/supabase/client'
+import { useUser } from '@app/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
-import { YStack, Text } from 'tamagui'
-import { AUTH_ROUTES } from '@app/core/constants/routes'
+import { Text, YStack } from 'tamagui'
 
 export default function RootIndex() {
   const { user, isPending } = useUser()

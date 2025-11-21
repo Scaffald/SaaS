@@ -6,7 +6,7 @@ The office navigation link appears in the **header flyout menu** (not the drawer
 
 ## How It Works
 
-1. **Header Flyout Menu**: `DrawerLayout.tsx` line 163 shows `<OfficeFlyout />` when `hasOfficeRole` is true
+1. **Header Popover Menu**: `DrawerLayout.tsx` line 163 shows `<OfficePopover />` when `hasOfficeRole` is true
 2. **Role Check**: `useUserRoles()` hook calls `api.auth.getUserRoles.useQuery()`
 3. **Database Query**: `auth.router.ts` queries `core.role_assignments` joined with `core.roles`
 4. **Role Name**: The system looks for a role named `"office"` with `scope = "platform"`

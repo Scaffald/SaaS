@@ -1,9 +1,10 @@
 // @ts-nocheck
-import { createClient } from '@supabase/supabase-js'
+
 import type { Page } from '@playwright/test'
-import { writeFileSync, readFileSync, existsSync } from 'fs'
+import { createClient } from '@supabase/supabase-js'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { ensureProfileComplete, ensureAdminProfileComplete } from './profile'
+import { ensureAdminProfileComplete, ensureProfileComplete } from './profile'
 import { readCachedToken, type TestPersona } from './tokens'
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321'
@@ -83,7 +84,7 @@ async function injectSession(page: Page, session: SupabaseSessionShape) {
         console.error('[TEST AUTH] Failed to populate localStorage', error)
       }
     },
-    { storageKey: STORAGE_KEY, payload, user: safeUser },
+    { storageKey: STORAGE_KEY, payload, user: safeUser }
   )
 
   await page.goto(`${APP_BASE_URL}/dashboard`, { waitUntil: 'domcontentloaded' })
@@ -221,7 +222,7 @@ export async function getSession(email: string, password: string) {
 export async function createStorageState(
   email: string,
   password: string,
-  outputPath = STORAGE_STATE_PATH,
+  outputPath = STORAGE_STATE_PATH
 ): Promise<void> {
   const session = await getSession(email, password)
   const storageState = {
@@ -270,9 +271,7 @@ export async function getBearerToken(email: string, password: string): Promise<s
 export const getRegularUserToken = () =>
   getBearerToken(TEST_USERS.regular.email, TEST_USERS.regular.password)
 
-export const getAdminToken = () =>
-  getBearerToken(TEST_USERS.admin.email, TEST_USERS.admin.password)
+export const getAdminToken = () => getBearerToken(TEST_USERS.admin.email, TEST_USERS.admin.password)
 
 export const getSuperAdminToken = () =>
   getBearerToken(TEST_USERS.superAdmin.email, TEST_USERS.superAdmin.password)
-

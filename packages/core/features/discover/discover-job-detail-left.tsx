@@ -1,13 +1,12 @@
-import { useState } from 'react'
-import { YStack, Text, Button, Spinner } from 'tamagui'
-import { ExternalLink } from '@tamagui/lucide-icons'
+import { ROUTES } from '@app/core/constants/routes'
 import { ApplicationWizard, QuickApplyModal } from '@app/core/features/applications/components'
 import { getApplicationFlow } from '@app/core/features/applications/utils/getApplicationFlow'
-import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
-import { ROUTES } from '@app/core/constants/routes'
-import { useEffect } from 'react'
 import { captureEvent } from '@app/core/utils/analytics/client'
+import { api } from '@app/core/utils/api'
+import { ExternalLink } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Button, Spinner, Text, YStack } from 'tamagui'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -19,7 +18,7 @@ interface DiscoverJobDetailLeftProps {
  */
 export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   const router = useRouter()
-  
+
   // Hooks must be called unconditionally at the top level
   const [showQuickApply, setShowQuickApply] = useState(false)
 
@@ -43,37 +42,43 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   const isExternal = !!externalJob
 
   // Determine which flow to use (must be computed before conditional returns)
-  const flowType = job && !isExternal && 'organization' in job
-    ? getApplicationFlow({
-        id: job.id,
-        title: job.title,
-        organization: job.organization,
-        custom_application_questions:
-          'custom_application_questions' in job
-            ? (job.custom_application_questions as
-                | Array<{
-                    id: string
-                    question: string
-                    type: 'short_text' | 'long_text' | 'single_choice' | 'multiple_choice' | 'yes_no'
-                    required: boolean
-                    options?: string[]
-                  }>
-                | undefined)
-            : undefined,
-        required_attachments:
-          'required_attachments' in job
-            ? (job.required_attachments as
-                | Record<
-                    string,
-                    {
+  const flowType =
+    job && !isExternal && 'organization' in job
+      ? getApplicationFlow({
+          id: job.id,
+          title: job.title,
+          organization: job.organization,
+          custom_application_questions:
+            'custom_application_questions' in job
+              ? (job.custom_application_questions as
+                  | Array<{
+                      id: string
+                      question: string
+                      type:
+                        | 'short_text'
+                        | 'long_text'
+                        | 'single_choice'
+                        | 'multiple_choice'
+                        | 'yes_no'
                       required: boolean
-                      max_size_mb?: number
-                    }
-                  >
-                | undefined)
-            : undefined,
-      })
-    : null
+                      options?: string[]
+                    }>
+                  | undefined)
+              : undefined,
+          required_attachments:
+            'required_attachments' in job
+              ? (job.required_attachments as
+                  | Record<
+                      string,
+                      {
+                        required: boolean
+                        max_size_mb?: number
+                      }
+                    >
+                  | undefined)
+              : undefined,
+        })
+      : null
 
   // Track flow selection
   useEffect(() => {
@@ -89,7 +94,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         job_id: job.id,
         is_external: isExternal,
         organization_id:
-          !isExternal && 'organization' in job ? job.organization?.id ?? null : null,
+          !isExternal && 'organization' in job ? (job.organization?.id ?? null) : null,
       })
     }
   }, [job, isExternal])
@@ -147,7 +152,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
             size="$4"
             chromeless
             onPress={() => {
-              router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+              router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
             }}
           >
             Back to Jobs
@@ -196,10 +201,10 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           }}
           onCancel={() => {
             // Navigate back to jobs list
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
           onReturnToJobs={() => {
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         />
       </YStack>
@@ -244,7 +249,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           size="$4"
           chromeless
           onPress={() => {
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         >
           Back to Jobs
@@ -264,7 +269,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           size="$4"
           theme="info"
           onPress={() => {
-            router.push(ROUTES.DASHBOARD_DISCOVER_JOBS.path)
+            router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)
           }}
         >
           Back to Jobs

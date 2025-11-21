@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router'
 import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
+import { Stack } from 'expo-router'
 import { Text, View } from 'tamagui'
 
 export default function Layout() {

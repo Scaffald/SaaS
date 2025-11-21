@@ -1,8 +1,8 @@
+import type { IPIPScore, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import type { IPIPScore, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
-import type { NormalizedScores } from '../../utils/scoreNormalizer'
 import { describe, expect, it, vi } from 'vitest'
+import type { NormalizedScores } from '../../utils/scoreNormalizer'
 
 import { ChartView } from '../ChartView'
 
@@ -61,7 +61,7 @@ describe('ChartView', () => {
         archetype={null}
         isComplete={false}
         completedDomains={0}
-      />,
+      />
     )
 
     expect(screen.getByText(/No chart data available yet/i)).toBeVisible()
@@ -75,7 +75,7 @@ describe('ChartView', () => {
         archetype={{ archetype: 'Connector', name: 'Connector', confidence: 82 }}
         isComplete
         completedDomains={5}
-      />,
+      />
     )
 
     expect(screen.getByText('Your Archetype')).toBeVisible()
@@ -85,5 +85,3 @@ describe('ChartView', () => {
     expect(screen.getByText(/Big Five Personality Traits/i)).toBeVisible()
   })
 })
-
-

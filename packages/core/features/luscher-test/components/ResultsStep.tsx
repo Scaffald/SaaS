@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
+import { useCallback, useEffect, useState } from 'react'
 import { Text, YStack } from 'tamagui'
-import { TwoStageTest, InterpretationLanguage, type MainColor } from 'luscher-test'
 
 export interface ResultsStepProps {
   feedbackMessage?: string

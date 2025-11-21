@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Select, Spinner, Text, XStack, YStack } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
-import { useToastController } from '@tamagui/toast'
-
 import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
+import { ResponsiveSelect } from '@app/ui'
 import { UserSearch } from '@app/ui/components/user/UserSearch'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
-import { useTeamFormOptions, type TeamRoleOption } from '../hooks/useTeamFormOptions'
+import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 interface AddTeamMemberModalProps {
   open: boolean
@@ -103,37 +102,22 @@ export function AddTeamMemberModal({
           <Text fontSize="$3" color="$color11">
             Role
           </Text>
-          <Select
-            native
-            value={selectedRoleId || roleOptions[0]?.id}
-            onValueChange={setSelectedRoleId}
-            disablePreventBodyScroll
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value placeholder="Select role">
-                {roleOptions.find((role) => role.id === (selectedRoleId || roleOptions[0]?.id))
-                  ?.name ?? 'Select role'}
-              </Select.Value>
-              {isLoadingRoles ? <Spinner size="small" ml="$2" /> : null}
-            </Select.Trigger>
-            <Select.Content zIndex={1000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Team roles</Select.Label>
-                  {roleOptions.map((role, index) => (
-                    <Select.Item key={role.id} value={role.id} index={index}>
-                      <Select.ItemText>{role.name}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+          {isLoadingRoles ? (
+            <XStack items="center" gap="$2">
+              <Spinner size="small" />
+              <Text color="$color11">Loading roles...</Text>
+            </XStack>
+          ) : (
+            <ResponsiveSelect
+              value={selectedRoleId || roleOptions[0]?.id || ''}
+              onValueChange={setSelectedRoleId}
+              placeholder="Select role"
+              options={roleOptions.map((role) => ({
+                value: role.id,
+                label: role.name,
+              }))}
+            />
+          )}
         </YStack>
 
         <XStack gap="$3" justify="flex-end">
@@ -157,5 +141,3 @@ export function AddTeamMemberModal({
     </ResponsiveModal>
   )
 }
-
-

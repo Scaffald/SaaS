@@ -1,11 +1,11 @@
-import { Camera, User, Delete, Edit3 } from '@tamagui/lucide-icons'
+import { Camera, Delete, Edit3, User } from '@tamagui/lucide-icons'
 import { useEffect, useId, useState } from 'react'
+import { Platform } from 'react-native'
 import { Button, Circle, Image, Label, Spinner, Text, View, XStack, YStack } from 'tamagui'
-
-import type { AvatarImagePickerProps } from './types'
-import { AvatarCropModal } from './AvatarCropModal'
-import { UploadSurface } from '../upload/UploadSurface'
 import type { UploadSelection } from '../upload/UploadSurface'
+import { UploadSurface } from '../upload/UploadSurface'
+import { AvatarCropModal } from './AvatarCropModal'
+import type { AvatarImagePickerProps } from './types'
 
 /**
  * Avatar Image Picker Component
@@ -112,14 +112,15 @@ export function AvatarImagePicker({
               }) as Record<string, unknown>)}
             >
               {/* Hidden input for web */}
-              {/* @ts-ignore */}
-              <View
-                id={id}
-                tag="input"
-                width={0}
-                height={0}
-                {...(getInputProps({ accept: 'image/*' }) as Record<string, unknown>)}
-              />
+              {Platform.OS === 'web' && (
+                <View
+                  id={id}
+                  tag="input"
+                  width={0}
+                  height={0}
+                  {...(getInputProps({ accept: 'image/*' }) as Record<string, unknown>)}
+                />
+              )}
 
               <Circle
                 size={size}

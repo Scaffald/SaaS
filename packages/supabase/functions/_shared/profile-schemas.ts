@@ -1,6 +1,6 @@
-import { z } from "zod";
-// @ts-ignore - Deno requires .ts extension for relative imports
-import { phoneNumberSchema } from "./phone.ts";
+import { z } from 'zod'
+// @ts-expect-error - Deno requires .ts extension for relative imports
+import { phoneNumberSchema } from './phone.ts'
 
 /**
  * General Profile Form Schema
@@ -8,28 +8,20 @@ import { phoneNumberSchema } from "./phone.ts";
  */
 export const generalProfileSchema = z.object({
   // Avatar - optional (can be full URL or path)
-  avatar_path: z.union([z.string().url(), z.string().min(1), z.literal("")])
-    .optional(),
+  avatar_path: z.union([z.string().url(), z.string().min(1), z.literal('')]).optional(),
 
   // Name fields - required
-  first_name: z.string().min(1, "First name is required").max(
-    50,
-    "First name too long",
-  ),
-  last_name: z.string().min(1, "Last name is required").max(
-    50,
-    "Last name too long",
-  ),
+  first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
+  last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
 
   // About section - optional
-  about: z.string().max(500, "About section must be 500 characters or less")
-    .optional(),
+  about: z.string().max(1500, 'About section must be 1500 characters or less').optional(),
 
   // Contact information - optional
   phone: phoneNumberSchema,
 
   // Email - optional (read-only, managed by auth system)
-  email: z.string().email("Please enter a valid email address").optional(),
+  email: z.string().email('Please enter a valid email address').optional(),
 
   // Home Address - nullable to handle null from database
   address: z
@@ -44,7 +36,7 @@ export const generalProfileSchema = z.object({
     })
     .nullable()
     .optional(),
-});
+})
 
 /**
  * Employment Profile Form Schema
@@ -54,7 +46,7 @@ export const employmentProfileSchema = z.object({
   // Preferred work locations (up to 3)
   preferred_work_locations: z
     .array(z.string())
-    .max(3, "Maximum 3 work locations allowed")
+    .max(3, 'Maximum 3 work locations allowed')
     .optional(),
 
   // Travel preferences
@@ -69,51 +61,33 @@ export const employmentProfileSchema = z.object({
 
   // Drivers License (multi-select array)
   drivers_license_classes: z
-    .array(
-      z.enum([
-        "Class M",
-        "Class A",
-        "Class B",
-        "Class C",
-        "CDL A",
-        "CDL B",
-        "CDL C",
-      ]),
-    )
+    .array(z.enum(['Class M', 'Class A', 'Class B', 'Class C', 'CDL A', 'CDL B', 'CDL C']))
     .optional(),
 
   // Military Status (multi-select)
   military_status: z
-    .array(
-      z.enum([
-        "Active Duty",
-        "Reserve",
-        "National Guard",
-        "Veteran",
-        "Retired",
-      ]),
-    )
+    .array(z.enum(['Active Duty', 'Reserve', 'National Guard', 'Veteran', 'Retired']))
     .optional(),
 
   // Availability (multi-select)
   availability: z
     .array(
       z.enum([
-        "Part-time",
-        "Contract",
-        "Full-time",
-        "Weekend",
-        "Night Shift",
-        "Day Shift",
-        "Temporary",
-        "Short Notice",
-      ]),
+        'Part-time',
+        'Contract',
+        'Full-time',
+        'Weekend',
+        'Night Shift',
+        'Day Shift',
+        'Temporary',
+        'Short Notice',
+      ])
     )
     .optional(),
 
   // Hourly Rate
   hourly_rate: z.number().min(0).max(200).optional(),
-});
+})
 
-export type GeneralProfileFormData = z.infer<typeof generalProfileSchema>;
-export type EmploymentProfileFormData = z.infer<typeof employmentProfileSchema>;
+export type GeneralProfileFormData = z.infer<typeof generalProfileSchema>
+export type EmploymentProfileFormData = z.infer<typeof employmentProfileSchema>

@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { Button, Card, Dialog, Spinner, Text, XStack, YStack } from "tamagui";
-import { Download, X } from "@tamagui/lucide-icons";
-
-import { api } from "@app/core/utils/api";
+import { api } from '@app/core/utils/api'
+import { Dialog } from '@app/ui'
+import { Download, X } from '@tamagui/lucide-icons'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type TransactionReceiptModalProps = {
-  transactionId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
+  transactionId: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
 
 export function TransactionReceiptModal({
   transactionId,
@@ -19,8 +18,8 @@ export function TransactionReceiptModal({
     { transactionId },
     {
       enabled: open && Boolean(transactionId),
-    },
-  );
+    }
+  )
 
   const handleDownloadReceipt = () => {
     // TODO: Generate PDF receipt
@@ -35,19 +34,19 @@ Amount: ${receiptQuery.data.amount}
 Type: ${receiptQuery.data.transactionType}
 Status: ${receiptQuery.data.status}
 Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
-      `.trim();
+      `.trim()
 
-      const blob = new Blob([receiptText], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${receiptQuery.data.receiptNumber}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const blob = new Blob([receiptText], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${receiptQuery.data.receiptNumber}.txt`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
@@ -63,9 +62,9 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           bordered
           elevate
           key="content"
-          animateOnly={["transform", "opacity"]}
+          animateOnly={['transform', 'opacity']}
           animation={[
-            "quick",
+            'quick',
             {
               opacity: {
                 overshootClamping: true,
@@ -79,9 +78,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           style={{ maxWidth: 600 }}
         >
           <Dialog.Title>Transaction Receipt</Dialog.Title>
-          <Dialog.Description>
-            View and download receipt for this transaction.
-          </Dialog.Description>
+          <Dialog.Description>View and download receipt for this transaction.</Dialog.Description>
 
           {receiptQuery.isLoading ? (
             <YStack items="center" py="$6" gap="$3">
@@ -90,9 +87,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
             </YStack>
           ) : receiptQuery.error ? (
             <Card p="$4" bg="$red2" borderColor="$red6" borderWidth={1}>
-              <Text color="$red11">
-                Failed to load receipt: {receiptQuery.error.message}
-              </Text>
+              <Text color="$red11">Failed to load receipt: {receiptQuery.error.message}</Text>
             </Card>
           ) : receiptQuery.data ? (
             <YStack gap="$4">
@@ -125,7 +120,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
                     </XStack>
                     <XStack justify="space-between">
                       <Text color="$color10">Payment Intent:</Text>
-                      <Text fontSize="$2" style={{ fontFamily: "monospace" }}>
+                      <Text fontSize="$2" style={{ fontFamily: 'monospace' }}>
                         {receiptQuery.data.stripePaymentIntentId}
                       </Text>
                     </XStack>
@@ -151,6 +146,5 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>
-  );
+  )
 }
-

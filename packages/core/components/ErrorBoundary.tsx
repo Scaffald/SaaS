@@ -54,4 +54,3 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return <ErrorFallback error={error} onReset={this.handleReset} />
   }
 }
-

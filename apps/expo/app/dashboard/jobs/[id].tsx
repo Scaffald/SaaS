@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from 'expo-router'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { useLocalSearchParams } from 'expo-router'
 
 export default function JobDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -10,10 +10,5 @@ export default function JobDetailPage() {
   }
 
   const { left, right } = DiscoverJobDetailScreen({ jobId: id })
-  return (
-    <DashboardLayout
-      leftContent={left}
-      rightContent={<QuickLinksSidebar>{right}</QuickLinksSidebar>}
-    />
-  )
+  return <DashboardPage leftContent={left} rightContent={right} />
 }

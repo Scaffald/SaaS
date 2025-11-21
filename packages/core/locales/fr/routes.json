@@ -1,0 +1,161 @@
+{
+  "routes": {
+    "home": "Home",
+    "styleguide": "Styleguide",
+    "auth": {
+      "login": "Sign In",
+      "confirm": "Confirm Account",
+      "success": "Success"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "profile": {
+        "title": "Profile",
+        "general": "General",
+        "employment": "Employment",
+        "skills": "Skills",
+        "certifications": "Certifications",
+        "importReview": "Import Review",
+        "education": "Education",
+        "experience": "Experience",
+        "idVerification": "ID Verification",
+        "resume": {
+          "title": "Resumé",
+          "review": "Resume Review"
+        },
+        "backgroundCheck": {
+          "title": "Background Checks",
+          "initiate": "Start Background Check",
+          "dispute": "Dispute Background Check"
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "general": "General Settings",
+        "security": "Security Settings",
+        "authentication": "Authentication Settings",
+        "notifications": "Notifications"
+      },
+      "discover": {
+        "map": "Map",
+        "workers": {
+          "title": "Workers",
+          "detail": "Worker Details"
+        },
+        "employers": {
+          "title": "Employers",
+          "create": "Create Employer",
+          "detail": "Employer Details"
+        },
+        "jobs": {
+          "title": "Jobs",
+          "detail": "Job Details"
+        }
+      },
+      "organizations": {
+        "title": "Organizations",
+        "create": "Request Organization"
+      },
+      "teams": {
+        "title": "Teams",
+        "invitations": "Team Invitations",
+        "detail": "Team Details"
+      },
+      "workLogs": {
+        "title": "Work Logs",
+        "create": "Create Work Log",
+        "detail": "Work Log Detail"
+      },
+      "applications": {
+        "title": "Applications",
+        "inquiry": "Inquiry"
+      },
+      "user": "User Profile",
+      "assessments": {
+        "title": "Assessments",
+        "luscher": "Weekly Pulse",
+        "ipip": {
+          "title": "Personality",
+          "results": "Assessment Results",
+          "shared": "Shared Assessment"
+        },
+        "riasec": "Career Interests",
+        "occupation": "Occupation Preferences"
+      },
+      "news": "Industry News"
+    },
+    "office": {
+      "title": "Office",
+      "cms": {
+        "title": "Content Management",
+        "welcome": {
+          "title": "Welcome Slides",
+          "create": "Create Slide",
+          "edit": "Edit Slide"
+        },
+        "workers": {
+          "title": "Workers",
+          "create": "Create Worker",
+          "edit": "Edit Worker"
+        },
+        "jobs": {
+          "title": "Jobs",
+          "create": "Create Job",
+          "edit": "Edit Job"
+        },
+        "organizations": {
+          "title": "Organizations",
+          "create": "Create Organization",
+          "edit": "Edit Organization"
+        },
+        "teams": {
+          "title": "Teams",
+          "create": "Create Team",
+          "detail": {
+            "title": "Team Detail",
+            "edit": "Edit Team",
+            "analytics": "Team Analytics",
+            "settings": "Team Settings"
+          }
+        },
+        "projects": {
+          "title": "Projects",
+          "create": "Create Project",
+          "detail": {
+            "title": "Project Detail",
+            "edit": "Edit Project"
+          }
+        },
+        "universities": {
+          "title": "Universities",
+          "create": "Create University",
+          "edit": "Edit University"
+        }
+      },
+      "ats": {
+        "title": "ATS",
+        "detail": "Application Detail",
+        "checks": {
+          "title": "Background Checks",
+          "request": "Request Background Check",
+          "admin": "Review Background Checks"
+        },
+        "idVerifications": "ID Verifications"
+      },
+      "applications": {
+        "title": "Applications",
+        "inquiry": "Inquiry Detail"
+      },
+      "notifications": "Notifications",
+      "storage": "Storage Analytics",
+      "payments": "Payment Analytics",
+      "transactions": "Transaction History",
+      "violations": "Violation Reports",
+      "settings": {
+        "title": "Office Settings",
+        "geographic": "Geographic Settings",
+        "stripe": "Stripe Payments"
+      }
+    }
+  }
+}

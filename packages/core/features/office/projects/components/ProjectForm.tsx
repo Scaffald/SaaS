@@ -1,11 +1,21 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Button, Spinner, TextArea, Select, Adapt, Sheet, Switch, Card } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
+import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
+import { ResponsiveSelect } from '@app/ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
-import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { ROUTES } from '@app/core/constants/routes'
+import { useEffect, useState } from 'react'
+import {
+  Button,
+  Card,
+  Input,
+  Spinner,
+  Switch,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
 
 type ProjectFormData = {
   name: string
@@ -56,8 +66,14 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
     status: initialData?.status || projectData?.project?.status || 'planning',
     start_date: initialData?.start_date || projectData?.project?.start_date || '',
     end_date: initialData?.end_date || projectData?.project?.end_date || '',
-    location_visibility: initialData?.location_visibility || projectData?.project?.location_visibility || 'organization_only',
-    location_visibility_override: initialData?.location_visibility_override || projectData?.project?.location_visibility_override || false,
+    location_visibility:
+      initialData?.location_visibility ||
+      projectData?.project?.location_visibility ||
+      'organization_only',
+    location_visibility_override:
+      initialData?.location_visibility_override ||
+      projectData?.project?.location_visibility_override ||
+      false,
   })
 
   const { data: orgData } = api.organizations.getOrganization.useQuery(
@@ -69,10 +85,15 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   useEffect(() => {
     if (orgData?.default_project_location_visibility && !formData.location_visibility_override) {
       const orgVisibility = orgData.default_project_location_visibility
-      if (orgVisibility === 'public' || orgVisibility === 'authenticated' || orgVisibility === 'organization_only' || orgVisibility === 'private') {
-        setFormData(prev => ({
+      if (
+        orgVisibility === 'public' ||
+        orgVisibility === 'authenticated' ||
+        orgVisibility === 'organization_only' ||
+        orgVisibility === 'private'
+      ) {
+        setFormData((prev) => ({
           ...prev,
-          location_visibility: orgVisibility
+          location_visibility: orgVisibility,
         }))
       }
     }
@@ -95,7 +116,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           location_visibility_override: formData.location_visibility_override,
         })
         toast.show('Project created successfully', { variant: 'success' })
-        router.push(ROUTES.OFFICE_CMS_PROJECTS.path)
+        router.push(ROUTES.OFFICE.CMS.PROJECTS.path)
       } else if (projectId) {
         await updateMutation.mutateAsync({
           id: projectId,
@@ -130,36 +151,17 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           <YStack gap="$2">
             <Text fontWeight="600">Organization</Text>
             {organizationsData && (
-              <Select
+              <ResponsiveSelect
                 value={formData.organization_id}
-                onValueChange={(value) => setFormData(prev => ({ ...prev, organization_id: value }))}
-              >
-                <Select.Trigger>
-                  <Select.Value placeholder="Select organization" />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.Viewport>
-                    {organizationsData.map((org: typeof organizationsData[0], index: number) => (
-                      <Select.Item key={org.id} value={org.id} index={index}>
-                        <Select.ItemText>{org.name}</Select.ItemText>
-                        <Select.ItemIndicator marginLeft="auto">
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                </Select.Content>
-              </Select>
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, organization_id: value }))
+                }
+                placeholder="Select organization"
+                options={organizationsData.map((org: (typeof organizationsData)[0]) => ({
+                  value: org.id,
+                  label: org.name,
+                }))}
+              />
             )}
           </YStack>
 
@@ -167,7 +169,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             <Text fontWeight="600">Project Name *</Text>
             <Input
               value={formData.name}
-              onChangeText={(value) => setFormData(prev => ({ ...prev, name: value }))}
+              onChangeText={(value) => setFormData((prev) => ({ ...prev, name: value }))}
               placeholder="Enter project name"
             />
           </YStack>
@@ -176,7 +178,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             <Text fontWeight="600">Description</Text>
             <TextArea
               value={formData.description}
-              onChangeText={(value) => setFormData(prev => ({ ...prev, description: value }))}
+              onChangeText={(value) => setFormData((prev) => ({ ...prev, description: value }))}
               placeholder="Enter project description"
               style={{ minHeight: 100 }}
             />
@@ -185,47 +187,31 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           <XStack gap="$4">
             <YStack gap="$2" flex={1}>
               <Text fontWeight="600">Status</Text>
-              <Select
+              <ResponsiveSelect
                 value={formData.status}
                 onValueChange={(value) => {
-                  if (value === 'planning' || value === 'active' || value === 'completed' || value === 'on_hold') {
-                    setFormData(prev => ({ ...prev, status: value }))
+                  if (
+                    value === 'planning' ||
+                    value === 'active' ||
+                    value === 'completed' ||
+                    value === 'on_hold'
+                  ) {
+                    setFormData((prev) => ({ ...prev, status: value }))
                   }
                 }}
-              >
-                <Select.Trigger>
-                  <Select.Value />
-                </Select.Trigger>
-                <Adapt when="sm" platform="touch">
-                  <Sheet modal dismissOnSnapToBottom>
-                    <Sheet.Frame>
-                      <Sheet.ScrollView>
-                        <Adapt.Contents />
-                      </Sheet.ScrollView>
-                    </Sheet.Frame>
-                    <Sheet.Overlay />
-                  </Sheet>
-                </Adapt>
-                <Select.Content zIndex={200000}>
-                  <Select.Viewport>
-                    {STATUS_OPTIONS.map((option, index) => (
-                      <Select.Item key={option.value} value={option.value} index={index}>
-                        <Select.ItemText>{option.label}</Select.ItemText>
-                        <Select.ItemIndicator marginLeft="auto">
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                </Select.Content>
-              </Select>
+                placeholder="Select status"
+                options={STATUS_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: option.label,
+                }))}
+              />
             </YStack>
 
             <YStack gap="$2" flex={1}>
               <Text fontWeight="600">Start Date</Text>
               <Input
                 value={formData.start_date}
-                onChangeText={(value) => setFormData(prev => ({ ...prev, start_date: value }))}
+                onChangeText={(value) => setFormData((prev) => ({ ...prev, start_date: value }))}
                 placeholder="YYYY-MM-DD"
               />
             </YStack>
@@ -234,7 +220,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               <Text fontWeight="600">End Date</Text>
               <Input
                 value={formData.end_date}
-                onChangeText={(value) => setFormData(prev => ({ ...prev, end_date: value }))}
+                onChangeText={(value) => setFormData((prev) => ({ ...prev, end_date: value }))}
                 placeholder="YYYY-MM-DD"
               />
             </YStack>
@@ -243,11 +229,13 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
           <Card p="$4" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
             <YStack gap="$4">
               <Text fontWeight="600">Location Visibility Settings</Text>
-              
+
               <XStack gap="$2" items="center">
                 <Switch
                   checked={formData.location_visibility_override}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, location_visibility_override: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, location_visibility_override: checked }))
+                  }
                 />
                 <Text>Override organization's global setting</Text>
               </XStack>
@@ -262,56 +250,39 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
 
               <YStack gap="$2">
                 <Text fontWeight="600">Visibility Level</Text>
-                <Select
+                <ResponsiveSelect
                   value={formData.location_visibility}
                   onValueChange={(value) => {
-                    if (value === 'public' || value === 'authenticated' || value === 'organization_only' || value === 'private') {
-                      setFormData(prev => ({ ...prev, location_visibility: value }))
+                    if (
+                      value === 'public' ||
+                      value === 'authenticated' ||
+                      value === 'organization_only' ||
+                      value === 'private'
+                    ) {
+                      setFormData((prev) => ({ ...prev, location_visibility: value }))
                     }
                   }}
-                >
-                  <Select.Trigger>
-                    <Select.Value />
-                  </Select.Trigger>
-                  <Adapt when="sm" platform="touch">
-                    <Sheet modal dismissOnSnapToBottom>
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay />
-                    </Sheet>
-                  </Adapt>
-                  <Select.Content zIndex={200000}>
-                    <Select.Viewport>
-                      {VISIBILITY_OPTIONS.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                          <Select.ItemIndicator marginLeft="auto">
-                            <Check size={16} />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select>
+                  placeholder="Select visibility"
+                  options={VISIBILITY_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: option.label,
+                  }))}
+                />
                 <Text fontSize="$2" color="$gray10">
                   {formData.location_visibility === 'public' && 'Anyone can see exact locations'}
-                  {formData.location_visibility === 'authenticated' && 'Only logged-in users see exact locations'}
-                  {formData.location_visibility === 'organization_only' && 'Only organization members see exact locations'}
-                  {formData.location_visibility === 'private' && 'Only project team and admins see exact locations'}
+                  {formData.location_visibility === 'authenticated' &&
+                    'Only logged-in users see exact locations'}
+                  {formData.location_visibility === 'organization_only' &&
+                    'Only organization members see exact locations'}
+                  {formData.location_visibility === 'private' &&
+                    'Only project team and admins see exact locations'}
                 </Text>
               </YStack>
             </YStack>
           </Card>
 
           <XStack gap="$4" justify="flex-end">
-            <Button
-              variant="outlined"
-              onPress={() => router.back()}
-              disabled={isLoading}
-            >
+            <Button variant="outlined" onPress={() => router.back()} disabled={isLoading}>
               Cancel
             </Button>
             <Button
@@ -327,4 +298,3 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
     </YStack>
   )
 }
-

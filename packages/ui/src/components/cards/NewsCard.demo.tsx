@@ -1,4 +1,4 @@
-import { Text, YStack, XStack, Button } from 'tamagui'
+import { Button, Text, XStack, YStack } from 'tamagui'
 import { NewsCard } from './NewsCard'
 
 /**

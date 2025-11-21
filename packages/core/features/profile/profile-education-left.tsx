@@ -1,29 +1,49 @@
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
-import { YStack, XStack, Text, Input, H4, TextArea, ScrollView, Spinner, Label, Popover, Separator } from 'tamagui'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, X, ChevronDown } from '@tamagui/lucide-icons'
+import { api } from '@app/core/utils/api'
 import {
-  educationProfileSchema,
+  UIButton as Button,
+  ConfirmationDialog,
+  CustomCheckbox,
+  DashboardWidget,
+  FieldError,
+  MonthYearPicker,
+  Popover,
+  UniversityAutocomplete,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ChevronDown, Plus, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import {
+  H4,
+  Input,
+  Label,
+  ScrollView,
+  Separator,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from 'tamagui'
+import {
+  createNewEducationEntry,
+  DEGREE_TYPE_OPTIONS,
+  EDUCATION_LEVEL_OPTIONS,
   type EducationProfileFormData,
   educationProfileDefaults,
-  EDUCATION_LEVEL_OPTIONS,
-  DEGREE_TYPE_OPTIONS,
-  createNewEducationEntry,
+  educationProfileSchema,
 } from './config'
 import type { EducationEntry, EducationEntryFormValues } from './types/education'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker, FieldError } from '@app/ui'
-import { api } from '@app/core/utils/api'
+import { normalizeEducationEntry } from './utils/education-entry'
 import { invalidateProfileQueries } from './utils/profile-sync'
-import { useToastController } from '@tamagui/toast'
 import {
-  startProfileSync,
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
+  startProfileSync,
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
-import { normalizeEducationEntry } from './utils/education-entry'
 
 interface SaveEducationInput {
   education_level?: string | null
@@ -79,26 +99,26 @@ export function ProfileEducationLeft() {
   const isSyncing = syncStatus === 'syncing'
 
   // Queries
-  const educationQuery = api.profile.getEducation.useQuery()
-  const educationLevelQuery = api.profile.getEducationLevel.useQuery()
+  const educationQuery = api.profile.education.getEducation.useQuery()
+  const educationLevelQuery = api.profile.education.getEducationLevel.useQuery()
   const utils = api.useContext()
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Mutations
-  const saveEducationMutation = api.profile.saveEducation.useMutation({
+  const saveEducationMutation = api.profile.education.saveEducation.useMutation({
     async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
       resetProfileSyncError()
       startProfileSync()
       await Promise.all([
-        utils.profile.getEducation.cancel(),
-        utils.profile.getEducationLevel.cancel(),
+        utils.profile.education.getEducation.cancel(),
+        utils.profile.education.getEducationLevel.cancel(),
       ])
 
-      const previousEducation = utils.profile.getEducation.getData()
-      const previousLevel = utils.profile.getEducationLevel.getData()
+      const previousEducation = utils.profile.education.getEducation.getData()
+      const previousLevel = utils.profile.education.getEducationLevel.getData()
 
-      utils.profile.getEducation.setData(undefined, input.education_entries ?? [])
-      utils.profile.getEducationLevel.setData(undefined, {
+      utils.profile.education.getEducation.setData(undefined, input.education_entries ?? [])
+      utils.profile.education.getEducationLevel.setData(undefined, {
         education_level: input.education_level ?? null,
       })
 
@@ -107,10 +127,10 @@ export function ProfileEducationLeft() {
     onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
-        utils.profile.getEducation.setData(undefined, context.previousEducation)
+        utils.profile.education.getEducation.setData(undefined, context.previousEducation)
       }
       if (context?.previousLevel) {
-        utils.profile.getEducationLevel.setData(undefined, context.previousLevel)
+        utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel)
       }
       failProfileSync()
       toast.show('Save Failed', {
@@ -264,6 +284,21 @@ export function ProfileEducationLeft() {
       originalDataRef.current = formData
     }
   }, [educationQuery.data, educationLevelQuery.data, reset])
+
+  // Browser navigation guard - prevent data loss on page close/navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault()
+        e.returnValue = '' // Required for Chrome
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [isDirty])
 
   const onSubmit = async (data: EducationProfileFormData) => {
     setIsLoading(true)
@@ -450,6 +485,9 @@ export function ProfileEducationLeft() {
                                       nameField.onChange(text)
                                       universityField.onChange(null)
                                     }}
+                                    aria-label="Institution name"
+                                    accessibilityLabel="Institution name"
+                                    aria-required="true"
                                   />
                                   <FieldError message={entryErrors?.institution_name?.message} />
                                   <Button
@@ -518,6 +556,8 @@ export function ProfileEducationLeft() {
                                     placeholder="Specify degree type"
                                     value={customField.value || ''}
                                     onChangeText={customField.onChange}
+                                    aria-label="Custom degree type"
+                                    accessibilityLabel="Custom degree type"
                                   />
                                   <FieldError message={entryErrors?.custom_degree_type?.message} />
                                 </>
@@ -541,6 +581,8 @@ export function ProfileEducationLeft() {
                         placeholder="e.g. Computer Science"
                         value={field.value || ''}
                         onChangeText={field.onChange}
+                        aria-label="Field of study"
+                        accessibilityLabel="Field of study"
                       />
                     )}
                   />
@@ -566,6 +608,8 @@ export function ProfileEducationLeft() {
                           <Input
                             placeholder="e.g. 3.5 (0.0 - 4.0)"
                             value={localValue}
+                            aria-label="GPA"
+                            accessibilityLabel="GPA"
                             onChangeText={(text) => {
                               // Allow empty string
                               if (text === '') {

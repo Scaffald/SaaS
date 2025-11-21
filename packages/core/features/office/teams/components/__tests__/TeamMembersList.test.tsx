@@ -1,7 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
-import type { ReactNode } from 'react'
+import { render, screen } from '@testing-library/react'
+import type { ReactElement, ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseQuery = vi.fn()
 const mockUseMutation = vi.fn()
@@ -40,42 +39,54 @@ vi.mock('tamagui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
-    <button type="button" onClick={onPress}>{children}</button>
+    <button type="button" onClick={onPress}>
+      {children}
+    </button>
   )
   const Card = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Avatar = ({ children }: { children?: ReactNode; circular?: boolean; size?: string }) => (
     <div>{children}</div>
   )
-  const AvatarImage = ({ source }: { source?: { uri?: string } }) => <img src={source?.uri} alt="" />
+  const AvatarImage = ({ source }: { source?: { uri?: string } }) => (
+    <img src={source?.uri} alt="" />
+  )
   const AvatarFallback = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   Avatar.Image = AvatarImage
   Avatar.Fallback = AvatarFallback
-  
+
   const AlertDialogOverlay = () => <div data-testid="alert-overlay" />
   const AlertDialogContent = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const AlertDialogTitle = ({ children }: { children?: ReactNode }) => <h2>{children}</h2>
   const AlertDialogDescription = ({ children }: { children?: ReactNode }) => <p>{children}</p>
-  const AlertDialogCancel = ({ children, asChild }: { children?: ReactNode; asChild?: boolean }) => (
-    asChild ? <>{children}</> : <button type="button">{children}</button>
+  const AlertDialogCancel = ({ children, asChild }: { children?: ReactNode; asChild?: boolean }) =>
+    asChild ? (children as ReactElement) : <button type="button">{children}</button>
+  const AlertDialogAction = ({ children, asChild }: { children?: ReactNode; asChild?: boolean }) =>
+    asChild ? (children as ReactElement) : <button type="button">{children}</button>
+  const AlertDialogPortal = ({ children }: { children?: ReactNode }) => children as ReactElement
+
+  const AlertDialog = Object.assign(
+    ({ open, children }: { open: boolean; children?: ReactNode }) =>
+      open ? <div>{children}</div> : null,
+    {
+      Portal: AlertDialogPortal,
+      Overlay: AlertDialogOverlay,
+      Content: AlertDialogContent,
+      Title: AlertDialogTitle,
+      Description: AlertDialogDescription,
+      Cancel: AlertDialogCancel,
+      Action: AlertDialogAction,
+    }
   )
-  const AlertDialogAction = ({ children, asChild }: { children?: ReactNode; asChild?: boolean }) => (
-    asChild ? <>{children}</> : <button type="button">{children}</button>
-  )
-  const AlertDialogPortal = ({ children }: { children?: ReactNode }) => <>{children}</>
-  
-  const AlertDialog = Object.assign(({ open, children }: { open: boolean; children?: ReactNode }) => (
-    open ? <div>{children}</div> : null
-  ), {
-    Portal: AlertDialogPortal,
-    Overlay: AlertDialogOverlay,
-    Content: AlertDialogContent,
-    Title: AlertDialogTitle,
-    Description: AlertDialogDescription,
-    Cancel: AlertDialogCancel,
-    Action: AlertDialogAction,
-  })
-  
-  const TextArea = ({ value, onChangeText, placeholder }: { value?: string; onChangeText?: (text: string) => void; placeholder?: string }) => (
+
+  const TextArea = ({
+    value,
+    onChangeText,
+    placeholder,
+  }: {
+    value?: string
+    onChangeText?: (text: string) => void
+    placeholder?: string
+  }) => (
     <textarea
       value={value || ''}
       onChange={(e) => onChangeText?.(e.target.value)}
@@ -83,7 +94,7 @@ vi.mock('tamagui', () => {
     />
   )
   const Spinner = () => <span>Loading</span>
-  
+
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     YStack: Stack,
@@ -133,7 +144,13 @@ vi.mock('../RemoveMemberModal', () => ({
 }))
 
 vi.mock('../TeamMemberRoleSelect', () => ({
-  TeamMemberRoleSelect: ({ value, onValueChange }: { value?: string; onValueChange?: (value: string) => void }) => (
+  TeamMemberRoleSelect: ({
+    value,
+    onValueChange,
+  }: {
+    value?: string
+    onValueChange?: (value: string) => void
+  }) => (
     <select value={value} onChange={(e) => onValueChange?.(e.target.value)}>
       <option value="role-1">Member</option>
     </select>
@@ -142,9 +159,7 @@ vi.mock('../TeamMemberRoleSelect', () => ({
 
 vi.mock('../../hooks/useTeamFormOptions', () => ({
   useTeamFormOptions: () => ({
-    roles: [
-      { id: 'role-1', key: 'member', name: 'Member' },
-    ],
+    roles: [{ id: 'role-1', key: 'member', name: 'Member' }],
     isLoading: false,
   }),
 }))
@@ -201,4 +216,3 @@ describe('TeamMembersList', () => {
     expect(loadingElements.length).toBeGreaterThan(0)
   })
 })
-

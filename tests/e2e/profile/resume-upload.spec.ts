@@ -1,7 +1,6 @@
-import { Buffer } from 'buffer'
-
 import type { Route } from '@playwright/test'
 import { expect, test } from '@playwright/test'
+import { Buffer } from 'buffer'
 
 const TEST_RESUME_CONTENT = 'Playwright test resume content.'
 const TEST_RESUME_NAME = 'playwright-resume.pdf'
@@ -48,25 +47,45 @@ test.describe('Profile resume import workflow', () => {
       completedSteps: [],
       parsedData: {},
       errors: [
-        { section: 'general', message: 'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.' },
-        { section: 'experience', message: 'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.' },
-        { section: 'education', message: 'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.' },
-        { section: 'skills', message: 'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.' },
-        { section: 'certifications', message: 'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.' },
-        { section: 'employment', message: 'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.' },
+        {
+          section: 'general',
+          message:
+            'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.',
+        },
+        {
+          section: 'experience',
+          message:
+            'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.',
+        },
+        {
+          section: 'education',
+          message:
+            'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.',
+        },
+        {
+          section: 'skills',
+          message:
+            'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.',
+        },
+        {
+          section: 'certifications',
+          message:
+            'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.',
+        },
+        {
+          section: 'employment',
+          message:
+            'Resume parsing is disabled because the OpenAI API key is not configured. Please fill in this section manually.',
+        },
       ],
       startedAt: now,
       updatedAt: now,
       completedAt: null,
     }
 
-    await page.route(/\/trpc\/resume\.hasUploaded/, (route) =>
-      fulfillJson(route, { hasUploaded }),
-    )
+    await page.route(/\/trpc\/resume\.hasUploaded/, (route) => fulfillJson(route, { hasUploaded }))
 
-    await page.route(/\/trpc\/resume\.hasUploaded\.invalidate/, (route) =>
-      fulfillJson(route, null),
-    )
+    await page.route(/\/trpc\/resume\.hasUploaded\.invalidate/, (route) => fulfillJson(route, null))
 
     await page.route(/\/trpc\/resume\.upload/, async (route) => {
       uploadCalls += 1
@@ -89,16 +108,14 @@ test.describe('Profile resume import workflow', () => {
       })
     })
 
-    await page.route(/\/trpc\/resume\.getWizardState/, (route) =>
-      fulfillJson(route, wizardState),
-    )
+    await page.route(/\/trpc\/resume\.getWizardState/, (route) => fulfillJson(route, wizardState))
 
     await page.route(/\/trpc\/resume\.saveSection/, (route) =>
-      fulfillJson(route, { success: true }),
+      fulfillJson(route, { success: true })
     )
 
     await page.route(/\/trpc\/resume\.updateProgress/, (route) =>
-      fulfillJson(route, { success: true }),
+      fulfillJson(route, { success: true })
     )
 
     await page.route(/\/trpc\/profile\.getGeneral/, (route) =>
@@ -107,19 +124,15 @@ test.describe('Profile resume import workflow', () => {
         last_name: null,
         about: null,
         avatar_path: null,
-      }),
+      })
     )
 
-    await page.route(/\/trpc\/profile\.getExperience/, (route) =>
-      fulfillJson(route, []),
-    )
+    await page.route(/\/trpc\/profile\.getExperience/, (route) => fulfillJson(route, []))
 
-    await page.route(/\/trpc\/profile\.getEducation/, (route) =>
-      fulfillJson(route, []),
-    )
+    await page.route(/\/trpc\/profile\.getEducation/, (route) => fulfillJson(route, []))
 
     await page.route(/\/trpc\/profile\.skillsMultiTaxonomy\.getUserSkills/, (route) =>
-      fulfillJson(route, { skills: [] }),
+      fulfillJson(route, { skills: [] })
     )
 
     await page.route(/\/trpc\/profile\.certifications\.getUserCertificationTree/, (route) =>
@@ -127,12 +140,10 @@ test.describe('Profile resume import workflow', () => {
         depth0: [],
         depth1ByParent: {},
         depth2ByParent: {},
-      }),
+      })
     )
 
-    await page.route(/\/trpc\/profile\.getEmployment/, (route) =>
-      fulfillJson(route, null),
-    )
+    await page.route(/\/trpc\/profile\.getEmployment/, (route) => fulfillJson(route, null))
   })
 
   test('uploads a resume, triggers AI parsing, and redirects to review flow', async ({ page }) => {
@@ -163,7 +174,9 @@ test.describe('Profile resume import workflow', () => {
     expect(uploadCalls).toBe(1)
   })
 
-  test('shows validation error for files larger than 1MB without calling upload', async ({ page }) => {
+  test('shows validation error for files larger than 1MB without calling upload', async ({
+    page,
+  }) => {
     await page.goto('/dashboard/profile/general')
 
     const uploadButton = page.getByRole('button', { name: /upload resume/i })
@@ -179,7 +192,7 @@ test.describe('Profile resume import workflow', () => {
     })
 
     await expect(
-      page.getByText('File size exceeds 1MB limit. Please upload a smaller file.'),
+      page.getByText('File size exceeds 1MB limit. Please upload a smaller file.')
     ).toBeVisible()
     expect(uploadCalls).toBe(0)
   })
@@ -198,9 +211,7 @@ test.describe('Profile resume import workflow', () => {
       buffer: Buffer.from('Unsupported resume format.'),
     })
 
-    await expect(
-      page.getByText('Please upload a PDF or Word document.'),
-    ).toBeVisible()
+    await expect(page.getByText('Please upload a PDF or Word document.')).toBeVisible()
     expect(uploadCalls).toBe(0)
   })
 
@@ -245,16 +256,25 @@ test.describe('Profile resume import workflow', () => {
         startedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         completedAt: null,
-      }),
+      })
     )
 
     await page.goto(`/dashboard/profile/resume/review?resumeId=${RESUME_ID}`)
     await page.waitForTimeout(1000)
 
     // Check if parsed data is displayed
-    const nameVisible = await page.getByText(/john|doe/i).isVisible().catch(() => false)
-    const experienceVisible = await page.getByText(/lead electrician|abc corp/i).isVisible().catch(() => false)
-    const skillsVisible = await page.getByText(/electrical wiring|panel installation/i).isVisible().catch(() => false)
+    const nameVisible = await page
+      .getByText(/john|doe/i)
+      .isVisible()
+      .catch(() => false)
+    const experienceVisible = await page
+      .getByText(/lead electrician|abc corp/i)
+      .isVisible()
+      .catch(() => false)
+    const skillsVisible = await page
+      .getByText(/electrical wiring|panel installation/i)
+      .isVisible()
+      .catch(() => false)
 
     // At least some parsed data should be visible
     expect(nameVisible || experienceVisible || skillsVisible || true).toBeTruthy()
@@ -262,7 +282,9 @@ test.describe('Profile resume import workflow', () => {
 
   test('user can select sections to import', async ({ page }) => {
     const parsedData = {
-      general: [{ first_name: 'John', last_name: 'Doe', headline: 'Electrician', confidence_score: 85 }],
+      general: [
+        { first_name: 'John', last_name: 'Doe', headline: 'Electrician', confidence_score: 85 },
+      ],
       experience: [{ job_title: 'Electrician', company_name: 'ABC Corp', confidence_score: 80 }],
       skills: [{ name: 'Electrical Wiring', confidence_score: 75 }],
     }
@@ -279,7 +301,7 @@ test.describe('Profile resume import workflow', () => {
         startedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         completedAt: null,
-      }),
+      })
     )
 
     await page.goto(`/dashboard/profile/resume/review?resumeId=${RESUME_ID}`)
@@ -302,8 +324,20 @@ test.describe('Profile resume import workflow', () => {
       fulfillJson(route, {
         completionPercentage,
         sectionProgress: [
-          { id: 'general', title: 'General', completed: completionPercentage >= 20, weight: 20, missingFields: [] },
-          { id: 'skills', title: 'Skills', completed: completionPercentage >= 40, weight: 20, missingFields: [] },
+          {
+            id: 'general',
+            title: 'General',
+            completed: completionPercentage >= 20,
+            weight: 20,
+            missingFields: [],
+          },
+          {
+            id: 'skills',
+            title: 'Skills',
+            completed: completionPercentage >= 40,
+            weight: 20,
+            missingFields: [],
+          },
         ],
         milestoneBadges: [],
         incompleteSections: completionPercentage < 40 ? ['skills'] : [],
@@ -313,7 +347,7 @@ test.describe('Profile resume import workflow', () => {
           dismissed: {},
         },
         updatedAt: new Date().toISOString(),
-      }),
+      })
     )
 
     await page.route(/\/trpc\/resume\.saveSection/, (route) => {
@@ -328,7 +362,10 @@ test.describe('Profile resume import workflow', () => {
     await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 })
     await page.waitForTimeout(1000)
 
-    const updatedPercentage = await page.getByText(/40%|completion/i).isVisible().catch(() => false)
+    const updatedPercentage = await page
+      .getByText(/40%|completion/i)
+      .isVisible()
+      .catch(() => false)
     expect(updatedPercentage || true).toBeTruthy()
   })
 

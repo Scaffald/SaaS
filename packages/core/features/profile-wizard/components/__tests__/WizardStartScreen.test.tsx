@@ -132,7 +132,7 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     expect(screen.getByTestId('profile-wizard-start-screen')).toBeInTheDocument()
@@ -147,7 +147,7 @@ describe('WizardStartScreen', () => {
         onUploadResume={onUploadResume}
         onSkip={onSkip}
         completionPercentage={42}
-      />,
+      />
     )
 
     expect(screen.getByText(/You're 42% complete/i)).toBeInTheDocument()
@@ -159,7 +159,7 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     expect(screen.getByText('General Info')).toBeInTheDocument()
@@ -176,7 +176,7 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     expect(screen.getAllByText('2 min').length).toBeGreaterThan(0)
@@ -189,7 +189,7 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     const startButton = screen.getByText('Start Wizard')
@@ -204,7 +204,7 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     const uploadButton = screen.getByText('Upload Resume')
@@ -219,7 +219,7 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     const skipButton = screen.getByText('Skip and Edit Later')
@@ -235,7 +235,7 @@ describe('WizardStartScreen', () => {
         onUploadResume={onUploadResume}
         onSkip={onSkip}
         totalEstimatedMinutes={13}
-      />,
+      />
     )
 
     expect(screen.getByText('13 minutes')).toBeInTheDocument()
@@ -247,7 +247,7 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     // Total should be sum of all step times: 2+2+3+2+2+2 = 13
@@ -261,11 +261,10 @@ describe('WizardStartScreen', () => {
         onStartWizard={onStartWizard}
         onUploadResume={onUploadResume}
         onSkip={onSkip}
-      />,
+      />
     )
 
     expect(screen.getByText(/Introduce yourself with your name/i)).toBeInTheDocument()
     expect(screen.getByText(/Highlight the top skills/i)).toBeInTheDocument()
   })
 })
-

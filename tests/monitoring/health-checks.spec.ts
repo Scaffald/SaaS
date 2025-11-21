@@ -7,7 +7,7 @@
  * Task 12: Implement API Health Check and Status Endpoints
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('API Health Check Testing', () => {
   test('health check endpoint responds', async ({ page }) => {
@@ -54,7 +54,8 @@ test.describe('API Health Check Testing', () => {
 
       if (bodyJson) {
         // Health check should include database status
-        const hasDatabase = bodyJson.database || bodyJson.db || bodyJson.postgres || bodyJson.supabase
+        const hasDatabase =
+          bodyJson.database || bodyJson.db || bodyJson.postgres || bodyJson.supabase
         // Health check should include external services status
         const hasServices = bodyJson.services || bodyJson.external || bodyJson.status
 
@@ -70,4 +71,3 @@ test.describe('API Health Check Testing', () => {
     }
   })
 })
-

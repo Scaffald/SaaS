@@ -2,11 +2,15 @@
   "name": "@app/ui",
   "version": "0.0.1",
   "private": true,
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "types": "./src",
   "main": "src/index.tsx",
   "module:jsx": "src",
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "exports": {
     ".": "./src/index.tsx",
     "./styleguide": "./src/styleguide/index.ts",
@@ -33,17 +37,13 @@
     "@hookform/resolvers": "catalog:",
     "@tamagui/animations-moti": "catalog:",
     "@tamagui/animations-react-native": "catalog:",
-    "@tamagui/cli": "catalog:",
+    "@tamagui/cli": "^1.138.0",
     "@tamagui/config": "catalog:",
     "@tamagui/core": "catalog:",
-    "@tamagui/create-theme": "^1.135.0",
     "@tamagui/font-inter": "catalog:",
     "@tamagui/helpers-icon": "catalog:",
     "@tamagui/lucide-icons": "catalog:",
-    "@tamagui/react-native-media-driver": "catalog:",
-    "@tamagui/shorthands": "catalog:",
-    "@tamagui/theme-builder": "^1.135.0",
-    "@tamagui/themes": "catalog:",
+    "@tamagui/theme-builder": "catalog:",
     "@tamagui/toast": "catalog:",
     "@tanstack/react-table": "catalog:",
     "@tiptap/core": "^2.27.1",

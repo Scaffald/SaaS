@@ -1,13 +1,12 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { ArrowLeft } from '@tamagui/lucide-icons'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import { ROUTES } from '@app/core/constants/routes'
 import { TeamSettingsForm } from '@app/core/features/office/components/TeamSettingsForm'
 import { api } from '@app/core/utils/api'
 import { useUserRoles } from '@app/core/utils/auth/useUserRoles'
 import type { AppRouter } from '@app/supabase/client-types'
+import { ArrowLeft } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -41,7 +40,7 @@ export default function OfficeTeamSettingsPage() {
         title="Team not specified"
         description="Provide a team identifier to manage settings."
         actionLabel="Back to teams"
-        onAction={() => router.replace(ROUTES.OFFICE_CMS_TEAMS.path)}
+        onAction={() => router.replace(ROUTES.OFFICE.CMS.TEAMS.path)}
       />
     )
   }
@@ -83,7 +82,7 @@ export default function OfficeTeamSettingsPage() {
             size="$2"
             variant="outlined"
             icon={ArrowLeft}
-            onPress={() => router.push(ROUTES.OFFICE_CMS_TEAMS.path)}
+            onPress={() => router.push(ROUTES.OFFICE.CMS.TEAMS.path)}
           >
             Back to teams
           </Button>

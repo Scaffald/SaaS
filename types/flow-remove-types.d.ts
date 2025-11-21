@@ -13,7 +13,6 @@ declare module 'flow-remove-types' {
 
   export default function flowRemoveTypes(
     code: string,
-    options?: FlowRemoveTypesOptions,
+    options?: FlowRemoveTypesOptions
   ): FlowRemoveTypesResult
 }
-

@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProfileEducationRight } from '../profile-education-right'
@@ -49,10 +48,9 @@ vi.mock('../components', () => ({
 
 vi.mock('@app/ui', () => {
   const React = require('react') as typeof import('react')
-  const createView =
-    (element = 'div') =>
+  const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
+      React.createElement(element, { ref, ...rest }, children)
     )
 
   const Button = React.forwardRef<
@@ -72,10 +70,9 @@ vi.mock('@app/ui', () => {
 
 vi.mock('tamagui', () => {
   const React = require('react') as typeof import('react')
-  const createView =
-    (element = 'div') =>
+  const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>
-      React.createElement(element, { ref, ...rest }, children),
+      React.createElement(element, { ref, ...rest }, children)
     )
 
   const DialogRoot = ({
@@ -115,7 +112,9 @@ vi.mock('tamagui', () => {
       Content: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
       Title: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
       Description: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
-      Close: ({ children }: { children: React.ReactNode }) => <button type="button">{children}</button>,
+      Close: ({ children }: { children: React.ReactNode }) => (
+        <button type="button">{children}</button>
+      ),
     }),
   }
 })
@@ -206,10 +205,9 @@ describe('ProfileEducationRight', () => {
     const confirmButtons = screen.getAllByRole('button', { name: /^Delete$/i })
     fireEvent.click(confirmButtons[confirmButtons.length - 1])
 
-    await waitFor(
-      () => expect(deleteMutationSpy).toHaveBeenCalledWith({ educationId: 'ed-2' }),
-      { timeout: 1000 },
-    )
+    await waitFor(() => expect(deleteMutationSpy).toHaveBeenCalledWith({ educationId: 'ed-2' }), {
+      timeout: 1000,
+    })
   })
 
   it('renders formatted date ranges and location metadata', () => {
@@ -221,4 +219,3 @@ describe('ProfileEducationRight', () => {
     expect(screen.getByText('Remote')).toBeInTheDocument()
   })
 })
-

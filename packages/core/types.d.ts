@@ -5,4 +5,3 @@ export type Conf = typeof config
 declare module '@app/ui' {
   interface TamaguiCustomConfig extends Conf {}
 }
-

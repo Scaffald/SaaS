@@ -1,57 +1,48 @@
-import { useState } from "react";
-import {
-  AlertDialog,
-  Button,
-  Card,
-  Input,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from "tamagui";
-import { AlertTriangle, Trash2 } from "@tamagui/lucide-icons";
-
-import { api } from "@app/core/utils/api";
-import { useToast } from "@app/ui";
+import { api } from '@app/core/utils/api'
+import { useToast } from '@app/ui'
+import { AlertTriangle, Trash2 } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { AlertDialog, Button, Card, Input, Text, TextArea, XStack, YStack } from 'tamagui'
 
 export function AccountDeletionPanel() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [reason, setReason] = useState("");
-  const [confirmText, setConfirmText] = useState("");
-  const toast = useToast();
+  const [isOpen, setIsOpen] = useState(false)
+  const [reason, setReason] = useState('')
+  const [confirmText, setConfirmText] = useState('')
+  const toast = useToast()
 
   const deletionMutation = api.accountDeletion.requestWorkerDeletion.useMutation({
     onSuccess: () => {
-      toast.show("Account deletion requested", {
-        message: "Your account deletion request has been submitted. You will be logged out shortly.",
+      toast.show('Account deletion requested', {
+        message:
+          'Your account deletion request has been submitted. You will be logged out shortly.',
         duration: 5000,
-      });
-      setIsOpen(false);
-      setReason("");
-      setConfirmText("");
+      })
+      setIsOpen(false)
+      setReason('')
+      setConfirmText('')
       // In production, redirect to logout or show confirmation page
     },
     onError: (error: { message?: string }) => {
-      toast.show("Deletion request failed", {
-        message: error.message || "Failed to submit deletion request. Please try again.",
-        variant: "destructive",
-      });
+      toast.show('Deletion request failed', {
+        message: error.message || 'Failed to submit deletion request. Please try again.',
+        variant: 'destructive',
+      })
     },
-  });
+  })
 
   const handleDelete = () => {
-    if (confirmText !== "DELETE") {
-      toast.show("Confirmation required", {
+    if (confirmText !== 'DELETE') {
+      toast.show('Confirmation required', {
         message: 'Please type "DELETE" to confirm account deletion.',
-        variant: "destructive",
-      });
-      return;
+        variant: 'destructive',
+      })
+      return
     }
 
     deletionMutation.mutate({
       reason: reason || undefined,
-    });
-  };
+    })
+  }
 
   return (
     <Card borderWidth={1} borderColor="$red6" bg="$red2" p="$4">
@@ -68,9 +59,8 @@ export function AccountDeletionPanel() {
         </Text>
 
         <Text color="$color10" fontSize="$2">
-          • All payment data will be anonymized
-          • Your profile will be removed
-          • You will lose access to all organizations and teams
+          • All payment data will be anonymized • Your profile will be removed • You will lose
+          access to all organizations and teams
         </Text>
 
         <Button
@@ -118,7 +108,7 @@ export function AccountDeletionPanel() {
                     value={confirmText}
                     onChangeText={setConfirmText}
                     placeholder="DELETE"
-                    borderColor={confirmText === "DELETE" ? "$green8" : "$red8"}
+                    borderColor={confirmText === 'DELETE' ? '$green8' : '$red8'}
                   />
                 </YStack>
 
@@ -126,9 +116,9 @@ export function AccountDeletionPanel() {
                   <Button
                     variant="outlined"
                     onPress={() => {
-                      setIsOpen(false);
-                      setConfirmText("");
-                      setReason("");
+                      setIsOpen(false)
+                      setConfirmText('')
+                      setReason('')
                     }}
                     disabled={deletionMutation.isPending}
                   >
@@ -139,9 +129,9 @@ export function AccountDeletionPanel() {
                     color="white"
                     icon={Trash2}
                     onPress={handleDelete}
-                    disabled={confirmText !== "DELETE" || deletionMutation.isPending}
+                    disabled={confirmText !== 'DELETE' || deletionMutation.isPending}
                   >
-                    {deletionMutation.isPending ? "Deleting..." : "Delete Account"}
+                    {deletionMutation.isPending ? 'Deleting...' : 'Delete Account'}
                   </Button>
                 </XStack>
               </YStack>
@@ -150,6 +140,5 @@ export function AccountDeletionPanel() {
         </AlertDialog>
       </YStack>
     </Card>
-  );
+  )
 }
-

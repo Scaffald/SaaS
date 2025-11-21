@@ -8,7 +8,7 @@ packages:
 catalog:
   '@babel/core': ~7.26.0
   '@babel/runtime': ~7.18.9
-  '@biomejs/biome': ~1.9.4
+  '@biomejs/biome': ~2.3.6
   '@expo/metro-runtime': ~6.1.2
   '@hookform/resolvers': ~3.1.0
   '@react-native-async-storage/async-storage': 2.2.0
@@ -16,21 +16,17 @@ catalog:
   '@react-native-google-signin/google-signin': ~16.0.0
   '@rnmapbox/maps': ~10.1.45
   '@supabase/supabase-js': ~2.58.0
-  '@tamagui/animations-moti': ^1.135.0
-  '@tamagui/animations-react-native': ^1.135.0
-  '@tamagui/babel-plugin': ^1.135.0
-  '@tamagui/cli': ^1.135.0
-  '@tamagui/colors': ^1.135.0
-  '@tamagui/config': ^1.135.0
-  '@tamagui/core': ^1.135.0
-  '@tamagui/font-inter': ^1.135.0
-  '@tamagui/helpers-icon': ^1.135.0
-  '@tamagui/lucide-icons': ^1.135.0
-  '@tamagui/metro-plugin': ^1.135.0
-  '@tamagui/react-native-media-driver': ^1.135.0
-  '@tamagui/shorthands': ^1.135.0
-  '@tamagui/themes': ^1.135.0
-  '@tamagui/toast': ^1.135.0
+  '@tamagui/animations-moti': ^1.138.0
+  '@tamagui/animations-react-native': ^1.138.0
+  '@tamagui/babel-plugin': ^1.138.0
+  '@tamagui/config': ^1.138.0
+  '@tamagui/core': ^1.138.0
+  '@tamagui/font-inter': ^1.138.0
+  '@tamagui/helpers-icon': ^1.138.0
+  '@tamagui/lucide-icons': ^1.138.0
+  '@tamagui/metro-plugin': ^1.138.0
+  '@tamagui/theme-builder': ^1.138.0
+  '@tamagui/toast': ^1.138.0
   '@tanstack/react-query': ~5.90.1
   '@tanstack/react-table': ~8.20.5
   '@trpc/client': ~11.5.1
@@ -98,7 +94,7 @@ catalog:
   supabase: 2.47.2
   superjson: ~1.13.1
   swr: ~2.0.0
-  tamagui: ~1.135.0
+  tamagui: ^1.138.0
   turbo: ~2.5.8
   typescript: ~5.9.2
   zod: ~3.23.8

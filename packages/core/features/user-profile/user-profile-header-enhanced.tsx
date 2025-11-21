@@ -1,7 +1,16 @@
-import { YStack, XStack, Text, Button, Card, Avatar, Image } from 'tamagui'
-import { Star, MapPin, Award, DollarSign, Briefcase, MessageSquare, Edit3, Share2, MoreVertical } from '@tamagui/lucide-icons'
-import { useWindowDimensions } from 'tamagui'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import {
+  Award,
+  Briefcase,
+  DollarSign,
+  Edit3,
+  MapPin,
+  MessageSquare,
+  MoreVertical,
+  Share2,
+  Star,
+} from '@tamagui/lucide-icons'
+import { Avatar, Button, Card, Image, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
 
 interface UserProfileHeaderEnhancedProps {
   profile: {
@@ -169,7 +178,12 @@ export function UserProfileHeaderEnhanced({
               </Button>
             )}
             {canLeaveReview && onLeaveReview && (
-              <Button size={isMobile ? '$3' : '$4'} theme="info" icon={MessageSquare} onPress={onLeaveReview}>
+              <Button
+                size={isMobile ? '$3' : '$4'}
+                theme="info"
+                icon={MessageSquare}
+                onPress={onLeaveReview}
+              >
                 Leave Review
               </Button>
             )}
@@ -236,4 +250,3 @@ export function UserProfileHeaderEnhanced({
     </Card>
   )
 }
-

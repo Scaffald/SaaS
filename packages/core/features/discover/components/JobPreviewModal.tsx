@@ -1,15 +1,15 @@
-import { useState } from 'react'
-import { YStack, XStack, Text, Button, Separator, Spinner } from 'tamagui'
+import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@app/ui'
 import {
-  MapPin,
-  Building2,
-  DollarSign,
   Briefcase,
+  Building2,
   Clock,
+  DollarSign,
   ExternalLink,
+  MapPin,
 } from '@tamagui/lucide-icons'
-import { api } from '@app/core/utils/api'
+import { useState } from 'react'
+import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import { InternalJobDetailModal } from './InternalJobDetailModal'
 
 interface JobPreviewModalProps {

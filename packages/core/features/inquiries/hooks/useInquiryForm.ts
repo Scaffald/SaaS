@@ -1,9 +1,9 @@
+import { api } from '@app/core/utils/api'
+import { type InquiryCreateInput, inquiryCreateSchema } from '@app/schemas'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
 import { useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { inquiryCreateSchema, type InquiryCreateInput } from '@app/schemas'
-import { api } from '@app/core/utils/api'
-import { useToastController } from '@tamagui/toast'
 
 export interface UseInquiryFormOptions {
   applicationId: string
@@ -136,4 +136,3 @@ export function useInquiryForm({
     handleSend,
   }
 }
-

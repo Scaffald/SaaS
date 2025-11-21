@@ -1,7 +1,7 @@
+import type { Boundary, Coordinate } from '@app/schemas'
+import { Edit3, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { useEffect, useRef, useState } from 'react'
-import { YStack, XStack, Text, Button, Input, Card } from 'tamagui'
-import { Trash2, Plus, Edit3 } from '@tamagui/lucide-icons'
-import type { Coordinate, Boundary } from '@app/schemas'
+import { Button, Card, Input, Text, XStack, YStack } from 'tamagui'
 
 export interface SiteBoundaryDrawerProps {
   boundary?: Boundary
@@ -30,7 +30,7 @@ export function SiteBoundaryDrawer({
   onBoundaryChange,
   onAreaChange,
   center = [-84.5555, 42.7325],
-  zoom = 12,
+  zoom: _zoom = 12,
 }: SiteBoundaryDrawerProps) {
   const [coordinates, setCoordinates] = useState<Boundary>(boundary)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)

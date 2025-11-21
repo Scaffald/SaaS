@@ -1,8 +1,8 @@
-import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
-import { useRouter } from 'expo-router'
-import type { JSONContent } from '@tiptap/core'
-import { DashboardWidget, extractPlainText } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget, extractPlainText } from '@app/ui'
+import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
+import type { JSONContent } from '@tiptap/core'
+import { useRouter } from 'expo-router'
 import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type DiscoverEmployerDetailLeftProps = {
@@ -20,10 +20,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     data: employer,
     isLoading,
     isFetching,
-  } = api.employers.getEmployerById.useQuery(
-    { id: employerId },
-    { enabled: Boolean(employerId) }
-  )
+  } = api.employers.getEmployerById.useQuery({ id: employerId }, { enabled: Boolean(employerId) })
 
   if (!employerId) {
     return (
@@ -32,7 +29,18 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Employer not specified
           </Text>
-          <Button onPress={() => router.back()}>Go Back</Button>
+          <Button
+            onPress={() => {
+              // Try to go back, fallback to employers list if no history
+              try {
+                router.back()
+              } catch {
+                router.replace('/dashboard/discover/employers')
+              }
+            }}
+          >
+            Go Back
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -56,7 +64,18 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Employer not found
           </Text>
-          <Button onPress={() => router.back()}>Go Back</Button>
+          <Button
+            onPress={() => {
+              // Try to go back, fallback to employers list if no history
+              try {
+                router.back()
+              } catch {
+                router.replace('/dashboard/discover/employers')
+              }
+            }}
+          >
+            Go Back
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -72,7 +91,19 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     <DashboardWidget gap="$4">
       {/* Header with Back Button */}
       <XStack items="center" gap="$3">
-        <Button size="$3" variant="outlined" icon={ArrowLeft} onPress={() => router.back()}>
+        <Button
+          size="$3"
+          variant="outlined"
+          icon={ArrowLeft}
+          onPress={() => {
+            // Try to go back, fallback to employers list if no history
+            try {
+              router.back()
+            } catch {
+              router.replace('/dashboard/discover/employers')
+            }
+          }}
+        >
           Back
         </Button>
         <XStack items="center" gap="$2" flex={1}>
@@ -156,4 +187,3 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
     </DashboardWidget>
   )
 }
-

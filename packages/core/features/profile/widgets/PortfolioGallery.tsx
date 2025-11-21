@@ -1,9 +1,9 @@
-import { YStack, XStack, Text, Image, Card, H4, Spinner } from 'tamagui'
-import { Eye } from '@tamagui/lucide-icons'
-import { DashboardWidget, ResponsiveModal } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import { DashboardWidget, ResponsiveModal } from '@app/ui'
+import { Eye } from '@tamagui/lucide-icons'
 import { useState } from 'react'
+import { Card, H4, Image, Spinner, Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {
@@ -25,17 +25,14 @@ interface PortfolioItem {
  * @param showEdit - Whether to show edit actions (always false for gallery)
  * @param variant - Display variant (compact or full)
  */
-export function PortfolioGallery({
-  userId,
-  variant = 'full',
-}: ProfileWidgetProps) {
+export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProps) {
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
   // Fetch portfolio items
   const { data: portfolioItems = [], isLoading } = api.portfolio.list.useQuery(
     userId ? { userId } : undefined,
-    { enabled: !!userId },
+    { enabled: !!userId }
   )
 
   const handleItemClick = (item: PortfolioItem) => {
@@ -165,4 +162,3 @@ export function PortfolioGallery({
     </>
   )
 }
-

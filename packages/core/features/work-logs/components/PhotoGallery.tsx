@@ -1,21 +1,15 @@
-import { ScrollView, Text, XStack, YStack } from "tamagui";
+import { ScrollView, Text, XStack, YStack } from 'tamagui'
 
-import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from "../types/photos";
-import { PhotoCard } from "./PhotoCard";
+import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
+import { PhotoCard } from './PhotoCard'
 
 export interface PhotoGalleryProps {
-  photos: ResolvedWorkLogPhoto[];
-  disabled?: boolean;
-  onUpdateCaption?: (photoId: string, caption: string | null) => Promise<void> | void;
-  onUpdatePhotoType?: (
-    photoId: string,
-    photoType: WorkLogPhotoType,
-  ) => Promise<void> | void;
-  onToggleVisibility?: (
-    photoId: string,
-    showOnProfile: boolean,
-  ) => Promise<void> | void;
-  onDelete?: (photoId: string) => Promise<void> | void;
+  photos: ResolvedWorkLogPhoto[]
+  disabled?: boolean
+  onUpdateCaption?: (photoId: string, caption: string | null) => Promise<void> | void
+  onUpdatePhotoType?: (photoId: string, photoType: WorkLogPhotoType) => Promise<void> | void
+  onToggleVisibility?: (photoId: string, showOnProfile: boolean) => Promise<void> | void
+  onDelete?: (photoId: string) => Promise<void> | void
 }
 
 export function PhotoGallery({
@@ -42,7 +36,7 @@ export function PhotoGallery({
         </Text>
         <Text color="$color11">No photos have been uploaded yet.</Text>
       </YStack>
-    );
+    )
   }
 
   return (
@@ -67,6 +61,5 @@ export function PhotoGallery({
         </XStack>
       </ScrollView>
     </YStack>
-  );
+  )
 }
-

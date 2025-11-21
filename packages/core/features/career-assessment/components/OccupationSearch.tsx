@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, Spinner } from 'tamagui'
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
+import { useEffect, useState } from 'react'
+import { Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface OccupationSearchProps {
   value?: string
@@ -38,7 +38,11 @@ export function OccupationSearch({
   const debouncedSearch = useDebounce(searchTerm, 300)
 
   // Search occupations
-  const { data, isLoading, error: queryError } = api.onet.searchOccupations.useQuery(
+  const {
+    data,
+    isLoading,
+    error: queryError,
+  } = api.onet.searchOccupations.useQuery(
     {
       query: debouncedSearch,
       limit: 10,

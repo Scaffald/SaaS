@@ -1,6 +1,6 @@
-import { useContext } from 'react'
 import { SessionContext, type SessionContextHelper } from '@app/core/provider/auth/AuthProvider'
 import { supabase } from '@app/core/utils/supabase/client'
+import { useContext } from 'react'
 
 const fallbackSessionContext: SessionContextHelper = {
   session: null,

@@ -1,16 +1,15 @@
-import React, { useEffect, useState, useCallback, ReactNode, type FC, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { FC } from 'react'
 import { PanResponder } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
   AnimatePresence,
   Circle,
   Image,
-  Theme,
-  ThemeName,
-  XStack,
-  YStack,
   useTheme,
   useWindowDimensions,
+  XStack,
+  YStack,
 } from 'tamagui'
 
 import { OnboardingControls } from './OnboardingControls'

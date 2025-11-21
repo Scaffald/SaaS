@@ -1,15 +1,11 @@
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
 import { AssessmentsLandingLeft, AssessmentsLandingRight } from '@app/core/features/assessments'
+import { AssessmentsLayout } from '@app/ui'
 
 export default function AssessmentsLandingPage() {
   return (
-    <DashboardLayout
+    <AssessmentsLayout
       leftContent={<AssessmentsLandingLeft />}
-      rightContent={
-        <QuickLinksSidebar>
-          <AssessmentsLandingRight />
-        </QuickLinksSidebar>
-      }
+      rightContent={<AssessmentsLandingRight />}
     />
   )
 }

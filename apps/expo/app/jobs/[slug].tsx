@@ -1,11 +1,10 @@
-import { useLocalSearchParams } from 'expo-router'
-import { useEffect } from 'react'
-import { YStack, Spinner, Text } from 'tamagui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
+import { ROUTES } from '@app/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
 import { api } from '@app/core/utils/api'
-import { ROUTES } from '@app/core/constants/routes'
 import type { BreadcrumbItem } from '@app/ui'
+import { DashboardLayout } from '@app/ui'
+import { useLocalSearchParams } from 'expo-router'
+import { Spinner, Text, YStack } from 'tamagui'
 
 /**
  * Public Job Detail Route (Vanity URL)
@@ -32,7 +31,7 @@ export default function PublicJobDetailPage() {
   // Build breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: 'Home', href: '/' },
-    { label: 'Jobs', href: ROUTES.DASHBOARD_DISCOVER_JOBS.path },
+    { label: 'Jobs', href: ROUTES.DASHBOARD.DISCOVER.JOBS.path },
     {
       label: jobData?.title || 'Loading...',
       isActive: true,
@@ -52,7 +51,7 @@ export default function PublicJobDetailPage() {
             </Text>
           </YStack>
         }
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
@@ -72,7 +71,7 @@ export default function PublicJobDetailPage() {
             </Text>
           </YStack>
         }
-        rightContent={<QuickLinksSidebar />}
+        rightContent={null}
       />
     )
   }
@@ -81,10 +80,6 @@ export default function PublicJobDetailPage() {
   const { left, right } = DiscoverJobDetailScreen({ jobId: jobData.id })
 
   return (
-    <DashboardLayout
-      breadcrumbItems={breadcrumbItems}
-      leftContent={left}
-      rightContent={<QuickLinksSidebar>{right}</QuickLinksSidebar>}
-    />
+    <DashboardLayout breadcrumbItems={breadcrumbItems} leftContent={left} rightContent={right} />
   )
 }

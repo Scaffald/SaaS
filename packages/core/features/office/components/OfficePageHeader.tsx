@@ -1,5 +1,5 @@
-import { Input, Button, XStack } from 'tamagui'
 import { Plus } from '@tamagui/lucide-icons'
+import { Button, Input, XStack } from 'tamagui'
 
 interface OfficePageHeaderProps {
   searchPlaceholder?: string

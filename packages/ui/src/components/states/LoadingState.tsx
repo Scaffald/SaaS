@@ -1,4 +1,4 @@
-import { YStack, Text, Spinner } from 'tamagui'
+import { Spinner, Text, YStack } from 'tamagui'
 import { spacing } from '../../config/spacing'
 import { typography } from '../../config/typography'
 

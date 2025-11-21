@@ -1,5 +1,5 @@
-import { YStack, XStack, Text, Card } from 'tamagui'
 import { Award } from '@tamagui/lucide-icons'
+import { Card, Text, XStack, YStack } from 'tamagui'
 
 interface Skill {
   id: string

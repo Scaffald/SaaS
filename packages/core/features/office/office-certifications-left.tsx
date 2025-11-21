@@ -1,26 +1,23 @@
-import { useState, useEffect } from 'react'
+import { api } from '@app/core/utils/api'
+import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, Save, X } from '@tamagui/lucide-icons'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import {
-  YStack,
-  XStack,
-  Text,
   Button,
-  Input,
   H4,
-  TextArea,
-  Select,
-  Adapt,
-  Sheet,
+  Input,
   Label,
   Spinner,
+  Text,
+  TextArea,
   useWindowDimensions,
+  XStack,
+  YStack,
 } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Save, X } from '@tamagui/lucide-icons'
-import { CustomCheckbox, DashboardWidget } from '@app/ui'
-import { api } from '@app/core/utils/api'
 
 const certificationSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -73,7 +70,7 @@ export function OfficeCertificationsLeft({
   const [isLoading, setIsLoading] = useState(false)
   const toast = useToastController()
   const { width } = useWindowDimensions()
-  const isMobile = width < 640
+  const _isMobile = width < 640
 
   const {
     control,
@@ -107,10 +104,11 @@ export function OfficeCertificationsLeft({
       reset()
       onCertificationSaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create certification'
       toast.show('Error', {
-        message: error.message || 'Failed to create certification',
+        message: errorMessage,
       })
     },
   })
@@ -122,10 +120,11 @@ export function OfficeCertificationsLeft({
       })
       onCertificationSaved()
     },
-    // biome-ignore lint/suspicious/noExplicitAny: tRPC error type
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update certification'
       toast.show('Error', {
-        message: error.message || 'Failed to update certification',
+        message: errorMessage,
       })
     },
   })
@@ -250,34 +249,15 @@ export function OfficeCertificationsLeft({
               name="category"
               control={control}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <Select.Trigger>
-                    <Select.Value placeholder="Select category" />
-                  </Select.Trigger>
-
-                  <Adapt when={isMobile} platform="touch">
-                    <Sheet native modal dismissOnSnapToBottom>
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay />
-                    </Sheet>
-                  </Adapt>
-
-                  <Select.Content zIndex={200000}>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      {CATEGORY_OPTIONS.map((option, index) => (
-                        <Select.Item key={option.value} value={option.value} index={index}>
-                          <Select.ItemText>{option.label}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                <ResponsiveSelect
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  placeholder="Select category"
+                  options={CATEGORY_OPTIONS.map((option) => ({
+                    value: option.value,
+                    label: option.label,
+                  }))}
+                />
               )}
             />
           </YStack>
@@ -328,7 +308,7 @@ export function OfficeCertificationsLeft({
                 <Input
                   placeholder="e.g. 2"
                   value={field.value?.toString() || ''}
-                  onChangeText={(text) => field.onChange(text ? Number.parseInt(text) : undefined)}
+                  onChangeText={(text) => field.onChange(text ? parseInt(text, 10) : undefined)}
                   keyboardType="numeric"
                 />
               )}
@@ -374,7 +354,7 @@ export function OfficeCertificationsLeft({
                     placeholder="e.g. 36"
                     value={field.value?.toString() || ''}
                     onChangeText={(text) =>
-                      field.onChange(text ? Number.parseInt(text) : undefined)
+                      field.onChange(text ? parseInt(text, 10) : undefined)
                     }
                     keyboardType="numeric"
                   />

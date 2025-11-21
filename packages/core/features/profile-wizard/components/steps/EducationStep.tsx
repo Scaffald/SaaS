@@ -1,12 +1,12 @@
+import { MonthYearPicker, ToggleSwitch } from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Input, Paragraph, Text, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Input, Text, XStack, YStack, Paragraph } from 'tamagui'
+import type { EducationStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
-import type { EducationStepData } from '../../hooks/useProfileWizard'
-import { MonthYearPicker, ToggleSwitch } from '@app/ui'
 
 const educationSchema = z.object({
   degreeType: z.string().optional(),
@@ -71,9 +71,7 @@ export function EducationStep({
   }, [values, isDirty, onStepStateChange])
 
   const submit = handleSubmit(async (data) => {
-    await onContinue(
-      formatEducationPayload(data),
-    )
+    await onContinue(formatEducationPayload(data))
   })
 
   const handleSaveForLater = handleSubmit(async (data) => {
@@ -91,7 +89,8 @@ export function EducationStep({
           Highest education
         </Text>
         <Paragraph color="$color11">
-          Add your latest degree or training program. This section is optional but strengthens your profile.
+          Add your latest degree or training program. This section is optional but strengthens your
+          profile.
         </Paragraph>
       </YStack>
 
@@ -101,7 +100,11 @@ export function EducationStep({
           control={control}
           name="degreeType"
           render={({ field }) => (
-            <Input {...field} placeholder="Associate of Applied Science, Carpentry" onChangeText={field.onChange} />
+            <Input
+              {...field}
+              placeholder="Associate of Applied Science, Carpentry"
+              onChangeText={field.onChange}
+            />
           )}
         />
       </YStack>
@@ -112,7 +115,11 @@ export function EducationStep({
           control={control}
           name="institutionName"
           render={({ field }) => (
-            <Input {...field} placeholder="Northwest Technical College" onChangeText={field.onChange} />
+            <Input
+              {...field}
+              placeholder="Northwest Technical College"
+              onChangeText={field.onChange}
+            />
           )}
         />
       </YStack>
@@ -228,5 +235,3 @@ function toEducationFormValues(data?: EducationStepData | null): EducationFormVa
     isCurrent: data.isCurrent ?? false,
   }
 }
-
-

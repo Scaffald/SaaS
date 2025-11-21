@@ -1,8 +1,8 @@
-import { YStack, XStack, Text, Spinner } from 'tamagui'
-import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
-import { useRouter } from 'expo-router'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
 
 interface UserSkill {
@@ -25,13 +25,7 @@ interface UserSkill {
  */
 export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
   const router = useRouter()
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-    isFetching,
-  } = api.profile.widgets.getSkills.useQuery(
+  const { data, isLoading, error, refetch, isFetching } = api.profile.widgets.getSkills.useQuery(
     { userId },
     {
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -119,7 +113,11 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         <XStack justify="space-between" items="center">
           <Heading variant="h4">Skills</Heading>
           {showEdit && (
-            <UIButton variant="outlined" size="$2" onPress={() => router.push('/dashboard/profile/skills')}>
+            <UIButton
+              variant="outlined"
+              size="$2"
+              onPress={() => router.push('/dashboard/profile/skills')}
+            >
               Edit
             </UIButton>
           )}
@@ -131,7 +129,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             description="Add your skills to showcase your expertise"
             action={
               showEdit ? (
-                <UIButton variant="primary" onPress={() => router.push('/dashboard/profile/skills')}>
+                <UIButton
+                  variant="primary"
+                  onPress={() => router.push('/dashboard/profile/skills')}
+                >
                   Add Skills
                 </UIButton>
               ) : undefined

@@ -13,7 +13,7 @@
  * database query performance. Direct database testing requires database access.
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /**
  * API endpoints that should perform well
@@ -45,14 +45,15 @@ test.describe('Database Query Performance Testing', () => {
         const responseTime = timing.responseEnd - timing.requestStart
 
         // API should respond within 500ms (REQ-198 target)
-        expect(
-          responseTime,
-          `API endpoint should respond within 500ms: ${endpoint}`
-        ).toBeLessThan(500)
-      } catch (error) {
+        expect(responseTime, `API endpoint should respond within 500ms: ${endpoint}`).toBeLessThan(
+          500
+        )
+      } catch {
         // If no response was caught, verify page still loads
-        const bodyText = await page.textContent('body') || ''
-        expect(bodyText.length, 'Page should load even if API timing not captured').toBeGreaterThan(0)
+        const bodyText = (await page.textContent('body')) || ''
+        expect(bodyText.length, 'Page should load even if API timing not captured').toBeGreaterThan(
+          0
+        )
       }
     })
   }
@@ -76,9 +77,9 @@ test.describe('Database Query Performance Testing', () => {
       // Subsequent requests should be faster due to caching
       // This is a basic check - actual caching validation requires inspecting response headers
       expect(response.status(), 'API should return successful response').toBeLessThan(400)
-    } catch (error) {
+    } catch {
       // If no response caught, that's okay - caching might prevent the request
-      const bodyText = await page.textContent('body') || ''
+      const bodyText = (await page.textContent('body')) || ''
       expect(bodyText.length, 'Page should load successfully').toBeGreaterThan(0)
     }
   })
@@ -91,9 +92,7 @@ test.describe('Database Query Performance Testing', () => {
 
     // Make multiple concurrent requests
     const promises = Array.from({ length: 10 }, () =>
-      page.evaluate(() =>
-        fetch('/api/trpc/dashboard', { method: 'GET' }).catch(() => null)
-      )
+      page.evaluate(() => fetch('/api/trpc/dashboard', { method: 'GET' }).catch(() => null))
     )
 
     const responses = await Promise.all(promises)
@@ -114,7 +113,7 @@ test.describe('Database Query Performance Testing', () => {
 
     // Wait for content that indicates query completed
     await page.waitForSelector('body', { timeout: 5000 })
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
 
     const queryTime = Date.now() - startTime
 
@@ -135,4 +134,3 @@ test.describe('Database Query Performance Testing', () => {
  * database query performance. Full database testing should be done
  * via database profiling tools and monitoring.
  */
-

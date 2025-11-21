@@ -1,119 +1,109 @@
-import { useMemo } from "react";
-import { Button, Card, Spinner, Text, XStack, YStack } from "tamagui";
-import { RefreshCw } from "@tamagui/lucide-icons";
-import type { inferRouterOutputs } from "@trpc/server";
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { DataTable } from '@app/ui'
+import { RefreshCw } from '@tamagui/lucide-icons'
+import type { ColumnDef } from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useMemo } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
-import type { AppRouter } from "@app/supabase/client-types";
-import { api } from "@app/core/utils/api";
-import { DataTable } from "@app/ui";
-import type { ColumnDef } from "@tanstack/react-table";
-import { createColumnHelper } from "@tanstack/react-table";
+type PaymentAnalytics = inferRouterOutputs<AppRouter>['payments']['adminGetAnalytics']
 
-type PaymentAnalytics =
-  inferRouterOutputs<AppRouter>["payments"]["adminGetAnalytics"];
+type FailedTransactionRow = PaymentAnalytics['failedQueue'][number]
 
-type FailedTransactionRow = PaymentAnalytics["failedQueue"][number];
-
-const columnHelper = createColumnHelper<FailedTransactionRow>();
+const columnHelper = createColumnHelper<FailedTransactionRow>()
 
 const formatCurrency = (cents: number): string => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     minimumFractionDigits: 2,
-  }).format(cents / 100);
-};
+  }).format(cents / 100)
+}
 
 const formatTransactionType = (type: string): string => {
   return type
-    .split("_")
+    .split('_')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
+    .join(' ')
+}
 
 export function OfficePaymentAnalytics() {
-  const analyticsQuery = api.payments.adminGetAnalytics.useQuery(
-    undefined,
-    {
-      staleTime: 60_000,
-    },
-  );
+  const analyticsQuery = api.payments.adminGetAnalytics.useQuery(undefined, {
+    staleTime: 60_000,
+  })
 
-  const analytics = analyticsQuery.data as PaymentAnalytics | undefined;
+  const analytics = analyticsQuery.data as PaymentAnalytics | undefined
 
-  const kpis = analytics?.kpis;
-  const breakdowns = analytics?.breakdowns;
-  const failedQueue = analytics?.failedQueue ?? [];
+  const kpis = analytics?.kpis
+  const breakdowns = analytics?.breakdowns
+  const failedQueue = analytics?.failedQueue ?? []
 
   const columns = useMemo(() => {
     const defs = [
-      columnHelper.accessor("transactionType", {
-        header: "Type",
-        cell: (info) => (
-          <Text fontWeight="600">{formatTransactionType(info.getValue())}</Text>
-        ),
+      columnHelper.accessor('transactionType', {
+        header: 'Type',
+        cell: (info) => <Text fontWeight="600">{formatTransactionType(info.getValue())}</Text>,
       }),
-      columnHelper.accessor("amountCents", {
-        header: "Amount",
+      columnHelper.accessor('amountCents', {
+        header: 'Amount',
         cell: (info) => formatCurrency(info.getValue()),
       }),
-      columnHelper.accessor("failureReason", {
-        header: "Failure Reason",
+      columnHelper.accessor('failureReason', {
+        header: 'Failure Reason',
         cell: (info) => (
           <Text color="$red11" fontSize="$3">
-            {info.getValue() ?? "Unknown error"}
+            {info.getValue() ?? 'Unknown error'}
           </Text>
         ),
       }),
-      columnHelper.accessor("failedAt", {
-        header: "Failed At",
+      columnHelper.accessor('failedAt', {
+        header: 'Failed At',
         cell: (info) => {
-          const value = info.getValue();
+          const value = info.getValue()
           if (!value) {
-            return "—";
+            return '—'
           }
-          return new Date(value).toLocaleString();
+          return new Date(value).toLocaleString()
         },
       }),
-    ];
-    return defs as ColumnDef<FailedTransactionRow, unknown>[];
-  }, []);
+    ]
+    return defs as ColumnDef<FailedTransactionRow, unknown>[]
+  }, [])
 
   const summaryCards = useMemo(() => {
     if (!kpis) {
-      return [];
+      return []
     }
 
     return [
       {
-        label: "Total Revenue",
+        label: 'Total Revenue',
         value: formatCurrency(kpis.totalRevenue),
         subtext: `${kpis.succeededTransactions} successful transactions`,
       },
       {
-        label: "Success Rate",
+        label: 'Success Rate',
         value: `${kpis.successRate.toFixed(1)}%`,
         subtext: `${kpis.succeededTransactions} of ${kpis.totalTransactions} succeeded`,
       },
       {
-        label: "Failed Transactions",
+        label: 'Failed Transactions',
         value: kpis.failedTransactions.toString(),
-        subtext:
-          kpis.failedTransactions > 0
-            ? "Requires attention"
-            : "All transactions succeeded",
+        subtext: kpis.failedTransactions > 0 ? 'Requires attention' : 'All transactions succeeded',
       },
       {
-        label: "Pending",
+        label: 'Pending',
         value: kpis.pendingTransactions.toString(),
-        subtext: "Awaiting completion",
+        subtext: 'Awaiting completion',
       },
-    ];
-  }, [kpis]);
+    ]
+  }, [kpis])
 
   const typeBreakdown = useMemo(() => {
     if (!breakdowns?.byType) {
-      return [];
+      return []
     }
 
     return Object.entries(breakdowns.byType)
@@ -122,10 +112,10 @@ export function OfficePaymentAnalytics() {
         label: formatTransactionType(type),
         ...(stats as { revenue: number; count: number; succeeded: number; failed: number }),
       }))
-      .sort((a, b) => b.revenue - a.revenue);
-  }, [breakdowns]);
+      .sort((a, b) => b.revenue - a.revenue)
+  }, [breakdowns])
 
-  const isLoading = analyticsQuery.isLoading;
+  const isLoading = analyticsQuery.isLoading
 
   return (
     <YStack flex={1} p="$4" gap="$4">
@@ -135,8 +125,7 @@ export function OfficePaymentAnalytics() {
             Payment Analytics
           </Text>
           <Text color="$color10" fontSize="$3">
-            Monitor payment transactions, revenue, and failure rates across all
-            services.
+            Monitor payment transactions, revenue, and failure rates across all services.
           </Text>
         </YStack>
         <Button
@@ -197,8 +186,7 @@ export function OfficePaymentAnalytics() {
                       <XStack justify="space-between" items="center">
                         <Text fontWeight="600">{entry.label}</Text>
                         <Text color="$color10" fontSize="$2">
-                          {formatCurrency(entry.revenue)} · {entry.count}{" "}
-                          transactions
+                          {formatCurrency(entry.revenue)} · {entry.count} transactions
                         </Text>
                       </XStack>
                       <XStack gap="$2">
@@ -237,6 +225,5 @@ export function OfficePaymentAnalytics() {
         </>
       )}
     </YStack>
-  );
+  )
 }
-

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseInfiniteQuery = vi.fn()
 const mockUseMutation = vi.fn()
@@ -17,9 +17,19 @@ vi.mock('tamagui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
-    <button type="button" onClick={onPress}>{children}</button>
+    <button type="button" onClick={onPress}>
+      {children}
+    </button>
   )
-  const TextArea = ({ value, onChangeText, placeholder }: { value?: string; onChangeText?: (text: string) => void; placeholder?: string }) => (
+  const TextArea = ({
+    value,
+    onChangeText,
+    placeholder,
+  }: {
+    value?: string
+    onChangeText?: (text: string) => void
+    placeholder?: string
+  }) => (
     <textarea
       value={value || ''}
       onChange={(e) => onChangeText?.(e.target.value)}
@@ -28,8 +38,10 @@ vi.mock('tamagui', () => {
   )
   const Separator = () => <hr />
   const Spinner = () => <span>Loading</span>
-  
-  const SelectTrigger = ({ children }: { children?: ReactNode }) => <button type="button">{children}</button>
+
+  const SelectTrigger = ({ children }: { children?: ReactNode }) => (
+    <button type="button">{children}</button>
+  )
   const SelectValue = ({ placeholder }: { placeholder?: string }) => <span>{placeholder}</span>
   const SelectContent = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const SelectViewport = ({ children }: { children?: ReactNode }) => <div>{children}</div>
@@ -42,7 +54,7 @@ vi.mock('tamagui', () => {
   const SelectItemIndicator = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const SelectScrollUpButton = () => null
   const SelectScrollDownButton = () => null
-  
+
   const Select = Object.assign(() => null, {
     Trigger: SelectTrigger,
     Value: SelectValue,
@@ -56,7 +68,7 @@ vi.mock('tamagui', () => {
     ScrollUpButton: SelectScrollUpButton,
     ScrollDownButton: SelectScrollDownButton,
   })
-  
+
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     YStack: Stack,
@@ -166,4 +178,3 @@ describe('TeamActivityFeed', () => {
     expect(screen.getByText(/No activity/i)).toBeInTheDocument()
   })
 })
-

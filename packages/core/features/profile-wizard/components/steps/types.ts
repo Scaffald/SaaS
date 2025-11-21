@@ -1,5 +1,5 @@
-import type { ProfileWizardStepId } from '../../utils/wizardSteps'
 import type { WizardStepPayloads } from '../../hooks/useProfileWizard'
+import type { ProfileWizardStepId } from '../../utils/wizardSteps'
 
 export interface StepStateChangePayload<TStep extends ProfileWizardStepId> {
   data: WizardStepPayloads[TStep]
@@ -17,5 +17,3 @@ export interface WizardStepComponentProps<TStep extends ProfileWizardStepId> {
   onSkip?: () => Promise<void>
   onStepStateChange?: (snapshot: StepStateChangePayload<TStep>) => void
 }
-
-

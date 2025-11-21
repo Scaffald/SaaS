@@ -944,6 +944,121 @@ export type Database = {
   }
   core: {
     Tables: {
+      account_credits: {
+        Row: {
+          balance_cents: number
+          created_at: string
+          currency: string
+          id: string
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          balance_cents?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          balance_cents?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_credits_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      account_deletions: {
+        Row: {
+          completed_at: string | null
+          compliance_log: Json
+          created_at: string
+          deleted_organization_id: string | null
+          deleted_user_id: string | null
+          deletion_type: string
+          error_message: string | null
+          id: string
+          metadata: Json
+          payment_data_anonymized: boolean
+          payment_data_anonymized_at: string | null
+          reason: string | null
+          requested_at: string
+          requested_by_user_id: string | null
+          status: string
+          stripe_cleanup_errors: string[] | null
+          stripe_customer_deleted: boolean
+          stripe_customer_deleted_at: string | null
+          stripe_payment_methods_deleted: boolean
+          stripe_payment_methods_deleted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          compliance_log?: Json
+          created_at?: string
+          deleted_organization_id?: string | null
+          deleted_user_id?: string | null
+          deletion_type: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json
+          payment_data_anonymized?: boolean
+          payment_data_anonymized_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          requested_by_user_id?: string | null
+          status?: string
+          stripe_cleanup_errors?: string[] | null
+          stripe_customer_deleted?: boolean
+          stripe_customer_deleted_at?: string | null
+          stripe_payment_methods_deleted?: boolean
+          stripe_payment_methods_deleted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          compliance_log?: Json
+          created_at?: string
+          deleted_organization_id?: string | null
+          deleted_user_id?: string | null
+          deletion_type?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json
+          payment_data_anonymized?: boolean
+          payment_data_anonymized_at?: string | null
+          reason?: string | null
+          requested_at?: string
+          requested_by_user_id?: string | null
+          status?: string
+          stripe_cleanup_errors?: string[] | null
+          stripe_customer_deleted?: boolean
+          stripe_customer_deleted_at?: string | null
+          stripe_payment_methods_deleted?: boolean
+          stripe_payment_methods_deleted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_deletions_deleted_organization_id_fkey"
+            columns: ["deleted_organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       addresses: {
         Row: {
           address: Json
@@ -2344,6 +2459,98 @@ export type Database = {
         }
         Relationships: []
       }
+      circumvention_reports: {
+        Row: {
+          created_at: string
+          description: string
+          evidence_notes: string | null
+          evidence_urls: string[] | null
+          hire_agreement_id: string | null
+          id: string
+          metadata: Json
+          organization_id: string | null
+          reported_by_user_id: string | null
+          resolution_action: string | null
+          resolved_at: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by_user_id: string | null
+          status: string
+          updated_at: string
+          violation_type: string
+          worker_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          evidence_notes?: string | null
+          evidence_urls?: string[] | null
+          hire_agreement_id?: string | null
+          id?: string
+          metadata?: Json
+          organization_id?: string | null
+          reported_by_user_id?: string | null
+          resolution_action?: string | null
+          resolved_at?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by_user_id?: string | null
+          status?: string
+          updated_at?: string
+          violation_type: string
+          worker_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          evidence_notes?: string | null
+          evidence_urls?: string[] | null
+          hire_agreement_id?: string | null
+          id?: string
+          metadata?: Json
+          organization_id?: string | null
+          reported_by_user_id?: string | null
+          resolution_action?: string | null
+          resolved_at?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by_user_id?: string | null
+          status?: string
+          updated_at?: string
+          violation_type?: string
+          worker_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "circumvention_reports_hire_agreement_id_fkey"
+            columns: ["hire_agreement_id"]
+            isOneToOne: false
+            referencedRelation: "hire_agreements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "circumvention_reports_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "circumvention_reports_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "circumvention_reports_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       connections: {
         Row: {
           addressee_type: string | null
@@ -2467,6 +2674,110 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_ledger: {
+        Row: {
+          account_credit_id: string
+          amount_cents: number
+          background_check_id: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          description: string | null
+          direction: string
+          id: string
+          id_verification_id: string | null
+          metadata: Json
+          organization_id: string
+          payment_transaction_id: string | null
+          success_fee_id: string | null
+          transaction_type: string
+        }
+        Insert: {
+          account_credit_id: string
+          amount_cents: number
+          background_check_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          direction: string
+          id?: string
+          id_verification_id?: string | null
+          metadata?: Json
+          organization_id: string
+          payment_transaction_id?: string | null
+          success_fee_id?: string | null
+          transaction_type: string
+        }
+        Update: {
+          account_credit_id?: string
+          amount_cents?: number
+          background_check_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          direction?: string
+          id?: string
+          id_verification_id?: string | null
+          metadata?: Json
+          organization_id?: string
+          payment_transaction_id?: string | null
+          success_fee_id?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_ledger_account_credit_id_fkey"
+            columns: ["account_credit_id"]
+            isOneToOne: false
+            referencedRelation: "account_credits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_background_check_id_fkey"
+            columns: ["background_check_id"]
+            isOneToOne: false
+            referencedRelation: "background_checks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_id_verification_id_fkey"
+            columns: ["id_verification_id"]
+            isOneToOne: false
+            referencedRelation: "id_verifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_id_verification_id_fkey"
+            columns: ["id_verification_id"]
+            isOneToOne: false
+            referencedRelation: "v_id_verification_latest"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_payment_transaction_id_fkey"
+            columns: ["payment_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_success_fee_id_fkey"
+            columns: ["success_fee_id"]
+            isOneToOne: false
+            referencedRelation: "success_fees"
             referencedColumns: ["id"]
           },
         ]
@@ -2746,6 +3057,102 @@ export type Database = {
         }
         Relationships: []
       }
+      hire_agreements: {
+        Row: {
+          agreed_at: string
+          agreed_by_user_id: string | null
+          agreement_text: string
+          agreement_version: string
+          anti_circumvention_accepted: boolean
+          application_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          organization_id: string
+          status: string
+          success_fee_id: string | null
+          terms_accepted: boolean
+          updated_at: string
+          violated_at: string | null
+          violation_reason: string | null
+          worker_user_id: string
+        }
+        Insert: {
+          agreed_at?: string
+          agreed_by_user_id?: string | null
+          agreement_text: string
+          agreement_version?: string
+          anti_circumvention_accepted?: boolean
+          application_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          organization_id: string
+          status?: string
+          success_fee_id?: string | null
+          terms_accepted?: boolean
+          updated_at?: string
+          violated_at?: string | null
+          violation_reason?: string | null
+          worker_user_id: string
+        }
+        Update: {
+          agreed_at?: string
+          agreed_by_user_id?: string | null
+          agreement_text?: string
+          agreement_version?: string
+          anti_circumvention_accepted?: boolean
+          application_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          organization_id?: string
+          status?: string
+          success_fee_id?: string | null
+          terms_accepted?: boolean
+          updated_at?: string
+          violated_at?: string | null
+          violation_reason?: string | null
+          worker_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hire_agreements_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hire_agreements_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hire_agreements_success_fee_id_fkey"
+            columns: ["success_fee_id"]
+            isOneToOne: false
+            referencedRelation: "success_fees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hire_agreements_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hire_agreements_worker_user_id_fkey"
+            columns: ["worker_user_id"]
+            isOneToOne: false
+            referencedRelation: "v_profile_search"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       id_verifications: {
         Row: {
           badge_expires_at: string | null
@@ -3005,6 +3412,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "inquiry_comments_inquiry_id_fkey"
+            columns: ["inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "application_inquiries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inquiry_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          inquiry_id: string
+          reminder_type: string
+          sent_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inquiry_id: string
+          reminder_type: string
+          sent_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inquiry_id?: string
+          reminder_type?: string
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_reminders_inquiry_id_fkey"
             columns: ["inquiry_id"]
             isOneToOne: false
             referencedRelation: "application_inquiries"
@@ -4513,6 +4952,77 @@ export type Database = {
           },
         ]
       }
+      organization_payment_methods: {
+        Row: {
+          billing_country: string | null
+          billing_email: string | null
+          billing_name: string | null
+          billing_phone: string | null
+          brand: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          exp_month: number | null
+          exp_year: number | null
+          id: string
+          is_default: boolean
+          last4: string | null
+          metadata: Json
+          organization_id: string
+          stripe_customer_id: string
+          stripe_payment_method_id: string
+          updated_at: string
+        }
+        Insert: {
+          billing_country?: string | null
+          billing_email?: string | null
+          billing_name?: string | null
+          billing_phone?: string | null
+          brand?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          metadata?: Json
+          organization_id: string
+          stripe_customer_id: string
+          stripe_payment_method_id: string
+          updated_at?: string
+        }
+        Update: {
+          billing_country?: string | null
+          billing_email?: string | null
+          billing_name?: string | null
+          billing_phone?: string | null
+          brand?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          metadata?: Json
+          organization_id?: string
+          stripe_customer_id?: string
+          stripe_payment_method_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_payment_methods_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_requests: {
         Row: {
           created_at: string
@@ -4779,6 +5289,7 @@ export type Database = {
         Row: {
           address: Json | null
           created_at: string
+          default_payment_method_id: string | null
           default_project_location_visibility:
             | Database["core"]["Enums"]["location_visibility"]
             | null
@@ -4786,12 +5297,15 @@ export type Database = {
           geo: unknown
           id: string
           industry_id: string | null
+          inquiry_reminder_days: number | null
+          inquiry_reminder_enabled: boolean | null
           locations: Json
           logo_url: string | null
           name: string
           owner_user_id: string | null
           search_tsv: unknown
           slug: string
+          stripe_customer_id: string | null
           updated_at: string
           visibility: string | null
           website: string | null
@@ -4802,6 +5316,7 @@ export type Database = {
         Insert: {
           address?: Json | null
           created_at?: string
+          default_payment_method_id?: string | null
           default_project_location_visibility?:
             | Database["core"]["Enums"]["location_visibility"]
             | null
@@ -4809,12 +5324,15 @@ export type Database = {
           geo?: unknown
           id?: string
           industry_id?: string | null
+          inquiry_reminder_days?: number | null
+          inquiry_reminder_enabled?: boolean | null
           locations?: Json
           logo_url?: string | null
           name: string
           owner_user_id?: string | null
           search_tsv?: unknown
           slug: string
+          stripe_customer_id?: string | null
           updated_at?: string
           visibility?: string | null
           website?: string | null
@@ -4825,6 +5343,7 @@ export type Database = {
         Update: {
           address?: Json | null
           created_at?: string
+          default_payment_method_id?: string | null
           default_project_location_visibility?:
             | Database["core"]["Enums"]["location_visibility"]
             | null
@@ -4832,12 +5351,15 @@ export type Database = {
           geo?: unknown
           id?: string
           industry_id?: string | null
+          inquiry_reminder_days?: number | null
+          inquiry_reminder_enabled?: boolean | null
           locations?: Json
           logo_url?: string | null
           name?: string
           owner_user_id?: string | null
           search_tsv?: unknown
           slug?: string
+          stripe_customer_id?: string | null
           updated_at?: string
           visibility?: string | null
           website?: string | null
@@ -4846,6 +5368,13 @@ export type Database = {
           work_log_require_verification?: boolean | null
         }
         Relationships: [
+          {
+            foreignKeyName: "organizations_default_payment_method_fk"
+            columns: ["default_payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "organization_payment_methods"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "organizations_industry_id_fkey"
             columns: ["industry_id"]
@@ -8416,9 +8945,29 @@ export type Database = {
       }
     }
     Functions: {
+      anonymize_organization_payment_data: {
+        Args: { p_organization_id: string }
+        Returns: undefined
+      }
       anonymize_worker_payment_data: {
         Args: { p_worker_user_id: string }
         Returns: undefined
+      }
+      apply_credit_transaction: {
+        Args: {
+          p_amount_cents: number
+          p_background_check_id?: string
+          p_created_by?: string
+          p_description?: string
+          p_direction: string
+          p_id_verification_id?: string
+          p_metadata?: Json
+          p_organization_id: string
+          p_payment_transaction_id?: string
+          p_success_fee_id?: string
+          p_transaction_type: string
+        }
+        Returns: string
       }
       archive_expired_external_jobs: { Args: never; Returns: Json }
       calculate_next_attempt: { Args: { p_attempts: number }; Returns: string }
@@ -8471,6 +9020,31 @@ export type Database = {
           verification_level: string
           verified_at: string
         }[]
+      }
+      get_default_hire_agreement_text: { Args: never; Returns: string }
+      get_jobs_with_coords: {
+        Args: never
+        Returns: {
+          address: Json
+          employment_type: string
+          id: string
+          latitude: number
+          location: string
+          longitude: number
+          organization_id: string
+          organization_name: string
+          pay_range_max_cents: number
+          pay_range_min_cents: number
+          pay_range_type: string
+          position_level: string
+          remote_option: string
+          status: string
+          title: string
+        }[]
+      }
+      get_or_create_account_credits: {
+        Args: { p_organization_id: string }
+        Returns: string
       }
       get_org_id_from_path: { Args: { object_name: string }; Returns: string }
       get_organizations_with_coords: {
@@ -8597,6 +9171,7 @@ export type Database = {
           taxonomy: string
         }[]
       }
+      send_inquiry_reminders: { Args: never; Returns: Json }
       send_profile_completion_reminders: { Args: never; Returns: number }
       update_stale_applications: { Args: never; Returns: number }
       user_has_role: {
@@ -8710,6 +9285,8 @@ export type Database = {
         | "inquiry.section_accepted"
         | "inquiry.fully_accepted"
         | "inquiry.capability_answered"
+        | "inquiry.updated"
+        | "inquiry.reminder"
       organization_document_category:
         | "contracts"
         | "templates"
@@ -8945,6 +9522,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      clean_certification_categories: {
+        Args: never
+        Returns: {
+          operation: string
+          result: Json
+        }[]
+      }
+      cleanup_deprecated_certifications: {
+        Args: never
+        Returns: {
+          kept_count: number
+          removed_count: number
+        }[]
+      }
       get_masterformat_hierarchy: {
         Args: { code_id: string }
         Returns: {
@@ -8954,6 +9545,21 @@ export type Database = {
           name: string
         }[]
       }
+      identify_duplicate_certifications: {
+        Args: never
+        Returns: {
+          certification_ids: string[]
+          depth: number
+          duplicate_count: number
+          parent_id: string
+          title: string
+        }[]
+      }
+      merge_duplicate_certifications: {
+        Args: { duplicate_ids: string[]; keep_id: string }
+        Returns: undefined
+      }
+      normalize_certification_titles: { Args: never; Returns: number }
       search_masterformat: {
         Args: { search_term: string }
         Returns: {
@@ -8986,6 +9592,13 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      verify_certification_hierarchy: {
+        Args: never
+        Returns: {
+          invalid_certs: Json
+          invalid_count: number
+        }[]
       }
     }
     Enums: {
@@ -10991,6 +11604,38 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_jobs_with_coords: {
+        Args: never
+        Returns: {
+          address: Json
+          employment_type: string
+          id: string
+          latitude: number
+          location: string
+          longitude: number
+          organization_id: string
+          organization_name: string
+          pay_range_max_cents: number
+          pay_range_min_cents: number
+          pay_range_type: string
+          position_level: string
+          remote_option: string
+          status: string
+          title: string
+        }[]
+      }
+      get_organizations_with_coords: {
+        Args: never
+        Returns: {
+          address: Json
+          id: string
+          industry_name: string
+          latitude: number
+          longitude: number
+          name: string
+          slug: string
+        }[]
+      }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
       pgp_armor_headers: {
@@ -11731,27 +12376,6 @@ export type Database = {
         }
         Relationships: []
       }
-      buckets_vectors: {
-        Row: {
-          created_at: string
-          id: string
-          type: Database["storage"]["Enums"]["buckettype"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          type?: Database["storage"]["Enums"]["buckettype"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
       iceberg_namespaces: {
         Row: {
           bucket_id: string
@@ -12036,50 +12660,6 @@ export type Database = {
           },
         ]
       }
-      vector_indexes: {
-        Row: {
-          bucket_id: string
-          created_at: string
-          data_type: string
-          dimension: number
-          distance_metric: string
-          id: string
-          metadata_configuration: Json | null
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          bucket_id: string
-          created_at?: string
-          data_type: string
-          dimension: number
-          distance_metric: string
-          id?: string
-          metadata_configuration?: Json | null
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          bucket_id?: string
-          created_at?: string
-          data_type?: string
-          dimension?: number
-          distance_metric?: string
-          id?: string
-          metadata_configuration?: Json | null
-          name?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "vector_indexes_bucket_id_fkey"
-            columns: ["bucket_id"]
-            isOneToOne: false
-            referencedRelation: "buckets_vectors"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
     }
     Views: {
       [_ in never]: never
@@ -12233,7 +12813,7 @@ export type Database = {
       }
     }
     Enums: {
-      buckettype: "STANDARD" | "ANALYTICS" | "VECTOR"
+      buckettype: "STANDARD" | "ANALYTICS"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -12492,6 +13072,8 @@ export const Constants = {
         "inquiry.section_accepted",
         "inquiry.fully_accepted",
         "inquiry.capability_answered",
+        "inquiry.updated",
+        "inquiry.reminder",
       ],
       organization_document_category: [
         "contracts",
@@ -12567,7 +13149,7 @@ export const Constants = {
   },
   storage: {
     Enums: {
-      buckettype: ["STANDARD", "ANALYTICS", "VECTOR"],
+      buckettype: ["STANDARD", "ANALYTICS"],
     },
   },
 } as const

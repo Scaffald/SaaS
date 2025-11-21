@@ -1,10 +1,12 @@
+import type {
+  IPIPResults,
+  IPIPScores,
+} from '@app/core/features/personality-assessment/lib/ipip'
 import { Text, YStack } from 'tamagui'
-import { DomainCard } from './DomainCard'
-import { generateOverallSummary } from '../utils/narrativeGenerator'
 import { DOMAIN_ORDER } from '../utils/domainGrouping'
-import type { IPIPDomain, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
-import type { IPIPResults } from '@app/core/features/personality-assessment/lib/ipip'
+import { generateOverallSummary } from '../utils/narrativeGenerator'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
+import { DomainCard } from './DomainCard'
 
 export interface NarrativeViewProps {
   scores: IPIPScores | null
@@ -109,4 +111,3 @@ export function NarrativeView({
     </YStack>
   )
 }
-

@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockUseQuery = vi.fn()
 const mockUseMutation = vi.fn()
@@ -34,9 +34,19 @@ vi.mock('tamagui', () => {
   const Stack = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
   const Button = ({ children, onPress }: { children?: ReactNode; onPress?: () => void }) => (
-    <button type="button" onClick={onPress}>{children}</button>
+    <button type="button" onClick={onPress}>
+      {children}
+    </button>
   )
-  const TextArea = ({ value, onChangeText, placeholder }: { value?: string; onChangeText?: (text: string) => void; placeholder?: string }) => (
+  const TextArea = ({
+    value,
+    onChangeText,
+    placeholder,
+  }: {
+    value?: string
+    onChangeText?: (text: string) => void
+    placeholder?: string
+  }) => (
     <textarea
       value={value || ''}
       onChange={(e) => onChangeText?.(e.target.value)}
@@ -45,7 +55,7 @@ vi.mock('tamagui', () => {
   )
   const Card = ({ children }: { children?: ReactNode }) => <div>{children}</div>
   const Spinner = () => <span>Loading</span>
-  
+
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     YStack: Stack,
@@ -101,7 +111,7 @@ describe('TeamCommentThread', () => {
 
     const commentInput = screen.getByPlaceholderText(/add a comment/i)
     await user.type(commentInput, 'New comment')
-    
+
     const submitButton = screen.getByText(/post comment/i)
     await user.click(submitButton)
 
@@ -121,4 +131,3 @@ describe('TeamCommentThread', () => {
     expect(screen.getByText(/Loading discussion/i)).toBeInTheDocument()
   })
 })
-

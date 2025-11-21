@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Tamagui Property Mappings
 
-- **ALWAYS rely on the shorthand tokens from `@tamagui/shorthands` when a matching property exists.**
+- **ALWAYS rely on the shorthand tokens from `tamagui/shorthands` when a matching property exists.**
 - **SOURCE all design tokens from `packages/ui/src/themes/scaffald-theme.ts`; do not invent new colors or spacing values.**
 
 ## Examples

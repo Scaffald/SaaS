@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
-import { Text, DashboardLayout } from '@app/ui'
-import { api } from '@app/core/utils/api'
-import { createColumnHelper, type ColumnDef } from '@tanstack/react-table'
 import { ROUTES, RouteBuilder } from '@app/core/constants/routes'
+import { api } from '@app/core/utils/api'
+import { Text } from '@app/ui'
+import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
 
@@ -79,31 +79,29 @@ export function OfficeUniversitiesList() {
   const getItemName = (university: University) => university.name
 
   return (
-    <DashboardLayout
-      leftContent={
-        <OfficePageLayout
-          title="Universities"
-          searchPlaceholder="Search universities..."
-          searchValue={search}
-          onSearchChange={setSearch}
-          createButtonLabel="Create University"
-          onCreateClick={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
-          columns={columns as ColumnDef<University, unknown>[]}
-          data={universities}
-          isLoading={isLoading}
-          pageSize={50}
-          emptyMessage="No universities found"
-          onRowEdit={handleRowEdit}
-          onRowDelete={handleRowDelete}
-          getItemName={getItemName}
-          itemType="university"
-        />
-      }
+    <OfficePageLayout
+      wrapWithOfficeLayout
+      showBreadcrumb
+      title="Universities"
+      searchPlaceholder="Search universities..."
+      searchValue={search}
+      onSearchChange={setSearch}
+      createButtonLabel="Create University"
+      onCreateClick={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
+      columns={columns as ColumnDef<University, unknown>[]}
+      data={universities}
+      isLoading={isLoading}
+      pageSize={50}
+      emptyMessage="No universities found"
+      onRowEdit={handleRowEdit}
+      onRowDelete={handleRowDelete}
+      getItemName={getItemName}
+      itemType="university"
       rightContent={
         <QuickActionsWidget
           context="list"
           resourceName="University"
-          onCreate={() => router.push(ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path)}
+          onCreate={() => router.push(ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path)}
           onRefresh={() => refetch()}
           isLoading={isLoading}
         />

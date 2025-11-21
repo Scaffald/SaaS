@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
-import { YStack, Text } from 'tamagui'
 import { Inbox } from '@tamagui/lucide-icons'
+import type { ReactNode } from 'react'
+import { Text, YStack } from 'tamagui'
 import { spacing } from '../../config/spacing'
 import { typography } from '../../config/typography'
 

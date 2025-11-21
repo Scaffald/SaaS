@@ -1,8 +1,7 @@
+import { CheckStatusDashboard } from '@app/core/features/background-check'
 import { Stack } from 'expo-router'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { YStack } from 'tamagui'
-
-import { CheckStatusDashboard } from '@app/core/features/background-check'
 
 export default function BackgroundCheckDashboardScreen() {
   const insets = useSafeAreaInsets()

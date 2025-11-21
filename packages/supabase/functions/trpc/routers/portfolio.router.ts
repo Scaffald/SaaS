@@ -1,6 +1,6 @@
-import { TRPCError } from "@trpc/server";
-import { protectedProcedure, t } from "../middleware.ts";
-import { z } from "zod";
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure, t } from '../middleware.ts'
 
 /**
  * Portfolio router - handles user portfolio items
@@ -18,28 +18,28 @@ export const portfolioRouter = t.router({
           userId: z.string().uuid().optional(), // If provided, get portfolio for specific user (public profile)
         })
         .optional()
-        .default({}),
+        .default({})
     )
     .query(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
-      const targetUserId = input.userId || user.id;
+      const { supabase, user } = ctx
+      const targetUserId = input.userId || user.id
 
       const { data, error } = await supabase
-        .schema("core")
-        .from("portfolio_items")
-        .select("*")
-        .eq("user_id", targetUserId)
-        .order("display_order", { ascending: true })
-        .order("created_at", { ascending: false });
+        .schema('core')
+        .from('portfolio_items')
+        .select('*')
+        .eq('user_id', targetUserId)
+        .order('display_order', { ascending: true })
+        .order('created_at', { ascending: false })
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to fetch portfolio items: ${error.message}`,
-        });
+        })
       }
 
-      return data || [];
+      return data || []
     }),
 
   /**
@@ -53,14 +53,14 @@ export const portfolioRouter = t.router({
         imageUrl: z.string().optional(),
         filePath: z.string().optional(),
         displayOrder: z.number().optional().default(0),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       const { data, error } = await supabase
-        .schema("core")
-        .from("portfolio_items")
+        .schema('core')
+        .from('portfolio_items')
         .insert({
           user_id: user.id,
           title: input.title,
@@ -70,16 +70,16 @@ export const portfolioRouter = t.router({
           display_order: input.displayOrder,
         })
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to create portfolio item: ${error.message}`,
-        });
+        })
       }
 
-      return data;
+      return data
     }),
 
   /**
@@ -94,57 +94,57 @@ export const portfolioRouter = t.router({
         imageUrl: z.string().optional().nullable(),
         filePath: z.string().optional().nullable(),
         displayOrder: z.number().optional(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
-      const { id, ...updates } = input;
+      const { supabase, user } = ctx
+      const { id, ...updates } = input
 
       // Build update object
       const updateData: Record<string, unknown> = {
         updated_at: new Date().toISOString(),
-      };
+      }
 
       if (updates.title !== undefined) {
-        updateData.title = updates.title;
+        updateData.title = updates.title
       }
       if (updates.description !== undefined) {
-        updateData.description = updates.description;
+        updateData.description = updates.description
       }
       if (updates.imageUrl !== undefined) {
-        updateData.image_url = updates.imageUrl;
+        updateData.image_url = updates.imageUrl
       }
       if (updates.filePath !== undefined) {
-        updateData.file_path = updates.filePath;
+        updateData.file_path = updates.filePath
       }
       if (updates.displayOrder !== undefined) {
-        updateData.display_order = updates.displayOrder;
+        updateData.display_order = updates.displayOrder
       }
 
       const { data, error } = await supabase
-        .schema("core")
-        .from("portfolio_items")
+        .schema('core')
+        .from('portfolio_items')
         .update(updateData)
-        .eq("id", id)
-        .eq("user_id", user.id) // Ensure user can only update their own items
+        .eq('id', id)
+        .eq('user_id', user.id) // Ensure user can only update their own items
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to update portfolio item: ${error.message}`,
-        });
+        })
       }
 
       if (!data) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Portfolio item not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Portfolio item not found',
+        })
       }
 
-      return data;
+      return data
     }),
 
   /**
@@ -153,32 +153,32 @@ export const portfolioRouter = t.router({
   delete: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       const { data, error } = await supabase
-        .schema("core")
-        .from("portfolio_items")
+        .schema('core')
+        .from('portfolio_items')
         .delete()
-        .eq("id", input.id)
-        .eq("user_id", user.id) // Ensure user can only delete their own items
+        .eq('id', input.id)
+        .eq('user_id', user.id) // Ensure user can only delete their own items
         .select()
-        .single();
+        .single()
 
       if (error) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to delete portfolio item: ${error.message}`,
-        });
+        })
       }
 
       if (!data) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Portfolio item not found",
-        });
+          code: 'NOT_FOUND',
+          message: 'Portfolio item not found',
+        })
       }
 
-      return { success: true, deletedItem: data };
+      return { success: true, deletedItem: data }
     }),
 
   /**
@@ -192,35 +192,36 @@ export const portfolioRouter = t.router({
           z.object({
             id: z.string().uuid(),
             displayOrder: z.number(),
-          }),
+          })
         ),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       // Update each item's display_order
-      const updatePromises = input.items.map((item) =>
-        supabase
-          .schema("core")
-          .from("portfolio_items")
-          .update({ display_order: item.displayOrder, updated_at: new Date().toISOString() })
-          .eq("id", item.id)
-          .eq("user_id", user.id), // Ensure user can only reorder their own items
-      );
+      const updatePromises = input.items.map(
+        (item) =>
+          supabase
+            .schema('core')
+            .from('portfolio_items')
+            .update({ display_order: item.displayOrder, updated_at: new Date().toISOString() })
+            .eq('id', item.id)
+            .eq('user_id', user.id) // Ensure user can only reorder their own items
+      )
 
-      const results = await Promise.all(updatePromises);
+      const results = await Promise.all(updatePromises)
 
       // Check for errors
-      const errors = results.filter((result) => result.error);
+      const errors = results.filter((result) => result.error)
       if (errors.length > 0) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: 'INTERNAL_SERVER_ERROR',
           message: `Failed to reorder portfolio items: ${errors[0]?.error?.message}`,
-        });
+        })
       }
 
-      return { success: true, updatedCount: input.items.length };
+      return { success: true, updatedCount: input.items.length }
     }),
 
   /**
@@ -234,59 +235,58 @@ export const portfolioRouter = t.router({
         file: z.string(), // base64 encoded file data
         fileName: z.string(),
         contentType: z.string(),
-      }),
+      })
     )
     .mutation(async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { supabase, user } = ctx
 
       try {
         // Convert base64 to Uint8Array
-        const base64Data = input.file.split(",")[1]; // Remove data:image/jpeg;base64, prefix
-        const binaryString = atob(base64Data);
-        const bytes = new Uint8Array(binaryString.length);
+        const base64Data = input.file.split(',')[1] // Remove data:image/jpeg;base64, prefix
+        const binaryString = atob(base64Data)
+        const bytes = new Uint8Array(binaryString.length)
         for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
+          bytes[i] = binaryString.charCodeAt(i)
         }
 
         // Generate unique file name
-        const fileExtension = input.fileName.split(".").pop() || "jpg";
+        const fileExtension = input.fileName.split('.').pop() || 'jpg'
         const uniqueFileName = input.portfolioItemId
           ? `${user.id}/${input.portfolioItemId}/image-${Date.now()}.${fileExtension}`
-          : `${user.id}/temp-${Date.now()}.${fileExtension}`;
+          : `${user.id}/temp-${Date.now()}.${fileExtension}`
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("portfolio")
+          .from('portfolio')
           .upload(uniqueFileName, bytes, {
             contentType: input.contentType,
             upsert: true,
-          });
+          })
 
         if (uploadError) {
           throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
+            code: 'INTERNAL_SERVER_ERROR',
             message: `Failed to upload image: ${uploadError.message}`,
-          });
+          })
         }
 
         // Get public URL
         const {
           data: { publicUrl },
-        } = supabase.storage.from("portfolio").getPublicUrl(uniqueFileName);
+        } = supabase.storage.from('portfolio').getPublicUrl(uniqueFileName)
 
         return {
           filePath: uploadData.path,
           imageUrl: publicUrl,
-        };
+        }
       } catch (error) {
         if (error instanceof TRPCError) {
-          throw error;
+          throw error
         }
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `Failed to process image upload: ${error instanceof Error ? error.message : "Unknown error"}`,
-        });
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to process image upload: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        })
       }
     }),
-});
-
+})

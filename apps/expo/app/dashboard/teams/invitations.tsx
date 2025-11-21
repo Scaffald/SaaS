@@ -1,12 +1,12 @@
-import { useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
+import { TeamInvitationList } from '@app/core/features/dashboard/components'
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
 import { RefreshCw } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
-
-import { api } from '@app/core/utils/api'
-import { TeamInvitationList } from '@app/core/features/dashboard/components'
-import type { AppRouter } from '@app/supabase/client-types'
+import { useMemo } from 'react'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
 
@@ -39,7 +39,7 @@ export default function DashboardTeamInvitationsScreen() {
     await respondMutation.mutateAsync({ invitationId, action })
   }
 
-  return (
+  const content = (
     <YStack flex={1} p="$4" gap="$5">
       <YStack gap="$2">
         <Text fontSize="$7" fontWeight="700">
@@ -77,4 +77,6 @@ export default function DashboardTeamInvitationsScreen() {
       )}
     </YStack>
   )
+
+  return <DashboardPage showBreadcrumb={false} pageTitle="Team invitations" leftContent={content} />
 }

@@ -1,26 +1,24 @@
-import { PostHog } from "posthog-node";
+import { PostHog } from 'posthog-node'
 
-const POSTHOG_API_KEY = Deno.env.get("POSTHOG_KEY_SERVER") ??
-  Deno.env.get("POSTHOG_KEY") ??
-  "";
-const POSTHOG_HOST = Deno.env.get("POSTHOG_HOST") ?? "https://app.posthog.com";
-const APP_ENV = Deno.env.get("APP_ENV") ?? "development";
+const POSTHOG_API_KEY = Deno.env.get('POSTHOG_KEY_SERVER') ?? Deno.env.get('POSTHOG_KEY') ?? ''
+const POSTHOG_HOST = Deno.env.get('POSTHOG_HOST') ?? 'https://app.posthog.com'
+const APP_ENV = Deno.env.get('APP_ENV') ?? 'development'
 
 const posthog = POSTHOG_API_KEY
   ? new PostHog(POSTHOG_API_KEY, {
-    host: POSTHOG_HOST,
-    flushAt: 1,
-    flushInterval: 0,
-  })
-  : null;
+      host: POSTHOG_HOST,
+      flushAt: 1,
+      flushInterval: 0,
+    })
+  : null
 
 export async function trackServerEvent(
   distinctId: string,
   event: string,
-  properties?: Record<string, unknown>,
+  properties?: Record<string, unknown>
 ) {
   if (!posthog) {
-    return;
+    return
   }
 
   try {
@@ -30,12 +28,12 @@ export async function trackServerEvent(
       properties: {
         ...properties,
         env: APP_ENV,
-        source: "server",
+        source: 'server',
       },
-    });
+    })
 
-    await posthog.flush();
+    await posthog.flush()
   } catch (error) {
-    console.error("[analytics] Failed to capture server event", error);
+    console.error('[analytics] Failed to capture server event', error)
   }
 }

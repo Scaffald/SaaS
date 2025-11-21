@@ -1,20 +1,28 @@
-import { useMemo } from 'react'
+import { ROUTES } from '@app/core/constants/routes'
+import { ProfilePage } from '@app/core/features/profile/ProfilePage'
+import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@app/core/features/resume'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import { YStack, Text, Button } from 'tamagui'
-import { ResumeWizard } from '@app/core/features/resume'
+import { useMemo } from 'react'
+import { Button, Text, YStack } from 'tamagui'
 
-function ResumeReviewContent() {
-  const router = useRouter()
+function useResumeIdFromParams() {
   const params = useLocalSearchParams<{ resumeId?: string }>()
 
-  const resumeId = useMemo(() => {
+  return useMemo(() => {
     const value = params.resumeId
     if (Array.isArray(value)) {
       return value[0]
     }
     return value ?? ''
   }, [params.resumeId])
+}
+
+interface ResumeReviewContentProps {
+  resumeId?: string
+}
+
+function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
+  const router = useRouter()
 
   if (!resumeId) {
     return (
@@ -40,7 +48,31 @@ function ResumeReviewContent() {
 }
 
 export default function ResumeReviewPage() {
+  const resumeId = useResumeIdFromParams()
+
+  const breadcrumbs = [
+    { route: ROUTES.DASHBOARD.PROFILE },
+    { route: ROUTES.DASHBOARD.PROFILE.RESUME },
+    { route: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW },
+  ] as const
+
+  if (!resumeId) {
+    return (
+      <ProfilePage
+        breadcrumbs={breadcrumbs}
+        leftContent={<ResumeReviewContent />}
+        rightContent={null}
+      />
+    )
+  }
+
   return (
-    <DashboardLayout leftContent={<ResumeReviewContent />} rightContent={<QuickLinksSidebar />} />
+    <ResumeWizardProvider resumeId={resumeId}>
+      <ProfilePage
+        breadcrumbs={breadcrumbs}
+        leftContent={<ResumeReviewContent resumeId={resumeId} />}
+        rightContent={<ResumeStepsSidebar />}
+      />
+    </ResumeWizardProvider>
   )
 }

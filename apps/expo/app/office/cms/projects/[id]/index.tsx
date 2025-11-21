@@ -1,8 +1,8 @@
-import { useLocalSearchParams } from 'expo-router'
-import { YStack, XStack, Text, Button, Card, Spinner } from 'tamagui'
-import { api } from '@app/core/utils/api'
 import { RouteBuilder } from '@app/core/constants/routes'
-import { Eye, EyeOff, Plus, CheckCircle, Clock, XCircle } from '@tamagui/lucide-icons'
+import { api } from '@app/core/utils/api'
+import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from '@tamagui/lucide-icons'
+import { useLocalSearchParams } from 'expo-router'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()

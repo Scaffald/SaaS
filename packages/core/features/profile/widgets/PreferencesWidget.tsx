@@ -1,7 +1,7 @@
-import { YStack, XStack, Text } from 'tamagui'
-import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { useRouter } from 'expo-router'
+import { Text, XStack, YStack } from 'tamagui'
 
 /**
  * PreferencesWidget

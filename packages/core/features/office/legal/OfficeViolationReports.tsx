@@ -1,110 +1,107 @@
-import { useMemo } from "react";
-import { Button, Card, Spinner, Text, XStack, YStack } from "tamagui";
-import { AlertTriangle, RefreshCw } from "@tamagui/lucide-icons";
-import type { inferRouterOutputs } from "@trpc/server";
+import { api } from '@app/core/utils/api'
+import type { AppRouter } from '@app/supabase/client-types'
+import { DataTable } from '@app/ui'
+import { RefreshCw } from '@tamagui/lucide-icons'
+import type { ColumnDef } from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useMemo } from 'react'
+import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 
-import type { AppRouter } from "@app/supabase/client-types";
-import { api } from "@app/core/utils/api";
-import { DataTable } from "@app/ui";
-import type { ColumnDef } from "@tanstack/react-table";
-import { createColumnHelper } from "@tanstack/react-table";
+type ViolationReportsOutput =
+  inferRouterOutputs<AppRouter>['legalAgreements']['listViolationReports']
+type ViolationReport = ViolationReportsOutput['items'][number]
 
-type ViolationReportsOutput = inferRouterOutputs<AppRouter>["legalAgreements"]["listViolationReports"];
-type ViolationReport = ViolationReportsOutput["items"][number];
-
-const columnHelper = createColumnHelper<ViolationReport>();
+const columnHelper = createColumnHelper<ViolationReport>()
 
 const formatViolationType = (type: string): string => {
   return type
-    .split("_")
+    .split('_')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
+    .join(' ')
+}
 
 const formatStatus = (status: string): string => {
   return status
-    .split("_")
+    .split('_')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-};
+    .join(' ')
+}
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "pending":
-      return "$orange11" as const;
-    case "under_review":
-      return "$blue11" as const;
-    case "confirmed":
-      return "$red11" as const;
-    case "dismissed":
-      return "$gray11" as const;
-    case "resolved":
-      return "$green11" as const;
+    case 'pending':
+      return '$orange11' as const
+    case 'under_review':
+      return '$blue11' as const
+    case 'confirmed':
+      return '$red11' as const
+    case 'dismissed':
+      return '$gray11' as const
+    case 'resolved':
+      return '$green11' as const
     default:
-      return "$color11" as const;
+      return '$color11' as const
   }
-};
+}
 
 export function OfficeViolationReports() {
-  const reportsQuery = api.legalAgreements.listViolationReports.useQuery(
-    undefined,
-    {
-      staleTime: 30_000,
-    },
-  );
+  const reportsQuery = api.legalAgreements.listViolationReports.useQuery(undefined, {
+    staleTime: 30_000,
+  })
 
   const updateMutation = api.legalAgreements.updateViolationReport.useMutation({
     onSuccess: () => {
-      reportsQuery.refetch();
+      reportsQuery.refetch()
     },
-  });
+  })
 
   const reportsColumns = useMemo(() => {
     const defs = [
-      columnHelper.accessor("createdAt", {
-        header: "Date",
+      columnHelper.accessor('createdAt', {
+        header: 'Date',
         cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       }),
-      columnHelper.accessor("reportedByName", {
-        header: "Reported By",
-        cell: (info) => info.getValue() ?? "N/A",
+      columnHelper.accessor('reportedByName', {
+        header: 'Reported By',
+        cell: (info) => info.getValue() ?? 'N/A',
       }),
-      columnHelper.accessor("organizationName", {
-        header: "Organization",
-        cell: (info) => info.getValue() ?? "N/A",
+      columnHelper.accessor('organizationName', {
+        header: 'Organization',
+        cell: (info) => info.getValue() ?? 'N/A',
       }),
-      columnHelper.accessor("workerName", {
-        header: "Worker",
-        cell: (info) => info.getValue() ?? "N/A",
+      columnHelper.accessor('workerName', {
+        header: 'Worker',
+        cell: (info) => info.getValue() ?? 'N/A',
       }),
-      columnHelper.accessor("violationType", {
-        header: "Type",
+      columnHelper.accessor('violationType', {
+        header: 'Type',
         cell: (info) => formatViolationType(info.getValue()),
       }),
-      columnHelper.accessor("description", {
-        header: "Description",
+      columnHelper.accessor('description', {
+        header: 'Description',
         cell: (info) => (
           <Text fontSize="$2" numberOfLines={2}>
             {info.getValue()}
           </Text>
         ),
       }),
-      columnHelper.accessor("status", {
-        header: "Status",
+      columnHelper.accessor('status', {
+        header: 'Status',
         cell: (info) => {
-          const status = info.getValue();
+          const status = info.getValue()
           return (
             <Text color={getStatusColor(status)} fontWeight="600">
               {formatStatus(status)}
             </Text>
-          );
+          )
         },
       }),
-      columnHelper.accessor("id", {
-        header: "Actions",
+      columnHelper.accessor('id', {
+        header: 'Actions',
         cell: (info) => {
-          const row = info.row.original;
-          if (row.status === "pending") {
+          const row = info.row.original
+          if (row.status === 'pending') {
             return (
               <XStack gap="$1">
                 <Button
@@ -114,22 +111,22 @@ export function OfficeViolationReports() {
                   onPress={() => {
                     updateMutation.mutate({
                       reportId: info.getValue(),
-                      status: "under_review",
-                    });
+                      status: 'under_review',
+                    })
                   }}
                   disabled={updateMutation.isPending}
                 >
                   Review
                 </Button>
               </XStack>
-            );
+            )
           }
-          return null;
+          return null
         },
       }),
-    ];
-    return defs as ColumnDef<ViolationReport, unknown>[];
-  }, [updateMutation]);
+    ]
+    return defs as ColumnDef<ViolationReport, unknown>[]
+  }, [updateMutation])
 
   return (
     <YStack flex={1} p="$4" gap="$4">
@@ -175,6 +172,5 @@ export function OfficeViolationReports() {
         </Card>
       )}
     </YStack>
-  );
+  )
 }
-

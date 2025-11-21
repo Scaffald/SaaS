@@ -1,5 +1,4 @@
-import { XStack, YStack, Text, Button } from '@app/ui'
-import { Select } from 'tamagui'
+import { Button, ResponsiveSelect, Text, XStack, YStack } from '@app/ui'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
 
 interface ApplicationsFiltersProps {
@@ -32,7 +31,7 @@ export const ApplicationsFilters = ({
         <Text fontSize="$2" mb="$2" opacity={0.7}>
           Filter by Job
         </Text>
-        <Select
+        <ResponsiveSelect
           value={filters.jobId || 'all'}
           onValueChange={(value) => {
             onFiltersChange({
@@ -40,24 +39,16 @@ export const ApplicationsFilters = ({
               jobId: value === 'all' ? null : value,
             })
           }}
-        >
-          <Select.Trigger width={200}>
-            <Select.Value placeholder="All Jobs" />
-          </Select.Trigger>
-
-          <Select.Content>
-            <Select.Viewport>
-              <Select.Item index={0} value="all">
-                <Select.ItemText>All Jobs</Select.ItemText>
-              </Select.Item>
-              {jobs.map((job, idx) => (
-                <Select.Item key={job.id} index={idx + 1} value={job.id}>
-                  <Select.ItemText>{job.title}</Select.ItemText>
-                </Select.Item>
-              ))}
-            </Select.Viewport>
-          </Select.Content>
-        </Select>
+          placeholder="All Jobs"
+          options={[
+            { value: 'all', label: 'All Jobs' },
+            ...jobs.map((job) => ({
+              value: job.id,
+              label: job.title,
+            })),
+          ]}
+          triggerProps={{ width: 200 }}
+        />
       </YStack>
 
       {/* Status Filter */}
@@ -65,7 +56,7 @@ export const ApplicationsFilters = ({
         <Text fontSize="$2" mb="$2" opacity={0.7}>
           Filter by Status
         </Text>
-        <Select
+        <ResponsiveSelect
           value={filters.status || 'all'}
           onValueChange={(value) => {
             onFiltersChange({
@@ -73,37 +64,18 @@ export const ApplicationsFilters = ({
               status: value === 'all' ? null : (value as ApplicationStatus),
             })
           }}
-        >
-          <Select.Trigger width={200}>
-            <Select.Value placeholder="All Statuses" />
-          </Select.Trigger>
-
-          <Select.Content>
-            <Select.Viewport>
-              <Select.Item index={0} value="all">
-                <Select.ItemText>All Statuses</Select.ItemText>
-              </Select.Item>
-              <Select.Item index={1} value="new">
-                <Select.ItemText>New</Select.ItemText>
-              </Select.Item>
-              <Select.Item index={2} value="screen">
-                <Select.ItemText>Screening</Select.ItemText>
-              </Select.Item>
-              <Select.Item index={3} value="interview">
-                <Select.ItemText>Interview</Select.ItemText>
-              </Select.Item>
-              <Select.Item index={4} value="offer">
-                <Select.ItemText>Offer</Select.ItemText>
-              </Select.Item>
-              <Select.Item index={5} value="hired">
-                <Select.ItemText>Hired</Select.ItemText>
-              </Select.Item>
-              <Select.Item index={6} value="rejected">
-                <Select.ItemText>Rejected</Select.ItemText>
-              </Select.Item>
-            </Select.Viewport>
-          </Select.Content>
-        </Select>
+          placeholder="All Statuses"
+          options={[
+            { value: 'all', label: 'All Statuses' },
+            { value: 'new', label: 'New' },
+            { value: 'screen', label: 'Screening' },
+            { value: 'interview', label: 'Interview' },
+            { value: 'offer', label: 'Offer' },
+            { value: 'hired', label: 'Hired' },
+            { value: 'rejected', label: 'Rejected' },
+          ]}
+          triggerProps={{ width: 200 }}
+        />
       </YStack>
 
       {/* Clear Filters */}

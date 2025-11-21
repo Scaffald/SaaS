@@ -1,8 +1,8 @@
-import { YStack, XStack, Text, View, Spinner, Button } from 'tamagui'
-import { MapPin, Building2, Briefcase, User, ExternalLink } from '@tamagui/lucide-icons'
 import { RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
+import { Briefcase, Building2, ExternalLink, MapPin, User } from '@tamagui/lucide-icons'
+import { Button, Spinner, Text, View, XStack, YStack } from 'tamagui'
 
 interface ProfileHoverCardProps {
   /** Pin ID (user ID or organization ID) */
@@ -34,11 +34,10 @@ export function ProfileHoverCard({
   onHoverCardLeave,
 }: ProfileHoverCardProps) {
   // Fetch worker preview data (lightweight)
-  const { data: workerPreview, isLoading: isLoadingWorker } =
-    api.userProfile.getPreview.useQuery(
-      { userId: pinId || '' },
-      { enabled: !!pinId && pinType === 'worker' && visible }
-    )
+  const { data: workerPreview, isLoading: isLoadingWorker } = api.userProfile.getPreview.useQuery(
+    { userId: pinId || '' },
+    { enabled: !!pinId && pinType === 'worker' && visible }
+  )
 
   // Fetch organization data
   const { data: organization, isLoading: isLoadingOrg } =
@@ -114,13 +113,7 @@ export function ProfileHoverCard({
           {/* Header with avatar and name */}
           <XStack gap="$3" items="center">
             {avatarUrl ? (
-              <View
-                width={48}
-                height={48}
-                rounded="$10"
-                overflow="hidden"
-                bg="$color3"
-              >
+              <View width={48} height={48} rounded="$10" overflow="hidden" bg="$color3">
                 <img
                   src={avatarUrl}
                   alt={workerPreview.displayName || 'Worker'}
@@ -174,20 +167,22 @@ export function ProfileHoverCard({
           {/* Top Skills */}
           {workerPreview.topSkills && workerPreview.topSkills.length > 0 && (
             <XStack gap="$1" flexWrap="wrap">
-              {workerPreview.topSkills.slice(0, 3).map((skill: typeof workerPreview.topSkills[0]) => {
-                const skillKey =
-                  skill.csiSkillId ||
-                  skill.onetOccupationId ||
-                  skill.taxonomy ||
-                  `skill-${Math.random()}`
-                return (
-                  <View key={skillKey} bg="$blue4" px="$2" py="$1" rounded="$2">
-                    <Text fontSize="$1" color="$blue11">
-                      {skill.taxonomy || 'Skill'}
-                    </Text>
-                  </View>
-                )
-              })}
+              {workerPreview.topSkills
+                .slice(0, 3)
+                .map((skill: (typeof workerPreview.topSkills)[0]) => {
+                  const skillKey =
+                    skill.csiSkillId ||
+                    skill.onetOccupationId ||
+                    skill.taxonomy ||
+                    `skill-${Math.random()}`
+                  return (
+                    <View key={skillKey} bg="$blue4" px="$2" py="$1" rounded="$2">
+                      <Text fontSize="$1" color="$blue11">
+                        {skill.taxonomy || 'Skill'}
+                      </Text>
+                    </View>
+                  )
+                })}
               {workerPreview.topSkills.length > 3 && (
                 <Text fontSize="$1" color="$color10">
                   +{workerPreview.topSkills.length - 3} more
@@ -200,14 +195,7 @@ export function ProfileHoverCard({
         <YStack gap="$2">
           {/* Header with icon and name */}
           <XStack gap="$3" items="center">
-            <View
-              width={48}
-              height={48}
-              rounded="$6"
-              bg="$blue4"
-              items="center"
-              justify="center"
-            >
+            <View width={48} height={48} rounded="$6" bg="$blue4" items="center" justify="center">
               <Building2 size={24} color="$blue10" />
             </View>
             <YStack flex={1} gap="$1">
@@ -272,4 +260,3 @@ export function ProfileHoverCard({
     </View>
   )
 }
-

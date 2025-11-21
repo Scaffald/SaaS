@@ -6,7 +6,7 @@
  * User: Admin (ewongagent@gmail.com)
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 test.describe('Admin • /dashboard/discover/map - UI Exploration', () => {
@@ -25,10 +25,9 @@ test.describe('Admin • /dashboard/discover/map - UI Exploration', () => {
     await page.goto('/dashboard/discover/map', { waitUntil: 'domcontentloaded' })
 
     // Wait for page to load
-    await page.waitForFunction(
-      () => !document.body.textContent?.includes('Loading...'),
-      { timeout: 10000 }
-    ).catch(() => {})
+    await page
+      .waitForFunction(() => !document.body.textContent?.includes('Loading...'), { timeout: 10000 })
+      .catch(() => {})
     await page.waitForTimeout(2000)
 
     console.log('✓ Page loaded\n')
@@ -52,8 +51,8 @@ test.describe('Admin • /dashboard/discover/map - UI Exploration', () => {
     console.log(`Main: ${await page.locator('main').count()}\n`)
 
     console.log('=== HEADINGS ===')
-    const h1s = (await page.locator('h1').allTextContents()).filter(h => h.trim())
-    const h2s = (await page.locator('h2').allTextContents()).filter(h => h.trim())
+    const h1s = (await page.locator('h1').allTextContents()).filter((h) => h.trim())
+    const h2s = (await page.locator('h2').allTextContents()).filter((h) => h.trim())
     if (h1s.length) console.log(`H1: ${h1s.join(', ')}`)
     if (h2s.length) console.log(`H2: ${h2s.slice(0, 5).join(', ')}\n`)
 
@@ -67,10 +66,10 @@ test.describe('Admin • /dashboard/discover/map - UI Exploration', () => {
     console.log(`Buttons: ${await page.locator('button').count()}`)
     console.log(`Selects: ${await page.locator('select').count()}\n`)
 
-    const buttons = (await page.locator('button').allTextContents()).filter(b => b.trim())
+    const buttons = (await page.locator('button').allTextContents()).filter((b) => b.trim())
     const uniqueButtons = [...new Set(buttons)]
     console.log(`Unique Buttons (${uniqueButtons.length}):`)
-    uniqueButtons.slice(0, 15).forEach(b => console.log(`  - ${b}`))
+    uniqueButtons.slice(0, 15).forEach((b) => console.log(`  - ${b}`))
     console.log('')
 
     console.log('=== INTERACTIVE ===')
@@ -90,7 +89,7 @@ test.describe('Admin • /dashboard/discover/map - UI Exploration', () => {
     console.log('=== EXPLORATION COMPLETE ===\n')
 
     // Final assertion
-    const pageContent = await page.locator('body').textContent() || ''
+    const pageContent = (await page.locator('body').textContent()) || ''
     expect(pageContent.length).toBeGreaterThan(0)
   })
 })

@@ -1,7 +1,6 @@
+import { ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
 import { useState } from 'react'
-import { YStack, XStack, Text, Input, ToggleSwitch } from '@app/ui'
-import { Adapt, Sheet, Select, Label } from 'tamagui'
-import { Check, ChevronDown } from '@tamagui/lucide-icons'
+import { Label } from 'tamagui'
 
 interface ApplicationScreeningSectionProps {
   requireCurrentLocation: boolean
@@ -48,12 +47,12 @@ export function ApplicationScreeningSection({
   const handleChange = (key: keyof typeof localState, value: boolean | number | undefined) => {
     const newState = { ...localState, [key]: value }
     setLocalState(newState)
-    
+
     // If disabling experience requirement, clear the value
     if (key === 'minimum_years_experience_enabled' && value === false) {
       newState.minimum_years_experience = undefined
     }
-    
+
     onUpdate({
       require_current_location: newState.require_current_location,
       require_relocation_willingness: newState.require_relocation_willingness,
@@ -67,7 +66,6 @@ export function ApplicationScreeningSection({
 
   return (
     <YStack gap="$4">
-
       {/* Current Location */}
       <XStack gap="$3" items="center" justify="space-between">
         <YStack gap="$1" flex={1}>
@@ -122,45 +120,17 @@ export function ApplicationScreeningSection({
           </XStack>
         </XStack>
         {localState.minimum_years_experience_enabled && (
-          <Select
+          <ResponsiveSelect
             value={localState.minimum_years_experience?.toString() || ''}
             onValueChange={(value) =>
               handleChange('minimum_years_experience', value ? Number(value) : undefined)
             }
-          >
-            <Select.Trigger iconAfter={ChevronDown}>
-              <Select.Value placeholder="Select" />
-            </Select.Trigger>
-
-            <Adapt when="sm" platform="touch">
-              <Sheet modal dismissOnSnapToBottom>
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay />
-              </Sheet>
-            </Adapt>
-
-            <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                <Select.Group>
-                  <Select.Label>Experience Level</Select.Label>
-                  {EXPERIENCE_OPTIONS.map((option, i) => (
-                    <Select.Item key={option.value} index={i} value={option.value.toString()}>
-                      <Select.ItemText>{option.label}</Select.ItemText>
-                      <Select.ItemIndicator>
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Group>
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
-          </Select>
+            placeholder="Select"
+            options={EXPERIENCE_OPTIONS.map((option) => ({
+              value: option.value.toString(),
+              label: option.label,
+            }))}
+          />
         )}
       </YStack>
 

@@ -1,4 +1,4 @@
-import { DashboardWidget, Text, YStack, spacing } from '@app/ui'
+import { DashboardWidget, spacing, Text, YStack } from '@app/ui'
 
 export const AssessmentsLandingRight = () => {
   return (
@@ -9,8 +9,8 @@ export const AssessmentsLandingRight = () => {
             Why assessments matter
           </Text>
           <Text fontSize="$3" color="$color11">
-            Your answers create a shared language for coaches, managers, and teammates to understand where
-            you are today and how to help you grow.
+            Your answers create a shared language for coaches, managers, and teammates to understand
+            where you are today and how to help you grow.
           </Text>
         </YStack>
 
@@ -20,8 +20,8 @@ export const AssessmentsLandingRight = () => {
               Build a complete profile
             </Text>
             <Text fontSize="$3" color="$color11">
-              Each assessment fills in part of your strengths map—from how you process feedback to which
-              environments fuel your energy.
+              Each assessment fills in part of your strengths map—from how you process feedback to
+              which environments fuel your energy.
             </Text>
           </YStack>
 
@@ -30,8 +30,8 @@ export const AssessmentsLandingRight = () => {
               Drive better matches
             </Text>
             <Text fontSize="$3" color="$color11">
-              The more signal we have, the better we can tailor role recommendations, coaching plans,
-              and development sprints that resonate with you.
+              The more signal we have, the better we can tailor role recommendations, coaching
+              plans, and development sprints that resonate with you.
             </Text>
           </YStack>
 
@@ -40,20 +40,17 @@ export const AssessmentsLandingRight = () => {
               Share actionable insights
             </Text>
             <Text fontSize="$3" color="$color11">
-              Summaries flow into your dossier and team dashboards so collaborators know how to support you
-              before the next conversation.
+              Summaries flow into your dossier and team dashboards so collaborators know how to
+              support you before the next conversation.
             </Text>
           </YStack>
         </YStack>
 
         <Text fontSize="$2" color="$color11">
-          Tip: You can retake most assessments anytime your goals change—your latest results will be saved
-          and compared with your historical trends.
+          Tip: You can retake most assessments anytime your goals change—your latest results will be
+          saved and compared with your historical trends.
         </Text>
       </YStack>
     </DashboardWidget>
   )
 }
-
-
-

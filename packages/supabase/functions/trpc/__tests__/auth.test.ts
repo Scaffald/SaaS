@@ -37,12 +37,21 @@ const TEST_ADMIN_EMAIL = "admin@scaffald.dev"; // Assuming this exists in seeds
 Deno.test({
   name: "Auth Setup - Validate Mailpit is running",
   async fn() {
-    const response = await fetch(`${TEST_MAILPIT_URL}/api/v1/messages`);
-    assertEquals(
-      response.ok,
-      true,
-      "Mailpit should be running on port 54324",
-    );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    try {
+      const response = await fetch(`${TEST_MAILPIT_URL}/api/v1/messages`, {
+        signal: controller.signal,
+      });
+      assertEquals(
+        response.ok,
+        true,
+        "Mailpit should be running on port 54324",
+      );
+    } finally {
+      clearTimeout(timeoutId);
+    }
   },
   sanitizeResources: false,
   sanitizeOps: false,

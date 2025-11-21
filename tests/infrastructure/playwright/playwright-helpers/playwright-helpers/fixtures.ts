@@ -6,7 +6,8 @@ import type { Page } from '@playwright/test'
  */
 export async function getCurrentUserId(page: Page): Promise<string | null> {
   const userJson = await page.evaluate(() => {
-    const raw = localStorage.getItem('supabase.auth.user') || sessionStorage.getItem('supabase.auth.user')
+    const raw =
+      localStorage.getItem('supabase.auth.user') || sessionStorage.getItem('supabase.auth.user')
     return raw ?? null
   })
   if (!userJson) return null

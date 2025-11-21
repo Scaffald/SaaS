@@ -7,14 +7,14 @@
  * REQ-11: Responsive Layout Improvements
  */
 
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
+import { expect, type Page, test } from '@playwright/test'
 import {
-  assertNoHorizontalScroll,
   assertElementVisible,
+  assertNoHorizontalScroll,
   assertNoOverlap,
   getViewportCategory,
 } from '../../infrastructure/playwright/helpers/helpers/responsive'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Define all Priority 1 viewports from REQ-11 spec
 const viewports = [
@@ -37,22 +37,27 @@ test.describe('Responsive Discovery Map', () => {
         await signInAsAdmin(page)
       })
 
-      test('discover map interface renders correctly without horizontal scroll', async ({ page }: { page: Page }) => {
+      test('discover map interface renders correctly without horizontal scroll', async ({
+        page,
+      }: {
+        page: Page
+      }) => {
         await page.goto('/dashboard/discover/map')
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(3000) // Wait for map to load
 
         // Wait for loading to complete
-        await page.waitForFunction(
-          () => !document.body.textContent?.includes('Loading...'),
-          { timeout: 10000 }
-        ).catch(() => {})
+        await page
+          .waitForFunction(() => !document.body.textContent?.includes('Loading...'), {
+            timeout: 10000,
+          })
+          .catch(() => {})
 
         // Verify no horizontal scrolling required
         await assertNoHorizontalScroll(page)
 
         // Verify page content is visible
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
       })
 
@@ -88,11 +93,19 @@ test.describe('Responsive Discovery Map', () => {
 
         // FilterBar should be visible (it's positioned absolutely at bottom)
         // Look for filter buttons or results count button
-        const filterBar = page.locator('button:has-text(/\d+/), button[aria-label*="filter" i], button[aria-label*="search" i]').first()
+        const filterBar = page
+          .locator(
+            'button:has-text(/d+/), button[aria-label*="filter" i], button[aria-label*="search" i]'
+          )
+          .first()
         await expect(filterBar).toBeVisible({ timeout: 10000 })
 
         // Verify FilterBar buttons are accessible
-        const buttons = page.locator('button').filter({ hasText: /\d+/ }).or(page.locator('button[aria-label*="filter" i]')).or(page.locator('button[aria-label*="search" i]'))
+        const buttons = page
+          .locator('button')
+          .filter({ hasText: /\d+/ })
+          .or(page.locator('button[aria-label*="filter" i]'))
+          .or(page.locator('button[aria-label*="search" i]'))
         const buttonCount = await buttons.count()
         expect(buttonCount).toBeGreaterThan(0)
       })
@@ -103,19 +116,28 @@ test.describe('Responsive Discovery Map', () => {
         await page.waitForTimeout(3000)
 
         // Find and click search button to activate search input
-        const searchButtons = page.locator('button[aria-label*="search" i], button:has([class*="Search" i])')
+        const searchButtons = page.locator(
+          'button[aria-label*="search" i], button:has([class*="Search" i])'
+        )
         const searchButtonCount = await searchButtons.count()
-        
+
         if (searchButtonCount > 0) {
           await searchButtons.first().click()
           await page.waitForTimeout(1000)
 
           // Look for search input (could be in an autocomplete component)
-          const searchInput = page.locator('input[placeholder*="city" i], input[placeholder*="search" i], input[type="search"]').first()
+          const searchInput = page
+            .locator(
+              'input[placeholder*="city" i], input[placeholder*="search" i], input[type="search"]'
+            )
+            .first()
           const inputVisible = await searchInput.isVisible({ timeout: 5000 }).catch(() => false)
-          
+
           if (inputVisible) {
-            await assertElementVisible(page, 'input[placeholder*="city" i], input[placeholder*="search" i], input[type="search"]')
+            await assertElementVisible(
+              page,
+              'input[placeholder*="city" i], input[placeholder*="search" i], input[type="search"]'
+            )
           }
         }
 
@@ -133,7 +155,9 @@ test.describe('Responsive Discovery Map', () => {
 
         // Look for results rail (sidebar with worker cards)
         // ResultsRail typically contains worker cards or result lists
-        const resultsRail = page.locator('[role="complementary"], [class*="rail" i], [class*="sidebar" i], [aria-label*="results" i]')
+        const resultsRail = page.locator(
+          '[role="complementary"], [class*="rail" i], [class*="sidebar" i], [aria-label*="results" i]'
+        )
         const resultsVisible = await resultsRail.isVisible({ timeout: 5000 }).catch(() => false)
 
         // On mobile (≤800px): ResultsRail should be hidden
@@ -155,7 +179,11 @@ test.describe('Responsive Discovery Map', () => {
         await page.waitForTimeout(3000)
 
         // Get FilterBar buttons
-        const filterBarButtons = page.locator('button').filter({ hasText: /\d+/ }).or(page.locator('button[aria-label*="filter" i]')).or(page.locator('button[aria-label*="search" i]'))
+        const filterBarButtons = page
+          .locator('button')
+          .filter({ hasText: /\d+/ })
+          .or(page.locator('button[aria-label*="filter" i]'))
+          .or(page.locator('button[aria-label*="search" i]'))
         const buttonCount = await filterBarButtons.count()
 
         if (buttonCount >= 2) {
@@ -172,11 +200,14 @@ test.describe('Responsive Discovery Map', () => {
             const verticalOverlap = box1.y < box2.y + box2.height && box1.y + box1.height > box2.y
 
             // Allow slight overlap for visual design, but major overlap is a problem
-            const majorOverlap = horizontalOverlap && verticalOverlap && 
-              Math.min(box1.width, box2.width) / 2 < Math.max(
-                Math.min(box1.x + box1.width - box2.x, box2.x + box2.width - box1.x),
-                Math.min(box1.y + box1.height - box2.y, box2.y + box2.height - box1.y)
-              )
+            const majorOverlap =
+              horizontalOverlap &&
+              verticalOverlap &&
+              Math.min(box1.width, box2.width) / 2 <
+                Math.max(
+                  Math.min(box1.x + box1.width - box2.x, box2.x + box2.width - box1.x),
+                  Math.min(box1.y + box1.height - box2.y, box2.y + box2.height - box1.y)
+                )
 
             expect(majorOverlap).toBe(false)
           }
@@ -194,7 +225,10 @@ test.describe('Responsive Discovery Map', () => {
         }
 
         // Check FilterBar buttons are within viewport
-        const filterBarButtons = page.locator('button').filter({ hasText: /\d+/ }).or(page.locator('button[aria-label*="filter" i]'))
+        const filterBarButtons = page
+          .locator('button')
+          .filter({ hasText: /\d+/ })
+          .or(page.locator('button[aria-label*="filter" i]'))
         const buttonCount = await filterBarButtons.count()
 
         if (buttonCount > 0) {
@@ -211,7 +245,11 @@ test.describe('Responsive Discovery Map', () => {
         }
       })
 
-      test('search input and filter bar use correct positioning', async ({ page }: { page: Page }) => {
+      test('search input and filter bar use correct positioning', async ({
+        page,
+      }: {
+        page: Page
+      }) => {
         await page.goto('/dashboard/discover/map')
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(3000)
@@ -222,7 +260,11 @@ test.describe('Responsive Discovery Map', () => {
         // On mobile: search and filter should use full width (right offset = 0)
         // On desktop: search and filter may use 440px right offset when rail is visible
 
-        const filterBar = page.locator('button').filter({ hasText: /\d+/ }).or(page.locator('button[aria-label*="filter" i]')).first()
+        const filterBar = page
+          .locator('button')
+          .filter({ hasText: /\d+/ })
+          .or(page.locator('button[aria-label*="filter" i]'))
+          .first()
         const filterBarBox = await filterBar.boundingBox()
 
         if (filterBarBox && !isMobile) {
@@ -235,7 +277,11 @@ test.describe('Responsive Discovery Map', () => {
         }
       })
 
-      test('page content fits within viewport on all viewport sizes', async ({ page }: { page: Page }) => {
+      test('page content fits within viewport on all viewport sizes', async ({
+        page,
+      }: {
+        page: Page
+      }) => {
         await page.goto('/dashboard/discover/map')
         await page.waitForLoadState('networkidle')
         await page.waitForTimeout(3000)
@@ -246,9 +292,9 @@ test.describe('Responsive Discovery Map', () => {
         // Verify map heading is visible
         const heading = page.getByRole('heading', { name: /map search/i })
         const headingVisible = await heading.isVisible({ timeout: 5000 }).catch(() => false)
-        
+
         // Heading may or may not be visible depending on viewport, but page should render
-        const pageContent = await page.locator('body').textContent() || ''
+        const pageContent = (await page.locator('body').textContent()) || ''
         expect(pageContent.length).toBeGreaterThan(0)
       })
     })
@@ -260,7 +306,11 @@ test.describe('Responsive Discovery Map', () => {
       await signInAsAdmin(page)
     })
 
-    test('discover map works consistently across all viewports', async ({ page }: { page: Page }) => {
+    test('discover map works consistently across all viewports', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
       for (const viewport of viewports) {
         await page.setViewportSize({ width: viewport.width, height: viewport.height })
         await page.goto('/dashboard/discover/map')
@@ -276,11 +326,13 @@ test.describe('Responsive Discovery Map', () => {
         expect(canvasVisible).toBe(true)
 
         // Verify FilterBar buttons exist
-        const filterBarButtons = page.locator('button').filter({ hasText: /\d+/ }).or(page.locator('button[aria-label*="filter" i]'))
+        const filterBarButtons = page
+          .locator('button')
+          .filter({ hasText: /\d+/ })
+          .or(page.locator('button[aria-label*="filter" i]'))
         const buttonCount = await filterBarButtons.count()
         expect(buttonCount).toBeGreaterThan(0)
       }
     })
   })
 })
-

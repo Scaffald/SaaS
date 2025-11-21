@@ -1,9 +1,8 @@
-import { useCallback, useMemo } from 'react'
-import { ChevronRight, Check, Clock } from '@tamagui/lucide-icons'
-import type { GestureResponderEvent } from 'react-native'
-import { XStack, Paragraph, YStack } from 'tamagui'
-import { Link } from 'expo-router'
 import { useTranslation } from '@app/core/utils/useTranslation'
+import { Check, ChevronRight, Clock } from '@tamagui/lucide-icons'
+import { Link } from 'expo-router'
+import { useCallback, useMemo } from 'react'
+import { Paragraph, XStack, YStack } from 'tamagui'
 import type { DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
@@ -14,7 +13,9 @@ export const DrawerLink = ({
   onNavigate,
   expandedItems,
   onToggleExpanded,
+  isCollapsed,
 }: DrawerLinkProps) => {
+  const collapsed = isCollapsed ?? false
   const active = isActivePath(pathname, item.href)
   const Icon = item.icon
   const hasSubItems = Boolean(item.subItems?.length)
@@ -36,28 +37,43 @@ export const DrawerLink = ({
 
   const renderIcon = useCallback(() => {
     if (!Icon) return null
-
-    return (
-      <XStack items="center" justify="center" width={25} height={20} rounded="$6">
-        <Icon size={20} color={active ? '$color1' : '$color12'} />
-      </XStack>
-    )
+    return <Icon size={20} color={active ? '$color1' : '$color12'} />
   }, [Icon, active])
 
-  const renderContent = useCallback(
-    () => (
-      <XStack items="center" gap="$3">
+  const renderContent = useCallback(() => {
+    const iconWrapper = (
+      <XStack
+        items="center"
+        justify="center"
+        width={collapsed ? 48 : 32}
+        height={collapsed ? 48 : 32}
+        rounded="$8"
+        bg={collapsed ? (active ? '$blue9' : '$color5') : 'transparent'}
+      >
         {renderIcon()}
+      </XStack>
+    )
+
+    if (collapsed) {
+      return iconWrapper
+    }
+
+    return (
+      <XStack items="center" gap="$3">
+        {iconWrapper}
         <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
           {title}
         </Paragraph>
       </XStack>
-    ),
-    [active, renderIcon, title]
-  )
+    )
+  }, [active, collapsed, renderIcon, title])
 
-  const renderRightSide = useCallback(
-    () => (
+  const renderRightSide = useCallback(() => {
+    if (collapsed) {
+      return null
+    }
+
+    return (
       <XStack items="center" gap="$2">
         {item.badge && (
           <XStack px="$2" py="$1" rounded="$10" bg="$red9" minW={20} items="center">
@@ -68,11 +84,31 @@ export const DrawerLink = ({
         )}
         {!item.isExpandable && item.hasChevron && <ChevronRight size={16} color="$color10" />}
       </XStack>
-    ),
-    [active, item.badge, item.hasChevron, item.isExpandable]
-  )
+    )
+  }, [active, collapsed, item.badge, item.hasChevron, item.isExpandable])
+
+  if (collapsed && depth > 0) {
+    return null
+  }
 
   if (item.disabled) {
+    if (collapsed) {
+      return (
+        <XStack
+          items="center"
+          justify="center"
+          width={56}
+          height={56}
+          rounded="$8"
+          opacity={0.4}
+          bg="$color4"
+          cursor="not-allowed"
+        >
+          {renderIcon()}
+        </XStack>
+      )
+    }
+
     return (
       <XStack items="center" gap="$3" px="$3" py="$2" opacity={0.5} cursor="not-allowed" flex={1}>
         {Icon && <Icon size={18} color="$color12" />}
@@ -80,6 +116,26 @@ export const DrawerLink = ({
           {title}
         </Paragraph>
       </XStack>
+    )
+  }
+
+  if (collapsed && depth === 0) {
+    return (
+      <Link href={item.href} asChild>
+        <XStack
+          width={56}
+          height={56}
+          rounded="$8"
+          items="center"
+          justify="center"
+          bg={active ? '$blue9' : 'transparent'}
+          hoverStyle={{ bg: active ? '$blue9' : '$blue4' }}
+          pressStyle={{ bg: active ? '$blue9' : '$blue4' }}
+          cursor="pointer"
+        >
+          {renderIcon()}
+        </XStack>
+      </Link>
     )
   }
 
@@ -94,7 +150,7 @@ export const DrawerLink = ({
           py="$2"
           pl="$9"
           pressStyle={{ bg: '$color1' }}
-          hoverStyle={{ bg: '$color4' }}
+          hoverStyle={{ bg: '$blue4' }}
           cursor="pointer"
           flex={1}
         >
@@ -123,8 +179,8 @@ export const DrawerLink = ({
             rounded="$4"
             my="$1"
             bg={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
+            pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
             cursor="pointer"
           >
             {renderContent()}
@@ -142,6 +198,7 @@ export const DrawerLink = ({
                 onNavigate={onNavigate}
                 expandedItems={expandedItems}
                 onToggleExpanded={onToggleExpanded}
+                isCollapsed={collapsed}
               />
             ))}
           </YStack>
@@ -162,8 +219,8 @@ export const DrawerLink = ({
             rounded="$4"
             my="$1"
             bg={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
+            pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
             cursor="pointer"
           >
             {renderContent()}
@@ -181,6 +238,7 @@ export const DrawerLink = ({
                 onNavigate={onNavigate}
                 expandedItems={expandedItems}
                 onToggleExpanded={onToggleExpanded}
+                isCollapsed={collapsed}
               />
             ))}
           </YStack>
@@ -219,6 +277,7 @@ export const DrawerLink = ({
               onNavigate={onNavigate}
               expandedItems={expandedItems}
               onToggleExpanded={onToggleExpanded}
+              isCollapsed={collapsed}
             />
           ))}
         </YStack>
@@ -236,8 +295,8 @@ export const DrawerLink = ({
         rounded="$2"
         my="$1"
         bg={active ? '$blue9' : 'transparent'}
-        hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-        pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+        hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
+        pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
         cursor="pointer"
       >
         {renderContent()}

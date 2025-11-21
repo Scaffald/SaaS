@@ -1,8 +1,7 @@
-import { RefreshCcw } from '@tamagui/lucide-icons'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import type { inferRouterOutputs } from '@trpc/server'
-
 import type { AppRouter } from '@app/supabase/client-types'
+import { RefreshCcw } from '@tamagui/lucide-icons'
+import type { inferRouterOutputs } from '@trpc/server'
+import { Button, Card, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type MetricsSummary = RouterOutputs['backgroundChecks']['adminGetMetrics']
@@ -104,9 +103,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
             Average completion time
           </Text>
           <Text fontSize="$7" fontWeight="700" color="$color12">
-            {metrics.averageCompletionDays != null
-              ? `${metrics.averageCompletionDays} days`
-              : '—'}
+            {metrics.averageCompletionDays != null ? `${metrics.averageCompletionDays} days` : '—'}
           </Text>
           <Text fontSize="$2" color="$color10">
             Based on fully completed checks in the system.
@@ -114,14 +111,7 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         </Card>
       </XStack>
 
-      <Card
-        p="$4"
-        gap="$3"
-        bg="$color2"
-        borderColor="$borderColor"
-        borderWidth={1}
-        rounded="$4"
-      >
+      <Card p="$4" gap="$3" bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$4">
         <XStack justify="space-between" items="center" flexWrap="wrap" gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Package distribution
@@ -219,5 +209,3 @@ function DisputeMetric({ label, value, tone }: DisputeMetricProps) {
     </XStack>
   )
 }
-
-

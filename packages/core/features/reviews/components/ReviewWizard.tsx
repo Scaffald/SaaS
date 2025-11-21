@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Button, Text, Card } from 'tamagui'
-import { ChevronLeft, ChevronRight, X } from '@tamagui/lucide-icons'
+import { api } from '@app/core/utils/api'
+import { ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
+import { useEffect, useState } from 'react'
+import { Button, Card, Text, XStack, YStack } from 'tamagui'
+import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
+import { useReviewDraft } from '../hooks/useReviewDraft'
 import { ReviewProgress } from './ReviewProgress'
 import { ReviewStep1Skills } from './ReviewStep1Skills'
 import { ReviewStep2SkillsTags } from './ReviewStep2SkillsTags'
-import { ReviewStepCategoryRating } from './ReviewStepCategoryRating'
-import { ReviewStepCategoryTags } from './ReviewStepCategoryTags'
 import { ReviewStep7Summary } from './ReviewStep7Summary'
 import { ReviewStep8Recommendation } from './ReviewStep8Recommendation'
-import { useReviewDraft } from '../hooks/useReviewDraft'
-import { useReviewAutoSave } from '../hooks/useReviewAutoSave'
-import { api } from '@app/core/utils/api'
+import { ReviewStepCategoryRating } from './ReviewStepCategoryRating'
+import { ReviewStepCategoryTags } from './ReviewStepCategoryTags'
 
 interface Review {
   id: string
@@ -177,154 +177,142 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
   }
 
   return (
-    <Card elevate bordered>
-      <YStack gap="$4" p="$5">
-        {/* Header */}
-        <XStack justify="space-between" items="center">
-          <YStack gap="$1">
-            <Text fontSize="$8" fontWeight="700" color="$color12">
-              Leave a Review
-            </Text>
-            <Text fontSize="$5" color="$color11">
-              for {subjectName}
-            </Text>
-          </YStack>
-          <Button size="$3" circular icon={X} onPress={onCancel} chromeless />
-        </XStack>
+    <YStack gap="$4" p="$5">
+      {/* Progress Indicator */}
+      <ReviewProgress currentStep={reviewDraft.currentStep} totalSteps={totalSteps} />
+      <Text fontSize="$6" fontWeight="700" color="$color12">
+        Reviewing {subjectName}
+      </Text>
 
-        {/* Progress Indicator */}
-        <ReviewProgress currentStep={reviewDraft.currentStep} totalSteps={totalSteps} />
+      {/* Step Content */}
+      <Card bg="$color2" bordered>
+        <YStack p="$5" minH={400} gap="$4">
+          {/* Step 1: Technical Skills Rating */}
+          {reviewDraft.currentStep === 1 && (
+            <ReviewStep1Skills
+              ratings={reviewDraft.skillsRatings}
+              onChange={reviewDraft.updateSkillRating}
+            />
+          )}
 
-        {/* Step Content */}
-        <Card bg="$color2" bordered>
-          <YStack p="$5" minH={400} gap="$4">
-            {/* Step 1: Technical Skills Rating */}
-            {reviewDraft.currentStep === 1 && (
-              <ReviewStep1Skills
-                ratings={reviewDraft.skillsRatings}
-                onChange={reviewDraft.updateSkillRating}
-              />
-            )}
+          {/* Step 2: Skills Tags */}
+          {reviewDraft.currentStep === 2 && (
+            <ReviewStep2SkillsTags
+              strengths={reviewDraft.skillsStrengths}
+              improvements={reviewDraft.skillsImprovements}
+              onToggleStrength={reviewDraft.toggleSkillStrength}
+              onToggleImprovement={reviewDraft.toggleSkillImprovement}
+            />
+          )}
 
-            {/* Step 2: Skills Tags */}
-            {reviewDraft.currentStep === 2 && (
-              <ReviewStep2SkillsTags
-                strengths={reviewDraft.skillsStrengths}
-                improvements={reviewDraft.skillsImprovements}
-                onToggleStrength={reviewDraft.toggleSkillStrength}
-                onToggleImprovement={reviewDraft.toggleSkillImprovement}
-              />
-            )}
+          {/* Step 3: Reliability Rating */}
+          {reviewDraft.currentStep === 3 && (
+            <ReviewStepCategoryRating
+              title="Reliability"
+              description="How reliable were they in meeting deadlines and commitments?"
+              category="Reliability"
+              rating={reviewDraft.reliabilityRating}
+              onChange={reviewDraft.updateReliabilityRating}
+            />
+          )}
 
-            {/* Step 3: Reliability Rating */}
-            {reviewDraft.currentStep === 3 && (
-              <ReviewStepCategoryRating
-                title="Reliability"
-                description="How reliable were they in meeting deadlines and commitments?"
-                category="Reliability"
-                rating={reviewDraft.reliabilityRating}
-                onChange={reviewDraft.updateReliabilityRating}
-              />
-            )}
+          {/* Step 4: Reliability Tags */}
+          {reviewDraft.currentStep === 4 && (
+            <ReviewStepCategoryTags
+              title="Reliability - Details"
+              description="What are their reliability strengths and areas to improve?"
+              skills={MOCK_RELIABILITY_SKILLS}
+              strengths={reviewDraft.reliabilityStrengths}
+              improvements={reviewDraft.reliabilityImprovements}
+              onToggleStrength={reviewDraft.toggleReliabilityStrength}
+              onToggleImprovement={reviewDraft.toggleReliabilityImprovement}
+            />
+          )}
 
-            {/* Step 4: Reliability Tags */}
-            {reviewDraft.currentStep === 4 && (
-              <ReviewStepCategoryTags
-                title="Reliability - Details"
-                description="What are their reliability strengths and areas to improve?"
-                skills={MOCK_RELIABILITY_SKILLS}
-                strengths={reviewDraft.reliabilityStrengths}
-                improvements={reviewDraft.reliabilityImprovements}
-                onToggleStrength={reviewDraft.toggleReliabilityStrength}
-                onToggleImprovement={reviewDraft.toggleReliabilityImprovement}
-              />
-            )}
+          {/* Step 5: Collaboration Rating */}
+          {reviewDraft.currentStep === 5 && (
+            <ReviewStepCategoryRating
+              title="Collaboration"
+              description="How well did they collaborate with others?"
+              category="Collaboration"
+              rating={reviewDraft.collaborationRating}
+              onChange={reviewDraft.updateCollaborationRating}
+            />
+          )}
 
-            {/* Step 5: Collaboration Rating */}
-            {reviewDraft.currentStep === 5 && (
-              <ReviewStepCategoryRating
-                title="Collaboration"
-                description="How well did they collaborate with others?"
-                category="Collaboration"
-                rating={reviewDraft.collaborationRating}
-                onChange={reviewDraft.updateCollaborationRating}
-              />
-            )}
+          {/* Step 6: Collaboration Tags */}
+          {reviewDraft.currentStep === 6 && (
+            <ReviewStepCategoryTags
+              title="Collaboration - Details"
+              description="What are their collaboration strengths and areas to improve?"
+              skills={MOCK_COLLABORATION_SKILLS}
+              strengths={reviewDraft.collaborationStrengths}
+              improvements={reviewDraft.collaborationImprovements}
+              onToggleStrength={reviewDraft.toggleCollaborationStrength}
+              onToggleImprovement={reviewDraft.toggleCollaborationImprovement}
+            />
+          )}
 
-            {/* Step 6: Collaboration Tags */}
-            {reviewDraft.currentStep === 6 && (
-              <ReviewStepCategoryTags
-                title="Collaboration - Details"
-                description="What are their collaboration strengths and areas to improve?"
-                skills={MOCK_COLLABORATION_SKILLS}
-                strengths={reviewDraft.collaborationStrengths}
-                improvements={reviewDraft.collaborationImprovements}
-                onToggleStrength={reviewDraft.toggleCollaborationStrength}
-                onToggleImprovement={reviewDraft.toggleCollaborationImprovement}
-              />
-            )}
+          {/* Step 7: Summary */}
+          {reviewDraft.currentStep === 7 && (
+            <ReviewStep7Summary
+              comment={reviewDraft.summary}
+              onChange={reviewDraft.updateSummary}
+            />
+          )}
 
-            {/* Step 7: Summary */}
-            {reviewDraft.currentStep === 7 && (
-              <ReviewStep7Summary
-                comment={reviewDraft.summary}
-                onChange={reviewDraft.updateSummary}
-              />
-            )}
+          {/* Step 8: Recommendation */}
+          {reviewDraft.currentStep === 8 && (
+            <ReviewStep8Recommendation
+              recommendation={reviewDraft.recommendation}
+              onChange={reviewDraft.updateRecommendation}
+            />
+          )}
+        </YStack>
+      </Card>
 
-            {/* Step 8: Recommendation */}
-            {reviewDraft.currentStep === 8 && (
-              <ReviewStep8Recommendation
-                recommendation={reviewDraft.recommendation}
-                onChange={reviewDraft.updateRecommendation}
-              />
-            )}
-          </YStack>
-        </Card>
+      {/* Navigation Buttons */}
+      <XStack gap="$3" justify="space-between">
+        <Button
+          size="$4"
+          variant="outlined"
+          icon={ChevronLeft}
+          onPress={handleBack}
+          disabled={!canGoBack}
+          opacity={canGoBack ? 1 : 0.5}
+        >
+          Back
+        </Button>
 
-        {/* Navigation Buttons */}
-        <XStack gap="$3" justify="space-between">
-          <Button
-            size="$4"
-            variant="outlined"
-            icon={ChevronLeft}
-            onPress={handleBack}
-            disabled={!canGoBack}
-            opacity={canGoBack ? 1 : 0.5}
-          >
-            Back
+        <XStack gap="$2">
+          <Button size="$4" variant="outlined" onPress={onCancel}>
+            Save & Exit
           </Button>
 
-          <XStack gap="$2">
-            <Button size="$4" variant="outlined" onPress={onCancel}>
-              Save & Exit
+          {isLastStep ? (
+            <Button size="$4" theme="success" onPress={handleSubmit}>
+              Submit Review
             </Button>
-
-            {isLastStep ? (
-              <Button size="$4" theme="success" onPress={handleSubmit}>
-                Submit Review
-              </Button>
-            ) : (
-              <Button
-                size="$4"
-                theme="info"
-                iconAfter={ChevronRight}
-                onPress={handleNext}
-                disabled={!canGoForward}
-              >
-                Continue
-              </Button>
-            )}
-          </XStack>
+          ) : (
+            <Button
+              size="$4"
+              theme="info"
+              iconAfter={ChevronRight}
+              onPress={handleNext}
+              disabled={!canGoForward}
+            >
+              Continue
+            </Button>
+          )}
         </XStack>
+      </XStack>
 
-        {/* Auto-save Indicator */}
-        <XStack justify="center">
-          <Text fontSize="$3" color="$color10">
-            {reviewDraft.hasUnsavedChanges ? '💾 Saving...' : '✓ All changes saved'}
-          </Text>
-        </XStack>
-      </YStack>
-    </Card>
+      {/* Auto-save Indicator */}
+      <XStack justify="center">
+        <Text fontSize="$3" color="$color10">
+          {reviewDraft.hasUnsavedChanges ? '💾 Saving...' : '✓ All changes saved'}
+        </Text>
+      </XStack>
+    </YStack>
   )
 }

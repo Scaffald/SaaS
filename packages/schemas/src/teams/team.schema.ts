@@ -1,14 +1,13 @@
 import { z } from 'zod'
-
-import { jsonSchema } from './json.ts'
 import {
+  TEAM_INVITATION_TTL_DEFAULT,
+  TEAM_INVITATION_TTL_MAX,
+  TEAM_INVITATION_TTL_MIN,
   teamInvitationPolicySchema,
   teamRoleKeySchema,
   teamVisibilitySchema,
-  TEAM_INVITATION_TTL_DEFAULT,
-  TEAM_INVITATION_TTL_MIN,
-  TEAM_INVITATION_TTL_MAX,
 } from './constants.ts'
+import { jsonSchema } from './json.ts'
 
 export const teamIdSchema = z.string().uuid('Team ID must be a valid UUID')
 

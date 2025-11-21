@@ -13,11 +13,12 @@ describe('useAdaptiveLoading', () => {
   })
 
   it('shows loading immediately when delay is zero or negative', () => {
-    const { result, rerender } = renderHook(({ loading, delay }) =>
-      useAdaptiveLoading(loading, delay),
-    {
-      initialProps: { loading: false, delay: 0 },
-    })
+    const { result, rerender } = renderHook(
+      ({ loading, delay }) => useAdaptiveLoading(loading, delay),
+      {
+        initialProps: { loading: false, delay: 0 },
+      }
+    )
 
     expect(result.current).toBe(false)
 
@@ -63,5 +64,3 @@ describe('useAdaptiveLoading', () => {
     expect(result.current).toBe(false)
   })
 })
-
-

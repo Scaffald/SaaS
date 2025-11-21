@@ -1,7 +1,7 @@
 // @ts-nocheck
-import React from 'react'
-import { Paragraph, Text, View, XStack, YStack } from 'tamagui'
+
 import { AlertTriangle } from '@tamagui/lucide-icons'
+import { Paragraph, Text, View, XStack, YStack } from 'tamagui'
 import { TODO_ITEMS } from '../data/todos'
 
 type TodoCalloutProps = {

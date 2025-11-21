@@ -1,88 +1,88 @@
-import { z } from "zod";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
+import { z } from 'zod'
 
-import type { Database, Json } from "../database.types.ts";
+import type { Database, Json } from '../database.types.ts'
 
-export type NotificationSupabaseClient = SupabaseClient<Database>;
+export type NotificationSupabaseClient = SupabaseClient<Database>
 
-export const NOTIFICATION_CHANNELS = ["in_app", "email", "push", "sms"] as const;
-export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
+export const NOTIFICATION_CHANNELS = ['in_app', 'email', 'push', 'sms'] as const
+export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number]
 
-export const NOTIFICATION_SEVERITIES = ["info", "important", "critical"] as const;
-export type NotificationSeverity = (typeof NOTIFICATION_SEVERITIES)[number];
+export const NOTIFICATION_SEVERITIES = ['info', 'important', 'critical'] as const
+export type NotificationSeverity = (typeof NOTIFICATION_SEVERITIES)[number]
 
 export const NOTIFICATION_DELIVERY_STATUSES = [
-  "queued",
-  "sending",
-  "sent",
-  "delivered",
-  "failed",
-  "bounce",
-  "blocked",
-] as const;
-export type NotificationDeliveryStatus = (typeof NOTIFICATION_DELIVERY_STATUSES)[number];
+  'queued',
+  'sending',
+  'sent',
+  'delivered',
+  'failed',
+  'bounce',
+  'blocked',
+] as const
+export type NotificationDeliveryStatus = (typeof NOTIFICATION_DELIVERY_STATUSES)[number]
 
 export const NOTIFICATION_EVENT_KINDS = [
-  "accepted",
-  "delivered",
-  "opened",
-  "clicked",
-  "failed",
-  "bounce",
-  "complaint",
-] as const;
-export type NotificationEventKind = (typeof NOTIFICATION_EVENT_KINDS)[number];
+  'accepted',
+  'delivered',
+  'opened',
+  'clicked',
+  'failed',
+  'bounce',
+  'complaint',
+] as const
+export type NotificationEventKind = (typeof NOTIFICATION_EVENT_KINDS)[number]
 
 export const NOTIFICATION_FREQUENCIES = [
-  "immediate",
-  "digest_daily",
-  "digest_weekly",
-  "mute",
-] as const;
-export type NotificationFrequency = (typeof NOTIFICATION_FREQUENCIES)[number];
+  'immediate',
+  'digest_daily',
+  'digest_weekly',
+  'mute',
+] as const
+export type NotificationFrequency = (typeof NOTIFICATION_FREQUENCIES)[number]
 
 export const NOTIFICATION_TYPES = [
-  "success",
-  "warning",
-  "info",
-  "job.match",
-  "app.submitted",
-  "app.status_changed",
-  "interview.scheduled",
-  "offer.extended",
-  "hiring.decision",
-  "team.invite",
-  "team.assigned",
-  "team.commented",
-  "team.role_changed",
-  "profile.viewed",
-  "profile.unlocked",
-  "review.new",
-  "review.reply",
-  "skill.endorse",
-  "acct.verify",
-  "acct.password_reset",
-  "payment.success",
-  "payment.failed",
-  "sub.renewal",
-  "bgcheck.completed",
-  "profile.reminder",
-  "reengage",
-  "feature.announcement",
-  "platform.update",
-  "message.received",
-] as const;
-export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+  'success',
+  'warning',
+  'info',
+  'job.match',
+  'app.submitted',
+  'app.status_changed',
+  'interview.scheduled',
+  'offer.extended',
+  'hiring.decision',
+  'team.invite',
+  'team.assigned',
+  'team.commented',
+  'team.role_changed',
+  'profile.viewed',
+  'profile.unlocked',
+  'review.new',
+  'review.reply',
+  'skill.endorse',
+  'acct.verify',
+  'acct.password_reset',
+  'payment.success',
+  'payment.failed',
+  'sub.renewal',
+  'bgcheck.completed',
+  'profile.reminder',
+  'reengage',
+  'feature.announcement',
+  'platform.update',
+  'message.received',
+] as const
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number]
 
 export const notificationEventSchema = z.object({
   id: z.string().min(1),
   type: z.enum(NOTIFICATION_TYPES),
-  severity: z.enum(NOTIFICATION_SEVERITIES).default("info"),
+  severity: z.enum(NOTIFICATION_SEVERITIES).default('info'),
   title: z.string().min(1),
   message: z.string().min(1).optional(),
   preview: z.string().optional(),
   recipients: z.array(z.string().uuid()).min(1),
-  channels: z.array(z.enum(NOTIFICATION_CHANNELS)).default(["in_app"]),
+  channels: z.array(z.enum(NOTIFICATION_CHANNELS)).default(['in_app']),
   body: z.record(z.any()).default({}),
   metadata: z.record(z.any()).optional(),
   dedupeKey: z.string().optional(),
@@ -90,41 +90,45 @@ export const notificationEventSchema = z.object({
   tenantId: z.string().optional(),
   timezone: z.string().optional(),
   sendAfter: z.string().datetime().optional(),
-  cta: z.object({
-    label: z.string().optional(),
-    url: z.string().url().optional(),
-  }).optional(),
-});
+  cta: z
+    .object({
+      label: z.string().optional(),
+      url: z.string().url().optional(),
+    })
+    .optional(),
+})
 
-export type NotificationEventPayload = z.infer<typeof notificationEventSchema>;
+export type NotificationEventPayload = z.infer<typeof notificationEventSchema>
 
-export type NotificationRow = Database["core"]["Tables"]["notifications"]["Row"];
-export type NotificationDeliveryRow = Database["core"]["Tables"]["notification_deliveries"]["Row"];
-export type NotificationPreferencesRow = Database["core"]["Tables"]["notification_preferences"]["Row"];
-export type NotificationDigestQueueRow = Database["core"]["Tables"]["notification_digest_queue"]["Row"];
+export type NotificationRow = Database['core']['Tables']['notifications']['Row']
+export type NotificationDeliveryRow = Database['core']['Tables']['notification_deliveries']['Row']
+export type NotificationPreferencesRow =
+  Database['core']['Tables']['notification_preferences']['Row']
+export type NotificationDigestQueueRow =
+  Database['core']['Tables']['notification_digest_queue']['Row']
 
 export interface DeliveryWithNotification extends NotificationDeliveryRow {
-  notification: NotificationRow;
+  notification: NotificationRow
 }
 
 export interface AdapterSendParams {
-  supabase: NotificationSupabaseClient;
-  delivery: NotificationDeliveryRow;
-  notification: NotificationRow;
+  supabase: NotificationSupabaseClient
+  delivery: NotificationDeliveryRow
+  notification: NotificationRow
 }
 
 export interface AdapterSendResult {
-  status: "sent" | "retry" | "failed";
-  providerMessageId?: string;
+  status: 'sent' | 'retry' | 'failed'
+  providerMessageId?: string
   events?: Array<{
-    kind: NotificationEventKind;
-    meta?: Record<string, unknown>;
-  }>;
-  error?: string;
+    kind: NotificationEventKind
+    meta?: Record<string, unknown>
+  }>
+  error?: string
 }
 
 export interface ChannelAdapter {
-  send(params: AdapterSendParams): Promise<AdapterSendResult>;
+  send(params: AdapterSendParams): Promise<AdapterSendResult>
 }
 
-export type DeliveryMetadata = Record<string, Json | undefined>;
+export type DeliveryMetadata = Record<string, Json | undefined>

@@ -1,12 +1,29 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
-import { YStack, XStack, Text, Input, TextArea, Select, Adapt, Sheet, useWindowDimensions, Label, Spinner } from 'tamagui'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ChevronDown } from '@tamagui/lucide-icons'
-import { singleEducationEntrySchema, DEGREE_TYPE_OPTIONS } from '../config'
-import { UIButton as Button, CustomCheckbox, ResponsiveModal, UniversityAutocomplete, ConfirmationDialog, MonthYearPicker, FieldError } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import {
+  UIButton as Button,
+  ConfirmationDialog,
+  CustomCheckbox,
+  FieldError,
+  MonthYearPicker,
+  ResponsiveModal,
+  ResponsiveSelect,
+  UniversityAutocomplete,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import {
+  Input,
+  Label,
+  Spinner,
+  Text,
+  TextArea,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from 'tamagui'
+import { DEGREE_TYPE_OPTIONS, singleEducationEntrySchema } from '../config'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
 import { normalizeEducationEntry } from '../utils/education-entry'
 
@@ -38,7 +55,7 @@ export function EducationEntryEditModal({
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const originalDataRef = useRef<EducationEntryFormValues | null>(null)
   const { width } = useWindowDimensions()
-  const isMobile = width < 640
+  const _isMobile = width < 640
   const toast = useToastController()
 
   // University search state
@@ -46,7 +63,7 @@ export function EducationEntryEditModal({
   const [manualEntryMode, setManualEntryMode] = useState(false)
 
   // Queries
-  const educationQuery = api.profile.getEducation.useQuery()
+  const educationQuery = api.profile.education.getEducation.useQuery()
   const searchUniversitiesQuery = api.office.universities.searchUniversities.useQuery(
     {
       query: searchQuery,
@@ -60,7 +77,7 @@ export function EducationEntryEditModal({
   )
 
   // Mutations
-  const saveEducationMutation = api.profile.saveEducation.useMutation({
+  const saveEducationMutation = api.profile.education.saveEducation.useMutation({
     onSuccess: () => {
       toast.show('Education Updated', {
         message: 'Your education entry has been updated successfully!',
@@ -238,53 +255,17 @@ export function EducationEntryEditModal({
               name="degree_type"
               control={control}
               render={({ field }) => (
-                <Select
+                <ResponsiveSelect
                   value={field.value ?? ''}
                   onValueChange={(value) =>
                     field.onChange(value === '' ? undefined : (value as DegreeOption))
                   }
-                >
-                  <Select.Trigger iconAfter={ChevronDown}>
-                    <Select.Value placeholder="Select degree type" />
-                  </Select.Trigger>
-
-                  <Adapt when={isMobile} platform="touch">
-                    <Sheet
-                      native
-                      modal
-                      dismissOnSnapToBottom
-                      animationConfig={{
-                        type: 'spring',
-                        damping: 20,
-                        mass: 1.2,
-                        stiffness: 250,
-                      }}
-                    >
-                      <Sheet.Frame>
-                        <Sheet.ScrollView>
-                          <Adapt.Contents />
-                        </Sheet.ScrollView>
-                      </Sheet.Frame>
-                      <Sheet.Overlay
-                        animation="lazy"
-                        enterStyle={{ opacity: 0 }}
-                        exitStyle={{ opacity: 0 }}
-                      />
-                    </Sheet>
-                  </Adapt>
-
-                  <Select.Content zIndex={200000}>
-                    <Select.ScrollUpButton />
-                    <Select.Viewport>
-                      {DEGREE_TYPE_OPTIONS.map((type, idx) => (
-                        <Select.Item key={type} value={type} index={idx}>
-                          <Select.ItemText>{type}</Select.ItemText>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                    <Select.ScrollDownButton />
-                  </Select.Content>
-                </Select>
+                  placeholder="Select degree type"
+                  options={DEGREE_TYPE_OPTIONS.map((type) => ({
+                    value: type,
+                    label: type,
+                  }))}
+                />
               )}
             />
             {/* Custom Degree Type Input (shown when "Other" is selected) */}
@@ -411,11 +392,7 @@ export function EducationEntryEditModal({
 
           {/* Start and End Dates */}
           <YStack gap="$2">
-            <XStack 
-              gap="$3"
-              $sm={{ flexDirection: 'column' }}
-              $gtSm={{ flexDirection: 'row' }}
-            >
+            <XStack gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
               <YStack gap="$2" flex={1}>
                 <Controller
                   name="start_date"
@@ -505,9 +482,7 @@ export function EducationEntryEditModal({
                       />
                     )}
                   />
-                ) : (
-                  <></>
-                )
+                ) : null
               }
             />
           </YStack>
@@ -533,12 +508,12 @@ export function EducationEntryEditModal({
           </YStack>
 
           {/* Action Buttons */}
-          <XStack 
-            justify="flex-end" 
-            gap="$3" 
+          <XStack
+            justify="flex-end"
+            gap="$3"
             pt="$4"
             $sm={{ flexDirection: 'column' }}
-            $gtSm={{ flexDirection: 'row' }}
+            $md={{ flexDirection: 'row' }}
           >
             <Button
               variant="outlined"
@@ -546,7 +521,7 @@ export function EducationEntryEditModal({
               onPress={() => setShowCancelDialog(true)}
               opacity={!isDirty ? 0.5 : 1}
               $sm={{ height: 44, width: '100%' }}
-              $gtSm={{ height: undefined, width: undefined }}
+              $md={{ height: undefined, width: undefined }}
             >
               Cancel
             </Button>
@@ -556,7 +531,7 @@ export function EducationEntryEditModal({
               disabled={!isDirty || isLoading}
               opacity={!isDirty || isLoading ? 0.5 : 1}
               $sm={{ height: 44, width: '100%' }}
-              $gtSm={{ height: undefined, width: undefined }}
+              $md={{ height: undefined, width: undefined }}
             >
               {isLoading ? (
                 <XStack gap="$2" items="center">

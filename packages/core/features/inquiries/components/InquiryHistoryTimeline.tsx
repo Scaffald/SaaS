@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
-import { YStack, XStack, Text } from '@app/ui'
-import { Avatar, type GetThemeValueForKey } from 'tamagui'
-import { Check, MessageSquare, Edit3, Send, FileText, AlertCircle } from '@tamagui/lucide-icons'
 import { api } from '@app/core/utils/api'
+import { Text, XStack, YStack } from '@app/ui'
+import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from '@tamagui/lucide-icons'
+import { useMemo } from 'react'
+import { Avatar, type GetThemeValueForKey } from 'tamagui'
 
 interface InquiryHistoryTimelineProps {
   inquiryId: string
@@ -84,7 +84,10 @@ const formatEventType = (eventType: EventType): string => {
   return labels[eventType] || eventType
 }
 
-const formatEventData = (eventType: EventType, eventData: Record<string, unknown> | null): string | null => {
+const formatEventData = (
+  eventType: EventType,
+  eventData: Record<string, unknown> | null
+): string | null => {
   if (!eventData) return null
 
   switch (eventType) {
@@ -126,7 +129,11 @@ const formatTimestamp = (timestamp: string): string => {
 }
 
 export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProps) {
-  const { data: history, isLoading, error } = api.inquiries.getHistory.useQuery({
+  const {
+    data: history,
+    isLoading,
+    error,
+  } = api.inquiries.getHistory.useQuery({
     inquiryId,
   })
 
@@ -231,4 +238,3 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
     </YStack>
   )
 }
-

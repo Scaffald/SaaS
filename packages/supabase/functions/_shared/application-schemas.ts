@@ -87,7 +87,16 @@ export const applicationUpdateSchema = z.object({
   notes: z.record(z.unknown()).optional(),
   metadata: z.record(z.unknown()).optional(),
   status: z
-    .enum(['pending', 'reviewing', 'inquired', 'interview', 'offer', 'hired', 'rejected', 'withdrawn'])
+    .enum([
+      'pending',
+      'reviewing',
+      'inquired',
+      'interview',
+      'offer',
+      'hired',
+      'rejected',
+      'withdrawn',
+    ])
     .optional(),
 })
 
@@ -147,7 +156,16 @@ export const applicationWithdrawSchema = z.object({
 export const applicationFilterSchema = z.object({
   job_id: z.string().uuid().optional(),
   status: z
-    .enum(['pending', 'reviewing', 'inquired', 'interview', 'offer', 'hired', 'rejected', 'withdrawn'])
+    .enum([
+      'pending',
+      'reviewing',
+      'inquired',
+      'interview',
+      'offer',
+      'hired',
+      'rejected',
+      'withdrawn',
+    ])
     .optional(),
   min_score: z.number().int().min(0).max(100).optional(),
   max_score: z.number().int().min(0).max(100).optional(),

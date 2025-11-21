@@ -1,7 +1,7 @@
 /**
  * Quick test to debug navigation issue
  */
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { OFFICE_ROUTES } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
 
 test('debug navigation to office route', async ({ page }) => {

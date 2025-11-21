@@ -40,11 +40,7 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div {...rest}>
-      {children}
-    </div>
-  )
+  } & Record<string, unknown>) => <div {...rest}>{children}</div>
 
   const Input = ({
     value = '',
@@ -54,11 +50,7 @@ vi.mock('tamagui', () => {
     value?: string
     onChangeText?: (value: string) => void
   } & Record<string, unknown>) => (
-    <input
-      value={value}
-      onChange={(event) => onChangeText?.(event.target.value)}
-      {...rest}
-    />
+    <input value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
   )
 
   const TextArea = ({
@@ -69,11 +61,7 @@ vi.mock('tamagui', () => {
     value?: string
     onChangeText?: (value: string) => void
   } & Record<string, unknown>) => (
-    <textarea
-      value={value}
-      onChange={(event) => onChangeText?.(event.target.value)}
-      {...rest}
-    />
+    <textarea value={value} onChange={(event) => onChangeText?.(event.target.value)} {...rest} />
   )
 
   const Text = ({
@@ -81,18 +69,14 @@ vi.mock('tamagui', () => {
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <span {...rest}>{children}</span>
-  )
+  } & Record<string, unknown>) => <span {...rest}>{children}</span>
 
   const Paragraph = ({
     children,
     ...rest
   }: {
     children?: ReactNode
-  } & Record<string, unknown>) => (
-    <p {...rest}>{children}</p>
-  )
+  } & Record<string, unknown>) => <p {...rest}>{children}</p>
 
   const Button = ({
     children,
@@ -146,7 +130,7 @@ describe('GeneralInfoStep', () => {
           await onSaveForLater(data)
         }}
         onStepStateChange={onStepStateChange}
-      />,
+      />
     )
 
     const nextButton = screen.getByRole('button', { name: /next: skills/i })
@@ -157,13 +141,14 @@ describe('GeneralInfoStep', () => {
 
     fireEvent.change(screen.getByPlaceholderText('First name'), { target: { value: '  Jane ' } })
     fireEvent.change(screen.getByPlaceholderText('Last name'), { target: { value: ' Doe ' } })
+    fireEvent.change(screen.getByPlaceholderText('Licensed electrician with 8+ years experience'), {
+      target: { value: '  Master Electrician  ' },
+    })
     fireEvent.change(
-      screen.getByPlaceholderText('Licensed electrician with 8+ years experience'),
-      { target: { value: '  Master Electrician  ' } },
-    )
-    fireEvent.change(
-      screen.getByPlaceholderText('Share a quick summary of your experience, strengths, and goals.'),
-      { target: { value: ' Experienced and reliable. ' } },
+      screen.getByPlaceholderText(
+        'Share a quick summary of your experience, strengths, and goals.'
+      ),
+      { target: { value: ' Experienced and reliable. ' } }
     )
 
     await waitFor(() => expect(nextButton).toBeEnabled())
@@ -195,18 +180,19 @@ describe('GeneralInfoStep', () => {
         onSaveForLater={async (data) => {
           await onSaveForLater(data)
         }}
-      />,
+      />
     )
 
     fireEvent.change(screen.getByPlaceholderText('First name'), { target: { value: '  Jane ' } })
     fireEvent.change(screen.getByPlaceholderText('Last name'), { target: { value: ' Doe ' } })
+    fireEvent.change(screen.getByPlaceholderText('Licensed electrician with 8+ years experience'), {
+      target: { value: '  Master Electrician  ' },
+    })
     fireEvent.change(
-      screen.getByPlaceholderText('Licensed electrician with 8+ years experience'),
-      { target: { value: '  Master Electrician  ' } },
-    )
-    fireEvent.change(
-      screen.getByPlaceholderText('Share a quick summary of your experience, strengths, and goals.'),
-      { target: { value: ' Experienced and reliable. ' } },
+      screen.getByPlaceholderText(
+        'Share a quick summary of your experience, strengths, and goals.'
+      ),
+      { target: { value: ' Experienced and reliable. ' } }
     )
 
     const user = userEvent.setup()
@@ -227,7 +213,7 @@ describe('GeneralInfoStep', () => {
           bio: 'Experienced and reliable.',
         })
       },
-      { timeout: 3000 },
+      { timeout: 3000 }
     )
 
     await user.click(screen.getByRole('button', { name: /save & continue later/i }))
@@ -238,9 +224,7 @@ describe('GeneralInfoStep', () => {
         lastName: 'Doe',
         headline: 'Master Electrician',
         bio: 'Experienced and reliable.',
-      }),
+      })
     )
   })
 })
-
-

@@ -1,14 +1,12 @@
-import { YStack, Text } from 'tamagui'
-import { ProfileSnapshotWidget } from '../profile/widgets'
-import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
-import { IPIPAssessmentWidget } from '../ipip-assessment'
-import { RIASECAssessmentWidget } from '../riasec-assessment'
-import { OccupationAssessmentWidget } from '../occupation-assessment'
-import { api } from '@app/core/utils/api'
-import { ProfileCompletionExperience } from '../profile-completion/components/ProfileCompletionExperience'
-import { ResumeImportWidget } from '@app/core/features/resume'
-import { SkeletonCard } from '@app/ui'
 import { InquiryOverviewWidget } from '@app/core/features/inquiries/components/InquiryOverviewWidget'
+import { api } from '@app/core/utils/api'
+import { SkeletonCard } from '@app/ui'
+import { YStack } from 'tamagui'
+import { IPIPAssessmentWidget } from '../ipip-assessment'
+import { OccupationAssessmentWidget } from '../occupation-assessment'
+import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'
+import { ProfileSnapshotWidget } from '../profile/widgets'
+import { RIASECAssessmentWidget } from '../riasec-assessment'
 
 /**
  * Dashboard Index Left Component

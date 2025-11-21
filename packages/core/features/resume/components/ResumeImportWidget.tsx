@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react'
-import { useRouter } from 'expo-router'
-import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack } from 'tamagui'
-import { DashboardWidget, spacing } from '@app/ui'
 import { api } from '@app/core/utils/api'
+import { DashboardWidget, spacing } from '@app/ui'
+import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
+import { useCallback, useState } from 'react'
+import { Text, XStack, YStack } from 'tamagui'
 import { ResumeUploadButton } from './ResumeUploadButton'
 import { ResumeUploadModal } from './ResumeUploadModal'
 
@@ -15,7 +15,7 @@ export function ResumeImportWidget() {
       setModalOpen(false)
       router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
     },
-    [router],
+    [router]
   )
   const { data, isLoading } = api.resume.hasUploaded.useQuery(undefined, {
     refetchOnWindowFocus: false,
@@ -32,14 +32,7 @@ export function ResumeImportWidget() {
       <DashboardWidget>
         <YStack gap={spacing.md}>
           <XStack gap={spacing.md} items="center">
-            <YStack
-              width={48}
-              height={48}
-              items="center"
-              justify="center"
-              bg="$blue3"
-              rounded="$4"
-            >
+            <YStack width={48} height={48} items="center" justify="center" bg="$blue3" rounded="$4">
               <FileText color="$blue10" size={26} />
             </YStack>
             <YStack gap="$1">
@@ -64,11 +57,7 @@ export function ResumeImportWidget() {
             </Text>
           </YStack>
 
-          <ResumeUploadButton
-            onPress={() => setModalOpen(true)}
-            label="Upload Resume"
-            size="$4"
-          />
+          <ResumeUploadButton onPress={() => setModalOpen(true)} label="Upload Resume" size="$4" />
         </YStack>
       </DashboardWidget>
 

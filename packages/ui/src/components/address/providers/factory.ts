@@ -1,4 +1,4 @@
-import type { GeocodingProvider, ProviderConfig, SearchOptions, AddressResult } from '../types'
+import type { AddressResult, GeocodingProvider, ProviderConfig, SearchOptions } from '../types'
 import { GeocodingError } from '../types'
 import { MapboxProvider } from './mapbox'
 

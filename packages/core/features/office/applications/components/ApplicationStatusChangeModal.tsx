@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import { YStack, Button, Text, XStack, ResponsiveModal, Spinner, CustomCheckbox } from '@app/ui'
-import { Card, TextArea } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
 import { api } from '@app/core/utils/api'
+import { Button, CustomCheckbox, ResponsiveModal, Spinner, Text, XStack, YStack } from '@app/ui'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useMemo, useState } from 'react'
+import { Card, TextArea } from 'tamagui'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 
@@ -45,18 +45,26 @@ export const ApplicationStatusChangeModal = ({
   const isRejection = toStatus === 'rejected'
   const isHire = toStatus === 'hired'
 
-  const hireInputs = useMemo(() => (isHire ? deriveHireInputs(application) : null), [application, isHire])
+  const hireInputs = useMemo(
+    () => (isHire ? deriveHireInputs(application) : null),
+    [application, isHire]
+  )
   const hireSummary = useMemo(
     () =>
       hireInputs
-        ? deriveSchedule(hireInputs.totalHireValueCents, hireInputs.jobDurationDays, hireInputs.hireStartDate)
+        ? deriveSchedule(
+            hireInputs.totalHireValueCents,
+            hireInputs.jobDurationDays,
+            hireInputs.hireStartDate
+          )
         : null,
     [hireInputs]
   )
 
   const [initializingIntent, setInitializingIntent] = useState(false)
-  const [intentState, setIntentState] =
-    useState<Awaited<ReturnType<typeof successFeeMutation.mutateAsync>> | null>(null)
+  const [intentState, setIntentState] = useState<Awaited<
+    ReturnType<typeof successFeeMutation.mutateAsync>
+  > | null>(null)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
   const [paymentCompleted, setPaymentCompleted] = useState(false)
@@ -65,11 +73,7 @@ export const ApplicationStatusChangeModal = ({
 
   const canQuerySuccessFeeStatus =
     Boolean(
-      isHire &&
-        open &&
-        application?.organizationId &&
-        application?.id &&
-        hireInputs?.workerUserId
+      isHire && open && application?.organizationId && application?.id && hireInputs?.workerUserId
     ) && Boolean(hireInputs?.organizationId)
 
   const successFeeStatusQuery = api.successFees.getStatusByApplication.useQuery(
@@ -109,8 +113,8 @@ export const ApplicationStatusChangeModal = ({
       setPaymentError(null)
       setPaymentCompleted(false)
       setInitializingIntent(false)
-       setResumeAttempted(false)
-       setLegalAccepted(false)
+      setResumeAttempted(false)
+      setLegalAccepted(false)
       return
     }
 
@@ -149,7 +153,8 @@ export const ApplicationStatusChangeModal = ({
         }
       } catch (error) {
         if (!cancelled) {
-          const message = error instanceof Error ? error.message : 'Unable to create success fee intent.'
+          const message =
+            error instanceof Error ? error.message : 'Unable to create success fee intent.'
           setPaymentError(message)
           setIntentState(null)
         }
@@ -338,7 +343,12 @@ export const ApplicationStatusChangeModal = ({
 
         {/* Action buttons */}
         <XStack gap="$3" ml="auto">
-          <Button data-testid="status-change-cancel-button" variant="outlined" onPress={handleClose} disabled={isLoading}>
+          <Button
+            data-testid="status-change-cancel-button"
+            variant="outlined"
+            onPress={handleClose}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           {!isHire && (
@@ -351,11 +361,7 @@ export const ApplicationStatusChangeModal = ({
                 bg: isRejection ? '$red10' : '$green10',
               }}
             >
-              {isLoading
-                ? 'Processing...'
-                : isRejection
-                  ? 'Reject Application'
-                  : 'Confirm Hire'}
+              {isLoading ? 'Processing...' : isRejection ? 'Reject Application' : 'Confirm Hire'}
             </Button>
           )}
         </XStack>
@@ -411,7 +417,7 @@ function deriveHireInputs(application?: MockApplication | null): HireInputs | nu
   const jobDurationDays = payType === 'salary' ? 60 : 21
 
   const hireStartDate = normalizeDate(
-    application.screeningAnswers.earliestStartDate || application.job.targetStartDate || undefined
+    application.screeningAnswers.earliestStartDate || undefined // targetStartDate column doesn't exist in database yet
   )
 
   return {
@@ -439,13 +445,20 @@ function normalizeDate(value?: string): string {
   return toISODate(parsed)
 }
 
-function deriveSchedule(totalHireValueCents: number, jobDurationDays: number, hireStartDate: string) {
+function deriveSchedule(
+  totalHireValueCents: number,
+  jobDurationDays: number,
+  hireStartDate: string
+) {
   const paymentSchedule = jobDurationDays >= 30 ? 'standard' : 'short'
   const upfrontPercentage = paymentSchedule === 'standard' ? 20 : 50
   const finalPercentage = 100 - upfrontPercentage
   const upfrontAmountCents = Math.round(totalHireValueCents * (upfrontPercentage / 100))
   const finalAmountCents = Math.max(totalHireValueCents - upfrontAmountCents, 0)
-  const finalDueDate = addDays(hireStartDate, paymentSchedule === 'standard' ? 30 : Math.max(jobDurationDays, 1))
+  const finalDueDate = addDays(
+    hireStartDate,
+    paymentSchedule === 'standard' ? 30 : Math.max(jobDurationDays, 1)
+  )
 
   return {
     totalHireValueCents,
@@ -506,16 +519,21 @@ function HireSummaryCard({
         </Text>
         <XStack justify="space-between">
           <Text color="$color11">Total Hire Value</Text>
-          <Text fontWeight="600">{currencyFormatter.format(hireSummary.totalHireValueCents / 100)}</Text>
+          <Text fontWeight="600">
+            {currencyFormatter.format(hireSummary.totalHireValueCents / 100)}
+          </Text>
         </XStack>
         <XStack justify="space-between">
           <Text color="$color11">Upfront ({hireSummary.upfrontPercentage}%)</Text>
-          <Text fontWeight="600">{currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}</Text>
+          <Text fontWeight="600">
+            {currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}
+          </Text>
         </XStack>
         <XStack justify="space-between">
           <Text color="$color11">Final ({hireSummary.finalPercentage}%)</Text>
           <Text fontWeight="600">
-            {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due {hireSummary.finalDueDate}
+            {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due{' '}
+            {hireSummary.finalDueDate}
           </Text>
         </XStack>
         {isProcessing && (

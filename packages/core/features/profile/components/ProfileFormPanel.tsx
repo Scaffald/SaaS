@@ -1,9 +1,10 @@
-import { YStack, ScrollView, type YStackProps } from 'tamagui'
 import { DashboardWidget } from '@app/ui'
+import type { ReactNode } from 'react'
+import { ScrollView, YStack, type YStackProps } from 'tamagui'
 
 interface ProfileFormPanelProps extends YStackProps {
   /** Child content for the form panel */
-  children: React.ReactNode
+  children: ReactNode
   /** Whether to show scrollbar */
   showScrollbar?: boolean
 }

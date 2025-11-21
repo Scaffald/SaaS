@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { z } from 'zod'
 
 const createTeamMock = vi.hoisted(() => ({ mutateAsync: vi.fn(), useMutation: vi.fn() }))
@@ -54,7 +54,7 @@ vi.mock('@app/schemas', () => {
   })
   const teamCreateSchema = teamCreateBaseSchema.refine(
     (input) => Boolean(input.defaultRoleId ?? input.defaultRoleKey),
-    'A default role must be provided',
+    'A default role must be provided'
   )
 
   return {
@@ -92,7 +92,7 @@ vi.mock('@app/core/constants/routes', () => ({
 vi.mock('react-hook-form', () => {
   return {
     useForm: ({ defaultValues }: { defaultValues?: Record<string, unknown> }) => {
-      const values: Record<string, unknown> = { 
+      const values: Record<string, unknown> = {
         ...(defaultValues ?? {}),
         // Ensure default role is set for form validation
         defaultRoleId: defaultValues?.defaultRoleId ?? 'role-1',
@@ -106,22 +106,21 @@ vi.mock('react-hook-form', () => {
 
       return {
         control: store,
-        handleSubmit:
-          (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) => {
-            const submitHandler = async () => {
-              handleSubmitSpy()
-              // Ensure required fields are present before submitting
-              const submitData = {
-                ...store.values,
-                defaultRoleId: store.values.defaultRoleId ?? 'role-1',
-                defaultRoleKey: store.values.defaultRoleKey ?? 'member',
-                organizationId: 'org-1',
-              }
-              // Await onSubmit to ensure mutation is triggered
-              await onSubmit(submitData)
+        handleSubmit: (onSubmit: (data: Record<string, unknown>) => Promise<void> | void) => {
+          const submitHandler = async () => {
+            handleSubmitSpy()
+            // Ensure required fields are present before submitting
+            const submitData = {
+              ...store.values,
+              defaultRoleId: store.values.defaultRoleId ?? 'role-1',
+              defaultRoleKey: store.values.defaultRoleKey ?? 'member',
+              organizationId: 'org-1',
             }
-            return submitHandler
-          },
+            // Await onSubmit to ensure mutation is triggered
+            await onSubmit(submitData)
+          }
+          return submitHandler
+        },
         formState: { errors: {}, isDirty: true },
         setValue: setValueSpy,
         reset: (next?: Record<string, unknown>) => {
@@ -308,36 +307,40 @@ describe('TeamForm', () => {
   beforeEach(() => {
     createTeamMock.mutateAsync.mockReset()
     updateTeamMock.mutateAsync.mockReset()
-    
+
     // Set up useMutation mocks to call onError when mutateAsync rejects
-    createTeamMock.useMutation.mockImplementation((options?: { onError?: (error: Error) => void }) => {
-      const wrappedMutateAsync = async (...args: unknown[]) => {
-        try {
-          return await createTeamMock.mutateAsync(...args)
-        } catch (error) {
-          if (options?.onError && error instanceof Error) {
-            options.onError(error)
+    createTeamMock.useMutation.mockImplementation(
+      (options?: { onError?: (error: Error) => void }) => {
+        const wrappedMutateAsync = async (...args: unknown[]) => {
+          try {
+            return await createTeamMock.mutateAsync(...args)
+          } catch (error) {
+            if (options?.onError && error instanceof Error) {
+              options.onError(error)
+            }
+            throw error
           }
-          throw error
         }
+        return { mutateAsync: wrappedMutateAsync, isPending: false }
       }
-      return { mutateAsync: wrappedMutateAsync, isPending: false }
-    })
-    
-    updateTeamMock.useMutation.mockImplementation((options?: { onError?: (error: Error) => void }) => {
-      const wrappedMutateAsync = async (...args: unknown[]) => {
-        try {
-          return await updateTeamMock.mutateAsync(...args)
-        } catch (error) {
-          if (options?.onError && error instanceof Error) {
-            options.onError(error)
+    )
+
+    updateTeamMock.useMutation.mockImplementation(
+      (options?: { onError?: (error: Error) => void }) => {
+        const wrappedMutateAsync = async (...args: unknown[]) => {
+          try {
+            return await updateTeamMock.mutateAsync(...args)
+          } catch (error) {
+            if (options?.onError && error instanceof Error) {
+              options.onError(error)
+            }
+            throw error
           }
-          throw error
         }
+        return { mutateAsync: wrappedMutateAsync, isPending: false }
       }
-      return { mutateAsync: wrappedMutateAsync, isPending: false }
-    })
-    
+    )
+
     toastMock.show.mockReset()
     routerMock.push.mockReset()
     routerMock.back.mockReset()
@@ -362,7 +365,7 @@ describe('TeamForm', () => {
           description: 'Hire quickly',
           defaultRole: { id: 'role-2', key: 'team_admin' },
         }}
-      />,
+      />
     )
 
     await user.click(screen.getByTestId('team-form-submit'))
@@ -377,10 +380,10 @@ describe('TeamForm', () => {
             defaultRoleKey: 'team_admin',
             defaultRoleId: 'role-2',
             invitationPolicy: 'invite_only',
-          }),
+          })
         )
       },
-      { timeout: DEFAULT_WAIT_TIMEOUT },
+      { timeout: DEFAULT_WAIT_TIMEOUT }
     )
   })
 
@@ -398,7 +401,7 @@ describe('TeamForm', () => {
           slug: 'existing-team',
           defaultRole: { id: 'role-1', key: 'member' },
         }}
-      />,
+      />
     )
 
     await user.click(screen.getByTestId('team-form-submit'))
@@ -412,10 +415,10 @@ describe('TeamForm', () => {
             defaultRoleId: 'role-1',
             defaultRoleKey: 'member',
             invitationPolicy: 'invite_only',
-          }),
+          })
         )
       },
-      { timeout: DEFAULT_WAIT_TIMEOUT },
+      { timeout: DEFAULT_WAIT_TIMEOUT }
     )
   })
 
@@ -443,12 +446,12 @@ describe('TeamForm', () => {
 
   it('displays validation errors', async () => {
     const user = userEvent.setup()
-    
+
     // Set up the mutation to reject with an error
     const error = new Error('Validation failed')
-    
+
     createTeamMock.mutateAsync.mockRejectedValueOnce(error)
-    
+
     // Set up error handler to catch unhandled rejections
     // The error may be thrown after onError is called, so we need to catch it
     const unhandledRejectionHandler = vi.fn((reason) => {
@@ -483,7 +486,7 @@ describe('TeamForm', () => {
       () => {
         expect(screen.queryByText('Loading team options…')).not.toBeInTheDocument()
       },
-      { timeout: 1000 },
+      { timeout: 1000 }
     )
 
     // Ensure form values are set in the store
@@ -502,7 +505,7 @@ describe('TeamForm', () => {
         expect(btn).not.toBeDisabled()
         return btn
       },
-      { timeout: 1000 },
+      { timeout: 1000 }
     )
 
     // Click the button
@@ -513,7 +516,7 @@ describe('TeamForm', () => {
       () => {
         expect(handleSubmitSpy).toHaveBeenCalled()
       },
-      { timeout: 1000 },
+      { timeout: 1000 }
     )
 
     // Wait for mutation to be called - the onSubmit should trigger it
@@ -521,7 +524,7 @@ describe('TeamForm', () => {
       () => {
         expect(createTeamMock.mutateAsync).toHaveBeenCalled()
       },
-      { timeout: 3000 },
+      { timeout: 3000 }
     )
 
     // The mutation's onError handler should show a toast
@@ -530,9 +533,9 @@ describe('TeamForm', () => {
       () => {
         expect(toastMock.show).toHaveBeenCalled()
       },
-      { timeout: 2000 },
+      { timeout: 2000 }
     )
-    
+
     // Clean up unhandled rejection handler
     process.removeAllListeners('unhandledRejection')
     // Restore original handlers if any
@@ -550,7 +553,7 @@ describe('TeamForm', () => {
           name: 'Initial Name',
           defaultRole: { id: 'role-1', key: 'member' },
         }}
-      />,
+      />
     )
 
     rerender(
@@ -561,7 +564,7 @@ describe('TeamForm', () => {
           name: 'Reset Name',
           defaultRole: { id: 'role-1', key: 'member' },
         }}
-      />,
+      />
     )
 
     // Form should update with new initial data
@@ -585,7 +588,7 @@ describe('TeamForm', () => {
           description: 'Test description',
           defaultRole: { id: 'role-1', key: 'member' },
         }}
-      />,
+      />
     )
 
     await user.click(screen.getByTestId('team-form-submit'))
@@ -599,11 +602,10 @@ describe('TeamForm', () => {
             purpose: 'Test purpose',
             visibility: 'private',
             invitationPolicy: 'request_to_join',
-          }),
+          })
         )
       },
-      { timeout: DEFAULT_WAIT_TIMEOUT },
+      { timeout: DEFAULT_WAIT_TIMEOUT }
     )
   })
 })
-

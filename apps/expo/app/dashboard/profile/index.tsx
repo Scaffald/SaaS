@@ -1,16 +1,18 @@
-import { YStack } from 'tamagui'
-import { DashboardLayout, QuickLinksSidebar } from '@app/ui'
-import {
-  GeneralInfoWidget,
-  ExperienceWidget,
-  EducationWidget,
-  SkillsWidget,
-  PreferencesWidget,
-} from '@app/core/features/profile/widgets'
-import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
-import { useUser } from '@app/core/utils/useUser'
+import { ROUTES } from '@app/core/constants/routes'
 import { IdVerificationWidget } from '@app/core/features/id-verification'
+import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
+import { ProfileCertificationsHighlightProvider } from '@app/core/features/profile/profile-certifications-highlight-context'
+import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
+import {
+  EducationWidget,
+  ExperienceWidget,
+  GeneralInfoWidget,
+  PreferencesWidget,
+  SkillsWidget,
+} from '@app/core/features/profile/widgets'
+import { useUser } from '@app/core/utils/useUser'
+import { YStack } from 'tamagui'
 
 /**
  * Profile Index - Own profile view
@@ -24,16 +26,17 @@ export default function ProfileIndexScreen() {
   }
 
   return (
-    <DashboardLayout
-      leftContent={
-        <YStack gap="$4">
-          <GeneralInfoWidget userId={user.id} showEdit />
-          <ExperienceWidget userId={user.id} showEdit />
-          <EducationWidget userId={user.id} showEdit />
-        </YStack>
-      }
-      rightContent={
-        <QuickLinksSidebar>
+    <ProfileCertificationsHighlightProvider>
+      <ProfilePage
+        breadcrumbs={[{ route: ROUTES.DASHBOARD.PROFILE }]}
+        leftContent={
+          <YStack gap="$4">
+            <GeneralInfoWidget userId={user.id} showEdit />
+            <ExperienceWidget userId={user.id} showEdit />
+            <EducationWidget userId={user.id} showEdit />
+          </YStack>
+        }
+        rightContent={
           <YStack gap="$4">
             <SkillsWidget userId={user.id} showEdit />
             <IdVerificationWidget />
@@ -41,8 +44,8 @@ export default function ProfileIndexScreen() {
             <PreferencesWidget showEdit />
             <AccountDeletionPanel />
           </YStack>
-        </QuickLinksSidebar>
-      }
-    />
+        }
+      />
+    </ProfileCertificationsHighlightProvider>
   )
 }

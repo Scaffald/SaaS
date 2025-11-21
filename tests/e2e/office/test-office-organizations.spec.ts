@@ -17,16 +17,16 @@
  * BrainGrid: REQ-2 (Task 24, Task 25)
  */
 
-import { test, expect, type Page } from '@playwright/test'
-import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
-import { generateOrganizationData } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { expect, type Page, test } from '@playwright/test'
 import {
   navigateToOfficeRoute,
   OFFICE_ROUTES,
-  waitForPageLoad,
   waitForNavigation,
-  waitForRootContent
+  waitForPageLoad,
+  waitForRootContent,
 } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
+import { generateOrganizationData } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -37,8 +37,12 @@ test.describe('Office • Organizations Management', () => {
   // ============================================================================
 
   test.describe('Organizations List Page', () => {
-    test('navigates to organizations list and loads correctly', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    test('navigates to organizations list and loads correctly', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
 
       // Verify URL
@@ -48,17 +52,17 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Check for page title
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent).toMatch(/organizations/i)
     })
 
     test('displays organizations table with data', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
       // Check for table headers
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent).toMatch(/name/i)
       expect(pageContent).toMatch(/slug/i)
       expect(pageContent).toMatch(/industry/i)
@@ -66,7 +70,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('displays "Create Organization" button', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -76,7 +80,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('displays search input field', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -86,7 +90,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('displays edit and delete buttons for organizations', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -103,7 +107,7 @@ test.describe('Office • Organizations Management', () => {
 
   test.describe('Search Functionality', () => {
     test('search field accepts text input', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -115,30 +119,32 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('search filters organizations by name', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
       // Get initial organization count
-      const initialContent = await page.locator('#root').textContent() || ''
+      const initialContent = (await page.locator('#root').textContent()) || ''
 
       // Search for a specific term
       const searchInput = page.getByPlaceholder(/search organizations/i)
       await searchInput.fill('zzz_nonexistent_org_name_xyz')
-      
+
       // Wait for search results or empty state to appear
-      await page.waitForSelector('text=/no organizations found|no results/i', { timeout: 5000 }).catch(() => {
-        // If no error message selector found, wait for root content to update
-      })
+      await page
+        .waitForSelector('text=/no organizations found|no results/i', { timeout: 5000 })
+        .catch(() => {
+          // If no error message selector found, wait for root content to update
+        })
       await waitForRootContent(page, { timeout: 5000 })
 
       // Should show "no organizations found" or similar
-      const afterSearchContent = await page.locator('#root').textContent() || ''
+      const afterSearchContent = (await page.locator('#root').textContent()) || ''
       expect(afterSearchContent).toMatch(/no organizations found|no results/i)
     })
 
     test('clearing search shows all organizations', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -153,7 +159,7 @@ test.describe('Office • Organizations Management', () => {
       await waitForRootContent(page, { timeout: 5000 })
 
       // Should show organizations again (or empty state)
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     })
   })
@@ -164,7 +170,7 @@ test.describe('Office • Organizations Management', () => {
 
   test.describe('Create Organization Flow', () => {
     test('navigates to create organization page', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -180,7 +186,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('displays all required form fields', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -199,7 +205,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('displays save and cancel buttons', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -211,7 +217,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('auto-generates slug from organization name', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -220,11 +226,13 @@ test.describe('Office • Organizations Management', () => {
 
       // Enter organization name
       await nameInput.fill('Test Organization Name')
-      
+
       // Wait for slug to be auto-generated (check for expected value)
       await page.waitForFunction(
         () => {
-          const slugInput = document.querySelector('[data-testid="org-form-slug"]') as HTMLInputElement
+          const slugInput = document.querySelector(
+            '[data-testid="org-form-slug"]'
+          ) as HTMLInputElement
           return slugInput && slugInput.value === 'test-organization-name'
         },
         { timeout: 5000 }
@@ -236,7 +244,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('validates required fields', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -249,7 +257,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('creates organization successfully with all fields', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -274,12 +282,12 @@ test.describe('Office • Organizations Management', () => {
       // Select industry
       const industrySelect = page.locator('[data-testid="org-form-industry"]')
       await industrySelect.click()
-      
+
       // Wait for dropdown to open and options to be visible
       const firstIndustry = page.getByRole('option').nth(1)
       await expect(firstIndustry).toBeVisible({ timeout: 5000 })
       await firstIndustry.click()
-      
+
       // Wait for dropdown to close (option should not be visible)
       await expect(firstIndustry).not.toBeVisible({ timeout: 3000 })
 
@@ -291,31 +299,34 @@ test.describe('Office • Organizations Management', () => {
       // Visibility should default to "public" but let's ensure it
       const visibilitySelect = page.locator('[data-testid="org-form-visibility"]')
       await visibilitySelect.click()
-      
+
       // Wait for dropdown to open
       const publicOption = page.getByRole('option', { name: /public/i })
       await expect(publicOption).toBeVisible({ timeout: 5000 })
       await publicOption.click()
-      
+
       // Wait for dropdown to close
       await expect(publicOption).not.toBeVisible({ timeout: 3000 })
 
       // Submit form
       const saveButton = page.locator('[data-testid="org-form-save-btn"]')
-      
+
       // Wait for button to be enabled (form should be dirty)
       await expect(saveButton).toBeEnabled({ timeout: 5000 })
-      
+
       // Wait for API response before clicking save
-      const responsePromise = page.waitForResponse(
-        (response) => response.url().includes('/api/') && 
-        (response.url().includes('organization') || response.url().includes('trpc')),
-        { timeout: 15000 }
-      ).catch(() => null) // Don't fail if response already completed
-      
+      const responsePromise = page
+        .waitForResponse(
+          (response) =>
+            response.url().includes('/api/') &&
+            (response.url().includes('organization') || response.url().includes('trpc')),
+          { timeout: 15000 }
+        )
+        .catch(() => null) // Don't fail if response already completed
+
       // Click save button
       await saveButton.click()
-      
+
       // Wait for API response (if not already completed)
       await responsePromise
 
@@ -330,27 +341,29 @@ test.describe('Office • Organizations Management', () => {
 
       // Search for our new organization
       const searchInput = page.getByPlaceholder(/search organizations/i)
-      
+
       // Wait for search API response (if API-based search) or just wait for results
-      const searchResponsePromise = page.waitForResponse(
-        (response) => response.url().includes('/api/') && response.url().includes('organization'),
-        { timeout: 10000 }
-      ).catch(() => null)
-      
+      const searchResponsePromise = page
+        .waitForResponse(
+          (response) => response.url().includes('/api/') && response.url().includes('organization'),
+          { timeout: 10000 }
+        )
+        .catch(() => null)
+
       await searchInput.fill(uniqueName)
-      
+
       // Wait for search API response if present
       await searchResponsePromise
-      
+
       // Verify organization appears in list (wait for it to appear)
       await expect(async () => {
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toContain(uniqueName)
       }).toPass({ timeout: 10000 })
     })
 
     test('creates organization with minimal required fields', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -380,7 +393,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('cancel button returns to list without saving', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -408,7 +421,7 @@ test.describe('Office • Organizations Management', () => {
 
   test.describe('Edit Organization Flow', () => {
     test('navigates to edit page from list', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -430,7 +443,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('displays form pre-populated with organization data', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -457,7 +470,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('save button is disabled when no changes made', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -479,7 +492,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('updates organization name successfully', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
 
       // First, create a test organization to edit
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
@@ -522,16 +535,16 @@ test.describe('Office • Organizations Management', () => {
 
       // Save changes
       const updateButton = page.locator('[data-testid="org-form-save-btn"]')
-      
+
       // Wait for button to be enabled (form should be dirty after changes)
       await expect(updateButton).toBeEnabled({ timeout: 5000 })
-      
+
       // Click save button
       await updateButton.click()
-      
+
       // Wait a moment for mutation to start
       await page.waitForTimeout(500)
-      
+
       // Wait for navigation back to list (this will wait for mutation to complete)
       await waitForNavigation(page, { timeout: 15000 })
       await waitForPageLoad(page)
@@ -539,19 +552,23 @@ test.describe('Office • Organizations Management', () => {
       // Verify updated name appears in list
       const listSearchInput = page.getByPlaceholder(/search organizations/i)
       await listSearchInput.fill(updatedName)
-      
+
       // Wait for search results to appear (with retry logic)
       await page.waitForTimeout(1000)
-      
+
       // Verify updated name appears (wait for it to appear)
       await expect(async () => {
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
         expect(pageContent).toContain(updatedName)
       }).toPass({ timeout: 10000 })
     })
 
-    test('cancel button on edit returns to list without saving changes', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    test('cancel button on edit returns to list without saving changes', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -560,7 +577,7 @@ test.describe('Office • Organizations Management', () => {
 
       if (buttonCount > 0) {
         // Get original name
-        const pageContent = await page.locator('#root').textContent() || ''
+        const pageContent = (await page.locator('#root').textContent()) || ''
 
         await editButton.click()
         await waitForNavigation(page)
@@ -578,7 +595,7 @@ test.describe('Office • Organizations Management', () => {
         // Click cancel
         const cancelButton = page.locator('[data-testid="org-form-cancel-btn"]')
         await cancelButton.click()
-        
+
         // Wait for navigation back to list
         await waitForNavigation(page, { timeout: 10000 })
 
@@ -596,15 +613,19 @@ test.describe('Office • Organizations Management', () => {
   // ============================================================================
 
   test.describe('Pagination', () => {
-    test('displays page size controls if many organizations exist', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    test('displays page size controls if many organizations exist', async ({
+      page,
+    }: {
+      page: Page
+    }) => {
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
       // Check for pagination controls (may not exist if < 50 orgs)
       // Pagination controls may appear if there are many items
       // This test just verifies the page loads without errors
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent.length).toBeGreaterThan(0)
     })
   })
@@ -615,7 +636,7 @@ test.describe('Office • Organizations Management', () => {
 
   test.describe('Delete Organization', () => {
     test('displays delete button for each organization', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATIONS)
       await waitForPageLoad(page)
 
@@ -644,7 +665,7 @@ test.describe('Office • Organizations Management', () => {
     })
 
     test('validates slug format (lowercase, hyphens)', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
@@ -655,12 +676,12 @@ test.describe('Office • Organizations Management', () => {
       await page.waitForTimeout(300)
 
       // Check for helper text about slug format
-      const pageContent = await page.locator('#root').textContent() || ''
+      const pageContent = (await page.locator('#root').textContent()) || ''
       expect(pageContent).toMatch(/url-friendly|lowercase|hyphens/i)
     })
 
     test('validates logo URL format', async ({ page }: { page: Page }) => {
-  // Authentication handled by storage state (tests/.auth/admin.json)
+      // Authentication handled by storage state (tests/.auth/admin.json)
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 

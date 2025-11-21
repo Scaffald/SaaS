@@ -1,16 +1,22 @@
-import { useState, useEffect } from 'react'
-import { YStack, XStack, Text, Input, TextArea, Spinner, AnimatePresence } from 'tamagui'
-import { useToastController } from '@tamagui/toast'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  generalProfileSchema,
-  type GeneralProfileFormData,
-  generalProfileDefaults,
-} from '../config/general-schema'
-import { UIButton as Button, PhoneNumberInput, AddressForm, DashboardWidget, AvatarImagePicker } from '@app/ui'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
+import {
+  AddressForm,
+  AvatarImagePicker,
+  UIButton as Button,
+  DashboardWidget,
+  PhoneNumberInput,
+} from '@app/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToastController } from '@tamagui/toast'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { AnimatePresence, Input, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  type GeneralProfileFormData,
+  generalProfileDefaults,
+  generalProfileSchema,
+} from '../config/general-schema'
 
 interface GeneralProfileSectionProps {
   /**
@@ -56,7 +62,7 @@ export function GeneralProfileSection({
   const useQuery =
     mode === 'admin' && userId
       ? () => api.office.getUserGeneral.useQuery({ userId })
-      : () => api.profile.getGeneral.useQuery()
+      : () => api.profile.general.getGeneral.useQuery()
 
   const useMutation =
     mode === 'admin' && userId
@@ -78,7 +84,7 @@ export function GeneralProfileSection({
             },
           })
       : () =>
-          api.profile.updateGeneral.useMutation({
+          api.profile.general.updateGeneral.useMutation({
             onSuccess: () => {
               toast.show('Profile Updated', {
                 message: 'Your profile has been saved successfully!',
@@ -99,7 +105,7 @@ export function GeneralProfileSection({
 
   const updateProfileMutation = useMutation()
 
-  const uploadAvatarMutation = api.profile.uploadAvatar.useMutation({
+  const uploadAvatarMutation = api.profile.avatar.uploadAvatar.useMutation({
     onSuccess: (data: { avatarPath: string }) => {
       toast.show('Avatar Uploaded', {
         message: 'Avatar has been uploaded successfully!',
@@ -211,11 +217,7 @@ export function GeneralProfileSection({
         </YStack>
 
         {/* Name Fields */}
-        <XStack 
-          gap="$3"
-          $sm={{ flexDirection: 'column' }}
-          $gtSm={{ flexDirection: 'row' }}
-        >
+        <XStack gap="$3" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
           <YStack gap="$2" flex={1}>
             <Text fontWeight="600">First Name *</Text>
             <Controller

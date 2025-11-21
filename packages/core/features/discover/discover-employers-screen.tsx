@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
 import { api } from '@app/core/utils/api'
+import { useMemo, useState } from 'react'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'

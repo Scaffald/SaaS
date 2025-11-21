@@ -1,2 +1,2 @@
-export { FilterChip } from './FilterChip'
 export { Chip } from './Chip'
+export { FilterChip } from './FilterChip'

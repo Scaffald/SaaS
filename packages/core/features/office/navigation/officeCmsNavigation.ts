@@ -1,41 +1,42 @@
 import { ROUTES } from '@app/core/constants/routes'
+import { i18n } from '@app/core/locales'
 import type { OfficeAccordionSection, OfficeTabsItem } from '@app/ui'
 
 export const CMS_TABS: OfficeTabsItem[] = [
   {
     key: 'cms-manage-users',
     label: 'Users',
-    href: ROUTES.OFFICE_CMS.path,
+    href: ROUTES.OFFICE.CMS.path,
   },
   {
     key: 'cms-jobs',
-    label: ROUTES.OFFICE_CMS_JOBS.title,
-    href: ROUTES.OFFICE_CMS_JOBS.path,
+    label: i18n.t(ROUTES.OFFICE.CMS.JOBS.titleKey),
+    href: ROUTES.OFFICE.CMS.JOBS.path,
   },
   {
     key: 'cms-teams',
-    label: ROUTES.OFFICE_CMS_TEAMS.title,
-    href: ROUTES.OFFICE_CMS_TEAMS.path,
+    label: i18n.t(ROUTES.OFFICE.CMS.TEAMS.titleKey),
+    href: ROUTES.OFFICE.CMS.TEAMS.path,
   },
   {
     key: 'cms-universities',
-    label: ROUTES.OFFICE_CMS_UNIVERSITIES.title,
-    href: ROUTES.OFFICE_CMS_UNIVERSITIES.path,
+    label: i18n.t(ROUTES.OFFICE.CMS.UNIVERSITIES.titleKey),
+    href: ROUTES.OFFICE.CMS.UNIVERSITIES.path,
   },
   {
     key: 'cms-organizations',
-    label: ROUTES.OFFICE_CMS_ORGANIZATIONS.title,
-    href: ROUTES.OFFICE_CMS_ORGANIZATIONS.path,
+    label: i18n.t(ROUTES.OFFICE.CMS.ORGANIZATIONS.titleKey),
+    href: ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
   },
   {
     key: 'cms-welcome',
-    label: ROUTES.OFFICE_CMS_WELCOME.title,
-    href: ROUTES.OFFICE_CMS_WELCOME.path,
+    label: i18n.t(ROUTES.OFFICE.CMS.WELCOME.titleKey),
+    href: ROUTES.OFFICE.CMS.WELCOME.path,
   },
   {
     key: 'cms-applications',
-    label: ROUTES.OFFICE_APPLICATIONS.title,
-    href: ROUTES.OFFICE_APPLICATIONS.path,
+    label: i18n.t(ROUTES.OFFICE.APPLICATIONS.titleKey),
+    href: ROUTES.OFFICE.APPLICATIONS.path,
   },
 ]
 
@@ -48,12 +49,12 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'users-overview',
         label: 'Overview',
-        href: ROUTES.OFFICE_CMS.path,
+        href: ROUTES.OFFICE.CMS.path,
       },
       {
         key: 'users-directory',
         label: 'User Directory',
-        href: ROUTES.OFFICE_CMS_WORKERS.path,
+        href: ROUTES.OFFICE.CMS.WORKERS.path,
       },
     ],
   },
@@ -64,12 +65,12 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'jobs-list',
         label: 'Jobs Dashboard',
-        href: ROUTES.OFFICE_CMS_JOBS.path,
+        href: ROUTES.OFFICE.CMS.JOBS.path,
       },
       {
         key: 'jobs-create',
         label: 'Create Job',
-        href: ROUTES.OFFICE_CMS_JOBS_CREATE.path,
+        href: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
       },
     ],
   },
@@ -80,12 +81,12 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'teams-list',
         label: 'Team Directory',
-        href: ROUTES.OFFICE_CMS_TEAMS.path,
+        href: ROUTES.OFFICE.CMS.TEAMS.path,
       },
       {
         key: 'teams-create',
         label: 'Create Team',
-        href: ROUTES.OFFICE_CMS_TEAMS_CREATE.path,
+        href: ROUTES.OFFICE.CMS.TEAMS.CREATE.path,
       },
     ],
   },
@@ -96,12 +97,12 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'universities-list',
         label: 'Universities',
-        href: ROUTES.OFFICE_CMS_UNIVERSITIES.path,
+        href: ROUTES.OFFICE.CMS.UNIVERSITIES.path,
       },
       {
         key: 'universities-create',
         label: 'Create University',
-        href: ROUTES.OFFICE_CMS_UNIVERSITIES_CREATE.path,
+        href: ROUTES.OFFICE.CMS.UNIVERSITIES.CREATE.path,
       },
     ],
   },
@@ -112,12 +113,12 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'organizations-list',
         label: 'Organizations',
-        href: ROUTES.OFFICE_CMS_ORGANIZATIONS.path,
+        href: ROUTES.OFFICE.CMS.ORGANIZATIONS.path,
       },
       {
         key: 'organizations-create',
         label: 'Create Organization',
-        href: ROUTES.OFFICE_CMS_ORGANIZATIONS_CREATE.path,
+        href: ROUTES.OFFICE.CMS.ORGANIZATIONS.CREATE.path,
       },
     ],
   },
@@ -128,12 +129,12 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'welcome-list',
         label: 'Welcome Slides',
-        href: ROUTES.OFFICE_CMS_WELCOME.path,
+        href: ROUTES.OFFICE.CMS.WELCOME.path,
       },
       {
         key: 'welcome-create',
         label: 'Create Slide',
-        href: ROUTES.OFFICE_CMS_WELCOME_CREATE.path,
+        href: ROUTES.OFFICE.CMS.WELCOME.CREATE.path,
       },
     ],
   },
@@ -144,20 +145,18 @@ export const CMS_ACCORDION_SECTIONS: OfficeAccordionSection[] = [
       {
         key: 'ats-dashboard',
         label: 'Applications Dashboard',
-        href: ROUTES.OFFICE_APPLICATIONS.path,
+        href: ROUTES.OFFICE.APPLICATIONS.path,
       },
       {
         key: 'ats-background-checks',
         label: 'Background Checks',
-        href: ROUTES.OFFICE_ATS_CHECKS.path,
+        href: ROUTES.OFFICE.ATS.CHECKS.path,
       },
       {
         key: 'ats-request',
         label: 'Request Background Check',
-        href: ROUTES.OFFICE_ATS_CHECKS_REQUEST.path,
+        href: ROUTES.OFFICE.ATS.CHECKS.REQUEST.path,
       },
     ],
   },
 ]
-
-

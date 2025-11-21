@@ -53,4 +53,3 @@ export function describeVerboseSource(filepath?: string): string | undefined {
   }
   return undefined
 }
-

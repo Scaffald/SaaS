@@ -1,7 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React, { type ReactNode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock processCroppedImage
 const mockProcessCroppedImage = vi.fn()
@@ -85,7 +84,11 @@ vi.mock('tamagui', async () => {
     open,
     onOpenChange,
     ...rest
-  }: { children?: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }) => {
+  }: {
+    children?: ReactNode
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+  }) => {
     dialogOnOpenChangeRef.current = onOpenChange || null
     if (!open) return null
     return (
@@ -117,7 +120,11 @@ vi.mock('tamagui', async () => {
     asChild,
     children,
     onPress,
-  }: { asChild?: boolean; children?: ReactNode; onPress?: () => void }) => {
+  }: {
+    asChild?: boolean
+    children?: ReactNode
+    onPress?: () => void
+  }) => {
     const handleClose = () => {
       onPress?.()
       // Also call Dialog's onOpenChange if no explicit onPress
@@ -189,7 +196,11 @@ vi.mock('tamagui', async () => {
     open,
     onOpenChange,
     ...rest
-  }: { children?: ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }) => {
+  }: {
+    children?: ReactNode
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+  }) => {
     if (!open) return null
     return (
       <div data-testid="sheet" {...rest}>
@@ -226,7 +237,6 @@ vi.mock('tamagui', async () => {
     </button>
   )
 
-  // biome-ignore lint/a11y/useAltText: Mock component, alt text is provided in the img element
   const Image = ({ source, ...rest }: { source?: { uri?: string } }) => (
     <img src={source?.uri} alt="Crop preview" aria-label="Crop preview" {...rest} />
   )

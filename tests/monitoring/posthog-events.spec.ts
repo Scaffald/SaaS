@@ -7,14 +7,14 @@
  * Task 23: Validate PostHog Analytics Event Instrumentation
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('PostHog Analytics Validation', () => {
   test('PostHog events fire correctly', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' })
 
     // Check if PostHog is loaded
-    const posthogLoaded = await page.evaluate(() => {
+    await page.evaluate(() => {
       // Check for PostHog object
       return (
         typeof (window as unknown as { posthog?: unknown }).posthog !== 'undefined' ||
@@ -62,7 +62,7 @@ test.describe('PostHog Analytics Validation', () => {
 
     // Interact with page
     const button = page.locator('button').first()
-    if (await button.count() > 0) {
+    if ((await button.count()) > 0) {
       await button.click()
       await page.waitForTimeout(500)
     }
@@ -79,7 +79,7 @@ test.describe('PostHog Analytics Validation', () => {
     // Note: Actual consent validation requires checking consent UI
 
     // Basic check: page should load without errors
-    const bodyText = await page.textContent('body') || ''
+    const bodyText = (await page.textContent('body')) || ''
     expect(bodyText.length, 'Page should respect privacy settings').toBeGreaterThan(0)
   })
 
@@ -116,4 +116,3 @@ test.describe('PostHog Analytics Validation', () => {
  * These tests validate basic infrastructure.
  * Full PostHog validation should be done via PostHog dashboard.
  */
-
