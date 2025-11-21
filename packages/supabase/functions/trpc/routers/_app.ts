@@ -78,6 +78,7 @@ export const appRouter = t.router({
   legalAgreements: legalAgreementsRouter,
   accountDeletion: accountDeletionRouter,
   connections: connectionsRouter,
+  profileViews: profileViewsRouter,
 })
 
 // Export the router type for client-side usage
