@@ -24,14 +24,72 @@ jobs:
       - name: Install
         uses: ./.github/actions/install
 
+      - name: Prepare artifact directory
+        run: mkdir -p artifacts/logs
+
       - name: Format, Lint & Type Check (pnpm check)
-        run: pnpm check
+        run: |
+          set -o pipefail
+          pnpm check 2>&1 | tee artifacts/logs/pnpm-check.log
 
       - name: Standalone Type Check (pnpm typecheck)
-        run: pnpm typecheck
+        run: |
+          set -o pipefail
+          pnpm typecheck 2>&1 | tee artifacts/logs/pnpm-typecheck.log
 
       - name: Build all packages
         run: pnpm build
+
+      - name: Upload lint and typecheck logs
+        if: always()
+        id: lint_artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-typecheck-logs
+          path: artifacts/logs
+          if-no-files-found: ignore
+
+      - name: Link lint artifacts in PR
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        uses: actions/github-script@v7
+        env:
+          LINT_URL: ${{ steps.lint_artifacts.outputs.artifact-url }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const marker = '<!-- ci-artifacts:code-quality -->'
+            const links = []
+
+            if (process.env.LINT_URL) {
+              links.push(`- [Lint & typecheck logs](${process.env.LINT_URL})`)
+            }
+
+            if (!links.length) {
+              core.info('No artifacts to link. Skipping comment.')
+              return
+            }
+
+            const body = `${marker}\nCode quality artifacts for this run:\n${links.join('\n')}`
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.issue,
+              per_page: 100,
+            })
+
+            const existing = comments.find((comment) => comment.body?.includes(marker))
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                comment_id: existing.id,
+                ...context.repo,
+                body,
+              })
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                ...context.repo,
+                body,
+              })
+            }
 
   monorepo-integrity:
     name: "Monorepo Integrity Checks"
