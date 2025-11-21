@@ -158,22 +158,11 @@ import { ComponentB } from './components/ComponentB'
 - ❌ Smaller ecosystem of plugins
 - ❌ Less mature than ESLint/Prettier
 
-## Migration Decisions
-
-### Next.js to Expo Web Migration
-**Decision**: Migrate from Next.js to Expo Web for unified platform
-
 **Rationale**:
 - Single codebase for all platforms
 - Consistent development experience
 - Better code sharing between mobile and web
 - Simplified deployment and maintenance
-
-**Migration Strategy**:
-- Gradual migration of features
-- Maintain Next.js during transition
-- Ensure feature parity before switching
-- Update deployment pipelines
 
 ## Data Architecture
 

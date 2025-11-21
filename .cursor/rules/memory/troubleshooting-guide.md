@@ -356,8 +356,7 @@ export function Component() {
 # Nuclear option - reset everything
 rm -rf node_modules
 rm -rf .expo
-rm -rf .next
-rm pnpm.lock
+rm pnpm-lock.yaml
 rm package-lock.json
 
 # Reinstall

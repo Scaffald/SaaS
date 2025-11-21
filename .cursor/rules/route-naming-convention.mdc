@@ -62,7 +62,9 @@ export function ParentChildScreen() {
 
 **Expo Routes:**
 ```tsx
-import { ParentChildScreen } from '@app/core/features/parent/parent-child-screen'
+import { DashboardLayout } from '@app/core/features/dashboard/DashboardLayout'
+import { ParentChildLeft } from '@app/core/features/parent/parent-child-left'
+import { ParentChildRight } from '@app/core/features/parent/parent-child-right'
 
 export default function Screen() {
   return (

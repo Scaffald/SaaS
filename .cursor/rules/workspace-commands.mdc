@@ -9,7 +9,7 @@ alwaysApply: true
 ## Development Commands
 ### Core Development
 - `pnpm dev` - Start Expo development server (port 8081)
-- `pnpm web` - Start web development server (port 3000)
+- `pnpm web` - Start Expo Web development server
 - `pnpm ios` - Run iOS app (includes Xcode version check)
 - `pnpm android` - Run Android app
 - `pnpm web:build` - Build web app for production
@@ -42,7 +42,7 @@ alwaysApply: true
 - `pnpm supa start` - Start local Supabase
 - `pnpm supa stop` - Stop local Supabase
 - `pnpm supa status` - Check Supabase status
-- `pnpm supa reset` - Reset database
+- `pnpm supa db reset` - Reset database (use with caution)
 
 ### Type Generation
 - `pnpm supa:generate` - Generate types from local DB
@@ -131,7 +131,7 @@ alwaysApply: true
 - **Supabase Local**: http://localhost:54321
 - **Supabase Studio**: http://127.0.0.1:54323
 - **Mailpit**: http://127.0.0.1:54324
-- **Web Dev Server**: http://localhost:3000 (when using `pnpm web`)
+- **Web Dev Server**: Expo Web (when using `pnpm web`)
 
 ## Best Practices
 1. **Always use workspace commands** instead of direct package commands

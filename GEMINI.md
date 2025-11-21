@@ -7,7 +7,7 @@ This is a [Tamagui](https://tamagui.dev), [solito](https://solito.dev), [Expo](h
 
 The project is structured as a monorepo with the following workspaces:
 
--   `apps/expo`: The Expo app (iOS and Android)
+-   `apps/expo`: The Expo app (iOS, Android, and Web)
 -   `packages/core`: Core business logic and types
 -   `packages/ui`: Shared UI components
 -   `packages/supabase`: Supabase client and migrations
@@ -23,9 +23,9 @@ The project is structured as a monorepo with the following workspaces:
 
 ### Supabase
 
--   Start Supabase: `pnpm supa:start`
--   Stop Supabase: `pnpm supa:stop`
--   Reset database: `pnpm supa:reset`
+-   Start Supabase: `pnpm supa start`
+-   Stop Supabase: `pnpm supa stop`
+-   Reset database: `pnpm supa db reset`
 -   Generate types: `pnpm supa:generate`
 
 ### Testing

@@ -45,8 +45,7 @@
 ```
 SCF-Neue/
 ├── apps/
-│   ├── expo/              # React Native app (primary)
-│   └── next/              # Next.js web (legacy, migrating to Expo Web)
+│   └── expo/              # React Native app (primary, includes Expo Web)
 ├── packages/
 │   ├── core/              # Shared business logic and features
 │   │   └── features/      # Route-based feature organization
@@ -303,7 +302,7 @@ pnpm gen route
 
 ### Ports
 - **Expo Dev**: 8081
-- **Web Dev**: 3000 (Next.js) or 8082 (Expo Web)
+- **Web Dev**: 8081 (Expo Web)
 - **Supabase**: 54321 (API), 54323 (Studio), 54324 (Mailpit)
 
 ## Git Workflow

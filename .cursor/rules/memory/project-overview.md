@@ -1,15 +1,15 @@
 # SCF-Neue Project Overview
 
 ## Project Type
-**pnpm Workspace Monorepo** - Cross-platform React Native/Next.js application with shared packages
+**pnpm Workspace Monorepo** - Cross-platform React Native application with Expo Web support and shared packages
 
 ## Tech Stack
 
 ### Core Technologies
-- **React Native** (Expo) - Mobile application
-- **Next.js** - Web application (legacy, being migrated)
+- **React Native** (Expo SDK 54) - Mobile and web application
+- **Expo Web** - Web platform (via Expo)
 - **TypeScript** - Type safety across all packages
-- **pnpm 4.1.0** - Package manager with workspaces
+- **pnpm 10.20.0** - Package manager with workspaces
 - **Turbo** - Monorepo build system and task runner
 
 ### UI & Styling
@@ -33,8 +33,7 @@
 ```
 SCF-Neue/
 ├── apps/
-│   ├── expo/           # React Native mobile app (primary)
-│   └── next/           # Next.js web app (legacy, being migrated)
+│   └── expo/           # React Native app (iOS, Android, Web via Expo)
 ├── packages/
 │   ├── core/           # Shared business logic and features
 │   ├── ui/             # Cross-platform UI components
@@ -106,8 +105,7 @@ SCF-Neue/
 - Shared UI components in `packages/ui/`
 
 ## Current Status
-- **Primary Platform**: React Native (Expo)
-- **Migration**: Moving from Next.js to Expo Web
+- **Primary Platform**: React Native (Expo) with Expo Web
 - **Database**: Supabase with comprehensive RLS policies
 - **CI/CD**: GitHub Actions with quality checks
 - **Development**: Active development with established patterns

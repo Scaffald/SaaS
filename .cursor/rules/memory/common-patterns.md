@@ -28,12 +28,14 @@ export function ProfileOverviewRight() {
   return <div>Right content</div>
 }
 
-// Main screen component
-export function ProfileOverviewScreen() {
+// Main screen component (in apps/expo/app/dashboard/profile/overview.tsx)
+import { DashboardLayout } from '@app/core/features/dashboard/DashboardLayout'
+
+export default function Screen() {
   return (
     <DashboardLayout
-      leftContent={<ProfileEmploymentLeft />}
-      rightContent={<ProfileEmploymentRight />}
+      leftContent={<ProfileOverviewLeft />}
+      rightContent={<ProfileOverviewRight />}
     />
   )
 }

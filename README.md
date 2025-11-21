@@ -14,13 +14,13 @@ We don't provide priority support for Windows, and lesser to Linux, but we do ai
 
 The following are the tested and supported versions of packages:
 
-- Node.js: 18.17.0
-- pnpm: 4.1.0
-- npm: 9.6.7
-- TypeScript: 5.3.3
+- Node.js: 18.17.0+
+- pnpm: 10.20.0
+- npm: 9.6.7+
+- TypeScript: 5.9.2
 
-- React Native: 0.76.5
-- Expo SDK: 52.0.23
+- React Native: 0.81.5
+- Expo SDK: 54.0.23
 
 - Xcode: 16.2
 - iOS SDK: 18.2
@@ -278,7 +278,7 @@ See [`tests/README.md`](./tests/README.md) for full documentation.
       "distribution": "internal"
       "env": {
         "APP_ENV": "development",
-        "EXPO_PUBLIC_URL": "[YOUR_LOCAL_NEXTJS_URL]",
+        "EXPO_PUBLIC_URL": "[YOUR_LOCAL_EXPO_WEB_URL]",
         "EXPO_PUBLIC_SUPABASE_URL": "https://[YOUR-PROJECT-ID].supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "[YOUR-ANON-KEY]"
       }
@@ -335,8 +335,7 @@ Supabase PKCE flow requires email confirmation on sign up. You fill in the sign 
 The main apps are:
 
 - `apps`
-  - `expo` (Native)
-  - `next` (Web)
+  - `expo` (Native and Web)
 - `packages` Shared packages across apps
   - `ui` Includes your custom UI kit that will be optimized by Tamagui
   - `app` You'll be importing most files from `app/`
@@ -344,7 +343,7 @@ The main apps are:
     - `provider` All providers that wrap the app, sometimes forked by platform.
 - `supabase` Supabase files, migrations, types, etc. + [scripts](/supabase/README.md)
 
-Note that the main entry point for the Expo app is at `apps/expo/app/(drawer)/index.tsx`. This is because folders in parenthesis are flattened and Expo Router finds the first index.tsx file. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
+Note that the main entry point for the Expo app is at `apps/expo/app/index.tsx`. For more on how Expo Router works, [check out their docs](https://docs.expo.dev/router/create-pages/).
 
 ## Route Naming Convention
 
@@ -430,13 +429,11 @@ We use a unified `DashboardLayout` component for all dashboard pages that provid
 
 **Expo Dashboard Page:**
 ```tsx
-import React from 'react'
 import { ProfileEmploymentLeft } from '@app/core/features/profile/profile-employment-left'
 import { ProfileEmploymentRight } from '@app/core/features/profile/profile-employment-right'
 import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
-import { NextPageWithLayout } from '../../_app'
 
-const Page: NextPageWithLayout = () => {
+export default function DashboardPage() {
   return (
     <DashboardLayout
       leftContent={<ProfileEmploymentLeft />}
@@ -444,8 +441,6 @@ const Page: NextPageWithLayout = () => {
     />
   )
 }
-
-export default Page
 ```
 
 #### React Native Setup Expo
@@ -509,10 +504,6 @@ Redirect URL for email signup needs to be configured in Supabase Auth dashboard 
 Getting OAuth to work on web is as easy as it gets but on native, you will need to manually get the OAuth credentials, and then feed them to the Supabase session. See [this article](https://dev.to/fedorish/google-sign-in-using-supabase-and-react-native-expo-14jf) for more info on how to handle native OAuth with Supabase.
 
 For a detailed guide about Supabase and all available script commands see [Supabase README](/supabase/README.md)
-
-### Protecting Pages on Web
-
-We use middlewares to protect routes on the web. See `apps/next/middleware.ts`.
 
 ### Protecting Screens on Native
 
@@ -707,7 +698,7 @@ pnpm
 
 You can also install the native library inside of `packages/core` if you want to get autoimport for that package inside of the `app` folder. However, you need to be careful and install the _exact_ same version in both packages. If the versions mismatch at all, you'll potentially get terrible bugs. This is a classic monorepo issue. I use `lerna-update-wizard` to help with this (you don't need to use Lerna to use that lib).
 
-You may potentially want to have the native module transpiled for the next app. If you get error messages with `Cannot use import statement outside a module`, you may need to use `transpilePackages` in your `next.config.js` and add the module to the array there.
+For Expo Web, native modules are automatically handled by Metro bundler. If you encounter module resolution issues, check your `metro.config.js` configuration.
 
 ## Using With Expo Application Services (EAS)
 
@@ -739,8 +730,7 @@ This project includes cursor rules to help maintain code quality and consistency
 
 - **`route-naming-convention.mdc`** - Guidelines for dashboard route structure
 - **`ui-development.mdc`** - UI component development standards
-- **`nextjs.mdc`** - Next.js specific guidelines
-- **`react-native.mdc`** - React Native development guidelines
+- **`react-native.mdc`** - React Native/Expo development guidelines
 - **`code-quality.mdc`** - Code quality and maintenance rules
 
 ### Using Generators
@@ -786,10 +776,10 @@ Running `pod install` inside a pnpm alias can create this broken file.
 
 https://github.com/facebook/react-native/issues/43285
 
-### App requests hanging when querying Next.js API
+### App requests hanging when querying Expo Web API
 
-iOS simulator will not make requests to localhost, you will need to run the next.js server based on your local IP address.
+iOS simulator will not make requests to localhost, you will need to run the Expo Web server based on your local IP address.
 
 ```bash
-pnpm web -H $(pnpm get-local-ip-mac)
+pnpm web -H $(pnpm get-local-ip-mac | head -n 1)
 ```

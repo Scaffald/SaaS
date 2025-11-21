@@ -87,9 +87,9 @@ Provides optimized queries for each widget:
 **Layout:**
 ```
 Left Column:               Right Column:
-- GeneralInfoWidget        - SkillsWidget (TODO)
-- ExperienceWidget         - CertificationsWidget (TODO)
-- EducationWidget (TODO)   - PreferencesWidget (TODO)
+- GeneralInfoWidget        - SkillsWidget ✅
+- ExperienceWidget         - CertificationsWidget ✅
+- EducationWidget ✅       - PreferencesWidget ✅
 ```
 
 Shows user's own profile with edit buttons on all widgets.
