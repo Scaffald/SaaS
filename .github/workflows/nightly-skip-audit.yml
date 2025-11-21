@@ -1,0 +1,28 @@
+name: Nightly skip audit
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SKIP_THRESHOLD: 5
+
+jobs:
+  audit-skipped-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Count skipped vitest suites
+        run: |
+          skip_count=$(rg -o "(it|test|describe)\\.skip\\(" apps packages | wc -l)
+          echo "Detected ${skip_count} skipped Vitest blocks"
+          if [ "$skip_count" -gt "$SKIP_THRESHOLD" ]; then
+            echo "::error::Skip count (${skip_count}) exceeds threshold (${SKIP_THRESHOLD})."
+            exit 1
+          fi
