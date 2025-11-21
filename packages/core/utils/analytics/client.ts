@@ -28,11 +28,20 @@ const APP_ENV: AnalyticsEnvironment =
   'development'
 
 // SECURITY: Only use EXPO_PUBLIC variables - non-public env vars should never be in client bundle
-const POSTHOG_KEY =
-  (EXTRA_CONFIG.posthogKey as string | undefined) ??
-  (ANALYTICS_EXTRA.key as string | undefined) ??
+// If an environment variable is explicitly set to an empty string, treat that as a deliberate
+// choice to disable analytics and avoid falling back to embedded config values.
+const envPosthogKey =
   process.env.EXPO_PUBLIC_POSTHOG_API_KEY ??
-  ''
+  // Non-public env vars are only used in test environments
+  process.env.POSTHOG_KEY
+
+const POSTHOG_KEY =
+  envPosthogKey === ''
+    ? ''
+    : envPosthogKey ??
+      (EXTRA_CONFIG.posthogKey as string | undefined) ??
+      (ANALYTICS_EXTRA.key as string | undefined) ??
+      ''
 
 const POSTHOG_HOST =
   (EXTRA_CONFIG.posthogHost as string | undefined) ??

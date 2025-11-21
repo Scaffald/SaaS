@@ -19,7 +19,7 @@ export interface JobMapPin {
   position_level?: string;
 }
 
-// Type for the RPC function response
+// Type for the query response
 interface JobWithCoords {
   id: string;
   title: string;
@@ -27,15 +27,13 @@ interface JobWithCoords {
   employment_type: string | null;
   remote_option: string | null;
   location: string | null;
-  longitude: number;
-  latitude: number;
-  address: unknown;
+  address: { longitude?: number | null; latitude?: number | null } | null;
   pay_range_min_cents: number | null;
   pay_range_max_cents: number | null;
   pay_range_type: string | null;
   status: string;
   position_level: string | null;
-  organization_name: string | null;
+  organizations: { name?: string | null } | null;
 }
 
 interface UseJobsOptions {
@@ -48,15 +46,23 @@ export const buildJobsQuery = (options: UseJobsOptions = {}) => {
   const { bounds = null, limit = 500 } = options;
 
   return async (): Promise<JobMapPin[]> => {
-    // Get jobs with coordinates extracted from PostGIS geography
-    // Note: RPC function doesn't support bounds filtering yet
-    // We'll fetch all and filter in memory (with a reasonable limit)
-    const result = await (supabase
+    const maxLimit = Math.min(limit ?? 500, 500);
+    const query = supabase
       .schema("public")
-      // @ts-ignore - get_jobs_with_coords may not be in generated types yet
-      // biome-ignore lint/suspicious/noExplicitAny: RPC function may not exist in database types yet
-      .rpc("get_jobs_with_coords") as any) as { data: JobWithCoords[] | null; error: { message: string } | null };
-    const { data: jobs, error: jobsError } = result;
+      .from("jobs")
+      .select(
+        "id, title, organization_id, employment_type, remote_option, location, address, pay_range_min_cents, pay_range_max_cents, pay_range_type, status, position_level, organizations(name)",
+      )
+      .eq("status", "open")
+      .limit(maxLimit);
+
+    const { data: jobs, error: jobsError } =
+      typeof (query as { returns?: unknown }).returns === "function"
+        ? // Supabase client supports .returns for type inference; mocked clients in tests provide it for data
+          await (query as { returns: <T>() => Promise<{ data: T | null; error: { message: string } | null }> }).returns<
+            JobWithCoords[]
+          >()
+        : await (query as Promise<{ data: JobWithCoords[] | null; error: { message: string } | null }>);
 
     if (jobsError) {
       console.error("Error fetching jobs:", jobsError);
@@ -79,23 +85,21 @@ export const buildJobsQuery = (options: UseJobsOptions = {}) => {
     // Transform to JobMapPin format and filter by viewport bounds if provided
     const filtered = jobs
       .map((job: JobWithCoords): JobMapPin | null => {
+        const longitude = job.address?.longitude ?? null;
+        const latitude = job.address?.latitude ?? null;
+
         // Skip jobs without valid coordinates
-        if (
-          job.longitude === null ||
-          job.latitude === null ||
-          typeof job.longitude !== "number" ||
-          typeof job.latitude !== "number"
-        ) {
+        if (longitude === null || latitude === null || typeof longitude !== "number" || typeof latitude !== "number") {
           return null;
         }
 
         // Filter by viewport bounds if provided
         if (bounds) {
           if (
-            job.longitude < bounds.west ||
-            job.longitude > bounds.east ||
-            job.latitude < bounds.south ||
-            job.latitude > bounds.north
+            longitude < bounds.west ||
+            longitude > bounds.east ||
+            latitude < bounds.south ||
+            latitude > bounds.north
           ) {
             return null;
           }
@@ -104,12 +108,12 @@ export const buildJobsQuery = (options: UseJobsOptions = {}) => {
         return {
           id: job.id,
           title: job.title || "Untitled Job",
-          organization_name: job.organization_name || undefined,
+          organization_name: job.organizations?.name || undefined,
           organization_id: job.organization_id,
           employment_type: job.employment_type || undefined,
           remote_option: job.remote_option || undefined,
           location: job.location || undefined,
-          coordinates: [job.longitude, job.latitude],
+          coordinates: [longitude, latitude],
           pay_range_min_cents: job.pay_range_min_cents || undefined,
           pay_range_max_cents: job.pay_range_max_cents || undefined,
           pay_range_type: job.pay_range_type || undefined,

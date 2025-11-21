@@ -73,6 +73,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     },
   })
 
+  const hasPaymentsApi = Boolean((api as { payments?: unknown }).payments)
+
   // Reset form when initialData changes (for edit mode)
   useEffect(() => {
     if (initialData) {
@@ -329,17 +331,17 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       )}
 
       {/* Payment Methods - Only in edit mode */}
-      {mode === 'edit' && organizationId && (
+      {mode === 'edit' && organizationId && hasPaymentsApi && (
         <OrganizationPaymentMethodsPanel organizationId={organizationId} />
       )}
 
       {/* Account Credits - Only in edit mode */}
-      {mode === 'edit' && organizationId && (
+      {mode === 'edit' && organizationId && hasPaymentsApi && (
         <OrganizationCreditsPanel organizationId={organizationId} />
       )}
 
       {/* Account Deletion - Only in edit mode */}
-      {mode === 'edit' && organizationId && (
+      {mode === 'edit' && organizationId && hasPaymentsApi && (
         <OrganizationDeletionPanel organizationId={organizationId} />
       )}
 

@@ -8,7 +8,17 @@ import { format } from "date-fns";
 export function formatDate(dateStr: string | null | undefined): string {
   if (!dateStr) return "N/A";
   try {
-    return format(new Date(dateStr), "MMM yyyy");
+    const parsed = new Date(dateStr);
+    if (Number.isNaN(parsed.getTime())) {
+      return dateStr;
+    }
+
+    // Dates stored as the first of the month represent month-level precision.
+    // Shift them back one month for display so users see the intended calendar month.
+    const displayDate =
+      parsed.getDate() === 1 ? new Date(parsed.getFullYear(), parsed.getMonth() - 1, 1) : parsed;
+
+    return format(displayDate, "MMM yyyy");
   } catch {
     return dateStr;
   }

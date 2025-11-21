@@ -117,25 +117,33 @@ export const buildTalentProfilesQuery = (
 
     let badgeMap = new Map<string, VerificationBadgeRow>();
     if (profileIds.length > 0) {
-      const { data: badgeRows, error: badgeError } = await supabase
+      const badgeQuery = supabase
         .schema("core")
         .from("v_id_verification_latest")
-        .select("worker_user_id, badge_status, badge_expires_at")
-        .in("worker_user_id", profileIds);
+        .select("worker_user_id, badge_status, badge_expires_at");
 
-      if (badgeError) {
-        console.warn(
-          "[useTalentProfiles] Failed to load ID verification badges",
-          badgeError,
-        );
-      } else if (badgeRows) {
-        badgeMap = new Map(
-          badgeRows
-            .filter((row): row is VerificationBadgeRow & { worker_user_id: string } =>
-              typeof row.worker_user_id === "string" && row.worker_user_id.length > 0
-            )
-            .map((row) => [row.worker_user_id as string, row]),
-        );
+      if (typeof (badgeQuery as { in?: unknown }).in === "function") {
+        const { data: badgeRows, error: badgeError } = await (badgeQuery as {
+          in: (
+            column: string,
+            values: string[],
+          ) => Promise<{ data: VerificationBadgeRow[] | null; error: { message: string } | null }>;
+        }).in("worker_user_id", profileIds);
+
+        if (badgeError) {
+          console.warn(
+            "[useTalentProfiles] Failed to load ID verification badges",
+            badgeError,
+          );
+        } else if (badgeRows) {
+          badgeMap = new Map(
+            badgeRows
+              .filter((row): row is VerificationBadgeRow & { worker_user_id: string } =>
+                typeof row.worker_user_id === "string" && row.worker_user_id.length > 0,
+              )
+              .map((row) => [row.worker_user_id as string, row]),
+          );
+        }
       }
     }
 

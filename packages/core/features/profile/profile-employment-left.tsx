@@ -138,6 +138,28 @@ export function ProfileEmploymentLeft() {
   const utils = api.useContext()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
+  const [hasInteracted, setHasInteracted] = useState(false)
+
+  const buildFormValues = (
+    data?: EmploymentProfileFormData | null,
+  ): EmploymentProfileFormData => ({
+    ...profileEmploymentDefaults,
+    ...(data ?? {}),
+    open_to_travel: true,
+    preferred_work_locations: data?.preferred_work_locations ??
+      profileEmploymentDefaults.preferred_work_locations ??
+      [],
+    travel_distance_miles:
+      data?.travel_distance_miles ??
+      profileEmploymentDefaults.travel_distance_miles ??
+      25,
+    us_resident: data?.us_resident ?? false,
+    us_passport: data?.us_passport ?? false,
+    authorized_countries: data?.authorized_countries ?? [],
+    drivers_license_classes: data?.drivers_license_classes ?? [],
+    military_status: data?.military_status ?? [],
+    availability: data?.availability ?? [],
+  })
 
   // Use tRPC to fetch and update employment data
   const {
@@ -194,9 +216,28 @@ export function ProfileEmploymentLeft() {
     clearErrors,
   } = useForm<EmploymentProfileFormData>({
     resolver: zodResolver(profileEmploymentInputSchema),
-    defaultValues: profileEmploymentDefaults,
+    defaultValues: buildFormValues(),
     mode: 'onChange', // Real-time validation
   })
+
+  const watchedValues = watch()
+
+  useEffect(() => {
+    if (isDirty) {
+      setHasInteracted(true)
+    }
+  }, [isDirty])
+
+  useEffect(() => {
+    if (!originalDataRef.current || hasInteracted) return
+
+    const initialSerialized = JSON.stringify(originalDataRef.current)
+    const currentSerialized = JSON.stringify(watchedValues)
+
+    if (initialSerialized !== currentSerialized) {
+      setHasInteracted(true)
+    }
+  }, [hasInteracted, watchedValues])
 
   const driversLicenseClassesValue = watch('drivers_license_classes')
   const travelDistanceValue = watch('travel_distance_miles')
@@ -227,8 +268,9 @@ export function ProfileEmploymentLeft() {
       return
     }
 
-    reset(employmentData)
-    originalDataRef.current = employmentData
+    const normalized = buildFormValues(employmentData)
+    reset(normalized)
+    originalDataRef.current = normalized
   }, [employmentData, isLoadingEmployment, isFetchingEmployment, reset])
 
   const onSubmit = async (data: EmploymentProfileFormData) => {
@@ -499,8 +541,8 @@ export function ProfileEmploymentLeft() {
               <Button
                 variant="primary"
                 onPress={handleSubmit(onSubmit, onFormError)}
-                disabled={!isDirty || isLoading}
-                opacity={!isDirty || isLoading ? 0.5 : 1}
+                disabled={!hasInteracted || isLoading}
+                opacity={!hasInteracted || isLoading ? 0.5 : 1}
                 space={isSyncing ? '$2' : 0}
               >
                 <AnimatePresence>

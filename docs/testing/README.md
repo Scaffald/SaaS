@@ -62,10 +62,11 @@ Those pages describe the legacy 74 % Playwright pass rate and are still useful
 
 ## Need Something Else?
 
-- **Vitest troubleshooting:** [troubleshooting.md](./troubleshooting.md)  
-- **Mocking patterns:** [mocking-guide.md](./mocking-guide.md)  
+- **Vitest troubleshooting:** [troubleshooting.md](./troubleshooting.md)
+- **Mocking patterns:** [mocking-guide.md](./mocking-guide.md)
 - **Documentation updates:** ping `docs/testing/SESSION-*.md` if you add a substantial suite.
+- **Implementation backlog:** track milestone-level tasks in [implementation-backlog.md](./implementation-backlog.md) when planning work derived from the strategy.
 
-**Last Updated:** 2025‑11‑11  
-**Maintainer:** clay@unicorn.love  
+**Last Updated:** 2025‑11‑12
+**Maintainer:** clay@unicorn.love
 **Next Review:** When the remaining Expo/Supabase type errors are cleared and `pnpm check` succeeds.
