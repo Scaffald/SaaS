@@ -1,10 +1,21 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from '../components/SoftSkillsCategoryTabs'
 import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
 import { SoftSkillsHistoryTimeline } from '../components/SoftSkillsHistoryTimeline'
 import { SoftSkillsProgressionChart } from '../components/SoftSkillsProgressionChart'
 import { SoftSkillsRadarGrid } from '@app/ui'
-import { DashboardWidget, EmptyState, Heading, LoadingState, ResponsiveModal, spacing, Tab, TabGroup, UIButton } from '@app/ui'
+import {
+  DashboardWidget,
+  EmptyState,
+  Heading,
+  LoadingState,
+  ResponsiveModal,
+  spacing,
+  Tab,
+  TabGroup,
+  UIButton,
+} from '@app/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -147,7 +158,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               size="$2"
               onPress={() => {
                 if (activeTab === 'soft-skills') {
-                  router.push('/dashboard/profile/skills?tab=soft-skills')
+                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 } else {
                   router.push('/dashboard/profile/skills')
                 }
@@ -284,7 +295,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   variant="primary"
                   size="$2"
                   onPress={() => {
-                    router.push('/dashboard/profile/skills?tab=soft-skills')
+                    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                   }}
                 >
                   Complete Assessment
@@ -298,7 +309,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   showEdit ? (
                     <UIButton
                       variant="primary"
-                      onPress={() => router.push('/dashboard/profile/skills?tab=soft-skills')}
+                      onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                     >
                       Start Assessment
                     </UIButton>
@@ -337,7 +348,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                     <UIButton
                       variant="primary"
                       size="$3"
-                      onPress={() => router.push('/dashboard/profile/skills?tab=soft-skills')}
+                      onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                     >
                       Update Assessment
                     </UIButton>

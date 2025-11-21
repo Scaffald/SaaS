@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, Heading, LoadingState, RadarChart, spacing, UIButton } from '@app/ui'
 import { useRouter } from 'expo-router'
@@ -87,7 +88,7 @@ export const SoftSkillsAssessmentWidget: FC = () => {
   }, [categoryAverages])
 
   const handleNavigateToAssessment = () => {
-    router.push('/dashboard/profile/skills?tab=soft-skills')
+    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
   }
 
   if (isLoading) {

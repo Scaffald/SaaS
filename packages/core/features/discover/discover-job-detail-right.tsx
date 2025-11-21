@@ -534,7 +534,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     <UIButton
                       variant="primary"
                       size="$3"
-                      onPress={() => router.push(`${ROUTES.DASHBOARD.PROFILE.path}/skills?tab=soft-skills`)}
+                      onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                     >
                       Start Assessment
                     </UIButton>
@@ -576,7 +576,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                         <UIButton
                           variant="outlined"
                           size="$3"
-                          onPress={() => router.push(`${ROUTES.DASHBOARD.PROFILE.path}/skills?tab=soft-skills`)}
+                          onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                         >
                           Update Assessment
                         </UIButton>

@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { SoftSkillsRadarGrid } from '@app/ui'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from '../components/SoftSkillsCategoryTabs'
@@ -172,8 +173,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
                 variant="outlined"
                 size="$2"
                 onPress={() => {
-                  // Navigate to assessment form
-                  router.push('/dashboard/profile/skills?tab=soft-skills')
+                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
                 }}
               >
                 Edit

@@ -1,8 +1,15 @@
-import { ResponsiveSelect, SaveStatusIndicator, SavingModal, SkeletonForm } from '@app/ui'
+import {
+  DashboardWidget,
+  ResponsiveSelect,
+  SaveStatusIndicator,
+  SavingModal,
+  SkeletonForm,
+} from '@app/ui'
 import { Check } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
-import { InlineSkillSearch, ProfileFormPanel } from './components'
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { InlineSkillSearch } from './components'
+import { SoftSkillsRatingForm } from './components/SoftSkillsRatingForm'
 import { useSaveStatus } from './hooks/useSaveStatus'
 import { useProfileSkillsContext } from './profile-skills-context'
 
@@ -52,96 +59,115 @@ export function ProfileSkillsLeft() {
 
   if (isLoadingIndustries) {
     return (
-      <ProfileFormPanel>
-        <YStack gap="$4" p="$4">
-          <SkeletonForm fields={4} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <YStack gap="$4">
+          <DashboardWidget>
+            <YStack gap="$4" p="$4">
+              <SkeletonForm fields={4} />
+            </YStack>
+          </DashboardWidget>
+          <DashboardWidget>
+            <YStack gap="$4" p="$4">
+              <SkeletonForm fields={6} />
+            </YStack>
+          </DashboardWidget>
         </YStack>
-      </ProfileFormPanel>
+      </ScrollView>
     )
   }
 
   return (
-    <ProfileFormPanel>
-      {/* Header with Save Status Indicator */}
-      <XStack justify="space-between" items="center" mb="$2">
-        <YStack flex={1} />
-        <SaveStatusIndicator status={saveStatus} lastSavedAt={lastSavedAt} error={saveError} />
-      </XStack>
-
-      {/* Industry Selector */}
-      <YStack gap="$2">
-        <ResponsiveSelect
-          value={selectedIndustryId || ''}
-          onValueChange={handleIndustryChange}
-          placeholder="Select an industry"
-          label="Primary Industry *"
-          options={industryOptions}
-          disabled={isLoadingIndustries}
-          testID="primary-industry-select-trigger"
-          sheetTitle="Select Industry"
-        />
-        <Text fontSize="$2" color="$color11">
-          Select your industry to search for relevant skills
-        </Text>
-      </YStack>
-
-      <Separator />
-
-      {/* Inline Skill Search */}
-      {!selectedIndustryId ? (
-        <YStack p="$4" items="center" gap="$2" bg="$color3" rounded="$4">
-          <Text fontSize="$3" color="$color11" text="center">
-            Please select an industry above to search for skills
-          </Text>
-        </YStack>
-      ) : (
-        <InlineSkillSearch
-          onSearchSkills={searchSkills}
-          onSelectSkill={selectSkill}
-          isSearching={isSearchingSkills}
-          existingSkillIds={existingSkillIds}
-          externalSearchId={pendingSearch?.id}
-          externalSearchTerm={pendingSearch?.term ?? null}
-          externalSearchTaxonomy={pendingSearch?.taxonomy}
-          onConsumeExternalSearchTerm={clearPendingSearch}
-        />
-      )}
-
-      <Separator />
-
-      {/* Save Button */}
-      <XStack justify="flex-end" pt="$2">
-        <Button
-          size="$4"
-          themeInverse
-          onPress={handleForceSave}
-          disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
-          icon={saveButtonState === 'saved' ? Check : undefined}
-        >
-          {saveButtonState === 'saving' ? (
-            <XStack gap="$2" items="center">
-              <Spinner size="small" />
-              <Text>Saving...</Text>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <YStack gap="$4">
+        <DashboardWidget>
+          <YStack gap="$4">
+            {/* Header with Save Status Indicator */}
+            <XStack justify="space-between" items="center" mb="$2">
+              <YStack flex={1} />
+              <SaveStatusIndicator status={saveStatus} lastSavedAt={lastSavedAt} error={saveError} />
             </XStack>
-          ) : saveButtonState === 'saved' ? (
-            'Saved ✓'
-          ) : (
-            'Save'
-          )}
-        </Button>
-      </XStack>
 
-      {/* Saving Modal for Navigation Safety */}
-      <SavingModal
-        open={isSaving}
-        onClose={() => {
-          setIsSaving(false)
-          setSaveModalError(undefined)
-        }}
-        isError={!!saveModalError}
-        errorMessage={saveModalError}
-        onRetry={handleRetrySave}
-      />
-    </ProfileFormPanel>
+            {/* Industry Selector */}
+            <YStack gap="$2">
+              <ResponsiveSelect
+                value={selectedIndustryId || ''}
+                onValueChange={handleIndustryChange}
+                placeholder="Select an industry"
+                label="Primary Industry *"
+                options={industryOptions}
+                disabled={isLoadingIndustries}
+                testID="primary-industry-select-trigger"
+                sheetTitle="Select Industry"
+              />
+              <Text fontSize="$2" color="$color11">
+                Select your industry to search for relevant skills
+              </Text>
+            </YStack>
+
+            <Separator />
+
+            {/* Inline Skill Search */}
+            {!selectedIndustryId ? (
+              <YStack p="$4" items="center" gap="$2" bg="$color3" rounded="$4">
+                <Text fontSize="$3" color="$color11" text="center">
+                  Please select an industry above to search for skills
+                </Text>
+              </YStack>
+            ) : (
+              <InlineSkillSearch
+                onSearchSkills={searchSkills}
+                onSelectSkill={selectSkill}
+                isSearching={isSearchingSkills}
+                existingSkillIds={existingSkillIds}
+                externalSearchId={pendingSearch?.id}
+                externalSearchTerm={pendingSearch?.term ?? null}
+                externalSearchTaxonomy={pendingSearch?.taxonomy}
+                onConsumeExternalSearchTerm={clearPendingSearch}
+              />
+            )}
+
+            <Separator />
+
+            {/* Save Button */}
+            <XStack justify="flex-end" pt="$2">
+              <Button
+                size="$4"
+                themeInverse
+                onPress={handleForceSave}
+                disabled={saveButtonState === 'saving' || saveButtonState === 'saved'}
+                icon={saveButtonState === 'saved' ? Check : undefined}
+              >
+                {saveButtonState === 'saving' ? (
+                  <XStack gap="$2" items="center">
+                    <Spinner size="small" />
+                    <Text>Saving...</Text>
+                  </XStack>
+                ) : saveButtonState === 'saved' ? (
+                  'Saved ✓'
+                ) : (
+                  'Save'
+                )}
+              </Button>
+            </XStack>
+
+            {/* Saving Modal for Navigation Safety */}
+            <SavingModal
+              open={isSaving}
+              onClose={() => {
+                setIsSaving(false)
+                setSaveModalError(undefined)
+              }}
+              isError={!!saveModalError}
+              errorMessage={saveModalError}
+              onRetry={handleRetrySave}
+            />
+          </YStack>
+        </DashboardWidget>
+
+        <DashboardWidget>
+          <SoftSkillsRatingForm />
+        </DashboardWidget>
+      </YStack>
+    </ScrollView>
   )
 }
