@@ -301,19 +301,19 @@ export function ProfileActivityWidget() {
                         size="$2"
                         circular
                         icon={
-                          acceptRequestMutation.isLoading ? Loader2 : CheckCircle2
+                          acceptRequestMutation.isPending ? Loader2 : CheckCircle2
                         }
                         theme="green"
                         onPress={() => handleAcceptRequest(request.id)}
-                        disabled={acceptRequestMutation.isLoading || declineRequestMutation.isLoading}
+                        disabled={acceptRequestMutation.isPending || declineRequestMutation.isPending}
                       />
                       <Button
                         size="$2"
                         circular
-                        icon={declineRequestMutation.isLoading ? Loader2 : X}
+                        icon={declineRequestMutation.isPending ? Loader2 : X}
                         variant="outlined"
                         onPress={() => handleDeclineRequest(request.id)}
-                        disabled={acceptRequestMutation.isLoading || declineRequestMutation.isLoading}
+                        disabled={acceptRequestMutation.isPending || declineRequestMutation.isPending}
                       />
                     </XStack>
                   </XStack>

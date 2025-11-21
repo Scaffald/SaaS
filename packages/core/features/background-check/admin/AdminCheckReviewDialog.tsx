@@ -309,9 +309,12 @@ export function AdminCheckReviewDialog({
   const organizationName = detailedCheck?.organization?.name ?? null
 
   const packageLabel = useMemo(() => {
-    if (!detailedCheck?.package) return 'Background check'
-    return detailedCheck.package.display_name ?? detailedCheck.package.slug ?? 'Background check'
-  }, [detailedCheck?.package])
+    const checkWithPackage = detailedCheck as typeof detailedCheck & {
+      package?: { display_name?: string | null; slug?: string | null } | null
+    }
+    if (!checkWithPackage?.package) return 'Background check'
+    return checkWithPackage.package.display_name ?? checkWithPackage.package.slug ?? 'Background check'
+  }, [detailedCheck])
 
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
@@ -419,9 +422,14 @@ export function AdminCheckReviewDialog({
                     <Text fontSize="$2" color="$color10">
                       Created: {formatDateTime(detailedCheck.created_at)}
                     </Text>
-                    {detailedCheck.completed_at ? (
+                    {(detailedCheck as typeof detailedCheck & { completed_at?: string | null })
+                      .completed_at ? (
                       <Text fontSize="$2" color="$color10">
-                        Completed: {formatDateTime(detailedCheck.completed_at)}
+                        Completed:{' '}
+                        {formatDateTime(
+                          (detailedCheck as typeof detailedCheck & { completed_at?: string | null })
+                            .completed_at!
+                        )}
                       </Text>
                     ) : null}
                     {detailedCheck.expires_at ? (
@@ -456,7 +464,10 @@ export function AdminCheckReviewDialog({
                   componentStatuses={detailedCheck.component_statuses}
                   statusHistory={detailedCheck.status_history}
                   estimatedCompletionDate={detailedCheck.estimated_completion_date}
-                  completedAt={detailedCheck.completed_at ?? null}
+                  completedAt={
+                    (detailedCheck as typeof detailedCheck & { completed_at?: string | null })
+                      .completed_at ?? null
+                  }
                   expiresAt={detailedCheck.expires_at ?? null}
                 />
 

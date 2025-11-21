@@ -811,13 +811,23 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
             cert.expiresOn ? `Expires ${cert.expiresOn}` : undefined,
           ])
           return (
-            <SelectableCard
+            <ToggleCard
               key={`${cert.name}-${index}`}
               checked={certificationSelections[index]}
               onCheckedChange={(value) => certificationSelections.set(index, value)}
               title={cert.name ?? 'Certification'}
-              subtitle={cert.issuer}
-              details={details}
+              description={cert.issuer}
+              expandedContent={
+                details.length > 0 ? (
+                  <YStack gap="$1" pt="$2">
+                    {details.map((detail) => (
+                      <Text key={detail} color="$color11" fontSize="$3">
+                        • {detail}
+                      </Text>
+                    ))}
+                  </YStack>
+                ) : undefined
+              }
             />
           )
         })}

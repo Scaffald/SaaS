@@ -6,13 +6,38 @@ import { CheckCircle2, X } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
-type PendingRequest = NonNullable<
+type PendingRequestsData = NonNullable<
   ReturnType<typeof api.connections.getPendingRequests.useQuery>['data']
->['sent'][number] & { type: 'sent' }
+> & {
+  sent: Array<{
+    id: string
+    status: string
+    created_at: string
+    user: {
+      id: string
+      display_name: string | null
+      username: string | null
+      avatar_url: string | null
+      headline: string | null
+    } | null
+  }>
+  received: Array<{
+    id: string
+    status: string
+    created_at: string
+    user: {
+      id: string
+      display_name: string | null
+      username: string | null
+      avatar_url: string | null
+      headline: string | null
+    } | null
+  }>
+}
 
-type ReceivedRequest = NonNullable<
-  ReturnType<typeof api.connections.getPendingRequests.useQuery>['data']
->['received'][number] & { type: 'received' }
+type PendingRequest = PendingRequestsData['sent'][number] & { type: 'sent' }
+
+type ReceivedRequest = PendingRequestsData['received'][number] & { type: 'received' }
 
 type RequestRow = PendingRequest | ReceivedRequest
 
