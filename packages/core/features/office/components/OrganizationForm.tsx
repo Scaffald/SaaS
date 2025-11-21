@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/normalizeOrganizationSlug'
 import { OrganizationDeletionPanel } from '@app/core/features/organizations/components/OrganizationDeletionPanel'
 import { api } from '@app/core/utils/api'
@@ -177,7 +178,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   const createMutation = api.office.createOrganization.useMutation({
     onSuccess: () => {
       toast.show('Success', { message: 'Organization created successfully' })
-      router.push('/office/organizations')
+      router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: Error) => {
       toast.show('Error', { message: error.message || 'Failed to create organization' })
@@ -187,7 +188,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   const updateMutation = api.office.updateOrganization.useMutation({
     onSuccess: () => {
       toast.show('Success', { message: 'Organization updated successfully' })
-      router.push('/office/organizations')
+      router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: Error) => {
       toast.show('Error', { message: error.message || 'Failed to update organization' })

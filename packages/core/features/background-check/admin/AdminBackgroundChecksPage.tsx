@@ -521,7 +521,7 @@ export function AdminBackgroundChecksPage() {
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           createButtonLabel="Request background check"
-          onCreateClick={() => router.push('/office/background-checks/request')}
+          onCreateClick={() => router.push(ROUTES.OFFICE.ATS.CHECKS.REQUEST.path)}
           hideCreateButton
           data={filteredCheckRows}
           columns={checkColumns}

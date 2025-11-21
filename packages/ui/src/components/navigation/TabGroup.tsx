@@ -1,5 +1,12 @@
+import { createContext, useContext } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
 import { ScrollView, styled, Tabs } from 'tamagui'
+
+export type TabGroupVariant = 'default' | 'underlined'
+
+const TabGroupVariantContext = createContext<TabGroupVariant>('default')
+
+export const useTabGroupVariant = () => useContext(TabGroupVariantContext)
 
 export type TabGroupProps = {
   /** Current active tab value */
@@ -16,6 +23,8 @@ export type TabGroupProps = {
   scrollable?: boolean
   /** Custom className */
   className?: string
+  /** Visual style variant */
+  variant?: TabGroupVariant
 } & Omit<ComponentProps<typeof Tabs>, 'value' | 'onValueChange' | 'children'>
 
 /**
@@ -31,26 +40,36 @@ export const TabGroup = ({
   ariaLabel,
   bordered = true,
   scrollable = false,
+  variant = 'default',
   ...props
 }: TabGroupProps) => {
+  const resolvedBordered = variant === 'underlined' ? false : bordered
+
   return (
-    <Tabs
-      value={value}
-      onValueChange={onValueChange}
-      activationMode="manual"
-      flexDirection="column"
-      {...props}
-    >
-      <TabList bordered={bordered} scrollable={scrollable} aria-label={ariaLabel}>
-        {scrollable ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {children}
-          </ScrollView>
-        ) : (
-          children
-        )}
-      </TabList>
-    </Tabs>
+    <TabGroupVariantContext.Provider value={variant}>
+      <Tabs
+        value={value}
+        onValueChange={onValueChange}
+        activationMode="manual"
+        flexDirection="column"
+        {...props}
+      >
+        <TabList
+          bordered={resolvedBordered}
+          scrollable={scrollable}
+          variant={variant}
+          aria-label={ariaLabel}
+        >
+          {scrollable ? (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {children}
+            </ScrollView>
+          ) : (
+            children
+          )}
+        </TabList>
+      </Tabs>
+    </TabGroupVariantContext.Provider>
   )
 }
 
@@ -64,6 +83,19 @@ const TabList = styled(Tabs.List, {
   flexWrap: 'wrap',
 
   variants: {
+    variant: {
+      default: {
+        bg: '$color2',
+        gap: '$1',
+      },
+      underlined: {
+        rounded: 0,
+        borderWidth: 0,
+        bg: 'transparent',
+        gap: '$3',
+        px: 0,
+      },
+    },
     bordered: {
       true: {
         borderWidth: 1,
@@ -88,6 +120,7 @@ const TabList = styled(Tabs.List, {
   } as const,
 
   defaultVariants: {
+    variant: 'default',
     bordered: true,
     scrollable: false,
   },
@@ -96,4 +129,5 @@ const TabList = styled(Tabs.List, {
 TabList.defaultProps = {
   bordered: true,
   scrollable: false,
+  variant: 'default',
 }

@@ -33,7 +33,7 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
         <Text color="$color11">
           We couldn’t locate a resume session. Upload a resume to begin the review process.
         </Text>
-        <Button size="$4" onPress={() => router.push('/dashboard/profile/resume')}>
+        <Button size="$4" onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.RESUME.path)}>
           Upload Resume
         </Button>
       </YStack>

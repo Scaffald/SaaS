@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, spacing } from '@app/ui'
 import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
@@ -13,7 +14,10 @@ export function ResumeImportWidget() {
   const handleResumeUploadComplete = useCallback(
     (resumeId: string) => {
       setModalOpen(false)
-      router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+      router.push({
+        pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
+        params: { resumeId },
+      })
     },
     [router]
   )

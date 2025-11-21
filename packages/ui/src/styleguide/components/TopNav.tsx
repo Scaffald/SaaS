@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { ROUTES } from '@app/core/constants/routes'
 import { ScaffaldLogo } from '@app/core/assets/ScaffaldLogo'
 import { Github, Search } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
@@ -56,7 +57,7 @@ export function StyleguideTopNav({
           $sm={{ flexDirection: 'column', alignItems: 'stretch', gap: '$3' }}
         >
           <XStack alignItems="center" gap="$3">
-            <Link href="/styleguide" asChild>
+            <Link href={ROUTES.STYLEGUIDE.path} asChild>
               <Button
                 unstyled
                 aria-label="Scaffald Styleguide home"
@@ -88,7 +89,7 @@ export function StyleguideTopNav({
                 placeholder="Search components, tokens, or pages"
               />
             </View>
-            <Link href="/styleguide/approval-queue" asChild>
+            <Link href={ROUTES.STYLEGUIDE.APPROVAL_QUEUE.path} asChild>
               <Button
                 size="$3"
                 iconAfter={() => (

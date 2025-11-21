@@ -16,7 +16,10 @@ function ResumeImportContent() {
   const handleResumeUploadComplete = useCallback(
     (resumeId: string) => {
       setModalOpen(false)
-      router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+      router.push({
+        pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
+        params: { resumeId },
+      })
     },
     [router]
   )
@@ -63,7 +66,7 @@ function ResumeImportContent() {
             <Button
               size="$4"
               theme="blue"
-              onPress={() => router.push('/dashboard/profile/resume/review')}
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path)}
             >
               Continue Review
             </Button>

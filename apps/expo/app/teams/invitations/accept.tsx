@@ -1,3 +1,4 @@
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -40,8 +41,8 @@ export default function AcceptTeamInvitationScreen() {
   const isProcessing = respondMutation.isPending || status === 'pending'
 
   const redirectPath = useMemo(() => {
-    if (!token) return '/dashboard'
-    return `/teams/invitations/accept?token=${encodeURIComponent(token)}`
+    if (!token) return ROUTES.DASHBOARD.path
+    return `${ROUTES.TEAMS.INVITATIONS.ACCEPT.path}?token=${encodeURIComponent(token)}`
   }, [token])
 
   useEffect(() => {
@@ -66,9 +67,9 @@ export default function AcceptTeamInvitationScreen() {
 
   const handleViewTeam = () => {
     if (resultTeamId) {
-      router.replace(`/dashboard/teams/${resultTeamId}`)
+      router.replace(buildPath(ROUTES.DASHBOARD.TEAMS.DETAIL, { teamId: resultTeamId }))
     } else {
-      router.replace('/dashboard/teams/invitations')
+      router.replace(ROUTES.DASHBOARD.TEAMS.INVITATIONS.path)
     }
   }
 
@@ -100,7 +101,10 @@ export default function AcceptTeamInvitationScreen() {
           <Text color="$color11">
             You&apos;ll need to sign in so we can confirm your identity and add you to the team.
           </Text>
-          <Link href={`/auth?redirect_to=${encodeURIComponent(redirectPath)}`} asChild>
+          <Link
+            href={`${ROUTES.AUTH.LOGIN.path}?redirect_to=${encodeURIComponent(redirectPath)}`}
+            asChild
+          >
             <Button icon={LogIn} size="$4">
               Sign in or create an account
             </Button>
@@ -140,7 +144,7 @@ export default function AcceptTeamInvitationScreen() {
               You can always accept later from your dashboard if you change your mind.
             </Text>
           </YStack>
-          <Button size="$4" onPress={() => router.replace('/dashboard')}>
+          <Button size="$4" onPress={() => router.replace(ROUTES.DASHBOARD.path)}>
             Return to dashboard
           </Button>
         </YStack>

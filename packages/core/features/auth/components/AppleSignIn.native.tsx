@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { captureEvent } from '@app/core/utils/analytics/client'
 import { initiateAppleSignIn } from '@app/core/utils/auth/initiateAppleSignIn'
 import { supabase } from '@app/core/utils/supabase/client'
@@ -17,7 +18,7 @@ export function AppleSignIn() {
         token,
         nonce,
       })
-      if (!error) router.replace('/')
+      if (!error) router.replace(ROUTES.HOME.path)
       if (error) throw error
     } catch (e) {
       const errorCode =

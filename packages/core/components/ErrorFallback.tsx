@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { Home, RefreshCcw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
@@ -12,7 +13,7 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
 
   const handleGoHome = () => {
     onReset()
-    router.replace('/dashboard')
+    router.replace(ROUTES.DASHBOARD.path)
   }
 
   return (

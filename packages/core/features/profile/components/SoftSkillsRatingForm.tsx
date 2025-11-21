@@ -1,6 +1,4 @@
 import { api } from '@app/core/utils/api'
-import { StarRating } from '@app/core/features/reviews/components/StarRating'
-import { IndividualSkillRadarChart } from '@app/ui'
 import { ROUTES } from '@app/core/constants/routes'
 import {
   Heading,
@@ -15,7 +13,7 @@ import { useRouter } from 'expo-router'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Separator, Spinner, Text, View, XStack, YStack } from 'tamagui'
+import { Button, Card, Separator, Slider, Spinner, Text, XStack, YStack } from 'tamagui'
 import { softSkillsUpdateSchema } from '@app/schemas/profile/soft-skills.schema'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
 import type { SoftSkillsUpdateInput } from '@app/schemas/profile/soft-skills.schema'
@@ -30,6 +28,14 @@ interface SoftSkillWithRating {
   orderIndex: number
   rating: number | null
 }
+
+const SOFT_SKILL_LEVELS = [
+  { value: 1, label: 'Learning' },
+  { value: 2, label: 'Developing' },
+  { value: 3, label: 'Proficient' },
+  { value: 4, label: 'Advanced' },
+  { value: 5, label: 'Expert' },
+] as const
 
 /**
  * SoftSkillsRatingForm component
@@ -205,185 +211,171 @@ export const SoftSkillsRatingForm: FC = () => {
   // Handle success modal close
   const handleSuccessModalClose = useCallback(() => {
     setShowSuccessModal(false)
-    router.push('/dashboard/profile/skills')
+    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
   }, [router])
 
   if (isLoading) {
-    return (
-      <Card elevate bordered p="$6">
-        <LoadingState message="Loading soft skills assessment..." />
-      </Card>
-    )
+    return <LoadingState message="Loading soft skills assessment..." />
   }
 
   if (error) {
     return (
-      <Card elevate bordered p="$6">
-        <YStack gap="$4" items="center" py="$8">
-          <Text color="$red10">Failed to load assessment</Text>
-          <Text color="$color11" fontSize="$2">
-            {error.message}
-          </Text>
-          <UIButton variant="primary" size="$2" onPress={() => void refetch()}>
-            Retry
-          </UIButton>
-        </YStack>
-      </Card>
+      <YStack gap="$4" items="center" py="$8">
+        <Text color="$red10">Failed to load assessment</Text>
+        <Text color="$color11" fontSize="$2">
+          {error.message}
+        </Text>
+        <UIButton variant="primary" size="$2" onPress={() => void refetch()}>
+          Retry
+        </UIButton>
+      </YStack>
     )
   }
 
   if (formSkills.length === 0) {
     return (
-      <Card elevate bordered p="$6">
-        <YStack gap="$4" items="center" py="$8">
-          <Text color="$color11">No soft skills available</Text>
-          <Text color="$color10" fontSize="$2">
-            Please contact support if this issue persists.
-          </Text>
-        </YStack>
-      </Card>
+      <YStack gap="$4" items="center" py="$8">
+        <Text color="$color11">No soft skills available</Text>
+        <Text color="$color10" fontSize="$2">
+          Please contact support if this issue persists.
+        </Text>
+      </YStack>
     )
   }
 
   return (
-    <Card elevate bordered p="$6">
-      <YStack gap="$4">
-        {/* Header */}
-        <XStack justify="space-between" items="center">
-          <Heading variant="h3">Rate Your Soft Skills</Heading>
-          <SaveStatusIndicator
-            status={autoSaveStatus}
-            lastSavedAt={lastSavedAt?.toISOString()}
-            error={autoSaveStatus === 'error' ? 'Failed to auto-save' : undefined}
-          />
-        </XStack>
-
-        <Text fontSize="$3" color="$color11">
-          Rate each soft skill from 1-5 based on your proficiency level. Changes are automatically
-          saved every 30 seconds.
-        </Text>
-
-        <Separator />
-
-        {/* Category Tabs */}
-        <SoftSkillsCategoryTabs
-          activeCategory={activeCategory}
-          onCategoryChange={setActiveCategory}
-          skills={formSkills.map((skill) => ({
-            id: skill.id,
-            name: skill.name,
-            category: skill.category,
-            selfRating: watchedRatings.find((r) => r.skill_id === skill.id)?.rating ?? 0,
-          }))}
+    <YStack gap="$4">
+      {/* Header */}
+      <XStack justify="space-between" items="center">
+        <Heading variant="h3">Rate Your Soft Skills</Heading>
+        <SaveStatusIndicator
+          status={autoSaveStatus}
+          lastSavedAt={lastSavedAt?.toISOString()}
+          error={autoSaveStatus === 'error' ? 'Failed to auto-save' : undefined}
         />
+      </XStack>
 
-        <Separator />
+      <Text fontSize="$3" color="$color11">
+        Rate each soft skill from 1-5 based on your proficiency level. Changes are automatically
+        saved every 30 seconds.
+      </Text>
 
-        {/* Skills List for Active Category */}
-        <YStack gap="$4">
-          {categorySkills.length === 0 ? (
-            <YStack gap="$2" items="center" py="$8">
-              <Text color="$color11">No skills in this category</Text>
-            </YStack>
-          ) : (
-            categorySkills.map((skill) => {
-              // Find the rating index in the sorted form array
-              const skillRatingIndex = watchedRatings.findIndex((r) => r.skill_id === skill.id)
-              const currentRating =
-                skillRatingIndex >= 0 ? watchedRatings[skillRatingIndex]?.rating ?? 1 : 1
+      <Separator />
 
-              // Skip rendering if skill not found in ratings (shouldn't happen with proper init)
-              if (skillRatingIndex < 0) {
-                return null
-              }
+      {/* Category Tabs */}
+      <SoftSkillsCategoryTabs activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
 
-              return (
-                <Card key={skill.id} bordered p="$4" bg="$background">
-                  <XStack gap="$4" $md={{ flexDirection: 'row' }}>
-                    {/* Left: Rating Input and Description */}
-                    <YStack flex={1} gap="$3">
-                      <YStack gap="$1">
-                        <Text fontSize="$5" fontWeight="600" color="$color12">
-                          {skill.name}
-                        </Text>
-                        {skill.description && (
-                          <Text fontSize="$3" color="$color11">
-                            {skill.description}
-                          </Text>
-                        )}
-                      </YStack>
+      <Separator />
 
-                      <Controller
-                        control={control}
-                        name={`skills.${skillRatingIndex}.rating`}
-                        rules={{
-                          required: true,
-                          min: 1,
-                          max: 5,
-                        }}
-                        render={({ field: { onChange, value } }) => (
-                          <StarRating
-                            label=""
-                            value={value}
-                            onChange={(newRating) => {
-                              onChange(newRating)
-                            }}
-                          />
-                        )}
-                      />
-                    </YStack>
+      {/* Skills List for Active Category */}
+      <YStack gap="$4">
+        {categorySkills.length === 0 ? (
+          <YStack gap="$2" items="center" py="$8">
+            <Text color="$color11">No skills in this category</Text>
+          </YStack>
+        ) : (
+          categorySkills.map((skill) => {
+            const skillRatingIndex = watchedRatings.findIndex((r) => r.skill_id === skill.id)
+            const defaultRating = skillRatingIndex >= 0 ? watchedRatings[skillRatingIndex]?.rating ?? 1 : 1
 
-                    {/* Right: Mini Radar Chart */}
-                    <View $md={{ minW: 180 }}>
-                      <IndividualSkillRadarChart
-                        skillName=""
-                        selfRating={currentRating}
-                        size="small"
-                      />
-                    </View>
-                  </XStack>
-                </Card>
-              )
-            })
-          )}
-        </YStack>
+            if (skillRatingIndex < 0) {
+              return null
+            }
 
-        <Separator />
+            return (
+              <Card key={skill.id} bordered p="$4" bg="$background">
+                <YStack gap="$3">
+                  <YStack gap="$1">
+                    <Text fontSize="$5" fontWeight="600" color="$color12">
+                      {skill.name}
+                    </Text>
+                    {skill.description && (
+                      <Text fontSize="$3" color="$color11">
+                        {skill.description}
+                      </Text>
+                    )}
+                  </YStack>
 
-        {/* Submit Button */}
-        <XStack justify="flex-end" pt="$2">
-          <UIButton
-            variant="primary"
-            size="$4"
-            onPress={handleSubmit(onSubmit)}
-            disabled={!allSkillsRated || updateMutation.isPending}
-            icon={updateMutation.isPending ? undefined : CheckCircle2}
-          >
-            {updateMutation.isPending ? (
-              <XStack gap="$2" items="center">
-                <Spinner size="small" />
-                <Text>Submitting...</Text>
-              </XStack>
-            ) : allSkillsRated ? (
-              'Complete Assessment'
-            ) : (
-              `Rate ${25 - watchedRatings.filter((r) => r.rating > 0).length} more skills to complete`
-            )}
-          </UIButton>
-        </XStack>
+                  <Controller
+                    control={control}
+                    name={`skills.${skillRatingIndex}.rating`}
+                    rules={{
+                      required: true,
+                      min: 1,
+                      max: 5,
+                    }}
+                    render={({ field: { onChange, value } }) => {
+                      const sliderValue = typeof value === 'number' ? value : defaultRating
 
-        {/* Progress Indicator */}
-        {!allSkillsRated && (
-          <XStack gap="$2" items="center" justify="center" p="$3" bg="$color3" rounded="$3">
-            <Text fontSize="$3" color="$color11">
-              Progress:{' '}
-            </Text>
-            <Text fontSize="$3" fontWeight="600" color="$blue10">
-              {watchedRatings.filter((r) => r.rating > 0).length} of 25 skills rated
-            </Text>
-          </XStack>
+                      return (
+                        <YStack gap="$2">
+                          <Slider
+                            value={[sliderValue]}
+                            onValueChange={(newValue) => onChange(newValue[0])}
+                            min={1}
+                            max={5}
+                            step={1}
+                            size="$3"
+                            mt="$4"
+                            mb="$2"
+                          >
+                            <Slider.Track bg="$color4" height={6} rounded="$pill">
+                              <Slider.TrackActive bg="$blue9" rounded="$pill" />
+                            </Slider.Track>
+                            <Slider.Thumb
+                              index={0}
+                              circular
+                              size="$1"
+                              bg="$blue9"
+                              borderWidth={2}
+                              borderColor="$blue11"
+                            />
+                          </Slider>
+
+                          <XStack justify="space-between" gap="$2" flexWrap="wrap">
+                            {SOFT_SKILL_LEVELS.map((level) => (
+                              <YStack
+                                key={level.value}
+                                flex={1}
+                                minWidth={64}
+                                items="center"
+                                opacity={sliderValue === level.value ? 1 : 0.6}
+                              >
+                                <Text fontSize="$2" fontWeight="700" color="$color12">
+                                  {level.value}
+                                </Text>
+                                <Text fontSize="$2" textAlign="center" color="$color11">
+                                  {level.label}
+                                </Text>
+                              </YStack>
+                            ))}
+                          </XStack>
+                        </YStack>
+                      )
+                    }}
+                  />
+                </YStack>
+              </Card>
+            )
+          })
         )}
       </YStack>
+
+      <Separator />
+
+      {/* Submit Button */}
+      <XStack justify="flex-end" pt="$2">
+        <UIButton
+          variant="primary"
+          size="$4"
+          onPress={handleSubmit(onSubmit)}
+          disabled={!allSkillsRated || updateMutation.isPending}
+          icon={updateMutation.isPending ? undefined : CheckCircle2}
+          iconAfter={updateMutation.isPending ? <Spinner size="small" /> : undefined}
+        >
+          {updateMutation.isPending ? 'Saving...' : 'Save Assessment'}
+        </UIButton>
+      </XStack>
 
       {/* Success Modal */}
       <ResponsiveModal
@@ -433,7 +425,7 @@ export const SoftSkillsRatingForm: FC = () => {
           </XStack>
         </YStack>
       </ResponsiveModal>
-    </Card>
+    </YStack>
   )
 }
 

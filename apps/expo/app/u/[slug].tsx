@@ -7,6 +7,7 @@ import {
   SkillsWidget,
   WorkLogPortfolioWidget,
 } from '@app/core/features/profile/widgets'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@app/ui'
@@ -43,7 +44,7 @@ export default function PublicUserProfilePage() {
   // Redirect to dashboard route if viewing own profile
   useEffect(() => {
     if (profileData && currentUserId && profileData.id === currentUserId) {
-      router.replace(`/dashboard/users/${profileData.id}`)
+      router.replace(buildPath(ROUTES.DASHBOARD.USER, { userId: profileData.id }))
     }
   }, [profileData, currentUserId, router])
 
@@ -54,7 +55,7 @@ export default function PublicUserProfilePage() {
 
   // Build breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
-    { label: 'Home', href: '/' },
+    { label: 'Home', href: ROUTES.HOME.path },
     {
       label: displayName || 'Loading...',
       isActive: true,

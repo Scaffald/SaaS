@@ -41,7 +41,7 @@ export function IPIPAssessmentWidget() {
   }
 
   const handleViewResults = () => {
-    router.push('/dashboard/assessments/ipip/results')
+    router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.RESULTS.path)
   }
 
   // Show results preview when completed

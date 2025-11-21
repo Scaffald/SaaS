@@ -1,4 +1,4 @@
-import { AUTH_ROUTES } from '@app/core/constants/routes'
+import { AUTH_ROUTES, ROUTES } from '@app/core/constants/routes'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useUser } from '@app/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
@@ -91,7 +91,7 @@ export default function RootIndex() {
       try {
         if (user) {
           console.log('Navigating to dashboard for authenticated user')
-          router.replace('/dashboard')
+          router.replace(ROUTES.DASHBOARD.path)
         } else {
           console.log('Navigating to auth for unauthenticated user')
           router.replace(AUTH_ROUTES.INDEX.path)

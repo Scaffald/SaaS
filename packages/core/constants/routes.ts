@@ -8,6 +8,7 @@
  * - Compile-time route validation
  * - Centralized route management
  * - Nested route structure for hierarchical organization
+ * - Automated enforcement via `pnpm lint:routes`
  */
 
 import {
@@ -79,6 +80,12 @@ const ROUTES_CONFIG = {
     protected: false,
     exact: true,
     icon: Palette,
+    APPROVAL_QUEUE: {
+      path: "/styleguide/approval-queue",
+      titleKey: "routes.styleguideApprovalQueue",
+      protected: false,
+      exact: true,
+    },
   },
 
   AUTH: {
@@ -97,6 +104,12 @@ const ROUTES_CONFIG = {
     SUCCESS: {
       path: "/auth/success",
       titleKey: "routes.auth.success",
+      protected: false,
+      exact: true,
+    },
+    VERIFY: {
+      path: "/auth/verify",
+      titleKey: "routes.auth.verify",
       protected: false,
       exact: true,
     },
@@ -661,6 +674,16 @@ const ROUTES_CONFIG = {
         path: "/office/settings/stripe",
         titleKey: "routes.office.settings.stripe",
         protected: true,
+        exact: true,
+      },
+    },
+  },
+  TEAMS: {
+    INVITATIONS: {
+      ACCEPT: {
+        path: "/teams/invitations/accept",
+        titleKey: "routes.teams.invitations.accept",
+        protected: false,
         exact: true,
       },
     },

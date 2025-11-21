@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import '@testing-library/jest-dom/vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { TRPCClientError } from '@trpc/client'
@@ -170,7 +171,7 @@ describe('LoginScreen', () => {
     })
 
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/auth/verify',
+      pathname: ROUTES.AUTH.VERIFY.path,
       params: {
         email: 'person@example.com',
         mode: 'magic_link',

@@ -1,4 +1,4 @@
-import { type FC, useMemo } from 'react'
+import type { FC } from 'react'
 import { Tab, TabGroup } from '@app/ui'
 
 export type SoftSkillCategory = 'reliability' | 'collaboration' | 'professionalism' | 'technical'
@@ -15,7 +15,6 @@ export interface SoftSkill {
 export interface SoftSkillsCategoryTabsProps {
   activeCategory: SoftSkillCategory
   onCategoryChange: (category: SoftSkillCategory) => void
-  skills: SoftSkill[]
 }
 
 const CATEGORY_LABELS: Record<SoftSkillCategory, string> = {
@@ -29,7 +28,7 @@ const CATEGORY_LABELS: Record<SoftSkillCategory, string> = {
  * SoftSkillsCategoryTabs component
  *
  * Category-based tab navigation for soft skills organized by category.
- * Shows completion counts (e.g., "5/7") for each category tab.
+ * Shows soft skill categories without completion counts.
  *
  * @param activeCategory - Currently active category
  * @param onCategoryChange - Callback when category changes
@@ -45,31 +44,7 @@ const CATEGORY_LABELS: Record<SoftSkillCategory, string> = {
  * />
  * ```
  */
-export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({
-  activeCategory,
-  onCategoryChange,
-  skills,
-}) => {
-  // Calculate completion counts per category
-  const categoryCounts = useMemo(() => {
-    const counts: Record<SoftSkillCategory, { total: number; completed: number }> = {
-      reliability: { total: 0, completed: 0 },
-      collaboration: { total: 0, completed: 0 },
-      professionalism: { total: 0, completed: 0 },
-      technical: { total: 0, completed: 0 },
-    }
-
-    for (const skill of skills) {
-      const category = skill.category
-      counts[category].total += 1
-      if (skill.selfRating > 0) {
-        counts[category].completed += 1
-      }
-    }
-
-    return counts
-  }, [skills])
-
+export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({ activeCategory, onCategoryChange }) => {
   const categories: SoftSkillCategory[] = ['reliability', 'collaboration', 'professionalism', 'technical']
 
   return (
@@ -82,20 +57,9 @@ export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({
       scrollable
       bordered={false}
     >
-      {categories.map((category) => {
-        const counts = categoryCounts[category]
-        const badgeText =
-          counts.total > 0 ? `${counts.completed}/${counts.total}` : undefined
-
-        return (
-          <Tab
-            key={category}
-            value={category}
-            label={CATEGORY_LABELS[category]}
-            badge={badgeText}
-          />
-        )
-      })}
+      {categories.map((category) => (
+        <Tab key={category} value={category} label={CATEGORY_LABELS[category]} />
+      ))}
     </TabGroup>
   )
 }

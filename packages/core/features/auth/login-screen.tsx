@@ -1,4 +1,5 @@
 import { ScaffaldLogo } from '@app/core/assets'
+import { ROUTES } from '@app/core/constants/routes'
 import { i18n } from '@app/core/locales'
 import { captureEvent } from '@app/core/utils/analytics/client'
 import { captureEventWithQueue } from '@app/core/utils/analytics/queue'
@@ -39,7 +40,7 @@ export const LoginScreen = () => {
   useEffect(() => {
     // remove the persisted email from the url, mostly to not leak user's email in case they share it
     if (params?.email) {
-      router.replace('/auth')
+      router.replace(ROUTES.AUTH.LOGIN.path)
     }
   }, [params?.email, router])
 
@@ -82,7 +83,7 @@ export const LoginScreen = () => {
       console.log('Magic link sent successfully!')
       // Navigate to verify screen with email
       router.push({
-        pathname: '/auth/verify',
+        pathname: ROUTES.AUTH.VERIFY.path,
         params: { email: normalizedEmail, mode: result?.mode },
       })
     } catch (error) {
@@ -180,7 +181,7 @@ function useRedirectAfterSignIn() {
   useEffect(() => {
     const signOutListener = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       if (event === 'SIGNED_IN') {
-        router.replace('/')
+        router.replace(ROUTES.HOME.path)
       }
     })
     return () => {

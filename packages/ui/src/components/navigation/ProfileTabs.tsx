@@ -119,6 +119,7 @@ export const ProfileTabs = ({
       ariaLabel={ariaLabel}
       scrollable={isSmallScreen}
       bordered={false}
+      variant="underlined"
       {...tabGroupProps}
     >
       {items.map((item) => (

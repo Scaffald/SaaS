@@ -1,6 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { Link } from 'expo-router'
 import { styled, Tabs, Text, useTabsContext, XStack, YStack } from 'tamagui'
+import { useTabGroupVariant } from './TabGroup'
 
 export type TabProps = {
   /** Unique value for this tab */
@@ -29,6 +30,16 @@ export type TabProps = {
 export const Tab = ({ value, label, href, badge, children, disabled, ...props }: TabProps) => {
   const tabsContext = useTabsContext()
   const isActive = tabsContext.value === value
+  const variant = useTabGroupVariant()
+  const isUnderlined = variant === 'underlined'
+
+  const textColor = isUnderlined
+    ? isActive
+      ? '$blue9'
+      : '$color10'
+    : isActive
+      ? '$color12'
+      : '$color10'
 
   const content = (
     <Tabs.Tab
@@ -38,17 +49,26 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
       paddingVertical="$2"
       paddingHorizontal="$4"
       minHeight="$2"
-      bg="$color2"
-      borderWidth={1}
-      borderColor="$color4"
+      bg={isUnderlined ? 'transparent' : '$color2'}
+      borderWidth={isUnderlined ? 0 : 1}
+      borderColor={isUnderlined ? 'transparent' : '$color4'}
+      borderBottomWidth={isUnderlined ? 2 : undefined}
+      borderBottomColor={isUnderlined ? (isActive ? '$blue9' : 'transparent') : undefined}
       cursor={disabled ? 'not-allowed' : 'pointer'}
-      hoverStyle={{
-        bg: '$blue3',
-      }}
-      pressStyle={{
-        bg: '$blue3',
-        scale: 0.98,
-      }}
+      hoverStyle={
+        isUnderlined ? { borderBottomColor: '$yellow9', bg: 'transparent' } : { bg: '$blue3' }
+      }
+      pressStyle={
+        isUnderlined
+          ? {
+              bg: 'transparent',
+              borderBottomColor: '$blue9',
+            }
+          : {
+              bg: '$blue3',
+              scale: 0.98,
+            }
+      }
       disabledStyle={{
         opacity: 0.5,
         cursor: 'not-allowed',
@@ -57,11 +77,7 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
     >
       <XStack gap="$2" items="center" justify="center">
         {children || (
-          <Text
-            fontSize="$3"
-            fontWeight={isActive ? '600' : '500'}
-            color={isActive ? '$color12' : '$color10'}
-          >
+          <Text fontSize="$3" fontWeight={isActive ? '600' : '500'} color={textColor}>
             {label}
           </Text>
         )}

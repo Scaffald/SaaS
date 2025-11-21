@@ -1,4 +1,4 @@
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, Dialog } from '@app/ui'
 import { Check, Loader2, RefreshCw, X as XIcon } from '@tamagui/lucide-icons'
@@ -212,7 +212,7 @@ export function OfficeOrganizationsList() {
   const columns = createColumns(router)
 
   const handleRowEdit = (org: Organization) => {
-    router.push(`/office/organizations/${org.id}/edit`)
+    router.push(buildPath(ROUTES.OFFICE.CMS.ORGANIZATIONS.EDIT, { id: org.id }))
   }
 
   const handleRowDelete = async (org: Organization) => {

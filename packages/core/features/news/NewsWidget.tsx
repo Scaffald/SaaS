@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { redirect } from '@app/core/utils/redirect'
 import { supabase } from '@app/core/utils/supabase/client'
@@ -412,7 +413,7 @@ export function NewsWidget({
   }
 
   const handleViewAll = () => {
-    router.push('/dashboard/news')
+    router.push(ROUTES.DASHBOARD.NEWS.path)
   }
 
   const updatePreference = (key: keyof NewsPreferences, value: boolean) => {

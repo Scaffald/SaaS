@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { captureEvent } from '@app/core/utils/analytics/client'
 import { supabase } from '@app/core/utils/supabase/client'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
@@ -33,7 +34,7 @@ export function GoogleSignIn() {
           throw new Error('error', error)
         }
 
-        router.replace('/')
+        router.replace(ROUTES.HOME.path)
       } else {
         throw new Error('no ID token present!')
       }

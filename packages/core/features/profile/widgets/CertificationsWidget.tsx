@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { Award, CheckCircle } from '@tamagui/lucide-icons'
@@ -95,7 +96,7 @@ export function CertificationsWidget({
             <UIButton
               variant="outlined"
               size="$2"
-              onPress={() => router.push('/dashboard/profile/certifications')}
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
             >
               Edit
             </UIButton>
@@ -111,7 +112,7 @@ export function CertificationsWidget({
               showEdit ? (
                 <UIButton
                   variant="primary"
-                  onPress={() => router.push('/dashboard/profile/certifications')}
+                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
                 >
                   Add Certification
                 </UIButton>
@@ -264,7 +265,7 @@ export function CertificationsWidget({
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push('/dashboard/profile/certifications')}
+                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
               >
                 View all {certifications.length} certifications →
               </Text>

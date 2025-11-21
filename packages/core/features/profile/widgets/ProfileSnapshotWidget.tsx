@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
@@ -117,7 +118,7 @@ export function ProfileSnapshotWidget() {
             size="$2"
             chromeless
             color="$blue7"
-            onPress={() => router.push('/dashboard/profile')}
+            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
           >
             View Full Profile
           </Button>
@@ -262,7 +263,11 @@ export function ProfileSnapshotWidget() {
               <Text fontSize="$3" fontWeight="600">
                 Top Skills
               </Text>
-              <Button size="$1" chromeless onPress={() => router.push('/dashboard/profile/skills')}>
+              <Button
+                size="$1"
+                chromeless
+                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+              >
                 View All
               </Button>
             </XStack>
@@ -305,7 +310,7 @@ export function ProfileSnapshotWidget() {
           <StyledButton
             variant="primary"
             size="$3"
-            onPress={() => router.push('/dashboard/profile')}
+            onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
             width="100%"
           >
             Edit Profile

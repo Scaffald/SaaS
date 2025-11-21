@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { GraduationCap } from '@tamagui/lucide-icons'
@@ -83,7 +84,7 @@ export function EducationWidget({
             <UIButton
               variant="outlined"
               size="$2"
-              onPress={() => router.push('/dashboard/profile/education')}
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
             >
               Edit
             </UIButton>
@@ -99,7 +100,7 @@ export function EducationWidget({
               showEdit ? (
                 <UIButton
                   variant="primary"
-                  onPress={() => router.push('/dashboard/profile/education')}
+                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
                 >
                   Add Education
                 </UIButton>
@@ -178,7 +179,7 @@ export function EducationWidget({
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push('/dashboard/profile/education')}
+                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
               >
                 View all {education.length} entries →
               </Text>

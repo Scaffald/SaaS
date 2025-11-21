@@ -157,11 +157,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               variant="outlined"
               size="$2"
               onPress={() => {
-                if (activeTab === 'soft-skills') {
-                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
-                } else {
-                  router.push('/dashboard/profile/skills')
-                }
+                router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
               }}
             >
               Edit
@@ -206,7 +202,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               showEdit ? (
                 <UIButton
                   variant="primary"
-                  onPress={() => router.push('/dashboard/profile/skills')}
+                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                 >
                   Add Skills
                 </UIButton>
@@ -273,7 +269,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push('/dashboard/profile/skills')}
+                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
               >
                 View all {skills.length} skills →
               </Text>

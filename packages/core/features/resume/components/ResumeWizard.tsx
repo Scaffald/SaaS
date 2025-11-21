@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { UIButton as Button, spacing } from '@app/ui'
 import {
@@ -532,7 +533,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         return
       }
       case 'review': {
-        router.push('/dashboard/profile/general')
+        router.push(ROUTES.DASHBOARD.PROFILE.GENERAL.path)
         return
       }
       default:

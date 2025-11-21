@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, extractPlainText } from '@app/ui'
 import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
@@ -35,7 +36,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
               try {
                 router.back()
               } catch {
-                router.replace('/dashboard/discover/employers')
+                router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)
               }
             }}
           >
@@ -70,7 +71,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
               try {
                 router.back()
               } catch {
-                router.replace('/dashboard/discover/employers')
+                router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)
               }
             }}
           >
@@ -100,7 +101,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
             try {
               router.back()
             } catch {
-              router.replace('/dashboard/discover/employers')
+              router.replace(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.path)
             }
           }}
         >

@@ -49,7 +49,7 @@ import { cardShadows } from '../../config/shadows'
  *   description="This is a sample news description..."
  *   header={<Badge>Technology</Badge>}
  *   footer={<Text fontSize="$2" color="$color11">2 hours ago</Text>}
- *   href="/news/123"
+ *   href={ROUTES.DASHBOARD.NEWS.path}
  *   fullCardClickable
  * />
  * ```

@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { Briefcase } from '@tamagui/lucide-icons'
@@ -85,7 +86,7 @@ export function ExperienceWidget({
             <UIButton
               variant="outlined"
               size="$2"
-              onPress={() => router.push('/dashboard/profile/experience')}
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
             >
               Edit
             </UIButton>
@@ -101,7 +102,7 @@ export function ExperienceWidget({
               showEdit ? (
                 <UIButton
                   variant="primary"
-                  onPress={() => router.push('/dashboard/profile/experience')}
+                  onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
                 >
                   Add Experience
                 </UIButton>
@@ -193,7 +194,7 @@ export function ExperienceWidget({
                 cursor="pointer"
                 hoverStyle={{ color: '$blue8' }}
                 pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push('/dashboard/profile/experience')}
+                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EXPERIENCE.path)}
               >
                 View all {experiences.length} positions →
               </Text>

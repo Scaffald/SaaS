@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@app/ui'
 import { useRouter } from 'expo-router'
@@ -69,7 +70,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
             <UIButton
               variant="outlined"
               size="$2"
-              onPress={() => router.push('/dashboard/profile/employment')}
+              onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)}
             >
               Edit
             </UIButton>

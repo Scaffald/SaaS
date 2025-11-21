@@ -1,4 +1,5 @@
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
+import { ROUTES } from '@app/core/constants/routes'
 import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
 import { api } from '@app/core/utils/api'
 import { useProtectedRoute } from '@app/core/utils/auth/useProtectedRoute'
@@ -25,8 +26,11 @@ export default function Layout() {
   // Redirect to /dashboard if prerequisites incomplete and not already there
   useEffect(() => {
     if (!isCheckingPrereqs && statusData && !statusData.isComplete) {
-      if (pathname !== '/dashboard' && !pathname?.startsWith('/dashboard/index')) {
-        router.replace('/dashboard')
+      const dashboardPath = ROUTES.DASHBOARD.path
+      const dashboardIndexPath = `${dashboardPath}/index`
+
+      if (pathname !== dashboardPath && !pathname?.startsWith(dashboardIndexPath)) {
+        router.replace(dashboardPath)
       }
     }
   }, [statusData, isCheckingPrereqs, pathname, router])

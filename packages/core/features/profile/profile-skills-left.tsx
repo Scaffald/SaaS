@@ -84,7 +84,11 @@ export function ProfileSkillsLeft() {
             {/* Header with Save Status Indicator */}
             <XStack justify="space-between" items="center" mb="$2">
               <YStack flex={1} />
-              <SaveStatusIndicator status={saveStatus} lastSavedAt={lastSavedAt} error={saveError} />
+              <SaveStatusIndicator
+                status={saveStatus}
+                lastSavedAt={lastSavedAt}
+                error={saveError}
+              />
             </XStack>
 
             {/* Industry Selector */}

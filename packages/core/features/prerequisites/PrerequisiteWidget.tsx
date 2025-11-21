@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
@@ -148,7 +149,10 @@ export function PrerequisiteWidget() {
           onOpenChange={setResumeModalOpen}
           onUploadComplete={(resumeId) => {
             setResumeModalOpen(false)
-            router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+            router.push({
+              pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
+              params: { resumeId },
+            })
           }}
         />
         <YStack gap={spacing.xs}>

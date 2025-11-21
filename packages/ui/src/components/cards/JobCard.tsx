@@ -118,7 +118,7 @@ function formatRelativeTime(dateString?: string): string {
  *   payRangeMin={12000000}
  *   payRangeMax={18000000}
  *   payRangeType="salary"
- *   onViewDetails={() => router.push('/jobs/1')}
+ *   onViewDetails={() => router.push(ROUTES.DASHBOARD.DISCOVER.JOBS.path)}
  * />
  * ```
  */

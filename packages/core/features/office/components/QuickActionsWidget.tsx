@@ -38,7 +38,7 @@ export interface QuickActionsWidgetProps {
  * <QuickActionsWidget
  *   context="list"
  *   resourceName="Job"
- *   onCreate={() => router.push('/office/jobs/create')}
+ *   onCreate={() => router.push(ROUTES.OFFICE.CMS.JOBS.CREATE.path)}
  *   onRefresh={() => refetch()}
  *   isLoading={isLoading}
  * />

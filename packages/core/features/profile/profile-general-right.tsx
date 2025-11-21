@@ -1,3 +1,4 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
 import { DashboardWidget, spacing } from '@app/ui'
 import { useRouter } from 'expo-router'
@@ -15,7 +16,10 @@ export function ProfileGeneralRight() {
   const handleResumeUploadComplete = useCallback(
     (resumeId: string) => {
       setResumeModalOpen(false)
-      router.push(`/dashboard/profile/resume/review?resumeId=${resumeId}`)
+      router.push({
+        pathname: ROUTES.DASHBOARD.PROFILE.RESUME.REVIEW.path,
+        params: { resumeId },
+      })
     },
     [router]
   )

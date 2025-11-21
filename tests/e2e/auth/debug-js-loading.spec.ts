@@ -1,4 +1,17 @@
+import { ROUTES } from '@app/core/constants/routes'
 import { expect, test } from '@playwright/test'
+
+const EXPO_BASE_URL = 'http://localhost:8081'
+const OFFICE_PATH = ROUTES.OFFICE.path
+const OFFICE_ORGANIZATIONS_PATH = ROUTES.OFFICE.CMS.ORGANIZATIONS.path
+const OFFICE_JOBS_PATH = ROUTES.OFFICE.CMS.JOBS.path
+const OFFICE_WORKERS_PATH = ROUTES.OFFICE.CMS.WORKERS.path
+
+const OFFICE_URL = `${EXPO_BASE_URL}${OFFICE_PATH}`
+const OFFICE_ORGANIZATIONS_URL = `${EXPO_BASE_URL}${OFFICE_ORGANIZATIONS_PATH}`
+const OFFICE_JOBS_URL = `${EXPO_BASE_URL}${OFFICE_JOBS_PATH}`
+const OFFICE_WORKERS_URL = `${EXPO_BASE_URL}${OFFICE_WORKERS_PATH}`
+const ORGANIZATIONS_REGEX = new RegExp(escapeForRegex(OFFICE_ORGANIZATIONS_PATH))
 
 test.use({ storageState: 'tests/.auth/super-admin.json' })
 
@@ -14,8 +27,8 @@ test('debug JS loading with console output', async ({ page }) => {
     console.log('REQUEST FAILED:', request.url(), request.failure()?.errorText)
   )
 
-  console.log('=== Navigating to /office/organizations ===')
-  await page.goto('http://localhost:8081/office/organizations')
+  console.log(`=== Navigating to ${OFFICE_ORGANIZATIONS_PATH} ===`)
+  await page.goto(OFFICE_ORGANIZATIONS_URL)
 
   console.log('=== Waiting 10 seconds for JS to load ===')
   await page.waitForTimeout(10000)
@@ -36,6 +49,10 @@ test('debug JS loading with console output', async ({ page }) => {
   console.log('=== Test complete ===')
 })
 
+function escapeForRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 test('debug authentication state loading', async ({ page }) => {
   console.log('\n=== AUTH DEBUG TEST START ===\n')
 
@@ -45,8 +62,8 @@ test('debug authentication state loading', async ({ page }) => {
   // Capture page errors
   page.on('pageerror', (error) => console.log('PAGE ERROR:', error.message))
 
-  console.log('=== Navigating to /office/organizations ===')
-  await page.goto('http://localhost:8081/office/organizations')
+  console.log(`=== Navigating to ${OFFICE_ORGANIZATIONS_PATH} ===`)
+  await page.goto(OFFICE_ORGANIZATIONS_URL)
 
   // Wait for React to initialize
   await page.waitForTimeout(5000)
@@ -115,8 +132,8 @@ test('debug authentication state loading', async ({ page }) => {
 
   const currentUrl = page.url()
   console.log('  Current URL:', currentUrl)
-  console.log('  Expected URL:', 'http://localhost:8081/office/organizations')
-  console.log('  URL matches:', currentUrl === 'http://localhost:8081/office/organizations')
+  console.log('  Expected URL:', OFFICE_ORGANIZATIONS_URL)
+  console.log('  URL matches:', currentUrl === OFFICE_ORGANIZATIONS_URL)
 
   console.log('\n=== CHECKING PAGE CONTENT ===\n')
 
@@ -183,7 +200,7 @@ test('verify routing and route protection', async ({ page }) => {
 
   // Test 1: Direct navigation to /office/organizations
   console.log('\n=== TEST 1: Direct Navigation ===\n')
-  const targetUrl = 'http://localhost:8081/office/organizations'
+  const targetUrl = OFFICE_ORGANIZATIONS_URL
   console.log(`Navigating directly to: ${targetUrl}`)
 
   await page.goto(targetUrl, { waitUntil: 'domcontentloaded' })
@@ -203,11 +220,11 @@ test('verify routing and route protection', async ({ page }) => {
   }
 
   // Check if we're still on the expected route or were redirected
-  const isOnExpectedRoute = finalUrl1.includes('/office/organizations')
+  const isOnExpectedRoute = finalUrl1.includes(OFFICE_ORGANIZATIONS_PATH)
   console.log(`On expected route: ${isOnExpectedRoute}`)
 
   if (!isOnExpectedRoute) {
-    console.log(`WARNING: Redirected from /office/organizations to ${finalUrl1}`)
+    console.log(`WARNING: Redirected from ${OFFICE_ORGANIZATIONS_PATH} to ${finalUrl1}`)
   }
 
   // Check auth state persists
@@ -227,25 +244,25 @@ test('verify routing and route protection', async ({ page }) => {
   redirects.length = 0
 
   // Navigate to office dashboard first
-  console.log('Navigating to /office first...')
-  await page.goto('http://localhost:8081/office', { waitUntil: 'domcontentloaded' })
+  console.log(`Navigating to ${OFFICE_PATH} first...`)
+  await page.goto(OFFICE_URL, { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(2000)
 
   const initialUrl = page.url()
   console.log(`Initial URL: ${initialUrl}`)
 
   // Now navigate programmatically to organizations
-  console.log('Programmatically navigating to /office/organizations...')
+  console.log(`Programmatically navigating to ${OFFICE_ORGANIZATIONS_PATH}...`)
   urlHistory.length = 0
   redirects.length = 0
 
-  await page.evaluate(() => {
-    window.location.href = '/office/organizations'
-  })
+  await page.evaluate((path) => {
+    window.location.href = path
+  }, OFFICE_ORGANIZATIONS_PATH)
 
   // Wait for navigation
-  await page.waitForURL(/\/office\/organizations/, { timeout: 10000 }).catch(() => {
-    console.log('Timeout waiting for /office/organizations URL')
+  await page.waitForURL(ORGANIZATIONS_REGEX, { timeout: 10000 }).catch(() => {
+    console.log(`Timeout waiting for ${OFFICE_ORGANIZATIONS_PATH} URL`)
   })
 
   await page.waitForTimeout(2000)
@@ -260,7 +277,7 @@ test('verify routing and route protection', async ({ page }) => {
     })
   }
 
-  const isOnExpectedRoute2 = finalUrl2.includes('/office/organizations')
+  const isOnExpectedRoute2 = finalUrl2.includes(OFFICE_ORGANIZATIONS_PATH)
   console.log(`On expected route after programmatic nav: ${isOnExpectedRoute2}`)
 
   // Check auth state persists after programmatic navigation
@@ -277,7 +294,12 @@ test('verify routing and route protection', async ({ page }) => {
   // Test 3: Check route protection - verify we can access office routes
   console.log('\n=== TEST 3: Route Protection Check ===\n')
 
-  const officeRoutes = ['/office', '/office/organizations', '/office/jobs', '/office/users']
+  const officeRoutes = [
+    OFFICE_PATH,
+    OFFICE_ORGANIZATIONS_PATH,
+    OFFICE_JOBS_PATH,
+    OFFICE_WORKERS_PATH,
+  ]
 
   for (const route of officeRoutes) {
     console.log(`\nTesting route: ${route}`)
@@ -288,7 +310,7 @@ test('verify routing and route protection', async ({ page }) => {
     await page.waitForTimeout(2000)
 
     const routeUrl = page.url()
-    const isAccessible = routeUrl.includes(route) || routeUrl.includes('/office')
+    const isAccessible = routeUrl.includes(route) || routeUrl.includes(OFFICE_PATH)
     const wasRedirected = !routeUrl.includes(route) && routeUrl !== `http://localhost:8081${route}`
 
     console.log(`  Final URL: ${routeUrl}`)
@@ -312,7 +334,7 @@ test('verify routing and route protection', async ({ page }) => {
   // Test 4: Verify root content is rendered
   console.log('\n=== TEST 4: Root Content Check ===\n')
 
-  await page.goto('http://localhost:8081/office/organizations', { waitUntil: 'domcontentloaded' })
+  await page.goto(OFFICE_ORGANIZATIONS_URL, { waitUntil: 'domcontentloaded' })
   await page.waitForTimeout(3000)
 
   const rootContent = await page.locator('#root').innerHTML()

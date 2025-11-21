@@ -118,7 +118,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
       // If user is authenticated but in auth group, redirect to dashboard
       const performRedirect = () => {
         try {
-          router.replace('/dashboard')
+          router.replace(ROUTES.DASHBOARD.path)
           setHasChecked(true)
         } catch (error) {
           console.error('Auth redirect error:', error)

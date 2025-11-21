@@ -36,7 +36,7 @@ export interface RowActionOverlayProps<TData> {
  * <RowActionOverlay
  *   row={selectedRow}
  *   position={{ x: 100, y: 200 }}
- *   onEdit={(row) => router.push(`/edit/${row.id}`)}
+ *   onEdit={(row) => router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: row.id }))}
  *   onDelete={async (row) => await deleteMutation.mutateAsync({ id: row.id })}
  *   onClose={() => setSelectedRow(null)}
  *   itemName={selectedRow.name}
