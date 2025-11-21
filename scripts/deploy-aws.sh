@@ -19,13 +19,13 @@ if [ -z "$ENV" ]; then
     if git rev-parse --git-dir > /dev/null 2>&1; then
         BRANCH=$(git branch --show-current 2>/dev/null || echo "")
         case "$BRANCH" in
-            dev|development)
+            main|master)
                 ENV="dev"
                 ;;
             preview|staging)
                 ENV="preview"
                 ;;
-            main|master|production)
+            production)
                 ENV="production"
                 ;;
             *)
