@@ -5,6 +5,7 @@ import { applicationsRouter } from './applications.router.ts'
 import { authRouter } from './auth.router.ts'
 import { backgroundChecksRouter } from './background-checks.router.ts'
 import { cmsRouter } from './cms.router.ts'
+import { connectionsRouter } from './connections.router.ts'
 import { employersRouter } from './employers.router.ts'
 import { feedbackRouter } from './feedback.router.ts'
 import { idVerificationRouter } from './id-verification.router.ts'
@@ -73,6 +74,7 @@ export const appRouter = t.router({
   payments: paymentsRouter,
   legalAgreements: legalAgreementsRouter,
   accountDeletion: accountDeletionRouter,
+  connections: connectionsRouter,
 })
 
 // Export the router type for client-side usage

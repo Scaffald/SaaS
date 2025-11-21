@@ -71,6 +71,8 @@ export const NOTIFICATION_TYPES = [
   'feature.announcement',
   'platform.update',
   'message.received',
+  'connection.request',
+  'connection.accepted',
 ] as const
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number]
 
