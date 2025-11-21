@@ -44,8 +44,16 @@ const CATEGORY_LABELS: Record<SoftSkillCategory, string> = {
  * />
  * ```
  */
-export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({ activeCategory, onCategoryChange }) => {
-  const categories: SoftSkillCategory[] = ['reliability', 'collaboration', 'professionalism', 'technical']
+export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({
+  activeCategory,
+  onCategoryChange,
+}) => {
+  const categories: SoftSkillCategory[] = [
+    'reliability',
+    'collaboration',
+    'professionalism',
+    'technical',
+  ]
 
   return (
     <TabGroup
@@ -56,6 +64,7 @@ export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({ active
       ariaLabel="Soft skills categories"
       scrollable
       bordered={false}
+      variant="underlined"
     >
       {categories.map((category) => (
         <Tab key={category} value={category} label={CATEGORY_LABELS[category]} />
@@ -63,4 +72,3 @@ export const SoftSkillsCategoryTabs: FC<SoftSkillsCategoryTabsProps> = ({ active
     </TabGroup>
   )
 }
-

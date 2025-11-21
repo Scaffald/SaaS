@@ -23,11 +23,13 @@ interface UserProfileReviewsProps {
 
 export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviewsProps) {
   // Fetch real reviews from database
-  const { data: reviews, isLoading } = api.reviews.getBySubject.useQuery({
+  const { data: reviewsData, isLoading } = api.reviews.getBySubject.useQuery({
     subjectId: userId,
     subjectType: 'user',
     status: 'released',
   })
+
+  const reviews = (Array.isArray(reviewsData) ? reviewsData : []) as Review[]
 
   if (isLoading) {
     return (
@@ -40,7 +42,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
     )
   }
 
-  if (!reviews || reviews.length === 0) {
+  if (!reviewsData || reviews.length === 0) {
     return (
       <Card elevate bordered>
         <YStack gap="$4" p="$5">
@@ -93,7 +95,8 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
   const overallRating =
     categoryRatings.length > 0
-      ? categoryRatings.reduce((sum: number, r: CategoryRating) => sum + r.rating, 0) / categoryRatings.length
+      ? categoryRatings.reduce((sum: number, r: CategoryRating) => sum + r.rating, 0) /
+        categoryRatings.length
       : 0
 
   return (

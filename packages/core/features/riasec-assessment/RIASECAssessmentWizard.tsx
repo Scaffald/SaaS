@@ -57,6 +57,8 @@ export function RIASECAssessmentWizard() {
     (score) => typeof score === 'number' && score >= 1 && score <= 5
   )
 
+  const queryError = error ? new Error(error.message ?? 'Failed to load assessment status.') : null
+
   return (
     <AssessmentWizard
       title="Career Interests"
@@ -65,7 +67,7 @@ export function RIASECAssessmentWizard() {
       currentStep="interests"
       completionScore={status?.isCompleted ? 100 : 0}
       isLoading={isLoading}
-      error={error}
+      error={queryError}
       showNext={false}
     >
       <YStack gap="$4" width="100%" maxW={800} mx="auto">

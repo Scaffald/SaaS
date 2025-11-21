@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@app/ui'
-import { Filter, Search, SortAsc, X } from '@tamagui/lucide-icons'
+import { ChevronsUpDown, Filter, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
 
@@ -273,7 +273,7 @@ export function DiscoverJobsRight({
           <DashboardWidget>
             <YStack gap="$3">
               <XStack items="center" gap="$2">
-                <SortAsc size={18} color="$color10" />
+                <ChevronsUpDown size={18} color="$color10" />
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   Sort By
                 </Text>

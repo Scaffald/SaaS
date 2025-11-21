@@ -15,7 +15,11 @@ import {
 } from 'tamagui'
 import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
 import { PhotoUpload } from './PhotoUpload'
-import { ProjectSelector } from './ProjectSelector'
+import {
+  ProjectSelector,
+  type ProjectSelectorOrganization,
+  type ProjectSelectorProject,
+} from './ProjectSelector'
 import { TimeEntryInput } from './TimeEntryInput'
 
 const getDateInputProps = () => {
@@ -50,6 +54,124 @@ const deriveSkillName = (skill: Record<string, unknown>): string => {
   }
 
   return 'Unnamed Skill'
+}
+
+type ProjectOptionsData = {
+  organizations: ProjectSelectorOrganization[]
+  projects: ProjectSelectorProject[]
+}
+
+const normalizeProjectOptions = (input: unknown): ProjectOptionsData => {
+  if (!input || typeof input !== 'object' || input === null) {
+    return { organizations: [], projects: [] }
+  }
+
+  const organizationsValue = (input as { organizations?: unknown }).organizations
+  const projectsValue = (input as { projects?: unknown }).projects
+
+  const organizations = Array.isArray(organizationsValue)
+    ? organizationsValue
+        .map((organization) => {
+          if (!organization || typeof organization !== 'object') {
+            return null
+          }
+          const id =
+            typeof (organization as { id?: unknown }).id === 'string'
+              ? (organization as { id: string }).id
+              : null
+          if (!id) {
+            return null
+          }
+          const name =
+            typeof (organization as { name?: unknown }).name === 'string'
+              ? (organization as { name: string }).name || 'Unknown Organization'
+              : 'Unknown Organization'
+          return {
+            id,
+            name,
+            isAdmin: Boolean(
+              (organization as { isAdmin?: unknown }).isAdmin ??
+                (organization as { is_admin?: unknown }).is_admin
+            ),
+            isOwner: Boolean(
+              (organization as { isOwner?: unknown }).isOwner ??
+                (organization as { is_owner?: unknown }).is_owner
+            ),
+          } satisfies ProjectSelectorOrganization
+        })
+        .filter((organization): organization is ProjectSelectorOrganization =>
+          Boolean(organization)
+        )
+    : []
+
+  const projects = Array.isArray(projectsValue)
+    ? projectsValue
+        .map((project) => {
+          if (!project || typeof project !== 'object') {
+            return null
+          }
+          const id =
+            typeof (project as { id?: unknown }).id === 'string'
+              ? (project as { id: string }).id
+              : null
+          const name =
+            typeof (project as { name?: unknown }).name === 'string'
+              ? (project as { name: string }).name || 'Untitled Project'
+              : 'Untitled Project'
+          const organizationIdSource =
+            typeof (project as { organizationId?: unknown }).organizationId === 'string'
+              ? (project as { organizationId: string }).organizationId
+              : typeof (project as { organization_id?: unknown }).organization_id === 'string'
+                ? (project as { organization_id: string }).organization_id
+                : null
+          if (!id || !organizationIdSource) {
+            return null
+          }
+          return {
+            id,
+            name,
+            organizationId: organizationIdSource,
+            status:
+              typeof (project as { status?: unknown }).status === 'string'
+                ? (project as { status: string }).status
+                : null,
+            isArchived: Boolean(
+              (project as { isArchived?: unknown }).isArchived ??
+                (project as { is_archived?: unknown }).is_archived
+            ),
+            startsAt:
+              typeof (project as { startsAt?: unknown }).startsAt === 'string'
+                ? (project as { startsAt: string }).startsAt
+                : typeof (project as { starts_at?: unknown }).starts_at === 'string'
+                  ? (project as { starts_at: string }).starts_at
+                  : null,
+            endsAt:
+              typeof (project as { endsAt?: unknown }).endsAt === 'string'
+                ? (project as { endsAt: string }).endsAt
+                : typeof (project as { ends_at?: unknown }).ends_at === 'string'
+                  ? (project as { ends_at: string }).ends_at
+                  : null,
+          } satisfies ProjectSelectorProject
+        })
+        .filter((project): project is ProjectSelectorProject => Boolean(project))
+    : []
+
+  return { organizations, projects }
+}
+
+const extractExplicitSkills = (input: unknown): Array<Record<string, unknown>> => {
+  if (!input || typeof input !== 'object') {
+    return []
+  }
+
+  const explicitSkills = (input as { explicitSkills?: unknown }).explicitSkills
+  if (!Array.isArray(explicitSkills)) {
+    return []
+  }
+
+  return explicitSkills.filter(
+    (skill): skill is Record<string, unknown> => Boolean(skill) && typeof skill === 'object'
+  )
 }
 
 export interface WorkLogFormProps extends UseWorkLogFormOptions {
@@ -92,13 +214,11 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
   const [taskDraft, setTaskDraft] = useState('')
 
-  const projectData = projectOptionsQuery.data ?? {
-    organizations: [],
-    projects: [],
-  }
+  const projectData = normalizeProjectOptions(projectOptionsQuery.data)
 
-  const projectError =
-    projectOptionsQuery.error instanceof Error ? projectOptionsQuery.error.message : null
+  const projectError = projectOptionsQuery.error
+    ? (projectOptionsQuery.error.message ?? 'Unable to load project options.')
+    : null
 
   const tasksWithKeys = useMemo(() => {
     const counts = new Map<string, number>()
@@ -114,7 +234,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
   }, [tasksCompleted])
 
   const skillOptions = useMemo(() => {
-    const explicit = (skillsQuery.data?.explicitSkills ?? []) as Array<Record<string, unknown>>
+    const explicit = extractExplicitSkills(skillsQuery.data)
     return explicit
       .map((skill) => ({
         id: deriveSkillId(skill),
@@ -124,7 +244,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
         (skill): skill is { id: string; name: string } =>
           typeof skill.id === 'string' && skill.id.length > 0
       )
-  }, [skillsQuery.data?.explicitSkills])
+  }, [skillsQuery.data])
 
   const addTask = () => {
     const trimmed = taskDraft.trim()

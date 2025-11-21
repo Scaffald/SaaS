@@ -1,4 +1,4 @@
-import { Edit3, Eye, EyeOff, Tag, Trash2, X } from '@tamagui/lucide-icons'
+import { Check, Edit3, Eye, EyeOff, Tag, Trash2, X } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
 import { ResponsiveSelect } from '@app/ui'

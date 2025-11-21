@@ -95,7 +95,7 @@ export function WorkLogVisibilitySettingsCard() {
                     </YStack>
                     <ToggleSwitch
                       checked={item.showOnProfile}
-                      disabled={!isVerified || updateProfileVisibilityMutation.isLoading}
+                      disabled={!isVerified || updateProfileVisibilityMutation.isPending}
                       onCheckedChange={(checked) => {
                         if (!isVerified && checked) {
                           toast.show('Pending verification', {
@@ -123,7 +123,7 @@ export function WorkLogVisibilitySettingsCard() {
                     </YStack>
                     <ToggleSwitch
                       checked={item.showDateRangeOnProfile}
-                      disabled={!item.showOnProfile || updateProfileVisibilityMutation.isLoading}
+                      disabled={!item.showOnProfile || updateProfileVisibilityMutation.isPending}
                       onCheckedChange={(checked) => {
                         updateProfileVisibilityMutation.mutate({
                           workLogId: item.id,
@@ -138,7 +138,11 @@ export function WorkLogVisibilitySettingsCard() {
                     <Button
                       size="$3"
                       variant="outlined"
-                      onPress={() => router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))}
+                      onPress={() =>
+                        router.push(
+                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id })
+                        )
+                      }
                     >
                       View details
                     </Button>
