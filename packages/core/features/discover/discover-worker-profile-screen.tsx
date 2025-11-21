@@ -1,4 +1,5 @@
 import { ROUTES } from '@app/core/constants/routes'
+import { ConnectionFollowButtons } from '@app/core/features/connections/components/ConnectionFollowButtons'
 import {
   CertificationsWidget,
   EducationWidget,
@@ -279,6 +280,10 @@ export function DiscoverWorkerProfileScreen({
 
   const leftColumn = (
     <YStack gap="$4">
+      {/* Connection and Follow Buttons */}
+      {!isOwnProfile && (
+        <ConnectionFollowButtons targetUserId={safeUserId} isOwnProfile={isOwnProfile} />
+      )}
       <GeneralInfoWidget userId={safeUserId} showEdit={false} />
       <ExperienceWidget userId={safeUserId} showEdit={false} />
       <EducationWidget userId={safeUserId} showEdit={false} />
