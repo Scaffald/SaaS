@@ -344,7 +344,7 @@ export const SoftSkillsRatingForm: FC = () => {
                                 <Text fontSize="$2" fontWeight="700" color="$color12">
                                   {level.value}
                                 </Text>
-                                <Text fontSize="$2" textAlign="center" color="$color11">
+                                <Text fontSize="$2" ta="center" color="$color11">
                                   {level.label}
                                 </Text>
                               </YStack>

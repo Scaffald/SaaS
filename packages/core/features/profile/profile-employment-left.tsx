@@ -1,4 +1,5 @@
 import {
+  OpenToTravelToggle,
   USPassportToggle,
   USResidentToggle,
 } from '@app/core/features/profile/components/employment-fields'
@@ -293,8 +294,8 @@ export function ProfileEmploymentLeft() {
       return
     }
 
-    // Ensure open_to_travel is always true (all users are willing to travel)
-    if (data.travel_distance_miles === undefined || data.travel_distance_miles === null) {
+    // Ensure travel distance is set if user is open to travel
+    if (data.open_to_travel && (data.travel_distance_miles === undefined || data.travel_distance_miles === null)) {
       setError('travel_distance_miles', {
         type: 'manual',
         message: 'Please select a travel distance',
@@ -305,8 +306,8 @@ export function ProfileEmploymentLeft() {
       return
     }
 
-    // Always set open_to_travel to true
-    data.open_to_travel = true
+    // Use the user's selection for open_to_travel (defaults to true if not set)
+    data.open_to_travel = data.open_to_travel ?? true
 
     setIsLoading(true)
     try {
@@ -411,6 +412,16 @@ export function ProfileEmploymentLeft() {
             {/* Travel Preferences */}
             <YStack gap="$3">
               <Text fontWeight="600">Travel Preferences</Text>
+              <Controller
+                name="open_to_travel"
+                control={control}
+                render={({ field }) => (
+                  <OpenToTravelToggle
+                    checked={field.value ?? true}
+                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                  />
+                )}
+              />
               <Controller
                 name="travel_distance_miles"
                 control={control}

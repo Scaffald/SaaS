@@ -150,7 +150,7 @@ export function FollowingList() {
           minHeight="$15"
         >
           <Text fontWeight="600">Not following anyone yet</Text>
-          <Text color="$color11" textAlign="center">
+          <Text color="$color11" ta="center">
             {searchTerm
               ? 'No users match your search.'
               : 'You\'re not following anyone yet. Discover workers and start following them.'}

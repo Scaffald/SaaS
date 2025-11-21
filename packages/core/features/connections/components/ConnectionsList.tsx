@@ -202,7 +202,7 @@ export function ConnectionsList() {
           minHeight="$15"
         >
           <Text fontWeight="600">No connections yet</Text>
-          <Text color="$color11" textAlign="center">
+          <Text color="$color11" ta="center">
             {searchTerm
               ? 'No connections match your search.'
               : 'You haven\'t connected with anyone yet. Send connection requests to build your network.'}

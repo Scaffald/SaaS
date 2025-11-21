@@ -243,7 +243,7 @@ export function PendingRequestsList() {
         minHeight="$15"
       >
         <Text fontWeight="600">No pending requests</Text>
-        <Text color="$color11" textAlign="center">
+        <Text color="$color11" ta="center">
           You don't have any pending connection requests. Send connection requests to build your network.
         </Text>
       </YStack>

@@ -1,4 +1,5 @@
 import {
+  OpenToTravelToggle,
   USPassportToggle,
   USResidentToggle,
 } from '@app/core/features/profile/components/employment-fields'
@@ -122,10 +123,10 @@ export function EmploymentSection({
   const onSubmit = async (data: EmploymentProfileFormData) => {
     if (readOnly) return
 
-    // Always set open_to_travel to true (all users are willing to travel)
+    // Use the user's selection for open_to_travel (defaults to true if not set)
     const updatedData = {
       ...data,
-      open_to_travel: true,
+      open_to_travel: data.open_to_travel ?? true,
     }
 
     setIsLoading(true)
@@ -206,6 +207,17 @@ export function EmploymentSection({
         {/* Travel Preferences */}
         <YStack gap="$3">
           <Text fontWeight="600">Travel Preferences</Text>
+          <Controller
+            name="open_to_travel"
+            control={control}
+            render={({ field }) => (
+              <OpenToTravelToggle
+                checked={field.value ?? true}
+                onCheckedChange={field.onChange}
+                disabled={readOnly}
+              />
+            )}
+          />
           <Controller
             name="travel_distance_miles"
             control={control}
