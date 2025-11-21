@@ -85,6 +85,8 @@ export {
   type ProfileTabsItem,
   type ProfileTabsProps,
 } from './components/navigation/ProfileTabs'
+export { Tab } from './components/navigation/Tab'
+export { TabGroup, type TabGroupProps } from './components/navigation/TabGroup'
 export * from './components/notifications'
 export * from './components/Onboarding'
 export { OnboardingControls } from './components/OnboardingControls'
