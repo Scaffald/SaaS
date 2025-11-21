@@ -1,5 +1,8 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { formatDateRange } from '@app/core/features/profile/utils/date-formatting'
+import { useConnectionStatus } from '@app/core/features/user-profile/hooks/useConnectionStatus'
+import { useFollowStatus } from '@app/core/features/user-profile/hooks/useFollowStatus'
+import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
 import { useAdaptiveLoading } from '@app/core/utils/useAdaptiveLoading'
 import { ResponsiveModal } from '@app/ui'
@@ -7,15 +10,22 @@ import {
   Award,
   BadgeCheck,
   Briefcase,
+  CheckCircle2,
   DollarSign,
   ExternalLink,
   GraduationCap,
+  Loader2,
   MapPin,
   Star,
   User,
+  UserCheck,
+  UserMinus,
+  UserPlus,
+  X,
 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
 import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface WorkerPreviewModalProps {
@@ -79,6 +89,165 @@ type EducationEntry = {
 export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreviewModalProps) {
   const router = useRouter()
   const toast = useToastController()
+  const { session } = useAuth()
+  const currentUserId = session?.user?.id
+  const utils = api.useUtils()
+
+  // Check if viewing own profile
+  const isOwnProfile = currentUserId === userId
+
+  // Connection and follow status hooks (only for other users' profiles)
+  const connectionStatus = useConnectionStatus(isOwnProfile || !open ? null : userId)
+  const followStatus = useFollowStatus(isOwnProfile || !open ? null : userId)
+
+  // Connection mutations
+  const sendRequestMutation = api.connections.sendRequest.useMutation({
+    onMutate: async () => {
+      await utils.connections.getConnections.cancel()
+      await utils.connections.getPendingRequests.cancel()
+    },
+    onSuccess: () => {
+      utils.connections.getConnections.invalidate()
+      utils.connections.getPendingRequests.invalidate()
+      toast.show('Connection request sent', {
+        message: 'Your connection request has been sent.',
+      })
+    },
+    onError: (error: { message?: string }) => {
+      toast.show('Unable to send request', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+  })
+
+  const acceptRequestMutation = api.connections.acceptRequest.useMutation({
+    onMutate: async () => {
+      await utils.connections.getConnections.cancel()
+      await utils.connections.getPendingRequests.cancel()
+    },
+    onSuccess: () => {
+      utils.connections.getConnections.invalidate()
+      utils.connections.getPendingRequests.invalidate()
+      toast.show('Connection accepted', {
+        message: 'You are now connected.',
+      })
+    },
+    onError: (error: { message?: string }) => {
+      toast.show('Unable to accept request', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+  })
+
+  const declineRequestMutation = api.connections.declineRequest.useMutation({
+    onMutate: async () => {
+      await utils.connections.getPendingRequests.cancel()
+    },
+    onSuccess: () => {
+      utils.connections.getPendingRequests.invalidate()
+    },
+    onError: (error: { message?: string }) => {
+      toast.show('Unable to decline request', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+  })
+
+  // Follow mutations
+  const followMutation = api.follows.followUser.useMutation({
+    onMutate: async () => {
+      await utils.follows.getFollowing.cancel()
+    },
+    onSuccess: () => {
+      utils.follows.getFollowing.invalidate()
+      toast.show('Following', {
+        message: 'You are now following this user.',
+      })
+    },
+    onError: (error: { message?: string }) => {
+      toast.show('Unable to follow', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+  })
+
+  const unfollowMutation = api.follows.unfollowUser.useMutation({
+    onMutate: async () => {
+      await utils.follows.getFollowing.cancel()
+    },
+    onSuccess: () => {
+      utils.follows.getFollowing.invalidate()
+      toast.show('Unfollowed', {
+        message: 'You are no longer following this user.',
+      })
+    },
+    onError: (error: { message?: string }) => {
+      toast.show('Unable to unfollow', {
+        message: error.message ?? 'Please try again in a moment.',
+      })
+    },
+  })
+
+  // Connection button handlers
+  const handleConnect = () => {
+    if (userId) {
+      sendRequestMutation.mutate({ targetUserId: userId })
+    }
+  }
+
+  const handleAccept = () => {
+    if (connectionStatus.connectionId) {
+      acceptRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+    }
+  }
+
+  const handleDecline = () => {
+    if (connectionStatus.connectionId) {
+      declineRequestMutation.mutate({ connectionId: connectionStatus.connectionId })
+    }
+  }
+
+  // Follow button handlers
+  const handleFollow = () => {
+    if (userId) {
+      followMutation.mutate({ targetUserId: userId })
+    }
+  }
+
+  const handleUnfollow = () => {
+    if (userId) {
+      unfollowMutation.mutate({ targetUserId: userId })
+    }
+  }
+
+  // Determine connection button state
+  const connectionButtonState = useMemo(() => {
+    if (isOwnProfile || !open || connectionStatus.isLoading) {
+      return null
+    }
+
+    if (connectionStatus.isConnected) {
+      return { type: 'connected' as const, connectionId: connectionStatus.connectionId }
+    }
+
+    if (connectionStatus.isPending) {
+      if (connectionStatus.isSent) {
+        return { type: 'pending_sent' as const, connectionId: connectionStatus.connectionId }
+      }
+      if (connectionStatus.isReceived) {
+        return { type: 'pending_received' as const, connectionId: connectionStatus.connectionId }
+      }
+    }
+
+    return { type: 'none' as const }
+  }, [isOwnProfile, open, connectionStatus])
+
+  const isConnectionMutating =
+    sendRequestMutation.isLoading ||
+    acceptRequestMutation.isLoading ||
+    declineRequestMutation.isLoading
+
+  const isFollowMutating = followMutation.isLoading || unfollowMutation.isLoading
 
   // Fetch worker profile data
   const { data: profile, isLoading: profileLoading } = api.userProfile.getUserProfile.useQuery(
@@ -453,6 +622,93 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           )}
 
           <Separator />
+
+          {/* Connect and Follow Buttons (only for other users' profiles) */}
+          {!isOwnProfile && userId && (
+            <>
+              <XStack gap="$2" flexWrap="wrap" justify="center">
+                {/* Connect Button */}
+                {connectionButtonState && (
+                  <>
+                    {connectionButtonState.type === 'none' && (
+                      <Button
+                        size="$4"
+                        theme="info"
+                        icon={isConnectionMutating ? Loader2 : UserPlus}
+                        onPress={handleConnect}
+                        disabled={isConnectionMutating}
+                      >
+                        {isConnectionMutating ? 'Sending...' : 'Connect'}
+                      </Button>
+                    )}
+
+                    {connectionButtonState.type === 'pending_sent' && (
+                      <Button size="$4" variant="outlined" icon={Loader2} disabled>
+                        Pending
+                      </Button>
+                    )}
+
+                    {connectionButtonState.type === 'pending_received' && (
+                      <>
+                        <Button
+                          size="$4"
+                          theme="info"
+                          icon={CheckCircle2}
+                          onPress={handleAccept}
+                          disabled={isConnectionMutating}
+                        >
+                          {isConnectionMutating ? 'Accepting...' : 'Accept'}
+                        </Button>
+                        <Button
+                          size="$4"
+                          variant="outlined"
+                          icon={X}
+                          onPress={handleDecline}
+                          disabled={isConnectionMutating}
+                        >
+                          Decline
+                        </Button>
+                      </>
+                    )}
+
+                    {connectionButtonState.type === 'connected' && (
+                      <Button size="$4" variant="outlined" icon={UserCheck} disabled>
+                        Connected
+                      </Button>
+                    )}
+                  </>
+                )}
+
+                {/* Follow Button */}
+                {!followStatus.isLoading && (
+                  <>
+                    {!followStatus.isFollowing ? (
+                      <Button
+                        size="$4"
+                        variant="outlined"
+                        icon={isFollowMutating ? Loader2 : UserPlus}
+                        onPress={handleFollow}
+                        disabled={isFollowMutating}
+                      >
+                        {isFollowMutating ? 'Following...' : 'Follow'}
+                      </Button>
+                    ) : (
+                      <Button
+                        size="$4"
+                        variant="outlined"
+                        icon={isFollowMutating ? Loader2 : UserMinus}
+                        onPress={handleUnfollow}
+                        disabled={isFollowMutating}
+                      >
+                        {isFollowMutating ? 'Unfollowing...' : 'Following'}
+                      </Button>
+                    )}
+                  </>
+                )}
+              </XStack>
+              <Separator />
+            </>
+          )}
 
           {/* CTA Buttons */}
           <YStack gap="$3">
