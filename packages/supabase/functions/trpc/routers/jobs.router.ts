@@ -246,7 +246,7 @@ export const jobsRouter = t.router({
     }
 
     // Transform data to match UI expectations
-    const jobs = (data || []).map((job) => ({
+    const jobs = (data || []).map((job: { id: string; title?: string | null; company_name?: string | null; company_logo?: string | null; job_location?: string | null; job_type?: string | null; job_category?: string | null; description?: string | null; compensation_min?: number | null; compensation_max?: number | null; [key: string]: unknown }) => ({
       id: job.id,
       title: job.title,
       company_name: job.company_name,
@@ -427,7 +427,7 @@ export const jobsRouter = t.router({
       }
 
       // Transform data
-      const jobs = (data || []).map((job) => ({
+      const jobs = (data || []).map((job: { id: string; title?: string | null; description?: string | null; employment_type?: string | null; remote_option?: string | null; location?: string | null; pay_range_min_cents?: number | null; pay_range_max_cents?: number | null; pay_range_type?: string | null; posted_at?: string | null; created_at: string; organization?: unknown; job_certifications?: unknown; [key: string]: unknown }) => ({
         id: job.id,
         title: job.title,
         description: job.description,
@@ -572,7 +572,7 @@ export const jobsRouter = t.router({
         })
       }
 
-      const jobsWithRequirements = (data || []).map((job) => {
+      const jobsWithRequirements = (data || []).map((job: { id: string; title?: string | null; slug?: string | null; organization?: unknown; required_soft_skills?: unknown; [key: string]: unknown }) => {
         const requirements = parseRequiredSoftSkills(job.required_soft_skills)
         return { job, requirements }
       })
@@ -587,8 +587,8 @@ export const jobsRouter = t.router({
       const metadata = await fetchSoftSkillMetadata(supabase, skillIds)
 
       const enriched = jobsWithRequirements
-        .filter((entry) => entry.requirements.length > 0)
-        .map((entry) => {
+        .filter((entry: { job: { id: string; title?: string | null; slug?: string | null; organization?: unknown; [key: string]: unknown }; requirements: SoftSkillRequirement[] }) => entry.requirements.length > 0)
+        .map((entry: { job: { id: string; title?: string | null; slug?: string | null; organization?: unknown; [key: string]: unknown }; requirements: SoftSkillRequirement[] }) => {
           const match = computeSoftSkillMatch(entry.requirements, ratings, metadata)
           return {
             jobId: entry.job.id,
@@ -600,13 +600,13 @@ export const jobsRouter = t.router({
             details: match.details,
           }
         })
-        .filter((entry) => entry.matchScore !== null)
+        .filter((entry: { matchScore: number | null; [key: string]: unknown }) => entry.matchScore !== null)
 
       const minScore = typeof input.minMatchScore === 'number' ? input.minMatchScore : null
-      const filtered = minScore !== null ? enriched.filter((entry) => (entry.matchScore ?? 0) >= minScore) : enriched
+      const filtered = minScore !== null ? enriched.filter((entry: { matchScore: number | null; [key: string]: unknown }) => (entry.matchScore ?? 0) >= minScore) : enriched
 
       if (input.sortBy === 'match_score') {
-        filtered.sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
+        filtered.sort((a: { matchScore: number | null; [key: string]: unknown }, b: { matchScore: number | null; [key: string]: unknown }) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
       }
 
       const total = filtered.length

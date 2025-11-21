@@ -8,7 +8,7 @@ export function useFollowStatus(targetUserId: string | null) {
     }
   )
 
-  const isFollowing = following?.some((follow) => follow.user?.id === targetUserId) ?? false
+  const isFollowing = following?.some((follow: { user?: { id: string } | null }) => follow.user?.id === targetUserId) ?? false
 
   return {
     isFollowing,

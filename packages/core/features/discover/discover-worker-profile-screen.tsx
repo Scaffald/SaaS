@@ -6,7 +6,8 @@ import {
   ExperienceWidget,
   GeneralInfoWidget,
   ReviewsWidget,
-  SkillsWidget,
+  SoftSkillsRadarWidget,
+  TechnicalSkillsWidget,
 } from '@app/core/features/profile/widgets'
 import { useSessionContext } from '@app/core/utils/supabase/useSessionContext'
 import { api } from '@app/core/utils/api'
@@ -292,7 +293,8 @@ export function DiscoverWorkerProfileScreen({
 
   const rightColumn = (
     <YStack gap="$4">
-      <SkillsWidget userId={safeUserId} showEdit={false} />
+      <SoftSkillsRadarWidget userId={safeUserId} showEdit={false} />
+      <TechnicalSkillsWidget userId={safeUserId} showEdit={false} />
       <CertificationsWidget userId={safeUserId} showEdit={false} />
       <ReviewsWidget userId={safeUserId} showEdit />
     </YStack>

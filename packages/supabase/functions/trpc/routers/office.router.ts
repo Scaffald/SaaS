@@ -108,7 +108,7 @@ export const officeRouter = t.router({
 
         const suggestions = getOrganizationSlugSuggestions(
           normalizedSlug,
-          (similar || []).map((org) => org.slug || '').filter((slug): slug is string => Boolean(slug))
+          (similar || []).map((org: { slug?: string | null }) => org.slug || '').filter((slug: string): slug is string => Boolean(slug))
         )
 
         return {
@@ -152,7 +152,7 @@ export const officeRouter = t.router({
     }
 
     // Get private profile data for all users
-    const userIds = usersData?.map((u) => u.id) || []
+    const userIds = usersData?.map((u: { id: string }) => u.id) || []
     const { data: profilesData } = await ctx.supabaseAdmin
       .schema('core')
       .from('profile')
@@ -160,10 +160,10 @@ export const officeRouter = t.router({
       .in('user_id', userIds)
 
     // Create a map for quick lookup
-    const profilesMap = new Map(profilesData?.map((p) => [p.user_id, p]) || [])
+    const profilesMap = new Map(profilesData?.map((p: { user_id: string; first_name?: string | null; last_name?: string | null }) => [p.user_id, p]) || [])
 
     // Combine the data
-    const users = (usersData ?? []).map((user) => {
+    const users = (usersData ?? []).map((user: { id: string; username?: string | null; display_name?: string | null; avatar_path?: string | null }) => {
       const profile = profilesMap.get(user.id)
       return {
         id: user.id,
@@ -461,8 +461,8 @@ export const officeRouter = t.router({
         }
 
         const teamIds = (memberships ?? [])
-          .map((membership) => membership.team_id as string | null)
-          .filter((teamId): teamId is string => Boolean(teamId))
+          .map((membership: { team_id?: string | null }) => membership.team_id as string | null)
+          .filter((teamId: string | null): teamId is string => Boolean(teamId))
 
         if (teamIds.length === 0) {
           return {
@@ -483,10 +483,10 @@ export const officeRouter = t.router({
         })
       }
 
-      const jobs = (data ?? []).map((job) => {
+      const jobs = (data ?? []).map((job: Record<string, unknown>) => {
         const { team_assignments: jobTeamsRaw, ...rest } = job as Record<string, unknown>
         const teamAssignments =
-          (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map((assignment) => ({
+          (jobTeamsRaw as Array<Record<string, unknown>> | null)?.map((assignment: Record<string, unknown>) => ({
             teamId: assignment.team_id as string,
             isPrimary: Boolean(assignment.is_primary),
             roleKey: assignment.role_key as string,
@@ -755,7 +755,7 @@ export const officeRouter = t.router({
       }
 
       const missingTeams = requestedTeamIds.filter(
-        (teamId) => !(teamRecords ?? []).some((team) => team.id === teamId)
+        (teamId: string) => !(teamRecords ?? []).some((team: { id: string }) => team.id === teamId)
       )
 
       if (missingTeams.length > 0) {
@@ -766,7 +766,7 @@ export const officeRouter = t.router({
       }
 
       const invalidTeams = (teamRecords ?? []).filter(
-        (team) => team.organization_id !== jobData.organization_id
+        (team: { organization_id: string }) => team.organization_id !== jobData.organization_id
       )
 
       if (invalidTeams.length > 0) {
@@ -998,7 +998,7 @@ export const officeRouter = t.router({
         }
 
         const missingTeams = requestedTeamIds.filter(
-          (teamId) => !(teamRecords ?? []).some((team) => team.id === teamId)
+          (teamId: string) => !(teamRecords ?? []).some((team: { id: string }) => team.id === teamId)
         )
 
         if (missingTeams.length > 0) {
@@ -1009,7 +1009,7 @@ export const officeRouter = t.router({
         }
 
         const invalidTeams = (teamRecords ?? []).filter(
-          (team) => team.organization_id !== nextOrganizationId
+          (team: { organization_id: string }) => team.organization_id !== nextOrganizationId
         )
 
         if (invalidTeams.length > 0) {
@@ -1120,11 +1120,11 @@ export const officeRouter = t.router({
       }
 
       const existingTeamIds = (existingAssignments ?? []).map(
-        (assignment) => assignment.team_id as string
+        (assignment: { team_id: string }) => assignment.team_id as string
       )
 
-      const teamIdsToInsert = requestedTeamIds.filter((teamId) => !existingTeamIds.includes(teamId))
-      const teamIdsToRemove = existingTeamIds.filter((teamId) => !requestedTeamIds.includes(teamId))
+      const teamIdsToInsert = requestedTeamIds.filter((teamId: string) => !existingTeamIds.includes(teamId))
+      const teamIdsToRemove = existingTeamIds.filter((teamId: string) => !requestedTeamIds.includes(teamId))
 
       if (teamIdsToRemove.length > 0) {
         const { error: deleteError } = await supabaseAdmin
@@ -1666,7 +1666,7 @@ export const officeRouter = t.router({
           .schema('core')
           .from('job_certifications')
           .insert(
-            certifications.map((cert) => ({
+            certifications.map((cert: { certification_id: string; is_required: boolean }) => ({
               job_id: newJob.id,
               certification_id: cert.certification_id,
               is_required: cert.is_required,

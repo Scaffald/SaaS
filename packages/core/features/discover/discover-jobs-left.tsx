@@ -77,7 +77,7 @@ export function DiscoverJobsLeft({
 
   // If soft skills filter is active, filter internal jobs to only matching ones
   if (shouldUseSoftSkillsMatch && matchingJobs.length > 0) {
-    const matchingJobIds = new Set(matchingJobs.map((j) => j.jobId))
+    const matchingJobIds = new Set(matchingJobs.map((j: { jobId: string }) => j.jobId))
     internalJobs = internalJobs.filter((job: InternalJob) => matchingJobIds.has(job.id))
   }
 

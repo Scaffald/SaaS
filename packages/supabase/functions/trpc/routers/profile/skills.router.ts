@@ -379,7 +379,7 @@ export const profileSkillsRouter = t.router({
 
       if (catalog.length === 0) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Soft skills catalog is not configured',
         })
       }
@@ -418,7 +418,7 @@ export const profileSkillsRouter = t.router({
 
       if (!shouldCreateNewVersion && !latestVersion) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Unable to determine current soft skills version',
         })
       }

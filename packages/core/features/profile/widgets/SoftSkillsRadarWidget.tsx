@@ -89,7 +89,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
 
     // Calculate peer averages if available
     const peerAverages =
-      comparisonData?.categoryAverages?.map((avg) => ({
+      comparisonData?.categoryAverages?.map((avg: { average: number; category: string }) => ({
         value: Math.round(avg.average * 20), // Convert 1-5 scale to 0-100
         label: categoryLabels[avg.category as SoftSkillCategory],
       })) ?? null

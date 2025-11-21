@@ -111,7 +111,7 @@ export const applicationsRouter = router({
       orderedTeamIds.push(job.assigned_team_id as string)
     }
 
-    const sortedAssignments = (teamAssignments ?? []).sort((a, b) => {
+    const sortedAssignments = (teamAssignments ?? []).sort((a: { team_id: string; is_primary: boolean }, b: { team_id: string; is_primary: boolean }) => {
       if (a.is_primary === b.is_primary) {
         return 0
       }
@@ -294,7 +294,7 @@ export const applicationsRouter = router({
     if (updateData.status === 'hired') {
       if (!resolvedOrganizationId) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Unable to determine organization for success fee verification.',
         })
       }
@@ -312,7 +312,7 @@ export const applicationsRouter = router({
 
       if (!successFee) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Upfront success fee payment is required before marking this hire.',
         })
       }
@@ -401,7 +401,7 @@ export const applicationsRouter = router({
       }
 
       // Get unique job IDs
-      const jobIds = [...new Set(applications.map((a) => a.job_id))]
+      const jobIds = [...new Set(applications.map((a: { job_id: string }) => a.job_id))]
 
       // Fetch jobs separately from core schema
       const { data: jobs } = await supabase
@@ -421,10 +421,10 @@ export const applicationsRouter = router({
         .single()
 
       // Create jobs map for lookup
-      const jobsMap = new Map(jobs?.map((j) => [j.id, j]) || [])
+      const jobsMap = new Map(jobs?.map((j: { id: string; slug: string; title: string; employment_type: string; remote_option: string; location: string; status: string; organization_id: string }) => [j.id, j]) || [])
 
       // Combine applications with job and user data
-      const result = applications.map((app) => ({
+      const result = applications.map((app: { job_id: string; [key: string]: unknown }) => ({
         ...app,
         user: userData || {
           id: user.id,

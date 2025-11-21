@@ -258,7 +258,7 @@ export const followsRouter = t.router({
     }
 
     // Extract follower user IDs
-    const followerIds = follows.map((follow) => follow.follower_id)
+    const followerIds = follows.map((follow: { follower_id: string }) => follow.follower_id)
 
     // Fetch user data for followers
     const { data: users, error: usersError } = await ctx.supabase
@@ -292,12 +292,12 @@ export const followsRouter = t.router({
 
     // Transform to include follower user info
     return follows
-      .map((follow) => ({
+      .map((follow: { id: string; created_at: string; follower_id: string }) => ({
         id: follow.id,
         created_at: follow.created_at,
         user: usersMap.get(follow.follower_id) || null,
       }))
-      .filter((follow) => follow.user !== null) // Filter out any missing users
+      .filter((follow: { user: unknown }) => follow.user !== null) // Filter out any missing users
   }),
 
   /**
@@ -330,7 +330,7 @@ export const followsRouter = t.router({
     }
 
     // Extract followee user IDs
-    const followeeIds = follows.map((follow) => follow.followee_id)
+    const followeeIds = follows.map((follow: { followee_id: string }) => follow.followee_id)
 
     // Fetch user data for followees
     const { data: users, error: usersError } = await ctx.supabase
@@ -360,16 +360,16 @@ export const followsRouter = t.router({
     }
 
     // Create a map of user ID to user data
-    const usersMap = new Map((users || []).map((user) => [user.id, user]))
+    const usersMap = new Map((users || []).map((user: { id: string; [key: string]: unknown }) => [user.id, user]))
 
     // Transform to include followee user info
     return follows
-      .map((follow) => ({
+      .map((follow: { id: string; created_at: string; followee_id: string }) => ({
         id: follow.id,
         created_at: follow.created_at,
         user: usersMap.get(follow.followee_id) || null,
       }))
-      .filter((follow) => follow.user !== null) // Filter out any missing users
+      .filter((follow: { user: unknown }) => follow.user !== null) // Filter out any missing users
   }),
 })
 

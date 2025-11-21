@@ -8,10 +8,17 @@ import { Text, View, XStack, YStack } from 'tamagui'
 /**
  * Format timestamp to human-readable relative time
  */
-const formatRelativeTime = (timestamp: string | null | undefined): string => {
+const formatRelativeTime = (timestamp: string | Date | null | undefined): string => {
   if (!timestamp) return 'Never'
 
-  const date = new Date(timestamp)
+  // Handle both string and Date object inputs
+  const date = timestamp instanceof Date ? timestamp : new Date(timestamp)
+  
+  // Validate the date is valid
+  if (Number.isNaN(date.getTime())) {
+    return 'Invalid date'
+  }
+
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffMins = Math.floor(diffMs / 60000)

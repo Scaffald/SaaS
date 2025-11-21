@@ -1,7 +1,9 @@
 import { TRPCError } from '@trpc/server'
+import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
 import { protectedProcedure, publicProcedure, t } from '../middleware.ts'
+import { supabaseServiceKey, supabaseUrl } from '../context.ts'
 
 const MAGIC_LINK_REDIRECT_FALLBACK =
   Deno.env.get('MAGIC_LINK_REDIRECT_URL') ??
@@ -33,6 +35,13 @@ export const authRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const email = input.email
 
+      if (!ctx.supabase) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Supabase client not available',
+        })
+      }
+
       const redirectTarget = input.redirectTo ?? MAGIC_LINK_REDIRECT_FALLBACK
       if (!redirectTarget) {
         throw new TRPCError({
@@ -41,8 +50,11 @@ export const authRouter = t.router({
         })
       }
 
+      // Create admin client for user lookup (needed to check if user exists)
+      const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
       const { data: existingUsers, error: lookupError } =
-        await ctx.supabaseAdmin.auth.admin.listUsers({
+        await supabaseAdmin.auth.admin.listUsers({
           email,
           page: 1,
           perPage: 1,
@@ -61,7 +73,7 @@ export const authRouter = t.router({
       }
 
       const isExistingUser = Boolean(
-        existingUsers?.users?.some((user) => (user.email ?? '').toLowerCase() === email)
+        existingUsers?.users?.some((user: { email?: string }) => (user.email ?? '').toLowerCase() === email)
       )
 
       const { error: otpError } = await ctx.supabase.auth.signInWithOtp({

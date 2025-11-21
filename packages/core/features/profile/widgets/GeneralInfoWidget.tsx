@@ -1,9 +1,21 @@
+import { ConnectionFollowButtonsInline } from '@app/core/features/connections/components/ConnectionFollowButtonsInline'
 import { IdVerificationBadge } from '@app/core/features/id-verification'
+import { ReviewWizard } from '@app/core/features/reviews/components/ReviewWizard'
 import { api } from '@app/core/utils/api'
+import { useUser } from '@app/core/utils/useUser'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, LoadingState, spacing, UIButton } from '@app/ui'
-import { Avatar, Text, XStack, YStack } from 'tamagui'
+import { DashboardWidget, LoadingState, ResponsiveModal, spacing, UIButton } from '@app/ui'
+import { MessageSquarePlus } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { Avatar, Button, Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
+
+interface GeneralInfoWidgetProps extends ProfileWidgetProps {
+  /** Show connection/follow buttons in header (for viewing other users' profiles) */
+  showButtons?: boolean
+  /** Whether this is the current user's own profile */
+  isOwnProfile?: boolean
+}
 
 /**
  * GeneralInfoWidget
@@ -12,8 +24,17 @@ import type { ProfileWidgetProps } from './types'
  * @param userId - User ID to display (defaults to current user)
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
+ * @param showButtons - Show connection/follow/review buttons in header
+ * @param isOwnProfile - Whether this is the current user's own profile
  */
-export function GeneralInfoWidget({ userId, variant = 'full' }: ProfileWidgetProps) {
+export function GeneralInfoWidget({
+  userId,
+  variant = 'full',
+  showButtons = false,
+  isOwnProfile = false,
+}: GeneralInfoWidgetProps) {
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const { user: currentUser } = useUser()
   const { data, isLoading, error, refetch, isFetching } =
     api.profile.widgets.getGeneralInfo.useQuery(
       { userId },
@@ -72,11 +93,56 @@ export function GeneralInfoWidget({ userId, variant = 'full' }: ProfileWidgetPro
   const showPrivateInfo = !!data.privateData
   const badge = data.idVerificationBadge
 
+  // Fetch profile data for review modal
+  const { data: profile } = api.userProfile.getUserProfile.useQuery(
+    { userId: userId || '' },
+    { enabled: !!userId && showButtons }
+  )
+
+  // Only show "Add Review" button if viewing someone else's profile
+  const canLeaveReview = showButtons && !isOwnProfile && currentUser?.id !== userId
+
+  const handleLeaveReview = () => {
+    setShowReviewModal(true)
+  }
+
+  const handleCloseReview = () => {
+    setShowReviewModal(false)
+  }
+
+  const handleReviewComplete = async () => {
+    setShowReviewModal(false)
+  }
+
   return (
-    <DashboardWidget>
-      <YStack gap={spacing.md}>
-        {/* Avatar & Name Section */}
-        <YStack gap="$3" items="center">
+    <>
+      <DashboardWidget>
+        <YStack gap={spacing.md}>
+          {/* Header with Action Buttons */}
+          {showButtons && (
+            <XStack justify="flex-end" items="center" mb="$2">
+              <XStack gap="$2" flexWrap="wrap" justify="flex-end">
+                <ConnectionFollowButtonsInline
+                  targetUserId={userId || ''}
+                  isOwnProfile={isOwnProfile}
+                  size="$3"
+                />
+                {canLeaveReview && (
+                  <Button
+                    size="$3"
+                    theme="info"
+                    icon={MessageSquarePlus}
+                    onPress={handleLeaveReview}
+                  >
+                    <Text>Add Review</Text>
+                  </Button>
+                )}
+              </XStack>
+            </XStack>
+          )}
+
+          {/* Avatar & Name Section */}
+          <YStack gap="$3" items="center">
           <Avatar circular size="$10">
             <Avatar.Image
               source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
@@ -220,5 +286,23 @@ export function GeneralInfoWidget({ userId, variant = 'full' }: ProfileWidgetPro
         )}
       </YStack>
     </DashboardWidget>
+
+    {/* Review Modal */}
+    {canLeaveReview && (
+      <ResponsiveModal
+        open={showReviewModal}
+        onOpenChange={setShowReviewModal}
+        title={`Review ${profile?.name || 'User'}`}
+        size="large"
+      >
+        <ReviewWizard
+          subjectId={userId || ''}
+          subjectName={profile?.name || 'this user'}
+          onCancel={handleCloseReview}
+          onComplete={handleReviewComplete}
+        />
+      </ResponsiveModal>
+    )}
+  </>
   )
 }

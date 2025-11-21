@@ -1489,7 +1489,7 @@ export const inquiriesRouter = router({
       }
 
       // Fetch related data for all inquiries
-      const inquiryIds = inquiries.map((i) => i.id)
+      const inquiryIds = inquiries.map((i: { id: string; [key: string]: unknown }) => i.id)
 
       // Get sections
       const { data: sections, error: sectionsError } = await supabase
@@ -1538,7 +1538,7 @@ export const inquiriesRouter = router({
       }
 
       // Get applications with candidate info
-      const applicationIds = inquiries.map((i) => i.application_id)
+      const applicationIds = inquiries.map((i: { application_id: string; [key: string]: unknown }) => i.application_id)
       const { data: applications, error: applicationsError } = await supabase
         .schema('core')
         .from('applications')
@@ -1585,17 +1585,17 @@ export const inquiriesRouter = router({
       }
 
       // Combine data for each inquiry
-      return inquiries.map((inquiry) => {
-        const applicationRecord = applications?.find((a) => a.id === inquiry.application_id) ?? null
+      return inquiries.map((inquiry: { id: string; application_id: string; [key: string]: unknown }) => {
+        const applicationRecord = applications?.find((a: { id: string; [key: string]: unknown }) => a.id === inquiry.application_id) ?? null
         const { application: applicationDetails, capabilityQuestions } =
           mapApplicationRecord(applicationRecord)
 
         return {
           inquiry,
-          sections: sections?.filter((s) => s.inquiry_id === inquiry.id) || [],
-          comments: comments?.filter((c) => c.inquiry_id === inquiry.id) || [],
+          sections: sections?.filter((s: { inquiry_id: string; [key: string]: unknown }) => s.inquiry_id === inquiry.id) || [],
+          comments: comments?.filter((c: { inquiry_id: string; [key: string]: unknown }) => c.inquiry_id === inquiry.id) || [],
           capabilityResponses:
-            capabilityResponses?.filter((r) => r.inquiry_id === inquiry.id) || [],
+            capabilityResponses?.filter((r: { inquiry_id: string; [key: string]: unknown }) => r.inquiry_id === inquiry.id) || [],
           application: applicationDetails,
           candidate: applicationDetails?.candidate ?? null,
           job: applicationDetails?.job ?? null,
@@ -2002,7 +2002,7 @@ export const inquiriesRouter = router({
         .select('accepted_by')
         .eq('inquiry_id', input.inquiryId)
 
-      const allAccepted = sections?.every((s) => s.accepted_by !== null)
+      const allAccepted = sections?.every((s: { accepted_by?: string | null; [key: string]: unknown }) => s.accepted_by !== null)
 
       // Update inquiry status if all sections accepted (using state machine validation)
       if (allAccepted && inquiry.status !== 'accepted') {
@@ -2348,7 +2348,7 @@ export const inquiriesRouter = router({
         .select('id, accepted_by')
         .eq('inquiry_id', id)
 
-      const hasAcceptedSections = existingSections?.some((s) => s.accepted_by !== null)
+      const hasAcceptedSections = existingSections?.some((s: { accepted_by?: string | null; [key: string]: unknown }) => s.accepted_by !== null)
 
       if (hasAcceptedSections) {
         // Reset acceptances - clear accepted_by and accepted_at

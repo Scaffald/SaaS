@@ -141,7 +141,7 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
 
   if (!settings?.api_key_secret_id) {
     throw new TRPCError({
-      code: 'FAILED_PRECONDITION',
+      code: 'BAD_REQUEST',
       message: 'Stripe API key is not configured.',
     })
   }
@@ -354,14 +354,14 @@ export const idVerificationRouter = t.router({
 
       if (!selectedPricing) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'ID verification pricing is not configured.',
         })
       }
 
       if (selectedPricing.price_cents <= 0) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Pricing for ID verification must be greater than zero.',
         })
       }
@@ -405,7 +405,7 @@ export const idVerificationRouter = t.router({
 
       if (intent.status !== 'succeeded') {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: `Payment intent is not succeeded (current status: ${intent.status}).`,
         })
       }

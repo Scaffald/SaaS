@@ -374,7 +374,7 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
 
   if (!settings?.api_key_secret_id) {
     throw new TRPCError({
-      code: 'FAILED_PRECONDITION',
+      code: 'BAD_REQUEST',
       message: 'Stripe API key is not configured.',
     })
   }
@@ -421,7 +421,7 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment) =>
+      (assignment: { role?: { scope?: string; name?: string } | null }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -614,7 +614,7 @@ async function submitBackgroundCheckToNationSearch(
 
   if (!pkg || checkTypeIds.length === 0) {
     throw new TRPCError({
-      code: 'FAILED_PRECONDITION',
+      code: 'BAD_REQUEST',
       message: 'Background check package is misconfigured',
     })
   }
@@ -928,7 +928,7 @@ async function fetchAdminCheckTypes(ctx: Context, ids?: string[]): Promise<Admin
     })
   }
 
-  return (data ?? []).map((row) => mapAdminCheckType(row as RawAdminCheckTypeRow))
+  return (data ?? []).map((row: unknown) => mapAdminCheckType(row as RawAdminCheckTypeRow))
 }
 
 function mapAdminPackage(
@@ -1020,7 +1020,7 @@ async function fetchAdminPackages(
     }
   }
 
-  return packageRows.map((pkg) => mapAdminPackage(pkg as RawAdminPackageRow, typeMap))
+  return packageRows.map((pkg: unknown) => mapAdminPackage(pkg as RawAdminPackageRow, typeMap))
 }
 
 export const backgroundChecksRouter = t.router({
@@ -1124,7 +1124,7 @@ export const backgroundChecksRouter = t.router({
 
       if (checkTypeIds.length === 0) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'The selected package does not include any components',
         })
       }
@@ -1344,7 +1344,7 @@ export const backgroundChecksRouter = t.router({
 
       if (intent.status !== 'succeeded') {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Payment has not succeeded yet.',
         })
       }
@@ -1467,7 +1467,7 @@ export const backgroundChecksRouter = t.router({
 
       if (intent.status !== 'succeeded') {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Payment has not succeeded yet.',
         })
       }
@@ -1543,8 +1543,8 @@ export const backgroundChecksRouter = t.router({
     const typeIds = Array.from(
       new Set(
         packages
-          ?.flatMap((pkg) => pkg.check_type_ids ?? [])
-          .filter((id): id is string => typeof id === 'string')
+          ?.flatMap((pkg: { check_type_ids?: string[] | null }) => pkg.check_type_ids ?? [])
+          .filter((id: string): id is string => typeof id === 'string')
       )
     )
 
@@ -1564,9 +1564,9 @@ export const backgroundChecksRouter = t.router({
       })
     }
 
-    const typeMap = new Map(types?.map((type) => [type.id, type]) ?? [])
+    const typeMap = new Map(types?.map((type: { id: string; [key: string]: unknown }) => [type.id, type]) ?? [])
 
-    const result = (packages ?? []).map((pkg) => ({
+    const result = (packages ?? []).map((pkg: { id: string; slug: string; display_name: string; [key: string]: unknown }) => ({
       id: pkg.id,
       slug: pkg.slug,
       display_name: pkg.display_name,
@@ -2012,7 +2012,7 @@ export const backgroundChecksRouter = t.router({
     }
 
     return listChecksOutputSchema.array().parse(
-      (data ?? []).map((row) => ({
+      (data ?? []).map((row: { id: string; status: string; package?: { id?: string | null; display_name?: string | null; slug?: string | null } | null; completed_at?: string | null; created_at?: string | null; expires_at?: string | null; invited_at?: string | null; provider_check_id?: string | null; findings?: unknown; metadata?: unknown }) => ({
         id: row.id,
         status: row.status,
         package: {
@@ -2260,7 +2260,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row) => ({
+      return (data ?? []).map((row: { id: string; dispute_reason?: string | null; dispute_details?: string | null; supporting_documents?: unknown; status: string; created_at?: string | null; updated_at?: string | null; resolved_at?: string | null; resolution?: string | null; resolution_notes?: string | null }) => ({
         id: row.id,
         dispute_reason: row.dispute_reason,
         dispute_details: row.dispute_details,
@@ -2783,7 +2783,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row) => {
+      return (data ?? []).map((row: { id: string; status: string; worker?: { id?: string | null; display_name?: string | null; username?: string | null; email?: string | null; avatar_path?: string | null } | null; job?: { id?: string | null; title?: string | null } | null; package?: { id?: string | null; display_name?: string | null; slug?: string | null } | null; [key: string]: unknown }) => {
         const workerRecord = (row.worker ?? null) as {
           id?: string | null
           display_name?: string | null

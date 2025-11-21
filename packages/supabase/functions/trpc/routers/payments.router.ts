@@ -179,7 +179,7 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
 
   if (!settings?.api_key_secret_id) {
     throw new TRPCError({
-      code: 'FAILED_PRECONDITION',
+      code: 'BAD_REQUEST',
       message: 'Stripe API key is not configured.',
     })
   }
@@ -223,7 +223,7 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment) =>
+      (assignment: { role?: { scope?: string; name?: string } | null }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -380,7 +380,7 @@ export const paymentsRouter = t.router({
 
     if (!data?.publishable_key) {
       throw new TRPCError({
-        code: 'FAILED_PRECONDITION',
+        code: 'BAD_REQUEST',
         message: 'Stripe publishable key is not configured.',
       })
     }
@@ -427,7 +427,7 @@ export const paymentsRouter = t.router({
         })
       }
 
-      return (data ?? []).map((row) => ({
+      return (data ?? []).map((row: { id: string; service_type: string; tier: string; name: string; description: string | null; price_cents: number; is_active: boolean; display_order: number; metadata: Record<string, unknown> | null }) => ({
         id: row.id,
         serviceType: row.service_type,
         tier: row.tier,
@@ -658,20 +658,20 @@ export const paymentsRouter = t.router({
 
       // Calculate KPIs
       const totalRevenue = allTransactions
-        .filter((t) => t.status === 'succeeded')
-        .reduce((sum, t) => sum + (t.amount_cents ?? 0), 0)
+        .filter((t: { status: string }) => t.status === 'succeeded')
+        .reduce((sum: number, t: { amount_cents?: number | null }) => sum + (t.amount_cents ?? 0), 0)
 
       const totalTransactions = allTransactions.length
-      const succeededTransactions = allTransactions.filter((t) => t.status === 'succeeded').length
-      const failedTransactions = allTransactions.filter((t) => t.status === 'failed').length
-      const pendingTransactions = allTransactions.filter((t) => t.status === 'pending').length
+      const succeededTransactions = allTransactions.filter((t: { status: string }) => t.status === 'succeeded').length
+      const failedTransactions = allTransactions.filter((t: { status: string }) => t.status === 'failed').length
+      const pendingTransactions = allTransactions.filter((t: { status: string }) => t.status === 'pending').length
 
       const successRate =
         totalTransactions > 0 ? (succeededTransactions / totalTransactions) * 100 : 0
 
       // Breakdown by transaction type
       const byType = allTransactions.reduce(
-        (acc, t) => {
+        (acc: Record<string, { count: number; revenue: number; succeeded: number; failed: number }>, t: { transaction_type?: string | null; status: string; amount_cents?: number | null }) => {
           const type = t.transaction_type ?? 'unknown'
           if (!acc[type]) {
             acc[type] = {
@@ -696,7 +696,7 @@ export const paymentsRouter = t.router({
 
       // Breakdown by status
       const byStatus = allTransactions.reduce(
-        (acc, t) => {
+        (acc: Record<string, number>, t: { status?: string | null }) => {
           const status = t.status ?? 'unknown'
           acc[status] = (acc[status] ?? 0) + 1
           return acc
@@ -706,9 +706,9 @@ export const paymentsRouter = t.router({
 
       // Time series data (daily revenue)
       const dailyRevenue = allTransactions
-        .filter((t) => t.status === 'succeeded')
+        .filter((t: { status: string }) => t.status === 'succeeded')
         .reduce(
-          (acc, t) => {
+          (acc: Record<string, number>, t: { created_at: string; amount_cents?: number | null }) => {
             const date = new Date(t.created_at).toISOString().split('T')[0]!
             acc[date] = (acc[date] ?? 0) + (t.amount_cents ?? 0)
             return acc
@@ -718,8 +718,8 @@ export const paymentsRouter = t.router({
 
       // Failed transactions queue
       const failedQueue = allTransactions
-        .filter((t) => t.status === 'failed')
-        .map((t) => ({
+        .filter((t: { status?: string | null }) => t.status === 'failed')
+        .map((t: { id: string; transaction_type?: string | null; amount_cents?: number | null; failure_reason?: string | null; created_at: string; failed_at?: string | null; organization_id: string; user_id: string | null }) => ({
           id: t.id,
           transactionType: t.transaction_type,
           amountCents: t.amount_cents,
@@ -730,7 +730,7 @@ export const paymentsRouter = t.router({
           userId: t.user_id,
         }))
         .sort(
-          (a, b) =>
+          (a: { failedAt?: string | null; createdAt: string }, b: { failedAt?: string | null; createdAt: string }) =>
             new Date(b.failed_at ?? b.created_at).getTime() -
             new Date(a.failed_at ?? a.created_at).getTime()
         )
@@ -828,7 +828,7 @@ export const paymentsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row) => ({
+        items: (data ?? []).map((row: { id: string; organization_id: string; organization?: { name?: string } | null; user_id: string | null; user?: { display_name?: string; email?: string } | null; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; status?: string | null; failure_reason?: string | null; stripe_payment_intent_id?: string | null; created_at: string; succeeded_at?: string | null; failed_at?: string | null; refunded_at?: string | null; metadata?: unknown }) => ({
           id: row.id,
           organizationId: row.organization_id,
           organizationName: (row.organization as { name?: string } | null)?.name ?? null,
@@ -1229,7 +1229,7 @@ export const paymentsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row) => ({
+        items: (data ?? []).map((row: { id: string; organization_id: string; organization?: { name?: string } | null; user_id: string | null; user?: { display_name?: string; email?: string } | null; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; status?: string | null; failure_reason?: string | null; stripe_payment_intent_id?: string | null; created_at: string; succeeded_at?: string | null; failed_at?: string | null; refunded_at?: string | null; metadata?: unknown }) => ({
           id: row.id,
           organizationId: row.organization_id,
           organizationName: (row.organization as { name?: string } | null)?.name ?? null,
@@ -1322,7 +1322,7 @@ export const paymentsRouter = t.router({
         })
       }
 
-      const transactions = (data ?? []).map((row) => ({
+      const transactions = (data ?? []).map((row: { id: string; organization?: { name?: string } | null; user?: { display_name?: string; email?: string } | null; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; status?: string | null; failure_reason?: string | null; stripe_payment_intent_id?: string | null; created_at: string; succeeded_at?: string | null; failed_at?: string | null; refunded_at?: string | null }) => ({
         id: row.id,
         organizationName: (row.organization as { name?: string } | null)?.name ?? 'N/A',
         userName:
@@ -1374,7 +1374,7 @@ export const paymentsRouter = t.router({
         'Refunded At',
       ]
 
-      const rows = transactions.map((t) => [
+      const rows = transactions.map((t: { id: string; organizationName: string; userName: string; amountCents?: number | null; currency?: string | null; transactionType?: string | null; status?: string | null; failureReason: string; stripePaymentIntentId?: string | null; createdAt: string; succeededAt: string; failedAt: string; refundedAt: string }) => [
         t.id,
         t.organizationName,
         t.userName,
@@ -1391,7 +1391,7 @@ export const paymentsRouter = t.router({
       ])
 
       const csvRows = [headers, ...rows]
-        .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .map((row: (string | number | null | undefined)[]) => row.map((cell: string | number | null | undefined) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
         .join('\n')
 
       return {
@@ -1623,7 +1623,7 @@ export const paymentsRouter = t.router({
       }
 
       return {
-        items: (data ?? []).map((row) => ({
+        items: (data ?? []).map((row: { id: string; account_credit_id: string; organization_id: string; amount_cents?: number | null; currency?: string | null; transaction_type?: string | null; direction?: string | null; description?: string | null; payment_transaction_id?: string | null; success_fee_id?: string | null; background_check_id?: string | null; id_verification_id?: string | null; metadata?: unknown; created_by?: string | null; created_at: string }) => ({
           id: row.id,
           accountCreditId: row.account_credit_id,
           organizationId: row.organization_id,

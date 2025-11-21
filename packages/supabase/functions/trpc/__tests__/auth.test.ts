@@ -157,6 +157,48 @@ Deno.test({
 });
 
 Deno.test({
+  name: "Auth - Request magic link handles missing redirect target",
+  async fn() {
+    const trpcEmail = `trpc-error-${Date.now()}@example.com`;
+
+    // Test with missing redirectTo and no fallback configured
+    // This should return a BAD_REQUEST error
+    const response = await callTRPCEndpoint(
+      "auth.requestMagicLink",
+      {
+        email: trpcEmail,
+        // Intentionally omit redirectTo
+      },
+      {
+        type: "mutation",
+      },
+    );
+
+    // The endpoint should either succeed (if fallback is configured) or fail with BAD_REQUEST
+    // We just want to ensure it doesn't crash with the undefined error
+    if (response[0]?.error) {
+      const errorCode = response[0].error?.data?.code;
+      // If it fails, it should be a proper error, not an internal server error from undefined
+      if (errorCode === "BAD_REQUEST") {
+        console.log("✅ Properly handled missing redirect target");
+        return;
+      }
+      // If it's an internal server error about undefined, that's the bug we fixed
+      if (errorCode === "INTERNAL_SERVER_ERROR") {
+        const message = response[0].error?.message ?? "";
+        if (message.includes("undefined") || message.includes("Cannot read")) {
+          throw new Error("Still getting undefined error - fix didn't work");
+        }
+      }
+    }
+    // If it succeeds, that's fine too (fallback was configured)
+    console.log("✅ Endpoint handled request without crashing");
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
   name: "Auth - Extract magic link from email",
   async fn() {
     const emailData = await getLatestEmail(TEST_USER_EMAIL);

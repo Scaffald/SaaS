@@ -167,7 +167,9 @@ export const reviewsRouter = t.router({
       }
 
       if (input?.category) {
-        return data.filter((skill) => skill.category === input.category);
+        return data.filter((skill: { category: string }) =>
+          skill.category === input.category
+        );
       }
 
       return data;
@@ -194,7 +196,10 @@ export const reviewsRouter = t.router({
 
     // Group by category
     const grouped = data.reduce(
-      (acc, skill) => {
+      (
+        acc: Record<string, unknown[]>,
+        skill: { category: string; [key: string]: unknown },
+      ) => {
         if (!acc[skill.category]) {
           acc[skill.category] = [];
         }

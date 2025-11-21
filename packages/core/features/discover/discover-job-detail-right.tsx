@@ -543,7 +543,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                   <YStack gap="$4">
                     {/* Skill-by-skill breakdown */}
                     <YStack gap="$2">
-                      {matchData.details.map((detail) => (
+                      {matchData.details.map((detail: { skillId: string; skillName: string; userRating: number | null; requiredImportance: number; meetsRequirement: boolean }) => (
                         <SoftSkillsMatchIndicator
                           key={detail.skillId}
                           skillName={detail.skillName}
@@ -555,7 +555,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </YStack>
 
                     {/* Skills to Develop */}
-                    {matchData.details.some((detail) => !detail.meetsRequirement) && (
+                    {matchData.details.some((detail: { meetsRequirement: boolean }) => !detail.meetsRequirement) && (
                       <YStack gap="$2" bg="$yellow2" p="$4" rounded="$4" borderWidth={1} borderColor="$yellow7">
                         <XStack gap="$2" items="center">
                           <TrendingUp size={16} color="$yellow10" />
@@ -565,8 +565,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                         </XStack>
                         <YStack gap="$1">
                           {matchData.details
-                            .filter((detail) => !detail.meetsRequirement)
-                            .map((detail) => (
+                            .filter((detail: { meetsRequirement: boolean }) => !detail.meetsRequirement)
+                            .map((detail: { skillId: string; skillName: string; userRating: number | null; requiredImportance: number }) => (
                               <Text key={detail.skillId} fontSize="$3" color="$yellow11">
                                 • {detail.skillName} (currently {detail.userRating || 0}/5, need{' '}
                                 {detail.requiredImportance}/5)

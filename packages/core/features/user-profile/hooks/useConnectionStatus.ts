@@ -26,7 +26,7 @@ export function useConnectionStatus(targetUserId: string | null) {
 
     // Check if connected
     const connection = connections?.find(
-      (conn) => conn.user?.id === targetUserId
+      (conn: { user?: { id: string } | null; id: string }) => conn.user?.id === targetUserId
     )
 
     if (connection) {
@@ -42,7 +42,7 @@ export function useConnectionStatus(targetUserId: string | null) {
 
     // Check pending requests
     const sentRequest = pendingRequests?.sent.find(
-      (req) => req.user?.id === targetUserId
+      (req: { user?: { id: string } | null; id: string }) => req.user?.id === targetUserId
     )
     if (sentRequest) {
       return {
@@ -56,7 +56,7 @@ export function useConnectionStatus(targetUserId: string | null) {
     }
 
     const receivedRequest = pendingRequests?.received.find(
-      (req) => req.user?.id === targetUserId
+      (req: { user?: { id: string } | null; id: string }) => req.user?.id === targetUserId
     )
     if (receivedRequest) {
       return {

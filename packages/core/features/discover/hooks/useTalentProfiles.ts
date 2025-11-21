@@ -102,7 +102,7 @@ export const buildTalentProfilesQuery = (options: TalentProfilesQueryOptions = {
     }
 
     const profileIds = profiles
-      .map((profile) => profile.id)
+      .map((profile: { id: string }) => profile.id)
       .filter((id): id is string => typeof id === 'string' && id.length > 0)
 
     let badgeMap = new Map<string, VerificationBadgeRow>()
@@ -119,10 +119,10 @@ export const buildTalentProfilesQuery = (options: TalentProfilesQueryOptions = {
         badgeMap = new Map(
           badgeRows
             .filter(
-              (row): row is VerificationBadgeRow & { worker_user_id: string } =>
+              (row: { worker_user_id: string | null }): row is VerificationBadgeRow & { worker_user_id: string } =>
                 typeof row.worker_user_id === 'string' && row.worker_user_id.length > 0
             )
-            .map((row) => [row.worker_user_id as string, row])
+            .map((row: { worker_user_id: string }) => [row.worker_user_id as string, row])
         )
       }
     }

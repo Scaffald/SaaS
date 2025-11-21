@@ -21,7 +21,7 @@ async function userHasPlatformRole(ctx: Context): Promise<boolean> {
 
   return Boolean(
     data?.some(
-      (assignment) =>
+      (assignment: { role?: { scope?: string; name?: string | null } | null; [key: string]: unknown }) =>
         assignment.role?.scope === 'platform' &&
         ['office', 'super_admin'].includes(assignment.role?.name ?? '')
     )
@@ -144,7 +144,7 @@ export const userProfileRouter = t.router({
         avatarPath: user.avatar_path,
         headline: user.headline,
         location,
-        topSkills: (skills || []).slice(0, 5).map((skill) => ({
+        topSkills: (skills || []).slice(0, 5).map((skill: { proficiency_level?: number | null; skill_taxonomy?: string | null; csi_skill_id?: string | null; onet_occupation_id?: string | null; [key: string]: unknown }) => ({
           proficiency: skill.proficiency_level || 0,
           taxonomy: skill.skill_taxonomy,
           csiSkillId: skill.csi_skill_id,
@@ -334,11 +334,11 @@ export const userProfileRouter = t.router({
       const totalReviews = reviewsList.length
 
       // Calculate average rating if rating field exists
-      const ratingsArray = reviewsList.filter((r) => r.rating != null).map((r) => r.rating)
+      const ratingsArray = reviewsList.filter((r: { rating?: number | null; [key: string]: unknown }) => r.rating != null).map((r: { rating?: number | null; [key: string]: unknown }) => r.rating)
       const averageRating =
         ratingsArray.length > 0
           ? Math.round(
-              (ratingsArray.reduce((sum, val) => sum + val, 0) / ratingsArray.length) * 10
+              (ratingsArray.reduce((sum: number, val: number | null | undefined) => sum + (val ?? 0), 0) / ratingsArray.length) * 10
             ) / 10
           : 0
 
@@ -349,7 +349,7 @@ export const userProfileRouter = t.router({
         ratings: {},
         strengths: [],
         improvements: [],
-        reviews: reviewsList.slice(0, 10).map((review) => ({
+        reviews: reviewsList.slice(0, 10).map((review: { id: string; headline?: string | null; body?: string | null; created_at: string; rating?: number | null; author_user_id?: string | null; [key: string]: unknown }) => ({
           id: review.id,
           headline: review.headline || '',
           body: review.body || '',

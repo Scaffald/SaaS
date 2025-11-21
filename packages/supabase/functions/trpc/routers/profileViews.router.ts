@@ -258,8 +258,8 @@ export const profileViewsRouter = t.router({
       }
 
       // Extract unique viewer user IDs and industry IDs
-      const viewerUserIds = [...new Set(views.map((v) => v.viewer_user_id).filter(Boolean))]
-      const industryIds = [...new Set(views.map((v) => v.viewer_industry_id).filter(Boolean))]
+      const viewerUserIds = [...new Set(views.map((v: { viewer_user_id: string | null }) => v.viewer_user_id).filter(Boolean))]
+      const industryIds = [...new Set(views.map((v: { viewer_industry_id: string | null }) => v.viewer_industry_id).filter(Boolean))]
 
       // Fetch viewer user data
       const usersMap = new Map()
@@ -291,7 +291,7 @@ export const profileViewsRouter = t.router({
         }
 
         // Create users map
-        users?.forEach((user) => {
+        users?.forEach((user: { id: string; [key: string]: unknown }) => {
           usersMap.set(user.id, user)
         })
       }
@@ -313,14 +313,14 @@ export const profileViewsRouter = t.router({
         }
 
         // Create industries map
-        industries?.forEach((industry) => {
+        industries?.forEach((industry: { id: string; name: string }) => {
           industriesMap.set(industry.id, industry)
         })
       }
 
       // Join the data
       return {
-        views: views.map((view) => ({
+        views: views.map((view: { id: string; viewed_at: string; viewer_user_id: string | null; viewer_role_type: string; viewer_industry_id: string | null; [key: string]: unknown }) => ({
           id: view.id,
           viewed_at: view.viewed_at,
           viewer: view.viewer_user_id ? usersMap.get(view.viewer_user_id) || null : null,

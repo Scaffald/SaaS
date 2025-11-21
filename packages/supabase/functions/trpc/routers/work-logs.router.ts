@@ -543,13 +543,18 @@ const getOrganizationManagerIds = async (
 
   return data
     .filter(
-      (assignment) =>
+      (
+        assignment: {
+          roles?: { scope?: string; name?: string } | null;
+          user_id: string | null;
+        },
+      ) =>
         assignment.roles?.scope === "organization" &&
         assignment.roles?.name &&
         managerRoles.has(assignment.roles.name),
     )
-    .map((assignment) => assignment.user_id)
-    .filter((value): value is string => Boolean(value));
+    .map((assignment: { user_id: string | null }) => assignment.user_id)
+    .filter((value: string | null): value is string => Boolean(value));
 };
 
 const assertUserIsOrganizationManager = async (
@@ -1269,7 +1274,14 @@ const resolveCsiSkillDetails = async (
   }
 
   return new Map(
-    (data ?? []).map((row) => [
+    (data ?? []).map((
+      row: {
+        id: string;
+        name: string;
+        code_key: string | null;
+        code_display: string | null;
+      },
+    ) => [
       row.id,
       {
         name: row.name,
@@ -1603,8 +1615,8 @@ export const workLogsRouter = t.router({
           : null;
 
       const projects = (projectRows ?? [])
-        .map((project) => project as Record<string, unknown>)
-        .map((project) => {
+        .map((project: unknown) => project as Record<string, unknown>)
+        .map((project: Record<string, unknown>) => {
           const id = typeof project.id === "string"
             ? project.id
             : String(project.id);
@@ -1640,38 +1652,52 @@ export const workLogsRouter = t.router({
             endsAt,
           };
         })
-        .filter((project) => {
-          if (!project.organizationId) {
-            return false;
-          }
-
-          if (!includeArchived && project.isArchived) {
-            return false;
-          }
-
-          if (normalizedSearch) {
-            const haystack = [project.name, project.id]
-              .filter(Boolean)
-              .map((value) => value.toLowerCase());
-
-            const matchesSearch = haystack.some((value) =>
-              value.includes(normalizedSearch)
-            );
-
-            if (!matchesSearch) {
+        .filter(
+          (
+            project: {
+              organizationId: string;
+              isArchived: boolean;
+              name: string;
+              id: string;
+            },
+          ) => {
+            if (!project.organizationId) {
               return false;
             }
-          }
 
-          return true;
-        })
-        .sort((a, b) => {
-          if (a.organizationId === b.organizationId) {
-            return a.name.localeCompare(b.name);
-          }
+            if (!includeArchived && project.isArchived) {
+              return false;
+            }
 
-          return a.organizationId.localeCompare(b.organizationId);
-        });
+            if (normalizedSearch) {
+              const haystack = [project.name, project.id]
+                .filter(Boolean)
+                .map((value: string) => value.toLowerCase());
+
+              const matchesSearch = haystack.some((value: string) =>
+                value.includes(normalizedSearch)
+              );
+
+              if (!matchesSearch) {
+                return false;
+              }
+            }
+
+            return true;
+          },
+        )
+        .sort(
+          (
+            a: { organizationId: string; name: string },
+            b: { organizationId: string; name: string },
+          ) => {
+            if (a.organizationId === b.organizationId) {
+              return a.name.localeCompare(b.name);
+            }
+
+            return a.organizationId.localeCompare(b.organizationId);
+          },
+        );
 
       return {
         organizations,
@@ -1733,8 +1759,10 @@ export const workLogsRouter = t.router({
 
       const workLogs = rows ?? [];
       const workLogIds = workLogs
-        .map((row) => (typeof row.id === "string" ? row.id : null))
-        .filter((value): value is string => Boolean(value));
+        .map((
+          row: { id: string | number },
+        ) => (typeof row.id === "string" ? row.id : null))
+        .filter((value: string | null): value is string => Boolean(value));
 
       const projectMap = await fetchProjectMetadata(supabase, [
         input.projectId,
@@ -1805,24 +1833,39 @@ export const workLogsRouter = t.router({
       }
 
       const recentActivity = workLogs
-        .map((log) => {
-          const logId = typeof log.id === "string" ? log.id : String(log.id);
-          const activityTimestamp = resolveActivityTimestamp(log);
-          return {
-            id: logId,
-            status: typeof log.status === "string" ? log.status : "draft",
-            logDate: log.log_date ?? null,
-            totalHours: coerceNumber(log.total_hours),
-            photoCount: relationshipCounts.photoCount.get(logId) ?? 0,
-            commentCount: relationshipCounts.commentCount.get(logId) ?? 0,
-            updatedAt: activityTimestamp,
-          };
-        })
-        .sort((a, b) => {
-          const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
-          const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
-          return timeB - timeA;
-        })
+        .map(
+          (
+            log: {
+              id: string | number;
+              status?: string;
+              log_date?: string | null;
+              total_hours?: number | null;
+              [key: string]: unknown;
+            },
+          ) => {
+            const logId = typeof log.id === "string" ? log.id : String(log.id);
+            const activityTimestamp = resolveActivityTimestamp(log);
+            return {
+              id: logId,
+              status: typeof log.status === "string" ? log.status : "draft",
+              logDate: log.log_date ?? null,
+              totalHours: coerceNumber(log.total_hours),
+              photoCount: relationshipCounts.photoCount.get(logId) ?? 0,
+              commentCount: relationshipCounts.commentCount.get(logId) ?? 0,
+              updatedAt: activityTimestamp,
+            };
+          },
+        )
+        .sort(
+          (
+            a: { updatedAt: string | null },
+            b: { updatedAt: string | null },
+          ) => {
+            const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
+            const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
+            return timeB - timeA;
+          },
+        )
         .slice(0, 5);
 
       const timeline = Array.from(hoursByDay.entries())
@@ -1894,12 +1937,16 @@ export const workLogsRouter = t.router({
       }
 
       const logIds = workLogs
-        .map((log) => log.id)
-        .filter((value): value is string => typeof value === "string");
+        .map((log: { id: string | number }) => log.id)
+        .filter((value: string | number): value is string =>
+          typeof value === "string"
+        );
 
       const projectIds = workLogs
-        .map((log) => log.project_id)
-        .filter((value): value is string => typeof value === "string");
+        .map((log: { project_id: string | null }) => log.project_id)
+        .filter((value: string | null): value is string =>
+          typeof value === "string"
+        );
 
       const projectMap = new Map<
         string,
@@ -1961,73 +2008,81 @@ export const workLogsRouter = t.router({
           });
         } else {
           const signedPhotos = await Promise.all(
-            (photoRows ?? []).map(async (photo) => {
-              if (typeof photo.id !== "string") {
-                return null;
-              }
+            (photoRows ?? []).map(
+              async (
+                photo: {
+                  id: string | number;
+                  file_path?: string;
+                  [key: string]: unknown;
+                },
+              ) => {
+                if (typeof photo.id !== "string") {
+                  return null;
+                }
 
-              const filePath = typeof photo.file_path === "string"
-                ? photo.file_path
-                : null;
-              const thumbnailPath = typeof photo.thumbnail_path === "string"
-                ? photo.thumbnail_path
-                : null;
+                const filePath = typeof photo.file_path === "string"
+                  ? photo.file_path
+                  : null;
+                const thumbnailPath = typeof photo.thumbnail_path === "string"
+                  ? photo.thumbnail_path
+                  : null;
 
-              let signedUrl: string | null = null;
-              let thumbnailSignedUrl: string | null = null;
+                let signedUrl: string | null = null;
+                let thumbnailSignedUrl: string | null = null;
 
-              try {
-                if (filePath) {
-                  const { data: signed } = await supabaseAdmin.storage
-                    .from(WORK_LOG_PHOTO_BUCKET)
-                    .createSignedUrl(
+                try {
+                  if (filePath) {
+                    const { data: signed } = await supabaseAdmin.storage
+                      .from(WORK_LOG_PHOTO_BUCKET)
+                      .createSignedUrl(
+                        filePath,
+                        PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS,
+                      );
+                    signedUrl = signed?.signedUrl ?? null;
+                  }
+                } catch (error) {
+                  console.warn(
+                    "[workLogs.publicProfileFeed] Failed to sign photo URL",
+                    {
                       filePath,
-                      PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS,
-                    );
-                  signedUrl = signed?.signedUrl ?? null;
+                      error,
+                    },
+                  );
                 }
-              } catch (error) {
-                console.warn(
-                  "[workLogs.publicProfileFeed] Failed to sign photo URL",
-                  {
-                    filePath,
-                    error,
-                  },
-                );
-              }
 
-              try {
-                if (thumbnailPath) {
-                  const { data: signedThumb } = await supabaseAdmin.storage
-                    .from(WORK_LOG_PHOTO_BUCKET)
-                    .createSignedUrl(
+                try {
+                  if (thumbnailPath) {
+                    const { data: signedThumb } = await supabaseAdmin.storage
+                      .from(WORK_LOG_PHOTO_BUCKET)
+                      .createSignedUrl(
+                        thumbnailPath,
+                        PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS,
+                      );
+                    thumbnailSignedUrl = signedThumb?.signedUrl ?? null;
+                  }
+                } catch (error) {
+                  console.warn(
+                    "[workLogs.publicProfileFeed] Failed to sign thumbnail URL",
+                    {
                       thumbnailPath,
-                      PUBLIC_WORK_LOG_PHOTO_TTL_SECONDS,
-                    );
-                  thumbnailSignedUrl = signedThumb?.signedUrl ?? null;
+                      error,
+                    },
+                  );
                 }
-              } catch (error) {
-                console.warn(
-                  "[workLogs.publicProfileFeed] Failed to sign thumbnail URL",
-                  {
-                    thumbnailPath,
-                    error,
-                  },
-                );
-              }
 
-              return {
-                id: photo.id,
-                workLogId: typeof photo.work_log_id === "string"
-                  ? photo.work_log_id
-                  : null,
-                caption: typeof photo.caption === "string"
-                  ? photo.caption
-                  : null,
-                signedUrl,
-                thumbnailSignedUrl,
-              };
-            }),
+                return {
+                  id: photo.id,
+                  workLogId: typeof photo.work_log_id === "string"
+                    ? photo.work_log_id
+                    : null,
+                  caption: typeof photo.caption === "string"
+                    ? photo.caption
+                    : null,
+                  signedUrl,
+                  thumbnailSignedUrl,
+                };
+              },
+            ),
           );
 
           for (const photo of signedPhotos) {
@@ -2044,27 +2099,37 @@ export const workLogsRouter = t.router({
         }
       }
 
-      const result = workLogs.map((log) => {
-        const logId = String(log.id);
-        const project = typeof log.project_id === "string"
-          ? (projectMap.get(log.project_id) ?? null)
-          : null;
+      const result = workLogs.map(
+        (
+          log: {
+            id: string | number;
+            project_id?: string | null;
+            [key: string]: unknown;
+          },
+        ) => {
+          const logId = String(log.id);
+          const project = typeof log.project_id === "string"
+            ? (projectMap.get(log.project_id) ?? null)
+            : null;
 
-        const photos = photosByWorkLog.get(logId) ?? [];
+          const photos = photosByWorkLog.get(logId) ?? [];
 
-        return {
-          id: logId,
-          projectId: typeof log.project_id === "string" ? log.project_id : null,
-          projectName: project?.name ?? null,
-          organizationName: project?.organizationName ?? null,
-          logDate: log.show_date_range_on_profile
-            ? (log.log_date ?? null)
-            : null,
-          showDateOnProfile: Boolean(log.show_date_range_on_profile),
-          verifiedAt: log.verified_at ?? null,
-          photos,
-        };
-      });
+          return {
+            id: logId,
+            projectId: typeof log.project_id === "string"
+              ? log.project_id
+              : null,
+            projectName: project?.name ?? null,
+            organizationName: project?.organizationName ?? null,
+            logDate: log.show_date_range_on_profile
+              ? (log.log_date ?? null)
+              : null,
+            showDateOnProfile: Boolean(log.show_date_range_on_profile),
+            verifiedAt: log.verified_at ?? null,
+            photos,
+          };
+        },
+      );
 
       return { workLogs: result };
     }),
@@ -2139,12 +2204,16 @@ export const workLogsRouter = t.router({
 
       const workLogs = rows ?? [];
       const workLogIds = workLogs
-        .map((row) => (typeof row.id === "string" ? row.id : null))
-        .filter((value): value is string => Boolean(value));
+        .map((
+          row: { id: string | number },
+        ) => (typeof row.id === "string" ? row.id : null))
+        .filter((value: string | null): value is string => Boolean(value));
 
       const workerIds = workLogs
-        .map((row) => (typeof row.user_id === "string" ? row.user_id : null))
-        .filter((value): value is string => Boolean(value));
+        .map((
+          row: { user_id?: string | null },
+        ) => (typeof row.user_id === "string" ? row.user_id : null))
+        .filter((value: string | null): value is string => Boolean(value));
 
       const [projectMap, relationshipCounts, workerRows] = await Promise.all([
         fetchProjectMetadata(supabase, [input.projectId]),
@@ -2336,30 +2405,48 @@ export const workLogsRouter = t.router({
         }));
 
       const recentActivity = workLogs
-        .map((log) => {
-          const logId = typeof log.id === "string" ? log.id : String(log.id);
-          const workerId = typeof log.user_id === "string" ? log.user_id : null;
-          const worker = workerId
-            ? (workerMetadata.get(workerId) ?? null)
-            : null;
-          const activityTimestamp = resolveActivityTimestamp(log);
-          return {
-            id: logId,
-            workerId,
-            workerName: worker?.displayName ?? "Member",
-            status: typeof log.status === "string" ? log.status : "draft",
-            logDate: log.log_date ?? null,
-            totalHours: coerceNumber(log.total_hours),
-            photoCount: relationshipCounts.photoCount.get(logId) ?? 0,
-            commentCount: relationshipCounts.commentCount.get(logId) ?? 0,
-            updatedAt: activityTimestamp,
-          };
-        })
-        .sort((a, b) => {
-          const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
-          const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
-          return timeB - timeA;
-        })
+        .map(
+          (
+            log: {
+              id: string | number;
+              user_id?: string | null;
+              status?: string;
+              log_date?: string | null;
+              total_hours?: number | null;
+              [key: string]: unknown;
+            },
+          ) => {
+            const logId = typeof log.id === "string" ? log.id : String(log.id);
+            const workerId = typeof log.user_id === "string"
+              ? log.user_id
+              : null;
+            const worker = workerId
+              ? (workerMetadata.get(workerId) ?? null)
+              : null;
+            const activityTimestamp = resolveActivityTimestamp(log);
+            return {
+              id: logId,
+              workerId,
+              workerName: worker?.displayName ?? "Member",
+              status: typeof log.status === "string" ? log.status : "draft",
+              logDate: log.log_date ?? null,
+              totalHours: coerceNumber(log.total_hours),
+              photoCount: relationshipCounts.photoCount.get(logId) ?? 0,
+              commentCount: relationshipCounts.commentCount.get(logId) ?? 0,
+              updatedAt: activityTimestamp,
+            };
+          },
+        )
+        .sort(
+          (
+            a: { updatedAt: string | null },
+            b: { updatedAt: string | null },
+          ) => {
+            const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
+            const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
+            return timeB - timeA;
+          },
+        )
         .slice(0, 10);
 
       return {
@@ -2451,58 +2538,72 @@ export const workLogsRouter = t.router({
 
       const workLogs = rows ?? [];
       const workLogIds = workLogs
-        .map((row) => (typeof row.id === "string" ? row.id : null))
-        .filter((value): value is string => Boolean(value));
+        .map((
+          row: { id: string | number },
+        ) => (typeof row.id === "string" ? row.id : null))
+        .filter((value: string | null): value is string => Boolean(value));
 
       const projectIds = workLogs
         .map((
-          row,
+          row: { project_id?: string | null },
         ) => (typeof row.project_id === "string" ? row.project_id : null))
-        .filter((value): value is string => Boolean(value));
+        .filter((value: string | null): value is string => Boolean(value));
 
       const [projectMap, relationshipCounts] = await Promise.all([
         fetchProjectMetadata(supabase, Array.from(new Set(projectIds))),
         fetchWorkLogRelationshipCounts(supabase, workLogIds),
       ]);
 
-      const items = workLogs.map((row) => {
-        const id = typeof row.id === "string" ? row.id : String(row.id);
-        const projectId = typeof row.project_id === "string"
-          ? row.project_id
-          : null;
-        const project = projectId ? (projectMap.get(projectId) ?? null) : null;
-        const status = typeof row.status === "string" ? row.status : "draft";
-        const totalHours = coerceNumber(row.total_hours);
+      const items = workLogs.map(
+        (
+          row: {
+            id: string | number;
+            project_id?: string | null;
+            status?: string;
+            [key: string]: unknown;
+          },
+        ) => {
+          const id = typeof row.id === "string" ? row.id : String(row.id);
+          const projectId = typeof row.project_id === "string"
+            ? row.project_id
+            : null;
+          const project = projectId
+            ? (projectMap.get(projectId) ?? null)
+            : null;
+          const status = typeof row.status === "string" ? row.status : "draft";
+          const totalHours = coerceNumber(row.total_hours);
 
-        return {
-          id,
-          projectId,
-          project,
-          status,
-          logDate: row.log_date ?? null,
-          entryType: typeof row.entry_type === "string"
-            ? row.entry_type
-            : "daily",
-          totalHours,
-          submittedAt: row.submitted_at ?? null,
-          verifiedAt: row.verified_at ?? null,
-          disputedAt: row.disputed_at ?? null,
-          disputeReason: row.dispute_reason ?? null,
-          visibility: typeof row.visibility === "string"
-            ? row.visibility
-            : "private",
-          showOnProfile: Boolean(row.show_on_profile),
-          showDateRangeOnProfile: Boolean(row.show_date_range_on_profile),
-          createdAt: row.created_at ?? null,
-          updatedAt: row.updated_at ?? null,
-          photoCount: relationshipCounts.photoCount.get(id) ?? 0,
-          collaboratorCount: relationshipCounts.collaboratorCount.get(id) ?? 0,
-          commentCount: relationshipCounts.commentCount.get(id) ?? 0,
-          descriptionPreview: typeof row.work_description === "string"
-            ? shorten(row.work_description, 220)
-            : null,
-        };
-      });
+          return {
+            id,
+            projectId,
+            project,
+            status,
+            logDate: row.log_date ?? null,
+            entryType: typeof row.entry_type === "string"
+              ? row.entry_type
+              : "daily",
+            totalHours,
+            submittedAt: row.submitted_at ?? null,
+            verifiedAt: row.verified_at ?? null,
+            disputedAt: row.disputed_at ?? null,
+            disputeReason: row.dispute_reason ?? null,
+            visibility: typeof row.visibility === "string"
+              ? row.visibility
+              : "private",
+            showOnProfile: Boolean(row.show_on_profile),
+            showDateRangeOnProfile: Boolean(row.show_date_range_on_profile),
+            createdAt: row.created_at ?? null,
+            updatedAt: row.updated_at ?? null,
+            photoCount: relationshipCounts.photoCount.get(id) ?? 0,
+            collaboratorCount: relationshipCounts.collaboratorCount.get(id) ??
+              0,
+            commentCount: relationshipCounts.commentCount.get(id) ?? 0,
+            descriptionPreview: typeof row.work_description === "string"
+              ? shorten(row.work_description, 220)
+              : null,
+          };
+        },
+      );
 
       const statusSummary = createEmptyStatusSummary();
       let totalHours = 0;
@@ -2600,14 +2701,16 @@ export const workLogsRouter = t.router({
 
       const workLogs = rows ?? [];
       const workLogIds = workLogs
-        .map((row) => (typeof row.id === "string" ? row.id : null))
-        .filter((value): value is string => Boolean(value));
+        .map((
+          row: { id: string | number },
+        ) => (typeof row.id === "string" ? row.id : null))
+        .filter((value: string | null): value is string => Boolean(value));
 
       const projectIds = workLogs
         .map((
-          row,
+          row: { project_id?: string | null },
         ) => (typeof row.project_id === "string" ? row.project_id : null))
-        .filter((value): value is string => Boolean(value));
+        .filter((value: string | null): value is string => Boolean(value));
 
       const [projectMap, relationshipCounts] = await Promise.all([
         fetchProjectMetadata(supabase, Array.from(new Set(projectIds))),
@@ -2719,29 +2822,45 @@ export const workLogsRouter = t.router({
         .sort((a, b) => b.totalHours - a.totalHours);
 
       const recentActivity = workLogs
-        .map((log) => {
-          const id = typeof log.id === "string" ? log.id : String(log.id);
-          const projectId = typeof log.project_id === "string"
-            ? log.project_id
-            : null;
-          const activityTimestamp = resolveActivityTimestamp(log);
-          return {
-            id,
-            projectId,
-            project: projectId ? (projectMap.get(projectId) ?? null) : null,
-            status: typeof log.status === "string" ? log.status : "draft",
-            logDate: log.log_date ?? null,
-            totalHours: coerceNumber(log.total_hours),
-            photoCount: relationshipCounts.photoCount.get(id) ?? 0,
-            commentCount: relationshipCounts.commentCount.get(id) ?? 0,
-            updatedAt: activityTimestamp,
-          };
-        })
-        .sort((a, b) => {
-          const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
-          const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
-          return timeB - timeA;
-        })
+        .map(
+          (
+            log: {
+              id: string | number;
+              project_id?: string | null;
+              status?: string;
+              log_date?: string | null;
+              total_hours?: number | null;
+              [key: string]: unknown;
+            },
+          ) => {
+            const id = typeof log.id === "string" ? log.id : String(log.id);
+            const projectId = typeof log.project_id === "string"
+              ? log.project_id
+              : null;
+            const activityTimestamp = resolveActivityTimestamp(log);
+            return {
+              id,
+              projectId,
+              project: projectId ? (projectMap.get(projectId) ?? null) : null,
+              status: typeof log.status === "string" ? log.status : "draft",
+              logDate: log.log_date ?? null,
+              totalHours: coerceNumber(log.total_hours),
+              photoCount: relationshipCounts.photoCount.get(id) ?? 0,
+              commentCount: relationshipCounts.commentCount.get(id) ?? 0,
+              updatedAt: activityTimestamp,
+            };
+          },
+        )
+        .sort(
+          (
+            a: { updatedAt: string | null },
+            b: { updatedAt: string | null },
+          ) => {
+            const timeA = a.updatedAt ? Number(new Date(a.updatedAt)) : 0;
+            const timeB = b.updatedAt ? Number(new Date(b.updatedAt)) : 0;
+            return timeB - timeA;
+          },
+        )
         .slice(0, 5);
 
       return {
@@ -4894,12 +5013,12 @@ export const workLogsRouter = t.router({
         .eq("user_id", user.id)
         .eq("log_date", input.logDate);
 
-      const relevantLogs = (workLogs ?? []).filter((log) =>
-        log.id !== input.workLogId
-      );
+      const relevantLogs = (workLogs ?? []).filter((
+        log: { id: string | number },
+      ) => log.id !== input.workLogId);
 
       const conflicts = relevantLogs
-        .map((log) => ({
+        .map((log: { id: string | number; [key: string]: unknown }) => ({
           workLogId: log.id,
           conflicts: intersectingEntries(
             input.timeEntries,

@@ -243,7 +243,7 @@ async function loadStripeClient(ctx: Context): Promise<Stripe> {
 
   if (!settings?.api_key_secret_id) {
     throw new TRPCError({
-      code: 'FAILED_PRECONDITION',
+      code: 'BAD_REQUEST',
       message: 'Stripe API key is not configured.',
     })
   }
@@ -581,7 +581,7 @@ export const successFeesRouter = t.router({
 
       if (!successFee.upfront_payment_intent_id) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Success fee does not have an upfront payment intent.',
         })
       }
@@ -598,7 +598,7 @@ export const successFeesRouter = t.router({
 
       if (intent.status !== 'succeeded') {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Payment has not succeeded yet.',
         })
       }
@@ -725,14 +725,14 @@ export const successFeesRouter = t.router({
 
       if (successFee.status !== 'upfront_paid') {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Success fee must have an upfront payment completed before final charge.',
         })
       }
 
       if (successFee.final_amount_cents <= 0) {
         throw new TRPCError({
-          code: 'FAILED_PRECONDITION',
+          code: 'BAD_REQUEST',
           message: 'Final amount is zero; nothing to charge.',
         })
       }

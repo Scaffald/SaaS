@@ -77,9 +77,17 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   }, [currentData])
 
   // Format date for display
-  const formatDate = (dateString: string | null) => {
+  const formatDate = (dateString: string | Date | null) => {
     if (!dateString) return 'Date unknown'
-    const date = new Date(dateString)
+    
+    // Handle both string and Date object inputs
+    const date = dateString instanceof Date ? dateString : new Date(dateString)
+    
+    // Validate the date is valid
+    if (Number.isNaN(date.getTime())) {
+      return 'Invalid date'
+    }
+    
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -88,9 +96,17 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
   }
 
   // Calculate days between versions
-  const getDaysAgo = (dateString: string | null) => {
+  const getDaysAgo = (dateString: string | Date | null) => {
     if (!dateString) return null
-    const date = new Date(dateString)
+    
+    // Handle both string and Date object inputs
+    const date = dateString instanceof Date ? dateString : new Date(dateString)
+    
+    // Validate the date is valid
+    if (Number.isNaN(date.getTime())) {
+      return null
+    }
+    
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))

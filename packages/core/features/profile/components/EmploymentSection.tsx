@@ -277,7 +277,7 @@ export function EmploymentSection({
                   title="I have a valid driver's license"
                   description="Class D (standard license) is automatically selected. Add any additional classes below."
                   checked={isExpanded}
-                  onCheckedChange={(checked) => {
+                  onCheckedChange={(checked: boolean) => {
                     if (readOnly) return
                     setIsExpanded(checked)
                     if (checked) {
@@ -294,7 +294,7 @@ export function EmploymentSection({
                         <XStack key={license} gap="$3" items="center">
                           <CustomCheckbox
                             checked={field.value?.includes(license) || false}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: boolean) => {
                               if (readOnly) return
                               const current = field.value || []
                               if (checked) {
@@ -355,7 +355,7 @@ export function EmploymentSection({
                   title="Former/Current Military"
                   description="Select all that apply"
                   checked={isExpanded}
-                  onCheckedChange={(checked) => {
+                  onCheckedChange={(checked: boolean) => {
                     if (readOnly) return
                     setIsExpanded(checked)
                     if (!checked) {
@@ -369,7 +369,7 @@ export function EmploymentSection({
                         <XStack key={status} gap="$3" items="center">
                           <CustomCheckbox
                             checked={field.value?.includes(status) || false}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: boolean) => {
                               if (readOnly) return
                               const current = field.value || []
                               if (checked) {
@@ -409,7 +409,7 @@ export function EmploymentSection({
                   title="I'm available for work"
                   description="Select all that apply"
                   checked={isExpanded}
-                  onCheckedChange={(checked) => {
+                  onCheckedChange={(checked: boolean) => {
                     if (readOnly) return
                     setIsExpanded(checked)
                     if (!checked) {
@@ -423,7 +423,7 @@ export function EmploymentSection({
                         <XStack key={option} gap="$3" items="center">
                           <CustomCheckbox
                             checked={field.value?.includes(option) || false}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked: boolean) => {
                               if (readOnly) return
                               const current = field.value || []
                               if (checked) {
