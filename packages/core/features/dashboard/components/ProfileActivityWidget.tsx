@@ -303,7 +303,7 @@ export function ProfileActivityWidget() {
                         icon={
                           acceptRequestMutation.isPending ? Loader2 : CheckCircle2
                         }
-                        theme="green"
+                        theme="success"
                         onPress={() => handleAcceptRequest(request.id)}
                         disabled={acceptRequestMutation.isPending || declineRequestMutation.isPending}
                       />

@@ -166,7 +166,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
   })
 
   const isFollowing = Boolean(followStatus?.isFollowing)
-  const isFollowMutating = followMutation.isLoading || unfollowMutation.isLoading
+  const isFollowMutating = followMutation.isPending || unfollowMutation.isPending
   const isFollowButtonDisabled = isFollowMutating || followStatusLoading
   const followButtonIcon = isFollowButtonDisabled ? Loader2 : isFollowing ? CheckCircle2 : UserPlus
   const followButtonLabel = followStatusLoading
