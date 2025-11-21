@@ -16,7 +16,7 @@ import { useProfileSkillsMutations } from './hooks/useProfileSkillsMutations'
 const createPendingSearchId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
-const DEFAULT_INDUSTRY_SLUG = 'construction'
+const _DEFAULT_INDUSTRY_SLUG = 'construction'
 
 interface ProfileSkillsContextValue {
   isLoadingIndustries: boolean
@@ -77,8 +77,8 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
   const updateIndustryMutationRef = useRef(mutations.updateIndustryMutation)
   updateIndustryMutationRef.current = mutations.updateIndustryMutation
 
-  const searchSkillsMutationRef = useRef(mutations.searchSkillsMutation)
-  searchSkillsMutationRef.current = mutations.searchSkillsMutation
+  const searchParentSkillsMutationRef = useRef(mutations.searchParentSkillsMutation)
+  searchParentSkillsMutationRef.current = mutations.searchParentSkillsMutation
 
   const selectSkill = mutations.selectSkill
   const isSearchingSkills = mutations.isSearchingSkills
@@ -132,7 +132,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
     setPendingSearch(null)
   }, [])
 
-  // Search skills function - use ref to access mutation to prevent callback recreation
+  // Search skills function - use cascading approach (searchParentSkills)
   const searchSkills = useCallback(
     async (query: string, taxonomies: string[]): Promise<ParentSkill[]> => {
       if (!selectedIndustryId || taxonomies.length === 0) {
@@ -140,39 +140,37 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
       }
 
       try {
-        const allResults: ParentSkill[] = []
+        // Use searchParentSkills (cascading approach)
+        const result = await searchParentSkillsMutationRef.current.mutateAsync({
+          query,
+          industryId: selectedIndustryId,
+          limit: 20,
+        })
 
-        for (const taxonomy of taxonomies) {
-          const result = await searchSkillsMutationRef.current.mutateAsync({
-            query,
-            industrySlug: taxonomy === 'csi' ? DEFAULT_INDUSTRY_SLUG : selectedIndustrySlug,
-            limit: 20,
+        // Map results to ParentSkill format
+        const skills = (result.skills || []).map(
+          (skill: {
+            skill_id: string
+            skill_name: string
+            csi_display: string | null
+            csi_code: string[] | null
+            child_count: number
+          }) => ({
+            id: skill.skill_id,
+            name: skill.skill_name,
+            code: skill.csi_display || skill.skill_id,
+            depth: 0, // Parent skills are at depth 0
+            childCount: skill.child_count,
           })
+        )
 
-          const skills = result.skills.map(
-            (skill: {
-              skill_id: string
-              name: string
-              display_code: string
-              hierarchy_level: number | null
-            }) => ({
-              id: skill.skill_id,
-              name: skill.name,
-              code: skill.display_code,
-              depth: skill.hierarchy_level || 0,
-            })
-          )
-
-          allResults.push(...skills)
-        }
-
-        return allResults
+        return skills
       } catch (error) {
         console.error('Search error:', error)
         return []
       }
     },
-    [selectedIndustryId, selectedIndustrySlug] // Only depends on primitive values
+    [selectedIndustryId] // Only depends on primitive values
   )
 
   // Derived state

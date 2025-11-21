@@ -9,15 +9,6 @@ import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
 
-interface SearchSkillResult {
-  skill_id: string
-  name: string
-  display_code?: string | null
-  code?: string | null
-  hierarchy_level?: number | null
-  taxonomy?: string | null
-}
-
 const MIN_SKILLS = 3
 const MAX_SKILLS = 5
 
@@ -43,7 +34,7 @@ export function SkillsStep({
     new Map()
   )
 
-  const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
+  const searchParentSkillsMutation = api.profile.skills.searchParentSkills.useMutation()
   const { data: primaryIndustryData } =
     api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
 
@@ -72,40 +63,44 @@ export function SkillsStep({
     })
   }, [skills, hasMinimumSkills, isDirty, onStepStateChange])
 
-  const industrySlug = primaryIndustryData?.industry?.slug ?? 'construction'
 
   const handleSearchSkills = useCallback(
-    async (query: string, taxonomies: string[]) => {
+    async (query: string, _taxonomies: string[]) => {
       if (!query.trim()) {
         return []
       }
 
-      try {
-        const taxonomyInput =
-          taxonomies.length === 0
-            ? 'both'
-            : taxonomies.length === 1
-              ? (taxonomies[0] as 'csi' | 'onet')
-              : 'both'
+      const industryId = primaryIndustryData?.primary_industry_id
+      if (!industryId) {
+        return []
+      }
 
-        const result = await searchSkillsMutation.mutateAsync({
+      try {
+        const result = await searchParentSkillsMutation.mutateAsync({
           query,
-          industrySlug,
-          taxonomy: taxonomyInput,
+          industryId,
           limit: 25,
         })
 
-        const parentSkills: ParentSkill[] = result.skills.map(
-          (skill: SearchSkillResult): ParentSkill => {
+        const parentSkills: ParentSkill[] = (result.skills || []).map(
+          (skill: {
+            skill_id: string
+            skill_name: string
+            csi_display: string | null
+            csi_code: string[] | null
+            child_count: number
+          }): ParentSkill => {
             const mapped: ParentSkill = {
               id: skill.skill_id,
-              name: skill.name,
-              code: skill.display_code || skill.code || skill.skill_id,
-              depth: skill.hierarchy_level ?? 0,
+              name: skill.skill_name,
+              code: skill.csi_display || skill.skill_id,
+              depth: 0, // Parent skills are at depth 0
+              childCount: skill.child_count,
             }
+            // Default to 'onet' taxonomy for wizard (can be refined later)
             searchResultsRef.current.set(skill.skill_id, {
               ...mapped,
-              taxonomy: (skill.taxonomy as SkillEntry['taxonomy']) ?? 'onet',
+              taxonomy: 'onet' as SkillEntry['taxonomy'],
             })
             return mapped
           }
@@ -117,7 +112,7 @@ export function SkillsStep({
         return []
       }
     },
-    [industrySlug, searchSkillsMutation]
+    [primaryIndustryData, searchParentSkillsMutation]
   )
 
   const handleSelectSkill = useCallback(
@@ -239,7 +234,7 @@ export function SkillsStep({
           onSearchSkills={handleSearchSkills}
           onSelectSkill={handleSelectSkill}
           existingSkillIds={existingSkillIds}
-          isSearching={searchSkillsMutation.isPending}
+          isSearching={searchParentSkillsMutation.isPending}
         />
         {skills.length >= MAX_SKILLS && (
           <Paragraph fontSize="$2" color="$color11" aria-live="polite">

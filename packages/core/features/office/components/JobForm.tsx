@@ -458,7 +458,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   type Organization = { id: string; name: string; slug: string; owner_user_id: string | null }
 
   // Skills and certifications handlers
-  const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills.useMutation()
+  const searchParentSkillsMutation = api.profile.skills.searchParentSkills.useMutation()
   const { data: primaryIndustryData } =
     api.profile.skillsMultiTaxonomy.getPrimaryIndustry.useQuery()
   const searchCertificationsQuery = api.office.searchCertifications.useQuery(
@@ -469,19 +469,27 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
   const handleSearchSkills = useCallback(
     async (query: string) => {
       if (!query.trim()) return []
-      const industrySlug = primaryIndustryData?.industry?.slug ?? 'construction'
+      const industryId = primaryIndustryData?.primary_industry_id
+      if (!industryId) {
+        return []
+      }
       try {
-        const result = await searchSkillsMutation.mutateAsync({
+        const result = await searchParentSkillsMutation.mutateAsync({
           query,
-          industrySlug,
-          taxonomy: 'both',
+          industryId,
           limit: 25,
         })
-        return result.skills.map(
-          (skill: { skill_id: string; name: string; display_code?: string; code?: string }) => ({
+        return (result.skills || []).map(
+          (skill: {
+            skill_id: string
+            skill_name: string
+            csi_display: string | null
+            csi_code: string[] | null
+            child_count: number
+          }) => ({
             id: skill.skill_id,
-            name: skill.name,
-            code: skill.display_code || skill.code || skill.skill_id,
+            name: skill.skill_name,
+            code: skill.csi_display || skill.skill_id,
           })
         )
       } catch (error) {
@@ -489,7 +497,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         return []
       }
     },
-    [searchSkillsMutation, primaryIndustryData]
+    [searchParentSkillsMutation, primaryIndustryData]
   )
 
   const handleSearchCertifications = useCallback(
