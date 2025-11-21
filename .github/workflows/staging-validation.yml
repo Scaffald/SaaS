@@ -1,0 +1,95 @@
+name: Staging Validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'
+  push:
+    branches:
+      - staging
+      - preview
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PNPM_HOME: ~/.pnpm
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10.20.0'
+  PLAYWRIGHT_BASE_URL: ${{ secrets.STAGING_APP_URL || 'https://staging.example.com' }}
+
+jobs:
+  provision:
+    name: Provision preview database
+    runs-on: ubuntu-latest
+    if: secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY != ''
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Provision staging/preview Supabase
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.STAGING_SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+        run: node scripts/provision-preview.mjs staging
+
+  staging-tests:
+    name: Staging coverage + e2e
+    runs-on: ubuntu-latest
+    needs: provision
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest with coverage against staging
+        env:
+          CI: true
+          STAGING_APP_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+        run: pnpm test:coverage -- --runInBand
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Playwright against staging
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ env.PLAYWRIGHT_BASE_URL }}
+        run: pnpm test:playwright
+
+      - name: Upload Playwright traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: tests/e2e/**/trace.zip
+          if-no-files-found: ignore

@@ -31,6 +31,7 @@
     "deploy:aws:setup:prod": "./scripts/setup-aws-infra.sh production",
     "deploy:verify": "./scripts/verify-prod-deployment.sh",
     "secrets:add": "./scripts/add-github-secrets.sh",
+    "staging:provision": "node scripts/provision-preview.mjs staging",
     "watch": "turbo watch",
     "format": "turbo format",
     "format:fix": "turbo format:fix",
@@ -88,6 +89,7 @@
     "test:expo": "pnpm --filter expo-app test",
     "test": "pnpm test:vitest && pnpm test:api",
     "test:performance": "cd apps/expo && time pnpm web:build",
+    "release:gates": "node tests/infrastructure/chaos/latency-toggle.mjs && pnpm test:performance",
     "validate:migration": "pnpm test:all && echo '✅ Migration validation complete'",
     "test:playwright": "playwright test"
   },

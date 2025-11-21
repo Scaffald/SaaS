@@ -23,6 +23,24 @@ Sync GitHub Actions secrets from your local environment files.
 - Also sets optional Supabase secrets when present
 - Requires GitHub CLI authentication (`gh auth login`)
 
+### `scripts/provision-preview.mjs`
+
+Non-interactive provisioning for staging/preview Supabase environments with anonymized seeds and per-run test accounts.
+
+**Usage:**
+```bash
+# Provision preview using .env.preview
+pnpm staging:provision
+
+# Provision staging explicitly
+node scripts/provision-preview.mjs staging
+```
+
+**Details:**
+- Applies the linked Supabase migrations via `supabase db push`
+- Seeds the database using the preview-safe TypeScript seeders
+- Generates unique auth accounts for each run in `artifacts/run-accounts-<id>.json`
+
 ## Interactive Deployment (Recommended)
 
 ### `pnpm prod`

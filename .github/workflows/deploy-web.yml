@@ -74,6 +74,27 @@ jobs:
           pnpm lint
         continue-on-error: true # Don't fail deploy on lint warnings
 
+      # ===== CHAOS/PERFORMANCE GATES =====
+      - name: 🧪 Chaos & performance gates
+        if: github.event_name != 'pull_request'
+        env:
+          CHAOS_LATENCY_ENDPOINT: ${{ secrets.CHAOS_LATENCY_ENDPOINT }}
+          CHAOS_LATENCY_TOKEN: ${{ secrets.CHAOS_LATENCY_TOKEN }}
+          CHAOS_LATENCY_MS: ${{ vars.CHAOS_LATENCY_MS || '250' }}
+          # Supabase
+          EXPO_PUBLIC_SUPABASE_URL: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_URL || secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_ANON_KEY || secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          # App URL
+          EXPO_PUBLIC_URL: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_URL || secrets.EXPO_PUBLIC_URL }}
+          # Google OAuth
+          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+          EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || secrets.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID }}
+          EXPO_PUBLIC_GOOGLE_IOS_SCHEME: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_GOOGLE_IOS_SCHEME || secrets.EXPO_PUBLIC_GOOGLE_IOS_SCHEME }}
+          # Mapbox
+          EXPO_PUBLIC_MAPBOX_TOKEN: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_MAPBOX_TOKEN || secrets.EXPO_PUBLIC_MAPBOX_TOKEN }}
+          EXPO_PUBLIC_MAPBOX_API_URL: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_MAPBOX_API_URL || secrets.EXPO_PUBLIC_MAPBOX_API_URL }}
+        run: pnpm release:gates
+
       # ===== BUILD WEB APP =====
       - name: 🚀 Build web application
         working-directory: apps/expo
