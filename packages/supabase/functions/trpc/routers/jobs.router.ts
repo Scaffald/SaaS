@@ -1,11 +1,200 @@
 import { TRPCError } from '@trpc/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 import {
   applicationCreateSchema,
   applicationWithdrawSchema,
 } from '../../_shared/application-schemas.ts'
+import { jobSoftSkillRequirementSchema } from '@app/schemas/profile/soft-skills.schema'
 import { JOB_SKILLS_SELECT, transformJobSkills } from '../../_shared/skill-helpers.ts'
 import { protectedProcedure, t } from '../middleware.ts'
+
+type SoftSkillRequirement = z.infer<typeof jobSoftSkillRequirementSchema>
+
+interface SoftSkillMetadata {
+  name: string | null
+  category: string | null
+}
+
+interface SoftSkillMatchDetail {
+  skillId: string
+  skillName: string | null
+  category: string | null
+  requiredImportance: number
+  userRating: number | null
+  meetsRequirement: boolean | null
+  contribution: number
+}
+
+const softSkillRequirementArraySchema = z.array(jobSoftSkillRequirementSchema)
+
+const parseRequiredSoftSkills = (value: unknown): SoftSkillRequirement[] => {
+  if (!value) {
+    return []
+  }
+
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value)
+      return parseRequiredSoftSkills(parsed)
+    } catch {
+      return []
+    }
+  }
+
+  const parsed = softSkillRequirementArraySchema.safeParse(value)
+  if (parsed.success) {
+    return parsed.data
+  }
+
+  return []
+}
+
+const fetchSoftSkillMetadata = async (
+  supabase: SupabaseClient,
+  skillIds: string[],
+): Promise<Map<string, SoftSkillMetadata>> => {
+  if (skillIds.length === 0) {
+    return new Map()
+  }
+
+  const uniqueIds = Array.from(new Set(skillIds))
+
+  const { data, error } = await supabase
+    .schema('core')
+    .from('soft_skills')
+    .select('id, name, category')
+    .in('id', uniqueIds)
+
+  if (error) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: `Failed to load soft skills metadata: ${error.message}`,
+      cause: error,
+    })
+  }
+
+  const map = new Map<string, SoftSkillMetadata>()
+  for (const row of data ?? []) {
+    if (!row.id) continue
+    map.set(row.id, {
+      name: row.name ?? null,
+      category: row.category ?? null,
+    })
+  }
+
+  return map
+}
+
+const loadUserSoftSkillsForMatching = async (
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<{ ratings: Map<string, number>; hasAssessment: boolean }> => {
+  const { data: latestVersionRow, error: versionError } = await supabase
+    .schema('core')
+    .from('user_skills')
+    .select('version')
+    .eq('user_id', userId)
+    .eq('skill_taxonomy', 'soft_skills')
+    .order('version', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (versionError && versionError.code !== 'PGRST116') {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: `Failed to load latest soft skill version: ${versionError.message}`,
+      cause: versionError,
+    })
+  }
+
+  const version = latestVersionRow?.version ?? null
+
+  if (!version) {
+    return { ratings: new Map(), hasAssessment: false }
+  }
+
+  const { data, error } = await supabase
+    .schema('core')
+    .from('user_skills')
+    .select('soft_skill_id, proficiency_level')
+    .eq('user_id', userId)
+    .eq('skill_taxonomy', 'soft_skills')
+    .eq('version', version)
+
+  if (error) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: `Failed to load soft skill ratings: ${error.message}`,
+      cause: error,
+    })
+  }
+
+  const ratings = new Map<string, number>()
+
+  for (const row of data ?? []) {
+    if (!row.soft_skill_id) continue
+    if (typeof row.proficiency_level === 'number') {
+      ratings.set(row.soft_skill_id, row.proficiency_level)
+    }
+  }
+
+  return { ratings, hasAssessment: ratings.size > 0 }
+}
+
+const computeSoftSkillMatch = (
+  requirements: SoftSkillRequirement[],
+  ratings: Map<string, number>,
+  metadata: Map<string, SoftSkillMetadata>,
+): { score: number | null; details: SoftSkillMatchDetail[] } => {
+  if (requirements.length === 0) {
+    return { score: null, details: [] }
+  }
+
+  const details = requirements.map<SoftSkillMatchDetail>((req) => {
+    const info = metadata.get(req.skill_id)
+    const userRating = ratings.get(req.skill_id)
+    const cappedRating =
+      typeof userRating === 'number' ? Math.min(userRating, req.importance) : 0
+    const contributionRatio = req.importance > 0 ? cappedRating / req.importance : 0
+
+    return {
+      skillId: req.skill_id,
+      skillName: info?.name ?? null,
+      category: info?.category ?? null,
+      requiredImportance: req.importance,
+      userRating: userRating ?? null,
+      meetsRequirement:
+        typeof userRating === 'number' ? userRating >= req.importance : null,
+      contribution: Number((contributionRatio * 100).toFixed(2)),
+    }
+  })
+
+  if (ratings.size === 0) {
+    return { score: null, details }
+  }
+
+  const averageRatio =
+    details.reduce((sum, detail) => sum + detail.contribution / 100, 0) / requirements.length
+
+  return {
+    score: Math.round(averageRatio * 100),
+    details,
+  }
+}
+
+const calculateSoftSkillsMatchInput = z.object({
+  jobId: z.string().uuid(),
+  userId: z.string().uuid().optional(),
+})
+
+const jobsWithSoftSkillsMatchInput = z.object({
+  userId: z.string().uuid().optional(),
+  minMatchScore: z.number().int().min(0).max(100).optional(),
+  sortBy: z.enum(['match_score']).optional(),
+  limit: z.number().int().min(1).max(100).default(25),
+  offset: z.number().int().min(0).default(0),
+})
 
 /**
  * Jobs router - handles job-related operations
@@ -263,6 +452,171 @@ export const jobsRouter = t.router({
       }))
 
       return { jobs, total: count || 0 }
+    }),
+
+  calculateSoftSkillsMatch: protectedProcedure
+    .input(calculateSoftSkillsMatchInput)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+      const targetUserId = input.userId ?? user.id
+
+      const { ratings, hasAssessment } = await loadUserSoftSkillsForMatching(supabase, targetUserId)
+
+      const { data: job, error } = await supabase
+        .schema('core')
+        .from('jobs')
+        .select(
+          `
+            id,
+            title,
+            slug,
+            organization:organizations!jobs_organization_id_fkey(id, name, slug),
+            required_soft_skills
+          `,
+        )
+        .eq('id', input.jobId)
+        .maybeSingle()
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to load job: ${error.message}`,
+          cause: error,
+        })
+      }
+
+      if (!job) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Job not found',
+        })
+      }
+
+      const requirements = parseRequiredSoftSkills(job.required_soft_skills)
+
+      if (requirements.length === 0) {
+        return {
+          jobId: job.id,
+          jobTitle: job.title,
+          organization: job.organization,
+          score: null,
+          needsSelfAssessment: !hasAssessment,
+          totalRequirements: 0,
+          details: [] as SoftSkillMatchDetail[],
+        }
+      }
+
+      const metadata = await fetchSoftSkillMetadata(
+        supabase,
+        requirements.map((req) => req.skill_id),
+      )
+
+      const match = computeSoftSkillMatch(requirements, ratings, metadata)
+
+      return {
+        jobId: job.id,
+        jobTitle: job.title,
+        organization: job.organization,
+        score: match.score,
+        needsSelfAssessment: !hasAssessment,
+        totalRequirements: requirements.length,
+        details: match.details,
+      }
+    }),
+
+  getJobsWithSoftSkillsMatch: protectedProcedure
+    .input(jobsWithSoftSkillsMatchInput)
+    .query(async ({ ctx, input }) => {
+      const { supabase, user } = ctx
+      const targetUserId = input.userId ?? user.id
+
+      const { ratings, hasAssessment } = await loadUserSoftSkillsForMatching(supabase, targetUserId)
+
+      if (!hasAssessment) {
+        return {
+          total: 0,
+          needsSelfAssessment: true,
+          jobs: [] as Array<{
+            jobId: string
+            title: string
+            slug: string | null
+            organization: unknown
+            matchScore: number | null
+            totalRequirements: number
+            details: SoftSkillMatchDetail[]
+          }>,
+        }
+      }
+
+      const { data, error } = await supabase
+        .schema('core')
+        .from('jobs')
+        .select(
+          `
+            id,
+            title,
+            slug,
+            created_at,
+            organization:organizations!jobs_organization_id_fkey(id, name, slug),
+            required_soft_skills
+          `,
+        )
+        .eq('status', 'open')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to load jobs: ${error.message}`,
+          cause: error,
+        })
+      }
+
+      const jobsWithRequirements = (data || []).map((job) => {
+        const requirements = parseRequiredSoftSkills(job.required_soft_skills)
+        return { job, requirements }
+      })
+
+      const skillIds: string[] = []
+      for (const entry of jobsWithRequirements) {
+        for (const req of entry.requirements) {
+          skillIds.push(req.skill_id)
+        }
+      }
+
+      const metadata = await fetchSoftSkillMetadata(supabase, skillIds)
+
+      const enriched = jobsWithRequirements
+        .filter((entry) => entry.requirements.length > 0)
+        .map((entry) => {
+          const match = computeSoftSkillMatch(entry.requirements, ratings, metadata)
+          return {
+            jobId: entry.job.id,
+            title: entry.job.title,
+            slug: entry.job.slug ?? null,
+            organization: entry.job.organization,
+            matchScore: match.score,
+            totalRequirements: entry.requirements.length,
+            details: match.details,
+          }
+        })
+        .filter((entry) => entry.matchScore !== null)
+
+      const minScore = typeof input.minMatchScore === 'number' ? input.minMatchScore : null
+      const filtered = minScore !== null ? enriched.filter((entry) => (entry.matchScore ?? 0) >= minScore) : enriched
+
+      if (input.sortBy === 'match_score') {
+        filtered.sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0))
+      }
+
+      const total = filtered.length
+      const paginated = filtered.slice(input.offset, input.offset + input.limit)
+
+      return {
+        total,
+        needsSelfAssessment: false,
+        jobs: paginated,
+      }
     }),
 
   /**
