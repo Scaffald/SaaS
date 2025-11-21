@@ -20,8 +20,8 @@ interface UseProfileSkillsMutationsReturn {
   updateIndustryMutation: ReturnType<
     typeof api.profile.skillsMultiTaxonomy.updatePrimaryIndustry.useMutation
   >;
-  searchSkillsMutation: ReturnType<
-    typeof api.profile.skillsMultiTaxonomy.searchSkills.useMutation
+  searchParentSkillsMutation: ReturnType<
+    typeof api.profile.skills.searchParentSkills.useMutation
   >;
   selectSkill: (
     skillId: string,
@@ -174,8 +174,8 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
       },
     });
 
-  // Search skills mutation
-  const searchSkillsMutation = api.profile.skillsMultiTaxonomy.searchSkills
+  // Search parent skills mutation (cascading approach)
+  const searchParentSkillsMutation = api.profile.skills.searchParentSkills
     .useMutation();
 
   // Select skill wrapper (stores skill details before mutation)
@@ -211,14 +211,14 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
       addSkillMutation,
       removeSkillMutation,
       updateIndustryMutation,
-      searchSkillsMutation,
+      searchParentSkillsMutation,
       selectSkill,
     }),
     [
       addSkillMutation,
       removeSkillMutation,
       updateIndustryMutation,
-      searchSkillsMutation,
+      searchParentSkillsMutation,
       selectSkill,
     ],
   );
@@ -229,6 +229,6 @@ export function useProfileSkillsMutations(): UseProfileSkillsMutationsReturn {
     ...stableMutations,
     isAddingSkill: addSkillMutation.isPending,
     isRemovingSkill: removeSkillMutation.isPending,
-    isSearchingSkills: searchSkillsMutation.isPending,
+    isSearchingSkills: searchParentSkillsMutation.isPending,
   };
 }
