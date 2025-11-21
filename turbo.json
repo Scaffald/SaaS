@@ -39,6 +39,10 @@
     },
     "check-circular-deps": {
       "cache": false
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "cache": false
     }
   }
 }

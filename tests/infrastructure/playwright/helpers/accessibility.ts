@@ -8,10 +8,7 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
 
-// Note: axe-playwright needs to be installed: pnpm add -D axe-playwright @axe-core/playwright
-// For now, these helpers use basic Playwright APIs
-// Uncomment when axe-playwright is installed:
-// import { injectAxe, checkA11y, getViolations, configureAxe } from 'axe-playwright'
+import { checkA11y, configureAxe, getViolations, injectAxe } from 'axe-playwright'
 
 /**
  * WCAG 2.1 AA compliance levels
@@ -27,18 +24,16 @@ export const WCAG_LEVELS = {
  * Note: Requires axe-playwright package
  */
 export async function initializeAxe(page: Page): Promise<void> {
-  // TODO: Install axe-playwright and uncomment:
-  // await injectAxe(page)
-  // await configureAxe(page, {
-  //   rules: {
-  //     // Disable color-contrast rule as it's often false positives
-  //     // Manual testing should verify actual contrast ratios
-  //     'color-contrast': { enabled: false },
-  //   },
-  // })
-  // For now, this is a no-op
-  await page.evaluate(() => {
-    // Placeholder for axe initialization
+  await injectAxe(page)
+  await configureAxe(page, {
+    rules: [
+      {
+        // Disable color-contrast rule as it's often false positives
+        // Manual testing should verify actual contrast ratios
+        id: 'color-contrast',
+        enabled: false,
+      },
+    ],
   })
 }
 
@@ -57,19 +52,14 @@ export async function assertA11y(
 ): Promise<void> {
   await initializeAxe(page)
 
-  // TODO: Install axe-playwright and uncomment:
-  // const tags = options?.tags || [WCAG_LEVELS.AA]
-  // const exclude = options?.exclude || []
-  // await checkA11y(page, undefined, {
-  //   tags,
-  //   exclude,
-  //   detailedReport: true,
-  //   detailedReportOptions: { html: true },
-  // })
-
-  // For now, run basic checks
-  await assertFormLabels(page)
-  await assertHeadingHierarchy(page)
+  const tags = options?.tags || [WCAG_LEVELS.AA]
+  const exclude = options?.exclude || []
+  await checkA11y(page, undefined, {
+    tags,
+    exclude,
+    detailedReport: true,
+    detailedReportOptions: { html: true },
+  })
 }
 
 /**
@@ -87,22 +77,18 @@ export async function getA11yViolations(
 ): Promise<Array<{ id: string; impact: string; description: string; nodes: unknown[] }>> {
   await initializeAxe(page)
 
-  // TODO: Install axe-playwright and uncomment:
-  // const tags = options?.tags || [WCAG_LEVELS.AA]
-  // const exclude = options?.exclude || []
-  // const violations = await getViolations(page, {
-  //   tags,
-  //   exclude,
-  // })
-  // return violations.map((v) => ({
-  //   id: v.id,
-  //   impact: v.impact || 'unknown',
-  //   description: v.description,
-  //   nodes: v.nodes,
-  // }))
-
-  // For now, return empty array
-  return []
+  const tags = options?.tags || [WCAG_LEVELS.AA]
+  const exclude = options?.exclude || []
+  const violations = await getViolations(page, {
+    tags,
+    exclude,
+  })
+  return violations.map((v) => ({
+    id: v.id,
+    impact: v.impact || 'unknown',
+    description: v.description,
+    nodes: v.nodes,
+  }))
 }
 
 /**

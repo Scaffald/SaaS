@@ -19,16 +19,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+
+      - name: Determine Turbo scope for PRs
+        if: github.event_name == 'pull_request'
+        run: echo "TURBO_FILTER=--filter=...[origin/${GITHUB_BASE_REF}]" >> $GITHUB_ENV
 
       - name: Install
         uses: ./.github/actions/install
 
       - name: Format, Lint & Type Check (pnpm check)
-        run: pnpm check
+        run: |
+          cmd="pnpm check"
+          if [ -n "${TURBO_FILTER:-}" ]; then
+            cmd="$cmd -- ${TURBO_FILTER}"
+          fi
+          echo "Running: $cmd"
+          eval "$cmd"
 
       - name: Standalone Type Check (pnpm typecheck)
-        run: pnpm typecheck
+        run: |
+          cmd="pnpm typecheck"
+          if [ -n "${TURBO_FILTER:-}" ]; then
+            cmd="$cmd -- ${TURBO_FILTER}"
+          fi
+          echo "Running: $cmd"
+          eval "$cmd"
 
       - name: Build all packages
         run: pnpm build
@@ -39,11 +55,11 @@ jobs:
     defaults:
       run:
         working-directory: ./
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
 
       - name: Install
         uses: ./.github/actions/install
