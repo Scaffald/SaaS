@@ -19,7 +19,9 @@
 
 import { test, expect, type Page } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
-import { generateOrganizationData } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { createGeneratorFromTestInfo, generateOrganizationData } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { OFFICE_TEST_IDS } from '../../infrastructure/playwright/helpers/helpers/office-test-ids'
+import { stubNonEssentialRequests } from '../../infrastructure/playwright/helpers/helpers/network'
 import {
   navigateToOfficeRoute,
   OFFICE_ROUTES,
@@ -32,6 +34,16 @@ import {
 test.use({ storageState: 'tests/.auth/super-admin.json' })
 
 test.describe('Office • Organizations Management', () => {
+  let generator = createGeneratorFromTestInfo({
+    workerIndex: 0,
+    project: { name: 'default' },
+    title: 'seed-bootstrap',
+  })
+
+  test.beforeEach(async ({ page }, testInfo) => {
+    generator = createGeneratorFromTestInfo(testInfo, 'office-organizations')
+    await stubNonEssentialRequests(page)
+  })
   // ============================================================================
   // 1. ORGANIZATIONS LIST PAGE TESTS
   // ============================================================================
@@ -185,11 +197,11 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Check for all form fields
-      const nameInput = page.locator('[data-testid="org-form-name"]')
-      const slugInput = page.locator('[data-testid="org-form-slug"]')
-      const industrySelect = page.locator('[data-testid="org-form-industry"]')
-      const logoInput = page.locator('[data-testid="org-form-logo-url"]')
-      const visibilitySelect = page.locator('[data-testid="org-form-visibility"]')
+      const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
+      const slugInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.slug)
+      const industrySelect = page.getByTestId(OFFICE_TEST_IDS.organizationForm.industry)
+      const logoInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.logoUrl)
+      const visibilitySelect = page.getByTestId(OFFICE_TEST_IDS.organizationForm.visibility)
 
       await expect(nameInput).toBeVisible({ timeout: 10000 })
       await expect(slugInput).toBeVisible({ timeout: 10000 })
@@ -203,8 +215,8 @@ test.describe('Office • Organizations Management', () => {
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
-      const saveButton = page.locator('[data-testid="org-form-save-btn"]')
-      const cancelButton = page.locator('[data-testid="org-form-cancel-btn"]')
+      const saveButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
+      const cancelButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.cancel)
 
       await expect(saveButton).toBeVisible({ timeout: 10000 })
       await expect(cancelButton).toBeVisible({ timeout: 10000 })
@@ -215,8 +227,8 @@ test.describe('Office • Organizations Management', () => {
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
-      const nameInput = page.locator('[data-testid="org-form-name"]')
-      const slugInput = page.locator('[data-testid="org-form-slug"]')
+      const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
+      const slugInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.slug)
 
       // Enter organization name
       await nameInput.fill('Test Organization Name')
@@ -241,7 +253,7 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Try to submit empty form
-      const saveButton = page.locator('[data-testid="org-form-save-btn"]')
+      const saveButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
 
       // Save button should be disabled when form is pristine
       const isDisabled = await saveButton.isDisabled()
@@ -254,25 +266,25 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Generate test data
-      const orgData = generateOrganizationData()
+      const orgData = generateOrganizationData({ generator })
       const uniqueName = `TEST_${Date.now()}_${orgData.name}`
       const uniqueSlug = uniqueName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
       // Fill form fields
-      const nameInput = page.locator('[data-testid="org-form-name"]')
+      const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
       await nameInput.fill(uniqueName)
       // Wait for slug to be auto-generated (small delay for debounce)
       await page.waitForTimeout(300)
 
       // Override auto-generated slug with our unique one
-      const slugInput = page.locator('[data-testid="org-form-slug"]')
+      const slugInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.slug)
       await slugInput.clear()
       await slugInput.fill(uniqueSlug)
       // Small delay for input debounce
       await page.waitForTimeout(300)
 
       // Select industry
-      const industrySelect = page.locator('[data-testid="org-form-industry"]')
+      const industrySelect = page.getByTestId(OFFICE_TEST_IDS.organizationForm.industry)
       await industrySelect.click()
       
       // Wait for dropdown to open and options to be visible
@@ -284,12 +296,12 @@ test.describe('Office • Organizations Management', () => {
       await expect(firstIndustry).not.toBeVisible({ timeout: 3000 })
 
       // Fill logo URL (optional but we'll add it)
-      const logoInput = page.locator('[data-testid="org-form-logo-url"]')
+      const logoInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.logoUrl)
       await logoInput.fill('https://example.com/logo.png')
       await page.waitForTimeout(300)
 
       // Visibility should default to "public" but let's ensure it
-      const visibilitySelect = page.locator('[data-testid="org-form-visibility"]')
+      const visibilitySelect = page.getByTestId(OFFICE_TEST_IDS.organizationForm.visibility)
       await visibilitySelect.click()
       
       // Wait for dropdown to open
@@ -301,7 +313,7 @@ test.describe('Office • Organizations Management', () => {
       await expect(publicOption).not.toBeVisible({ timeout: 3000 })
 
       // Submit form
-      const saveButton = page.locator('[data-testid="org-form-save-btn"]')
+      const saveButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
       
       // Wait for button to be enabled (form should be dirty)
       await expect(saveButton).toBeEnabled({ timeout: 5000 })
@@ -359,17 +371,17 @@ test.describe('Office • Organizations Management', () => {
       const uniqueSlug = uniqueName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
       // Fill only required fields
-      const nameInput = page.locator('[data-testid="org-form-name"]')
+      const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
       await nameInput.fill(uniqueName)
       await page.waitForTimeout(300)
 
-      const slugInput = page.locator('[data-testid="org-form-slug"]')
+      const slugInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.slug)
       await slugInput.clear()
       await slugInput.fill(uniqueSlug)
       await page.waitForTimeout(300)
 
       // Submit form
-      const saveButton = page.locator('[data-testid="org-form-save-btn"]')
+      const saveButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
       await saveButton.click()
 
       // Wait for navigation
@@ -385,12 +397,12 @@ test.describe('Office • Organizations Management', () => {
       await waitForPageLoad(page)
 
       // Fill some data
-      const nameInput = page.locator('[data-testid="org-form-name"]')
+      const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
       await nameInput.fill('This Should Not Be Saved')
       await page.waitForTimeout(300)
 
       // Click cancel
-      const cancelButton = page.locator('[data-testid="org-form-cancel-btn"]')
+      const cancelButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.cancel)
       await cancelButton.click()
 
       // Should navigate back
@@ -443,8 +455,8 @@ test.describe('Office • Organizations Management', () => {
         await waitForPageLoad(page)
 
         // Check that form fields have values
-        const nameInput = page.locator('[data-testid="org-form-name"]')
-        const slugInput = page.locator('[data-testid="org-form-slug"]')
+        const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
+        const slugInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.slug)
 
         const nameValue = await nameInput.inputValue()
         const slugValue = await slugInput.inputValue()
@@ -470,7 +482,7 @@ test.describe('Office • Organizations Management', () => {
         await waitForPageLoad(page)
 
         // Save button should be disabled when form is not dirty
-        const saveButton = page.locator('[data-testid="org-form-save-btn"]')
+        const saveButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
         const isDisabled = await saveButton.isDisabled()
         expect(isDisabled).toBe(true)
       } else {
@@ -489,16 +501,16 @@ test.describe('Office • Organizations Management', () => {
       const originalSlug = originalName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
       // Create organization
-      const nameInput = page.locator('[data-testid="org-form-name"]')
+      const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
       await nameInput.fill(originalName)
       await page.waitForTimeout(300)
 
-      const slugInput = page.locator('[data-testid="org-form-slug"]')
+      const slugInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.slug)
       await slugInput.clear()
       await slugInput.fill(originalSlug)
       await page.waitForTimeout(300)
 
-      const saveButton = page.locator('[data-testid="org-form-save-btn"]')
+      const saveButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
       await saveButton.click()
       await waitForNavigation(page, { timeout: 15000 })
       await waitForPageLoad(page)
@@ -515,13 +527,13 @@ test.describe('Office • Organizations Management', () => {
 
       // Modify the name
       const updatedName = `${originalName}_UPDATED`
-      const editNameInput = page.locator('[data-testid="org-form-name"]')
+      const editNameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
       await editNameInput.clear()
       await editNameInput.fill(updatedName)
       await page.waitForTimeout(300)
 
       // Save changes
-      const updateButton = page.locator('[data-testid="org-form-save-btn"]')
+      const updateButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
       
       // Wait for button to be enabled (form should be dirty after changes)
       await expect(updateButton).toBeEnabled({ timeout: 5000 })
@@ -567,7 +579,7 @@ test.describe('Office • Organizations Management', () => {
         await waitForPageLoad(page)
 
         // Get original value
-        const nameInput = page.locator('[data-testid="org-form-name"]')
+        const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
         const originalValue = await nameInput.inputValue()
 
         // Modify field
@@ -576,7 +588,7 @@ test.describe('Office • Organizations Management', () => {
         await page.waitForTimeout(300)
 
         // Click cancel
-        const cancelButton = page.locator('[data-testid="org-form-cancel-btn"]')
+        const cancelButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.cancel)
         await cancelButton.click()
         
         // Wait for navigation back to list
@@ -648,7 +660,7 @@ test.describe('Office • Organizations Management', () => {
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
-      const slugInput = page.locator('[data-testid="org-form-slug"]')
+      const slugInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.slug)
 
       // Try invalid slug with spaces and uppercase
       await slugInput.fill('Invalid Slug With Spaces')
@@ -664,19 +676,19 @@ test.describe('Office • Organizations Management', () => {
       await navigateToOfficeRoute(page, OFFICE_ROUTES.ORGANIZATION_CREATE)
       await waitForPageLoad(page)
 
-      const logoInput = page.locator('[data-testid="org-form-logo-url"]')
+      const logoInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.logoUrl)
 
       // Enter invalid URL
       await logoInput.fill('not-a-valid-url')
       await page.waitForTimeout(300)
 
       // Fill required fields to trigger validation
-      const nameInput = page.locator('[data-testid="org-form-name"]')
+      const nameInput = page.getByTestId(OFFICE_TEST_IDS.organizationForm.name)
       await nameInput.fill('Test')
       await page.waitForTimeout(300)
 
       // Try to submit (should show validation error)
-      const saveButton = page.locator('[data-testid="org-form-save-btn"]')
+      const saveButton = page.getByTestId(OFFICE_TEST_IDS.organizationForm.save)
 
       // If button becomes enabled and we click it, should see error
       const isDisabled = await saveButton.isDisabled()

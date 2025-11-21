@@ -4,6 +4,8 @@ import { defineConfig, devices } from '@playwright/test'
  * Playwright configuration for SCF-Neue tests
  * See https://playwright.dev/docs/test-configuration
  */
+const jsonReportFile = process.env.PLAYWRIGHT_JSON_OUTPUT ?? 'playwright-report.json'
+
 export default defineConfig({
   // Config file lives in ./tests, so point testDir to current directory
   testDir: '.',
@@ -21,7 +23,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: process.env.CI
+    ? [['list'], ['json', { outputFile: jsonReportFile }], ['html']]
+    : [['html'], ['json', { outputFile: jsonReportFile }]],
   
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

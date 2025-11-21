@@ -9,7 +9,9 @@
 
 import { test, expect, type Page } from '@playwright/test'
 import { navigateToOfficeRoute } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
-import { generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { createGeneratorFromTestInfo, generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { OFFICE_TEST_IDS } from '../../infrastructure/playwright/helpers/helpers/office-test-ids'
+import { stubNonEssentialRequests } from '../../infrastructure/playwright/helpers/helpers/network'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -17,16 +19,27 @@ test.use({ storageState: 'tests/.auth/super-admin.json' })
 // Increase timeout for operations
 test.setTimeout(120000)
 
+let generator = createGeneratorFromTestInfo({
+  workerIndex: 0,
+  project: { name: 'default' },
+  title: 'seed-bootstrap',
+})
+
+test.beforeEach(async ({ page }, testInfo) => {
+  generator = createGeneratorFromTestInfo(testInfo, 'office-jobs-ops')
+  await stubNonEssentialRequests(page)
+})
+
 // Helper to wait for organization select to be ready
 async function waitForOrganizationSelect(page: Page) {
-  const orgSelect = page.locator('[data-testid="job-organization-select"]')
+  const orgSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.organization)
   await orgSelect.waitFor({ state: 'visible', timeout: 10000 })
   await page.waitForTimeout(1000)
 }
 
 // Helper to select first organization
 async function selectFirstOrganization(page: Page) {
-  const orgSelect = page.locator('[data-testid="job-organization-select"]')
+  const orgSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.organization)
   await orgSelect.click()
   await page.waitForTimeout(500)
   const firstOption = page.locator('[role="option"]').first()
@@ -40,15 +53,15 @@ async function createTestJob(page: Page, title: string) {
   await waitForOrganizationSelect(page)
   await selectFirstOrganization(page)
 
-  const titleInput = page.locator('[data-testid="job-title-input"]')
+  const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
   await titleInput.fill(title)
 
-  const descInput = page.locator('[data-testid="job-description-input"]')
+  const descInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.description)
   await descInput.click()
   await page.keyboard.type('Test job description')
   await page.waitForTimeout(500)
 
-  const saveDraftButton = page.locator('[data-testid="job-save-draft-button"]')
+  const saveDraftButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.saveDraft)
   await saveDraftButton.click()
 
   await page.waitForURL('**/office/cms/jobs**', { timeout: 15000 })
@@ -57,10 +70,10 @@ async function createTestJob(page: Page, title: string) {
 
 test.describe('Office • Jobs Operations - Delete', () => {
   test('should delete job with confirmation', async ({ page }: { page: Page }) => {
-    const testData = {
-      ...generateJobData(),
-      title: `TEST_JOB_DELETE_${generateTestId()}`,
-    }
+    const testData = generateJobData({
+      generator,
+      titlePrefix: `TEST_JOB_DELETE_${generateTestId('job', generator)}`,
+    })
 
     // Create a job first
     await createTestJob(page, testData.title)
@@ -92,10 +105,10 @@ test.describe('Office • Jobs Operations - Delete', () => {
   })
 
   test('should cancel delete when confirmation is cancelled', async ({ page }: { page: Page }) => {
-    const testData = {
-      ...generateJobData(),
-      title: `TEST_JOB_DELETE_CANCEL_${generateTestId()}`,
-    }
+    const testData = generateJobData({
+      generator,
+      titlePrefix: `TEST_JOB_DELETE_CANCEL_${generateTestId('job', generator)}`,
+    })
 
     // Create a job first
     await createTestJob(page, testData.title)
@@ -129,10 +142,10 @@ test.describe('Office • Jobs Operations - Delete', () => {
 
 test.describe('Office • Jobs Operations - Duplicate', () => {
   test('should duplicate job successfully', async ({ page }: { page: Page }) => {
-    const testData = {
-      ...generateJobData(),
-      title: `TEST_JOB_DUPLICATE_${generateTestId()}`,
-    }
+    const testData = generateJobData({
+      generator,
+      titlePrefix: `TEST_JOB_DUPLICATE_${generateTestId('job', generator)}`,
+    })
 
     // Create a job first
     await createTestJob(page, testData.title)
@@ -153,7 +166,7 @@ test.describe('Office • Jobs Operations - Duplicate', () => {
       const isOnCreatePage = page.url().includes('/create')
       if (isOnCreatePage) {
         // Verify form is pre-filled
-        const titleInput = page.locator('[data-testid="job-title-input"]')
+        const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
         const titleValue = await titleInput.inputValue()
         expect(titleValue).toContain(testData.title)
       } else {

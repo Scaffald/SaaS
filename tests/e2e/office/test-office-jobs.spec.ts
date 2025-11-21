@@ -17,7 +17,9 @@
 import { test, expect, type Page } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 import { navigateToOfficeRoute, waitForPageLoad, OFFICE_ROUTES } from '../../infrastructure/playwright/helpers/helpers/office-navigation'
-import { generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { createGeneratorFromTestInfo, generateJobData, generateTestId } from '../../infrastructure/playwright/helpers/helpers/office-test-data'
+import { OFFICE_TEST_IDS } from '../../infrastructure/playwright/helpers/helpers/office-test-ids'
+import { stubNonEssentialRequests } from '../../infrastructure/playwright/helpers/helpers/network'
 
 // Use super-admin auth state (Zach) who has 'office' role required for /office routes
 test.use({ storageState: 'tests/.auth/super-admin.json' })
@@ -27,7 +29,7 @@ test.setTimeout(90000)
 
 // Helper to wait for organization select to be ready
 async function waitForOrganizationSelect(page: Page) {
-  const orgSelect = page.locator('[data-testid="job-organization-select"]')
+  const orgSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.organization)
   await orgSelect.waitFor({ state: 'visible', timeout: 10000 })
   // Wait for organizations to load
   await page.waitForTimeout(1000)
@@ -35,7 +37,7 @@ async function waitForOrganizationSelect(page: Page) {
 
 // Helper to select first organization
 async function selectFirstOrganization(page: Page) {
-  const orgSelect = page.locator('[data-testid="job-organization-select"]')
+  const orgSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.organization)
   await orgSelect.click()
   await page.waitForTimeout(500)
 
@@ -46,9 +48,17 @@ async function selectFirstOrganization(page: Page) {
 }
 
 test.describe('Office • Jobs Management', () => {
-  test.beforeEach(async ({ page }: { page: Page }) => {
+  let generator = createGeneratorFromTestInfo({
+    workerIndex: 0,
+    project: { name: 'default' },
+    title: 'seed-bootstrap',
+  })
+
+  test.beforeEach(async ({ page }: { page: Page }, testInfo) => {
+    generator = createGeneratorFromTestInfo(testInfo, 'office-jobs')
+    await stubNonEssentialRequests(page)
     console.log('Signing in as admin...')
-  // Authentication handled by storage state (tests/.auth/admin.json)
+    // Authentication handled by storage state (tests/.auth/admin.json)
     console.log('Admin signed in successfully')
   })
 
@@ -143,12 +153,6 @@ test.describe('Office • Jobs Management', () => {
   })
 
   test.describe('Create Job Flow', () => {
-    // Generate unique test data for this run
-    const testData = {
-      ...generateJobData(),
-      title: `TEST_JOB_${generateTestId()}`,
-    }
-
     test.beforeEach(async ({ page }: { page: Page }) => {
       console.log('Navigating to create job page...')
       await navigateToOfficeRoute(page, OFFICE_ROUTES.JOB_CREATE)
@@ -171,23 +175,23 @@ test.describe('Office • Jobs Management', () => {
       await waitForOrganizationSelect(page)
 
       // Check for organization select
-      const orgSelect = page.locator('[data-testid="job-organization-select"]')
+      const orgSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.organization)
       await expect(orgSelect).toBeVisible({ timeout: 5000 })
 
       // Check for title input
-      const titleInput = page.locator('[data-testid="job-title-input"]')
+      const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
       await expect(titleInput).toBeVisible({ timeout: 5000 })
 
       // Check for description input
-      const descInput = page.locator('[data-testid="job-description-input"]')
+      const descInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.description)
       await expect(descInput).toBeVisible({ timeout: 5000 })
 
       // Check for employment type select
-      const empTypeSelect = page.locator('[data-testid="job-employment-type-select"]')
+      const empTypeSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.employmentType)
       await expect(empTypeSelect).toBeVisible({ timeout: 5000 })
 
       // Check for remote option select
-      const remoteSelect = page.locator('[data-testid="job-remote-option-select"]')
+      const remoteSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.remoteOption)
       await expect(remoteSelect).toBeVisible({ timeout: 5000 })
 
       console.log('All required form fields displayed')
@@ -197,9 +201,9 @@ test.describe('Office • Jobs Management', () => {
       // Wait for form to load
       await waitForOrganizationSelect(page)
 
-      const payMinInput = page.locator('[data-testid="job-pay-min-input"]')
-      const payMaxInput = page.locator('[data-testid="job-pay-max-input"]')
-      const payTypeSelect = page.locator('[data-testid="job-pay-type-select"]')
+      const payMinInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.payMin)
+      const payMaxInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.payMax)
+      const payTypeSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.payType)
 
       await expect(payMinInput).toBeVisible({ timeout: 5000 })
       await expect(payMaxInput).toBeVisible({ timeout: 5000 })
@@ -209,16 +213,16 @@ test.describe('Office • Jobs Management', () => {
     test('should display position level field', async ({ page }: { page: Page }) => {
       await waitForOrganizationSelect(page)
 
-      const positionLevelInput = page.locator('[data-testid="job-position-level-input"]')
+      const positionLevelInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.positionLevel)
       await expect(positionLevelInput).toBeVisible({ timeout: 5000 })
     })
 
     test('should display form action buttons', async ({ page }: { page: Page }) => {
       await waitForOrganizationSelect(page)
 
-      const cancelButton = page.locator('[data-testid="job-cancel-button"]')
-      const saveDraftButton = page.locator('[data-testid="job-save-draft-button"]')
-      const publishButton = page.locator('[data-testid="job-publish-button"]')
+      const cancelButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.cancel)
+      const saveDraftButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.saveDraft)
+      const publishButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.publish)
 
       await expect(cancelButton).toBeVisible({ timeout: 5000 })
       await expect(saveDraftButton).toBeVisible({ timeout: 5000 })
@@ -226,6 +230,7 @@ test.describe('Office • Jobs Management', () => {
     })
 
     test('should create job as draft successfully', async ({ page }: { page: Page }) => {
+      const testData = generateJobData({ generator, titlePrefix: 'TEST_JOB' })
       console.log('Filling job form with test data:', testData.title)
 
       // Wait for form to be ready
@@ -235,49 +240,49 @@ test.describe('Office • Jobs Management', () => {
       await selectFirstOrganization(page)
 
       // Fill title
-      const titleInput = page.locator('[data-testid="job-title-input"]')
+      const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
       await titleInput.fill(testData.title)
 
       // Fill description
-      const descInput = page.locator('[data-testid="job-description-input"]')
+      const descInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.description)
       await descInput.fill(testData.description)
 
       // Select employment type
-      const empTypeSelect = page.locator('[data-testid="job-employment-type-select"]')
+      const empTypeSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.employmentType)
       await empTypeSelect.click()
       await page.waitForTimeout(300)
       const fullTimeOption = page.getByRole('option', { name: /full time/i })
       await fullTimeOption.click()
 
       // Select remote option
-      const remoteSelect = page.locator('[data-testid="job-remote-option-select"]')
+      const remoteSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.remoteOption)
       await remoteSelect.click()
       await page.waitForTimeout(300)
       const onSiteOption = page.getByRole('option', { name: /on-site/i })
       await onSiteOption.click()
 
       // Fill pay range
-      const payMinInput = page.locator('[data-testid="job-pay-min-input"]')
+      const payMinInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.payMin)
       await payMinInput.fill('25')
 
-      const payMaxInput = page.locator('[data-testid="job-pay-max-input"]')
+      const payMaxInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.payMax)
       await payMaxInput.fill('35')
 
       // Select pay type
-      const payTypeSelect = page.locator('[data-testid="job-pay-type-select"]')
+      const payTypeSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.payType)
       await payTypeSelect.click()
       await page.waitForTimeout(300)
       const hourlyOption = page.getByRole('option', { name: /hourly/i })
       await hourlyOption.click()
 
       // Fill position level
-      const positionLevelInput = page.locator('[data-testid="job-position-level-input"]')
+      const positionLevelInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.positionLevel)
       await positionLevelInput.fill('Senior')
 
       console.log('Form filled, clicking save draft...')
 
       // Click save draft button
-      const saveDraftButton = page.locator('[data-testid="job-save-draft-button"]')
+      const saveDraftButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.saveDraft)
       await saveDraftButton.click()
 
       // Wait for navigation back to list
@@ -305,7 +310,7 @@ test.describe('Office • Jobs Management', () => {
       await waitForOrganizationSelect(page)
 
       // Try to save without filling required fields
-      const saveDraftButton = page.locator('[data-testid="job-save-draft-button"]')
+      const saveDraftButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.saveDraft)
 
       // Button should be disabled when required fields are empty
       const isDisabled = await saveDraftButton.isDisabled()
@@ -317,12 +322,10 @@ test.describe('Office • Jobs Management', () => {
 
   test.describe('Edit Job Flow', () => {
     let jobId: string | null = null
-    const testData = {
-      ...generateJobData(),
-      title: `TEST_JOB_EDIT_${generateTestId()}`,
-    }
+    let testData = generateJobData({ generator, titlePrefix: 'TEST_JOB_EDIT' })
 
-    test.beforeEach(async ({ page }: { page: Page }) => {
+    test.beforeEach(async ({ page }: { page: Page }, testInfo) => {
+      testData = generateJobData({ generator, titlePrefix: `TEST_JOB_EDIT_${generateTestId('job', generator)}` })
       // Create a job first for editing
       console.log('Creating test job for editing...')
       await navigateToOfficeRoute(page, OFFICE_ROUTES.JOB_CREATE)
@@ -331,19 +334,19 @@ test.describe('Office • Jobs Management', () => {
       await waitForOrganizationSelect(page)
       await selectFirstOrganization(page)
 
-      const titleInput = page.locator('[data-testid="job-title-input"]')
+      const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
       await titleInput.fill(testData.title)
 
-      const descInput = page.locator('[data-testid="job-description-input"]')
+      const descInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.description)
       await descInput.fill(testData.description)
 
-      const empTypeSelect = page.locator('[data-testid="job-employment-type-select"]')
+      const empTypeSelect = page.getByTestId(OFFICE_TEST_IDS.jobForm.employmentType)
       await empTypeSelect.click()
       await page.waitForTimeout(300)
       const fullTimeOption = page.getByRole('option', { name: /full time/i })
       await fullTimeOption.click()
 
-      const saveDraftButton = page.locator('[data-testid="job-save-draft-button"]')
+      const saveDraftButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.saveDraft)
       await saveDraftButton.click()
 
       await page.waitForURL('**/office/jobs**', { timeout: 15000 })
@@ -373,7 +376,7 @@ test.describe('Office • Jobs Management', () => {
       await expect(formTitle).toBeVisible({ timeout: 10000 })
 
       // Verify title is pre-filled
-      const titleInput = page.locator('[data-testid="job-title-input"]')
+      const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
       const titleValue = await titleInput.inputValue()
       expect(titleValue).toBe(testData.title)
 
@@ -384,14 +387,14 @@ test.describe('Office • Jobs Management', () => {
       const updatedTitle = `${testData.title}_UPDATED`
 
       // Update title
-      const titleInput = page.locator('[data-testid="job-title-input"]')
+      const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
       await titleInput.clear()
       await titleInput.fill(updatedTitle)
 
       console.log('Updated title to:', updatedTitle)
 
       // Save changes
-      const saveDraftButton = page.locator('[data-testid="job-save-draft-button"]')
+      const saveDraftButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.saveDraft)
       await saveDraftButton.click()
 
       // Wait for navigation back to list
@@ -418,12 +421,12 @@ test.describe('Office • Jobs Management', () => {
       const updatedTitle = `${testData.title}_CANCELLED`
 
       // Update title but don't save
-      const titleInput = page.locator('[data-testid="job-title-input"]')
+      const titleInput = page.getByTestId(OFFICE_TEST_IDS.jobForm.title)
       await titleInput.clear()
       await titleInput.fill(updatedTitle)
 
       // Click cancel
-      const cancelButton = page.locator('[data-testid="job-cancel-button"]')
+      const cancelButton = page.getByTestId(OFFICE_TEST_IDS.jobForm.cancel)
       await cancelButton.click()
 
       // Wait for navigation back to list
