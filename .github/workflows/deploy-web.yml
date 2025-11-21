@@ -145,10 +145,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
           # Determine environment based on branch
-          AWS_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || github.ref == 'refs/heads/dev' && 'dev' || 'production' }}
+          AWS_ENV: ${{ github.ref == 'refs/heads/main' && 'dev' || github.ref == 'refs/heads/preview' && 'preview' || github.ref == 'refs/heads/staging' && 'staging' || 'production' }}
           # Environment-specific bucket names
-          AWS_S3_BUCKET: ${{ github.ref == 'refs/heads/main' && secrets.AWS_S3_BUCKET_PROD || github.ref == 'refs/heads/preview' && secrets.AWS_S3_BUCKET_PREVIEW || github.ref == 'refs/heads/dev' && secrets.AWS_S3_BUCKET_DEV || secrets.AWS_S3_BUCKET_PROD }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || github.ref == 'refs/heads/preview' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || github.ref == 'refs/heads/dev' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+          AWS_S3_BUCKET: ${{ github.ref == 'refs/heads/main' && secrets.AWS_S3_BUCKET_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_S3_BUCKET_PREVIEW || github.ref == 'refs/heads/staging' && secrets.AWS_S3_BUCKET_PROD || secrets.AWS_S3_BUCKET_PROD }}
+          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || github.ref == 'refs/heads/staging' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
         run: |
           echo "🚀 Deploying to AWS S3 + CloudFront ($AWS_ENV environment)..."
           
