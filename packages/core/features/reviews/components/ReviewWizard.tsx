@@ -156,7 +156,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
 
     try {
       const draft = reviewDraft.getDraft()
-      const result = await submitReviewMutation.mutateAsync({
+      await submitReviewMutation.mutateAsync({
         reviewId,
         recommendation: draft.recommendation ? 1 : -1,
       })
