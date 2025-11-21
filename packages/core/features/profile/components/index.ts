@@ -15,3 +15,5 @@ export type {
 export { SoftSkillsRatingForm } from './SoftSkillsRatingForm'
 export { SoftSkillsMatchIndicator } from './SoftSkillsMatchIndicator'
 export type { SoftSkillsMatchIndicatorProps } from './SoftSkillsMatchIndicator'
+export { SoftSkillsHistoryTimeline } from './SoftSkillsHistoryTimeline'
+export { SoftSkillsProgressionChart } from './SoftSkillsProgressionChart'

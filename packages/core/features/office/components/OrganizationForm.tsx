@@ -84,6 +84,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   const initialSlug = initialData?.slug?.toLowerCase() ?? ''
   const slugNeedsValidation =
     Boolean(slugValue) && (mode === 'create' || slugValue.toLowerCase() !== initialSlug)
+  const slugAvailabilityBlocksSubmit =
+    slugNeedsValidation &&
+    (slugStatus.state === 'checking' || slugStatus.state === 'invalid' || slugStatus.state === 'taken')
   const slugHasAvailabilityError = slugStatus.state === 'invalid' || slugStatus.state === 'taken'
 
   // Reset form when initialData changes (for edit mode)
@@ -434,14 +437,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
         <Button
           testID="org-form-save-btn"
           onPress={handleSubmit(onSubmit)}
-          disabled={
-            !isDirty ||
-            isLoading ||
-            (slugNeedsValidation &&
-              (slugStatus.state === 'checking' ||
-                slugStatus.state === 'invalid' ||
-                slugStatus.state === 'taken'))
-          }
+          disabled={!isDirty || isLoading || slugAvailabilityBlocksSubmit}
           icon={isLoading ? <Spinner /> : undefined}
           $sm={{ height: 44, width: '100%' }}
           $md={{ height: undefined, width: undefined }}

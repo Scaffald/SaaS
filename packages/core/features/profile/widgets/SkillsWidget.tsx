@@ -1,8 +1,10 @@
 import { api } from '@app/core/utils/api'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from '../components/SoftSkillsCategoryTabs'
 import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
+import { SoftSkillsHistoryTimeline } from '../components/SoftSkillsHistoryTimeline'
+import { SoftSkillsProgressionChart } from '../components/SoftSkillsProgressionChart'
 import { SoftSkillsRadarGrid } from '@app/ui'
-import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, Tab, TabGroup, UIButton } from '@app/ui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, ResponsiveModal, spacing, Tab, TabGroup, UIButton } from '@app/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -35,6 +37,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<'technical' | 'soft-skills'>('technical')
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
+  const [showHistoryModal, setShowHistoryModal] = useState(false)
+  const [historyView, setHistoryView] = useState<'timeline' | 'progression'>('timeline')
 
   // Fetch technical skills
   const { data, isLoading, error, refetch, isFetching } = api.profile.widgets.getSkills.useQuery(
@@ -320,11 +324,18 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   isLoading={false}
                 />
 
-                {/* Update Assessment Button */}
+                {/* Action Buttons */}
                 {showEdit && (
-                  <XStack justify="flex-end" pt="$2">
+                  <XStack justify="flex-end" gap="$2" pt="$2" flexWrap="wrap">
                     <UIButton
                       variant="outlined"
+                      size="$3"
+                      onPress={() => setShowHistoryModal(true)}
+                    >
+                      View History
+                    </UIButton>
+                    <UIButton
+                      variant="primary"
                       size="$3"
                       onPress={() => router.push('/dashboard/profile/skills?tab=soft-skills')}
                     >
@@ -335,6 +346,42 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               </YStack>
             ))}
       </YStack>
+
+      {/* History Modal */}
+      <ResponsiveModal
+        open={showHistoryModal}
+        onOpenChange={setShowHistoryModal}
+        title="Soft Skills History"
+        size="large"
+        showCloseButton={true}
+      >
+        <YStack gap="$4" p="$4">
+          {/* View Toggle */}
+          <XStack gap="$2" justify="center">
+            <UIButton
+              variant={historyView === 'timeline' ? 'primary' : 'outlined'}
+              size="$3"
+              onPress={() => setHistoryView('timeline')}
+            >
+              Timeline
+            </UIButton>
+            <UIButton
+              variant={historyView === 'progression' ? 'primary' : 'outlined'}
+              size="$3"
+              onPress={() => setHistoryView('progression')}
+            >
+              Progression
+            </UIButton>
+          </XStack>
+
+          {/* History Content */}
+          {historyView === 'timeline' ? (
+            <SoftSkillsHistoryTimeline userId={userId} />
+          ) : (
+            <SoftSkillsProgressionChart userId={userId} />
+          )}
+        </YStack>
+      </ResponsiveModal>
     </DashboardWidget>
   )
 }
