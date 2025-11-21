@@ -1,5 +1,5 @@
 import { ROUTES } from '@app/core/constants/routes'
-import { OpenToTravelToggle } from '@app/core/features/profile/components/employment-fields'
+import { OpenToTravelCard } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
 import { ToggleCard, UIButton as Button, spacing } from '@app/ui'
 import {
@@ -846,26 +846,20 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           Tell us about your ideal working conditions. We'll update your profile with these
           preferences.
         </Paragraph>
-        <OpenToTravelToggle
+        <OpenToTravelCard
           checked={employmentForm.openToTravel}
           onCheckedChange={(checked) =>
             setEmploymentForm((prev) => ({ ...prev, openToTravel: checked }))
           }
+          travelDistanceValue={employmentForm.travelDistanceMiles ?? 25}
+          onTravelDistanceChange={(value) =>
+            setEmploymentForm((prev) => ({
+              ...prev,
+              travelDistanceMiles: value,
+            }))
+          }
         />
         <XStack gap="$3" flexWrap="wrap">
-          <YStack gap="$2" flex={1}>
-            <Text fontWeight="600">Travel distance (miles)</Text>
-            <Input
-              keyboardType="numeric"
-              value={employmentForm.travelDistanceMiles?.toString() ?? ''}
-              onChangeText={(value) =>
-                setEmploymentForm((prev) => ({
-                  ...prev,
-                  travelDistanceMiles: parseNumericInput(value),
-                }))
-              }
-            />
-          </YStack>
           <YStack gap="$2" flex={1}>
             <Text fontWeight="600">Hourly rate (USD)</Text>
             <Input

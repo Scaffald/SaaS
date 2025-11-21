@@ -1,5 +1,5 @@
 import {
-  OpenToTravelToggle,
+  OpenToTravelCard,
   USPassportToggle,
   USResidentToggle,
 } from '@app/core/features/profile/components/employment-fields'
@@ -18,12 +18,11 @@ import {
   CustomCheckbox,
   DashboardWidget,
   LocationListInput,
-  RangeSliderCard,
   SkeletonForm,
   ToggleCard,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Car, Plane, Shield } from '@tamagui/lucide-icons'
+import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
@@ -415,31 +414,21 @@ export function ProfileEmploymentLeft() {
               <Controller
                 name="open_to_travel"
                 control={control}
-                render={({ field }) => (
-                  <OpenToTravelToggle
-                    checked={field.value ?? true}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                render={({ field: openToTravelField }) => (
+                  <OpenToTravelCard
+                    checked={openToTravelField.value ?? true}
+                    onCheckedChange={(checked) => openToTravelField.onChange(Boolean(checked))}
+                    travelDistanceValue={travelDistanceValue ?? 25}
+                    onTravelDistanceChange={(value) => {
+                      control._setValue('travel_distance_miles', value, { shouldValidate: true })
+                    }}
                   />
                 )}
               />
               <Controller
                 name="travel_distance_miles"
                 control={control}
-                render={({ field }) => (
-                  <RangeSliderCard
-                    icon={<Plane size="$2" color="$color11" />}
-                    title="Maximum Travel Distance"
-                    description="Select your maximum travel distance to find opportunities that match your preferences"
-                    value={field.value ?? 25}
-                    onValueChange={field.onChange}
-                    min={10}
-                    max={250}
-                    step={5}
-                    formatValue={(v) => `${v} miles`}
-                    formatMin={(v) => `${v} miles`}
-                    formatMax={(v) => `${v}+ miles`}
-                  />
-                )}
+                render={() => null}
               />
               {errors.travel_distance_miles && (
                 <Text color="$red10" fontSize="$2">

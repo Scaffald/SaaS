@@ -1,3 +1,7 @@
+export { MaximumTravelDistanceCard } from './MaximumTravelDistanceCard'
+export type { MaximumTravelDistanceCardProps } from './MaximumTravelDistanceCard'
+export { OpenToTravelCard } from './OpenToTravelCard'
+export type { OpenToTravelCardProps } from './OpenToTravelCard'
 export { OpenToTravelToggle } from './OpenToTravelToggle'
 export type { OpenToTravelToggleProps } from './OpenToTravelToggle'
 export { USResidentToggle } from './USResidentToggle'

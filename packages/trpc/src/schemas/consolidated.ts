@@ -315,8 +315,11 @@ export const profileEmploymentInputSchema = z
   })
   .partial()
   .superRefine((data, ctx) => {
-    // All users are willing to travel, so travel_distance_miles is always required
-    if (data.travel_distance_miles === undefined || data.travel_distance_miles === null) {
+    // Travel distance is only required if user is open to travel
+    if (
+      data.open_to_travel &&
+      (data.travel_distance_miles === undefined || data.travel_distance_miles === null)
+    ) {
       ctx.addIssue({
         path: ['travel_distance_miles'],
         code: z.ZodIssueCode.custom,

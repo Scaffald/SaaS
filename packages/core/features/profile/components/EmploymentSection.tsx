@@ -1,5 +1,5 @@
 import {
-  OpenToTravelToggle,
+  OpenToTravelCard,
   USPassportToggle,
   USResidentToggle,
 } from '@app/core/features/profile/components/employment-fields'
@@ -9,13 +9,12 @@ import {
   CustomCheckbox,
   DashboardWidget,
   LocationListInput,
-  RangeSliderCard,
 } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Calendar, Car, Plane, Shield } from '@tamagui/lucide-icons'
+import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 import {
   AVAILABILITY_OPTIONS,
@@ -111,6 +110,11 @@ export function EmploymentSection({
     resolver: zodResolver(employmentProfileSchema),
     defaultValues: employmentProfileDefaults,
     mode: 'onChange',
+  })
+
+  const travelDistanceMiles = useWatch({
+    control,
+    name: 'travel_distance_miles',
   })
 
   // Reset form when employment data is loaded
@@ -210,10 +214,14 @@ export function EmploymentSection({
           <Controller
             name="open_to_travel"
             control={control}
-            render={({ field }) => (
-              <OpenToTravelToggle
-                checked={field.value ?? true}
-                onCheckedChange={field.onChange}
+            render={({ field: openToTravelField }) => (
+              <OpenToTravelCard
+                checked={openToTravelField.value ?? true}
+                onCheckedChange={openToTravelField.onChange}
+                travelDistanceValue={travelDistanceMiles ?? 25}
+                onTravelDistanceChange={(value) => {
+                  control._setValue('travel_distance_miles', value, { shouldValidate: true })
+                }}
                 disabled={readOnly}
               />
             )}
@@ -221,22 +229,7 @@ export function EmploymentSection({
           <Controller
             name="travel_distance_miles"
             control={control}
-            render={({ field }) => (
-              <RangeSliderCard
-                icon={<Plane size="$2" color="$color11" />}
-                title="Maximum Travel Distance"
-                description="Select your maximum travel distance to find opportunities that match your preferences"
-                value={field.value ?? 25}
-                onValueChange={field.onChange}
-                min={10}
-                max={250}
-                step={5}
-                disabled={readOnly}
-                formatValue={(v) => `${v} miles`}
-                formatMin={(v) => `${v} miles`}
-                formatMax={(v) => `${v}+ miles`}
-              />
-            )}
+            render={() => null}
           />
         </YStack>
 
