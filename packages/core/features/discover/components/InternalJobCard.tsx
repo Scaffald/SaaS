@@ -1,8 +1,10 @@
+import { api } from '@app/core/utils/api'
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { Chip, DiscoverCard, extractPlainText } from '@app/ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'
 
 /**
@@ -80,6 +82,12 @@ export interface InternalJob {
       max_size_mb?: number
     }
   >
+
+  // Soft Skills Requirements (Migration REQ-255)
+  required_soft_skills?: Array<{
+    skill_id: string
+    importance: number
+  }> | null
 }
 
 interface InternalJobCardProps {
@@ -187,6 +195,22 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   const postedTime = formatRelativeTime(job.posted_at || job.created_at)
   const hasInquiryLink = Boolean(hasApplied && applicationId)
 
+  // Check if job has required soft skills
+  const hasSoftSkillsRequirements = useMemo(() => {
+    if (!job.required_soft_skills || typeof job.required_soft_skills !== 'object') return false
+    const requirements = job.required_soft_skills as Array<{ skill_id: string; importance: number }>
+    return Array.isArray(requirements) && requirements.length > 0
+  }, [job.required_soft_skills])
+
+  // Fetch soft skills match if job has requirements
+  const { data: matchData } = api.jobs.calculateSoftSkillsMatch.useQuery(
+    { jobId: job.id },
+    {
+      enabled: hasSoftSkillsRequirements,
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    },
+  )
+
   // Extract plain text from description (handles both string and rich text JSON)
   const descriptionText =
     typeof job.description === 'string'
@@ -222,11 +246,27 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                 </XStack>
               )}
             </YStack>
-            {hasApplied && (
-              <Chip bg="$green9" color="$green1">
-                Applied
-              </Chip>
-            )}
+            <XStack gap="$2" items="center">
+              {hasApplied && (
+                <Chip bg="$green9" color="$green1">
+                  Applied
+                </Chip>
+              )}
+              {matchData?.score !== null && matchData?.score !== undefined && (
+                <Chip
+                  bg={
+                    matchData.score >= 80
+                      ? '$green9'
+                      : matchData.score >= 60
+                        ? '$yellow9'
+                        : '$red9'
+                  }
+                  color="$color1"
+                >
+                  {Math.round(matchData.score)}% Match
+                </Chip>
+              )}
+            </XStack>
           </XStack>
 
           {/* Job metadata */}

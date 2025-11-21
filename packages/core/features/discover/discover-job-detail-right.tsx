@@ -1,5 +1,7 @@
 import { api } from '@app/core/utils/api'
-import { Chip, extractPlainText } from '@app/ui'
+import { SoftSkillsMatchIndicator } from '@app/core/features/profile/components/SoftSkillsMatchIndicator'
+import { ROUTES } from '@app/core/constants/routes'
+import { Chip, extractPlainText, UIButton } from '@app/ui'
 import {
   Award,
   Briefcase,
@@ -13,8 +15,11 @@ import {
   MapPin,
   Plane,
   Shield,
+  TrendingUp,
 } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
 import type { JSONContent } from '@tiptap/core'
+import { useMemo } from 'react'
 import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface DiscoverJobDetailRightProps {
@@ -114,6 +119,8 @@ function formatEducationLevel(level?: string): string {
  * Displays job information in the right panel
  */
 export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
+  const router = useRouter()
+
   // Try fetching as internal job first
   const { data: internalJobData, isLoading: internalLoading } = api.jobs.getJobDetails.useQuery(
     { id: jobId },
@@ -133,6 +140,27 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
   const externalJob = externalJobs?.jobs?.find((j: { id: string }) => j.id === jobId)
   const job = internalJob || externalJob
   const isExternal = !!externalJob
+
+  // Check if job has required soft skills
+  const hasSoftSkillsRequirements = useMemo(() => {
+    if (!internalJob || isExternal) return false
+    if (!internalJob.required_soft_skills || typeof internalJob.required_soft_skills !== 'object')
+      return false
+    const requirements = internalJob.required_soft_skills as Array<{
+      skill_id: string
+      importance: number
+    }>
+    return Array.isArray(requirements) && requirements.length > 0
+  }, [internalJob, isExternal])
+
+  // Fetch soft skills match for internal jobs with requirements
+  const { data: matchData, isLoading: isLoadingMatch } = api.jobs.calculateSoftSkillsMatch.useQuery(
+    { jobId },
+    {
+      enabled: !!jobId && hasSoftSkillsRequirements && !isExternal,
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    },
+  )
 
   if (isLoading) {
     return (
@@ -455,6 +483,107 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     )
                   })}
                 </XStack>
+              </YStack>
+            </>
+          )}
+
+          {/* Soft Skills Match Section */}
+          {hasSoftSkillsRequirements && (
+            <>
+              <Separator />
+              <YStack gap="$3">
+                <XStack justify="space-between" items="center">
+                  <Text fontSize="$5" fontWeight="600" color="$color12">
+                    Your Soft Skills Match
+                  </Text>
+                  {matchData?.score !== null && matchData?.score !== undefined && (
+                    <Chip
+                      bg={
+                        matchData.score >= 80
+                          ? '$green9'
+                          : matchData.score >= 60
+                            ? '$yellow9'
+                            : '$red9'
+                      }
+                      color="$color1"
+                      fontSize="$3"
+                      px="$3"
+                      py="$2"
+                    >
+                      {Math.round(matchData.score)}% Match
+                    </Chip>
+                  )}
+                </XStack>
+
+                {isLoadingMatch ? (
+                  <YStack gap="$2" items="center" py="$4">
+                    <Spinner size="small" color="$blue10" />
+                    <Text fontSize="$3" color="$color11">
+                      Calculating match...
+                    </Text>
+                  </YStack>
+                ) : matchData?.needsSelfAssessment ? (
+                  <YStack gap="$3" bg="$blue2" p="$4" rounded="$4" borderWidth={1} borderColor="$blue7">
+                    <Text fontSize="$4" fontWeight="600" color="$blue11">
+                      Complete Your Assessment
+                    </Text>
+                    <Text fontSize="$3" color="$blue11">
+                      Complete your soft skills assessment to see how well you match this job's
+                      requirements.
+                    </Text>
+                    <UIButton
+                      variant="primary"
+                      size="$3"
+                      onPress={() => router.push(`${ROUTES.DASHBOARD.PROFILE.path}/skills?tab=soft-skills`)}
+                    >
+                      Start Assessment
+                    </UIButton>
+                  </YStack>
+                ) : matchData?.details && matchData.details.length > 0 ? (
+                  <YStack gap="$4">
+                    {/* Skill-by-skill breakdown */}
+                    <YStack gap="$2">
+                      {matchData.details.map((detail) => (
+                        <SoftSkillsMatchIndicator
+                          key={detail.skillId}
+                          skillName={detail.skillName}
+                          userRating={detail.userRating}
+                          requiredImportance={detail.requiredImportance}
+                          meetsRequirement={detail.meetsRequirement}
+                        />
+                      ))}
+                    </YStack>
+
+                    {/* Skills to Develop */}
+                    {matchData.details.some((detail) => !detail.meetsRequirement) && (
+                      <YStack gap="$2" bg="$yellow2" p="$4" rounded="$4" borderWidth={1} borderColor="$yellow7">
+                        <XStack gap="$2" items="center">
+                          <TrendingUp size={16} color="$yellow10" />
+                          <Text fontSize="$4" fontWeight="600" color="$yellow11">
+                            Skills to Develop
+                          </Text>
+                        </XStack>
+                        <YStack gap="$1">
+                          {matchData.details
+                            .filter((detail) => !detail.meetsRequirement)
+                            .map((detail) => (
+                              <Text key={detail.skillId} fontSize="$3" color="$yellow11">
+                                • {detail.skillName} (currently {detail.userRating || 0}/5, need{' '}
+                                {detail.requiredImportance}/5)
+                              </Text>
+                            ))}
+                        </YStack>
+                        <UIButton
+                          variant="outlined"
+                          size="$3"
+                          onPress={() => router.push(`${ROUTES.DASHBOARD.PROFILE.path}/skills?tab=soft-skills`)}
+                        >
+                          Update Assessment
+                        </UIButton>
+                      </YStack>
+                    )}
+                  </YStack>
+                ) : null}
               </YStack>
             </>
           )}

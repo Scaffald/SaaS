@@ -13,3 +13,5 @@ export type {
   SoftSkillCategory,
 } from './SoftSkillsCategoryTabs'
 export { SoftSkillsRatingForm } from './SoftSkillsRatingForm'
+export { SoftSkillsMatchIndicator } from './SoftSkillsMatchIndicator'
+export type { SoftSkillsMatchIndicatorProps } from './SoftSkillsMatchIndicator'
