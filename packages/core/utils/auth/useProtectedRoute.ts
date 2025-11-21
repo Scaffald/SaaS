@@ -1,4 +1,4 @@
-import { AUTH_ROUTES, ROUTES } from '@app/core/constants/routes'
+import { ROUTES } from '@app/core/constants/routes'
 import { useUser } from '@app/core/utils/useUser'
 import { useRouter, useSegments } from 'expo-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -101,7 +101,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
     if (!user && !inAuthGroup) {
       const performRedirect = () => {
         try {
-          router.replace(AUTH_ROUTES.INDEX.path)
+          router.replace(ROUTES.AUTH.LOGIN.path)
           setHasChecked(true)
         } catch (error) {
           console.error('Protected route redirect error:', error)
