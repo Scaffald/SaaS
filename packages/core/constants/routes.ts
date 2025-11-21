@@ -678,11 +678,10 @@ export const ROUTES = ROUTES_CONFIG;
 // ============================================================================
 
 /**
- * Build a route with dynamic parameters
- * @example buildRoute(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: 123 }) => '/office/cms/jobs/123/edit'
- * @deprecated Use buildPath instead
+ * Build a route path with dynamic parameters
+ * @example buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: 123 }) => '/office/cms/jobs/123/edit'
  */
-export function buildRoute(
+export function buildPath(
   route: RouteConfig,
   params: RouteParams = {},
 ): string {
@@ -700,157 +699,7 @@ export function buildRoute(
   return path;
 }
 
-/**
- * Build a route path with dynamic parameters
- * @example buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: 123 }) => '/office/cms/jobs/123/edit'
- */
-export function buildPath(
-  route: RouteConfig,
-  params: RouteParams = {},
-): string {
-  return buildRoute(route, params);
-}
 
-/**
- * Type-safe route builders for common dynamic routes
- * @deprecated These will be updated to use nested routes in a future update
- */
-export const RouteBuilder = {
-  // Office routes
-  officeUsersEdit: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.WORKERS.EDIT, { id }),
-  officeJobsEdit: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id }),
-  officeUniversitiesEdit: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.UNIVERSITIES.EDIT, { id }),
-  officeTeamsEdit: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.EDIT, { id }),
-  officeTeamsDetail: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL, { id }),
-  officeTeamsAnalytics: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.ANALYTICS, { id }),
-  officeTeamsSettings: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.TEAMS.DETAIL.SETTINGS, { id }),
-  projectEdit: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id }),
-  projectDetail: (id: string | number) =>
-    buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL, { id }),
-  officeBackgroundChecksRequest: () => ROUTES.OFFICE.ATS.CHECKS.REQUEST.path,
-  officeBackgroundChecksAdmin: () => ROUTES.OFFICE.ATS.CHECKS.ADMIN.path,
-  officeIdVerifications: () => ROUTES.OFFICE.ATS.ID_VERIFICATIONS.path,
-  officeStorage: () => ROUTES.OFFICE.STORAGE.path,
-  officePayments: () => ROUTES.OFFICE.PAYMENTS.path,
-  officeTransactions: () => ROUTES.OFFICE.TRANSACTIONS.path,
-  officeViolations: () => ROUTES.OFFICE.VIOLATIONS.path,
-  dashboardBackgroundCheck: () =>
-    ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.path,
-  dashboardBackgroundCheckInitiate: () =>
-    ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.INITIATE.path,
-  dashboardBackgroundCheckDispute: (checkId: string | number) =>
-    buildPath(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.DISPUTE, {
-      checkId,
-    }),
-  dashboardProfileIdVerification: () =>
-    ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION.path,
-
-  // Dashboard routes
-  dashboardUser: (userId: string | number) =>
-    buildPath(ROUTES.DASHBOARD.USER, { userId }),
-  discoverWorkerDetail: (id: string | number) =>
-    buildPath(ROUTES.DASHBOARD.DISCOVER.WORKERS.DETAIL, { id }),
-  discoverJobDetail: (id: string | number) =>
-    buildPath(ROUTES.DASHBOARD.DISCOVER.JOBS.DETAIL, { id }),
-  dashboardEmployer: (id: string | number) =>
-    buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id }),
-  dashboardOrganizationCreate: () => ROUTES.DASHBOARD.ORGANIZATIONS.CREATE.path,
-  dashboardTeams: () => ROUTES.DASHBOARD.TEAMS.path,
-  dashboardTeamDetail: (teamId: string | number) =>
-    buildPath(ROUTES.DASHBOARD.TEAMS.DETAIL, { teamId }),
-  dashboardTeamsInvitations: () => ROUTES.DASHBOARD.TEAMS.INVITATIONS.path,
-  dashboardWorkLogs: () => ROUTES.DASHBOARD.WORK_LOGS.path,
-  dashboardWorkLogDetail: (workLogId: string | number) =>
-    buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId }),
-  dashboardWorkLogCreate: () => ROUTES.DASHBOARD.WORK_LOGS.CREATE.path,
-  dashboardApplicationInquiry: (applicationId: string | number) =>
-    buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId }),
-} as const;
-
-// ============================================================================
-// Navigation Hierarchy (Legacy - kept for backward compatibility during migration)
-// ============================================================================
-
-export type RouteHierarchyNode = {
-  key: string;
-  children?: readonly RouteHierarchyNode[];
-};
-
-// This will be deprecated once all code is migrated to nested routes
-export const ROUTE_HIERARCHY: readonly RouteHierarchyNode[] = [] as const;
-
-// ============================================================================
-// Legacy Compatibility (for gradual migration)
-// ============================================================================
-
-/**
- * @deprecated Use ROUTES.AUTH.LOGIN, ROUTES.AUTH.CONFIRM, ROUTES.AUTH.SUCCESS instead
- */
-export const AUTH_ROUTES = {
-  INDEX: ROUTES.AUTH.LOGIN,
-  CONFIRM: ROUTES.AUTH.CONFIRM,
-  SUCCESS: ROUTES.AUTH.SUCCESS,
-} as const;
-
-/**
- * @deprecated Use nested ROUTES.DASHBOARD structure instead
- */
-export const DASHBOARD_ROUTES = {
-  INDEX: ROUTES.DASHBOARD,
-  PROFILE: ROUTES.DASHBOARD.PROFILE,
-  PROFILE_ID_VERIFICATION: ROUTES.DASHBOARD.PROFILE.ID_VERIFICATION,
-  PROFILE_BACKGROUND_CHECK: ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK,
-  PROFILE_BACKGROUND_CHECK_INITIATE:
-    ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.INITIATE,
-  SETTINGS: ROUTES.DASHBOARD.SETTINGS,
-  NOTIFICATIONS: ROUTES.DASHBOARD.SETTINGS.NOTIFICATIONS,
-  TEAMS: ROUTES.DASHBOARD.TEAMS,
-  TEAM_DETAIL: ROUTES.DASHBOARD.TEAMS.DETAIL,
-  INVITATIONS: ROUTES.DASHBOARD.TEAMS.INVITATIONS,
-  WORK_LOGS: ROUTES.DASHBOARD.WORK_LOGS,
-  WORK_LOGS_CREATE: ROUTES.DASHBOARD.WORK_LOGS.CREATE,
-  WORK_LOGS_DETAIL: ROUTES.DASHBOARD.WORK_LOGS.DETAIL,
-  APPLICATIONS: ROUTES.DASHBOARD.APPLICATIONS,
-  APPLICATION_INQUIRY: ROUTES.DASHBOARD.APPLICATIONS.INQUIRY,
-} as const;
-
-/**
- * @deprecated Use nested ROUTES.OFFICE structure instead
- */
-export const OFFICE_ROUTES = {
-  INDEX: ROUTES.OFFICE,
-  USERS: ROUTES.OFFICE.CMS.WORKERS,
-  JOBS: ROUTES.OFFICE.CMS.JOBS,
-  TEAMS: ROUTES.OFFICE.CMS.TEAMS,
-  TEAMS_DETAIL: ROUTES.OFFICE.CMS.TEAMS.DETAIL,
-  TEAMS_ANALYTICS: ROUTES.OFFICE.CMS.TEAMS.DETAIL.ANALYTICS,
-  TEAMS_SETTINGS: ROUTES.OFFICE.CMS.TEAMS.DETAIL.SETTINGS,
-  PROJECTS: ROUTES.OFFICE.CMS.PROJECTS,
-  PROJECTS_DETAIL: ROUTES.OFFICE.CMS.PROJECTS.DETAIL,
-  PROJECTS_EDIT: ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT,
-  UNIVERSITIES: ROUTES.OFFICE.CMS.UNIVERSITIES,
-  BACKGROUND_CHECKS: ROUTES.OFFICE.ATS.CHECKS,
-  ID_VERIFICATIONS: ROUTES.OFFICE.ATS.ID_VERIFICATIONS,
-  BACKGROUND_CHECKS_ADMIN: ROUTES.OFFICE.ATS.CHECKS.ADMIN,
-  NOTIFICATIONS: ROUTES.OFFICE.NOTIFICATIONS,
-  STORAGE: ROUTES.OFFICE.STORAGE,
-  PAYMENTS: ROUTES.OFFICE.PAYMENTS,
-  TRANSACTIONS: ROUTES.OFFICE.TRANSACTIONS,
-  VIOLATIONS: ROUTES.OFFICE.VIOLATIONS,
-  SETTINGS: ROUTES.OFFICE.SETTINGS,
-  SETTINGS_GEOGRAPHIC: ROUTES.OFFICE.SETTINGS.GEOGRAPHIC,
-  SETTINGS_STRIPE: ROUTES.OFFICE.SETTINGS.STRIPE,
-  APPLICATIONS: ROUTES.OFFICE.APPLICATIONS,
-  APPLICATION_INQUIRY: ROUTES.OFFICE.APPLICATIONS.INQUIRY,
-} as const;
 
 // ============================================================================
 // Route Helpers
