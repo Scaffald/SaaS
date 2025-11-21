@@ -3833,6 +3833,7 @@ export type Database = {
           position_level: string | null
           posted_at: string | null
           remote_option: string | null
+          required_soft_skills: Json
           scheduled_publish_at: string | null
           search_tsv: unknown
           slug: string | null
@@ -3862,6 +3863,7 @@ export type Database = {
           position_level?: string | null
           posted_at?: string | null
           remote_option?: string | null
+          required_soft_skills?: Json
           scheduled_publish_at?: string | null
           search_tsv?: unknown
           slug?: string | null
@@ -3891,6 +3893,7 @@ export type Database = {
           position_level?: string | null
           posted_at?: string | null
           remote_option?: string | null
+          required_soft_skills?: Json
           scheduled_publish_at?: string | null
           search_tsv?: unknown
           slug?: string | null
@@ -8170,13 +8173,16 @@ export type Database = {
           notes: string | null
           onet_occupation_id: string | null
           proficiency_level: number | null
+          self_assessed_at: string | null
           skill_taxonomy: string
+          soft_skill_id: string | null
           trade_id: string | null
           updated_at: string | null
           user_id: string
           verified: boolean | null
           verified_at: string | null
           verified_by: string | null
+          version: number
           years_experience: number | null
         }
         Insert: {
@@ -8187,13 +8193,16 @@ export type Database = {
           notes?: string | null
           onet_occupation_id?: string | null
           proficiency_level?: number | null
+          self_assessed_at?: string | null
           skill_taxonomy: string
+          soft_skill_id?: string | null
           trade_id?: string | null
           updated_at?: string | null
           user_id: string
           verified?: boolean | null
           verified_at?: string | null
           verified_by?: string | null
+          version?: number
           years_experience?: number | null
         }
         Update: {
@@ -8204,16 +8213,26 @@ export type Database = {
           notes?: string | null
           onet_occupation_id?: string | null
           proficiency_level?: number | null
+          self_assessed_at?: string | null
           skill_taxonomy?: string
+          soft_skill_id?: string | null
           trade_id?: string | null
           updated_at?: string | null
           user_id?: string
           verified?: boolean | null
           verified_at?: string | null
           verified_by?: string | null
+          version?: number
           years_experience?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "user_skills_soft_skill_id_fkey"
+            columns: ["soft_skill_id"]
+            isOneToOne: false
+            referencedRelation: "soft_skills"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_skills_user_id_fkey"
             columns: ["user_id"]
