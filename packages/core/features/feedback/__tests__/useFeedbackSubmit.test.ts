@@ -56,7 +56,7 @@ describe('useFeedbackSubmit', () => {
     })
   }
 
-  it.skip('exposes default submission state', async () => {
+  it.skip('exposes default submission state (tracking issue #7421)', async () => {
     const { result } = renderHook(() => useFeedbackSubmit())
 
     await flushEffects()
@@ -68,7 +68,7 @@ describe('useFeedbackSubmit', () => {
     expect(typeof result.current.processQueue).toBe('function')
   })
 
-  it.skip('calls queue helpers when processing pending submissions', async () => {
+  it.skip('calls queue helpers when processing pending submissions (see #7421)', async () => {
     const { result } = renderHook(() => useFeedbackSubmit())
 
     await flushEffects()
