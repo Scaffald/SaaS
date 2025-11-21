@@ -23,3 +23,8 @@ export {
   type StackedBarChartData,
   type StackedBarChartProps,
 } from './StackedBarChart'
+export {
+  IndividualSkillRadarChart,
+  type IndividualSkillRadarChartProps,
+  type VersionHistoryItem,
+} from './IndividualSkillRadarChart'
