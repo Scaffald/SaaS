@@ -1,3 +1,4 @@
+import { addressSchema } from '@app/schemas/common/address'
 import { z } from 'zod'
 
 /**
@@ -26,14 +27,7 @@ export const experienceProfileSchema = z.object({
         location: z
           .union([
             z.string(), // Backward compatibility
-            z.object({
-              street: z.string().optional(),
-              city: z.string(),
-              state: z.string(),
-              zip: z.string().optional(),
-              country: z.string(),
-              formattedAddress: z.string(),
-            }),
+            addressSchema, // Standard address format (all fields optional)
           ])
           .optional(),
         is_remote: z.boolean().default(false),

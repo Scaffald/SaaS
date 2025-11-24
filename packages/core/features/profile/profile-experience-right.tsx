@@ -35,16 +35,38 @@ function formatLocationForDisplay(
   isRemote: boolean
 ): string {
   if (!location) return ''
-  const locationStr =
-    typeof location === 'string'
-      ? location
-      : typeof location === 'object' && 'formattedAddress' in location
-        ? (location.formattedAddress as string) ||
-          ('city' in location && 'state' in location
-            ? `${(location.city as string) || ''}, ${(location.state as string) || ''}`.trim()
-            : '')
-        : ''
-  return isRemote ? `${locationStr} (Remote)` : locationStr
+  
+  if (typeof location === 'string') {
+    return isRemote ? `${location} (Remote)` : location
+  }
+  
+  if (typeof location === 'object' && location !== null) {
+    const addr = location as Record<string, unknown>
+    
+    // If formattedAddress exists (backward compatibility), use it
+    if ('formattedAddress' in addr && typeof addr.formattedAddress === 'string') {
+      const locationStr = addr.formattedAddress || ''
+      return isRemote ? `${locationStr} (Remote)` : locationStr
+    }
+    
+    // Otherwise, compute from standard address fields
+    const street = typeof addr.street === 'string' ? addr.street : ''
+    const city = typeof addr.city === 'string' ? addr.city : ''
+    const state = typeof addr.state === 'string' ? addr.state : ''
+    const zip = typeof addr.zip === 'string' ? addr.zip : ''
+    
+    // Build formatted address from available parts
+    const addressParts = [street, city, state, zip].filter(Boolean)
+    const locationStr = addressParts.length > 0 
+      ? addressParts.join(', ') 
+      : city && state 
+        ? `${city}, ${state}` 
+        : city || state || ''
+    
+    return isRemote ? `${locationStr} (Remote)` : locationStr
+  }
+  
+  return ''
 }
 
 /**
