@@ -1,3 +1,4 @@
+import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { SiteOverlapNotification } from '@app/core/features/notifications/components/SiteOverlapNotification'
 import { api } from '@app/core/utils/api'
 import { UIButton as Button, type NotificationItem, NotificationTag, ToggleSwitch } from '@app/ui'
@@ -655,6 +656,8 @@ export default function NotificationsCenterScreen() {
             )}
           </YStack>
         )}
+
+        <AccountDeletionPanel />
       </YStack>
     </ScrollView>
   )

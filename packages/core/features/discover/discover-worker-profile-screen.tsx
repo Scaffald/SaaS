@@ -144,6 +144,18 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
     <YStack gap="$4">
       {wrapWidget(
         <YStack gap="$3">
+          <SkeletonBlock height={20} width="60%" />
+          {['review-1', 'review-2'].map((reviewId) => (
+            <YStack key={reviewId} gap="$1">
+              <SkeletonBlock height={16} width="80%" />
+              <SkeletonBlock height={12} width="55%" />
+            </YStack>
+          ))}
+        </YStack>
+      )}
+
+      {wrapWidget(
+        <YStack gap="$3">
           <SkeletonBlock height={20} width="45%" />
           <XStack gap="$2" flexWrap="wrap">
             {['skill-1', 'skill-2', 'skill-3', 'skill-4', 'skill-5', 'skill-6'].map((skillId) => (
@@ -160,18 +172,6 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
             <YStack key={statId} gap="$1">
               <SkeletonBlock height={16} width="70%" />
               <SkeletonBlock height={12} width="40%" />
-            </YStack>
-          ))}
-        </YStack>
-      )}
-
-      {wrapWidget(
-        <YStack gap="$3">
-          <SkeletonBlock height={20} width="60%" />
-          {['review-1', 'review-2'].map((reviewId) => (
-            <YStack key={reviewId} gap="$1">
-              <SkeletonBlock height={16} width="80%" />
-              <SkeletonBlock height={12} width="55%" />
             </YStack>
           ))}
         </YStack>
@@ -292,9 +292,9 @@ export function DiscoverWorkerProfileScreen({
 
   const rightColumn = (
     <YStack gap="$4">
+      <ReviewsWidget userId={safeUserId} showEdit />
       <ProfileSkillsSection userId={safeUserId} showEdit={false} />
       <CertificationsWidget userId={safeUserId} showEdit={false} />
-      <ReviewsWidget userId={safeUserId} showEdit />
     </YStack>
   )
 

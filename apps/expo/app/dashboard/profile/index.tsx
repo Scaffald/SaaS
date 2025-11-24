@@ -1,7 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { IdVerificationWidget } from '@app/core/features/id-verification'
 import { ProfilePage } from '@app/core/features/profile/ProfilePage'
-import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { ProfileCertificationsHighlightProvider } from '@app/core/features/profile/profile-certifications-highlight-context'
 import { ProfileCertificationsRight } from '@app/core/features/profile/profile-certifications-right'
 import { ProfileSkillsSection } from '@app/core/features/profile/components/ProfileSkillsSection'
@@ -42,7 +41,6 @@ export default function ProfileIndexScreen() {
             <IdVerificationWidget />
             <ProfileCertificationsRight />
             <PreferencesWidget showEdit />
-            <AccountDeletionPanel />
           </YStack>
         }
       />

@@ -422,16 +422,18 @@ export function AdminCheckReviewDialog({
                     <Text fontSize="$2" color="$color10">
                       Created: {formatDateTime(detailedCheck.created_at)}
                     </Text>
-                    {(detailedCheck as typeof detailedCheck & { completed_at?: string | null })
-                      .completed_at ? (
-                      <Text fontSize="$2" color="$color10">
-                        Completed:{' '}
-                        {formatDateTime(
-                          (detailedCheck as typeof detailedCheck & { completed_at?: string | null })
-                            .completed_at!
-                        )}
-                      </Text>
-                    ) : null}
+                    {(() => {
+                      const checkWithCompletedAt = detailedCheck as typeof detailedCheck & {
+                        completed_at?: string | null
+                      }
+                      const completedAt = checkWithCompletedAt.completed_at
+                      if (!completedAt) return null
+                      return (
+                        <Text fontSize="$2" color="$color10">
+                          Completed: {formatDateTime(completedAt)}
+                        </Text>
+                      )
+                    })()}
                     {detailedCheck.expires_at ? (
                       <Text fontSize="$2" color="$color10">
                         Expires: {formatDateTime(detailedCheck.expires_at)}
