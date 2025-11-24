@@ -10,6 +10,7 @@ import {
   EmptyState,
   Heading,
   LoadingState,
+  RadarChart,
   ResponsiveModal,
   spacing,
   Tab,
@@ -88,6 +89,31 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
       versionHistory: undefined, // Not needed for widget
     }))
   }, [softSkillsData])
+
+  // Category labels for display
+  const categoryLabels: Record<SoftSkillCategory, string> = {
+    reliability: 'Reliability',
+    collaboration: 'Collaboration',
+    professionalism: 'Professionalism',
+    technical: 'Technical',
+  }
+
+  // Calculate radar chart data for the active category
+  const categoryRadarData = useMemo(() => {
+    if (!softSkills || softSkills.length === 0) return null
+
+    // Filter skills by active category
+    const categorySkills = softSkills.filter((skill) => skill.category === activeCategory)
+
+    if (categorySkills.length === 0) return null
+
+    // Create radar chart data: each skill becomes a point
+    // Convert 1-5 scale to 0-100 for better visualization
+    return categorySkills.map((skill) => ({
+      value: Math.round(skill.selfRating * 20), // Convert 1-5 to 0-100 scale
+      label: skill.name,
+    }))
+  }, [softSkills, activeCategory])
 
   if (isLoading) {
     return (
@@ -320,6 +346,28 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                   onCategoryChange={setActiveCategory}
                   skills={softSkills}
                 />
+
+                <Separator />
+
+                {/* Radar Chart for Active Category */}
+                {categoryRadarData && categoryRadarData.length > 0 && (
+                  <YStack gap="$2" items="center">
+                    <Text fontSize="$4" fontWeight="600" color="$color12">
+                      {categoryLabels[activeCategory]} Skills
+                    </Text>
+                    <RadarChart
+                      data={categoryRadarData}
+                      height={variant === 'compact' ? 200 : 300}
+                      radius={variant === 'compact' ? 80 : 120}
+                      maxValue={100}
+                      noOfSections={5}
+                      color="$blue9"
+                    />
+                    <Text fontSize="$2" color="$color10" textAlign="center">
+                      Individual skill ratings in {categoryLabels[activeCategory]}
+                    </Text>
+                  </YStack>
+                )}
 
                 <Separator />
 

@@ -4,17 +4,20 @@ import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from '@t
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Button, H4, Spinner, Text, XStack, YStack } from 'tamagui'
-import { EducationEntryEditModal, ProfileEmptyState } from './components'
+import { ProfileEmptyState } from './components'
 import type { EducationEntry } from './types/education'
 import { formatDateRange } from './utils/date-formatting'
+
+interface ProfileEducationRightProps {
+  onEditEntry?: (entryId: string) => void
+}
 
 /**
  * Profile Education Right Component
  * Displays saved education entries in the right column
  */
-export function ProfileEducationRight() {
+export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProps = {}) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null)
-  const [editingEntry, setEditingEntry] = useState<EducationEntry | null>(null)
   const toast = useToastController()
 
   // Query saved education data
@@ -208,7 +211,15 @@ export function ProfileEducationRight() {
                         icon={Pencil}
                         aria-label="Edit education entry"
                         accessibilityLabel="Edit education entry"
-                        onPress={() => setEditingEntry(edu)}
+                        onPress={() => {
+                          if (edu.id && onEditEntry) {
+                            onEditEntry(edu.id)
+                          } else {
+                            toast.show('Error', {
+                              message: 'Unable to edit this entry. Please try again.',
+                            })
+                          }
+                        }}
                       />
                       <Button
                         size="$2"
@@ -249,16 +260,6 @@ export function ProfileEducationRight() {
           })}
         </YStack>
       )}
-
-      {/* Edit Modal */}
-      <EducationEntryEditModal
-        open={!!editingEntry}
-        onOpenChange={(open: boolean) => !open && setEditingEntry(null)}
-        educationEntry={editingEntry}
-        onSuccess={() => {
-          educationQuery.refetch()
-        }}
-      />
     </DashboardWidget>
   )
 }

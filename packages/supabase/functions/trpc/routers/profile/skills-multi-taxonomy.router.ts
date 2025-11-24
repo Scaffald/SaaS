@@ -73,6 +73,7 @@ export const skillsMultiTaxonomyRouter = t.router({
         created_at
       `)
       .eq('user_id', user.id)
+      .in('skill_taxonomy', ['csi', 'onet'])
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -132,7 +133,10 @@ export const skillsMultiTaxonomyRouter = t.router({
       })
     )
 
-    return { skills: enrichedSkills }
+    // Filter out skills without valid details (shouldn't happen with the taxonomy filter above, but safety check)
+    const validSkills = enrichedSkills.filter((skill) => skill.skill_details !== null)
+
+    return { skills: validSkills }
   }),
 
   /**

@@ -132,7 +132,27 @@ export function ProfileSkillsRight() {
     await removeSkillMutation.mutateAsync({ userSkillId: skillIdToRemove })
   }, [confirmRemoveSkillId, removingSkillId, removeSkillMutation, toast])
 
-  const userSkills = userSkillsData?.skills || []
+  // Filter out soft skills and skills without valid details
+  const userSkills = (userSkillsData?.skills || []).filter(
+    (skill: {
+      skill_taxonomy?: string | null
+      skill_details: {
+        name: string
+        display_code: string
+        hierarchy_level: number | null
+      } | null
+    }) => {
+      // Exclude soft skills
+      if (skill.skill_taxonomy === 'soft_skills') {
+        return false
+      }
+      // Exclude skills without valid details
+      if (!skill.skill_details || !skill.skill_details.name) {
+        return false
+      }
+      return true
+    },
+  )
 
   // Detect newly added skills for highlight animation
   useEffect(() => {

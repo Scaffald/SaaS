@@ -358,7 +358,7 @@ INSERT INTO core.soft_skills (name, slug, category, description, order_index) VA
   ('Learning Ability', 'learning-ability', 'technical', 'Quickly learns new skills and technologies', 2),
   ('Innovation', 'innovation', 'technical', 'Brings innovative ideas and solutions', 3),
   ('Best Practices', 'best-practices', 'technical', 'Follows industry best practices', 4),
-  ('Code Quality', 'code-quality', 'technical', 'Writes clean, maintainable code', 5),
+  ('Quality', 'quality', 'technical', 'Follows best quality practices', 5),
   ('Documentation', 'documentation', 'technical', 'Creates clear and helpful documentation', 6)
 ON CONFLICT (slug) DO NOTHING;
 -- =========================================================

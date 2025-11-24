@@ -86,14 +86,24 @@ const ERROR_FIELD_LABELS: Record<string, string> = {
   location: 'Location',
 }
 
+interface ProfileEducationLeftProps {
+  editingEntryId?: string | null
+  onEditComplete?: () => void
+}
+
 /**
- * Profile Education Right Component
+ * Profile Education Left Component
  * Form for managing education background
  */
-export function ProfileEducationLeft() {
+export function ProfileEducationLeft({
+  editingEntryId,
+  onEditComplete,
+}: ProfileEducationLeftProps = {}) {
   const [isLoading, setIsLoading] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [hiddenEntryIds, setHiddenEntryIds] = useState<Set<string>>(new Set())
   const originalDataRef = useRef<EducationProfileFormData | null>(null)
+  const entryRefs = useRef<Record<string, HTMLElement | null>>({})
   const toast = useToastController()
   const syncStatus = useAdaptiveProfileSync(300)
   const isSyncing = syncStatus === 'syncing'
@@ -282,8 +292,92 @@ export function ProfileEducationLeft() {
       }
       reset(formData)
       originalDataRef.current = formData
+
+      // Clear hidden entries - we'll set them after fields update
+      setHiddenEntryIds(new Set())
     }
   }, [educationQuery.data, educationLevelQuery.data, reset])
+
+  // Hide all existing entries after form data loads
+  useEffect(() => {
+    if (fields.length > 0 && educationQuery.data) {
+      const existingEntryFieldIds: string[] = []
+      fields.forEach((field, index) => {
+        const entryData = watch(`education_entries.${index}`)
+        // Hide if it has an ID (existing entry) and is not being edited
+        if (entryData?.id && entryData.id !== editingEntryId) {
+          existingEntryFieldIds.push(field.id)
+        }
+      })
+
+      if (existingEntryFieldIds.length > 0) {
+        setHiddenEntryIds((prev) => {
+          const next = new Set(prev)
+          for (const id of existingEntryFieldIds) {
+            next.add(id)
+          }
+          return next
+        })
+      }
+    }
+  }, [fields, educationQuery.data, editingEntryId, watch])
+
+  // Scroll to editing entry when editingEntryId changes
+  useEffect(() => {
+    if (editingEntryId) {
+      // Find the entry in the form fields by matching the ID
+      const entryIndex = fields.findIndex((_field, idx) => {
+        const entryData = watch(`education_entries.${idx}`)
+        return entryData?.id === editingEntryId
+      })
+
+      if (entryIndex !== -1) {
+        const entryId = fields[entryIndex].id
+        const entryData = watch(`education_entries.${entryIndex}`)
+
+        // Make sure the entry is visible (remove from hidden set)
+        setHiddenEntryIds((prev) => {
+          const next = new Set(prev)
+          next.delete(entryId)
+          return next
+        })
+
+        // Set manual entry mode based on whether it has a university_id
+        if (entryData) {
+          const shouldUseManualMode = !entryData.university_id
+          setManualEntryMode((prev) => ({
+            ...prev,
+            [entryIndex]: shouldUseManualMode,
+          }))
+
+          // If there's an institution name with a university_id (verified institution),
+          // trigger a search to populate results so the value displays in autocomplete
+          if (entryData.institution_name && entryData.university_id && !shouldUseManualMode) {
+            // Trigger search with the institution name to populate results
+            // This ensures the UniversityAutocomplete can find and display the value
+            setSearchQuery(entryData.institution_name)
+            handleUniversitySearch(entryData.institution_name)
+          }
+        }
+
+        // Scroll to the entry after a short delay to ensure it's rendered
+        setTimeout(() => {
+          const element = entryRefs.current[entryId]
+          if (element && typeof window !== 'undefined') {
+            // Scroll to the entry (web only)
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            // Focus the first input in the entry after another short delay
+            setTimeout(() => {
+              const firstInput = element.querySelector('input, textarea, button')
+              if (firstInput instanceof HTMLElement) {
+                firstInput.focus()
+              }
+            }, 100)
+          }
+        }, 100)
+      }
+    }
+  }, [editingEntryId, fields, watch, handleUniversitySearch])
 
   // Browser navigation guard - prevent data loss on page close/navigation
   useEffect(() => {
@@ -302,11 +396,38 @@ export function ProfileEducationLeft() {
 
   const onSubmit = async (data: EducationProfileFormData) => {
     setIsLoading(true)
+
+    // Track which entries are new (without IDs) before save
+    const newEntryFieldIds: string[] = []
+    data.education_entries?.forEach((entry, index) => {
+      if (!entry.id && fields[index]) {
+        newEntryFieldIds.push(fields[index].id)
+      }
+    })
+
     try {
       await saveEducationMutation.mutateAsync({
         education_level: data.education_level || null,
         education_entries: data.education_entries || [],
       })
+
+      // After successful save, hide ALL entries (both new and edited)
+      // They'll be visible in the right column instead
+      const allEntryFieldIds = fields.map((field) => field.id)
+      if (allEntryFieldIds.length > 0) {
+        setHiddenEntryIds((prev) => {
+          const next = new Set(prev)
+          for (const id of allEntryFieldIds) {
+            next.add(id)
+          }
+          return next
+        })
+      }
+
+      // Clear editing state
+      if (editingEntryId) {
+        onEditComplete?.()
+      }
     } catch (error) {
       console.error('Error saving education:', error)
     } finally {
@@ -407,19 +528,42 @@ export function ProfileEducationLeft() {
           {fields.map((field, index) => {
             const entryErrors = educationEntryFieldErrors[index]
             const hasEntryErrors = entryErrors !== undefined && entryErrors !== null
+            const entryId = field.id
+            const entryData = watch(`education_entries.${index}`)
+            const isEditing = editingEntryId === entryData?.id
+            const hasId = Boolean(entryData?.id)
+
+            // Hide entry if:
+            // 1. It has an ID (existing entry) AND is not being edited
+            // 2. OR it's explicitly in the hidden set and not being edited
+            const isHidden = (hasId && !isEditing) || (hiddenEntryIds.has(entryId) && !isEditing)
+
+            // Only show forms for:
+            // - New entries (no ID)
+            // - Entries being edited (isEditing is true)
+            if (isHidden) {
+              return null
+            }
 
             return (
               <YStack
                 key={field.id}
+                ref={(el) => {
+                  if (el) {
+                    entryRefs.current[entryId] = el
+                  }
+                }}
                 gap="$3"
                 p="$3"
                 borderWidth={1}
-                borderColor={hasEntryErrors ? '$red7' : '$borderColor'}
-                bg={hasEntryErrors ? '$red2' : '$background'}
+                borderColor={isEditing ? '$blue7' : hasEntryErrors ? '$red7' : '$borderColor'}
+                bg={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
                 rounded="$4"
               >
                 <XStack justify="space-between" items="center">
-                  <Text fontWeight="600">Education {index + 1}</Text>
+                  <Text fontWeight="600">
+                    {entryData?.id ? 'Edit Education' : `Education ${index + 1}`}
+                  </Text>
                   <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                     Remove
                   </Button>
@@ -443,6 +587,11 @@ export function ProfileEducationLeft() {
                                 <>
                                   <UniversityAutocomplete
                                     value={nameField.value || ''}
+                                    // Control input value when editing to display institution name
+                                    // This ensures the value shows even if not in search results yet
+                                    inputValue={
+                                      isEditing && nameField.value ? nameField.value : undefined
+                                    }
                                     onChange={nameField.onChange}
                                     onUniversitySelect={(university: University) => {
                                       universityField.onChange(university.id)

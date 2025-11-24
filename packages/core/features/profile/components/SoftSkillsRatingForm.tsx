@@ -1,12 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import {
-  Heading,
-  LoadingState,
-  ResponsiveModal,
-  SaveStatusIndicator,
-  UIButton,
-} from '@app/ui'
+import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator, UIButton } from '@app/ui'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
@@ -49,19 +43,16 @@ export const SoftSkillsRatingForm: FC = () => {
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>(
-    'idle',
+    'idle'
   )
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastAutoSaveRef = useRef<SoftSkillsFormData | null>(null)
 
   // Fetch soft skills data
-  const { data, isLoading, error, refetch } = api.profile.skills.getSoftSkills.useQuery(
-    undefined,
-    {
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    },
-  )
+  const { data, isLoading, error, refetch } = api.profile.skills.getSoftSkills.useQuery(undefined, {
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  })
 
   // Prepare form data structure
   const formSkills = useMemo<SoftSkillWithRating[]>(() => {
@@ -183,7 +174,6 @@ export const SoftSkillsRatingForm: FC = () => {
       .sort((a, b) => a.orderIndex - b.orderIndex)
   }, [formSkills, activeCategory])
 
-
   // Check if all skills are rated
   const allSkillsRated = useMemo(() => {
     return watchedRatings.length === 25 && watchedRatings.every((r) => r.rating > 0)
@@ -205,7 +195,7 @@ export const SoftSkillsRatingForm: FC = () => {
         })
       }
     },
-    [updateMutation, toast],
+    [updateMutation, toast]
   )
 
   // Handle success modal close
@@ -250,7 +240,7 @@ export const SoftSkillsRatingForm: FC = () => {
         <Heading variant="h3">Rate Your Soft Skills</Heading>
         <SaveStatusIndicator
           status={autoSaveStatus}
-          lastSavedAt={lastSavedAt?.toISOString()}
+          lastSavedAt={lastSavedAt}
           error={autoSaveStatus === 'error' ? 'Failed to auto-save' : undefined}
         />
       </XStack>
@@ -263,7 +253,10 @@ export const SoftSkillsRatingForm: FC = () => {
       <Separator />
 
       {/* Category Tabs */}
-      <SoftSkillsCategoryTabs activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
+      <SoftSkillsCategoryTabs
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+      />
 
       <Separator />
 
@@ -276,7 +269,8 @@ export const SoftSkillsRatingForm: FC = () => {
         ) : (
           categorySkills.map((skill) => {
             const skillRatingIndex = watchedRatings.findIndex((r) => r.skill_id === skill.id)
-            const defaultRating = skillRatingIndex >= 0 ? watchedRatings[skillRatingIndex]?.rating ?? 1 : 1
+            const defaultRating =
+              skillRatingIndex >= 0 ? (watchedRatings[skillRatingIndex]?.rating ?? 1) : 1
 
             if (skillRatingIndex < 0) {
               return null
@@ -428,4 +422,3 @@ export const SoftSkillsRatingForm: FC = () => {
     </YStack>
   )
 }
-

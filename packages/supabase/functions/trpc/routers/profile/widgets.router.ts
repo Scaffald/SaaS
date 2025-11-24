@@ -181,6 +181,7 @@ export const profileWidgetsRouter = t.router({
   /**
    * Get skills for display widget
    * Public endpoint - can view any user's skills
+   * Filters out soft_skills (only returns technical skills: csi and onet)
    */
   getSkills: publicProcedure.input(userIdInputSchema.optional()).query(async ({ ctx, input }) => {
     const { supabase, user } = ctx
@@ -198,6 +199,7 @@ export const profileWidgetsRouter = t.router({
       .from('user_skills')
       .select('*')
       .eq('user_id', targetUserId)
+      .in('skill_taxonomy', ['csi', 'onet'])
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -207,7 +209,12 @@ export const profileWidgetsRouter = t.router({
       })
     }
 
-    return await enrichUserSkills(supabase, data ?? [])
+    const enrichedSkills = await enrichUserSkills(supabase, data ?? [])
+    
+    // Filter out skills with "Unknown" labels (missing reference data)
+    return enrichedSkills.filter(
+      (skill) => skill.name !== 'Unknown Occupation' && skill.name !== 'Unknown CSI Skill'
+    )
   }),
 
   /**

@@ -17,7 +17,7 @@ import { Download } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useMemo, useState, type FC } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Separator, Text, XStack, YStack } from 'tamagui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -31,6 +31,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
   const toast = useToastController()
   const [drillDownOpen, setDrillDownOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<SoftSkillCategory>('reliability')
+  const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
   // Fetch soft skills data
   const { data, isLoading, error } = api.profile.skills.getSoftSkills.useQuery(
@@ -53,14 +54,16 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
 
     // Note: getSoftSkillsComparison returns category averages, not individual skill ratings
     // So we only show self ratings in the drill-down grid
-    return data.skills.map((skill) => ({
-      id: skill.id,
-      name: skill.name,
-      category: skill.category,
-      selfRating: skill.rating ?? 0,
-      peerRating: undefined, // Individual peer ratings not available
-      versionHistory: undefined, // Not needed for widget
-    }))
+    return data.skills
+      .filter((skill) => skill.rating !== null && skill.rating !== undefined)
+      .map((skill) => ({
+        id: skill.id,
+        name: skill.name,
+        category: skill.category,
+        selfRating: skill.rating ?? 0,
+        peerRating: undefined, // Individual peer ratings not available
+        versionHistory: undefined, // Not needed for widget
+      }))
   }, [data])
 
   // Calculate category averages for radar chart
@@ -88,11 +91,12 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
     })
 
     // Calculate peer averages if available
-    const peerAverages =
-      comparisonData?.categoryAverages?.map((avg: { average: number; category: string }) => ({
-        value: Math.round(avg.average * 20), // Convert 1-5 scale to 0-100
-        label: categoryLabels[avg.category as SoftSkillCategory],
-      })) ?? null
+    const peerAverages = comparisonData?.peer
+      ? categories.map((category) => ({
+          value: Math.round((comparisonData.peer[category] ?? 0) * 20), // Convert 1-5 scale to 0-100
+          label: categoryLabels[category],
+        }))
+      : null
 
     return {
       self: selfAverages,
@@ -101,7 +105,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
   }, [data, comparisonData])
 
   // Handle category click for drill-down
-  const handleCategoryClick = useCallback((index: number) => {
+  const handleCategoryClick = useCallback((_item: { value: number; label: string }, index: number) => {
     const categories: SoftSkillCategory[] = ['reliability', 'collaboration', 'professionalism', 'technical']
     setSelectedCategory(categories[index])
     setDrillDownOpen(true)
@@ -148,7 +152,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
   }
 
   const showCompact = variant === 'compact'
-  const hasPeerData = !!comparisonData && comparisonData.categoryAverages.length > 0
+  const hasPeerData = !!comparisonData?.peer
 
   return (
     <DashboardWidget>
@@ -239,9 +243,28 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
                 onPress={handleCategoryClick}
               />
             )}
-            <Text fontSize="$2" color="$color10" ta="center">
+            <Text fontSize="$2" color="$color10" textAlign="center">
               Click on a category to view individual skills
             </Text>
+          </YStack>
+        )}
+
+        {/* Category Tabs and Skills Grid */}
+        {skills.length > 0 && (
+          <YStack gap="$3">
+            <Separator />
+            <SoftSkillsCategoryTabs
+              activeCategory={activeCategory}
+              onCategoryChange={setActiveCategory}
+            />
+            <Separator />
+
+            {/* Skills Grid */}
+            <SoftSkillsRadarGrid
+              skills={skills}
+              activeCategory={activeCategory}
+              isLoading={false}
+            />
           </YStack>
         )}
 
@@ -258,14 +281,12 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
             <SoftSkillsCategoryTabs
               activeCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
-              skills={skills}
             />
 
             {/* Skills Grid */}
             <SoftSkillsRadarGrid
               skills={skills}
               activeCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
               isLoading={false}
             />
           </YStack>
