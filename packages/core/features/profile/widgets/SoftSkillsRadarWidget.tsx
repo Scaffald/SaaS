@@ -1,17 +1,21 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { SoftSkillsRadarGrid } from '@app/ui'
-import { SoftSkillsCategoryTabs, type SoftSkillCategory } from '../components/SoftSkillsCategoryTabs'
+import {
+  SoftSkillsCategoryTabs,
+  type SoftSkillCategory,
+} from '../components/SoftSkillsCategoryTabs'
 import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
 import {
   DashboardWidget,
   EmptyState,
   Heading,
   LoadingState,
-  RadarChart,
   ResponsiveModal,
+  SkillsChart,
   spacing,
   UIButton,
+  type SkillsChartDataset,
 } from '@app/ui'
 import { Download } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
@@ -26,7 +30,11 @@ import type { ProfileWidgetProps } from './types'
  * Main soft skills radar chart widget for profile display.
  * Shows 4-category overview with self/peer overlay and interactive drill-down.
  */
-export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit = false, variant = 'full' }) => {
+export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
+  userId,
+  showEdit = false,
+  variant = 'full',
+}) => {
   const router = useRouter()
   const toast = useToastController()
   const [drillDownOpen, setDrillDownOpen] = useState(false)
@@ -39,7 +47,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
     {
       enabled: !!userId,
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    },
+    }
   )
 
   // Fetch peer comparison data (only for current user's own profile)
@@ -66,50 +74,68 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
       }))
   }, [data])
 
-  // Calculate category averages for radar chart
-  const radarChartData = useMemo(() => {
-    if (!data) return null
+  // Category labels for display
+  const categoryLabels: Record<SoftSkillCategory, string> = {
+    reliability: 'Reliability',
+    collaboration: 'Collaboration',
+    professionalism: 'Professionalism',
+    technical: 'Technical',
+  }
 
-    const categories: SoftSkillCategory[] = ['reliability', 'collaboration', 'professionalism', 'technical']
-    const categoryLabels: Record<SoftSkillCategory, string> = {
-      reliability: 'Reliability',
-      collaboration: 'Collaboration',
-      professionalism: 'Professionalism',
-      technical: 'Technical',
-    }
+  // Calculate skills chart data for the active category
+  const categoryChartData = useMemo<SkillsChartDataset[] | null>(() => {
+    if (!data || !skills || skills.length === 0) return null
 
-    // Calculate self-assessment averages
-    const selfAverages = categories.map((category) => {
-      const categorySkills = data.skills.filter((s) => s.category === category && s.rating)
-      if (categorySkills.length === 0) return { value: 0, label: categoryLabels[category] }
-      const average =
-        categorySkills.reduce((sum, s) => sum + (s.rating ?? 0), 0) / categorySkills.length
-      return {
-        value: Math.round(average * 20), // Convert 1-5 scale to 0-100
-        label: categoryLabels[category],
-      }
-    })
+    // Filter skills by active category
+    const categorySkills = skills.filter((skill) => skill.category === activeCategory)
 
-    // Calculate peer averages if available
-    const peerAverages = comparisonData?.peer
-      ? categories.map((category) => ({
-          value: Math.round((comparisonData.peer[category] ?? 0) * 20), // Convert 1-5 scale to 0-100
-          label: categoryLabels[category],
+    if (categorySkills.length === 0) return null
+
+    // Create skills chart dataset: each skill becomes a point
+    // Convert 1-5 scale to 0-100 for better visualization
+    const chartData = categorySkills.map((skill) => ({
+      label: skill.name,
+      value: Math.round(skill.selfRating * 20), // Convert 1-5 to 0-100 scale
+    }))
+
+    const datasets: SkillsChartDataset[] = [
+      {
+        label: categoryLabels[activeCategory],
+        data: chartData,
+        fillColor: '$blue3',
+        strokeColor: '#1B6B93',
+        strokeWidth: 2,
+        fillOpacity: 0.3,
+      },
+    ]
+
+    // Add peer comparison data if available for this category
+    if (comparisonData?.peer) {
+      // For peer data, we'll show category average as comparison
+      // Note: Individual peer skill ratings aren't available, so we use category average
+      const peerCategoryAvg = comparisonData.peer[activeCategory] ?? 0
+      const categorySkillsCount = categorySkills.length
+
+      // Create peer dataset with category average applied to all skills
+      if (categorySkillsCount > 0) {
+        const peerChartData = categorySkills.map((skill) => ({
+          label: skill.name,
+          value: Math.round(peerCategoryAvg * 20), // Convert 1-5 to 0-100 scale
         }))
-      : null
 
-    return {
-      self: selfAverages,
-      peer: peerAverages,
+        datasets.push({
+          label: 'Peer Average',
+          data: peerChartData,
+          fillColor: '$green3',
+          strokeColor: '#4CAF50',
+          strokeWidth: 2,
+          fillOpacity: 0.2,
+        })
+      }
     }
-  }, [data, comparisonData])
 
-  // Handle category click for drill-down
-  const handleCategoryClick = useCallback((_item: { value: number; label: string }, index: number) => {
-    const categories: SoftSkillCategory[] = ['reliability', 'collaboration', 'professionalism', 'technical']
-    setSelectedCategory(categories[index])
-    setDrillDownOpen(true)
-  }, [])
+    return datasets
+  }, [data, skills, activeCategory, categoryLabels, comparisonData])
 
   // Handle export (placeholder for now)
   const handleExport = useCallback(() => {
@@ -186,86 +212,58 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
           </XStack>
         </XStack>
 
-        {/* Radar Chart */}
-        {radarChartData && (
-          <YStack gap="$3">
-            {hasPeerData && radarChartData.peer ? (
-              <YStack gap="$2">
-                <RadarChart
-                  datasets={[
-                    {
-                      data: radarChartData.self,
-                      label: 'Self Assessment',
-                      color: '$blue9',
-                      fillColor: '$blue3',
-                      strokeColor: '$blue9',
-                      fillOpacity: 0.3,
-                    },
-                    {
-                      data: radarChartData.peer,
-                      label: 'Peer Review',
-                      color: '$green9',
-                      fillColor: '$green3',
-                      strokeColor: '$green9',
-                      fillOpacity: 0.2,
-                    },
-                  ]}
-                  height={showCompact ? 200 : 300}
-                  radius={showCompact ? 80 : 120}
-                  maxValue={100}
-                  noOfSections={5}
-                  onPress={handleCategoryClick}
-                />
-                {/* Legend */}
-                <XStack gap="$4" items="center" justify="center" py="$2">
-                  <XStack gap="$2" items="center">
-                    <YStack width={20} height={3} bg="$blue9" />
-                    <Text fontSize="$2" color="$color11">
-                      Self Assessment
-                    </Text>
-                  </XStack>
-                  <XStack gap="$2" items="center">
-                    <YStack width={20} height={3} bg="$green9" />
-                    <Text fontSize="$2" color="$color11">
-                      Peer Review
-                    </Text>
-                  </XStack>
-                </XStack>
-              </YStack>
-            ) : (
-              <RadarChart
-                data={radarChartData.self}
-                height={showCompact ? 200 : 300}
-                radius={showCompact ? 80 : 120}
-                maxValue={100}
-                noOfSections={5}
-                color="$blue9"
-                onPress={handleCategoryClick}
-              />
-            )}
-            <Text fontSize="$2" color="$color10" textAlign="center">
-              Click on a category to view individual skills
-            </Text>
-          </YStack>
-        )}
-
-        {/* Category Tabs and Skills Grid */}
+        {/* Category Tabs */}
         {skills.length > 0 && (
-          <YStack gap="$3">
-            <Separator />
+          <>
             <SoftSkillsCategoryTabs
               activeCategory={activeCategory}
               onCategoryChange={setActiveCategory}
             />
             <Separator />
+          </>
+        )}
 
-            {/* Skills Grid */}
-            <SoftSkillsRadarGrid
-              skills={skills}
-              activeCategory={activeCategory}
-              isLoading={false}
+        {/* Skills Chart for Active Category */}
+        {categoryChartData && categoryChartData.length > 0 && (
+          <YStack gap="$2" items="center">
+            <Text fontSize="$4" fontWeight="600" color="$color12">
+              {categoryLabels[activeCategory]} Skills
+            </Text>
+            <SkillsChart
+              datasets={categoryChartData}
+              height={showCompact ? 200 : 300}
+              radius={showCompact ? 80 : 120}
+              maxValue={100}
+              isAnimated={true}
+              showSets={categoryChartData.length > 1 ? [0, 1] : [0]}
             />
+            {hasPeerData && categoryChartData.length > 1 && (
+              <XStack gap="$4" items="center" justify="center" py="$2">
+                <XStack gap="$2" items="center">
+                  <YStack width={20} height={3} bg="#1B6B93" />
+                  <Text fontSize="$2" color="$color11">
+                    Self Assessment
+                  </Text>
+                </XStack>
+                <XStack gap="$2" items="center">
+                  <YStack width={20} height={3} bg="#4CAF50" />
+                  <Text fontSize="$2" color="$color11">
+                    Peer Average
+                  </Text>
+                </XStack>
+              </XStack>
+            )}
+            <Text fontSize="$2" color="$color10" ta="center">
+              Individual skill ratings in {categoryLabels[activeCategory]}
+            </Text>
           </YStack>
+        )}
+
+        {skills.length > 0 && categoryChartData && <Separator />}
+
+        {/* Skills Grid */}
+        {skills.length > 0 && (
+          <SoftSkillsRadarGrid skills={skills} activeCategory={activeCategory} isLoading={false} />
         )}
 
         {/* Drill-down Modal */}
@@ -295,4 +293,3 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({ userId, showEdit
     </DashboardWidget>
   )
 }
-

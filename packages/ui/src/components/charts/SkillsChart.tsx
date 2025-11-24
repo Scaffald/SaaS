@@ -54,15 +54,28 @@ const RadarPolygon: FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data })
   const animatedValue = useSharedValue(0)
 
   const animatedProps = useAnimatedProps(() => {
-    const animatedPoints = data.map(({ value }, i) => {
+    'worklet'
+    const pointsArray: string[] = []
+    const axes = data.length
+
+    for (let i = 0; i < axes; i++) {
+      // Access data directly inside worklet - extract value safely
+      const item = data[i]
+      const value = typeof item?.value === 'number' && !Number.isNaN(item.value) ? item.value : 0
+
       const adjustedPoint = (value / dimensions.max) * animatedValue.value * dimensions.radius
       const x = dimensions.centerX + adjustedPoint * Math.cos(dimensions.angle * i - Math.PI / 2)
       const y = dimensions.centerY + adjustedPoint * Math.sin(dimensions.angle * i - Math.PI / 2)
-      return `${x},${y}`
-    })
+
+      // Ensure we format as valid coordinate pair - must be numbers
+      const xNum = typeof x === 'number' && !Number.isNaN(x) ? x : 0
+      const yNum = typeof y === 'number' && !Number.isNaN(y) ? y : 0
+
+      pointsArray.push(`${xNum},${yNum}`)
+    }
 
     return {
-      points: animatedPoints.join(' '),
+      points: pointsArray.join(' '),
     }
   })
 

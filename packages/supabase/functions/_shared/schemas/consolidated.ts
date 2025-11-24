@@ -431,7 +431,7 @@ export const searchParentSkillsInputSchema = z.object({
   limit: z.number().min(1).max(50).optional().default(20),
 });
 
-// Parent skill output
+// Parent skill output (now includes hierarchy information)
 export const parentSkillSchema = z.object({
   skill_id: z.string(),
   skill_name: z.string(),
@@ -439,6 +439,10 @@ export const parentSkillSchema = z.object({
   csi_code: z.array(z.string()).nullable(),
   active: z.boolean(),
   child_count: z.number(),
+  parent_id: z.string().uuid().nullable(),
+  parent_name: z.string().nullable(),
+  depth: z.number(),
+  hierarchy_path: z.string().nullable(),
 });
 
 // Get skill children input

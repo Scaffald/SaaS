@@ -151,7 +151,7 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
           limit: 20,
         })
 
-        // Map results to ParentSkill format
+        // Map results to ParentSkill format (now includes hierarchy information)
         const skills = (result.skills || []).map(
           (skill: {
             skill_id: string
@@ -159,12 +159,19 @@ export function ProfileSkillsProvider({ children }: ProfileSkillsProviderProps) 
             csi_display: string | null
             csi_code: string[] | null
             child_count: number
+            parent_id: string | null
+            parent_name: string | null
+            depth: number
+            hierarchy_path: string | null
           }) => ({
             id: skill.skill_id,
             name: skill.skill_name,
             code: skill.csi_display || skill.skill_id,
-            depth: 0, // Parent skills are at depth 0
+            depth: skill.depth || 0,
             childCount: skill.child_count,
+            parentId: skill.parent_id || null,
+            parentName: skill.parent_name || null,
+            hierarchyPath: skill.hierarchy_path || skill.skill_name,
           })
         )
 

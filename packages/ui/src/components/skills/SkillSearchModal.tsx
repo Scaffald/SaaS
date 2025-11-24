@@ -19,12 +19,17 @@ import { Sheet } from '../sheets/Sheet'
 
 /**
  * Parent skill from search (multi-taxonomy format)
+ * Now includes hierarchy information for CSI skills
  */
 export interface ParentSkill {
   id: string
   name: string
   code: string
   depth: number
+  childCount?: number
+  parentId?: string | null
+  parentName?: string | null
+  hierarchyPath?: string | null
 }
 
 /**
@@ -238,6 +243,83 @@ export function SkillSearchModal({
     return 'Set Proficiency Level'
   }
 
+  // Group results by parent (similar to certifications)
+  const groupedResults = useMemo(() => {
+    const groups: {
+      depth1: ParentSkill[] // Top-level (no parent)
+      depth2ByParent: Record<string, ParentSkill[]>
+      depth3ByParent: Record<string, ParentSkill[]>
+      depth4ByParent: Record<string, ParentSkill[]>
+    } = {
+      depth1: [],
+      depth2ByParent: {},
+      depth3ByParent: {},
+      depth4ByParent: {},
+    }
+
+    for (const skill of parentResults) {
+      if (skill.depth === 1 || !skill.parentId) {
+        groups.depth1.push(skill)
+      } else if (skill.depth === 2) {
+        const parentId = skill.parentId || 'none'
+        if (!groups.depth2ByParent[parentId]) {
+          groups.depth2ByParent[parentId] = []
+        }
+        groups.depth2ByParent[parentId].push(skill)
+      } else if (skill.depth === 3) {
+        const parentId = skill.parentId || 'none'
+        if (!groups.depth3ByParent[parentId]) {
+          groups.depth3ByParent[parentId] = []
+        }
+        groups.depth3ByParent[parentId].push(skill)
+      } else if (skill.depth === 4) {
+        const parentId = skill.parentId || 'none'
+        if (!groups.depth4ByParent[parentId]) {
+          groups.depth4ByParent[parentId] = []
+        }
+        groups.depth4ByParent[parentId].push(skill)
+      }
+    }
+
+    return groups
+  }, [parentResults])
+
+  // Get parent name for grouping display
+  const getParentName = (parentId: string | null | undefined): string => {
+    if (!parentId) return 'Other'
+    const parent = parentResults.find((s) => s.id === parentId)
+    return parent?.name || 'Unknown Parent'
+  }
+
+  // Depth badge component (for CSI skills)
+  const DepthBadge = ({ depth }: { depth: number }) => {
+    const labels = ['', 'Division', 'Subdivision', 'Detail', 'Sub-detail']
+    const colors: Array<'$blue9' | '$green9' | '$purple9' | '$orange9' | '$gray9'> = [
+      '$gray9',
+      '$blue9',
+      '$green9',
+      '$purple9',
+      '$orange9',
+    ]
+    const bgColor = (colors[depth] || '$gray9') as
+      | '$blue9'
+      | '$green9'
+      | '$purple9'
+      | '$orange9'
+      | '$gray9'
+    const label = labels[depth] || `Level ${depth}`
+
+    if (depth === 0 || !label) return null
+
+    return (
+      <XStack bg={bgColor} px="$2" py="$0.5" rounded="$2" borderWidth={1} borderColor={bgColor}>
+        <Text color="$background" fontSize="$1" fontWeight="600">
+          {label}
+        </Text>
+      </XStack>
+    )
+  }
+
   // Render content based on step
   const renderContent = () => {
     if (step === 'search-parent') {
@@ -277,32 +359,190 @@ export function SkillSearchModal({
                 </YStack>
               )}
 
-              {parentResults.map((parent) => (
-                <Card
-                  key={parent.id}
-                  size="$4"
-                  bordered
-                  pressStyle={{ scale: 0.98, backgroundColor: '$color5' }}
-                  animation="quick"
-                  onPress={() => handleParentSelect(parent)}
-                >
-                  <Card.Header>
-                    <XStack justify="space-between" items="center">
-                      <YStack flex={1}>
-                        <Text fontSize="$4" fontWeight="600">
-                          {parent.name}
+              {/* Top-level skills (depth 1, no parent) */}
+              {groupedResults.depth1.length > 0 && (
+                <YStack gap="$2">
+                  {groupedResults.depth1.map((skill) => (
+                    <Card
+                      key={skill.id}
+                      size="$4"
+                      bordered
+                      pressStyle={{ scale: 0.98, backgroundColor: '$color5' }}
+                      animation="quick"
+                      onPress={() => handleParentSelect(skill)}
+                    >
+                      <Card.Header>
+                        <XStack justify="space-between" items="center">
+                          <YStack flex={1} gap="$1">
+                            <XStack gap="$2" items="center" flexWrap="wrap">
+                              <Text fontSize="$4" fontWeight="600">
+                                {skill.name}
+                              </Text>
+                              {skill.depth > 0 && <DepthBadge depth={skill.depth} />}
+                            </XStack>
+                            {skill.code && (
+                              <Text fontSize="$2" color="$color10">
+                                {skill.code}
+                              </Text>
+                            )}
+                          </YStack>
+                          <ChevronRight size={20} color="$color11" />
+                        </XStack>
+                      </Card.Header>
+                    </Card>
+                  ))}
+                </YStack>
+              )}
+
+              {/* Depth 2 skills grouped by parent */}
+              {Object.keys(groupedResults.depth2ByParent).length > 0 && (
+                <YStack gap="$3">
+                  {Object.entries(groupedResults.depth2ByParent).map(([parentId, skills]) => (
+                    <YStack key={parentId} gap="$2">
+                      <XStack gap="$2" items="center" px="$2">
+                        <Text fontSize="$3" fontWeight="600" color="$color11">
+                          {getParentName(parentId)}
                         </Text>
-                        {parent.code && (
-                          <Text fontSize="$2" color="$color10">
-                            {parent.code}
-                          </Text>
-                        )}
-                      </YStack>
-                      <ChevronRight size={20} color="$color11" />
-                    </XStack>
-                  </Card.Header>
-                </Card>
-              ))}
+                        <Separator flex={1} />
+                      </XStack>
+                      {skills.map((skill) => (
+                        <Card
+                          key={skill.id}
+                          size="$4"
+                          bordered
+                          pressStyle={{ scale: 0.98, backgroundColor: '$color5' }}
+                          animation="quick"
+                          onPress={() => handleParentSelect(skill)}
+                        >
+                          <Card.Header>
+                            <YStack gap="$1">
+                              <XStack justify="space-between" items="center" flexWrap="wrap">
+                                <XStack gap="$2" items="center" flexWrap="wrap" flex={1}>
+                                  <Text fontSize="$3" fontWeight="600">
+                                    {skill.name}
+                                  </Text>
+                                  <DepthBadge depth={skill.depth} />
+                                </XStack>
+                                <ChevronRight size={20} color="$color11" />
+                              </XStack>
+                              {skill.hierarchyPath && (
+                                <Text fontSize="$2" color="$color10">
+                                  {skill.hierarchyPath}
+                                </Text>
+                              )}
+                              {skill.code && (
+                                <Text fontSize="$2" color="$color10">
+                                  {skill.code}
+                                </Text>
+                              )}
+                            </YStack>
+                          </Card.Header>
+                        </Card>
+                      ))}
+                    </YStack>
+                  ))}
+                </YStack>
+              )}
+
+              {/* Depth 3 skills grouped by parent */}
+              {Object.keys(groupedResults.depth3ByParent).length > 0 && (
+                <YStack gap="$3">
+                  {Object.entries(groupedResults.depth3ByParent).map(([parentId, skills]) => (
+                    <YStack key={parentId} gap="$2">
+                      <XStack gap="$2" items="center" px="$2">
+                        <Text fontSize="$3" fontWeight="600" color="$color11">
+                          {getParentName(parentId)}
+                        </Text>
+                        <Separator flex={1} />
+                      </XStack>
+                      {skills.map((skill) => (
+                        <Card
+                          key={skill.id}
+                          size="$4"
+                          bordered
+                          pressStyle={{ scale: 0.98, backgroundColor: '$color5' }}
+                          animation="quick"
+                          onPress={() => handleParentSelect(skill)}
+                        >
+                          <Card.Header>
+                            <YStack gap="$1">
+                              <XStack justify="space-between" items="center" flexWrap="wrap">
+                                <XStack gap="$2" items="center" flexWrap="wrap" flex={1}>
+                                  <Text fontSize="$3" fontWeight="600">
+                                    {skill.name}
+                                  </Text>
+                                  <DepthBadge depth={skill.depth} />
+                                </XStack>
+                                <ChevronRight size={20} color="$color11" />
+                              </XStack>
+                              {skill.hierarchyPath && (
+                                <Text fontSize="$2" color="$color10">
+                                  {skill.hierarchyPath}
+                                </Text>
+                              )}
+                              {skill.code && (
+                                <Text fontSize="$2" color="$color10">
+                                  {skill.code}
+                                </Text>
+                              )}
+                            </YStack>
+                          </Card.Header>
+                        </Card>
+                      ))}
+                    </YStack>
+                  ))}
+                </YStack>
+              )}
+
+              {/* Depth 4 skills grouped by parent */}
+              {Object.keys(groupedResults.depth4ByParent).length > 0 && (
+                <YStack gap="$3">
+                  {Object.entries(groupedResults.depth4ByParent).map(([parentId, skills]) => (
+                    <YStack key={parentId} gap="$2">
+                      <XStack gap="$2" items="center" px="$2">
+                        <Text fontSize="$3" fontWeight="600" color="$color11">
+                          {getParentName(parentId)}
+                        </Text>
+                        <Separator flex={1} />
+                      </XStack>
+                      {skills.map((skill) => (
+                        <Card
+                          key={skill.id}
+                          size="$4"
+                          bordered
+                          pressStyle={{ scale: 0.98, backgroundColor: '$color5' }}
+                          animation="quick"
+                          onPress={() => handleParentSelect(skill)}
+                        >
+                          <Card.Header>
+                            <YStack gap="$1">
+                              <XStack justify="space-between" items="center" flexWrap="wrap">
+                                <XStack gap="$2" items="center" flexWrap="wrap" flex={1}>
+                                  <Text fontSize="$3" fontWeight="600">
+                                    {skill.name}
+                                  </Text>
+                                  <DepthBadge depth={skill.depth} />
+                                </XStack>
+                                <ChevronRight size={20} color="$color11" />
+                              </XStack>
+                              {skill.hierarchyPath && (
+                                <Text fontSize="$2" color="$color10">
+                                  {skill.hierarchyPath}
+                                </Text>
+                              )}
+                              {skill.code && (
+                                <Text fontSize="$2" color="$color10">
+                                  {skill.code}
+                                </Text>
+                              )}
+                            </YStack>
+                          </Card.Header>
+                        </Card>
+                      ))}
+                    </YStack>
+                  ))}
+                </YStack>
+              )}
             </YStack>
           </ScrollView>
         </YStack>

@@ -10,12 +10,13 @@ import {
   EmptyState,
   Heading,
   LoadingState,
-  RadarChart,
   ResponsiveModal,
+  SkillsChart,
   spacing,
   Tab,
   TabGroup,
   UIButton,
+  type SkillsChartDataset,
 } from '@app/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
@@ -98,8 +99,8 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     technical: 'Technical',
   }
 
-  // Calculate radar chart data for the active category
-  const categoryRadarData = useMemo(() => {
+  // Calculate skills chart data for the active category
+  const categoryChartData = useMemo<SkillsChartDataset[] | null>(() => {
     if (!softSkills || softSkills.length === 0) return null
 
     // Filter skills by active category
@@ -107,13 +108,24 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
     if (categorySkills.length === 0) return null
 
-    // Create radar chart data: each skill becomes a point
+    // Create skills chart dataset: each skill becomes a point
     // Convert 1-5 scale to 0-100 for better visualization
-    return categorySkills.map((skill) => ({
-      value: Math.round(skill.selfRating * 20), // Convert 1-5 to 0-100 scale
+    const chartData = categorySkills.map((skill) => ({
       label: skill.name,
+      value: Math.round(skill.selfRating * 20), // Convert 1-5 to 0-100 scale
     }))
-  }, [softSkills, activeCategory])
+
+    return [
+      {
+        label: categoryLabels[activeCategory],
+        data: chartData,
+        fillColor: '$blue3',
+        strokeColor: '#1B6B93',
+        strokeWidth: 2,
+        fillOpacity: 0.3,
+      },
+    ]
+  }, [softSkills, activeCategory, categoryLabels])
 
   if (isLoading) {
     return (
@@ -349,19 +361,18 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
                 <Separator />
 
-                {/* Radar Chart for Active Category */}
-                {categoryRadarData && categoryRadarData.length > 0 && (
+                {/* Skills Chart for Active Category */}
+                {categoryChartData && categoryChartData.length > 0 && (
                   <YStack gap="$2" items="center">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       {categoryLabels[activeCategory]} Skills
                     </Text>
-                    <RadarChart
-                      data={categoryRadarData}
+                    <SkillsChart
+                      datasets={categoryChartData}
                       height={variant === 'compact' ? 200 : 300}
                       radius={variant === 'compact' ? 80 : 120}
                       maxValue={100}
-                      noOfSections={5}
-                      color="$blue9"
+                      isAnimated={true}
                     />
                     <Text fontSize="$2" color="$color10" textAlign="center">
                       Individual skill ratings in {categoryLabels[activeCategory]}
