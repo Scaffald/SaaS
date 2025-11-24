@@ -1,4 +1,4 @@
-import { type FC, useEffect, useMemo } from 'react'
+import { type FC, useEffect, useMemo, useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated'
 import {
@@ -148,10 +148,14 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 }) => {
   const { width: screenWidth } = useWindowDimensions()
   const theme = useTheme()
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
-  // Use height as default width if not provided, or fallback to 300
-  const chartWidth = width || height || 300
-  const chartHeight = height || width || 300
+  // Determine actual dimensions
+  const chartWidth = width || Math.max(dimensions.width, 300)
+  const chartHeight = height || Math.max(dimensions.height, 300)
+
+  // Calculate effective radius (use provided radius or auto-calculate from available space with padding for labels)
+  const effectiveRadius = radius || Math.min(chartWidth, chartHeight) / 2 - 40
 
   // Helper to safely resolve colors
   const resolveColor = (color: string | any): string => {
@@ -181,9 +185,9 @@ export const SkillsChart: FC<SkillsChartProps> = ({
       centerY: chartHeight / 2,
       angle: (2 * Math.PI) / axes,
       max: maxValue,
-      radius,
+      radius: effectiveRadius,
     }),
-    [chartWidth, chartHeight, axes, maxValue, radius]
+    [chartWidth, chartHeight, axes, maxValue, effectiveRadius]
   )
 
   // Render the spider web grid
@@ -194,7 +198,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
     // Concentric polygons/circles
     for (let level = 1; level <= levels; level++) {
       const levelFactor = level / levels
-      const r = radius * levelFactor
+      const r = effectiveRadius * levelFactor
 
       // Create polygon points for the grid
       const points = datasets[0].data
@@ -221,8 +225,8 @@ export const SkillsChart: FC<SkillsChartProps> = ({
     // Spokes from center
     const spokes = datasets[0].data.map((_, i) => {
       const angle = calculated.angle * i - Math.PI / 2
-      const x = calculated.centerX + radius * Math.cos(angle)
-      const y = calculated.centerY + radius * Math.sin(angle)
+      const x = calculated.centerX + effectiveRadius * Math.cos(angle)
+      const y = calculated.centerY + effectiveRadius * Math.sin(angle)
 
       return (
         <G key={`spoke-${i}`}>
@@ -249,7 +253,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
     return datasets[0].data.map(({ label }, i) => {
       const angle = calculated.angle * i - Math.PI / 2
       // Push label out slightly further than radius
-      const labelRadius = radius + 25
+      const labelRadius = effectiveRadius + 25
       const x = calculated.centerX + labelRadius * Math.cos(angle)
       const y = calculated.centerY + labelRadius * Math.sin(angle)
 
@@ -292,7 +296,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
     return dataset.data.map((item, i) => {
       const value = Math.min(item.value, maxValue)
-      const dist = (value / maxValue) * radius
+      const dist = (value / maxValue) * effectiveRadius
       const angle = calculated.angle * i - Math.PI / 2
       const x = calculated.centerX + dist * Math.cos(angle)
       const y = calculated.centerY + dist * Math.sin(angle)
@@ -315,10 +319,14 @@ export const SkillsChart: FC<SkillsChartProps> = ({
     <View
       items="center"
       justify="center"
-      minH={chartHeight}
-      width={chartWidth}
+      minH={height || 300}
+      width={width || '100%'}
       bg={bg}
       overflow="hidden"
+      onLayout={(event) => {
+        const { width: layoutWidth, height: layoutHeight } = event.nativeEvent.layout
+        setDimensions({ width: layoutWidth, height: layoutHeight })
+      }}
     >
       <Svg height={chartHeight} width={chartWidth}>
         <Defs>
