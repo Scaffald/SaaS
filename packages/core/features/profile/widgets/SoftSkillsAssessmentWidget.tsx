@@ -1,6 +1,14 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, Heading, LoadingState, RadarChart, spacing, UIButton } from '@app/ui'
+import {
+  DashboardWidget,
+  Heading,
+  LoadingState,
+  SkillsChart,
+  spacing,
+  UIButton,
+  type SkillsChartDataset,
+} from '@app/ui'
 import { useRouter } from 'expo-router'
 import { type FC, useMemo } from 'react'
 import { Text, View, XStack, YStack } from 'tamagui'
@@ -13,7 +21,7 @@ const formatRelativeTime = (timestamp: string | Date | null | undefined): string
 
   // Handle both string and Date object inputs
   const date = timestamp instanceof Date ? timestamp : new Date(timestamp)
-  
+
   // Validate the date is valid
   if (Number.isNaN(date.getTime())) {
     return 'Invalid date'
@@ -73,7 +81,9 @@ export const SoftSkillsAssessmentWidget: FC = () => {
     const { skills, lastUpdated: updatedAt, categoryAverages: averages } = data
 
     // Count how many skills have ratings
-    const ratedSkills = skills.filter((skill) => skill.rating !== null && skill.rating !== undefined)
+    const ratedSkills = skills.filter(
+      (skill) => skill.rating !== null && skill.rating !== undefined
+    )
     const completed = ratedSkills.length === 25 // All 25 soft skills should be rated
 
     return {
@@ -85,12 +95,25 @@ export const SoftSkillsAssessmentWidget: FC = () => {
   }, [data])
 
   // Prepare data for mini radar chart (category averages)
-  const radarData = useMemo(() => {
+  const chartDatasets = useMemo<SkillsChartDataset[]>(() => {
     return [
-      { value: categoryAverages.reliability, label: 'Reliability' },
-      { value: categoryAverages.collaboration, label: 'Collaboration' },
-      { value: categoryAverages.professionalism, label: 'Professionalism' },
-      { value: categoryAverages.technical, label: 'Technical' },
+      {
+        label: 'Assessment',
+        data: [
+          { value: categoryAverages.reliability, label: 'Reliability' },
+          { value: categoryAverages.collaboration, label: 'Collaboration' },
+          { value: categoryAverages.professionalism, label: 'Professionalism' },
+          { value: categoryAverages.technical, label: 'Technical' },
+        ],
+        fillColor: '$blue4',
+        strokeColor: '$blue9',
+        strokeWidth: 2,
+        fillOpacity: 0.02,
+        gradient: {
+          startColor: '$blue8',
+          endColor: '$blue4',
+        },
+      },
     ]
   }, [categoryAverages])
 
@@ -162,16 +185,17 @@ export const SoftSkillsAssessmentWidget: FC = () => {
 
             {/* Mini Radar Chart Preview */}
             <View items="center" py="$2">
-              <RadarChart
-                data={radarData}
+              <SkillsChart
+                datasets={chartDatasets}
                 height={180}
-                width={180}
                 radius={70}
                 maxValue={5}
-                noOfSections={5}
-                color="#1B6B93"
-                strokeWidth={2}
                 isAnimated={true}
+                showDots={true}
+                dotSize={3}
+                bg="$color2"
+                gridColor="$color5"
+                labelColor="$color11"
               />
             </View>
 
@@ -184,4 +208,3 @@ export const SoftSkillsAssessmentWidget: FC = () => {
     </DashboardWidget>
   )
 }
-

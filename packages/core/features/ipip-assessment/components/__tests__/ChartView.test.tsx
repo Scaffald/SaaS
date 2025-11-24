@@ -8,8 +8,8 @@ import { ChartView } from '../ChartView'
 
 vi.mock('@app/ui', () => ({
   __esModule: true as const,
-  RadarChart: (props: { data: unknown[] }) => (
-    <div data-testid="radar-chart">points:{props.data?.length ?? 0}</div>
+  SkillsChart: (props: { datasets: { data: unknown[] }[] }) => (
+    <div data-testid="skills-chart">points:{props.datasets[0]?.data?.length ?? 0}</div>
   ),
   BarChart: (props: { data: unknown[]; domain?: string }) => (
     <div data-testid={`bar-chart-${props.data?.length ?? 0}`}>{props.domain}</div>
@@ -80,7 +80,7 @@ describe('ChartView', () => {
 
     expect(screen.getByText('Your Archetype')).toBeVisible()
     expect(screen.getByText('Connector')).toBeVisible()
-    expect(screen.getByTestId('radar-chart')).toHaveTextContent('points:5')
+    expect(screen.getByTestId('skills-chart')).toHaveTextContent('points:5')
     expect(screen.getAllByTestId(/bar-chart-/i)).toHaveLength(5)
     expect(screen.getByText(/Big Five Personality Traits/i)).toBeVisible()
   })

@@ -1,23 +1,37 @@
-import { randomUUID } from 'expo-crypto'
-import { type FC, useEffect } from 'react'
+import { type FC, useEffect, useMemo } from 'react'
 import { useWindowDimensions } from 'react-native'
 import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated'
-import { Circle, Defs, G, LinearGradient, Polygon, Rect, Stop, Svg } from 'react-native-svg'
-import { type GetThemeValueForKey, Text, View } from 'tamagui'
+import {
+  Circle,
+  Defs,
+  G,
+  LinearGradient,
+  Polygon,
+  Stop,
+  Svg,
+  Text as SvgText,
+  type TextAnchor,
+} from 'react-native-svg'
+import { type GetThemeValueForKey, useTheme, View, Text } from 'tamagui'
 
 // Data interfaces
 export interface SkillsChartDataItem {
   label: string
   value: number
+  fullMark?: number
 }
 
 export interface SkillsChartDataset {
   label: string
   data: SkillsChartDataItem[]
-  fillColor?: GetThemeValueForKey<'backgroundColor'>
-  strokeColor?: string
+  fillColor?: string | GetThemeValueForKey<'backgroundColor'>
+  strokeColor?: string | GetThemeValueForKey<'borderColor'>
   strokeWidth?: number
   fillOpacity?: number
+  gradient?: {
+    startColor: string
+    endColor: string
+  }
 }
 
 export interface SkillsChartProps {
@@ -29,9 +43,11 @@ export interface SkillsChartProps {
   maxValue?: number
   bg?: GetThemeValueForKey<'backgroundColor'>
   gridColor?: string
-  labelColor?: GetThemeValueForKey<'color'>
+  labelColor?: string
   labelTextSize?: number
   isAnimated?: boolean
+  showDots?: boolean
+  dotSize?: number
 }
 
 // Animated Polygon Component
@@ -47,10 +63,19 @@ interface RadarPolygonProps {
   }
   fill: string
   stroke: string
+  strokeWidth: number
+  fillOpacity: number
   data: SkillsChartDataItem[]
 }
 
-const RadarPolygon: FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data }) => {
+const RadarPolygon: FC<RadarPolygonProps> = ({
+  dimensions,
+  fill,
+  stroke,
+  strokeWidth,
+  fillOpacity,
+  data,
+}) => {
   const animatedValue = useSharedValue(0)
 
   const animatedProps = useAnimatedProps(() => {
@@ -59,15 +84,22 @@ const RadarPolygon: FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data })
     const axes = data.length
 
     for (let i = 0; i < axes; i++) {
-      // Access data directly inside worklet - extract value safely
       const item = data[i]
       const value = typeof item?.value === 'number' && !Number.isNaN(item.value) ? item.value : 0
 
-      const adjustedPoint = (value / dimensions.max) * animatedValue.value * dimensions.radius
-      const x = dimensions.centerX + adjustedPoint * Math.cos(dimensions.angle * i - Math.PI / 2)
-      const y = dimensions.centerY + adjustedPoint * Math.sin(dimensions.angle * i - Math.PI / 2)
+      // Calculate expansion
+      const currentVal = value * animatedValue.value
+      // Clamp to max if needed, or allow overflow if desired. Usually clamp.
+      const clampedVal = Math.min(currentVal, dimensions.max)
 
-      // Ensure we format as valid coordinate pair - must be numbers
+      const adjustedPoint = (clampedVal / dimensions.max) * dimensions.radius
+
+      // -PI/2 to start at 12 o'clock
+      const angle = dimensions.angle * i - Math.PI / 2
+
+      const x = dimensions.centerX + adjustedPoint * Math.cos(angle)
+      const y = dimensions.centerY + adjustedPoint * Math.sin(angle)
+
       const xNum = typeof x === 'number' && !Number.isNaN(x) ? x : 0
       const yNum = typeof y === 'number' && !Number.isNaN(y) ? y : 0
 
@@ -80,11 +112,17 @@ const RadarPolygon: FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data })
   })
 
   useEffect(() => {
-    animatedValue.value = withSpring(1)
+    animatedValue.value = withSpring(1, { damping: 12, stiffness: 90 })
   }, [])
 
   return (
-    <AnimatedPolygon animatedProps={animatedProps} fill={fill} stroke={stroke} strokeWidth="2" />
+    <AnimatedPolygon
+      animatedProps={animatedProps}
+      fill={fill}
+      fillOpacity={fillOpacity}
+      stroke={stroke}
+      strokeWidth={strokeWidth}
+    />
   )
 }
 
@@ -92,156 +130,244 @@ const RadarPolygon: FC<RadarPolygonProps> = ({ dimensions, fill, stroke, data })
  * Custom Skills Chart component using SVG and Reanimated
  *
  * A highly customizable radar chart built from scratch with SVG and animations.
- * Perfect for displaying skill sets, performance metrics, or multi-dimensional data.
- *
- * @param datasets - Array of skill datasets to display
- * @param showSets - Array of dataset indices to show (defaults to [0, 1])
- * @param height - Chart height (defaults to 300)
- * @param width - Chart width (defaults to screen width)
- * @param radius - Chart radius (defaults to 120)
- * @param maxValue - Maximum value for scaling (defaults to 100)
- * @param bg - Background color (defaults to transparent)
- * @param gridColor - Grid line color (defaults to #E0E0E0)
- * @param labelColor - Label text color (defaults to #E0E0E0)
- * @param labelTextSize - Label font size (defaults to 12)
- * @param isAnimated - Enable animations (defaults to true)
- * @returns JSX element
- *
- * @example
- * ```tsx
- * const skillsData = [
- *   {
- *     label: "Hard Skills",
- *     data: [
- *       { label: "React", value: 90 },
- *       { label: "TypeScript", value: 85 },
- *       { label: "Node.js", value: 80 }
- *     ],
- *     fillColor: '#4FC3F7',
- *     strokeColor: '#29B6F6'
- *   }
- * ]
- *
- * <SkillsChart datasets={skillsData} height={300} />
- * ```
+ * Supports multiple datasets, gradients, and custom theming.
  */
 export const SkillsChart: FC<SkillsChartProps> = ({
   datasets,
   showSets = [0, 1],
   height = 300,
   width,
-  radius = 120,
+  radius = 100,
   maxValue = 100,
   bg = 'transparent',
-  gridColor = '#E0E0E0',
+  gridColor = '$color6',
+  labelColor = '$color11',
   labelTextSize = 12,
+  showDots = true,
+  dotSize = 4,
 }) => {
   const { width: screenWidth } = useWindowDimensions()
-  const chartWidth = width || screenWidth
-  const chartHeight = height
+  const theme = useTheme()
 
-  if (showSets.some((index) => index >= datasets.length)) {
+  // Use height as default width if not provided, or fallback to 300
+  const chartWidth = width || height || 300
+  const chartHeight = height || width || 300
+
+  // Helper to safely resolve colors
+  const resolveColor = (color: string | any): string => {
+    if (typeof color === 'string' && color.startsWith('$')) {
+      return (theme[color]?.get() as string) || color
+    }
+    return String(color)
+  }
+
+  // Resolve simplified colors
+  const itemsColor = resolveColor(gridColor)
+  const resolvedLabelColor = resolveColor(labelColor)
+
+  // Validate datasets
+  if (!datasets || datasets.length === 0 || !datasets[0]?.data?.length) {
     return (
-      <View items="center" justify="center" minH={chartHeight}>
-        <Text color="$red10">Cannot Display Data</Text>
+      <View items="center" justify="center" minH={chartHeight} width={chartWidth}>
+        <Text color="$red10">No data available</Text>
       </View>
     )
   }
 
   const axes = datasets[0].data.length
-  const calculated = {
-    centerX: chartWidth / 2,
-    centerY: chartHeight / 2,
-    angle: (2 * Math.PI) / axes,
-    angleDeg: 360 / axes,
-    max: maxValue,
-    radius,
-  }
-
-  const renderAxis = (data: SkillsChartDataItem[]) =>
-    data.map((_, i) => (
-      <G key={`axis-circle-${i}-${radius}`}>
-        <Circle
-          cx={calculated.centerX}
-          cy={calculated.centerY}
-          r={(radius / axes) * (i + 1)}
-          stroke={gridColor}
-          strokeWidth="0.5"
-          fill="none"
-        />
-        <Rect
-          width={1}
-          height={radius}
-          fill="url(#gradient)"
-          transform={`translate(${calculated.centerX}, ${calculated.centerY}) rotate(${180 + calculated.angleDeg * i}, ${0.5}, ${0.5})`}
-        />
-      </G>
-    ))
-
-  const renderLabels = (data: SkillsChartDataItem[], set: number, index: number) => (
-    <View key={set} position="absolute" height="100%" flex={1}>
-      {data.map(({ label }, i) => {
-        const x = calculated.centerX + radius * Math.cos(calculated.angle * i - Math.PI / 2)
-        const y = calculated.centerY + radius * Math.sin(calculated.angle * i - Math.PI / 2)
-        let left = x - 40
-        let top = y + index * 20
-
-        if (y < calculated.centerY && x !== calculated.centerX) top -= 10
-        if (y < calculated.centerY && x === calculated.centerX) top -= 30
-        if (y > calculated.centerY) top += 20
-        if (x < calculated.centerX) left -= 20
-        if (x > calculated.centerX) left += 20
-
-        return (
-          <View
-            key={randomUUID()}
-            position="absolute"
-            l={left}
-            t={top}
-            items="center"
-            justify="center"
-          >
-            <Text
-              fontSize={labelTextSize}
-              fontWeight="bold"
-              color="$color12"
-              text="center"
-              numberOfLines={2}
-            >
-              {label}
-            </Text>
-          </View>
-        )
-      })}
-    </View>
+  const calculated = useMemo(
+    () => ({
+      centerX: chartWidth / 2,
+      centerY: chartHeight / 2,
+      angle: (2 * Math.PI) / axes,
+      max: maxValue,
+      radius,
+    }),
+    [chartWidth, chartHeight, axes, maxValue, radius]
   )
 
+  // Render the spider web grid
+  const renderGrid = () => {
+    const levels = 4 // How many concentric rings
+    const rings = []
+
+    // Concentric polygons/circles
+    for (let level = 1; level <= levels; level++) {
+      const levelFactor = level / levels
+      const r = radius * levelFactor
+
+      // Create polygon points for the grid
+      const points = datasets[0].data
+        .map((_, i) => {
+          const angle = calculated.angle * i - Math.PI / 2
+          const x = calculated.centerX + r * Math.cos(angle)
+          const y = calculated.centerY + r * Math.sin(angle)
+          return `${x},${y}`
+        })
+        .join(' ')
+
+      rings.push(
+        <Polygon
+          key={`grid-ring-${level}`}
+          points={points}
+          stroke={itemsColor}
+          strokeWidth="1"
+          strokeOpacity={0.3}
+          fill="none"
+        />
+      )
+    }
+
+    // Spokes from center
+    const spokes = datasets[0].data.map((_, i) => {
+      const angle = calculated.angle * i - Math.PI / 2
+      const x = calculated.centerX + radius * Math.cos(angle)
+      const y = calculated.centerY + radius * Math.sin(angle)
+
+      return (
+        <G key={`spoke-${i}`}>
+          <Polygon
+            points={`${calculated.centerX},${calculated.centerY} ${x},${y}`}
+            stroke={itemsColor}
+            strokeWidth="1"
+            strokeOpacity={0.3}
+          />
+        </G>
+      )
+    })
+
+    return (
+      <G>
+        {rings}
+        {spokes}
+      </G>
+    )
+  }
+
+  // Render SVG Text Labels
+  const renderLabels = () => {
+    return datasets[0].data.map(({ label }, i) => {
+      const angle = calculated.angle * i - Math.PI / 2
+      // Push label out slightly further than radius
+      const labelRadius = radius + 25
+      const x = calculated.centerX + labelRadius * Math.cos(angle)
+      const y = calculated.centerY + labelRadius * Math.sin(angle)
+
+      // Determine text anchor based on horizontal position
+      let textAnchor: TextAnchor = 'middle'
+      if (x > calculated.centerX + 10) textAnchor = 'start'
+      if (x < calculated.centerX - 10) textAnchor = 'end'
+
+      // Determine baseline based on vertical position
+      // SVG text alignment is tricky, simple vertical adjust often works best
+      let dy = 0 // middle
+      if (y < calculated.centerY - 10) dy = 0 // top half
+      if (y > calculated.centerY + 10) dy = 10 // bottom half need to push down
+
+      return (
+        <SvgText
+          key={`label-${i}`}
+          x={x}
+          y={y}
+          dy={dy}
+          fill={resolvedLabelColor}
+          fontSize={labelTextSize}
+          fontWeight="bold"
+          textAnchor={textAnchor}
+          alignmentBaseline="middle"
+        >
+          {label}
+        </SvgText>
+      )
+    })
+  }
+
+  // Render dots at vertices
+  const renderDots = (dataset: SkillsChartDataset, index: number) => {
+    if (!showDots) return null
+
+    // Resolve color
+    const rawColor = dataset.strokeColor || dataset.fillColor || '$blue10'
+    const color = resolveColor(rawColor)
+
+    return dataset.data.map((item, i) => {
+      const value = Math.min(item.value, maxValue)
+      const dist = (value / maxValue) * radius
+      const angle = calculated.angle * i - Math.PI / 2
+      const x = calculated.centerX + dist * Math.cos(angle)
+      const y = calculated.centerY + dist * Math.sin(angle)
+
+      return (
+        <Circle
+          key={`dot-${index}-${i}`}
+          cx={x}
+          cy={y}
+          r={dotSize}
+          fill={color}
+          stroke={resolveColor(bg)}
+          strokeWidth={1.5}
+        />
+      )
+    })
+  }
+
   return (
-    <View items="center" justify="center" minH={chartHeight} flex={1} bg={bg}>
-      <View position="absolute" height="100%" flex={1}>
-        <Svg height="100%" width="100%">
-          <Defs>
-            <LinearGradient id="gradient" gradientTransform="rotate(90)">
-              <Stop offset="0%" stopColor={gridColor} />
-              <Stop offset="100%" stopColor={gridColor} stopOpacity={0.3} />
-            </LinearGradient>
-          </Defs>
+    <View
+      items="center"
+      justify="center"
+      minH={chartHeight}
+      width={chartWidth}
+      bg={bg}
+      overflow="hidden"
+    >
+      <Svg height={chartHeight} width={chartWidth}>
+        <Defs>
+          {datasets.map((set, i) => {
+            if (set.gradient) {
+              const start = resolveColor(set.gradient.startColor)
+              const end = resolveColor(set.gradient.endColor)
+              return (
+                <LinearGradient key={`grad-${i}`} id={`grad-${i}`} x1="0" y1="0" x2="1" y2="1">
+                  <Stop offset="0" stopColor={start} stopOpacity={set.fillOpacity ?? 0.5} />
+                  <Stop offset="1" stopColor={end} stopOpacity={(set.fillOpacity ?? 0.5) * 0.5} />
+                </LinearGradient>
+              )
+            }
+            return null
+          })}
+        </Defs>
 
-          {renderAxis(datasets[0].data)}
+        {renderGrid()}
+        {renderLabels()}
 
-          {showSets.map((s) => (
-            <RadarPolygon
-              key={s}
-              dimensions={calculated}
-              fill={(datasets[s].fillColor as string) || '#1B6B93'}
-              stroke={datasets[s].strokeColor || '#4FC3F7'}
-              data={datasets[s].data}
-            />
-          ))}
-        </Svg>
-      </View>
+        {/* Render Datasets */}
+        {datasets.map((d, i) => {
+          if (!showSets.includes(i)) return null
 
-      {showSets.map((s, i) => renderLabels(datasets[s].data, s, i))}
+          // Resolve colors
+          let fill = d.fillColor || '$blue10'
+          fill = resolveColor(fill)
+
+          let stroke = d.strokeColor || fill
+          stroke = resolveColor(stroke)
+
+          const fillId = d.gradient ? `url(#grad-${i})` : fill
+
+          return (
+            <G key={`dataset-${i}`}>
+              <RadarPolygon
+                dimensions={calculated}
+                data={d.data}
+                fill={fillId}
+                stroke={stroke}
+                strokeWidth={d.strokeWidth || 2}
+                fillOpacity={d.gradient ? 1 : d.fillOpacity || 0.3}
+              />
+              {renderDots(d, i)}
+            </G>
+          )
+        })}
+      </Svg>
     </View>
   )
 }

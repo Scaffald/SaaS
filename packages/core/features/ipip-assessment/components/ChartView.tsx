@@ -1,5 +1,5 @@
 import type { IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
-import { BarChart, RadarChart } from '@app/ui'
+import { BarChart, SkillsChart } from '@app/ui'
 import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { useMemo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'
@@ -131,19 +131,30 @@ export function ChartView({
           Your scores across the five major personality domains (0-100%)
         </Text>
         <YStack items="center" p="$4">
-          <RadarChart
-            data={radarData}
+          <SkillsChart
+            datasets={[
+              {
+                label: 'Big Five',
+                data: radarData,
+                fillColor: '$blue4',
+                strokeColor: '$blue9',
+                strokeWidth: 2,
+                fillOpacity: 0.02,
+                gradient: {
+                  startColor: '$blue8',
+                  endColor: '$blue4',
+                },
+              },
+            ]}
             height={300}
             width={300}
             maxValue={100}
-            noOfSections={5}
             isAnimated={true}
-            animationDuration={1000}
-            color="$blue9"
-            strokeWidth={2}
-            gridColor="$gray7"
+            bg="transparent"
+            gridColor="$color5"
             labelColor="$color11"
             labelTextSize={12}
+            showDots={true}
           />
         </YStack>
         {/* Domain Labels with Scores */}
