@@ -1,17 +1,24 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 // Profile schemas for tRPC operations
 export const profileGeneralSchema = z.object({
   // Required fields (matching frontend expectations)
-  first_name: z.string().min(1, 'First name is required').max(50, 'First name too long'),
-  last_name: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
+  first_name: z.string().min(1, "First name is required").max(
+    50,
+    "First name too long",
+  ),
+  last_name: z.string().min(1, "Last name is required").max(
+    50,
+    "Last name too long",
+  ),
 
   // Optional fields
-  avatar_path: z.union([z.string().url(), z.string().min(1), z.literal('')]).optional(),
+  avatar_path: z.union([z.string().url(), z.string().min(1), z.literal("")])
+    .optional(),
   email: z.string().email().optional(),
   phone: z.string().optional(),
   about: z.string().max(500).optional(),
-})
+});
 
 // Output schema for profile data
 export const profileGeneralOutputSchema = z.object({
@@ -21,7 +28,7 @@ export const profileGeneralOutputSchema = z.object({
   email: z.string(),
   phone: z.string(),
   about: z.string(),
-})
+});
 
 // Database update schemas with proper typing
 export const profileUpdateSchema = z.object({
@@ -30,14 +37,14 @@ export const profileUpdateSchema = z.object({
   first_name: z.string().optional(),
   last_name: z.string().optional(),
   avatar_path: z.string().optional(),
-})
+});
 
 export const userPrivateUpdateSchema = z.object({
   user_id: z.string(),
   updated_at: z.string(),
   phone: z.string().optional(),
   about: z.string().optional(),
-})
+});
 
 // Employment profile schema for tRPC operations
 export const profileEmploymentSchema = z
@@ -56,7 +63,7 @@ export const profileEmploymentSchema = z
     // Preferred work locations (up to 3)
     preferred_work_locations: z
       .array(z.string())
-      .max(3, 'Maximum 3 work locations allowed')
+      .max(3, "Maximum 3 work locations allowed")
       .optional(),
 
     // Travel preferences
@@ -65,7 +72,10 @@ export const profileEmploymentSchema = z
 
     // Residency (multiple countries but keep US boolean)
     us_resident: z.boolean().optional(),
-    authorized_countries: z.array(z.string()).max(3, 'Maximum 3 countries allowed').optional(),
+    authorized_countries: z.array(z.string()).max(
+      3,
+      "Maximum 3 countries allowed",
+    ).optional(),
 
     // Passport
     us_passport: z.boolean().optional(),
@@ -73,35 +83,52 @@ export const profileEmploymentSchema = z
     // Drivers License (multi-select array)
     drivers_license_classes: z
       .array(
-        z.enum(['Class M', 'Class A', 'Class B', 'Class C', 'Class D', 'CDL A', 'CDL B', 'CDL C'])
+        z.enum([
+          "Class M",
+          "Class A",
+          "Class B",
+          "Class C",
+          "Class D",
+          "CDL A",
+          "CDL B",
+          "CDL C",
+        ]),
       )
       .optional(),
 
     // Military Status (multi-select)
     military_status: z
-      .array(z.enum(['Active Duty', 'Reserve', 'National Guard', 'Veteran', 'Retired']))
+      .array(
+        z.enum([
+          "Active Duty",
+          "Reserve",
+          "National Guard",
+          "Veteran",
+          "Retired",
+        ]),
+      )
       .optional(),
 
     // Availability (multi-select)
     availability: z
       .array(
         z.enum([
-          'Part-time',
-          'Contract',
-          'Full-time',
-          'Weekend',
-          'Night Shift',
-          'Day Shift',
-          'Temporary',
-          'Short Notice',
-        ])
+          "Part-time",
+          "Contract",
+          "Full-time",
+          "Weekend",
+          "Night Shift",
+          "Day Shift",
+          "Temporary",
+          "Short Notice",
+        ]),
       )
       .optional(),
 
     // Hourly Rate
-    hourly_rate: z.number().min(0).max(200).optional(),
+    hourly_rate: z.number().min(0).max(200).default(0),
   })
-  .partial()
+  .partial();
 
 // Output schema for employment profile data
 export const profileEmploymentOutputSchema = z.object({
@@ -124,7 +151,7 @@ export const profileEmploymentOutputSchema = z.object({
   military_status: z.array(z.string()),
   availability: z.array(z.string()),
   hourly_rate: z.number().nullable(),
-})
+});
 
 // Database update schema for employment data
 export const userPrivateEmploymentUpdateSchema = z.object({
@@ -145,7 +172,7 @@ export const userPrivateEmploymentUpdateSchema = z.object({
   military_status: z.array(z.string()).optional(),
   availability: z.array(z.string()).optional(),
   hourly_rate: z.number().optional(),
-})
+});
 
 // Skills profile schema for tRPC operations
 export const profileSkillsSchema = z
@@ -160,7 +187,7 @@ export const profileSkillsSchema = z
           years_experience: z.number().min(0).max(50).optional(),
           is_primary: z.boolean().default(false),
           endorsed_count: z.number().default(0).optional(),
-        })
+        }),
       )
       .optional(),
 
@@ -171,7 +198,7 @@ export const profileSkillsSchema = z
     // Skill categories of interest
     skill_categories: z.array(z.string()).optional(),
   })
-  .partial()
+  .partial();
 
 // Output schema for skills profile data
 export const profileSkillsOutputSchema = z.object({
@@ -183,9 +210,9 @@ export const profileSkillsOutputSchema = z.object({
       years_experience: z.number().nullable(),
       is_primary: z.boolean(),
       endorsed_count: z.number(),
-    })
+    }),
   ),
   industry_id: z.string().nullable(),
   secondary_industries: z.array(z.string()),
   skill_categories: z.array(z.string()),
-})
+});

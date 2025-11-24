@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react'
-import { Button, Separator, XStack, YStack } from 'tamagui'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Button, Separator, useWindowDimensions, XStack, YStack } from 'tamagui'
 import { FilterChip } from '../chips/FilterChip'
 import { FieldError } from '../FieldError'
 import { Popover } from '../popovers/Popover'
@@ -38,6 +38,37 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
     () => new Set(selectedOptions.map((option) => option.value)),
     [selectedOptions]
   )
+
+  const triggerRef = useRef<HTMLDivElement | null>(null)
+  const [contentWidth, setContentWidth] = useState<number | undefined>()
+  const { width: windowWidth } = useWindowDimensions()
+  const isMediumOrAbove = windowWidth > 800 // Matches Tamagui $md breakpoint
+
+  // Measure trigger width when popover opens
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    const measureTrigger = () => {
+      if (triggerRef.current) {
+        const rect = triggerRef.current.getBoundingClientRect()
+        setContentWidth(rect.width)
+      }
+    }
+
+    // Use requestAnimationFrame to ensure DOM is ready
+    const frame = requestAnimationFrame(measureTrigger)
+
+    // Re-measure on window resize
+    const handleResize = () => measureTrigger()
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [isOpen])
 
   const keyboardNav = useKeyboardNav({
     optionCount: results.length,
@@ -105,7 +136,7 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
     <YStack gap="$2">
       <Popover open={isOpen} onOpenChange={setIsOpen} placement="bottom-start">
         <Popover.Trigger asChild>
-          <YStack gap="$2" width="100%">
+          <YStack ref={triggerRef} gap="$2" width="100%">
             <SearchInput
               value={inputValue}
               onChangeText={handleInputChange}
@@ -146,7 +177,11 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
             mt="$2"
             bordered
             elevate
-            style={{ maxHeight: 320, minWidth: 280, width: '100%' }}
+            minWidth={280}
+            style={{
+              maxHeight: 320,
+              ...(isMediumOrAbove && contentWidth ? { width: contentWidth } : {}),
+            }}
           >
             <ResultsList
               options={results}

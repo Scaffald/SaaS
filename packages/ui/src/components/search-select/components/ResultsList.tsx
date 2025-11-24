@@ -140,7 +140,7 @@ function ResultsListComponent<T>({
     const height = Math.min(maxHeight, options.length * itemHeight)
 
     return (
-      <YStack {...accessibilityProps}>
+      <YStack {...accessibilityProps} width="100%">
         {headerContent}
         <FixedSizeList
           height={height}
@@ -158,16 +158,20 @@ function ResultsListComponent<T>({
   }
 
   return (
-    <YStack {...accessibilityProps}>
+    <YStack {...accessibilityProps} width="100%">
       {headerContent}
-      <YStack style={{ maxHeight, overflow: 'hidden' }}>
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-          <YStack>
+      <YStack style={{ maxHeight, overflow: 'hidden' }} width="100%">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          style={{ width: '100%' }}
+        >
+          <YStack width="100%">
             {options.map((option, index) => {
               const optionId = `search-result-${index}`
               const isLast = index === options.length - 1
               return (
-                <YStack key={option.value}>
+                <YStack key={option.value} width="100%">
                   <ResultItem
                     option={option}
                     index={index}

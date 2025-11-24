@@ -37,6 +37,8 @@ module.exports = (api) => {
             '@app/ui': '../../packages/ui/src',
             '@app/ui/*': '../../packages/ui/src/*',
             '@app/supabase': '../../packages/supabase',
+            '@app/trpc': '../../packages/trpc/src',
+            '@app/trpc/*': '../../packages/trpc/src/*',
             '@app/schemas': '../../packages/schemas/src',
             '@app/styleguide': '../../packages/ui/src/styleguide',
             '@app/styleguide/*': '../../packages/ui/src/styleguide/*',

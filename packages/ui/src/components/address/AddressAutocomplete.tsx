@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { Text, YStack } from 'tamagui'
+import { SizableText, YStack } from 'tamagui'
 import { SearchSelect, type SearchSelectOption } from '../search-select'
 import { useAddressAutocomplete } from './hooks'
 import type { AddressAutocompleteProps, AddressResult } from './types'
@@ -117,14 +117,14 @@ export function AddressAutocomplete({
         }
 
         return (
-          <YStack gap="$1" items="flex-start">
-            <Text fontSize="$3" color="$color12" fontWeight="600" numberOfLines={1}>
+          <YStack gap="$1" flex={1} items="flex-start">
+            <SizableText fontSize="$4" color="$color12" fontWeight="600" numberOfLines={1}>
               {address.streetAddress}
-            </Text>
+            </SizableText>
             {secondLineParts.length > 0 && (
-              <Text fontSize="$2" color="$color11" numberOfLines={1}>
+              <SizableText fontSize="$2" color="$color11" numberOfLines={1}>
                 {secondLineParts.join(', ')}
-              </Text>
+              </SizableText>
             )}
           </YStack>
         )
@@ -132,9 +132,9 @@ export function AddressAutocomplete({
 
       // For region/city searches, show single-line format (current behavior)
       return (
-        <Text fontSize="$3" color="$color12" numberOfLines={1}>
+        <SizableText fontSize="$4" color="$color12" numberOfLines={1}>
           {option.label}
-        </Text>
+        </SizableText>
       )
     },
     [isFullAddressSearch]

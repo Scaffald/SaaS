@@ -4,12 +4,7 @@ import {
   USResidentToggle,
 } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
-import {
-  UIButton as Button,
-  CustomCheckbox,
-  DashboardWidget,
-  LocationListInput,
-} from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -106,6 +101,7 @@ export function EmploymentSection({
     handleSubmit,
     formState: { errors, isDirty },
     reset,
+    setValue,
   } = useForm<EmploymentProfileFormData>({
     resolver: zodResolver(employmentProfileSchema),
     defaultValues: employmentProfileDefaults,
@@ -168,10 +164,11 @@ export function EmploymentSection({
                 <Input
                   flex={1}
                   placeholder="Enter your hourly rate"
-                  value={field.value?.toString() || ''}
-                  onChangeText={(text) =>
-                    field.onChange(text ? Number.parseFloat(text) : undefined)
-                  }
+                  value={field.value?.toString() || '0'}
+                  onChangeText={(text) => {
+                    const numValue = text ? Number.parseFloat(text) : 0
+                    field.onChange(Number.isNaN(numValue) ? 0 : numValue)
+                  }}
                   keyboardType="numeric"
                   borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                   editable={!readOnly}
@@ -220,17 +217,13 @@ export function EmploymentSection({
                 onCheckedChange={openToTravelField.onChange}
                 travelDistanceValue={travelDistanceMiles ?? 25}
                 onTravelDistanceChange={(value) => {
-                  control._setValue('travel_distance_miles', value, { shouldValidate: true })
+                  setValue('travel_distance_miles', value, { shouldValidate: true })
                 }}
                 disabled={readOnly}
               />
             )}
           />
-          <Controller
-            name="travel_distance_miles"
-            control={control}
-            render={() => null}
-          />
+          <Controller name="travel_distance_miles" control={control} render={() => null} />
         </YStack>
 
         {/* Residency */}

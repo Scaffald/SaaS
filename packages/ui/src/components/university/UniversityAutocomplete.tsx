@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { Text, YStack } from 'tamagui'
+import { SizableText, YStack } from 'tamagui'
 import { SearchSelect, type SearchSelectOption } from '../search-select'
 
 export interface University {
@@ -89,13 +89,15 @@ export function UniversityAutocomplete({
   // Custom render function for university results
   const renderOption = useCallback(
     (option: SearchSelectOption<University>) => (
-      <YStack items="flex-start" gap="$1">
-        <Text fontSize="$3" color="$color12" numberOfLines={1} fontWeight="600">
+      <YStack gap="$1" flex={1} items="flex-start">
+        <SizableText fontSize="$4" color="$color12" numberOfLines={1} fontWeight="600">
           {option.raw.name}
-        </Text>
-        <Text fontSize="$2" color="$color11" numberOfLines={1}>
-          {option.raw.country}
-        </Text>
+        </SizableText>
+        {option.raw.country && (
+          <SizableText fontSize="$2" color="$color11" numberOfLines={1}>
+            {option.raw.country}
+          </SizableText>
+        )}
       </YStack>
     ),
     []

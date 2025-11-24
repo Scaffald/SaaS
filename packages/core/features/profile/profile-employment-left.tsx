@@ -205,6 +205,7 @@ export function ProfileEmploymentLeft() {
     formState: { errors, isDirty },
     watch,
     reset,
+    setValue,
     setError,
     clearErrors,
   } = useForm<EmploymentProfileFormData>({
@@ -294,7 +295,10 @@ export function ProfileEmploymentLeft() {
     }
 
     // Ensure travel distance is set if user is open to travel
-    if (data.open_to_travel && (data.travel_distance_miles === undefined || data.travel_distance_miles === null)) {
+    if (
+      data.open_to_travel &&
+      (data.travel_distance_miles === undefined || data.travel_distance_miles === null)
+    ) {
       setError('travel_distance_miles', {
         type: 'manual',
         message: 'Please select a travel distance',
@@ -371,10 +375,11 @@ export function ProfileEmploymentLeft() {
                     <Input
                       flex={1}
                       placeholder="Enter your hourly rate"
-                      value={field.value?.toString() || ''}
-                      onChangeText={(text) =>
-                        field.onChange(text ? Number.parseFloat(text) : undefined)
-                      }
+                      value={field.value?.toString() || '0'}
+                      onChangeText={(text) => {
+                        const numValue = text ? Number.parseFloat(text) : 0
+                        field.onChange(Number.isNaN(numValue) ? 0 : numValue)
+                      }}
                       keyboardType="numeric"
                       borderColor={errors.hourly_rate ? '$red8' : '$borderColor'}
                     />
@@ -420,16 +425,12 @@ export function ProfileEmploymentLeft() {
                     onCheckedChange={(checked) => openToTravelField.onChange(Boolean(checked))}
                     travelDistanceValue={travelDistanceValue ?? 25}
                     onTravelDistanceChange={(value) => {
-                      control._setValue('travel_distance_miles', value, { shouldValidate: true })
+                      setValue('travel_distance_miles', value, { shouldValidate: true })
                     }}
                   />
                 )}
               />
-              <Controller
-                name="travel_distance_miles"
-                control={control}
-                render={() => null}
-              />
+              <Controller name="travel_distance_miles" control={control} render={() => null} />
               {errors.travel_distance_miles && (
                 <Text color="$red10" fontSize="$2">
                   {errors.travel_distance_miles.message?.toString()}

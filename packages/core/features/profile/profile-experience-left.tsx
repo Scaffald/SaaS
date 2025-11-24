@@ -113,9 +113,7 @@ export function ProfileExperienceLeft() {
       failProfileSync()
       toast.show('Error', {
         message:
-          error instanceof Error
-            ? error.message
-            : 'Failed to save experience. Please try again.',
+          error instanceof Error ? error.message : 'Failed to save experience. Please try again.',
       })
     },
     onSuccess: () => {
@@ -166,7 +164,10 @@ export function ProfileExperienceLeft() {
           // Handle location: prefer location_structured, fallback to location TEXT
           // If location is string, keep as string for backward compatibility
           // ControlledAddressForm will handle conversion to structured format on edit
-          const location = (exp as ExperienceEntry & { location_structured?: unknown }).location_structured || exp.location || undefined
+          const location =
+            (exp as ExperienceEntry & { location_structured?: unknown }).location_structured ||
+            exp.location ||
+            undefined
 
           // If location is a string and we need structured format, we'll let ControlledAddressForm handle it
           // For now, keep the raw location value (API already transforms it)
