@@ -274,13 +274,17 @@ describe.skipIf(!shouldRunRealAPITests)('PostHog API verification (REAL API CALL
     process.env.POSTHOG_HOST = POSTHOG_HOST
     process.env.EXPO_PUBLIC_POSTHOG_PROJECT = POSTHOG_PROJECT_ID
     mockPlatform.OS = 'ios'
-    ;(global as any).__DEV__ = true
+    ;(global as { __DEV__?: boolean }).__DEV__ = true
     
     // Update mock constants with real values
     mockConstants.expoConfig.extra.posthogKey = POSTHOG_KEY || ''
     mockConstants.expoConfig.extra.posthogHost = POSTHOG_HOST
-    ;(mockConstants.expoConfig.extra.analytics as any).posthog.key = POSTHOG_KEY || ''
-    ;(mockConstants.expoConfig.extra.analytics as any).posthog.host = POSTHOG_HOST
+    const analytics = mockConstants.expoConfig.extra.analytics as { posthog?: { key?: string; host?: string } }
+    if (!analytics.posthog) {
+      analytics.posthog = {}
+    }
+    analytics.posthog.key = POSTHOG_KEY || ''
+    analytics.posthog.host = POSTHOG_HOST
   })
 
   afterEach(async () => {

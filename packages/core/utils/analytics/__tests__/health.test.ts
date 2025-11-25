@@ -105,7 +105,7 @@ describe('analytics health', () => {
     process.env.EXPO_PUBLIC_POSTHOG_API_KEY = 'test-key'
     process.env.EXPO_PUBLIC_POSTHOG_HOST = 'https://app.posthog.com'
     mockPlatform.OS = 'ios'
-    ;(global as any).__DEV__ = true
+    ;(global as { __DEV__?: boolean }).__DEV__ = true
     mockPostHogInstance.getDistinctId.mockReturnValue('test-distinct-id')
   })
 

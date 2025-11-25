@@ -182,10 +182,10 @@ export function SoftSkillsRequirementsSection({
           </Text>
           <YStack gap="$1">
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
-              // biome-ignore lint/suspicious/noExplicitAny: Skills data structure after flat()
+              type SoftSkill = { id?: string; name?: string; category?: string; [key: string]: unknown }
               const skill = Object.values(softSkillsData)
                 .flat()
-                .find((s: any) => s.id === skillId)
+                .find((s: SoftSkill) => s.id === skillId)
               if (!skill) return null
 
               const importanceLabel = IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]

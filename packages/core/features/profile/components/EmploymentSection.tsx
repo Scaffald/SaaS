@@ -4,7 +4,7 @@ import {
   USResidentToggle,
 } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput } from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -132,9 +132,9 @@ export function EmploymentSection({
     setIsLoading(true)
     try {
       if (mode === 'admin' && userId) {
-        await updateEmploymentMutation.mutateAsync({ userId, data: updatedData })
+        await updateEmploymentMutation.mutateAsync({ userId, data: updatedData as any })
       } else {
-        await updateEmploymentMutation.mutateAsync(updatedData)
+        await updateEmploymentMutation.mutateAsync(updatedData as any)
       }
     } finally {
       setIsLoading(false)
@@ -223,7 +223,7 @@ export function EmploymentSection({
               />
             )}
           />
-          <Controller name="travel_distance_miles" control={control} render={() => null} />
+          <Controller name="travel_distance_miles" control={control} render={() => <></>} />
         </YStack>
 
         {/* Residency */}
