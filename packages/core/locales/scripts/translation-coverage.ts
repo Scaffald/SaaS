@@ -145,14 +145,14 @@ fs.mkdirSync(reportsDir, { recursive: true })
 fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8')
 
 console.log('✅ Translation coverage report written to', path.relative(repoRoot, reportPath))
-coverage.forEach((entry) => {
+for (const entry of coverage) {
   console.log(
     `  • ${entry.locale}: ${entry.translatedKeys}/${entry.totalKeys} (${entry.coverage}% coverage)`
   )
   if (entry.missingKeys.length > 0) {
     console.log(`    Missing: ${entry.missingKeys.length} keys`)
   }
-})
+}
 if (unusedKeys.length > 0) {
   console.log(`⚠️  Potential unused keys: ${unusedKeys.length}`)
 }
