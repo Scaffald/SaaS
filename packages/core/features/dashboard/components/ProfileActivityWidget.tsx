@@ -75,7 +75,10 @@ export function ProfileActivityWidget() {
   const isLoading = viewsLoading || analyticsLoading || followersLoading || requestsLoading
 
   return (
-    <DashboardWidget title="Profile Activity">
+    <DashboardWidget>
+      <Text fontSize="$5" fontWeight="600" color="$color12">
+        Profile Activity
+      </Text>
       {isLoading ? (
         <YStack items="center" justify="center" py="$4" gap="$2">
           <Spinner size="large" />

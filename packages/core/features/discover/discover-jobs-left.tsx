@@ -192,7 +192,7 @@ export function DiscoverJobsLeft({
         <Text fontSize="$6" fontWeight="600" color="$color12">
           Complete Your Assessment
         </Text>
-        <Text fontSize="$4" color="$color11" ta="center">
+        <Text fontSize="$4" color="$color11" textAlign="center">
           Complete your soft skills assessment to filter and sort jobs by match score.
         </Text>
       </YStack>

@@ -44,22 +44,22 @@ export function ConnectionsManagementPage() {
         />
 
         <Tabs.Content value="connections">
-          <YStack paddingTop="$4">
+          <YStack pt="$4">
             <ConnectionsList />
           </YStack>
         </Tabs.Content>
         <Tabs.Content value="followers">
-          <YStack paddingTop="$4">
+          <YStack pt="$4">
             <FollowersList />
           </YStack>
         </Tabs.Content>
         <Tabs.Content value="following">
-          <YStack paddingTop="$4">
+          <YStack pt="$4">
             <FollowingList />
           </YStack>
         </Tabs.Content>
         <Tabs.Content value="pending">
-          <YStack paddingTop="$4">
+          <YStack pt="$4">
             <PendingRequestsList />
           </YStack>
         </Tabs.Content>

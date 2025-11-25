@@ -177,7 +177,6 @@ export function IdVerificationRequestPanel({
       <YStack gap="$2">
         <Label htmlFor="idv-organization">Organization</Label>
         <ResponsiveSelect
-          id="idv-organization"
           value={organizationId ?? '__none__'}
           onValueChange={handleOrganizationChange}
           placeholder={
@@ -207,7 +206,6 @@ export function IdVerificationRequestPanel({
           autoCapitalize="none"
         />
         <ResponsiveSelect
-          id="idv-worker"
           value={selectedWorkerId ?? ''}
           onValueChange={(value) => setSelectedWorkerId(value)}
           placeholder={selectedWorkerId ? undefined : workerPlaceholder}
@@ -230,7 +228,6 @@ export function IdVerificationRequestPanel({
       <YStack gap="$2">
         <Label htmlFor="idv-pricing">Verification plan</Label>
         <ResponsiveSelect
-          id="idv-pricing"
           value={selectedPricingId ?? ''}
           onValueChange={(value) => setSelectedPricingId(value)}
           placeholder={
