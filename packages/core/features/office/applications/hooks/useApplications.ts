@@ -192,7 +192,8 @@ export function useCalculateScore() {
   const utils = api.useUtils()
 
   const mutation = api.applications.calculateScore.useMutation({
-    onSuccess: (data: any) => {
+    // biome-ignore lint/suspicious/noExplicitAny: Mutation success response type
+    onSuccess: (_data: any) => {
       // Invalidate applications list after scoring
       utils.applications.getUserApplications.invalidate()
     },

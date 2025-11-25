@@ -88,7 +88,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
                     <Button
                       size="$2"
                       onPress={() => handleDownload(document.id)}
-                      disabled={downloadMutation.isLoading}
+                      disabled={downloadMutation.isPending}
                     >
                       Download
                     </Button>

@@ -115,8 +115,8 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
               </YStack>
             )}
           />
-          <Button onPress={handleSave} disabled={updateMutation.isLoading}>
-            {updateMutation.isLoading ? 'Saving…' : 'Save settings'}
+          <Button onPress={handleSave} disabled={updateMutation.isPending}>
+            {updateMutation.isPending ? 'Saving…' : 'Save settings'}
           </Button>
         </YStack>
       )}

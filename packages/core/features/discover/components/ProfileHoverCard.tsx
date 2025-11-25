@@ -54,7 +54,9 @@ export function ProfileHoverCard({
   const jobsCount: number = (() => {
     const data = jobsCountQuery.data
     if (typeof data === 'number') return data
-    if (data && typeof data === 'object' && 'count' in data) return (data as any).count
+    if (data && typeof data === 'object' && 'count' in data) {
+      return (data as { count: number; organizationId: string }).count
+    }
     return 0
   })()
 

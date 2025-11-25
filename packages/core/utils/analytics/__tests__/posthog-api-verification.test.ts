@@ -19,7 +19,7 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 
 // Load .env file if it exists
-let envVars: Record<string, string> = {}
+const envVars: Record<string, string> = {}
 try {
   const envPath = join(process.cwd(), '.env')
   const envContent = readFileSync(envPath, 'utf-8')

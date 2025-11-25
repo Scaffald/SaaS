@@ -42,7 +42,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
     defaultValues: { email: '', roleName: 'member', message: '' },
   })
 
-  const isSubmitting = inviteMutation.isLoading
+  const isSubmitting = inviteMutation.isPending
 
   const onSubmit = form.handleSubmit(async (values) => {
     await inviteMutation.mutateAsync(
@@ -91,7 +91,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                 />
                 {fieldState.error ? (
                   <Text color="$red10" fontSize="$2">
-                    {fieldState.error.message}
+                    {fieldState.error?.message}
                   </Text>
                 ) : null}
               </YStack>

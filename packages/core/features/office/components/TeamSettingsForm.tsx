@@ -128,6 +128,7 @@ export function TeamSettingsForm({
       await utils.teams.byId.invalidate({ teamId })
       setTimeout(() => setStatus('idle'), 2000)
     },
+    // biome-ignore lint/suspicious/noExplicitAny: Mutation error type from tRPC
     onError: (error: any) => {
       setStatus('error')
       pendingMetadataRef.current = null
@@ -160,6 +161,7 @@ export function TeamSettingsForm({
     pendingMetadataRef.current = nextMetadata
     updateMutation.mutate({
       teamId,
+      // biome-ignore lint/suspicious/noExplicitAny: Metadata structure stored as JSON
       metadata: nextMetadata as any,
     })
   }, [canEdit, debouncedValues, isDirty, metadataState, teamId, updateMutation])

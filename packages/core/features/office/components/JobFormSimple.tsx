@@ -71,8 +71,10 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
     }
 
     if (mode === 'create') {
+      // biome-ignore lint/suspicious/noExplicitAny: Form data type mismatch with mutation
       createJob.mutate(submitData as any)
     } else if (jobId) {
+      // biome-ignore lint/suspicious/noExplicitAny: Form data type mismatch with mutation
       updateJob.mutate({ id: jobId, ...submitData } as any)
     }
   }

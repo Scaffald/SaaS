@@ -1,8 +1,8 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
   "files": {
-    "include": ["**"],
-    "ignore": [
+    "includes": ["**"],
+    "experimentalScannerIgnores": [
       "node_modules",
       "build",
       ".vscode",
@@ -23,7 +23,7 @@
     "indentWidth": 2,
     "lineWidth": 100
   },
-  "assists": {
+  "assist": {
     "actions": {
       "source": {
         "useSortedKeys": "on"
@@ -75,7 +75,7 @@
   },
   "overrides": [
     {
-      "include": [
+      "includes": [
         "**/packages/core/features/profile/profile-skills-left.tsx",
         "**/packages/supabase/functions/_shared/client-types.ts"
       ],
@@ -88,7 +88,7 @@
       }
     },
     {
-      "include": [
+      "includes": [
         "**/packages/supabase/functions/**/*.ts",
         "**/packages/supabase/functions/**/*.tsx"
       ],

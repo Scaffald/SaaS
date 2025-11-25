@@ -146,6 +146,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           return
         }
 
+        // biome-ignore lint/suspicious/noExplicitAny: Slug validation response structure
         const reason = (result as any).reason ?? 'taken'
         const fallbackMessage =
           reason === 'reserved'
@@ -156,7 +157,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
         setSlugStatus({
           state: reason === 'taken' ? 'taken' : 'invalid',
+          // biome-ignore lint/suspicious/noExplicitAny: Slug validation response structure
           message: (result as any).message ?? fallbackMessage,
+          // biome-ignore lint/suspicious/noExplicitAny: Slug validation response structure
           suggestions: (result as any).suggestions ?? [],
         })
       } catch (error) {
@@ -180,6 +183,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       toast.show('Success', { message: 'Organization created successfully' })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
+    // biome-ignore lint/suspicious/noExplicitAny: Mutation error type from tRPC
     onError: (error: any) => {
       toast.show('Error', { message: error?.message || 'Failed to create organization' })
     },
@@ -190,6 +194,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       toast.show('Success', { message: 'Organization updated successfully' })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
+    // biome-ignore lint/suspicious/noExplicitAny: Mutation error type from tRPC
     onError: (error: any) => {
       toast.show('Error', { message: error?.message || 'Failed to update organization' })
     },
@@ -199,11 +204,13 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setIsLoading(true)
     try {
       if (mode === 'create') {
+        // biome-ignore lint/suspicious/noExplicitAny: Form data has extra fields not in mutation type
         await createMutation.mutateAsync(data as any)
       } else {
         if (!organizationId) {
           throw new Error('Organization ID is required for update')
         }
+        // biome-ignore lint/suspicious/noExplicitAny: Form data has extra fields not in mutation type
         await updateMutation.mutateAsync({ id: organizationId, ...data } as any)
       }
     } finally {

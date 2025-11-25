@@ -51,7 +51,7 @@ describeIfHasKey('Office Role Access', () => {
           .from('role_assignments')
           .select('role:roles(name, scope)')
           .eq('user_id', userId)
-          .eq('role_id', officeRole!.id)
+          .eq('role_id', officeRole?.id)
 
         expect(assignmentError).toBeNull()
         expect(roleAssignments).toBeDefined()
@@ -96,7 +96,7 @@ describeIfHasKey('Office Role Access', () => {
           .from('role_assignments')
           .select('role:roles(name, scope)')
           .eq('user_id', userId)
-          .eq('role_id', officeRole!.id)
+          .eq('role_id', officeRole?.id)
           .single() as unknown as RoleAssignmentQueryResponse
 
         expect(assignmentError).toBeNull()
@@ -131,7 +131,7 @@ describeIfHasKey('Office Role Access', () => {
         .from('role_assignments')
         .select('role:roles(name, scope)')
         .eq('user_id', officeUserId)
-        .eq('role_id', officeRole!.id)
+        .eq('role_id', officeRole?.id)
         .single() as unknown as RoleAssignmentQueryResponse
 
       expect(roleAssignment).toBeDefined()
@@ -166,7 +166,7 @@ describeIfHasKey('Office Role Access', () => {
         .from('role_assignments')
         .select('role:roles(name, scope)')
         .eq('user_id', regularUserId)
-        .eq('role_id', officeRole!.id)
+        .eq('role_id', officeRole?.id)
         .maybeSingle() as unknown as { data: RoleAssignmentQueryResponse['data'] | null; error: Error | null }
 
       // Regular user should NOT have office role

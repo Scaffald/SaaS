@@ -74,9 +74,9 @@ export function OfficeTeamsList() {
       toast.show('Team archived', { message: 'The team is no longer visible to members.' })
       void refetch()
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast.show('Unable to archive team', {
-        message: error.message ?? 'Please try again shortly.',
+        message: error?.message ?? 'Please try again shortly.',
       })
     },
   })

@@ -62,7 +62,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       limit: range,
     },
     {
-      keepPreviousData: true,
+      placeholderData: (previousData) => previousData,
     }
   )
 

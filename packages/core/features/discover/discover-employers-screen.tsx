@@ -5,6 +5,24 @@ import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
 import type { Employer } from './components/EmployerCard'
 
+type RawEmployer = {
+  id: string
+  name: string
+  slug: string
+  description: unknown
+  website: string | null
+  website_url?: string | null
+  visibility: string
+  address: unknown
+  industry_id: string | null
+  industries?: { id: string; name: string } | { id: string; name: string }[] | null
+  employee_count_range?: string | null
+  annual_revenue_range?: string | null
+  owner_user_id: string | null
+  created_at: string
+  updated_at: string
+}
+
 /**
  * Discover Employers Screen Component
  * Main screen for employer discovery with search/filter on right and employer list on left
@@ -16,12 +34,19 @@ export function DiscoverEmployersScreen() {
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
   const { data: allData, isLoading: isLoadingAll } = api.employers.getEmployers.useQuery()
-  const allEmployers: Employer[] = (allData?.employers ?? []).map((emp: any) => ({
-    ...emp,
+  // biome-ignore lint/suspicious/noExplicitAny: Complex API response mapping
+  const allEmployers: Employer[] = ((allData?.employers ?? []) as any[]).map((emp: any) => ({
+    id: emp.id,
+    name: emp.name,
+    slug: emp.slug,
+    description: emp.description ?? null,
     website_url: emp.website_url || emp.website || null,
     employee_count_range: emp.employee_count_range || null,
     annual_revenue_range: emp.annual_revenue_range || null,
-  })) as Employer[]
+    address: emp.address ?? null,
+    industries: emp.industries ?? null,
+    created_at: emp.created_at,
+  }))
 
   // Create industry name to ID mapping from all employers
   const industryNameToIdMap = useMemo(() => {
@@ -29,10 +54,17 @@ export function DiscoverEmployersScreen() {
     for (const employer of allEmployers) {
       if (Array.isArray(employer.industries)) {
         for (const ind of employer.industries) {
-          const industry = ind as any
-          if (industry?.id && industry?.name) {
-            map.set(industry.name, industry.id)
+          if (ind && typeof ind === 'object' && 'id' in ind && 'name' in ind) {
+            const industry = ind as { id: string; name: string }
+            if (industry.id && industry.name) {
+              map.set(industry.name, industry.id)
+            }
           }
+        }
+      } else if (employer.industries && typeof employer.industries === 'object' && 'id' in employer.industries && 'name' in employer.industries) {
+        const industry = employer.industries as { id: string; name: string }
+        if (industry.id && industry.name) {
+          map.set(industry.name, industry.id)
         }
       }
     }
@@ -63,7 +95,7 @@ export function DiscoverEmployersScreen() {
 
   // Use filtered results when filters are applied, otherwise use all employers
   const employers: Employer[] = hasFilters
-    ? ((data?.employers ?? []).map((emp: any) => ({
+    ? ((data?.employers ?? []).map((emp: RawEmployer) => ({
         ...emp,
         website_url: emp.website_url || emp.website || null,
         employee_count_range: emp.employee_count_range || null,

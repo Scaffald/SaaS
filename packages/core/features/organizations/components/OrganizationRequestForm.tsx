@@ -65,7 +65,7 @@ export function OrganizationRequestForm({
       },
       onError: (error: { message?: string }) => {
         toast.show('Unable to submit request', {
-          message: error.message ?? 'Please try again shortly.',
+          message: error?.message ?? 'Please try again shortly.',
         })
       },
     }
@@ -75,7 +75,7 @@ export function OrganizationRequestForm({
     createOrganizationRequestMutation.mutate(values)
   })
 
-  const isSubmitting = createOrganizationRequestMutation.isLoading || formState.isSubmitting
+  const isSubmitting = createOrganizationRequestMutation.isPending || formState.isSubmitting
   const submissionSucceeded = createOrganizationRequestMutation.isSuccess
 
   return (

@@ -1,5 +1,5 @@
 import type { Boundary } from '@app/schemas'
-// @ts-ignore - SiteBoundaryDrawer is not exported from @app/ui
+// @ts-expect-error - SiteBoundaryDrawer is not exported from @app/ui
 import { SiteBoundaryDrawer } from '@app/ui/src/components/map/SiteBoundaryDrawer'
 
 export interface SiteBoundaryEditorProps {

@@ -178,7 +178,7 @@ export function ProfileEducationLeft({
     },
     {
       enabled: searchQuery.length >= 3,
-      keepPreviousData: true,
+      placeholderData: (previousData) => previousData,
     }
   )
 

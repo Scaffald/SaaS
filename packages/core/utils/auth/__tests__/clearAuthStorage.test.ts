@@ -1,5 +1,6 @@
-import { type QueryClient } from '@tanstack/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import { Platform } from 'react-native'
+// biome-ignore lint/correctness/noUnusedImports: Test setup uses these for test framework
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { clearAllAuthStorage, isSessionExpired } from '../clearAuthStorage'
@@ -46,6 +47,7 @@ describe('clearAllAuthStorage', () => {
     asyncStorageMock.multiRemove.mockReset()
     localStorage.clear()
     sessionStorage.clear()
+    // biome-ignore lint/suspicious/noDocumentCookie: Test setup clearing cookies
     document.cookie = ''
   })
 
@@ -64,6 +66,7 @@ describe('clearAllAuthStorage', () => {
     localStorage.setItem('sb-auth-token', 'abc')
     localStorage.setItem('regular-key', 'keep')
     sessionStorage.setItem('authSession', '123')
+    // biome-ignore lint/suspicious/noDocumentCookie: Test setup setting cookies
     document.cookie = 'sb-auth-token=abc'
 
     const queryClient = { clear: vi.fn() } as unknown as QueryClient

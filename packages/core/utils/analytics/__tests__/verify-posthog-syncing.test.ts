@@ -14,7 +14,7 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 
 // Load .env file
-let envVars: Record<string, string> = {}
+const envVars: Record<string, string> = {}
 try {
   const envPath = join(process.cwd(), '.env')
   const envContent = readFileSync(envPath, 'utf-8')
@@ -40,6 +40,7 @@ const shouldRunVerification = Boolean(POSTHOG_ALL_ACCESS && POSTHOG_PROJECT_ID)
 /**
  * Query PostHog Events API directly
  */
+// biome-ignore lint/suspicious/noExplicitAny: PostHog API response structure
 async function queryPostHogEventsAPI(
   eventName?: string,
   distinctId?: string,

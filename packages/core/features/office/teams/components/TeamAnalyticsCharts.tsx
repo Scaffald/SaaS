@@ -44,7 +44,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
       limit: rangeDays,
     },
     {
-      keepPreviousData: true,
+      placeholderData: (previousData) => previousData,
     }
   )
 

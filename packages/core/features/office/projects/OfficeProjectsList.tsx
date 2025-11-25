@@ -111,7 +111,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
 
   const { data, isLoading, refetch } = api.projects.list.useQuery({
     organization_id: selectedOrg || undefined,
-    status: statusFilter || undefined,
+    status: (statusFilter as any) || undefined,
     limit: 50,
     offset: 0,
   })
