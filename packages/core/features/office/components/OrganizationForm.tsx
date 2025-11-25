@@ -4,7 +4,7 @@ import { OrganizationDeletionPanel } from '@app/core/features/organizations/comp
 import { api } from '@app/core/utils/api'
 import { isSlugValid } from '@app/core/utils/slugify'
 import { supabase } from '@app/core/utils/supabase/client'
-import { organizationCreateSchema } from '@app/schemas'
+import { organizationCreateSchema, type OrganizationCreate } from '@app/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
@@ -146,7 +146,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           return
         }
 
-        const reason = result.reason ?? 'taken'
+        const reason = (result as any).reason ?? 'taken'
         const fallbackMessage =
           reason === 'reserved'
             ? 'This vanity URL is reserved for internal routes.'
@@ -156,8 +156,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
         setSlugStatus({
           state: reason === 'taken' ? 'taken' : 'invalid',
-          message: result.message ?? fallbackMessage,
-          suggestions: result.suggestions,
+          message: (result as any).message ?? fallbackMessage,
+          suggestions: (result as any).suggestions ?? [],
         })
       } catch (error) {
         if (isCancelled) return
@@ -180,8 +180,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       toast.show('Success', { message: 'Organization created successfully' })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
-    onError: (error: Error) => {
-      toast.show('Error', { message: error.message || 'Failed to create organization' })
+    onError: (error: any) => {
+      toast.show('Error', { message: error?.message || 'Failed to create organization' })
     },
   })
 
@@ -190,8 +190,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       toast.show('Success', { message: 'Organization updated successfully' })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
-    onError: (error: Error) => {
-      toast.show('Error', { message: error.message || 'Failed to update organization' })
+    onError: (error: any) => {
+      toast.show('Error', { message: error?.message || 'Failed to update organization' })
     },
   })
 
@@ -261,7 +261,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               </Text>
             )}
             {slugStatus.state === 'checking' && slugNeedsValidation && (
-              <XStack gap="$2" alignItems="center">
+              <XStack gap="$2" items="center">
                 <Spinner size="small" />
                 <Text fontSize="$2" color="$color11">
                   Checking availability...

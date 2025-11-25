@@ -128,11 +128,11 @@ export function TeamSettingsForm({
       await utils.teams.byId.invalidate({ teamId })
       setTimeout(() => setStatus('idle'), 2000)
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       setStatus('error')
       pendingMetadataRef.current = null
       toast.show('Unable to update settings', {
-        message: error.message ?? 'Please try again shortly.',
+        message: error?.message ?? 'Please try again shortly.',
         type: 'error',
       })
     },
@@ -160,7 +160,7 @@ export function TeamSettingsForm({
     pendingMetadataRef.current = nextMetadata
     updateMutation.mutate({
       teamId,
-      metadata: nextMetadata,
+      metadata: nextMetadata as any,
     })
   }, [canEdit, debouncedValues, isDirty, metadataState, teamId, updateMutation])
 

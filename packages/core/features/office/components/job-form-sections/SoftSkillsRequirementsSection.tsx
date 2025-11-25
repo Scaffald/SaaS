@@ -184,13 +184,13 @@ export function SoftSkillsRequirementsSection({
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
               const skill = Object.values(softSkillsData)
                 .flat()
-                .find((s) => s.id === skillId)
+                .find((s: any) => s.id === skillId)
               if (!skill) return null
 
               const importanceLabel = IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
                 <Text key={skillId} fontSize="$3" color="$blue11">
-                  • {skill.name} ({importanceLabel} - {importance}/5)
+                  • {(skill as any).name} ({importanceLabel} - {importance}/5)
                 </Text>
               )
             })}

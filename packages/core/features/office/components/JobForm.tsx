@@ -371,8 +371,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       onSuccess?.()
       router.back()
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+    onError: (error: any) => {
+      const message = error?.message || 'An error occurred'
       toast.show(`Error: ${message}`, { variant: 'error' })
     },
   })
@@ -383,8 +383,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       onSuccess?.()
       router.back()
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'An error occurred'
+    onError: (error: any) => {
+      const message = error?.message || 'An error occurred'
       toast.show(`Error: ${message}`, { variant: 'error' })
     },
   })
@@ -453,9 +453,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     }
 
     if (mode === 'create') {
-      createJob.mutate(submitData)
+      createJob.mutate(submitData as any)
     } else if (jobId) {
-      updateJob.mutate({ id: jobId, ...submitData })
+      updateJob.mutate({ id: jobId, ...submitData } as any)
     }
   }
 
@@ -512,7 +512,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
     async (query: string) => {
       if (!query.trim()) return []
       try {
-        const result = await searchCertificationsQuery.refetch({ query, limit: 50 })
+        const result = await searchCertificationsQuery.refetch()
         return (
           result.data?.certifications?.map((cert: { id: string; name: string; slug: string }) => ({
             id: cert.id,
@@ -1284,7 +1284,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             flex={1}
             themeInverse
             onPress={() => handleSubmit(false)}
-            disabled={
+            disabled={Boolean(
               isLoading ||
               !formData.title ||
               !formData.description ||
@@ -1292,7 +1292,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
               !formData.organization_id ||
               (formData.scheduled_publish_at &&
                 new Date(formData.scheduled_publish_at) <= new Date())
-            }
+            )}
             $sm={{ height: 44, width: '100%' }}
             $md={{ height: undefined, width: undefined }}
           >

@@ -70,7 +70,7 @@ export function useUpdateApplicationStatus() {
   const mutation = api.applications.update.useMutation({
     onSuccess: () => {
       // Invalidate and refetch applications
-      utils.applications.getByUser.invalidate()
+      utils.applications.getUserApplications.invalidate()
     },
   })
 
@@ -91,7 +91,7 @@ export function useWithdrawApplication() {
 
   const mutation = api.applications.withdraw.useMutation({
     onSuccess: () => {
-      utils.applications.getByUser.invalidate()
+      utils.applications.getUserApplications.invalidate()
     },
   })
 
@@ -112,7 +112,7 @@ export function useSubmitApplication() {
 
   const mutation = api.applications.submit.useMutation({
     onSuccess: () => {
-      utils.applications.getByUser.invalidate()
+      utils.applications.getUserApplications.invalidate()
     },
   })
 
@@ -172,7 +172,7 @@ export function useConfirmUpload() {
     onSuccess: (data: { id: string }) => {
       // Invalidate specific application
       utils.applications.getById.invalidate({ id: data.id })
-      utils.applications.getByUser.invalidate()
+      utils.applications.getUserApplications.invalidate()
     },
   })
 
@@ -192,12 +192,9 @@ export function useCalculateScore() {
   const utils = api.useUtils()
 
   const mutation = api.applications.calculateScore.useMutation({
-    onSuccess: (data: { id?: string } | undefined) => {
-      // Invalidate specific application
-      if (data?.id) {
-        utils.applications.getById.invalidate({ id: data.id })
-        utils.applications.getByUser.invalidate()
-      }
+    onSuccess: (data: any) => {
+      // Invalidate applications list after scoring
+      utils.applications.getUserApplications.invalidate()
     },
   })
 

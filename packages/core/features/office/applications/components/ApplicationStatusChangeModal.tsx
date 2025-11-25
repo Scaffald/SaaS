@@ -551,7 +551,7 @@ function HireSummaryCard({
             Checking latest payment status…
           </Text>
         )}
-        {!isStatusLoading && successFeeStatus?.status && (
+        {!isStatusLoading && successFeeStatus && successFeeStatus.status && (
           <Text fontSize="$2" color="$color11">
             Current status: {successFeeStatus.status.replace(/_/g, ' ')}
           </Text>

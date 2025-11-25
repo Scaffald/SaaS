@@ -48,8 +48,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
       onSuccess?.()
       router.back()
     },
-    onError: (error: Error) => {
-      toast.show(`Error: ${error.message}`, { variant: 'error' })
+    onError: (error: any) => {
+      toast.show(`Error: ${error?.message || 'An error occurred'}`, { variant: 'error' })
     },
   })
 
@@ -59,8 +59,8 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
       onSuccess?.()
       router.back()
     },
-    onError: (error: Error) => {
-      toast.show(`Error: ${error.message}`, { variant: 'error' })
+    onError: (error: any) => {
+      toast.show(`Error: ${error?.message || 'An error occurred'}`, { variant: 'error' })
     },
   })
 
@@ -71,9 +71,9 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
     }
 
     if (mode === 'create') {
-      createJob.mutate(submitData)
+      createJob.mutate(submitData as any)
     } else if (jobId) {
-      updateJob.mutate({ id: jobId, ...submitData })
+      updateJob.mutate({ id: jobId, ...submitData } as any)
     }
   }
 

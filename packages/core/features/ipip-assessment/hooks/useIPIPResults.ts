@@ -44,7 +44,7 @@ export function useIPIPResults(): IPIPResultsData {
     error: assessmentError,
   } = api.personalityAssessment.getAssessmentStatus.useQuery(undefined, {
     staleTime: RESULTS_STALE_TIME_MS,
-    cacheTime: RESULTS_CACHE_TIME_MS,
+    gcTime: RESULTS_CACHE_TIME_MS,
     refetchOnWindowFocus: false,
   })
 
@@ -52,7 +52,7 @@ export function useIPIPResults(): IPIPResultsData {
     api.personalityAssessment.getArchetype.useQuery(undefined, {
       enabled: !!assessment?.ipip_completed_at,
       staleTime: RESULTS_STALE_TIME_MS,
-      cacheTime: RESULTS_CACHE_TIME_MS,
+      gcTime: RESULTS_CACHE_TIME_MS,
       refetchOnWindowFocus: false,
     })
 

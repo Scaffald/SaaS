@@ -123,9 +123,9 @@ export function OfficeOrganizationsList() {
     onSuccess: async () => {
       await Promise.all([refetch(), refetchRequests()])
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast.show('Unable to review request', {
-        message: error.message ?? 'Please try again shortly.',
+        message: error?.message ?? 'Please try again shortly.',
       })
     },
   })
@@ -226,7 +226,7 @@ export function OfficeOrganizationsList() {
   }
 
   const isProcessingAction = (id: string) =>
-    reviewMutation.isLoading && processingId !== null && processingId === id
+    reviewMutation.isPending && processingId !== null && processingId === id
 
   return (
     <>
@@ -301,14 +301,14 @@ export function OfficeOrganizationsList() {
             </YStack>
             <XStack gap="$3" justify="flex-end">
               <Dialog.Close asChild>
-                <Button variant="outlined" disabled={reviewMutation.isLoading}>
+                <Button variant="outlined" disabled={reviewMutation.isPending}>
                   Cancel
                 </Button>
               </Dialog.Close>
               <Button
                 theme="error"
                 icon={isProcessingAction(rejectDialog.requestId) ? Loader2 : XIcon}
-                disabled={reviewMutation.isLoading}
+                disabled={reviewMutation.isPending}
                 onPress={handleRejectConfirm}
               >
                 Reject Request
@@ -434,7 +434,7 @@ export function OfficeOrganizationsList() {
                           size="$2"
                           theme="success"
                           icon={isProcessingAction(request.id) ? Loader2 : Check}
-                          disabled={reviewMutation.isLoading}
+                          disabled={reviewMutation.isPending}
                           onPress={() => handleApprove(request)}
                         >
                           Approve
@@ -444,7 +444,7 @@ export function OfficeOrganizationsList() {
                           variant="outlined"
                           theme="error"
                           icon={XIcon}
-                          disabled={reviewMutation.isLoading}
+                          disabled={reviewMutation.isPending}
                           onPress={() => openRejectDialog(request)}
                         >
                           Reject

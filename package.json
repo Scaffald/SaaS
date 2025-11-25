@@ -8,10 +8,11 @@
   "scripts": {
     "reset": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo apps/*/.turbo packages/*/.turbo apps/expo/.expo apps/expo/.tamagui apps/expo/dist apps/expo/android/build apps/expo/ios/build apps/expo/.next **/tsconfig.tsbuildinfo **/.DS_Store && pnpm store prune && echo '✅ Cache cleared! Run pnpm install to reinstall dependencies.'",
     "reset:full": "pnpm reset && rm -rf apps/expo/android apps/expo/ios && echo '✅ Full reset complete! Run pnpm prebuild to regenerate native directories.'",
+    "watchman:reset": "watchman watch-del \"$(pwd)\" ; watchman watch-project \"$(pwd)\"",
     "env-local": "dotenv -e .env --",
     "env-prod": "dotenv -e .env.production --",
     "env-preview": "dotenv -e .env.preview --",
-    "dev": "pnpm --filter expo-app start",
+    "dev": "(pnpm watchman:reset || true) && pnpm --filter expo-app start",
     "ios": "pnpm --filter expo-app ios",
     "android": "pnpm --filter expo-app android",
     "web": "pnpm --filter expo-app web",

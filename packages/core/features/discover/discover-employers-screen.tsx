@@ -16,7 +16,12 @@ export function DiscoverEmployersScreen() {
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
   const { data: allData, isLoading: isLoadingAll } = api.employers.getEmployers.useQuery()
-  const allEmployers: Employer[] = (allData?.employers ?? []) as Employer[]
+  const allEmployers: Employer[] = (allData?.employers ?? []).map((emp: any) => ({
+    ...emp,
+    website_url: emp.website_url || emp.website || null,
+    employee_count_range: emp.employee_count_range || null,
+    annual_revenue_range: emp.annual_revenue_range || null,
+  })) as Employer[]
 
   // Create industry name to ID mapping from all employers
   const industryNameToIdMap = useMemo(() => {
@@ -57,7 +62,14 @@ export function DiscoverEmployersScreen() {
   )
 
   // Use filtered results when filters are applied, otherwise use all employers
-  const employers: Employer[] = hasFilters ? ((data?.employers ?? []) as Employer[]) : allEmployers
+  const employers: Employer[] = hasFilters
+    ? ((data?.employers ?? []).map((emp: any) => ({
+        ...emp,
+        website_url: emp.website_url || emp.website || null,
+        employee_count_range: emp.employee_count_range || null,
+        annual_revenue_range: emp.annual_revenue_range || null,
+      })) as Employer[])
+    : allEmployers
   const isLoading = hasFilters ? isLoadingFiltered : isLoadingAll
 
   const availableIndustries = useMemo(() => getAvailableIndustries(allEmployers), [allEmployers])

@@ -34,7 +34,12 @@ interface JobData {
     csi_skill?: { id?: string | number; name?: string } | null
     onet_occupation?: { code?: string; title?: string } | null
   }>
-  job_certifications?: Array<{ id: string; name: string }>
+  job_certifications?: Array<{
+    id?: string
+    name?: string
+    is_required?: boolean
+    certification?: { id?: string; name?: string } | null
+  }>
   status?: string | null
 }
 
@@ -145,19 +150,19 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
 
               {/* Job Type Badge */}
               <XStack gap="$2" flexWrap="wrap" justify="center">
-                {formatEmploymentType(job.employment_type) && (
+                {formatEmploymentType(job.employment_type ?? null) && (
                   <XStack bg="$blue3" px="$3" py="$1" rounded="$3" gap="$2" items="center">
                     <Briefcase size={14} color="$blue10" />
                     <Text fontSize="$2" color="$blue11" fontWeight="600">
-                      {formatEmploymentType(job.employment_type)}
+                      {formatEmploymentType(job.employment_type ?? null)}
                     </Text>
                   </XStack>
                 )}
-                {formatRemoteOption(job.remote_option) && (
+                {formatRemoteOption(job.remote_option ?? null) && (
                   <XStack bg="$green3" px="$3" py="$1" rounded="$3" gap="$2" items="center">
                     <MapPin size={14} color="$green10" />
                     <Text fontSize="$2" color="$green11" fontWeight="600">
-                      {formatRemoteOption(job.remote_option)}
+                      {formatRemoteOption(job.remote_option ?? null)}
                     </Text>
                   </XStack>
                 )}
@@ -178,17 +183,17 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               )}
 
               {formatPayRange(
-                job.pay_range_min_cents,
-                job.pay_range_max_cents,
-                job.pay_range_type
+                job.pay_range_min_cents ?? null,
+                job.pay_range_max_cents ?? null,
+                job.pay_range_type ?? null
               ) && (
                 <XStack gap="$2" items="center">
                   <DollarSign size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     {formatPayRange(
-                      job.pay_range_min_cents,
-                      job.pay_range_max_cents,
-                      job.pay_range_type
+                      job.pay_range_min_cents ?? null,
+                      job.pay_range_max_cents ?? null,
+                      job.pay_range_type ?? null
                     )}
                   </Text>
                 </XStack>
@@ -312,7 +317,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   }
                   fontWeight="600"
                 >
-                  {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                  {job.status ? (job.status.charAt(0).toUpperCase() + job.status.slice(1)) : 'Unknown'}
                 </Text>
               </XStack>
             </XStack>

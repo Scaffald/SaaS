@@ -8,7 +8,7 @@ import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {
   const router = useRouter()
-  const badgeQuery = api.idVerification.getCurrentVerification.useQuery(undefined, {
+  const badgeQuery = api.idVerification.getCurrentVerification.useQuery({}, {
     staleTime: 60 * 1000,
   })
 
