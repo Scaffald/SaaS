@@ -258,14 +258,14 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
         title: formData.title,
         description: formData.description,
         imageUrl: formData.imageUrl,
-        filePath: formData.filePath,
+        filePath: formData.filePath ?? undefined,
       })
     } else {
       createMutation.mutate({
         title: formData.title,
         description: formData.description,
         imageUrl: formData.imageUrl,
-        filePath: formData.filePath,
+        filePath: formData.filePath ?? undefined,
         displayOrder: portfolioItems.length,
       })
     }

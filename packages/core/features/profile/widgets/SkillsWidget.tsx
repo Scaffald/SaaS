@@ -182,7 +182,6 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   })
 
   const isLoadingSkills = isLoading && activeTab === 'technical'
-  const isError = error && activeTab === 'technical'
 
   return (
     <DashboardWidget>
@@ -215,17 +214,17 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         {activeTab === 'technical' &&
           (isLoadingSkills ? (
               <LoadingState message="Loading skills..." />
-            ) : isError ? (
+            ) : error ? (
               <YStack gap="$4" items="center" py="$8">
                 <Text color="$red10">Failed to load skills</Text>
                 <Text color="$color11" fontSize="$2">
-                  {error?.message}
+                  {(error as unknown as Record<string, unknown>).message}
                 </Text>
                 <UIButton
                   variant="primary"
                   size="$2"
                   onPress={() => {
-                    void refetch()
+                    void (refetch as unknown as () => Promise<unknown>)()
                   }}
                   disabled={isFetching}
                 >

@@ -430,7 +430,7 @@ export function ProfileEmploymentLeft() {
                   />
                 )}
               />
-              <Controller name="travel_distance_miles" control={control} render={() => null} />
+              <Controller name="travel_distance_miles" control={control} render={() => <></>} />
               {errors.travel_distance_miles && (
                 <Text color="$red10" fontSize="$2">
                   {errors.travel_distance_miles.message?.toString()}

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useProfileWizard } from "../useProfileWizard";
 import type { ProfileWizardProgressResponse } from "../useProfileWizard";
+import type { ProfileWizardStepId } from "../../utils/wizardSteps";
 
 const mockGetProgressQuery = {
   data: undefined as unknown,
@@ -405,9 +406,8 @@ describe("useProfileWizard", () => {
 
     mockGetProgressQuery.data = savedProgress;
 
-    // biome-ignore lint/suspicious/noExplicitAny: Testing invalid step value
     const { result } = renderHook(() =>
-      useProfileWizard("invalid-step" as any)
+      useProfileWizard("invalid-step" as unknown as ProfileWizardStepId)
     );
 
     await waitFor(() => {

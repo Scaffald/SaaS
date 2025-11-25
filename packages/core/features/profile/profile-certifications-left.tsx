@@ -891,7 +891,7 @@ function Depth2Certifications({
     certTitle: string
   ) => void
   onSelectForProof?: (certId: string, certTitle: string) => void
-  toggleMutation: { isLoading: boolean }
+  toggleMutation: { isPending: boolean }
   recentlyChangedCerts: Record<string, 'added' | 'removed'>
 }) {
   const { data: childrenData } = api.profile.certifications.getCertificationChildren.useQuery(
@@ -960,7 +960,7 @@ function Depth2Certifications({
                   ? () => onSelectForProof(userCert?.id || cert.id, cert.title)
                   : undefined
               }
-              disabled={toggleMutation.isLoading}
+              disabled={toggleMutation.isPending}
             />
             {changeStatus === 'added' && (
               <Text mt="$2" fontSize="$2" color="$green11">

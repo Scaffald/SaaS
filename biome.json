@@ -1,20 +1,20 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
   "files": {
-    "includes": ["**"],
-    "experimentalScannerIgnores": [
-      "node_modules",
-      "build",
-      ".vscode",
-      ".tamagui",
-      "ios",
-      "android",
-      "*.test.ts",
-      "*.test.tsx",
-      "*.css",
-      "packages/fonts/types/index.d.ts",
-      "coverage",
-      ".turbo"
+    "includes": [
+      "**",
+      "!!**/node_modules",
+      "!!**/build",
+      "!!**/.vscode",
+      "!!**/.tamagui",
+      "!!**/ios",
+      "!!**/android",
+      "!!**/*.test.ts",
+      "!!**/*.test.tsx",
+      "!!**/*.css",
+      "!!**/packages/fonts/types/index.d.ts",
+      "!!**/coverage",
+      "!!**/.turbo"
     ]
   },
   "formatter": {
