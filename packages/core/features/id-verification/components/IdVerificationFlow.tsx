@@ -252,14 +252,19 @@ function renderStatusCard(
     )
   }
 
-  const badge = queryReturn.data
+  const badge = queryReturn.data as {
+    badgeStatus?: string
+    badgeExpiresAt?: string
+    verifiedAt?: string
+    verificationLevel?: string | null
+  } | null | undefined
   if (!badge) {
     return (
       <Card p="$4" bordered>
         <YStack gap="$2">
           <IdVerificationBadge status={null} muted size="md" />
           <Text color="$color11">
-            Purchase a verification to unlock the “Verified Identity” badge on your profile.
+            Purchase a verification to unlock the "Verified Identity" badge on your profile.
           </Text>
         </YStack>
       </Card>
@@ -275,15 +280,15 @@ function renderStatusCard(
         />
         <Text color="$color11">
           {badge.badgeStatus === 'active'
-            ? `Valid until ${formatDate(badge.badgeExpiresAt)} (${formatDuration(
-                badge.badgeExpiresAt
+            ? `Valid until ${formatDate(badge.badgeExpiresAt ?? '')} (${formatDuration(
+                badge.badgeExpiresAt ?? ''
               )})`
             : badge.badgeStatus === 'expired'
-              ? `Expired on ${formatDate(badge.badgeExpiresAt)}`
+              ? `Expired on ${formatDate(badge.badgeExpiresAt ?? '')}`
               : 'Contact support to resolve revocation.'}
         </Text>
         <Text color="$color10">
-          Verified on {formatDate(badge.verifiedAt)} • Level: {badge.verificationLevel ?? 'N/A'}
+          Verified on {formatDate(badge.verifiedAt ?? '')} • Level: {badge.verificationLevel ?? 'N/A'}
         </Text>
       </YStack>
     </Card>

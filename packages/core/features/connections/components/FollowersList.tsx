@@ -9,6 +9,9 @@ interface FollowerData {
     display_name?: string | null
     username?: string | null
     avatar_url?: string | null
+    industry?: {
+      name?: string | null
+    } | null
   } | null
   created_at?: string
   id?: string
