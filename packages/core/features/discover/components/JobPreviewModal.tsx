@@ -26,7 +26,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   const router = useRouter()
 
   // Fetch job data
-  const { data: job, isLoading } = api.jobs.getJob.useQuery(
+  const { data: job, isLoading } = api.jobs.getJobDetails.useQuery(
     { id: jobId || '' },
     { enabled: !!jobId && open }
   )
