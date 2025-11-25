@@ -4,16 +4,8 @@ import { type ComponentPropsWithoutRef, forwardRef, type ReactElement, type Reac
 import type { Mock } from 'vitest'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mockUseQuery: Mock<
-  [],
-  {
-    data: EmploymentProfileFormData | undefined
-    isLoading: boolean
-    isFetching: boolean
-    error?: Error
-  }
-> = vi.fn()
-const mockMutateAsync: Mock<[EmploymentProfileFormData], Promise<{ success: boolean }>> = vi.fn()
+const mockUseQuery = vi.fn()
+const mockMutateAsync = vi.fn()
 const mockToastShow = vi.fn()
 const mockInvalidateProfileQueries = vi.fn()
 

@@ -68,7 +68,7 @@ describe('MilestoneBadge', () => {
     const { container } = render(<MilestoneBadge milestone={milestone} />)
 
     const badge = container.firstChild as HTMLElement
-    expect(badge).toHaveStyle({ opacity: '1' })
+    expect(badge).toHaveStyle({ opacity: 1 })
   })
 
   it('shows unachieved state with muted styling', () => {
@@ -83,7 +83,7 @@ describe('MilestoneBadge', () => {
     const { container } = render(<MilestoneBadge milestone={milestone} />)
 
     const badge = container.firstChild as HTMLElement
-    expect(badge).toHaveStyle({ opacity: '0.7' })
+    expect(badge).toHaveStyle({ opacity: 0.7 })
   })
 
   it('displays reached timestamp when available', () => {

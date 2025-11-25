@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { usePhotoUpload } from "../usePhotoUpload";
 import * as api from "@app/core/utils/api";
+import { useToastController } from "@tamagui/toast";
 
 const mockUseUtils = vi.fn(() => ({
   workLogs: {

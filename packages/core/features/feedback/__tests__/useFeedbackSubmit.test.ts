@@ -8,9 +8,11 @@ const submitMutation = { mutateAsync: vi.fn() }
 const uploadMutation = { mutateAsync: vi.fn() }
 const toastShow = vi.fn()
 
+const getPendingFeedbackQueueMock = vi.fn(async () => [])
+
 const storageMocks = vi.hoisted(() => ({
   addPendingFeedback: vi.fn(),
-  getPendingFeedbackQueue: vi.fn(async () => []) as unknown as () => Promise<FeedbackPendingSubmission[]>,
+  getPendingFeedbackQueue: getPendingFeedbackQueueMock as unknown as () => Promise<FeedbackPendingSubmission[]>,
   removePendingFeedback: vi.fn(),
   updatePendingFeedback: vi.fn(),
 }))
@@ -42,7 +44,7 @@ describe('useFeedbackSubmit', () => {
     submitMutation.mutateAsync.mockReset()
     uploadMutation.mutateAsync.mockReset()
     storageMocks.addPendingFeedback.mockReset()
-    storageMocks.getPendingFeedbackQueue.mockResolvedValue([])
+    getPendingFeedbackQueueMock.mockResolvedValue([])
     storageMocks.removePendingFeedback.mockReset()
     toastShow.mockReset()
   })
@@ -70,7 +72,7 @@ describe('useFeedbackSubmit', () => {
 
     await flushEffects()
 
-    storageMocks.getPendingFeedbackQueue.mockResolvedValueOnce([
+    getPendingFeedbackQueueMock.mockResolvedValueOnce([
       {
         id: 'pending-1',
         feedbackType: 'comment',

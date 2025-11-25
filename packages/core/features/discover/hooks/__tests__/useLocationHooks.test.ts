@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("discovery location hooks", () => {
   let mockFindNearestQuery: ReturnType<typeof vi.fn>;
@@ -14,10 +14,10 @@ describe("discovery location hooks", () => {
       api: {
         map: {
           findNearestResults: {
-            useQuery: (...args: unknown[]) => mockFindNearestQuery(...args),
+            useQuery: (...args: unknown[]) => (mockFindNearestQuery as unknown as (...args: unknown[]) => unknown)(...args),
           },
           getLocationCounts: {
-            useQuery: (...args: unknown[]) => mockLocationCountsQuery(...args),
+            useQuery: (...args: unknown[]) => (mockLocationCountsQuery as unknown as (...args: unknown[]) => unknown)(...args),
           },
         },
       },
