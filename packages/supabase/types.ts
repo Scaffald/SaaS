@@ -9306,6 +9306,8 @@ export type Database = {
         | "inquiry.capability_answered"
         | "inquiry.updated"
         | "inquiry.reminder"
+        | "connection.request"
+        | "connection.accepted"
       organization_document_category:
         | "contracts"
         | "templates"
@@ -9619,6 +9621,139 @@ export type Database = {
           invalid_count: number
         }[]
       }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  engagement: {
+    Tables: {
+      activity_events: {
+        Row: {
+          created_at: string
+          event_metadata: Json
+          event_type: string
+          id: string
+          occurred_at: string
+          target_id: string | null
+          target_type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_metadata?: Json
+          event_type: string
+          id?: string
+          occurred_at?: string
+          target_id?: string | null
+          target_type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_metadata?: Json
+          event_type?: string
+          id?: string
+          occurred_at?: string
+          target_id?: string | null
+          target_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      connection_analytics: {
+        Row: {
+          connections_count: number
+          created_at: string
+          followers_count: number
+          following_count: number
+          last_profile_view_at: string | null
+          pending_received_count: number
+          pending_sent_count: number
+          profile_views_30d: number
+          profile_views_total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connections_count?: number
+          created_at?: string
+          followers_count?: number
+          following_count?: number
+          last_profile_view_at?: string | null
+          pending_received_count?: number
+          pending_sent_count?: number
+          profile_views_30d?: number
+          profile_views_total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connections_count?: number
+          created_at?: string
+          followers_count?: number
+          following_count?: number
+          last_profile_view_at?: string | null
+          pending_received_count?: number
+          pending_sent_count?: number
+          profile_views_30d?: number
+          profile_views_total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profile_views: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json
+          referrer_url: string | null
+          session_id: string | null
+          updated_at: string
+          viewed_at: string
+          viewed_user_id: string
+          viewer_industry_id: string | null
+          viewer_role_type: string | null
+          viewer_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          referrer_url?: string | null
+          session_id?: string | null
+          updated_at?: string
+          viewed_at?: string
+          viewed_user_id: string
+          viewer_industry_id?: string | null
+          viewer_role_type?: string | null
+          viewer_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json
+          referrer_url?: string | null
+          session_id?: string | null
+          updated_at?: string
+          viewed_at?: string
+          viewed_user_id?: string
+          viewer_industry_id?: string | null
+          viewer_role_type?: string | null
+          viewer_user_id?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
@@ -11655,6 +11790,37 @@ export type Database = {
           slug: string
         }[]
       }
+      get_skill_children: {
+        Args: { p_parent_id: string }
+        Returns: {
+          active: boolean
+          csi_code: string[]
+          csi_display: string
+          depth: number
+          hierarchy_path: string
+          leaf_node: boolean
+          parent_id: string
+          skill_id: string
+          skill_name: string
+        }[]
+      }
+      get_skill_details: {
+        Args: { p_skill_id: string }
+        Returns: {
+          active: boolean
+          created_at: string
+          csi_code: string[]
+          csi_display: string
+          hierarchy_ids: string[]
+          hierarchy_path: string
+          industry_id: string
+          industry_name: string
+          parent_id: string
+          skill_id: string
+          skill_name: string
+        }[]
+      }
+      get_skill_parent_ids: { Args: { p_skill_id: string }; Returns: string[] }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
       pgp_armor_headers: {
@@ -11701,6 +11867,26 @@ export type Database = {
       }
       postgis_version: { Args: never; Returns: string }
       postgis_wagyu_version: { Args: never; Returns: string }
+      search_parent_skills: {
+        Args: {
+          p_industry_id: string
+          p_limit?: number
+          p_query: string
+          p_taxonomy?: string
+        }
+        Returns: {
+          active: boolean
+          child_count: number
+          csi_code: string[]
+          csi_display: string
+          depth: number
+          hierarchy_path: string
+          parent_id: string
+          parent_name: string
+          skill_id: string
+          skill_name: string
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       st_3dclosestpoint: {
@@ -13093,6 +13279,8 @@ export const Constants = {
         "inquiry.capability_answered",
         "inquiry.updated",
         "inquiry.reminder",
+        "connection.request",
+        "connection.accepted",
       ],
       organization_document_category: [
         "contracts",
@@ -13158,6 +13346,9 @@ export const Constants = {
     },
   },
   data: {
+    Enums: {},
+  },
+  engagement: {
     Enums: {},
   },
   onet: {

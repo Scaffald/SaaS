@@ -223,13 +223,13 @@ export const SkillsChart: FC<SkillsChartProps> = ({
     }
 
     // Spokes from center
-    const spokes = datasets[0].data.map((_, i) => {
+    const spokes = datasets[0].data.map((item, i) => {
       const angle = calculated.angle * i - Math.PI / 2
       const x = calculated.centerX + effectiveRadius * Math.cos(angle)
       const y = calculated.centerY + effectiveRadius * Math.sin(angle)
 
       return (
-        <G key={`spoke-${i}`}>
+        <G key={`spoke-${item.label}-${i}`}>
           <Polygon
             points={`${calculated.centerX},${calculated.centerY} ${x},${y}`}
             stroke={itemsColor}
@@ -250,8 +250,8 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
   // Render SVG Text Labels
   const renderLabels = () => {
-    return datasets[0].data.map(({ label }, i) => {
-      const angle = calculated.angle * i - Math.PI / 2
+    return datasets[0].data.map(({ label }, index) => {
+      const angle = calculated.angle * index - Math.PI / 2
       // Push label out slightly further than radius
       const labelRadius = effectiveRadius + 25
       const x = calculated.centerX + labelRadius * Math.cos(angle)
@@ -270,7 +270,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
       return (
         <SvgText
-          key={`label-${i}`}
+          key={`label-${label}`}
           x={x}
           y={y}
           dy={dy}
@@ -303,7 +303,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
       return (
         <Circle
-          key={`dot-${index}-${i}`}
+          key={`dot-${index}-${item.label}-${i}`}
           cx={x}
           cy={y}
           r={dotSize}
@@ -335,7 +335,14 @@ export const SkillsChart: FC<SkillsChartProps> = ({
               const start = resolveColor(set.gradient.startColor)
               const end = resolveColor(set.gradient.endColor)
               return (
-                <LinearGradient key={`grad-${i}`} id={`grad-${i}`} x1="0" y1="0" x2="1" y2="1">
+                <LinearGradient
+                  key={`grad-${set.label}-${i}`}
+                  id={`grad-${i}`}
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="1"
+                >
                   <Stop offset="0" stopColor={start} stopOpacity={set.fillOpacity ?? 0.5} />
                   <Stop offset="1" stopColor={end} stopOpacity={(set.fillOpacity ?? 0.5) * 0.5} />
                 </LinearGradient>
@@ -362,7 +369,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
           const fillId = d.gradient ? `url(#grad-${i})` : fill
 
           return (
-            <G key={`dataset-${i}`}>
+            <G key={`dataset-${d.label}-${i}`}>
               <RadarPolygon
                 dimensions={calculated}
                 data={d.data}

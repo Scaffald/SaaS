@@ -1,35 +1,20 @@
 {
-  "techStack": {
-    "framework": "Expo Router (React Native + Tamagui)",
-    "runtime": "Expo SDK 53 targeting web and native",
-    "buildTooling": ["Expo CLI", "Metro", "Turbo", "pnpm"],
-    "packageManager": "pnpm@10.17.1",
-    "workspace": "pnpm workspaces (apps/*, packages/*)",
-    "entry": "apps/expo/expo-router/entry",
-    "basePath": "/styleguide"
-  },
-  "languages": ["TypeScript", "TSX", "JSON"],
-  "styleSystem": {
-    "library": "Tamagui",
-    "tokens": [
-      "packages/ui/src/tamagui.config.ts",
-      "packages/ui/src/themes/scaffald-theme.ts",
-      "packages/core/assets/brand-colors.ts"
-    ],
-    "css": "Tamagui theme runtime generating CSS-in-JS for web"
-  },
   "componentSources": {
-    "uiPackage": "packages/ui/src",
     "forms": "packages/core/forms",
     "icons": "@tamagui/lucide-icons",
-    "maps": "packages/ui/src/components/maps"
+    "maps": "packages/ui/src/components/maps",
+    "uiPackage": "packages/ui/src"
+  },
+  "deployment": {
+    "ci": ".github/workflows/integrity.yaml",
+    "target": "Expo web export"
   },
   "design": {
-    "logo": "packages/core/assets/ScaffaldLogo.tsx",
     "brandName": "Scaffald",
+    "colors": "packages/core/assets/brand-colors.ts",
+    "logo": "packages/core/assets/ScaffaldLogo.tsx",
     "tagline": "Infrastructure for workforce compliance",
-    "typography": "Inter via Expo font loading",
-    "colors": "packages/core/assets/brand-colors.ts"
+    "typography": "Inter via Expo font loading"
   },
   "docs": {
     "existingExamples": [
@@ -40,43 +25,57 @@
     ],
     "stories": []
   },
+  "languages": ["TypeScript", "TSX", "JSON"],
+  "risks": [
+    "Expo web bundle may grow due to embedded code samples",
+    "Need to ensure color contrast meets WCAG when mapping Bootstrap variants"
+  ],
+  "search": {
+    "libraries": [],
+    "notes": "No existing global search utilities located"
+  },
   "security": {
     "auth": "Supabase session provider in apps/expo/app/_layout.tsx",
     "guard": "Not yet applied to /styleguide"
   },
-  "deployment": {
-    "target": "Expo web export",
-    "ci": ".github/workflows/integrity.yaml",
-    "netlify": "netlify.toml"
+  "styleSystem": {
+    "css": "Tamagui theme runtime generating CSS-in-JS for web",
+    "library": "Tamagui",
+    "tokens": [
+      "packages/ui/src/tamagui.config.ts",
+      "packages/ui/src/themes/scaffald-theme.ts",
+      "packages/core/assets/brand-colors.ts"
+    ]
+  },
+  "techStack": {
+    "basePath": "/styleguide",
+    "buildTooling": ["Expo CLI", "Metro", "Turbo", "pnpm"],
+    "entry": "apps/expo/expo-router/entry",
+    "framework": "Expo Router (React Native + Tamagui)",
+    "packageManager": "pnpm@10.17.1",
+    "runtime": "Expo SDK 53 targeting web and native",
+    "workspace": "pnpm workspaces (apps/*, packages/*)"
   },
   "testing": {
     "lint": "biome via pnpm lint",
     "typecheck": "tsc",
     "ui": "No dedicated visual regression tooling detected"
   },
-  "search": {
-    "libraries": [],
-    "notes": "No existing global search utilities located"
-  },
   "unknowns": [
     {
       "item": "Automated prop documentation",
-      "suggestedDefault": "Use react-docgen-typescript to emit JSON for @app/ui components",
-      "risk": "Manual drift between implementation and docs"
+      "risk": "Manual drift between implementation and docs",
+      "suggestedDefault": "Use react-docgen-typescript to emit JSON for @app/ui components"
     },
     {
       "item": "Production auth gate for /styleguide",
-      "suggestedDefault": "Reuse Provider session context to limit access to admin roles",
-      "risk": "Showcase could leak implementation details"
+      "risk": "Showcase could leak implementation details",
+      "suggestedDefault": "Reuse Provider session context to limit access to admin roles"
     },
     {
       "item": "Search indexing",
-      "suggestedDefault": "Generate Lunr-compatible index at build time",
-      "risk": "Runtime indexing may increase bundle size"
+      "risk": "Runtime indexing may increase bundle size",
+      "suggestedDefault": "Generate Lunr-compatible index at build time"
     }
-  ],
-  "risks": [
-    "Expo web bundle may grow due to embedded code samples",
-    "Need to ensure color contrast meets WCAG when mapping Bootstrap variants"
   ]
 }

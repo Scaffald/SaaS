@@ -57,9 +57,9 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
     return (
       <YStack gap="$4" p="$4">
         <XStack flexWrap="wrap" gap="$3" $md={{ gap: '$4' }}>
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
             <View
-              key={i}
+              key={key}
               width="100%"
               $md={{ width: '48%' }}
               $lg={{ width: '31%' }}

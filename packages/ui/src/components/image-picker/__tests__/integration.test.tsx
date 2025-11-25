@@ -89,7 +89,7 @@ vi.mock('tamagui', async () => {
   Button.Text = ({ children }: { children?: ReactNode }) => <span>{children}</span>
 
   const Image = ({ source, ...rest }: { source?: { uri?: string } }) => (
-    <img src={source?.uri} alt="Avatar" aria-label="Avatar" {...rest} />
+    <img src={source?.uri || ''} alt="Avatar" {...rest} />
   )
 
   const Circle = basicDiv

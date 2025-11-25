@@ -238,7 +238,7 @@ vi.mock('tamagui', async () => {
   )
 
   const Image = ({ source, ...rest }: { source?: { uri?: string } }) => (
-    <img src={source?.uri} alt="Crop preview" aria-label="Crop preview" {...rest} />
+    <img src={source?.uri || ''} alt="Crop preview" {...rest} />
   )
 
   const Circle = basicDiv

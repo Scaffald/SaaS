@@ -1,20 +1,20 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
-  "root": true,
   "files": {
-    "includes": [
-      "**",
-      "!**/node_modules",
-      "!**/build",
-      "!**/.vscode",
-      "!**/.tamagui",
-      "!**/ios",
-      "!**/android",
-      "!**/*.test.ts",
-      "!**/*.css",
-      "!**/packages/fonts/types/index.d.ts",
-      "!**/coverage",
-      "!**/.turbo"
+    "include": ["**"],
+    "ignore": [
+      "node_modules",
+      "build",
+      ".vscode",
+      ".tamagui",
+      "ios",
+      "android",
+      "*.test.ts",
+      "*.test.tsx",
+      "*.css",
+      "packages/fonts/types/index.d.ts",
+      "coverage",
+      ".turbo"
     ]
   },
   "formatter": {
@@ -23,7 +23,13 @@
     "indentWidth": 2,
     "lineWidth": 100
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assists": {
+    "actions": {
+      "source": {
+        "useSortedKeys": "on"
+      }
+    }
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
@@ -69,7 +75,7 @@
   },
   "overrides": [
     {
-      "includes": [
+      "include": [
         "**/packages/core/features/profile/profile-skills-left.tsx",
         "**/packages/supabase/functions/_shared/client-types.ts"
       ],
@@ -82,7 +88,7 @@
       }
     },
     {
-      "includes": [
+      "include": [
         "**/packages/supabase/functions/**/*.ts",
         "**/packages/supabase/functions/**/*.tsx"
       ],
