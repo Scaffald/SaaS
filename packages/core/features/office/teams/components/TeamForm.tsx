@@ -171,8 +171,9 @@ export function TeamForm({
       onSuccess?.(data?.team)
       router.push(ROUTES.OFFICE.CMS.TEAMS.path)
     },
-    onError: (error: any) => {
-      toast.show('Error', { message: error?.message || 'Failed to create team' })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Failed to create team'
+      toast.show('Error', { message })
     },
   })
 
@@ -182,8 +183,9 @@ export function TeamForm({
       onSuccess?.(data?.team)
       router.push(ROUTES.OFFICE.CMS.TEAMS.path)
     },
-    onError: (error: any) => {
-      toast.show('Error', { message: error?.message || 'Failed to update team' })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Failed to update team'
+      toast.show('Error', { message })
     },
   })
 

@@ -64,8 +64,9 @@ export function TeamInviteModal({
       onOpenChange(false)
       onInvited?.()
     },
-    onError: (error: any) => {
-      toast.show('Unable to send invitation', { message: error?.message })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show('Unable to send invitation', { message })
     },
   })
 

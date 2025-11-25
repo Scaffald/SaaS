@@ -150,14 +150,14 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
         <YStack gap="$4">
           <YStack gap="$2">
             <Text fontWeight="600">Organization</Text>
-            {organizationsData && (organizationsData as any).organizations && (
+            {organizationsData?.organizations && (
               <ResponsiveSelect
                 value={formData.organization_id}
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, organization_id: value }))
                 }
                 placeholder="Select organization"
-                options={(organizationsData as any).organizations.map((org: any) => ({
+                options={organizationsData.organizations.map((org: { id: string; name: string }) => ({
                   value: org.id,
                   label: org.name,
                 }))}

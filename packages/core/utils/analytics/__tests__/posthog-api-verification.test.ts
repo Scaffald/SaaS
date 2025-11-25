@@ -97,9 +97,18 @@ async function queryPostHogEvents(
   const data = await response.json()
   
   // PostHog Insights API returns results in results array
+  type PostHogEventResponse = {
+    event?: string
+    name?: string
+    properties?: Record<string, unknown>
+    timestamp?: string
+    distinct_id?: string
+    person?: { distinct_ids?: string[] }
+    [key: string]: unknown
+  }
   if (data.results && Array.isArray(data.results) && data.results.length > 0) {
-    return data.results[0].map((event: any) => ({
-      event: event.event,
+    return data.results[0].map((event: PostHogEventResponse) => ({
+      event: event.event || '',
       properties: event.properties || {},
       timestamp: event.timestamp,
       distinct_id: event.distinct_id,
@@ -147,9 +156,18 @@ async function queryPostHogEventsDirect(
 
   const data = await response.json()
   
+  type PostHogEventResponse = {
+    event?: string
+    name?: string
+    properties?: Record<string, unknown>
+    timestamp?: string
+    distinct_id?: string
+    person?: { distinct_ids?: string[] }
+    [key: string]: unknown
+  }
   if (data.results && Array.isArray(data.results)) {
-    return data.results.map((event: any) => ({
-      event: event.event || event.name,
+    return data.results.map((event: PostHogEventResponse) => ({
+      event: event.event || event.name || '',
       properties: event.properties || {},
       timestamp: event.timestamp,
       distinct_id: event.distinct_id || event.person?.distinct_ids?.[0],
@@ -157,8 +175,8 @@ async function queryPostHogEventsDirect(
   }
   
   if (Array.isArray(data)) {
-    return data.map((event: any) => ({
-      event: event.event || event.name,
+    return data.map((event: PostHogEventResponse) => ({
+      event: event.event || event.name || '',
       properties: event.properties || {},
       timestamp: event.timestamp,
       distinct_id: event.distinct_id,
@@ -168,32 +186,8 @@ async function queryPostHogEventsDirect(
   return []
 }
 
-/**
- * Wait for an event to appear in PostHog
- */
-async function waitForEvent(
-  eventName: string,
-  distinctId?: string,
-  timeoutMs = 30000,
-  pollIntervalMs = 3000,
-): Promise<Array<{ event: string; properties: Record<string, unknown> }>> {
-  const startTime = Date.now()
-  
-  while (Date.now() - startTime < timeoutMs) {
-    try {
-      const events = await queryPostHogEventsDirect(eventName, distinctId, 120)
-      if (events.length > 0) {
-        return events
-      }
-    } catch (error) {
-      console.warn('[posthog-api-verification] Error querying events:', error)
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, pollIntervalMs))
-  }
-  
-  throw new Error(`Event ${eventName} not found in PostHog within ${timeoutMs}ms`)
-}
+// Helper function waitForEvent removed - not currently used in tests
+// Future implementation would wait for events to appear in PostHog API
 
 // Mock AsyncStorage
 const asyncStorageStore = new Map<string, string>()

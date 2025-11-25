@@ -54,8 +54,9 @@ export function TeamCommentThread({
       await utils.teams.analytics.activity.invalidate({ teamId, pageSize: 20 })
       toast.show('Comment posted', { message: 'Your update was shared with the team.' })
     },
-    onError: (error: any) => {
-      toast.show('Unable to post comment', { message: error?.message })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show('Unable to post comment', { message })
     },
   })
 

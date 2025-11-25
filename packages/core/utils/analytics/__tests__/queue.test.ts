@@ -31,7 +31,7 @@ describe('analytics queue', () => {
   beforeEach(async () => {
     captureEventMock.mockReset()
     captureEventMock.mockReturnValue(false) // Default to failing so events are queued
-    ;(AsyncStorage as any).__reset()
+    ;(AsyncStorage as { __reset?: () => void }).__reset?.()
   })
 
   test('queues critical events when capture fails', async () => {
@@ -96,6 +96,7 @@ describe('analytics queue', () => {
     }
 
     // Try to queue multiple large events
+    // biome-ignore lint/suspicious/noExplicitAny: Testing large event payloads that exceed normal schema
     await queueEvent('job_viewed', largeEvent as any)
     
     // Check queue size

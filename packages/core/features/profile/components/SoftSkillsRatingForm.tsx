@@ -313,8 +313,8 @@ export const SoftSkillsRatingForm: FC = () => {
                             mt="$4"
                             mb="$2"
                           >
-                            <Slider.Track bg="$color4" height={6} rounded="$pill">
-                              <Slider.TrackActive bg="$blue9" rounded="$pill" />
+                            <Slider.Track bg="$color4" height={6} borderRadius={10}>
+                              <Slider.TrackActive bg="$blue9" borderRadius={10} />
                             </Slider.Track>
                             <Slider.Thumb
                               index={0}
@@ -332,13 +332,14 @@ export const SoftSkillsRatingForm: FC = () => {
                                 key={level.value}
                                 flex={1}
                                 minWidth={64}
-                                items="center"
+                                // biome-ignore lint/suspicious/noExplicitAny: Tamagui type compatibility
+                                {...({ style: { alignItems: 'center' } } as any)}
                                 opacity={sliderValue === level.value ? 1 : 0.6}
                               >
                                 <Text fontSize="$2" fontWeight="700" color="$color12">
                                   {level.value}
                                 </Text>
-                                <Text fontSize="$2" ta="center" color="$color11">
+                                <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
                                   {level.label}
                                 </Text>
                               </YStack>
@@ -394,10 +395,10 @@ export const SoftSkillsRatingForm: FC = () => {
           </YStack>
 
           <YStack gap="$2" items="center">
-            <Text fontSize="$6" fontWeight="700" color="$color12" ta="center">
+            <Text fontSize="$6" fontWeight="700" color="$color12" style={{ textAlign: 'center' }}>
               Soft Skills Assessment Complete!
             </Text>
-            <Text fontSize="$4" color="$color11" ta="center">
+            <Text fontSize="$4" color="$color11" style={{ textAlign: 'center' }}>
               Your assessment has been saved successfully. Your ratings will be used to improve job
               matching and showcase your strengths.
             </Text>
@@ -411,7 +412,7 @@ export const SoftSkillsRatingForm: FC = () => {
               variant="primary"
               onPress={() => {
                 setShowSuccessModal(false)
-                router.push(ROUTES.DASHBOARD.DISCOVER.path)
+                router.push(ROUTES.DASHBOARD.DISCOVER.MAP.path)
               }}
             >
               Find Matching Jobs

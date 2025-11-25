@@ -32,8 +32,9 @@ export function RemoveMemberModal({
       onOpenChange(false)
       onRemoved?.()
     },
-    onError: (error: any) => {
-      toast.show('Unable to remove member', { message: error?.message })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show('Unable to remove member', { message })
     },
   })
 

@@ -61,8 +61,9 @@ export function TeamActivityFeed({
         message: 'Your update is now visible to the team.',
       })
     },
-    onError: (error: any) => {
-      toast.show('Unable to post comment', { message: error?.message })
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'An error occurred'
+      toast.show('Unable to post comment', { message })
     },
   })
 

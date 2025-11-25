@@ -108,9 +108,10 @@ export function TeamAutomationSettings({
       })
       await utils.teams.byId.invalidate({ teamId })
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Please try again shortly.'
       toast.show('Unable to update automation settings', {
-        message: error?.message ?? 'Please try again shortly.',
+        message,
         type: 'error',
       })
     },
@@ -135,7 +136,7 @@ export function TeamAutomationSettings({
       allowSelfJoin: debouncedFormState.allowSelfJoin,
       autoAssignJobs: debouncedFormState.autoAssignJobs,
       invitationExpirationDays: debouncedFormState.invitationExpirationDays,
-      workloadStrategy: debouncedFormState.workloadStrategy as any,
+      workloadStrategy: debouncedFormState.workloadStrategy as 'manual' | 'round_robin' | 'load_balance',
       workloadSettings: debouncedFormState.workloadSettings,
       analyticsRefreshIntervalMinutes: debouncedFormState.analyticsRefreshIntervalMinutes,
     })

@@ -111,7 +111,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
 
   const { data, isLoading, refetch } = api.projects.list.useQuery({
     organization_id: selectedOrg || undefined,
-    status: (statusFilter as any) || undefined,
+    status: (statusFilter as ProjectStatus) || undefined,
     limit: 50,
     offset: 0,
   })
@@ -151,10 +151,10 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                       size="$3"
                       options={[
                         { value: '', label: 'All Organizations' },
-                        ...(organizationsData as any).organizations?.map((org: any) => ({
+                        ...(organizationsData?.organizations ?? []).map((org: { id: string; name: string }) => ({
                           value: org.id,
                           label: org.name,
-                        })) || [],
+                        })),
                       ]}
                     />
                   </XStack>

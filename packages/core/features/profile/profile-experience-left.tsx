@@ -96,10 +96,10 @@ export function ProfileExperienceLeft() {
       const previousExperience = utils.profile.experience.getExperience.getData()
       const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
-      utils.profile.experience.getExperience.setData(undefined, input.experience_entries as any)
+      utils.profile.experience.getExperience.setData(undefined, input.experience_entries as ExperienceEntries)
       utils.profile.experience.getExperienceSummary.setData(undefined, {
         career_level: input.career_level ?? null,
-      } as any)
+      } as { career_level: ExperienceProfileFormData['career_level'] | null })
 
       return { previousExperience, previousSummary }
     },
@@ -187,8 +187,8 @@ export function ProfileExperienceLeft() {
           }
         }),
       }
-      reset(formData as any)
-      originalDataRef.current = formData as any
+      reset(formData as ExperienceProfileFormData)
+      originalDataRef.current = formData as ExperienceProfileFormData
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
 

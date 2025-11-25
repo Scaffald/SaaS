@@ -46,9 +46,10 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       setShowDepositForm(false)
       setDepositAmount('')
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'An error occurred'
       toast.show('Failed to deposit credits', {
-        message: error?.message || 'An error occurred',
+        message,
         type: 'error',
       })
     },

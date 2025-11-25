@@ -46,7 +46,7 @@ async function queryPostHogEventsAPI(
   distinctId?: string,
   limit = 100,
   after?: string,
-): Promise<any> {
+): Promise<Array<{ event: string; properties: Record<string, unknown>; timestamp?: string; distinct_id?: string }>> {
   if (!POSTHOG_ALL_ACCESS || !POSTHOG_PROJECT_ID) {
     throw new Error('POSTHOG_ALL_ACCESS and POSTHOG_PROJECT_ID must be set')
   }
