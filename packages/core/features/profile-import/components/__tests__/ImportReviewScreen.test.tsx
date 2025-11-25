@@ -463,7 +463,7 @@ describe('ImportReviewScreen', () => {
       isLoading: true,
       isError: false,
       refetch: vi.fn(),
-    } satisfies MockImportDataResponse)
+    } as MockImportDataResponse)
 
     render(<ImportReviewScreen />)
 
@@ -479,7 +479,7 @@ describe('ImportReviewScreen', () => {
       isLoading: false,
       isError: true,
       refetch: vi.fn(),
-    } satisfies MockImportDataResponse)
+    } as MockImportDataResponse)
 
     render(<ImportReviewScreen />)
 

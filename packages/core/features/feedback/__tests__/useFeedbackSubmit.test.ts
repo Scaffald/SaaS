@@ -80,7 +80,7 @@ describe('useFeedbackSubmit', () => {
         pageUrl: '/dashboard/reports',
         userAgent: 'Vitest',
         attempts: 1,
-      },
+      } as FeedbackPendingSubmission,
     ])
 
     submitMutation.mutateAsync.mockResolvedValue({ id: 'feedback-id' })
