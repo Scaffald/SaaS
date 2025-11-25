@@ -146,7 +146,7 @@ export function ProfileActivityWidget() {
               </Text>
             ) : (
               <YStack gap="$2">
-                {profileViews.views.slice(0, 5).map((view: { id: string; viewer?: { avatar_url: string | null } | null }) => (
+                {profileViews.views.slice(0, 5).map((view: { id: string; viewer?: { avatar_url: string | null; display_name?: string | null; username?: string | null } | null; viewed_at?: string }) => (
                   <XStack key={view.id} items="center" gap="$2">
                     <Avatar circular size={32}>
                       {view.viewer?.avatar_url ? (
@@ -199,7 +199,7 @@ export function ProfileActivityWidget() {
               </Text>
             ) : (
               <YStack gap="$2">
-                {followers.slice(0, 5).map((follow: { id: string; user?: { avatar_url: string | null } | null }) => (
+                {followers.slice(0, 5).map((follow: { id: string; user?: { avatar_url: string | null; display_name?: string | null; username?: string | null } | null; created_at?: string }) => (
                   <XStack key={follow.id} items="center" gap="$2">
                     <Avatar circular size={32}>
                       {follow.user?.avatar_url ? (
@@ -269,7 +269,7 @@ export function ProfileActivityWidget() {
               </Text>
             ) : (
               <YStack gap="$2">
-                {pendingRequests.received.slice(0, 3).map((request: { id: string; user?: { avatar_url: string | null } | null }) => (
+                {pendingRequests.received.slice(0, 3).map((request: { id: string; user?: { avatar_url: string | null; display_name?: string | null; username?: string | null } | null; created_at?: string }) => (
                   <XStack key={request.id} items="center" gap="$2" justify="space-between">
                     <XStack items="center" gap="$2" flex={1}>
                       <Avatar circular size={32}>

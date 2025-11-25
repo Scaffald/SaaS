@@ -4,8 +4,19 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { Avatar, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
+interface FollowerData {
+  user?: {
+    display_name?: string | null
+    username?: string | null
+    avatar_url?: string | null
+  } | null
+  created_at?: string
+  id?: string
+  follower_id?: string
+}
+
 type FollowersQueryResult = ReturnType<typeof api.follows.getFollowers.useQuery>
-type Follower = NonNullable<FollowersQueryResult['data']> extends Array<infer T> ? T : never
+type Follower = NonNullable<FollowersQueryResult['data']> extends Array<infer T> ? T : FollowerData
 
 export function FollowersList() {
   const [searchTerm, setSearchTerm] = useState('')
