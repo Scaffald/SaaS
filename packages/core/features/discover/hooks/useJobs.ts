@@ -53,7 +53,6 @@ export const buildJobsQuery = (options: UseJobsOptions = {}) => {
     // We'll fetch all and filter in memory (with a reasonable limit)
     const result = (await (supabase
       .schema('public')
-      // @ts-expect-error - get_jobs_with_coords may not be in generated types yet
       .rpc('get_jobs_with_coords') as unknown)) as {
       data: JobWithCoords[] | null
       error: { message: string } | null

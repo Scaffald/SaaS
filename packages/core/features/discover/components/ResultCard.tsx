@@ -5,7 +5,7 @@ import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
-import { Paragraph, SizableText, Text, XStack } from 'tamagui'
+import { Button, Paragraph, SizableText, Text, XStack } from 'tamagui'
 
 import type { TalentProfile } from '../types'
 
