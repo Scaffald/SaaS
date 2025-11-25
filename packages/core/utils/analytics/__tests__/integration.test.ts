@@ -231,7 +231,7 @@ describe("analytics integration", () => {
       const result = captureEvent("user_signed_in", {
         provider: "email",
         // Missing is_new_user
-      } as { provider: string });
+      } as unknown as { provider: string; is_new_user: boolean });
 
       // Should fail validation
       expect(result).toBe(false);

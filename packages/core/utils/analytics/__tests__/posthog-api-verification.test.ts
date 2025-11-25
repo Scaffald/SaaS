@@ -178,8 +178,8 @@ async function queryPostHogEventsDirect(
     return data.map((event: PostHogEventResponse) => ({
       event: event.event || event.name || '',
       properties: event.properties || {},
-      timestamp: event.timestamp,
-      distinct_id: event.distinct_id,
+      timestamp: event.timestamp || '',
+      distinct_id: event.distinct_id || '',
     }))
   }
 

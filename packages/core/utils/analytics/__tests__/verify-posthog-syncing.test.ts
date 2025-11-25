@@ -132,7 +132,7 @@ describe.skipIf(!shouldRunVerification)(
         if (data.length > 0) {
           const event = data[0];
           console.log("[posthog-verification] Sample event:", {
-            event: event.event || event.name,
+            event: event.event || (event as { name?: string }).name || '',
             distinctId: event.distinct_id,
             timestamp: event.timestamp,
             hasProperties: !!event.properties,

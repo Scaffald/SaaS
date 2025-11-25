@@ -3,11 +3,21 @@ import { renderHook } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest'
 
-function createMockChannel(name: string) {
+type MockChannel = {
+  name: string
+  on: (_event: string, _filter: unknown, handler: () => void) => MockChannel
+  subscribe: () => MockChannel
+  unsubscribe: ReturnType<typeof vi.fn>
+  trigger: () => void
+}
+
+const channelMocks: MockChannel[] = []
+
+function createMockChannel(name: string): MockChannel {
   const callbacks: Array<() => void> = []
   const unsubscribe = vi.fn()
 
-  const channel = {
+  const channel: MockChannel = {
     name,
     on: (_event: string, _filter: unknown, handler: () => void) => {
       callbacks.push(handler)
@@ -25,8 +35,6 @@ function createMockChannel(name: string) {
   channelMocks.push(channel)
   return channel
 }
-
-const channelMocks: Array<ReturnType<typeof createMockChannel>> = []
 
 const supabaseMock = {
   channel: vi.fn((name: string) => createMockChannel(name)),
@@ -63,14 +71,14 @@ describe('useInquirySubscription', () => {
     expect(supabaseMock.channel).toHaveBeenCalledWith('inquiry-sections-inquiry-123')
     expect(supabaseMock.channel).toHaveBeenCalledWith('inquiry-capability-inquiry-123')
 
-    channelMocks.forEach((channel: ReturnType<typeof createMockChannel>) => {
+    channelMocks.forEach((channel) => {
       channel.trigger()
     })
 
     expect(invalidateSpy).toHaveBeenCalledTimes(4)
 
     unmount()
-    channelMocks.forEach((channel: ReturnType<typeof createMockChannel>) => {
+    channelMocks.forEach((channel) => {
       expect(channel.unsubscribe).toHaveBeenCalled()
     })
   })
