@@ -84,6 +84,7 @@ export function ProfileExperienceLeft() {
 
   // Mutations
   const saveExperienceMutation = api.profile.experience.saveExperience.useMutation({
+    // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
     async onMutate(input: SaveExperienceInput): Promise<SaveExperienceContext> {
       resetProfileSyncError()
       startProfileSync()
@@ -95,10 +96,10 @@ export function ProfileExperienceLeft() {
       const previousExperience = utils.profile.experience.getExperience.getData()
       const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
-      utils.profile.experience.getExperience.setData(undefined, input.experience_entries)
+      utils.profile.experience.getExperience.setData(undefined, input.experience_entries as any)
       utils.profile.experience.getExperienceSummary.setData(undefined, {
         career_level: input.career_level ?? null,
-      })
+      } as any)
 
       return { previousExperience, previousSummary }
     },
@@ -186,8 +187,8 @@ export function ProfileExperienceLeft() {
           }
         }),
       }
-      reset(formData)
-      originalDataRef.current = formData
+      reset(formData as any)
+      originalDataRef.current = formData as any
     }
   }, [experienceQuery.data, experienceSummaryQuery.data, reset])
 

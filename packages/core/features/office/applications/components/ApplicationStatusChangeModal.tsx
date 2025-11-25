@@ -551,9 +551,9 @@ function HireSummaryCard({
             Checking latest payment status…
           </Text>
         )}
-        {!isStatusLoading && (successFeeStatus as any)?.status && (
+        {!isStatusLoading && successFeeStatus?.status && (
           <Text fontSize="$2" color="$color11">
-            Current status: {(successFeeStatus as any).status.replace(/_/g, ' ')}
+            Current status: {successFeeStatus.status.replace(/_/g, ' ')}
           </Text>
         )}
       </YStack>
