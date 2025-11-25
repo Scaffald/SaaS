@@ -383,6 +383,7 @@ describe('useProfileWizard', () => {
 
     mockGetProgressQuery.data = savedProgress
 
+    // biome-ignore lint/suspicious/noExplicitAny: Testing invalid step value
     const { result } = renderHook(() => useProfileWizard('invalid-step' as any))
 
     await waitFor(() => {

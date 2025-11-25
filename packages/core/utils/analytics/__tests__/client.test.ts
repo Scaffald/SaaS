@@ -97,6 +97,7 @@ vi.mock('../events', async () => {
     ...actual,
     validateEventProperties: vi.fn((event: string, properties: unknown) => {
       // Use actual validation for now, can be overridden in tests
+      // biome-ignore lint/suspicious/noExplicitAny: Mock function accepts flexible types for testing
       return actual.validateEventProperties(event as any, properties as any)
     }),
   }
@@ -115,7 +116,7 @@ describe('analytics client', () => {
     delete process.env.POSTHOG_KEY
     
     // Reset __DEV__
-    ;(global as any).__DEV__ = true
+    ;(global as { __DEV__?: boolean }).__DEV__ = true
     
     // Reset platform
     mockPlatform.OS = 'ios'

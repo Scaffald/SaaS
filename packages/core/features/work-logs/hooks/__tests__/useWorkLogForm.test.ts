@@ -1,12 +1,10 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useToastController } from '@tamagui/toast';
 
 import { useWorkLogForm } from '../useWorkLogForm';
 import * as api from '@app/core/utils/api';
 import * as useOfflineWorkLogs from '../useOfflineWorkLogs';
-import * as useWorkLogLocation from '@app/core/utils/location/useWorkLogLocation';
 
 vi.mock('@app/core/utils/api', () => ({
   api: {

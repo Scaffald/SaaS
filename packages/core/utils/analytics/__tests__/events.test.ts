@@ -38,30 +38,30 @@ describe('analytics events', () => {
       })
 
       test('rejects missing required properties', () => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
         const result = validateEventProperties('user_signed_in', {
           provider: 'email',
           // Missing is_new_user
+          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
         } as any)
 
         expect(result.success).toBe(false)
       })
 
       test('rejects invalid provider type', () => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid property types
         const result = validateEventProperties('user_signed_in', {
           provider: 123, // Should be string
           is_new_user: true,
+          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid property types
         } as any)
 
         expect(result.success).toBe(false)
       })
 
       test('rejects invalid is_new_user type', () => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid property types
         const result = validateEventProperties('user_signed_in', {
           provider: 'email',
           is_new_user: 'true', // Should be boolean
+          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid property types
         } as any)
 
         expect(result.success).toBe(false)
@@ -92,9 +92,9 @@ describe('analytics events', () => {
       })
 
       test('rejects invalid reason value', () => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value
         const result = validateEventProperties('user_signed_out', {
           reason: 'invalid_reason',
+          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value
         } as any)
 
         expect(result.success).toBe(false)
@@ -148,10 +148,10 @@ describe('analytics events', () => {
       })
 
       test('rejects missing required properties', () => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
         const result = validateEventProperties('job_viewed', {
           job_id: 'job-123',
           // Missing is_external
+          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
         } as any)
 
         expect(result.success).toBe(false)
@@ -204,9 +204,9 @@ describe('analytics events', () => {
       })
 
       test('rejects invalid provider', () => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value
         const result = validateEventProperties('auth_social_sign_in_started', {
           provider: 'facebook',
+          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value
         } as any)
 
         expect(result.success).toBe(false)
@@ -265,10 +265,10 @@ describe('analytics events', () => {
   describe('assertValidEventProperties', () => {
     test('throws on invalid properties', () => {
       expect(() => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
         assertValidEventProperties('user_signed_in', {
           provider: 'email',
           // Missing is_new_user
+          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
         } as any)
       }).toThrow()
     })
@@ -310,6 +310,7 @@ describe('analytics events', () => {
       const result = validateEventProperties('user_signed_in', {
         provider: 'email',
         // Missing is_new_user
+        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
       } as any)
 
       expect(result.success).toBe(false)
