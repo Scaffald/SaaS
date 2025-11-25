@@ -202,9 +202,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   <DollarSign size={18} color="$color10" />
                   <Text fontSize="$4" color="$color11">
                     {formatPayRange(
-                      job.pay_range_min_cents,
-                      job.pay_range_max_cents,
-                      job.pay_range_type
+                      job.pay_range_min_cents ?? null,
+                      job.pay_range_max_cents ?? null,
+                      job.pay_range_type ?? null
                     )}
                     {job.pay_range_type === 'annual' && ' annually'}
                   </Text>

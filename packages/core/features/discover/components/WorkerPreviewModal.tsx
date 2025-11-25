@@ -584,7 +584,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                         {exp.job_title} at {exp.company_name}
                       </Text>
                       <Text fontSize="$3" color="$color10">
-                        {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
+                        {formatDateRange(exp.start_date, exp.end_date, exp.is_current ?? false)}
                       </Text>
                     </YStack>
                   ))}

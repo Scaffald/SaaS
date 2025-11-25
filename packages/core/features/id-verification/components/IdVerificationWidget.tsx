@@ -70,10 +70,10 @@ function deriveStatus(
     }
   }
 
-  const badge = badgeQuery.data
+  const badge = badgeQuery.data as { badgeStatus?: string; badgeExpiresAt?: string | null }
   return {
-    badgeStatus: badge.badgeStatus as 'active' | 'expired' | 'revoked',
-    badgeExpiresAt: badge.badgeExpiresAt ?? null,
+    badgeStatus: (badge?.badgeStatus ?? null) as 'active' | 'expired' | 'revoked' | null,
+    badgeExpiresAt: badge?.badgeExpiresAt ?? null,
     caption:
       badge.badgeStatus === 'revoked'
         ? 'Contact support to resolve badge issues.'
