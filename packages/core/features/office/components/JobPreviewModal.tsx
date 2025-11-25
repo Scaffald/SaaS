@@ -12,6 +12,32 @@ import {
 } from '@tamagui/lucide-icons'
 import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
+interface JobData {
+  id?: string
+  title?: string | null
+  organization?: {
+    id?: string
+    name?: string | null
+  } | null
+  employment_type?: string | null
+  position_level?: string | null
+  location?: string | null
+  remote_option?: string | null
+  pay_range_min_cents?: number | null
+  pay_range_max_cents?: number | null
+  pay_range_type?: string | null
+  posted_at?: string | null
+  description?: string | null | Record<string, unknown>
+  job_skills?: Array<{
+    id?: string
+    taxonomy?: string
+    csi_skill?: { id?: string | number; name?: string } | null
+    onet_occupation?: { code?: string; title?: string } | null
+  }>
+  job_certifications?: Array<{ id: string; name: string }>
+  status?: string | null
+}
+
 interface JobPreviewModalProps {
   jobId: string | null
   open: boolean
@@ -29,7 +55,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
     { enabled: !!jobId && open }
   )
 
-  const job = data?.job
+  const job = (data?.job ?? {}) as JobData
 
   const formatPayRange = (
     minCents: number | null,
@@ -172,7 +198,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 <XStack gap="$2" items="center">
                   <Calendar size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
-                    Posted {new Date(job.posted_at).toLocaleDateString()}
+                    Posted {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : 'Recently'}
                   </Text>
                 </XStack>
               )}
@@ -204,12 +230,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   </Text>
                 </XStack>
                 <XStack gap="$2" flexWrap="wrap">
-                  {job.job_skills.map((jobSkill: (typeof job.job_skills)[number], idx: number) => {
+                  {(job.job_skills || []).map((jobSkill, idx: number) => {
                     const skillName =
-                      jobSkill.csi_skill?.name || jobSkill.onet_occupation?.title || 'Unknown Skill'
+                      jobSkill?.csi_skill?.name || jobSkill?.onet_occupation?.title || 'Unknown Skill'
                     const skillKey =
-                      jobSkill.csi_skill?.id?.toString() ||
-                      jobSkill.onet_occupation?.code?.toString() ||
+                      jobSkill?.csi_skill?.id?.toString() ||
+                      jobSkill?.onet_occupation?.code?.toString() ||
                       `skill-${idx}-${skillName}`
                     return (
                       <XStack key={skillKey} bg="$blue3" px="$2" py="$1" rounded="$3">

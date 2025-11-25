@@ -3,21 +3,7 @@ import { useMemo, useState } from 'react'
 import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
-
-type Employer = {
-  id: string
-  created_at: string
-  updated_at: string
-  industry_id: string | null
-  name: string
-  slug: string
-  visibility: string
-  website: string | null
-  owner_user_id: string | null
-  description?: string | null
-  address?: Record<string, unknown> | null
-  industries?: Array<Record<string, unknown>>
-}
+import type { Employer } from './components/EmployerCard'
 
 /**
  * Discover Employers Screen Component
@@ -36,8 +22,13 @@ export function DiscoverEmployersScreen() {
   const industryNameToIdMap = useMemo(() => {
     const map = new Map<string, string>()
     for (const employer of allEmployers) {
-      if (employer.industries?.id && employer.industries?.name) {
-        map.set(employer.industries.name, employer.industries.id)
+      if (Array.isArray(employer.industries)) {
+        for (const ind of employer.industries) {
+          const industry = ind as any
+          if (industry?.id && industry?.name) {
+            map.set(industry.name, industry.id)
+          }
+        }
       }
     }
     return map
@@ -66,13 +57,13 @@ export function DiscoverEmployersScreen() {
   )
 
   // Use filtered results when filters are applied, otherwise use all employers
-  const employers = hasFilters ? (data?.employers ?? []) : allEmployers
+  const employers: Employer[] = hasFilters ? ((data?.employers ?? []) as Employer[]) : allEmployers
   const isLoading = hasFilters ? isLoadingFiltered : isLoadingAll
 
   const availableIndustries = useMemo(() => getAvailableIndustries(allEmployers), [allEmployers])
 
   const selectedIndustryCounts = useMemo(
-    () => getSelectedIndustryCounts(employers, selectedIndustries),
+    () => getSelectedIndustryCounts(employers as Employer[], selectedIndustries),
     [employers, selectedIndustries]
   )
 

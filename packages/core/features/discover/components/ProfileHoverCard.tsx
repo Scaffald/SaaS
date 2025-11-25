@@ -51,7 +51,12 @@ export function ProfileHoverCard({
     { organizationId: pinId || '' },
     { enabled: !!pinId && pinType === 'organization' && visible }
   )
-  const jobsCount: number = typeof jobsCountQuery.data === 'number' ? jobsCountQuery.data : (jobsCountQuery.data?.count as number) || 0
+  const jobsCount: number = (() => {
+    const data = jobsCountQuery.data
+    if (typeof data === 'number') return data
+    if (data && typeof data === 'object' && 'count' in data) return (data as any).count
+    return 0
+  })()
 
   if (!visible || !pinId || !pinType) {
     return null

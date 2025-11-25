@@ -34,7 +34,12 @@ export function OrganizationPreviewModal({
     { organizationId: organizationId || '' },
     { enabled: !!organizationId && open }
   )
-  const jobsCount: number = typeof jobsCountQuery.data === 'number' ? jobsCountQuery.data : (jobsCountQuery.data?.count as number) || 0
+  const jobsCount: number = (() => {
+    const data = jobsCountQuery.data
+    if (typeof data === 'number') return data
+    if (data && typeof data === 'object' && 'count' in data) return (data as any).count
+    return 0
+  })()
 
   const handleViewJobs = () => {
     // Navigate to jobs view with organization filter
