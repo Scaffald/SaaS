@@ -8,6 +8,8 @@ export interface ProfileWidgetProps {
   showEdit?: boolean
   /** Display variant */
   variant?: 'compact' | 'full'
+  /** Show CTA button for incomplete assessments (dashboard use case) */
+  showCTA?: boolean
 }
 
 /**

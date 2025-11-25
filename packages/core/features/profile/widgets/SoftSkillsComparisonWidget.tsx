@@ -23,34 +23,48 @@ import type { ProfileWidgetProps } from './types'
 /**
  * SoftSkillsComparisonWidget component
  *
- * Displays two radar charts side-by-side for comparison:
- * - Left: SkillsChart (custom SVG-based)
- * - Right: RadarChart (react-native-gifted-charts)
- *
- * Both charts use the same data source to allow visual comparison.
+ * Displays soft skills analysis with category tabs and radar chart visualization.
+ * Supports CTA button for incomplete assessments (dashboard use case).
  */
 export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   userId,
   showEdit = false,
   variant = 'full',
+  showCTA = false,
 }) => {
   const router = useRouter()
   const [activeCategory, setActiveCategory] = useState<SoftSkillCategory>('reliability')
 
   // Fetch soft skills data
+  // When userId is undefined, query for current user (API handles this)
   const { data, isLoading, error } = api.profile.skills.getSoftSkills.useQuery(
     userId ? { userId } : undefined,
     {
-      enabled: !!userId,
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
   )
 
   // Fetch peer comparison data
   const { data: comparisonData } = api.profile.skills.getSoftSkillsComparison.useQuery(undefined, {
-    enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   })
+
+  // Calculate completion status
+  const { isCompleted, completionCount } = useMemo(() => {
+    if (!data) {
+      return { isCompleted: false, completionCount: 0 }
+    }
+
+    const ratedSkills = data.skills.filter(
+      (skill) => skill.rating !== null && skill.rating !== undefined
+    )
+    const completed = ratedSkills.length === 25 // All 25 soft skills should be rated
+
+    return {
+      isCompleted: completed,
+      completionCount: ratedSkills.length,
+    }
+  }, [data])
 
   // Prepare skills for display
   const skills = useMemo<SoftSkill[]>(() => {
@@ -67,6 +81,11 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
         versionHistory: undefined,
       }))
   }, [data])
+
+  // Handle navigation to assessment
+  const handleNavigateToAssessment = () => {
+    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+  }
 
   // Category labels for display
   const categoryLabels: Record<SoftSkillCategory, string> = {
@@ -153,14 +172,52 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     )
   }
 
+  // Show empty state when no data or no skills
   if (!data || data.skills.length === 0) {
     return (
       <DashboardWidget>
-        <EmptyState
-          title="No soft skills assessment"
-          description="Complete your soft skills assessment to see your profile"
-          icon={undefined}
-        />
+        <YStack gap={spacing.md}>
+          <XStack justify="space-between" items="center">
+            <Heading variant="h4">Soft Skills Analysis</Heading>
+          </XStack>
+          <EmptyState
+            title="No soft skills assessment"
+            description="Complete your soft skills assessment to see your profile"
+            icon={undefined}
+          />
+          {showCTA && (
+            <UIButton variant="primary" onPress={handleNavigateToAssessment}>
+              Complete Soft Skills Assessment
+            </UIButton>
+          )}
+        </YStack>
+      </DashboardWidget>
+    )
+  }
+
+  // Show incomplete state with CTA when assessment is not complete
+  if (!isCompleted && showCTA) {
+    return (
+      <DashboardWidget>
+        <YStack gap={spacing.md}>
+          <XStack justify="space-between" items="center">
+            <Heading variant="h4">Soft Skills Analysis</Heading>
+          </XStack>
+          <YStack gap="$4">
+            <YStack gap="$2">
+              <Text fontSize="$3" color="$color11">
+                Complete your soft skills assessment to showcase your strengths and improve job
+                matching.
+              </Text>
+              <Text fontSize="$2" color="$color10">
+                {completionCount} of 25 skills rated
+              </Text>
+            </YStack>
+            <UIButton variant="primary" onPress={handleNavigateToAssessment}>
+              Complete Soft Skills Assessment
+            </UIButton>
+          </YStack>
+        </YStack>
       </DashboardWidget>
     )
   }
@@ -245,6 +302,13 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               Individual skill ratings in {categoryLabels[activeCategory]}
             </Text>
           </YStack>
+        )}
+
+        {/* CTA button for completed assessments when showCTA is true */}
+        {isCompleted && showCTA && (
+          <UIButton variant="outlined" onPress={handleNavigateToAssessment}>
+            Update Assessment
+          </UIButton>
         )}
       </YStack>
     </DashboardWidget>
