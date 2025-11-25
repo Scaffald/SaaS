@@ -23,6 +23,7 @@
     "../../tests/infrastructure/vitest/plugins/flow-remove.ts"
   ],
   "exclude": [
+    "../../packages/supabase/functions/**/__tests__/**/*",
     "../../packages/supabase/functions/tests/**/*",
     "../../packages/supabase/scripts/**/*",
     "../../packages/supabase/types-trpc.ts"

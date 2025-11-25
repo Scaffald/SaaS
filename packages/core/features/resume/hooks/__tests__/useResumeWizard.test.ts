@@ -15,8 +15,8 @@ interface MockWizardState {
 
 let wizardState: MockWizardState | undefined;
 const refetchMock = vi.fn(async () => ({ data: wizardState }));
-const saveSectionMutateAsync = vi.fn<[], Promise<unknown>>();
-const updateProgressMutateAsync = vi.fn<[], Promise<unknown>>();
+const saveSectionMutateAsync = vi.fn<unknown>();
+const updateProgressMutateAsync = vi.fn<unknown>();
 
 vi.mock("@app/core/utils/api", () => ({
   api: {

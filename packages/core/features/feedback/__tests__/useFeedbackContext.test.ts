@@ -109,11 +109,9 @@ describe('useFeedbackContext', () => {
       fontScale: 3,
     }
 
-    Dimensions.get = (
-      vi.fn<[('screen' | 'window')], ScaledSize>((type: 'screen' | 'window') =>
-        type === 'screen' ? screenSize : windowSize,
-      ) as unknown
-    ) as typeof Dimensions.get
+    Dimensions.get = vi.fn<unknown>((type: 'screen' | 'window') =>
+      type === 'screen' ? screenSize : windowSize,
+    ) as unknown as typeof Dimensions.get
 
     const { result } = renderHook(() => useFeedbackContext('Dashboard Native'))
 

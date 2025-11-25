@@ -113,7 +113,7 @@ describe("discovery data hooks", () => {
 
     const bounds = { north: 35.5, south: 35.0, east: -80.5, west: -81.0 };
 
-    const config = useJobs({ bounds, limit: 999 }) as {
+    const config = useJobs({ bounds, limit: 999 }) as unknown as {
       queryFn: () => Promise<unknown[]>;
     };
     const result = await config.queryFn();
@@ -136,7 +136,7 @@ describe("discovery data hooks", () => {
     const fromMock = vi.fn(() => jobBuilder);
     supabaseMock.schema.mockReturnValue({ from: fromMock });
 
-    const config = useJobs() as { queryFn: () => Promise<unknown> };
+    const config = useJobs() as unknown as { queryFn: () => Promise<unknown> };
     await expect(config.queryFn()).rejects.toThrow(
       "Failed to fetch jobs: boom",
     );
@@ -171,7 +171,7 @@ describe("discovery data hooks", () => {
     supabaseMock.schema.mockReturnValue(schemaReturn);
 
     const bounds = { north: 36, south: 34, east: -79, west: -81 };
-    const config = useOrganizations({ bounds, limit: 50 }) as {
+    const config = useOrganizations({ bounds, limit: 50 }) as unknown as {
       queryFn: () => Promise<unknown[]>;
     };
     const result = await config.queryFn();
@@ -217,7 +217,7 @@ describe("discovery data hooks", () => {
     supabaseMock.schema.mockReturnValue(schemaReturn);
 
     const bounds = { north: 36, south: 34, east: -79, west: -81 };
-    const config = useTalentProfiles({ bounds, limit: 800 }) as {
+    const config = useTalentProfiles({ bounds, limit: 800 }) as unknown as {
       queryFn: () => Promise<unknown[]>;
     };
     const result = await config.queryFn();
@@ -249,7 +249,7 @@ describe("discovery data hooks", () => {
       rpc: vi.fn(() => rpcBuilder),
     });
 
-    const config = useOrganizations() as { queryFn: () => Promise<unknown> };
+    const config = useOrganizations() as unknown as { queryFn: () => Promise<unknown> };
     await expect(config.queryFn()).rejects.toThrow(
       "Failed to fetch organizations: database down",
     );
@@ -261,7 +261,7 @@ describe("discovery data hooks", () => {
       rpc: vi.fn(() => rpcBuilder),
     });
 
-    const config = useOrganizations() as { queryFn: () => Promise<unknown[]> };
+    const config = useOrganizations() as unknown as { queryFn: () => Promise<unknown[]> };
     const result = await config.queryFn();
 
     expect(result).toEqual([]);
@@ -291,7 +291,7 @@ describe("discovery data hooks", () => {
       from: vi.fn(() => talentBuilder),
     });
 
-    const config = useTalentProfiles() as { queryFn: () => Promise<unknown[]> };
+    const config = useTalentProfiles() as unknown as { queryFn: () => Promise<unknown[]> };
     const result = await config.queryFn();
 
     expect(result).toEqual([
