@@ -106,7 +106,7 @@ export function useInquiryEdit({
     [inquiryId, updateMutation]
   )
 
-  const isSubmitting = updateMutation.isLoading
+  const isSubmitting = updateMutation.isPending
 
   return {
     form,

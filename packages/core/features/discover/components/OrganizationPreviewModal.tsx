@@ -30,10 +30,11 @@ export function OrganizationPreviewModal({
   )
 
   // Fetch open jobs count for this organization
-  const { data: jobsCount = 0 } = api.organizations.getOpenJobsCount.useQuery(
+  const jobsCountQuery = api.organizations.getOpenJobsCount.useQuery(
     { organizationId: organizationId || '' },
     { enabled: !!organizationId && open }
   )
+  const jobsCount: number = typeof jobsCountQuery.data === 'number' ? jobsCountQuery.data : (jobsCountQuery.data?.count as number) || 0
 
   const handleViewJobs = () => {
     // Navigate to jobs view with organization filter

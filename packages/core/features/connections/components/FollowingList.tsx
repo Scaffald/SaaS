@@ -122,7 +122,7 @@ export function FollowingList() {
               size="$2"
               variant="outlined"
               icon={UserMinus}
-              onPress={() => handleUnfollow(follow.id, follow.followee_id)}
+              onPress={() => handleUnfollow(follow.id || '', follow.followee_id || '')}
               disabled={unfollowMutation.isPending}
             >
               Unfollow

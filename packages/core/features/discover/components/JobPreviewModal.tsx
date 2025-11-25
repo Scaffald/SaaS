@@ -12,6 +12,23 @@ import {
 import { useRouter } from 'expo-router'
 import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
+interface JobData {
+  id?: string
+  title?: string | null
+  organization?: {
+    name?: string | null
+  } | null
+  employment_type?: string | null
+  position_level?: string | null
+  location?: string | null
+  remote_option?: string | null
+  pay_range_min_cents?: number | null
+  pay_range_max_cents?: number | null
+  pay_range_type?: string | null
+  status?: string | null
+  description?: string | null
+}
+
 interface JobPreviewModalProps {
   jobId: string | null
   open: boolean
@@ -26,10 +43,12 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   const router = useRouter()
 
   // Fetch job data
-  const { data: job, isLoading } = api.jobs.getJobDetails.useQuery(
+  const query = api.jobs.getJobDetails.useQuery(
     { id: jobId || '' },
     { enabled: !!jobId && open }
   )
+  const job = query.data as JobData | undefined
+  const isLoading = query.isLoading
 
   const formatPayRange = (
     minCents: number | null,

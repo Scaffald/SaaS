@@ -9,7 +9,38 @@ import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 type ConnectionsData = NonNullable<
   ReturnType<typeof api.connections.getConnections.useQuery>['data']
 >
-type Connection = ConnectionsData[number]
+
+interface ConnectionData {
+  id: string
+  status: string
+  created_at: string
+  decided_at?: string | null
+  user?: {
+    id?: string
+    display_name?: string | null
+    username?: string | null
+    avatar_url?: string | null
+    email?: string | null
+    industry?: {
+      name?: string | null
+    } | null
+    headline?: string | null
+  } | null
+  requester_user_id?: string
+  addressee_user?: {
+    id?: string
+    display_name?: string | null
+    username?: string | null
+    avatar_url?: string | null
+    email?: string | null
+    industry?: {
+      name?: string | null
+    } | null
+    headline?: string | null
+  } | null
+}
+
+type Connection = ConnectionsData extends Array<infer T> ? T : ConnectionData
 
 export function ConnectionsList() {
   const [searchTerm, setSearchTerm] = useState('')

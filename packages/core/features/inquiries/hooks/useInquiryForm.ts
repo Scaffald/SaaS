@@ -124,7 +124,7 @@ export function useInquiryForm({
     [createMutation]
   )
 
-  const isSubmitting = createMutation.isLoading || sendMutation.isLoading
+  const isSubmitting = createMutation.isPending || sendMutation.isPending
 
   return {
     form,

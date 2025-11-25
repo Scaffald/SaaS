@@ -177,8 +177,8 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
             mt="$2"
             bordered
             elevate
-            minWidth={280}
             style={{
+              minWidth: 280,
               maxHeight: 320,
               ...(isMediumOrAbove && contentWidth ? { width: contentWidth } : {}),
             }}

@@ -47,10 +47,11 @@ export function ProfileHoverCard({
     )
 
   // Fetch open jobs count for organizations
-  const { data: jobsCount = 0 } = api.organizations.getOpenJobsCount.useQuery(
+  const jobsCountQuery = api.organizations.getOpenJobsCount.useQuery(
     { organizationId: pinId || '' },
     { enabled: !!pinId && pinType === 'organization' && visible }
   )
+  const jobsCount: number = typeof jobsCountQuery.data === 'number' ? jobsCountQuery.data : (jobsCountQuery.data?.count as number) || 0
 
   if (!visible || !pinId || !pinType) {
     return null

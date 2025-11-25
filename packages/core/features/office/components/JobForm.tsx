@@ -13,6 +13,7 @@ import {
   YStack,
 } from '@app/ui'
 import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@app/ui/components/rich-text'
+import type { JSONContent } from '@tiptap/core'
 import { Eye, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
