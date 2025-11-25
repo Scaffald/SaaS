@@ -4,6 +4,21 @@ import { DiscoverEmployersLeft } from './discover-employers-left'
 import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
 
+type Employer = {
+  id: string
+  created_at: string
+  updated_at: string
+  industry_id: string | null
+  name: string
+  slug: string
+  visibility: string
+  website: string | null
+  owner_user_id: string | null
+  description?: string | null
+  address?: Record<string, unknown> | null
+  industries?: Array<Record<string, unknown>>
+}
+
 /**
  * Discover Employers Screen Component
  * Main screen for employer discovery with search/filter on right and employer list on left
@@ -15,7 +30,7 @@ export function DiscoverEmployersScreen() {
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
   const { data: allData, isLoading: isLoadingAll } = api.employers.getEmployers.useQuery()
-  const allEmployers = allData?.employers ?? []
+  const allEmployers: Employer[] = (allData?.employers ?? []) as Employer[]
 
   // Create industry name to ID mapping from all employers
   const industryNameToIdMap = useMemo(() => {
