@@ -69,8 +69,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       })
       void membersQuery.refetch()
     },
-    onError: (error: Error) => {
-      toast.show('Unable to transfer ownership', { message: error.message })
+    onError: (error: any) => {
+      toast.show('Unable to transfer ownership', { message: error?.message })
     },
   })
 
@@ -83,8 +83,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       setIsLeaveDialogOpen(false)
       router.replace(ROUTES.OFFICE.CMS.TEAMS.path)
     },
-    onError: (error: Error) => {
-      toast.show('Unable to leave team', { message: error.message })
+    onError: (error: any) => {
+      toast.show('Unable to leave team', { message: error?.message })
       setIsLeaveDialogOpen(false)
     },
   })

@@ -46,8 +46,8 @@ export function TeamMemberRoleSelect({
         onRoleChanged?.(variables.roleId)
       }
     },
-    onError: (error: Error) => {
-      toast.show('Unable to update role', { message: error.message })
+    onError: (error: any) => {
+      toast.show('Unable to update role', { message: error?.message })
       setSelectedRoleId(currentRoleId ?? '')
     },
   })

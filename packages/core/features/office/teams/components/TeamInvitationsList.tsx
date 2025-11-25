@@ -66,8 +66,8 @@ export function TeamInvitationsList({
       toast.show('Invitation resent', { message: 'The invitation email has been resent.' })
       void invitationsQuery.refetch()
     },
-    onError: (error: Error) => {
-      toast.show('Unable to resend invitation', { message: error.message })
+    onError: (error: any) => {
+      toast.show('Unable to resend invitation', { message: error?.message })
     },
   })
 
@@ -76,8 +76,8 @@ export function TeamInvitationsList({
       toast.show('Invitation cancelled', { message: 'The invitation can no longer be accepted.' })
       void invitationsQuery.refetch()
     },
-    onError: (error: Error) => {
-      toast.show('Unable to cancel invitation', { message: error.message })
+    onError: (error: any) => {
+      toast.show('Unable to cancel invitation', { message: error?.message })
     },
   })
 

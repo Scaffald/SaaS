@@ -41,9 +41,9 @@ export function OrganizationPaymentMethodsPanel({
       paymentMethodQuery.refetch()
       setShowAddForm(false)
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast.show('Failed to remove payment method', {
-        message: error.message,
+        message: error?.message || 'An error occurred',
         type: 'error',
       })
     },

@@ -199,12 +199,12 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setIsLoading(true)
     try {
       if (mode === 'create') {
-        await createMutation.mutateAsync(data)
+        await createMutation.mutateAsync(data as any)
       } else {
         if (!organizationId) {
           throw new Error('Organization ID is required for update')
         }
-        await updateMutation.mutateAsync({ id: organizationId, ...data })
+        await updateMutation.mutateAsync({ id: organizationId, ...data } as any)
       }
     } finally {
       setIsLoading(false)

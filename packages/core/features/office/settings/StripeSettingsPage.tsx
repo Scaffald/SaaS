@@ -147,14 +147,14 @@ export function StripeSettingsPage() {
               <Button
                 bg="$blue9"
                 color="$color1"
-                disabled={updatePublishableKey.isLoading || publishableKey.length < 16}
+                disabled={updatePublishableKey.isPending || publishableKey.length < 16}
                 onPress={() =>
                   updatePublishableKey.mutate({
                     publishableKey,
                   })
                 }
               >
-                {updatePublishableKey.isLoading ? <Spinner /> : 'Save Publishable Key'}
+                {updatePublishableKey.isPending ? <Spinner /> : 'Save Publishable Key'}
               </Button>
             </XStack>
           </YStack>
@@ -186,13 +186,13 @@ export function StripeSettingsPage() {
                 <Button
                   bg="$green9"
                   color="$color1"
-                  disabled={updateApiKey.isLoading || apiSecret.length < 20}
+                  disabled={updateApiKey.isPending || apiSecret.length < 20}
                   onPress={() => {
                     updateApiKey.mutate({ secret: apiSecret })
                     setApiSecret('')
                   }}
                 >
-                  {updateApiKey.isLoading ? <Spinner /> : 'Store API Secret'}
+                  {updateApiKey.isPending ? <Spinner /> : 'Store API Secret'}
                 </Button>
               </XStack>
               {data?.hasApiKey ? (
@@ -220,13 +220,13 @@ export function StripeSettingsPage() {
                 <Button
                   bg="$green9"
                   color="$color1"
-                  disabled={updateWebhookSecret.isLoading || webhookSecret.length < 10}
+                  disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
                   onPress={() => {
                     updateWebhookSecret.mutate({ secret: webhookSecret })
                     setWebhookSecret('')
                   }}
                 >
-                  {updateWebhookSecret.isLoading ? <Spinner /> : 'Store Webhook Secret'}
+                  {updateWebhookSecret.isPending ? <Spinner /> : 'Store Webhook Secret'}
                 </Button>
               </XStack>
               {data?.hasWebhookSecret ? (
@@ -272,7 +272,7 @@ export function StripeSettingsPage() {
             <Switch
               id="stripe-test-mode"
               checked={data?.testMode ?? true}
-              disabled={updateTestMode.isLoading}
+              disabled={updateTestMode.isPending}
               onCheckedChange={(checked) =>
                 updateTestMode.mutate({
                   testMode: Boolean(checked),
@@ -311,10 +311,10 @@ export function StripeSettingsPage() {
             <Button
               bg="$blue9"
               color="$color1"
-              disabled={testConnection.isLoading || !data?.hasApiKey}
+              disabled={testConnection.isPending || !data?.hasApiKey}
               onPress={() => testConnection.mutate()}
             >
-              {testConnection.isLoading ? <Spinner /> : 'Run Connection Test'}
+              {testConnection.isPending ? <Spinner /> : 'Run Connection Test'}
             </Button>
           </XStack>
         </Card>
