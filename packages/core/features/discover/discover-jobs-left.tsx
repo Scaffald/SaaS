@@ -29,7 +29,7 @@ export function DiscoverJobsLeft({
   sortBy,
 }: DiscoverJobsLeftProps) {
   // Check if soft skills filter is active
-  const useSoftSkillsFilter = (minSoftSkillsMatch !== null && minSoftSkillsMatch > 0) || sortBy === 'match_score'
+  const useSoftSkillsFilter = (minSoftSkillsMatch !== null && minSoftSkillsMatch !== undefined && minSoftSkillsMatch > 0) || sortBy === 'match_score'
   const shouldUseSoftSkillsMatch = useSoftSkillsFilter && (jobSource === 'all' || jobSource === 'internal')
 
   // Fetch external jobs (not affected by soft skills filter)

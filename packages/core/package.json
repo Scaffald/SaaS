@@ -1,22 +1,4 @@
 {
-  "version": "0.0.0",
-  "name": "@app/core",
-  "private": true,
-  "type": "module",
-  "main": "index.ts",
-  "types": "./index.ts",
-  "sideEffects": [
-    "*.css"
-  ],
-  "scripts": {
-    "watch": "tsc --watch",
-    "check:type": "tsc --noEmit",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
-  },
   "dependencies": {
     "@app/schemas": "workspace:*",
     "@app/supabase": "workspace:*",
@@ -44,8 +26,8 @@
     "expo-location": "catalog:",
     "expo-secure-store": "catalog:",
     "fast-xml-parser": "catalog:",
-    "i18n-js": "catalog:",
     "hast-util-to-html": "^9.0.0",
+    "i18n-js": "catalog:",
     "luscher-test": "^2.2.1",
     "mapbox-gl": "catalog:",
     "parse-numeric-range": "^1.0.0",
@@ -77,5 +59,23 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "typescript": "catalog:"
-  }
+  },
+  "main": "index.ts",
+  "name": "@app/core",
+  "private": true,
+  "scripts": {
+    "check:type": "tsc --noEmit",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "watch": "tsc --watch"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "type": "module",
+  "types": "./index.ts",
+  "version": "0.0.0"
 }

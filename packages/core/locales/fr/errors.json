@@ -1,9 +1,9 @@
 {
-  "unknown": "Something went wrong. Please try again.",
-  "network": "We could not connect to the server. Check your connection and try again.",
   "backend": {
-    "UNAUTHORIZED": "You do not have permission to perform this action.",
     "NOT_FOUND": "We couldn't find what you were looking for.",
+    "UNAUTHORIZED": "You do not have permission to perform this action.",
     "VALIDATION_ERROR": "Please review the highlighted fields and try again."
-  }
+  },
+  "network": "We could not connect to the server. Check your connection and try again.",
+  "unknown": "Something went wrong. Please try again."
 }

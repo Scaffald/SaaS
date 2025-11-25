@@ -1,9 +1,9 @@
 {
-  "unknown": "Algo salió mal. Inténtalo de nuevo.",
-  "network": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
   "backend": {
-    "UNAUTHORIZED": "No tienes permiso para realizar esta acción.",
     "NOT_FOUND": "No encontramos lo que estabas buscando.",
+    "UNAUTHORIZED": "No tienes permiso para realizar esta acción.",
     "VALIDATION_ERROR": "Revisa los campos resaltados e inténtalo otra vez."
-  }
+  },
+  "network": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+  "unknown": "Algo salió mal. Inténtalo de nuevo."
 }

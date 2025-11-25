@@ -2,20 +2,20 @@
   "generatedAt": "2025-11-20T10:37:47.978Z",
   "locales": [
     {
-      "locale": "es",
-      "totalKeys": 227,
-      "translatedKeys": 227,
-      "missingKeys": [],
+      "coverage": 100,
       "extraKeys": [],
-      "coverage": 100
+      "locale": "es",
+      "missingKeys": [],
+      "totalKeys": 227,
+      "translatedKeys": 227
     },
     {
-      "locale": "fr",
-      "totalKeys": 227,
-      "translatedKeys": 227,
-      "missingKeys": [],
+      "coverage": 100,
       "extraKeys": [],
-      "coverage": 100
+      "locale": "fr",
+      "missingKeys": [],
+      "totalKeys": 227,
+      "translatedKeys": 227
     }
   ],
   "unusedKeys": [

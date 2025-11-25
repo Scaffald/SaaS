@@ -5,9 +5,9 @@
     "continue": "Continue",
     "save": "Save"
   },
+  "or": "Or",
   "status": {
-    "loading": "Loading...",
-    "error": "Something went wrong"
-  },
-  "or": "Or"
+    "error": "Something went wrong",
+    "loading": "Loading..."
+  }
 }

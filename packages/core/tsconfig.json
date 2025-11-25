@@ -1,4 +1,22 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "noEmit": true,
+    "paths": {
+      "@app/core": ["."],
+      "@app/core/*": ["./*"],
+      "@app/supabase": ["../../supabase"],
+      "@app/supabase/*": ["../../supabase/*"],
+      "expo-clipboard": ["../../types/expo-clipboard.d.ts"]
+    },
+    "plugins": []
+  },
+  "exclude": [
+    "../../supabase/functions/**/*",
+    "../../supabase/migrations/**/*",
+    "../../supabase/scripts/**/*"
+  ],
   "extends": "../../tsconfig.base",
   "include": [
     "assets",
@@ -20,23 +38,5 @@
     "../../supabase/functions/_shared/deno-modules.d.ts",
     "../../types/custom-modules.d.ts"
   ],
-  "exclude": [
-    "../../supabase/functions/**/*",
-    "../../supabase/migrations/**/*",
-    "../../supabase/scripts/**/*"
-  ],
-  "compilerOptions": {
-    "noEmit": true,
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@app/core": ["."],
-      "@app/core/*": ["./*"],
-      "@app/supabase": ["../../supabase"],
-      "@app/supabase/*": ["../../supabase/*"],
-      "expo-clipboard": ["../../types/expo-clipboard.d.ts"]
-    },
-    "plugins": []
-  },
   "references": []
 }

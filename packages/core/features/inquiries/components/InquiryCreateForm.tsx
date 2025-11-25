@@ -454,7 +454,7 @@ export function InquiryCreateForm({
                         size="$3"
                         variant="outlined"
                         onPress={() => setSaveTemplateOpen(true)}
-                        disabled={createTemplateMutation.isLoading}
+                        disabled={createTemplateMutation.isPending}
                         $sm={{ flex: 1 }}
                       >
                         Save current
@@ -489,10 +489,10 @@ export function InquiryCreateForm({
                     <Button
                       size="$3"
                       onPress={handleApplyTemplate}
-                      disabled={!selectedTemplateId || applyTemplateMutation.isLoading}
+                      disabled={!selectedTemplateId || applyTemplateMutation.isPending}
                       $sm={{ width: '100%' }}
                     >
-                      {applyTemplateMutation.isLoading ? 'Applying…' : 'Apply template'}
+                      {applyTemplateMutation.isPending ? 'Applying…' : 'Apply template'}
                     </Button>
                   </XStack>
 
@@ -1272,16 +1272,16 @@ export function InquiryCreateForm({
             <Button
               variant="outlined"
               onPress={() => setSaveTemplateOpen(false)}
-              disabled={createTemplateMutation.isLoading}
+              disabled={createTemplateMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               theme="blue"
               onPress={handleSaveTemplate}
-              disabled={createTemplateMutation.isLoading}
+              disabled={createTemplateMutation.isPending}
             >
-              {createTemplateMutation.isLoading ? 'Saving…' : 'Save template'}
+              {createTemplateMutation.isPending ? 'Saving…' : 'Save template'}
             </Button>
           </XStack>
         </Sheet.Frame>
@@ -1348,7 +1348,7 @@ export function InquiryCreateForm({
                           borderColor="$red8"
                           onPress={() => handleDeleteTemplate(templateId)}
                           disabled={
-                            deleteTemplateMutation.isLoading && deletingTemplateId === templateId
+                            deleteTemplateMutation.isPending && deletingTemplateId === templateId
                           }
                         >
                           Delete

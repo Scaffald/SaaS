@@ -5,9 +5,9 @@
     "continue": "Continuar",
     "save": "Guardar"
   },
+  "or": "O",
   "status": {
-    "loading": "Cargando...",
-    "error": "Algo salió mal"
-  },
-  "or": "O"
+    "error": "Algo salió mal",
+    "loading": "Cargando..."
+  }
 }

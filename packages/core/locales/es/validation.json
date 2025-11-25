@@ -3,12 +3,12 @@
     "invalid": "Introduce una dirección de correo electrónico válida",
     "required": "El correo electrónico es obligatorio"
   },
-  "string": {
-    "required": "Este campo es obligatorio",
-    "tooShort": "Debe tener al menos {{min}} caracteres",
-    "tooLong": "Debe tener como máximo {{max}} caracteres"
-  },
   "password": {
     "required": "La contraseña es obligatoria"
+  },
+  "string": {
+    "required": "Este campo es obligatorio",
+    "tooLong": "Debe tener como máximo {{max}} caracteres",
+    "tooShort": "Debe tener al menos {{min}} caracteres"
   }
 }

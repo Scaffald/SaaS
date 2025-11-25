@@ -181,10 +181,10 @@ export function InquiryCommentThread({
           <Button
             icon={Send}
             onPress={handleAddComment}
-            disabled={!newComment.trim() || addCommentMutation.isLoading}
+            disabled={!newComment.trim() || addCommentMutation.isPending}
             theme="blue"
           >
-            {addCommentMutation.isLoading ? 'Sending...' : 'Send'}
+            {addCommentMutation.isPending ? 'Sending...' : 'Send'}
           </Button>
         </XStack>
       </YStack>

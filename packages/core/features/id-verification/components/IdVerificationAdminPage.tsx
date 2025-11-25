@@ -107,7 +107,7 @@ export function IdVerificationAdminPage({
       organizationId: selectedOrganizationId ?? undefined,
       search: debouncedSearch || undefined,
     },
-    { keepPreviousData: true, staleTime: 30_000 }
+    { placeholderData: (previousData) => previousData, staleTime: 30_000 }
   )
 
   const summary = listQuery.data?.summary ?? {

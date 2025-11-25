@@ -1,56 +1,56 @@
 {
-  "plus": [
-    {
-      "text": "Very Inaccurate",
-      "score": 1,
-      "color": 1
-    },
-    {
-      "text": "Moderately Inaccurate",
-      "score": 2,
-      "color": 2
-    },
-    {
-      "text": "Neither Accurate Nor Inaccurate",
-      "score": 3,
-      "color": 3
-    },
-    {
-      "text": "Moderately Accurate",
-      "score": 4,
-      "color": 4
-    },
-    {
-      "text": "Very Accurate",
-      "score": 5,
-      "color": 5
-    }
-  ],
   "minus": [
     {
-      "text": "Very Inaccurate",
+      "color": 1,
       "score": 5,
-      "color": 1
+      "text": "Very Inaccurate"
     },
     {
-      "text": "Moderately Inaccurate",
+      "color": 2,
       "score": 4,
-      "color": 2
+      "text": "Moderately Inaccurate"
     },
     {
-      "text": "Neither Accurate Nor Inaccurate",
+      "color": 3,
       "score": 3,
-      "color": 3
+      "text": "Neither Accurate Nor Inaccurate"
     },
     {
-      "text": "Moderately Accurate",
+      "color": 4,
       "score": 2,
-      "color": 4
+      "text": "Moderately Accurate"
     },
     {
-      "text": "Very Accurate",
+      "color": 5,
       "score": 1,
-      "color": 5
+      "text": "Very Accurate"
+    }
+  ],
+  "plus": [
+    {
+      "color": 1,
+      "score": 1,
+      "text": "Very Inaccurate"
+    },
+    {
+      "color": 2,
+      "score": 2,
+      "text": "Moderately Inaccurate"
+    },
+    {
+      "color": 3,
+      "score": 3,
+      "text": "Neither Accurate Nor Inaccurate"
+    },
+    {
+      "color": 4,
+      "score": 4,
+      "text": "Moderately Accurate"
+    },
+    {
+      "color": 5,
+      "score": 5,
+      "text": "Very Accurate"
     }
   ]
 }

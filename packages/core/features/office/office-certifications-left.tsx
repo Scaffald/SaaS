@@ -308,7 +308,7 @@ export function OfficeCertificationsLeft({
                 <Input
                   placeholder="e.g. 2"
                   value={field.value?.toString() || ''}
-                  onChangeText={(text) => field.onChange(text ? parseInt(text, 10) : undefined)}
+                  onChangeText={(text) => field.onChange(text ? Number.parseInt(text, 10) : undefined)}
                   keyboardType="numeric"
                 />
               )}
@@ -354,7 +354,7 @@ export function OfficeCertificationsLeft({
                     placeholder="e.g. 36"
                     value={field.value?.toString() || ''}
                     onChangeText={(text) =>
-                      field.onChange(text ? parseInt(text, 10) : undefined)
+                      field.onChange(text ? Number.parseInt(text, 10) : undefined)
                     }
                     keyboardType="numeric"
                   />

@@ -3,12 +3,12 @@
     "invalid": "Please enter a valid email address",
     "required": "Email is required"
   },
-  "string": {
-    "required": "This field is required",
-    "tooShort": "Must be at least {{min}} characters",
-    "tooLong": "Must be no more than {{max}} characters"
-  },
   "password": {
     "required": "Password is required"
+  },
+  "string": {
+    "required": "This field is required",
+    "tooLong": "Must be no more than {{max}} characters",
+    "tooShort": "Must be at least {{min}} characters"
   }
 }

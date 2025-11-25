@@ -109,7 +109,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
           targetId: job.id,
           metadata: {
             job_title: job.title,
-            is_external,
+            is_external: isExternal,
             organization_id:
               !isExternal && 'organization' in job ? (job.organization?.id ?? null) : null,
           },

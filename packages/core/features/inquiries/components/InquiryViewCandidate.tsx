@@ -590,11 +590,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {!sections.find((s) => s.section_name === 'employment')?.accepted_by && (
                 <Button
                   onPress={() => handleAcceptSection('employment')}
-                  disabled={acceptSectionMutation.isLoading}
+                  disabled={acceptSectionMutation.isPending}
                   theme="success"
                   $sm={{ height: 48 }}
                 >
-                  {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Employment Terms'}
+                  {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Employment Terms'}
                 </Button>
               )}
 
@@ -654,11 +654,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {!sections.find((s) => s.section_name === 'compensation')?.accepted_by && (
                 <Button
                   onPress={() => handleAcceptSection('compensation')}
-                  disabled={acceptSectionMutation.isLoading}
+                  disabled={acceptSectionMutation.isPending}
                   theme="success"
                   $sm={{ height: 48 }}
                 >
-                  {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Compensation Terms'}
+                  {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Compensation Terms'}
                 </Button>
               )}
 
@@ -778,11 +778,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {!sections.find((s) => s.section_name === 'capabilities')?.accepted_by && (
                 <Button
                   onPress={() => handleAcceptSection('capabilities')}
-                  disabled={acceptSectionMutation.isLoading}
+                  disabled={acceptSectionMutation.isPending}
                   theme="success"
                   $sm={{ height: 48 }}
                 >
-                  {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Capabilities Terms'}
+                  {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Capabilities Terms'}
                 </Button>
               )}
 
@@ -871,11 +871,11 @@ export function InquiryViewCandidate({ applicationId, inquiryId }: InquiryViewCa
               {!sections.find((s) => s.section_name === 'other')?.accepted_by && (
                 <Button
                   onPress={() => handleAcceptSection('other')}
-                  disabled={acceptSectionMutation.isLoading}
+                  disabled={acceptSectionMutation.isPending}
                   theme="success"
                   $sm={{ height: 48 }}
                 >
-                  {acceptSectionMutation.isLoading ? 'Accepting...' : 'Accept Other Terms'}
+                  {acceptSectionMutation.isPending ? 'Accepting...' : 'Accept Other Terms'}
                 </Button>
               )}
 

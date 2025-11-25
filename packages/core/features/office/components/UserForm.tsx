@@ -80,7 +80,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
     if (jobSearchStatus !== initialPrivateData?.job_search_status)
       privateData.job_search_status = jobSearchStatus
     if (yearsOfExperience !== initialPrivateData?.years_of_experience?.toString()) {
-      privateData.years_of_experience = parseInt(yearsOfExperience, 10) || 0
+      privateData.years_of_experience = Number.parseInt(yearsOfExperience, 10) || 0
     }
     if (currentTitle !== initialPrivateData?.current_title) privateData.current_title = currentTitle
     if (currentEmployer !== initialPrivateData?.current_employer)
