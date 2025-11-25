@@ -373,7 +373,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                       maxValue={100}
                       isAnimated={true}
                     />
-                    <Text fontSize="$2" color="$color10" textAlign="center">
+                    <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
                       Individual skill ratings in {categoryLabels[activeCategory]}
                     </Text>
                   </YStack>

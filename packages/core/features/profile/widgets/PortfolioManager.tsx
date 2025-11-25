@@ -256,15 +256,15 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
       updateMutation.mutate({
         id: editingId,
         title: formData.title,
-        description: formData.description,
-        imageUrl: formData.imageUrl,
+        description: formData.description ?? undefined,
+        imageUrl: formData.imageUrl ?? undefined,
         filePath: formData.filePath ?? undefined,
       })
     } else {
       createMutation.mutate({
         title: formData.title,
-        description: formData.description,
-        imageUrl: formData.imageUrl,
+        description: formData.description ?? undefined,
+        imageUrl: formData.imageUrl ?? undefined,
         filePath: formData.filePath ?? undefined,
         displayOrder: portfolioItems.length,
       })
