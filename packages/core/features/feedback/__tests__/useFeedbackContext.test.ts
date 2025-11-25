@@ -109,7 +109,7 @@ describe('useFeedbackContext', () => {
       fontScale: 3,
     }
 
-    Dimensions.get = vi.fn<unknown>((type: 'screen' | 'window') =>
+    Dimensions.get = vi.fn((type: 'screen' | 'window') =>
       type === 'screen' ? screenSize : windowSize,
     ) as unknown as typeof Dimensions.get
 

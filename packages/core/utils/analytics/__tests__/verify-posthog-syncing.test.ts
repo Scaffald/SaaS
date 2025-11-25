@@ -124,13 +124,13 @@ describe.skipIf(!shouldRunVerification)(
       expect(data).toBeDefined();
 
       // Check if results exist
-      if (data.results && Array.isArray(data.results)) {
+      if (Array.isArray(data)) {
         console.log(
-          `[posthog-verification] ✅ Found ${data.results.length} events in PostHog`,
+          `[posthog-verification] ✅ Found ${data.length} events in PostHog`,
         );
 
-        if (data.results.length > 0) {
-          const event = data.results[0];
+        if (data.length > 0) {
+          const event = data[0];
           console.log("[posthog-verification] Sample event:", {
             event: event.event || event.name,
             distinctId: event.distinct_id,
@@ -179,16 +179,16 @@ describe.skipIf(!shouldRunVerification)(
           const data = await queryPostHogEventsAPI(eventType, undefined, 10);
 
           if (
-            data.results && Array.isArray(data.results) &&
-            data.results.length > 0
+            Array.isArray(data) &&
+            data.length > 0
           ) {
             foundAnyEvents = true;
             console.log(
-              `[posthog-verification] ✅ Found ${data.results.length} ${eventType} events`,
+              `[posthog-verification] ✅ Found ${data.length} ${eventType} events`,
             );
 
             // Verify event properties
-            const event = data.results[0];
+            const event = data[0];
             if (event.properties) {
               console.log(
                 `[posthog-verification] ${eventType} event properties:`,
@@ -252,13 +252,13 @@ describe.skipIf(!shouldRunVerification)(
       const data = await queryPostHogEventsAPI("user_signed_in", undefined, 5);
 
       if (
-        data.results && Array.isArray(data.results) && data.results.length > 0
+        Array.isArray(data) && data.length > 0
       ) {
         console.log(
-          `[posthog-verification] Found ${data.results.length} user_signed_in events to validate`,
+          `[posthog-verification] Found ${data.length} user_signed_in events to validate`,
         );
 
-        for (const posthogEvent of data.results) {
+        for (const posthogEvent of data) {
           if (posthogEvent.properties) {
             // Extract core properties (PostHog may add extra properties like $lib, $lib_version, etc.)
             const coreProperties = {

@@ -100,7 +100,7 @@ const createEmptyPayload = (): MockImportPayload => ({
 })
 
 const mockGetImportDataQuery = vi.hoisted(() =>
-  vi.fn<unknown>(() => ({
+  vi.fn(() => ({
     data: {
       payload: createEmptyPayload(),
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),

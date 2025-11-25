@@ -10,7 +10,7 @@ const toastShow = vi.fn()
 
 const storageMocks = vi.hoisted(() => ({
   addPendingFeedback: vi.fn(),
-  getPendingFeedbackQueue: vi.fn<unknown>(async () => []) as unknown as () => Promise<FeedbackPendingSubmission[]>,
+  getPendingFeedbackQueue: vi.fn(async () => []) as unknown as () => Promise<FeedbackPendingSubmission[]>,
   removePendingFeedback: vi.fn(),
   updatePendingFeedback: vi.fn(),
 }))

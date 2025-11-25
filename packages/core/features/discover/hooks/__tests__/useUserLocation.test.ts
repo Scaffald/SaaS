@@ -9,15 +9,15 @@ type GeolocationReturn = ReturnType<Geolocation['getCurrentPosition']>
 type PositionSuccessCallback = (position: GeolocationPosition) => void
 type PositionErrorCallback = (error: GeolocationPositionError) => void
 
-const getCurrentPositionMock = vi.fn() as unknown as Geolocation['getCurrentPosition']
-const watchPositionMock = vi.fn(() => 1) as unknown as Geolocation['watchPosition']
-const clearWatchMock = vi.fn() as unknown as Geolocation['clearWatch']
+const getCurrentPositionMock = vi.fn()
+const watchPositionMock = vi.fn(() => 1)
+const clearWatchMock = vi.fn()
 
 describe('useUserLocation (web)', () => {
   const geolocationMock: Geolocation = {
-    getCurrentPosition: getCurrentPositionMock,
-    watchPosition: watchPositionMock,
-    clearWatch: clearWatchMock,
+    getCurrentPosition: getCurrentPositionMock as unknown as Geolocation['getCurrentPosition'],
+    watchPosition: watchPositionMock as unknown as Geolocation['watchPosition'],
+    clearWatch: clearWatchMock as unknown as Geolocation['clearWatch'],
   }
 
   beforeEach(() => {
