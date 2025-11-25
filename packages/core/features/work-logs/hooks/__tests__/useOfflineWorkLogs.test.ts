@@ -1,57 +1,58 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { Platform } from 'react-native';
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useOfflineWorkLogs } from '../useOfflineWorkLogs';
-import * as offlineStorage from '../../utils/offline-storage';
-import type { OfflineWorkLog } from '../../types/offline';
-import type { CreateWorkLogInput } from '../../schemas';
+import { useOfflineWorkLogs } from "../useOfflineWorkLogs";
+import * as offlineStorage from "../../utils/offline-storage";
+import type { OfflineWorkLog } from "../../types/offline";
+import type { CreateWorkLogInput } from "../../schemas";
 
-const createWorkLogInput = (overrides: Partial<CreateWorkLogInput>): CreateWorkLogInput => ({
-  projectId: 'project-1',
-  entryType: 'daily',
-  logDate: '2025-01-10',
-  timeEntries: [{ start: '08:00', end: '12:00' }],
-  workDescription: 'Test work',
+const createWorkLogInput = (
+  overrides: Partial<CreateWorkLogInput>,
+): CreateWorkLogInput => ({
+  projectId: "project-1",
+  entryType: "daily",
+  logDate: "2025-01-10",
+  timeEntries: [{ start: "08:00", end: "12:00" }],
+  workDescription: "Test work",
   tasksCompleted: [],
   skillsUsed: [],
-  visibility: 'private',
+  visibility: "private",
   showOnProfile: false,
   showDateRangeOnProfile: false,
   ...overrides,
 });
 
-vi.mock('../../utils/offline-storage');
-vi.mock('expo-file-system/legacy', () => ({
+vi.mock("../../utils/offline-storage");
+vi.mock("expo-file-system/legacy", () => ({
   default: {
-    documentDirectory: '/test/documents',
-    cacheDirectory: '/test/cache',
+    documentDirectory: "/test/documents",
+    cacheDirectory: "/test/cache",
     getInfoAsync: vi.fn().mockResolvedValue({ exists: true }),
     makeDirectoryAsync: vi.fn().mockResolvedValue(undefined),
   },
 }));
-vi.mock('expo-crypto', () => ({
-  randomUUID: vi.fn(() => 'test-uuid'),
+vi.mock("expo-crypto", () => ({
+  randomUUID: vi.fn(() => "test-uuid"),
 }));
 
-describe('useOfflineWorkLogs', () => {
+describe("useOfflineWorkLogs", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([]);
     vi.mocked(offlineStorage.saveOfflineWorkLogs).mockResolvedValue(undefined);
   });
 
-  it('loads offline work logs on mount', async () => {
+  it("loads offline work logs on mount", async () => {
     const mockLogs: OfflineWorkLog[] = [
       {
-        id: 'log-1',
-        createdAt: '2025-01-10T00:00:00Z',
-        updatedAt: '2025-01-10T00:00:00Z',
+        id: "log-1",
+        createdAt: "2025-01-10T00:00:00Z",
+        updatedAt: "2025-01-10T00:00:00Z",
         payload: {
-          kind: 'create',
-          input: createWorkLogInput({ workDescription: 'Test work' }),
+          kind: "create",
+          input: createWorkLogInput({ workDescription: "Test work" }),
         },
-        syncStatus: 'pending',
+        syncStatus: "pending",
         photos: [],
         retryCount: 0,
         nextRetryAt: null,
@@ -70,7 +71,7 @@ describe('useOfflineWorkLogs', () => {
     expect(offlineStorage.loadOfflineWorkLogs).toHaveBeenCalled();
   });
 
-  it('queues a new work log for offline', async () => {
+  it("queues a new work log for offline", async () => {
     const { result } = renderHook(() => useOfflineWorkLogs());
 
     await waitFor(() => {
@@ -80,37 +81,39 @@ describe('useOfflineWorkLogs', () => {
     await act(async () => {
       await result.current.queueWorkLog({
         payload: {
-          kind: 'create',
-          input: createWorkLogInput({ workDescription: 'New work log' }),
+          kind: "create",
+          input: createWorkLogInput({ workDescription: "New work log" }),
         },
       });
     });
 
     expect(result.current.offlineWorkLogs.length).toBe(1);
     expect(
-      result.current.offlineWorkLogs[0]?.payload.kind === 'create'
+      result.current.offlineWorkLogs[0]?.payload.kind === "create"
         ? result.current.offlineWorkLogs[0].payload.input.workDescription
         : undefined,
-    ).toBe('New work log');
+    ).toBe("New work log");
     expect(offlineStorage.saveOfflineWorkLogs).toHaveBeenCalled();
   });
 
-  it('mutates an existing offline work log', async () => {
+  it("mutates an existing offline work log", async () => {
     const existingLog: OfflineWorkLog = {
-      id: 'log-1',
-      createdAt: '2025-01-10T00:00:00Z',
-      updatedAt: '2025-01-10T00:00:00Z',
+      id: "log-1",
+      createdAt: "2025-01-10T00:00:00Z",
+      updatedAt: "2025-01-10T00:00:00Z",
       payload: {
-        kind: 'create',
-        input: createWorkLogInput({ workDescription: 'Original' }),
+        kind: "create",
+        input: createWorkLogInput({ workDescription: "Original" }),
       },
-      syncStatus: 'pending',
+      syncStatus: "pending",
       photos: [],
       retryCount: 0,
       nextRetryAt: null,
     };
 
-    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([existingLog]);
+    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([
+      existingLog,
+    ]);
 
     const { result } = renderHook(() => useOfflineWorkLogs());
 
@@ -119,47 +122,49 @@ describe('useOfflineWorkLogs', () => {
     });
 
     await act(async () => {
-      await result.current.mutateOfflineWorkLog('log-1', (current) => {
-        if (current.payload.kind === 'create') {
+      await result.current.mutateOfflineWorkLog("log-1", (current) => {
+        if (current.payload.kind === "create") {
           return {
             ...current,
             payload: {
               ...current.payload,
               input: {
                 ...current.payload.input,
-                workDescription: 'Updated',
+                workDescription: "Updated",
               },
             },
-          }
+          };
         }
-        return current
+        return current;
       });
     });
 
     expect(
-      result.current.offlineWorkLogs[0]?.payload.kind === 'create'
+      result.current.offlineWorkLogs[0]?.payload.kind === "create"
         ? result.current.offlineWorkLogs[0].payload.input.workDescription
         : undefined,
-    ).toBe('Updated');
+    ).toBe("Updated");
     expect(offlineStorage.saveOfflineWorkLogs).toHaveBeenCalled();
   });
 
-  it('removes an offline work log', async () => {
+  it("removes an offline work log", async () => {
     const existingLog: OfflineWorkLog = {
-      id: 'log-1',
-      createdAt: '2025-01-10T00:00:00Z',
-      updatedAt: '2025-01-10T00:00:00Z',
+      id: "log-1",
+      createdAt: "2025-01-10T00:00:00Z",
+      updatedAt: "2025-01-10T00:00:00Z",
       payload: {
-        kind: 'create',
-        input: createWorkLogInput({ workDescription: 'To be removed' }),
+        kind: "create",
+        input: createWorkLogInput({ workDescription: "To be removed" }),
       },
-      syncStatus: 'pending',
+      syncStatus: "pending",
       photos: [],
       retryCount: 0,
       nextRetryAt: null,
     };
 
-    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([existingLog]);
+    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([
+      existingLog,
+    ]);
 
     const { result } = renderHook(() => useOfflineWorkLogs());
 
@@ -168,29 +173,31 @@ describe('useOfflineWorkLogs', () => {
     });
 
     await act(async () => {
-      await result.current.removeOfflineWorkLog('log-1');
+      await result.current.removeOfflineWorkLog("log-1");
     });
 
     expect(result.current.offlineWorkLogs.length).toBe(0);
     expect(offlineStorage.saveOfflineWorkLogs).toHaveBeenCalled();
   });
 
-  it('marks work log for sync', async () => {
+  it("marks work log for sync", async () => {
     const existingLog: OfflineWorkLog = {
-      id: 'log-1',
-      createdAt: '2025-01-10T00:00:00Z',
-      updatedAt: '2025-01-10T00:00:00Z',
+      id: "log-1",
+      createdAt: "2025-01-10T00:00:00Z",
+      updatedAt: "2025-01-10T00:00:00Z",
       payload: {
-        kind: 'create',
-        input: createWorkLogInput({ workDescription: 'Test' }),
+        kind: "create",
+        input: createWorkLogInput({ workDescription: "Test" }),
       },
-      syncStatus: 'pending',
+      syncStatus: "pending",
       photos: [],
       retryCount: 0,
       nextRetryAt: null,
     };
 
-    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([existingLog]);
+    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([
+      existingLog,
+    ]);
 
     const { result } = renderHook(() => useOfflineWorkLogs());
 
@@ -199,14 +206,14 @@ describe('useOfflineWorkLogs', () => {
     });
 
     await act(async () => {
-      await result.current.markWorkLogForSync('log-1', 'queued');
+      await result.current.markWorkLogForSync("log-1", "queued");
     });
 
-    expect(result.current.offlineWorkLogs[0]?.syncStatus).toBe('queued');
+    expect(result.current.offlineWorkLogs[0]?.syncStatus).toBe("queued");
     expect(offlineStorage.saveOfflineWorkLogs).toHaveBeenCalled();
   });
 
-  it('refreshes offline work logs', async () => {
+  it("refreshes offline work logs", async () => {
     const { result } = renderHook(() => useOfflineWorkLogs());
 
     await waitFor(() => {
@@ -215,14 +222,14 @@ describe('useOfflineWorkLogs', () => {
 
     vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValueOnce([
       {
-        id: 'log-1',
-        createdAt: '2025-01-10T00:00:00Z',
-        updatedAt: '2025-01-10T00:00:00Z',
+        id: "log-1",
+        createdAt: "2025-01-10T00:00:00Z",
+        updatedAt: "2025-01-10T00:00:00Z",
         payload: {
-          kind: 'create',
-          input: createWorkLogInput({ workDescription: 'Refreshed' }),
+          kind: "create",
+          input: createWorkLogInput({ workDescription: "Refreshed" }),
         },
-        syncStatus: 'pending',
+        syncStatus: "pending",
         photos: [],
         retryCount: 0,
         nextRetryAt: null,
@@ -237,22 +244,24 @@ describe('useOfflineWorkLogs', () => {
     expect(offlineStorage.loadOfflineWorkLogs).toHaveBeenCalledTimes(2);
   });
 
-  it('resets offline work logs', async () => {
+  it("resets offline work logs", async () => {
     const existingLog: OfflineWorkLog = {
-      id: 'log-1',
-      createdAt: '2025-01-10T00:00:00Z',
-      updatedAt: '2025-01-10T00:00:00Z',
+      id: "log-1",
+      createdAt: "2025-01-10T00:00:00Z",
+      updatedAt: "2025-01-10T00:00:00Z",
       payload: {
-        kind: 'create',
-        input: createWorkLogInput({ workDescription: 'Test' }),
+        kind: "create",
+        input: createWorkLogInput({ workDescription: "Test" }),
       },
-      syncStatus: 'pending',
+      syncStatus: "pending",
       photos: [],
       retryCount: 0,
       nextRetryAt: null,
     };
 
-    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([existingLog]);
+    vi.mocked(offlineStorage.loadOfflineWorkLogs).mockResolvedValue([
+      existingLog,
+    ]);
     vi.mocked(offlineStorage.clearOfflineWorkLogs).mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useOfflineWorkLogs());
@@ -269,4 +278,3 @@ describe('useOfflineWorkLogs', () => {
     expect(offlineStorage.clearOfflineWorkLogs).toHaveBeenCalled();
   });
 });
-

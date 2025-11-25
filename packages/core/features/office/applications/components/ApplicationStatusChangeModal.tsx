@@ -551,9 +551,9 @@ function HireSummaryCard({
             Checking latest payment status…
           </Text>
         )}
-        {!isStatusLoading && successFeeStatus?.status && (
+        {!isStatusLoading && successFeeStatus && typeof (successFeeStatus as unknown as Record<string, unknown>)?.status === 'string' && (
           <Text fontSize="$2" color="$color11">
-            Current status: {successFeeStatus.status.replace(/_/g, ' ')}
+            Current status: {(successFeeStatus as unknown as Record<string, unknown>).status?.toString().replace(/_/g, ' ')}
           </Text>
         )}
       </YStack>

@@ -130,9 +130,9 @@ export function ProfileEducationLeft({
 
         // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
         utils.profile.education.getEducation.setData(undefined, (input.education_entries ?? []) as any)
-        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
         utils.profile.education.getEducationLevel.setData(undefined, {
           education_level: input.education_level ?? null,
+          // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
         } as any)
 
         return { previousEducation, previousLevel }
@@ -140,9 +140,11 @@ export function ProfileEducationLeft({
       onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
+        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
         utils.profile.education.getEducation.setData(undefined, context.previousEducation as any)
       }
       if (context?.previousLevel) {
+        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
         utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel as any)
       }
       failProfileSync()
@@ -164,6 +166,7 @@ export function ProfileEducationLeft({
       }
       void invalidateProfileQueries(utils)
     },
+    // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
     } as any
   )
 
@@ -556,6 +559,7 @@ export function ProfileEducationLeft({
                 key={field.id}
                 ref={(el) => {
                   if (el) {
+                    // biome-ignore lint/suspicious/noExplicitAny: Ref assignment for dynamic entry management
                     entryRefs.current[entryId] = el as any
                   }
                 }}

@@ -465,8 +465,11 @@ export function EducationEntryEditModal({
             <Controller
               name="is_current"
               control={control}
-              render={({ field: isCurrentField }) =>
-                isCurrentField.value ? (
+              render={({ field: isCurrentField }) => {
+                if (!isCurrentField.value) {
+                  return null
+                }
+                return (
                   <Controller
                     name="expected_graduation_date"
                     control={control}
@@ -482,8 +485,8 @@ export function EducationEntryEditModal({
                       />
                     )}
                   />
-                ) : null
-              }
+                )
+              }}
             />
           </YStack>
 

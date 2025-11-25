@@ -1,33 +1,33 @@
-import { act, renderHook, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useProfileWizard } from '../useProfileWizard'
-import type { ProfileWizardProgressResponse } from '../useProfileWizard'
+import { useProfileWizard } from "../useProfileWizard";
+import type { ProfileWizardProgressResponse } from "../useProfileWizard";
 
 const mockGetProgressQuery = {
   data: undefined as unknown,
   isLoading: false,
   isError: false,
   refetch: vi.fn().mockResolvedValue({}),
-}
+};
 
 const mockSaveStepMutation = {
   mutateAsync: vi.fn(),
   isPending: false,
-}
+};
 
 const mockCompleteMutation = {
   mutateAsync: vi.fn(),
   isPending: false,
-}
+};
 
 const mockUtils = {
   getProgress: {
     invalidate: vi.fn().mockResolvedValue(undefined),
   },
-}
+};
 
-vi.mock('@app/core/utils/api', () => ({
+vi.mock("@app/core/utils/api", () => ({
   api: {
     profileWizard: {
       getProgress: {
@@ -44,396 +44,421 @@ vi.mock('@app/core/utils/api', () => ({
       profileWizard: mockUtils,
     })),
   },
-}))
+}));
 
-describe('useProfileWizard', () => {
+describe("useProfileWizard", () => {
   beforeEach(() => {
-    mockGetProgressQuery.data = undefined
-    mockGetProgressQuery.isLoading = false
-    mockGetProgressQuery.isError = false
-    mockGetProgressQuery.refetch.mockClear()
-    mockSaveStepMutation.mutateAsync.mockClear()
-    mockCompleteMutation.mutateAsync.mockClear()
-    mockUtils.getProgress.invalidate.mockClear()
-  })
+    mockGetProgressQuery.data = undefined;
+    mockGetProgressQuery.isLoading = false;
+    mockGetProgressQuery.isError = false;
+    mockGetProgressQuery.refetch.mockClear();
+    mockSaveStepMutation.mutateAsync.mockClear();
+    mockCompleteMutation.mutateAsync.mockClear();
+    mockUtils.getProgress.invalidate.mockClear();
+  });
 
-  it('initializes with default progress', () => {
-    const { result } = renderHook(() => useProfileWizard())
+  it("initializes with default progress", () => {
+    const { result } = renderHook(() => useProfileWizard());
 
-    expect(result.current.state.currentStep).toBe('general')
-    expect(result.current.state.progress.completionPercentage).toBe(0)
-    expect(result.current.state.progress.completedSteps).toEqual([])
-    expect(result.current.state.stepData).toEqual({})
-    expect(result.current.isLoading).toBe(false)
-    expect(result.current.isError).toBe(false)
-  })
+    expect(result.current.state.currentStep).toBe("general");
+    expect(result.current.state.progress.completionPercentage).toBe(0);
+    expect(result.current.state.progress.completedSteps).toEqual([]);
+    expect(result.current.state.stepData).toEqual({});
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.isError).toBe(false);
+  });
 
-  it('initializes with custom initial step', () => {
-    const { result } = renderHook(() => useProfileWizard('skills'))
+  it("initializes with custom initial step", () => {
+    const { result } = renderHook(() => useProfileWizard("skills"));
 
-    expect(result.current.state.currentStep).toBe('skills')
-  })
+    expect(result.current.state.currentStep).toBe("skills");
+  });
 
-  it('loads saved progress from API', async () => {
+  it("loads saved progress from API", async () => {
     const savedProgress: ProfileWizardProgressResponse = {
-      currentStep: 'experience' as const,
-      completedSteps: ['general', 'skills'],
+      currentStep: "experience" as const,
+      completedSteps: ["general", "skills"],
       completionPercentage: 35,
-      lastSavedAt: '2025-01-01T12:00:00Z',
-      requiredSteps: ['general', 'skills', 'experience'],
+      lastSavedAt: "2025-01-01T12:00:00Z",
+      requiredSteps: ["general", "skills", "experience"],
       stepData: {
         general: {
-          firstName: 'John',
-          lastName: 'Doe',
-          headline: 'Electrician',
-          bio: 'Test bio',
+          firstName: "John",
+          lastName: "Doe",
+          headline: "Electrician",
+          bio: "Test bio",
         },
       },
-    }
+    };
 
-    mockGetProgressQuery.data = savedProgress
+    mockGetProgressQuery.data = savedProgress;
 
-    const { result } = renderHook(() => useProfileWizard())
+    const { result } = renderHook(() => useProfileWizard());
 
     await waitFor(() => {
-      expect(result.current.state.currentStep).toBe('experience')
-      expect(result.current.state.progress.completedSteps).toEqual(['general', 'skills'])
-      expect(result.current.state.progress.completionPercentage).toBe(35)
-      expect(result.current.state.stepData.general).toEqual(savedProgress.stepData.general)
-    }, { timeout: 1500 })
-  })
+      expect(result.current.state.currentStep).toBe("experience");
+      expect(result.current.state.progress.completedSteps).toEqual([
+        "general",
+        "skills",
+      ]);
+      expect(result.current.state.progress.completionPercentage).toBe(35);
+      expect(result.current.state.stepData.general).toEqual(
+        savedProgress.stepData.general,
+      );
+    }, { timeout: 1500 });
+  });
 
-  it('handles step navigation with goNext', () => {
-    const { result } = renderHook(() => useProfileWizard())
-
-    act(() => {
-      result.current.goNext()
-    })
-
-    expect(result.current.state.currentStep).toBe('skills')
-  })
-
-  it('handles step navigation with goBack', () => {
-    const { result } = renderHook(() => useProfileWizard('skills'))
+  it("handles step navigation with goNext", () => {
+    const { result } = renderHook(() => useProfileWizard());
 
     act(() => {
-      result.current.goBack()
-    })
+      result.current.goNext();
+    });
 
-    expect(result.current.state.currentStep).toBe('general')
-  })
+    expect(result.current.state.currentStep).toBe("skills");
+  });
 
-  it('does not go before first step', () => {
-    const { result } = renderHook(() => useProfileWizard('general'))
-
-    act(() => {
-      result.current.goBack()
-    })
-
-    expect(result.current.state.currentStep).toBe('general')
-  })
-
-  it('does not go after last step', () => {
-    const { result } = renderHook(() => useProfileWizard('education'))
+  it("handles step navigation with goBack", () => {
+    const { result } = renderHook(() => useProfileWizard("skills"));
 
     act(() => {
-      result.current.goNext()
-    })
+      result.current.goBack();
+    });
 
-    expect(result.current.state.currentStep).toBe('education')
-  })
+    expect(result.current.state.currentStep).toBe("general");
+  });
 
-  it('handles goToStep', () => {
-    const { result } = renderHook(() => useProfileWizard())
+  it("does not go before first step", () => {
+    const { result } = renderHook(() => useProfileWizard("general"));
 
     act(() => {
-      result.current.goToStep('certifications')
-    })
+      result.current.goBack();
+    });
 
-    expect(result.current.state.currentStep).toBe('certifications')
-  })
+    expect(result.current.state.currentStep).toBe("general");
+  });
 
-  it('saves step data correctly', async () => {
+  it("does not go after last step", () => {
+    const { result } = renderHook(() => useProfileWizard("education"));
+
+    act(() => {
+      result.current.goNext();
+    });
+
+    expect(result.current.state.currentStep).toBe("education");
+  });
+
+  it("handles goToStep", () => {
+    const { result } = renderHook(() => useProfileWizard());
+
+    act(() => {
+      result.current.goToStep("certifications");
+    });
+
+    expect(result.current.state.currentStep).toBe("certifications");
+  });
+
+  it("saves step data correctly", async () => {
     const saveResponse = {
-      currentStep: 'skills' as const,
-      completedSteps: ['general'],
+      currentStep: "skills" as const,
+      completedSteps: ["general"],
       completionPercentage: 20,
-      lastSavedAt: '2025-01-01T12:00:00Z',
-      requiredSteps: ['general', 'skills', 'experience'],
+      lastSavedAt: "2025-01-01T12:00:00Z",
+      requiredSteps: ["general", "skills", "experience"],
       stepData: {
         general: {
-          firstName: 'John',
-          lastName: 'Doe',
-          headline: 'Electrician',
-          bio: 'Test bio',
+          firstName: "John",
+          lastName: "Doe",
+          headline: "Electrician",
+          bio: "Test bio",
         },
       },
-    }
+    };
 
-    mockSaveStepMutation.mutateAsync.mockResolvedValue(saveResponse)
+    mockSaveStepMutation.mutateAsync.mockResolvedValue(saveResponse);
 
-    const { result } = renderHook(() => useProfileWizard())
+    const { result } = renderHook(() => useProfileWizard());
 
     await act(async () => {
       await result.current.saveStep({
-        step: 'general',
+        step: "general",
         data: {
-          firstName: 'John',
-          lastName: 'Doe',
-          headline: 'Electrician',
-          bio: 'Test bio',
+          firstName: "John",
+          lastName: "Doe",
+          headline: "Electrician",
+          bio: "Test bio",
         },
-      })
-    })
+      });
+    });
 
     expect(mockSaveStepMutation.mutateAsync).toHaveBeenCalledWith({
-      step: 'general',
+      step: "general",
       data: {
-        firstName: 'John',
-        lastName: 'Doe',
-        headline: 'Electrician',
-        bio: 'Test bio',
+        firstName: "John",
+        lastName: "Doe",
+        headline: "Electrician",
+        bio: "Test bio",
       },
-    })
+    });
 
     await waitFor(() => {
-      expect(result.current.state.progress.completedSteps).toEqual(['general'])
-      expect(result.current.state.progress.completionPercentage).toBe(20)
-      expect(result.current.state.stepData.general).toEqual(saveResponse.stepData.general)
-      expect(mockUtils.getProgress.invalidate).toHaveBeenCalled()
-    }, { timeout: 1500 })
-  })
+      expect(result.current.state.progress.completedSteps).toEqual(["general"]);
+      expect(result.current.state.progress.completionPercentage).toBe(20);
+      expect(result.current.state.stepData.general).toEqual(
+        saveResponse.stepData.general,
+      );
+      expect(mockUtils.getProgress.invalidate).toHaveBeenCalled();
+    }, { timeout: 1500 });
+  });
 
-  it('sets isSaving during save operation', async () => {
-    let resolveSave: (value: unknown) => void
+  it("sets isSaving during save operation", async () => {
+    let resolveSave: (value: unknown) => void;
     const savePromise = new Promise((resolve) => {
-      resolveSave = resolve
-    })
+      resolveSave = resolve;
+    });
 
-    mockSaveStepMutation.mutateAsync.mockReturnValue(savePromise)
+    mockSaveStepMutation.mutateAsync.mockReturnValue(savePromise);
 
-    const { result } = renderHook(() => useProfileWizard())
+    const { result } = renderHook(() => useProfileWizard());
 
     await act(async () => {
       result.current
         .saveStep({
-          step: 'general',
+          step: "general",
           data: {
-            firstName: 'John',
-            lastName: 'Doe',
-            headline: 'Electrician',
-            bio: 'Test bio',
+            firstName: "John",
+            lastName: "Doe",
+            headline: "Electrician",
+            bio: "Test bio",
           },
         })
-        .catch(() => {})
-    })
+        .catch(() => {});
+    });
 
-    expect(result.current.state.isSaving).toBe(true)
+    expect(result.current.state.isSaving).toBe(true);
 
     await act(async () => {
-      resolveSave!({
-        currentStep: 'general' as const,
+      if (!resolveSave) {
+        throw new Error("resolveSave should be initialized");
+      }
+      resolveSave({
+        currentStep: "general" as const,
         completedSteps: [],
         completionPercentage: 0,
         lastSavedAt: null,
-        requiredSteps: ['general', 'skills', 'experience'],
+        requiredSteps: ["general", "skills", "experience"],
         stepData: {},
-      })
-      await savePromise
-    })
+      });
+      await savePromise;
+    });
 
     await waitFor(() => {
-      expect(result.current.state.isSaving).toBe(false)
-    }, { timeout: 1500 })
-  })
+      expect(result.current.state.isSaving).toBe(false);
+    }, { timeout: 1500 });
+  });
 
-  it('handles wizard completion', async () => {
+  it("handles wizard completion", async () => {
     const completeResponse = {
-      currentStep: 'education' as const,
-      completedSteps: ['general', 'skills', 'experience', 'certifications', 'preferences', 'education'],
+      currentStep: "education" as const,
+      completedSteps: [
+        "general",
+        "skills",
+        "experience",
+        "certifications",
+        "preferences",
+        "education",
+      ],
       completionPercentage: 100,
-      lastSavedAt: '2025-01-01T12:00:00Z',
-      requiredSteps: ['general', 'skills', 'experience'],
+      lastSavedAt: "2025-01-01T12:00:00Z",
+      requiredSteps: ["general", "skills", "experience"],
       stepData: {},
-    }
+    };
 
-    mockCompleteMutation.mutateAsync.mockResolvedValue(completeResponse)
+    mockCompleteMutation.mutateAsync.mockResolvedValue(completeResponse);
 
-    const { result } = renderHook(() => useProfileWizard())
+    const { result } = renderHook(() => useProfileWizard());
 
     await act(async () => {
-      await result.current.completeWizard({ celebrate: true })
-    })
+      await result.current.completeWizard({ celebrate: true });
+    });
 
     expect(mockCompleteMutation.mutateAsync).toHaveBeenCalledWith({
       celebrate: true,
-    })
+    });
 
     await waitFor(() => {
-      expect(result.current.state.progress.completionPercentage).toBe(100)
-      expect(result.current.state.progress.completedSteps).toHaveLength(6)
-      expect(result.current.state.isCompleting).toBe(false)
-      expect(mockUtils.getProgress.invalidate).toHaveBeenCalled()
-    }, { timeout: 1500 })
-  })
+      expect(result.current.state.progress.completionPercentage).toBe(100);
+      expect(result.current.state.progress.completedSteps).toHaveLength(6);
+      expect(result.current.state.isCompleting).toBe(false);
+      expect(mockUtils.getProgress.invalidate).toHaveBeenCalled();
+    }, { timeout: 1500 });
+  });
 
-  it('sets isCompleting during completion', async () => {
-    let resolveComplete: (value: unknown) => void
+  it("sets isCompleting during completion", async () => {
+    let resolveComplete: (value: unknown) => void;
     const completePromise = new Promise((resolve) => {
-      resolveComplete = resolve
-    })
+      resolveComplete = resolve;
+    });
 
-    mockCompleteMutation.mutateAsync.mockReturnValue(completePromise)
+    mockCompleteMutation.mutateAsync.mockReturnValue(completePromise);
 
-    const { result } = renderHook(() => useProfileWizard())
-
-    await act(async () => {
-      result.current.completeWizard().catch(() => {})
-    })
-
-    expect(result.current.state.isCompleting).toBe(true)
+    const { result } = renderHook(() => useProfileWizard());
 
     await act(async () => {
-      resolveComplete!({
-        currentStep: 'education' as const,
+      result.current.completeWizard().catch(() => {});
+    });
+
+    expect(result.current.state.isCompleting).toBe(true);
+
+    await act(async () => {
+      if (!resolveComplete) {
+        throw new Error("resolveComplete should be initialized");
+      }
+      resolveComplete({
+        currentStep: "education" as const,
         completedSteps: [],
         completionPercentage: 100,
         lastSavedAt: null,
-        requiredSteps: ['general', 'skills', 'experience'],
+        requiredSteps: ["general", "skills", "experience"],
         stepData: {},
-      })
-      await completePromise
-    })
+      });
+      await completePromise;
+    });
 
     await waitFor(() => {
-      expect(result.current.state.isCompleting).toBe(false)
-    }, { timeout: 1500 })
-  })
+      expect(result.current.state.isCompleting).toBe(false);
+    }, { timeout: 1500 });
+  });
 
-  it('handles markStepSkipped', () => {
-    const { result } = renderHook(() => useProfileWizard())
+  it("handles markStepSkipped", () => {
+    const { result } = renderHook(() => useProfileWizard());
 
     // First, set up some completed steps
     act(() => {
-      result.current.state.progress.completedSteps = ['general', 'skills']
-    })
+      result.current.state.progress.completedSteps = ["general", "skills"];
+    });
 
     act(() => {
-      result.current.markStepSkipped('skills')
-    })
+      result.current.markStepSkipped("skills");
+    });
 
-    expect(result.current.state.progress.completedSteps).not.toContain('skills')
-    expect(result.current.state.progress.completedSteps).toContain('general')
-  })
+    expect(result.current.state.progress.completedSteps).not.toContain(
+      "skills",
+    );
+    expect(result.current.state.progress.completedSteps).toContain("general");
+  });
 
-  it('handles refresh', async () => {
-    const { result } = renderHook(() => useProfileWizard())
+  it("handles refresh", async () => {
+    const { result } = renderHook(() => useProfileWizard());
 
     await act(async () => {
-      await result.current.refresh()
-    })
+      await result.current.refresh();
+    });
 
-    expect(mockGetProgressQuery.refetch).toHaveBeenCalled()
-  })
+    expect(mockGetProgressQuery.refetch).toHaveBeenCalled();
+  });
 
-  it('handles loading state', () => {
-    mockGetProgressQuery.isLoading = true
+  it("handles loading state", () => {
+    mockGetProgressQuery.isLoading = true;
 
-    const { result } = renderHook(() => useProfileWizard())
+    const { result } = renderHook(() => useProfileWizard());
 
-    expect(result.current.isLoading).toBe(true)
-  })
+    expect(result.current.isLoading).toBe(true);
+  });
 
-  it('handles error state', () => {
-    mockGetProgressQuery.isError = true
+  it("handles error state", () => {
+    mockGetProgressQuery.isError = true;
 
-    const { result } = renderHook(() => useProfileWizard())
+    const { result } = renderHook(() => useProfileWizard());
 
-    expect(result.current.isError).toBe(true)
-  })
+    expect(result.current.isError).toBe(true);
+  });
 
-  it('preserves initial step when data loads if step is valid', async () => {
+  it("preserves initial step when data loads if step is valid", async () => {
     const savedProgress: unknown = {
-      currentStep: 'experience' as const,
+      currentStep: "experience" as const,
       completedSteps: [],
       completionPercentage: 0,
       lastSavedAt: null,
-      requiredSteps: ['general', 'skills', 'experience'],
+      requiredSteps: ["general", "skills", "experience"],
       stepData: {},
-    }
+    };
 
-    mockGetProgressQuery.data = savedProgress
+    mockGetProgressQuery.data = savedProgress;
 
-    const { result } = renderHook(() => useProfileWizard('skills'))
+    const { result } = renderHook(() => useProfileWizard("skills"));
 
     await waitFor(() => {
-      expect(result.current.state.currentStep).toBe('skills')
-    }, { timeout: 1500 })
-  })
+      expect(result.current.state.currentStep).toBe("skills");
+    }, { timeout: 1500 });
+  });
 
-  it('uses saved currentStep when initial step is invalid', async () => {
+  it("uses saved currentStep when initial step is invalid", async () => {
     const savedProgress: unknown = {
-      currentStep: 'experience' as const,
+      currentStep: "experience" as const,
       completedSteps: [],
       completionPercentage: 0,
       lastSavedAt: null,
-      requiredSteps: ['general', 'skills', 'experience'],
+      requiredSteps: ["general", "skills", "experience"],
       stepData: {},
-    }
+    };
 
-    mockGetProgressQuery.data = savedProgress
+    mockGetProgressQuery.data = savedProgress;
 
     // biome-ignore lint/suspicious/noExplicitAny: Testing invalid step value
-    const { result } = renderHook(() => useProfileWizard('invalid-step' as any))
+    const { result } = renderHook(() =>
+      useProfileWizard("invalid-step" as any)
+    );
 
     await waitFor(() => {
-      expect(result.current.state.currentStep).toBe('experience')
-    }, { timeout: 1500 })
-  })
+      expect(result.current.state.currentStep).toBe("experience");
+    }, { timeout: 1500 });
+  });
 
-  it('returns ordered steps', () => {
-    const { result } = renderHook(() => useProfileWizard())
+  it("returns ordered steps", () => {
+    const { result } = renderHook(() => useProfileWizard());
 
     expect(result.current.orderedSteps).toEqual([
-      'general',
-      'skills',
-      'experience',
-      'certifications',
-      'preferences',
-      'education',
-    ])
-  })
+      "general",
+      "skills",
+      "experience",
+      "certifications",
+      "preferences",
+      "education",
+    ]);
+  });
 
-  it('updates lastSavedAt when progress is saved', async () => {
+  it("updates lastSavedAt when progress is saved", async () => {
     const saveResponse = {
-      currentStep: 'general' as const,
+      currentStep: "general" as const,
       completedSteps: [],
       completionPercentage: 0,
-      lastSavedAt: '2025-01-01T12:00:00Z',
-      requiredSteps: ['general', 'skills', 'experience'],
+      lastSavedAt: "2025-01-01T12:00:00Z",
+      requiredSteps: ["general", "skills", "experience"],
       stepData: {},
-    }
+    };
 
-    mockSaveStepMutation.mutateAsync.mockResolvedValue(saveResponse)
+    mockSaveStepMutation.mutateAsync.mockResolvedValue(saveResponse);
 
-    const { result } = renderHook(() => useProfileWizard())
+    const { result } = renderHook(() => useProfileWizard());
 
     await act(async () => {
       await result.current.saveStep({
-        step: 'general',
+        step: "general",
         data: {
-          firstName: 'John',
-          lastName: 'Doe',
-          headline: 'Electrician',
-          bio: 'Test bio',
+          firstName: "John",
+          lastName: "Doe",
+          headline: "Electrician",
+          bio: "Test bio",
         },
-      })
-    })
+      });
+    });
 
     await waitFor(() => {
-      expect(result.current.state.lastSavedAt).toBeInstanceOf(Date)
-      expect(result.current.state.lastSavedAt?.toISOString()).toBe('2025-01-01T12:00:00.000Z')
-    }, { timeout: 1500 })
-  })
-})
-
+      expect(result.current.state.lastSavedAt).toBeInstanceOf(Date);
+      expect(result.current.state.lastSavedAt?.toISOString()).toBe(
+        "2025-01-01T12:00:00.000Z",
+      );
+    }, { timeout: 1500 });
+  });
+});

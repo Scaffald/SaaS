@@ -5,22 +5,28 @@ import { DiscoverEmployersRight } from './discover-employers-right'
 import { getAvailableIndustries, getSelectedIndustryCounts } from './utils/employerFilters'
 import type { Employer } from './components/EmployerCard'
 
-type RawEmployer = {
-  id: string
-  name: string
-  slug: string
-  description: unknown
-  website: string | null
-  website_url?: string | null
-  visibility: string
-  address: unknown
-  industry_id: string | null
-  industries?: { id: string; name: string } | { id: string; name: string }[] | null
-  employee_count_range?: string | null
-  annual_revenue_range?: string | null
-  owner_user_id: string | null
-  created_at: string
-  updated_at: string
+/**
+ * Transform API EmployerRecord to component Employer type
+ * Maps website → website_url and preserves other fields
+ */
+function transformEmployerRecord(record: unknown): Employer | unknown {
+  if (!record || typeof record !== 'object') {
+    return record
+  }
+
+  const data = record as Record<string, unknown>
+  return {
+    id: data.id ?? '',
+    name: data.name ?? '',
+    slug: data.slug ?? '',
+    description: data.description ?? null,
+    website_url: (data.website_url as string | null) ?? (data.website as string | null) ?? null,
+    employee_count_range: (data.employee_count_range as string | null) ?? null,
+    annual_revenue_range: (data.annual_revenue_range as string | null) ?? null,
+    address: data.address ?? null,
+    industries: data.industries ?? null,
+    created_at: (data.created_at as string) ?? new Date().toISOString(),
+  } as Employer
 }
 
 /**
@@ -34,19 +40,9 @@ export function DiscoverEmployersScreen() {
   // Fetch all employers (no filters) to build industry name-to-ID mapping
   // React Query will cache this, so it won't cause duplicate requests
   const { data: allData, isLoading: isLoadingAll } = api.employers.getEmployers.useQuery()
-  // biome-ignore lint/suspicious/noExplicitAny: Complex API response mapping
-  const allEmployers: Employer[] = ((allData?.employers ?? []) as any[]).map((emp: any) => ({
-    id: emp.id,
-    name: emp.name,
-    slug: emp.slug,
-    description: emp.description ?? null,
-    website_url: emp.website_url || emp.website || null,
-    employee_count_range: emp.employee_count_range || null,
-    annual_revenue_range: emp.annual_revenue_range || null,
-    address: emp.address ?? null,
-    industries: emp.industries ?? null,
-    created_at: emp.created_at,
-  }))
+  const allEmployers: Employer[] = (allData?.employers ?? []).map((emp: unknown) =>
+    transformEmployerRecord(emp) as Employer
+  )
 
   // Create industry name to ID mapping from all employers
   const industryNameToIdMap = useMemo(() => {
@@ -95,12 +91,7 @@ export function DiscoverEmployersScreen() {
 
   // Use filtered results when filters are applied, otherwise use all employers
   const employers: Employer[] = hasFilters
-    ? ((data?.employers ?? []).map((emp: RawEmployer) => ({
-        ...emp,
-        website_url: emp.website_url || emp.website || null,
-        employee_count_range: emp.employee_count_range || null,
-        annual_revenue_range: emp.annual_revenue_range || null,
-      })) as Employer[])
+    ? (data?.employers ?? []).map((emp: unknown) => transformEmployerRecord(emp) as Employer)
     : allEmployers
   const isLoading = hasFilters ? isLoadingFiltered : isLoadingAll
 

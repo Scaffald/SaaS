@@ -170,9 +170,10 @@ export function OfficeTeamsList() {
             p="$3"
             rounded="$4"
             shadowColor="$color10"
-            alignSelf="flex-end"
             mr="$4"
             mb="$4"
+            // biome-ignore lint/suspicious/noExplicitAny: Tamagui alignSelf prop compatibility
+            {...({ alignSelf: 'flex-end' } as any)}
           >
             <XStack gap="$3" items="center">
               <Spinner size="small" />

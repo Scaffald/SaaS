@@ -177,9 +177,9 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         <Button
                           theme="error"
                           onPress={() => handleDelete(edu.id)}
-                          disabled={deleteEducationMutation.isLoading}
+                          disabled={deleteEducationMutation.isPending}
                         >
-                          {deleteEducationMutation.isLoading ? 'Deleting...' : 'Delete'}
+                          {deleteEducationMutation.isPending ? 'Deleting...' : 'Delete'}
                         </Button>
                       </XStack>
                     </Dialog.Content>

@@ -454,7 +454,7 @@ export function ProfileCertificationsRight() {
                                 <Button
                                   icon={<Upload size={16} />}
                                   onPress={() => handleSaveFile(cert.id)}
-                                  disabled={updateProof.isLoading}
+                                  disabled={updateProof.isPending}
                                 >
                                   Upload
                                 </Button>
@@ -485,7 +485,7 @@ export function ProfileCertificationsRight() {
                                 variant="primary"
                                 icon={<ExternalLink size={16} />}
                                 onPress={() => handleSaveUrl(cert.id)}
-                                disabled={!urlInputs[cert.id] || updateProof.isLoading}
+                                disabled={!urlInputs[cert.id] || updateProof.isPending}
                               >
                                 Save
                               </Button>

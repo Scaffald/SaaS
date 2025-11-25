@@ -84,7 +84,6 @@ export function ProfileExperienceLeft() {
 
   // Mutations
   const saveExperienceMutation = api.profile.experience.saveExperience.useMutation({
-    // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
     async onMutate(input: SaveExperienceInput): Promise<SaveExperienceContext> {
       resetProfileSyncError()
       startProfileSync()

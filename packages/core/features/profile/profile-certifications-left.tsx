@@ -557,7 +557,7 @@ export function ProfileCertificationsLeft({
                     title: item.catalog.title,
                   }}
                   onRemove={handleRemoveTopLevel}
-                  disabled={removeTopLevel.isLoading}
+                  disabled={removeTopLevel.isPending}
                 />
               ))}
             </XStack>
