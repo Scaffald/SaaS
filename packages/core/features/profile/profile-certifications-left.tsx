@@ -406,7 +406,7 @@ export function ProfileCertificationsLeft({
 
     if (!isExpanded) {
       // Check if already saved
-      const depth1Items = certTree?.depth1ByParent[parentId] || []
+      const depth1Items = (certTree?.depth1ByParent[parentId] || []) as unknown as UserCertification[]
       const alreadySaved = depth1Items.some(
         (item: UserCertification) => item.certification_id === categoryId
       )
@@ -549,7 +549,7 @@ export function ProfileCertificationsLeft({
               Selected Categories
             </Text>
             <XStack gap="$2" flexWrap="wrap">
-              {certTree.depth0.map((item: UserCertification) => (
+              {(certTree.depth0 as unknown as UserCertification[]).map((item: UserCertification) => (
                 <CertificationChip
                   key={item.id}
                   certification={{
@@ -762,7 +762,7 @@ export function ProfileCertificationsLeft({
         {/* Depth 1 categories and depth 2 certifications */}
         <YStack gap="$3">
           {certTree?.depth0 && certTree.depth0.length > 0 ? (
-            certTree.depth0.map((topLevel: UserCertification) => {
+            (certTree.depth0 as unknown as UserCertification[]).map((topLevel: UserCertification) => {
               return (
                 <YStack key={topLevel.id} gap="$2">
                   <Text fontWeight="600" fontSize="$5" color="$blue11">
@@ -818,7 +818,7 @@ function Depth1Categories({
     certTitle: string
   ) => void
   onSelectForProof?: (certId: string, certTitle: string) => void
-  toggleCertMutation: { isLoading: boolean }
+  toggleCertMutation: { isPending: boolean }
   recentlyChangedCerts: Record<string, 'added' | 'removed'>
 }) {
   const { data: childrenData } = api.profile.certifications.getCertificationChildren.useQuery(
