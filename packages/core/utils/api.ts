@@ -13,6 +13,7 @@ import type { AppRouter } from "@app/supabase/client-types";
 import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { observable } from "@trpc/server/observable";
+import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { clearAllAuthStorage } from "./auth/clearAuthStorage";
 import { supabase } from "./supabase/client";
@@ -58,6 +59,27 @@ const sessionValidationLink: TRPCLink<AppRouter> = () => {
   };
 };
 
+const supabaseExtra = (Constants?.expoConfig?.extra as {
+  supabase?: { url?: string; anonKey?: string };
+})?.supabase;
+
+const resolvedSupabaseUrl =
+  process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url;
+const resolvedSupabaseAnonKey =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey;
+
+if (!resolvedSupabaseUrl) {
+  throw new Error(
+    "EXPO_PUBLIC_SUPABASE_URL is not configured. Update app.config.ts extra.supabase.url or the build env."
+  );
+}
+
+if (!resolvedSupabaseAnonKey) {
+  throw new Error(
+    "EXPO_PUBLIC_SUPABASE_ANON_KEY is not configured. Update app.config.ts extra.supabase.anonKey or the build env."
+  );
+}
+
 export const createTrpcClient = () =>
   api.createClient({
     links: [
@@ -65,7 +87,7 @@ export const createTrpcClient = () =>
       // This prevents stale sessions after DB resets from causing issues
       sessionValidationLink,
       httpBatchLink({
-        url: `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/trpc`,
+        url: `${resolvedSupabaseUrl}/functions/v1/trpc`,
         async headers() {
           const headers = new Map<string, string>();
 
@@ -76,7 +98,7 @@ export const createTrpcClient = () =>
           );
 
           // Always include apikey header for Supabase Edge Functions
-          const anonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+          const anonKey = resolvedSupabaseAnonKey;
           if (anonKey) {
             headers.set("apikey", anonKey);
           }

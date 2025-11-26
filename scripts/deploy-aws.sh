@@ -69,6 +69,93 @@ DISTRIBUTION_ID="${AWS_CLOUDFRONT_DISTRIBUTION_ID}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BUILD_DIR="$PROJECT_ROOT/apps/expo/dist"
+VERSION_BUMPED=false
+
+bump_version_if_needed() {
+    if [ "$VERSION_BUMPED" = true ]; then
+        return
+    fi
+
+    echo -e "${YELLOW}Auto-incrementing application version...${NC}"
+    local log_file="/tmp/version-bump.log"
+    if pnpm version:auto >"$log_file" 2>&1; then
+        VERSION_BUMPED=true
+        echo -e "${GREEN}✅ $(tail -n 1 "$log_file")${NC}"
+        rm -f "$log_file"
+    else
+        echo -e "${YELLOW}⚠️  Failed to auto-increment version (see $log_file)${NC}"
+    fi
+}
+
+build_web_app() {
+    local target_env="$1"
+    local env_file="$PROJECT_ROOT/.env"
+
+    case "$target_env" in
+        production)
+            env_file="$PROJECT_ROOT/.env.production"
+            ;;
+        preview)
+            env_file="$PROJECT_ROOT/.env.preview"
+            ;;
+        dev|development)
+            env_file="$PROJECT_ROOT/.env"
+            ;;
+    esac
+
+    echo -e "${BLUE}Building web application (${target_env})...${NC}"
+    cd "$PROJECT_ROOT"
+
+    bump_version_if_needed
+
+    export EXPO_USE_FAST_REFRESH=false
+    export TAMAGUI_DISABLE_WARN_DYNAMIC_LOAD=1
+    export NODE_ENV=production
+    export APP_ENV="$target_env"
+
+    if [ -f "$env_file" ]; then
+        set -a
+        # shellcheck disable=SC1090
+        source "$env_file"
+        set +a
+        echo -e "${BLUE}Loaded environment from $env_file${NC}"
+        echo "  EXPO_PUBLIC_SUPABASE_URL=${EXPO_PUBLIC_SUPABASE_URL:-<unset>}"
+        echo "  APP_ENV=$APP_ENV"
+    else
+        echo -e "${YELLOW}⚠️  Environment file not found at $env_file${NC}"
+    fi
+
+    pnpm --filter expo-app web:build
+
+    echo "/* /index.html 200" > "$BUILD_DIR/_redirects"
+    cat > "$BUILD_DIR/_headers" <<'EOF'
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+EOF
+
+    echo -e "${GREEN}✅ Build complete${NC}"
+    echo ""
+}
+
+FORCE_REBUILD=false
+if [ "$ENV" == "preview" ] || [ "$ENV" == "production" ]; then
+    FORCE_REBUILD=true
+fi
 
 echo -e "${BLUE}═══════════════════════════════════════${NC}"
 echo -e "${BLUE}🚀 AWS Deployment - $ENV_LABEL${NC}"
@@ -90,6 +177,15 @@ if ! aws sts get-caller-identity --profile "$AWS_PROFILE" &>/dev/null; then
 fi
 echo -e "${GREEN}✅ AWS credentials verified${NC}"
 echo ""
+
+# Force clean build for preview/production deployments
+if [ "$FORCE_REBUILD" = true ]; then
+    echo -e "${YELLOW}Forcing fresh $ENV build...${NC}"
+    rm -rf "$PROJECT_ROOT/.expo" \
+        "$PROJECT_ROOT/apps/expo/.expo" \
+        "$BUILD_DIR"
+    build_web_app "$ENV"
+fi
 
 # If distribution ID not set, try to find it
 if [ -z "$DISTRIBUTION_ID" ]; then
@@ -178,36 +274,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     
     # Build web app
     echo -e "${BLUE}Building web application...${NC}"
-    cd "$PROJECT_ROOT/apps/expo"
-    pnpm web:build
-    
-    # Create redirects file for SPA routing
-    echo "/* /index.html 200" > "$BUILD_DIR/_redirects"
-    
-    # Create headers file (for reference, CloudFront will handle headers)
-    cat > "$BUILD_DIR/_headers" << 'EOF'
-/*
-  X-Frame-Options: DENY
-  X-Content-Type-Options: nosniff
-  X-XSS-Protection: 1; mode=block
-  Referrer-Policy: strict-origin-when-cross-origin
-
-/*.js
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.css
-  Cache-Control: public, max-age=31536000, immutable
-
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.html
-  Cache-Control: public, max-age=0, must-revalidate
-EOF
-    
-    cd "$PROJECT_ROOT"
-    echo -e "${GREEN}✅ Build complete${NC}"
-    echo ""
+    build_web_app "$ENV"
 fi
 
 # Verify build output

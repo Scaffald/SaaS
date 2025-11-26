@@ -1,3 +1,16 @@
+const path = require('path')
+
+const APP_ENV = process.env.APP_ENV || process.env.NODE_ENV || 'development'
+const ENV_FILE_MAP = {
+  production: '.env.production',
+  preview: '.env.preview',
+  staging: '.env.staging',
+}
+const envFile = ENV_FILE_MAP[APP_ENV] || '.env'
+const envPath = path.resolve(__dirname, '..', '..', envFile)
+// eslint-disable-next-line no-console
+console.log(`[babel] APP_ENV=${APP_ENV} envPath=${envPath}`)
+
 module.exports = (api) => {
   api.cache(true)
 
@@ -9,7 +22,7 @@ module.exports = (api) => {
         {
           envName: 'APP_ENV',
           moduleName: '@env',
-          path: '../../.env',
+          path: envPath,
           // SECURITY: Block all non-EXPO_PUBLIC variables to prevent secrets from being bundled
           // Note: react-native-dotenv doesn't support regex in allowlist, so we use blocklist
           // Only APP_ENV and EXPO_PUBLIC_* variables will be accessible

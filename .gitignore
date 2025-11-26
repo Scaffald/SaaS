@@ -14,6 +14,7 @@ deno.lock
 # debug
 npm-debug.log*
 .pnpm-debug.log*
+.pnpm-store/
 
 # local env files
 .env
@@ -63,7 +64,7 @@ packages/supabase/seed-data/onet/cache/*
 !/plans/prds/
 
 # Local context cache for UI audit (never commit)
-CONTEXT_CACHE/test-results/
+CONTEXT_CACHE/
 
 # playwright
 .playwright/
@@ -72,6 +73,7 @@ playwright-report/
 
 #test results
 test-results/
+test-results.log
 coverage/
 .vitest/
 

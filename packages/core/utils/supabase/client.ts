@@ -1,6 +1,7 @@
 // @ts-nocheck
 import type { Database } from '@app/supabase/types'
 import { createClient } from '@supabase/supabase-js'
+import Constants from 'expo-constants'
 import { Platform } from 'react-native'
 
 // Platform-specific imports
@@ -17,20 +18,28 @@ if (Platform.OS === 'web') {
 }
 
 // Environment variables validation
-if (!process.env.EXPO_PUBLIC_SUPABASE_URL) {
+const supabaseExtra = (Constants?.expoConfig?.extra as {
+  supabase?: { url?: string; anonKey?: string }
+})?.supabase
+
+const resolvedSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? supabaseExtra?.url
+const resolvedSupabaseAnonKey =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? supabaseExtra?.anonKey
+
+if (!resolvedSupabaseUrl) {
   throw new Error(
     `EXPO_PUBLIC_SUPABASE_URL is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_URL and restart the server.`
   )
 }
 
-if (!process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY) {
+if (!resolvedSupabaseAnonKey) {
   throw new Error(
     `EXPO_PUBLIC_SUPABASE_ANON_KEY is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_ANON_KEY and restart the server.`
   )
 }
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+const supabaseUrl = resolvedSupabaseUrl
+const supabaseAnonKey = resolvedSupabaseAnonKey
 
 // Debug logging
 console.log(`[${Platform.OS}] Supabase URL:`, supabaseUrl)
