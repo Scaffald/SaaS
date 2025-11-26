@@ -355,7 +355,6 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                 <SoftSkillsCategoryTabs
                   activeCategory={activeCategory}
                   onCategoryChange={setActiveCategory}
-                  skills={softSkills}
                 />
 
                 <Separator />
@@ -385,7 +384,6 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                 <SoftSkillsRadarGrid
                   skills={softSkills}
                   activeCategory={activeCategory}
-                  onCategoryChange={setActiveCategory}
                   isLoading={false}
                 />
 

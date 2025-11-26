@@ -232,7 +232,7 @@ type TranslateFn = typeof i18n.t;
 const originalTranslate: TranslateFn = i18n.t.bind(i18n);
 
 const translateWithGuards: TranslateFn = (scope, options) => {
-  const key = formatScope(scope);
+  const key = formatScope(scope as string | string[]);
   const locale = getCurrentLocale();
   const context = extractDebugContext(
     options as Record<string, unknown> | undefined,
@@ -265,7 +265,7 @@ guardedI18n.t = translateWithGuards;
 
 if (isDevEnvironment) {
   i18n.missingTranslation.register("dev-console", (_i18n, scope) => {
-    const key = formatScope(scope);
+    const key = formatScope(scope as string | string[]);
     warnMissingTranslation(key, String(i18n.locale));
     return translationFallback(key);
   });

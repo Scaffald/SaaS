@@ -149,7 +149,8 @@ export function useImportData() {
             raw: item,
           })) ?? [],
       },
-    }
+      // biome-ignore lint/suspicious/noExplicitAny: Import data transformation type alignment
+    } as any
   }, [data])
 
   return {

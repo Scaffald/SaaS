@@ -183,9 +183,9 @@ export function SoftSkillsRequirementsSection({
           <YStack gap="$1">
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
               type SoftSkill = { id?: string; name?: string; category?: string; [key: string]: unknown }
-              const skill = Object.values(softSkillsData)
+              const skill = (Object.values(softSkillsData) as Array<SoftSkill[]>)
                 .flat()
-                .find((s: SoftSkill) => s.id === skillId)
+                .find((s) => (s as SoftSkill).id === skillId)
               if (!skill) return null
 
               const importanceLabel = IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]

@@ -5025,7 +5025,7 @@ export const workLogsRouter = t.router({
             log.time_entries as Array<{ start: string; end: string }>,
           ),
         }))
-        .filter(({ conflicts }) => conflicts.length > 0);
+        .filter(({ conflicts }: { conflicts: unknown[] }) => (conflicts as unknown[]).length > 0);
 
       return {
         hasConflicts: conflicts.length > 0,

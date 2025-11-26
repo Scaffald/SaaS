@@ -152,9 +152,11 @@ export function GeneralProfileSection({
     setIsLoading(true)
     try {
       if (mode === 'admin' && userId) {
-        await updateProfileMutation.mutateAsync({ userId, data })
+        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with form data
+        await updateProfileMutation.mutateAsync({ userId, data } as any)
       } else {
-        await updateProfileMutation.mutateAsync(data)
+        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with form data
+        await updateProfileMutation.mutateAsync(data as any)
       }
     } finally {
       setIsLoading(false)

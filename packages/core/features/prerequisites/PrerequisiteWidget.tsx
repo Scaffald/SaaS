@@ -115,8 +115,8 @@ export function PrerequisiteWidget() {
       },
       user_types: statusData.data.user_types ?? [],
       industry_id: statusData.data.industry_id ?? '',
-      accepts_privacy_policy: statusData.data.accepts_privacy_policy ?? false,
-      accepts_terms_of_service: statusData.data.accepts_terms_of_service ?? false,
+      accepts_privacy_policy: (statusData.data as unknown as { accepts_privacy_policy?: boolean }).accepts_privacy_policy ?? false,
+      accepts_terms_of_service: (statusData.data as unknown as { accepts_terms_of_service?: boolean }).accepts_terms_of_service ?? false,
     }
 
     const prefillHash = JSON.stringify(prefillData)

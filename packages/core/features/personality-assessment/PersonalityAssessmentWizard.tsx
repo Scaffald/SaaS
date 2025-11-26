@@ -211,7 +211,7 @@ export function PersonalityAssessmentWizard() {
             <ResultsStep
               assessment={assessment}
               onGenerateReport={(luscherResults) => {
-                generateReport.mutate(luscherResults, {
+                generateReport.mutate({ luscherResults }, {
                   onSuccess: () => {
                     setCurrentStep('completed')
                   },

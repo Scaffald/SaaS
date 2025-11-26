@@ -1,3 +1,4 @@
+// This file uses Deno ESM imports from esm.sh that are not compatible with TypeScript checking
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'

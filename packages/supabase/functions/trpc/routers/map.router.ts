@@ -118,7 +118,7 @@ export const mapRouter = t.router({
           .lte('longitude', bounds.east)
           .gte('latitude', bounds.south)
           .lte('latitude', bounds.north)
-          .then(({ count, error }) => {
+          .then(({ count, error }: { count: number | null; error: unknown }) => {
             if (error) {
               console.error('Error counting workers:', error)
               return 0
@@ -132,7 +132,7 @@ export const mapRouter = t.router({
           .from('jobs')
           .select('*', { count: 'exact', head: true })
           .eq('status', 'open')
-          .then(({ count, error }) => {
+          .then(({ count, error }: { count: number | null; error: unknown }) => {
             if (error) {
               console.error('Error counting jobs:', error)
               return 0
@@ -146,7 +146,7 @@ export const mapRouter = t.router({
         ctx.supabase
           .schema('core')
           .rpc('get_organizations_with_coords')
-          .then(({ data, error }) => {
+          .then(({ data, error }: { data: unknown; error: unknown }) => {
             if (error) {
               console.error('Error counting employers:', error)
               return 0

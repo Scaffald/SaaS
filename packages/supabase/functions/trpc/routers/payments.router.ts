@@ -1,3 +1,4 @@
+// This file uses Deno ESM imports from esm.sh that are not compatible with TypeScript checking
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
@@ -731,8 +732,8 @@ export const paymentsRouter = t.router({
         }))
         .sort(
           (a: { failedAt?: string | null; createdAt: string }, b: { failedAt?: string | null; createdAt: string }) =>
-            new Date(b.failed_at ?? b.created_at).getTime() -
-            new Date(a.failed_at ?? a.created_at).getTime()
+            new Date(b.failedAt ?? b.createdAt).getTime() -
+            new Date(a.failedAt ?? a.createdAt).getTime()
         )
 
       return {

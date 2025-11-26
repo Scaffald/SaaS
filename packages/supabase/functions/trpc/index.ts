@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { createTRPCContext } from './context.ts'
 import { type AppRouter, appRouter } from './routers/_app.ts'

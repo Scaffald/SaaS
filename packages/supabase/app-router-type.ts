@@ -38,7 +38,6 @@
 
 // Import the actual AppRouter type from the router implementation
 // Using type-only import to avoid Deno runtime code
-// @ts-expect-error - Deno function files are excluded from expo tsconfig but needed for types
 import type { AppRouter as _AppRouter } from "./functions/trpc/routers/_app.ts";
 
 // Re-export for client use

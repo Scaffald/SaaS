@@ -462,32 +462,23 @@ export function EducationEntryEditModal({
             />
 
             {/* Expected Graduation Date */}
-            <Controller
-              name="is_current"
-              control={control}
-              render={({ field: isCurrentField }) => {
-                if (!isCurrentField.value) {
-                  return null
-                }
-                return (
-                  <Controller
-                    name="expected_graduation_date"
-                    control={control}
-                    render={({ field: expectedField }) => (
-                      <MonthYearPicker
-                        value={expectedField.value ? new Date(expectedField.value) : null}
-                        onChange={(date) => {
-                          const dateStr = date ? date.toISOString().split('T')[0] : null
-                          expectedField.onChange(dateStr || undefined)
-                        }}
-                        label="Expected Graduation Date"
-                        error={errors.expected_graduation_date?.message}
-                      />
-                    )}
+            {watch('is_current') && (
+              <Controller
+                name="expected_graduation_date"
+                control={control}
+                render={({ field }) => (
+                  <MonthYearPicker
+                    value={field.value ? new Date(field.value) : null}
+                    onChange={(date) => {
+                      const dateStr = date ? date.toISOString().split('T')[0] : null
+                      field.onChange(dateStr || undefined)
+                    }}
+                    label="Expected Graduation Date"
+                    error={errors.expected_graduation_date?.message}
                   />
-                )
-              }}
-            />
+                )}
+              />
+            )}
           </YStack>
 
           {/* Description */}

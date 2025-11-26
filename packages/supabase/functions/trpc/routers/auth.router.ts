@@ -1,3 +1,4 @@
+// This file uses Deno ESM imports from esm.sh that are not compatible with TypeScript checking
 import { TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'

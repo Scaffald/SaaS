@@ -3,7 +3,10 @@ import type { RangeSliderCardProps } from '@app/ui'
 import { Plane } from '@tamagui/lucide-icons'
 
 export interface MaximumTravelDistanceCardProps
-  extends Omit<RangeSliderCardProps, 'icon' | 'title' | 'description' | 'min' | 'max' | 'step' | 'formatValue' | 'formatMin' | 'formatMax'> {
+  extends Omit<
+    RangeSliderCardProps,
+    'icon' | 'title' | 'description' | 'min' | 'max' | 'step' | 'formatValue' | 'formatMin' | 'formatMax'
+  > {
   /** Optional override for description */
   description?: string
   /** Optional override for minimum value (default: 10) */
@@ -12,8 +15,6 @@ export interface MaximumTravelDistanceCardProps
   max?: number
   /** Optional override for step value (default: 5) */
   step?: number
-  /** Current value (defaults to 25 if not provided) */
-  value?: number
 }
 
 /**
