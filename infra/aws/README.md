@@ -15,7 +15,7 @@ The static web application is hosted on AWS using S3 for storage and CloudFront 
 |------------|--------|--------|--------|-----------|
 | **Development** | `main` | `scaffald-app-dev` | `dev.scaffald.com` | Yes (pending cert validation) |
 | **Preview** | `preview` | `scaffald-app-preview` | `preview.scaffald.com` | Yes (pending cert validation) |
-| **Production** | `staging` | `scaffald-app-prod` | `app.scaffald.com` | Yes (pending cert validation) |
+| **Production** | `prod` | `scaffald-app-prod` | `app.scaffald.com` | Yes (pending cert validation) |
 
 ### Infrastructure Components
 
@@ -105,7 +105,7 @@ GitHub Actions automatically deploys to the correct environment based on branch:
 
 - **`main` branch** → Development environment
 - **`preview` branch** → Preview environment  
-- **`staging` branch** → Production environment
+- **`prod` branch** → Production environment
 
 Required GitHub Secrets:
 - `AWS_ACCESS_KEY_ID`

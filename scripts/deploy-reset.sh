@@ -182,7 +182,7 @@ echo "════════════════════════�
 if command -v gh &> /dev/null; then
     echo "Triggering GitHub Actions workflow..."
     
-    if gh workflow run deploy-web.yml --ref production; then
+    if gh workflow run deploy-web.yml --ref prod; then
         echo -e "${GREEN}✅ GitHub Actions workflow triggered${NC}"
         echo ""
         echo "Monitor deployment:"
@@ -192,7 +192,7 @@ if command -v gh &> /dev/null; then
         echo -e "${YELLOW}⚠️  Failed to trigger GitHub Actions${NC}"
         echo ""
         echo "Manual deployment options:"
-        echo "  1. Push to production branch: git push origin production"
+        echo "  1. Push to production branch: git push origin prod"
         echo "  2. Trigger manually in GitHub Actions UI"
     fi
 else
@@ -200,7 +200,7 @@ else
     echo ""
     echo "Install gh CLI: brew install gh"
     echo ""
-    echo "Alternative: Push to production branch to trigger deployment"
+    echo "Alternative: Push to prod branch to trigger deployment"
 fi
 
 # Deployment Summary

@@ -3,12 +3,13 @@ name: Deploy Web App
 on:
   push:
     branches:
-      - main # Production deployments
-      - staging # Staging deployments
+      - prod # Production deployments
+      - main # Development deployments
       - preview # Preview deployments
   pull_request:
     branches:
       - main
+      - prod
       - preview
   workflow_dispatch: # Manual trigger
 
@@ -79,7 +80,7 @@ jobs:
         working-directory: apps/expo
         env:
           NODE_ENV: production
-          APP_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'staging' }}
+          APP_ENV: ${{ github.ref == 'refs/heads/prod' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'staging' }}
           # Supabase
           EXPO_PUBLIC_SUPABASE_URL: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_URL || secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ github.ref == 'refs/heads/preview' && secrets.PREVIEW_EXPO_PUBLIC_SUPABASE_ANON_KEY || secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
@@ -119,7 +120,7 @@ jobs:
 
       # ===== DEPLOY EDGE FUNCTIONS (Production Only) =====
       - name: 🔧 Deploy Edge Functions to Supabase
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/preview'
+        if: github.ref == 'refs/heads/prod' || github.ref == 'refs/heads/preview'
         working-directory: packages/supabase
         env:
           SUPABASE_ENV_LABEL: ${{ github.ref == 'refs/heads/preview' && 'preview' || 'production' }}
@@ -145,10 +146,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
           # Determine environment based on branch
-          AWS_ENV: ${{ github.ref == 'refs/heads/main' && 'main' || github.ref == 'refs/heads/preview' && 'preview' || github.ref == 'refs/heads/staging' && 'staging' || 'production' }}
+          AWS_ENV: ${{ github.ref == 'refs/heads/prod' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || github.ref == 'refs/heads/main' && 'dev' || 'production' }}
           # Environment-specific bucket names
-          AWS_S3_BUCKET: ${{ github.ref == 'refs/heads/main' && secrets.AWS_S3_BUCKET_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_S3_BUCKET_PREVIEW || github.ref == 'refs/heads/staging' && secrets.AWS_S3_BUCKET_PROD || secrets.AWS_S3_BUCKET_PROD }}
-          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || github.ref == 'refs/heads/staging' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
+          AWS_S3_BUCKET: ${{ github.ref == 'refs/heads/main' && secrets.AWS_S3_BUCKET_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_S3_BUCKET_PREVIEW || github.ref == 'refs/heads/prod' && secrets.AWS_S3_BUCKET_PROD || secrets.AWS_S3_BUCKET_PROD }}
+          AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ github.ref == 'refs/heads/main' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV || github.ref == 'refs/heads/preview' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PREVIEW || github.ref == 'refs/heads/prod' && secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD || secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD }}
         run: |
           echo "🚀 Deploying to AWS S3 + CloudFront ($AWS_ENV environment)..."
 

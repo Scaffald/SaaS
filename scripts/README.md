@@ -329,10 +329,10 @@ cat .env.production
 ### GitHub Actions Not Triggered
 ```bash
 # Manual trigger
-gh workflow run deploy-web.yml --ref production
+gh workflow run deploy-web.yml --ref prod
 
 # Or push to production branch
-git push origin production
+git push origin prod
 ```
 
 ## Monitoring

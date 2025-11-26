@@ -1,0 +1,6 @@
+---
+description: "Always verify preview/dev/prod deployments via AWS CLI using AWS_KEY and AWS_SECRET from .env"
+alwaysApply: true
+---
+
+When confirming **any** environment deploy (preview, dev, or production), run AWS CLI commands (e.g., `aws cloudfront get-invalidation`, `aws s3 ls`) using the credentials provided in `.env` (`AWS_KEY`, `AWS_SECRET`) to verify CloudFront/S3 state. This verification is required before reporting deployment status.

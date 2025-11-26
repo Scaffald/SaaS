@@ -22,10 +22,10 @@ if [ -z "$ENV" ]; then
             main|master)
                 ENV="dev"
                 ;;
-            preview|staging)
+            preview)
                 ENV="preview"
                 ;;
-            production)
+            prod|production)
                 ENV="production"
                 ;;
             *)
