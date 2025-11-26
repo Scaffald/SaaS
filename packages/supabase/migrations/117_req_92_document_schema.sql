@@ -137,6 +137,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS organization_folders_unique_name_idx
 CREATE INDEX IF NOT EXISTS organization_folders_parent_idx
   ON core.organization_folders(organization_id, parent_folder_id);
 
+DROP TRIGGER IF EXISTS organization_folders_set_updated_at ON core.organization_folders;
 CREATE TRIGGER organization_folders_set_updated_at
   BEFORE UPDATE ON core.organization_folders
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -188,6 +189,7 @@ CREATE INDEX IF NOT EXISTS organization_documents_name_trgm_idx
   ON core.organization_documents
   USING GIN (name gin_trgm_ops);
 
+DROP TRIGGER IF EXISTS organization_documents_set_updated_at ON core.organization_documents;
 CREATE TRIGGER organization_documents_set_updated_at
   BEFORE UPDATE ON core.organization_documents
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -213,6 +215,8 @@ COMMENT ON TABLE core.organization_document_versions
 COMMENT ON COLUMN core.organization_document_versions.storage_object_path
   IS 'Full path (bucket/key) for the underlying storage object.';
 
+ALTER TABLE core.organization_document_versions
+  DROP CONSTRAINT IF EXISTS organization_document_versions_version_unique;
 ALTER TABLE core.organization_document_versions
   ADD CONSTRAINT organization_document_versions_version_unique
   UNIQUE (document_id, version_number);
@@ -258,6 +262,7 @@ $$;
 COMMENT ON FUNCTION core.set_document_version_defaults
   IS 'Ensures document versions inherit organization_id and sequential version numbers.';
 
+DROP TRIGGER IF EXISTS organization_document_versions_defaults ON core.organization_document_versions;
 CREATE TRIGGER organization_document_versions_defaults
   BEFORE INSERT ON core.organization_document_versions
   FOR EACH ROW EXECUTE FUNCTION core.set_document_version_defaults();
@@ -287,11 +292,14 @@ $$;
 COMMENT ON FUNCTION core.refresh_document_latest_version
   IS 'Denormalizes version metadata back onto the parent document row.';
 
+DROP TRIGGER IF EXISTS organization_document_versions_refresh_parent ON core.organization_document_versions;
 CREATE TRIGGER organization_document_versions_refresh_parent
   AFTER INSERT ON core.organization_document_versions
   FOR EACH ROW EXECUTE FUNCTION core.refresh_document_latest_version();
 
 -- Establish FK for denormalized latest_version_id now that versions table exists
+ALTER TABLE core.organization_documents
+  DROP CONSTRAINT IF EXISTS organization_documents_latest_version_id_fkey;
 ALTER TABLE core.organization_documents
   ADD CONSTRAINT organization_documents_latest_version_id_fkey
   FOREIGN KEY (latest_version_id)
@@ -322,6 +330,8 @@ COMMENT ON TABLE core.organization_document_shares
   IS 'Tracks fine-grained grants for document access (internal members or external links).';
 
 ALTER TABLE core.organization_document_shares
+  DROP CONSTRAINT IF EXISTS organization_document_shares_share_target_check;
+ALTER TABLE core.organization_document_shares
   ADD CONSTRAINT organization_document_shares_share_target_check
   CHECK (
     (share_type = 'organization_member' AND target_user_id IS NOT NULL AND external_email IS NULL)
@@ -335,6 +345,7 @@ CREATE INDEX IF NOT EXISTS organization_document_shares_token_idx
   ON core.organization_document_shares(access_token)
   WHERE access_token IS NOT NULL;
 
+DROP TRIGGER IF EXISTS organization_document_shares_set_updated_at ON core.organization_document_shares;
 CREATE TRIGGER organization_document_shares_set_updated_at
   BEFORE UPDATE ON core.organization_document_shares
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

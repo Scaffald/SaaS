@@ -65,6 +65,7 @@ CREATE INDEX IF NOT EXISTS account_deletions_status_idx
 CREATE INDEX IF NOT EXISTS account_deletions_type_idx
   ON core.account_deletions (deletion_type);
 
+DROP TRIGGER IF EXISTS account_deletions_set_updated_at ON core.account_deletions;
 CREATE TRIGGER account_deletions_set_updated_at
   BEFORE UPDATE ON core.account_deletions
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

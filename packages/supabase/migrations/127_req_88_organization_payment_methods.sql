@@ -49,11 +49,14 @@ CREATE UNIQUE INDEX IF NOT EXISTS organization_payment_methods_single_active_idx
 CREATE INDEX IF NOT EXISTS organization_payment_methods_org_idx
   ON core.organization_payment_methods (organization_id, created_at DESC);
 
+DROP TRIGGER IF EXISTS organization_payment_methods_set_updated_at ON core.organization_payment_methods;
 CREATE TRIGGER organization_payment_methods_set_updated_at
   BEFORE UPDATE ON core.organization_payment_methods
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
 
 -- Link organizations.default_payment_method_id once table exists
+ALTER TABLE core.organizations
+  DROP CONSTRAINT IF EXISTS organizations_default_payment_method_fk;
 ALTER TABLE core.organizations
   ADD CONSTRAINT organizations_default_payment_method_fk
     FOREIGN KEY (default_payment_method_id)

@@ -59,6 +59,7 @@ CREATE INDEX IF NOT EXISTS organization_locations_lat_lng_idx
   ON core.organization_locations(latitude, longitude)
   WHERE latitude IS NOT NULL AND longitude IS NOT NULL;
 
+DROP TRIGGER IF EXISTS organization_locations_set_updated_at ON core.organization_locations;
 CREATE TRIGGER organization_locations_set_updated_at
   BEFORE UPDATE ON core.organization_locations
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

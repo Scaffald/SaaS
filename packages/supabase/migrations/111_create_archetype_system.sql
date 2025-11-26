@@ -8,7 +8,7 @@ BEGIN;
 -- =========================================================
 -- ARCHETYPES TABLE
 -- =========================================================
-CREATE TABLE core.archetypes (
+CREATE TABLE IF NOT EXISTS core.archetypes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
   description TEXT NOT NULL,
@@ -26,7 +26,7 @@ COMMENT ON COLUMN core.archetypes.mapping_rules IS 'JSONB array of weighted cond
 -- =========================================================
 -- USER ARCHETYPES TABLE (History Tracking)
 -- =========================================================
-CREATE TABLE core.user_archetypes (
+CREATE TABLE IF NOT EXISTS core.user_archetypes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   archetype_id UUID NOT NULL REFERENCES core.archetypes(id) ON DELETE CASCADE,
@@ -44,7 +44,7 @@ COMMENT ON COLUMN core.user_archetypes.is_primary IS 'True for the current/displ
 -- =========================================================
 -- IPIP SHARE TOKENS TABLE
 -- =========================================================
-CREATE TABLE core.ipip_share_tokens (
+CREATE TABLE IF NOT EXISTS core.ipip_share_tokens (
   token UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   assessment_id UUID NOT NULL,
@@ -61,7 +61,7 @@ COMMENT ON COLUMN core.ipip_share_tokens.expires_at IS 'Optional expiration time
 -- =========================================================
 -- USER ASSESSMENT XP TABLE (One-time XP Tracking)
 -- =========================================================
-CREATE TABLE core.user_assessment_xp (
+CREATE TABLE IF NOT EXISTS core.user_assessment_xp (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   assessment_type TEXT NOT NULL,
@@ -112,6 +112,7 @@ CREATE INDEX IF NOT EXISTS idx_personality_assessments_next_available
 -- ROW LEVEL SECURITY
 -- =========================================================
 ALTER TABLE core.archetypes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS archetypes_select_all ON core.archetypes;
 CREATE POLICY archetypes_select_all
   ON core.archetypes
   FOR SELECT
@@ -119,11 +120,13 @@ CREATE POLICY archetypes_select_all
   USING (true);
 
 ALTER TABLE core.user_archetypes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS user_archetypes_select_own ON core.user_archetypes;
 CREATE POLICY user_archetypes_select_own
   ON core.user_archetypes
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS user_archetypes_insert_own ON core.user_archetypes;
 CREATE POLICY user_archetypes_insert_own
   ON core.user_archetypes
   FOR INSERT
@@ -131,16 +134,19 @@ CREATE POLICY user_archetypes_insert_own
   WITH CHECK (auth.uid() = user_id);
 
 ALTER TABLE core.ipip_share_tokens ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS ipip_share_tokens_select_own ON core.ipip_share_tokens;
 CREATE POLICY ipip_share_tokens_select_own
   ON core.ipip_share_tokens
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS ipip_share_tokens_insert_own ON core.ipip_share_tokens;
 CREATE POLICY ipip_share_tokens_insert_own
   ON core.ipip_share_tokens
   FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS ipip_share_tokens_update_own ON core.ipip_share_tokens;
 CREATE POLICY ipip_share_tokens_update_own
   ON core.ipip_share_tokens
   FOR UPDATE
@@ -148,6 +154,7 @@ CREATE POLICY ipip_share_tokens_update_own
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 -- Public read for shared results (validated by token)
+DROP POLICY IF EXISTS ipip_share_tokens_select_public ON core.ipip_share_tokens;
 CREATE POLICY ipip_share_tokens_select_public
   ON core.ipip_share_tokens
   FOR SELECT
@@ -155,11 +162,13 @@ CREATE POLICY ipip_share_tokens_select_public
   USING (is_revoked = FALSE AND (expires_at IS NULL OR expires_at > NOW()));
 
 ALTER TABLE core.user_assessment_xp ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS user_assessment_xp_select_own ON core.user_assessment_xp;
 CREATE POLICY user_assessment_xp_select_own
   ON core.user_assessment_xp
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS user_assessment_xp_insert_own ON core.user_assessment_xp;
 CREATE POLICY user_assessment_xp_insert_own
   ON core.user_assessment_xp
   FOR INSERT
@@ -192,7 +201,8 @@ VALUES (
     {"domain": "C", "level": "high", "weight": 1.0},
     {"domain": "O", "level": "neutral", "weight": 0.5}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 -- 2. Maker
 INSERT INTO core.archetypes (name, description, strengths, work_styles, team_dynamics, growth_areas, mapping_rules)
@@ -208,7 +218,8 @@ VALUES (
     {"domain": "O", "level": "high", "weight": 0.8},
     {"domain": "E", "level": "low", "weight": 0.6}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 -- 3. Operator
 INSERT INTO core.archetypes (name, description, strengths, work_styles, team_dynamics, growth_areas, mapping_rules)
@@ -224,7 +235,8 @@ VALUES (
     {"domain": "N", "level": "high", "weight": 0.7},
     {"domain": "O", "level": "low", "weight": 0.5}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 -- 4. Designer
 INSERT INTO core.archetypes (name, description, strengths, work_styles, team_dynamics, growth_areas, mapping_rules)
@@ -239,7 +251,8 @@ VALUES (
     {"domain": "O", "level": "high", "weight": 1.0},
     {"domain": "E", "level": "neutral", "weight": 0.5}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 -- 5. Connector
 INSERT INTO core.archetypes (name, description, strengths, work_styles, team_dynamics, growth_areas, mapping_rules)
@@ -254,7 +267,8 @@ VALUES (
     {"domain": "E", "level": "high", "weight": 1.0},
     {"domain": "A", "level": "high", "weight": 0.8}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 -- 6. Analyst
 INSERT INTO core.archetypes (name, description, strengths, work_styles, team_dynamics, growth_areas, mapping_rules)
@@ -270,7 +284,8 @@ VALUES (
     {"domain": "O", "level": "high", "weight": 0.8},
     {"domain": "C", "level": "high", "weight": 0.7}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 -- 7. Navigator
 INSERT INTO core.archetypes (name, description, strengths, work_styles, team_dynamics, growth_areas, mapping_rules)
@@ -286,7 +301,8 @@ VALUES (
     {"domain": "O", "level": "high", "weight": 0.8},
     {"domain": "N", "level": "low", "weight": 0.6}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 -- 8. Innovator
 INSERT INTO core.archetypes (name, description, strengths, work_styles, team_dynamics, growth_areas, mapping_rules)
@@ -302,7 +318,8 @@ VALUES (
     {"domain": "E", "level": "high", "weight": 0.8},
     {"domain": "C", "level": "low", "weight": 0.5}
   ]'::jsonb
-);
+)
+ON CONFLICT (name) DO NOTHING;
 
 COMMIT;
 

@@ -82,6 +82,7 @@ INSERT INTO core.stripe_settings (settings_name)
 VALUES ('stripe')
 ON CONFLICT (settings_name) DO NOTHING;
 
+DROP TRIGGER IF EXISTS stripe_settings_set_updated_at ON core.stripe_settings;
 CREATE TRIGGER stripe_settings_set_updated_at
   BEFORE UPDATE ON core.stripe_settings
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

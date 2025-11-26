@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
 import { createTRPCContext } from './context.ts'
-import { type AppRouter, appRouter } from './routers/_app.ts'
+import { type AppRouter } from './routers/_app.ts'
+import { appRouter } from './routers/_app-impl.ts'
 
 // Export the router type for client-side usage
 export type { AppRouter }

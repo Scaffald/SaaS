@@ -36,12 +36,13 @@ WHERE organization_id IS NULL
   AND target_type = 'organization';
 
 -- Prevent duplicate pending invites to the same email per target
-DROP INDEX IF EXISTS invites_unique_email_per_target_idx;
+DROP INDEX IF EXISTS core.invites_unique_email_per_target_idx;
 CREATE UNIQUE INDEX invites_unique_email_per_target_idx
   ON core.invites (target_type, target_id, invitee_email)
   WHERE status IN ('pending', 'sent', 'viewed');
 
 -- Track updates automatically
+DROP TRIGGER IF EXISTS invites_set_updated_at ON core.invites;
 CREATE TRIGGER invites_set_updated_at
   BEFORE UPDATE ON core.invites
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

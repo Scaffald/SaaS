@@ -11,6 +11,7 @@ BEGIN;
 
 DROP POLICY IF EXISTS user_skills_select ON core.user_skills;
 
+DROP POLICY IF EXISTS user_skills_select_public ON core.user_skills;
 CREATE POLICY user_skills_select_public
   ON core.user_skills
   FOR SELECT
@@ -27,6 +28,7 @@ CREATE POLICY user_skills_select_public
     )
   );
 
+DROP POLICY IF EXISTS user_skills_select_service_role ON core.user_skills;
 CREATE POLICY user_skills_select_service_role
   ON core.user_skills
   FOR SELECT

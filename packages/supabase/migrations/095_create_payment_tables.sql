@@ -113,6 +113,7 @@ CREATE INDEX IF NOT EXISTS success_fees_final_due_idx
   ON core.success_fees (final_payment_due_date)
   WHERE status IN ('upfront_paid', 'pending');
 
+DROP TRIGGER IF EXISTS success_fees_set_updated_at ON core.success_fees;
 CREATE TRIGGER success_fees_set_updated_at
   BEFORE UPDATE ON core.success_fees
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -145,6 +146,7 @@ CREATE INDEX IF NOT EXISTS service_pricing_active_idx
   ON core.service_pricing (service_type)
   WHERE is_active = TRUE;
 
+DROP TRIGGER IF EXISTS service_pricing_set_updated_at ON core.service_pricing;
 CREATE TRIGGER service_pricing_set_updated_at
   BEFORE UPDATE ON core.service_pricing
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -167,6 +169,7 @@ COMMENT ON TABLE core.background_check_addons
 CREATE INDEX IF NOT EXISTS background_check_addons_active_idx
   ON core.background_check_addons (is_active);
 
+DROP TRIGGER IF EXISTS background_check_addons_set_updated_at ON core.background_check_addons;
 CREATE TRIGGER background_check_addons_set_updated_at
   BEFORE UPDATE ON core.background_check_addons
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -229,6 +232,7 @@ CREATE INDEX IF NOT EXISTS background_check_access_check_idx
 CREATE INDEX IF NOT EXISTS background_check_access_org_idx
   ON core.background_check_access (organization_id);
 
+DROP TRIGGER IF EXISTS background_check_access_set_updated_at ON core.background_check_access;
 CREATE TRIGGER background_check_access_set_updated_at
   BEFORE UPDATE ON core.background_check_access
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -277,6 +281,7 @@ CREATE INDEX IF NOT EXISTS id_verifications_expiring_idx
   ON core.id_verifications (badge_expires_at)
   WHERE badge_status = 'active' AND badge_expires_at IS NOT NULL;
 
+DROP TRIGGER IF EXISTS id_verifications_set_updated_at ON core.id_verifications;
 CREATE TRIGGER id_verifications_set_updated_at
   BEFORE UPDATE ON core.id_verifications
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -337,6 +342,7 @@ CREATE INDEX IF NOT EXISTS payment_transactions_status_idx
 CREATE INDEX IF NOT EXISTS payment_transactions_stripe_idx
   ON core.payment_transactions (stripe_payment_intent_id);
 
+DROP TRIGGER IF EXISTS payment_transactions_set_updated_at ON core.payment_transactions;
 CREATE TRIGGER payment_transactions_set_updated_at
   BEFORE UPDATE ON core.payment_transactions
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

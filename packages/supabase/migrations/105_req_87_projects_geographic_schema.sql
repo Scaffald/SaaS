@@ -11,6 +11,7 @@ BEGIN;
 -- =========================================================
 
 -- Project status enum
+DROP TYPE IF EXISTS core.project_status CASCADE;
 CREATE TYPE core.project_status AS ENUM (
   'planning',
   'active',
@@ -19,6 +20,7 @@ CREATE TYPE core.project_status AS ENUM (
 );
 
 -- Project location visibility enum
+DROP TYPE IF EXISTS core.location_visibility CASCADE;
 CREATE TYPE core.location_visibility AS ENUM (
   'public',
   'authenticated',
@@ -27,6 +29,7 @@ CREATE TYPE core.location_visibility AS ENUM (
 );
 
 -- Property type enum
+DROP TYPE IF EXISTS core.property_type CASCADE;
 CREATE TYPE core.property_type AS ENUM (
   'residential',
   'commercial',
@@ -36,6 +39,7 @@ CREATE TYPE core.property_type AS ENUM (
 );
 
 -- Project worker status enum
+DROP TYPE IF EXISTS core.project_worker_status CASCADE;
 CREATE TYPE core.project_worker_status AS ENUM (
   'pending',
   'approved',
@@ -47,27 +51,49 @@ CREATE TYPE core.project_worker_status AS ENUM (
 -- =========================================================
 
 -- Projects table
-CREATE TABLE core.projects (
+CREATE TABLE IF NOT EXISTS core.projects (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL,  -- FK to core.organizations(id) in relations
   name TEXT NOT NULL,
   description TEXT,
-  status core.project_status NOT NULL DEFAULT 'planning',
-  start_date DATE,
-  end_date DATE,
-  location_visibility core.location_visibility NOT NULL DEFAULT 'organization_only',
-  location_visibility_override BOOLEAN DEFAULT false,
   created_by UUID NOT NULL,  -- FK to auth.users(id) in relations
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add columns that may be missing if table was created earlier
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'projects' AND column_name = 'status') THEN
+    ALTER TABLE core.projects ADD COLUMN status core.project_status NOT NULL DEFAULT 'planning';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'projects' AND column_name = 'start_date') THEN
+    ALTER TABLE core.projects ADD COLUMN start_date DATE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'projects' AND column_name = 'end_date') THEN
+    ALTER TABLE core.projects ADD COLUMN end_date DATE;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'projects' AND column_name = 'location_visibility') THEN
+    ALTER TABLE core.projects ADD COLUMN location_visibility core.location_visibility NOT NULL DEFAULT 'organization_only';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'projects' AND column_name = 'location_visibility_override') THEN
+    ALTER TABLE core.projects ADD COLUMN location_visibility_override BOOLEAN DEFAULT false;
+  END IF;
+END $$;
+
 COMMENT ON TABLE core.projects IS 'Construction projects with geographic location data';
-COMMENT ON COLUMN core.projects.location_visibility IS 'Who can see project location: public, authenticated, organization_only, private';
-COMMENT ON COLUMN core.projects.location_visibility_override IS 'Indicates if project overrides organization default visibility setting';
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'projects' AND column_name = 'location_visibility') THEN
+    COMMENT ON COLUMN core.projects.location_visibility IS 'Who can see project location: public, authenticated, organization_only, private';
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'projects' AND column_name = 'location_visibility_override') THEN
+    COMMENT ON COLUMN core.projects.location_visibility_override IS 'Indicates if project overrides organization default visibility setting';
+  END IF;
+END $$;
 
 -- Sites table (Geographic Boundaries)
-CREATE TABLE core.sites (
+CREATE TABLE IF NOT EXISTS core.sites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   site_identifier TEXT,
   boundary GEOGRAPHY(POLYGON, 4326) NOT NULL,
@@ -84,7 +110,7 @@ COMMENT ON COLUMN core.sites.boundary IS 'PostGIS polygon for site boundaries (W
 COMMENT ON COLUMN core.sites.site_identifier IS 'External site identifier or reference number';
 
 -- Addresses table (Property Locations)
-CREATE TABLE core.addresses (
+CREATE TABLE IF NOT EXISTS core.addresses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   site_id UUID,  -- FK to core.sites(id) in relations
   address JSONB NOT NULL,
@@ -100,7 +126,7 @@ COMMENT ON COLUMN core.addresses.address IS 'Structured address using addressSch
 COMMENT ON COLUMN core.addresses.geo IS 'PostGIS point for precise location (WGS84)';
 
 -- Project-Site Junction Table
-CREATE TABLE core.project_sites (
+CREATE TABLE IF NOT EXISTS core.project_sites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL,  -- FK to core.projects(id) in relations
   site_id UUID NOT NULL,  -- FK to core.sites(id) in relations
@@ -113,7 +139,7 @@ COMMENT ON TABLE core.project_sites IS 'Links projects to one or more sites (a p
 COMMENT ON COLUMN core.project_sites.is_primary IS 'Indicates main project site';
 
 -- Project-Address Junction Table
-CREATE TABLE core.project_addresses (
+CREATE TABLE IF NOT EXISTS core.project_addresses (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL,  -- FK to core.projects(id) in relations
   address_id UUID NOT NULL,  -- FK to core.addresses(id) in relations
@@ -126,12 +152,11 @@ COMMENT ON TABLE core.project_addresses IS 'Links projects to one or more addres
 COMMENT ON COLUMN core.project_addresses.is_primary IS 'Indicates main project address';
 
 -- Project Workers Junction Table
-CREATE TABLE core.project_workers (
+CREATE TABLE IF NOT EXISTS core.project_workers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL,  -- FK to core.projects(id) in relations
   user_id UUID NOT NULL,  -- FK to auth.users(id) in relations
   job_id UUID,  -- FK to core.jobs(id) in relations (optional)
-  status core.project_worker_status NOT NULL DEFAULT 'pending',
   claimed_by_worker BOOLEAN DEFAULT false,
   assigned_by_manager BOOLEAN DEFAULT false,
   approved_by UUID,  -- FK to auth.users(id) in relations (optional)
@@ -144,6 +169,14 @@ CREATE TABLE core.project_workers (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(project_id, user_id, job_id)
 );
+
+-- Add status column if missing
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'core' AND table_name = 'project_workers' AND column_name = 'status') THEN
+    ALTER TABLE core.project_workers ADD COLUMN status core.project_worker_status NOT NULL DEFAULT 'pending';
+  END IF;
+END $$;
 
 COMMENT ON TABLE core.project_workers IS 'Tracks which workers have worked on which projects with approval workflow';
 COMMENT ON COLUMN core.project_workers.claimed_by_worker IS 'Worker claimed they worked on this';
@@ -380,6 +413,7 @@ COMMENT ON FUNCTION core.notify_site_overlap IS 'Creates admin notifications whe
 
 -- Create trigger for overlap notifications
 DROP TRIGGER IF EXISTS trg_site_overlap_check ON core.sites;
+DROP TRIGGER IF EXISTS trg_site_overlap_check ON core.sites;
 CREATE TRIGGER trg_site_overlap_check
   AFTER INSERT OR UPDATE OF boundary ON core.sites
   FOR EACH ROW
@@ -391,49 +425,71 @@ CREATE TRIGGER trg_site_overlap_check
 
 -- Projects foreign keys
 ALTER TABLE core.projects
+  DROP CONSTRAINT IF EXISTS projects_organization_id_fkey;
+ALTER TABLE core.projects
   ADD CONSTRAINT projects_organization_id_fkey 
   FOREIGN KEY (organization_id) REFERENCES core.organizations(id) ON DELETE CASCADE;
 
+ALTER TABLE core.projects
+  DROP CONSTRAINT IF EXISTS projects_created_by_fkey;
 ALTER TABLE core.projects
   ADD CONSTRAINT projects_created_by_fkey 
   FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE RESTRICT;
 
 -- Addresses foreign keys
 ALTER TABLE core.addresses
+  DROP CONSTRAINT IF EXISTS addresses_site_id_fkey;
+ALTER TABLE core.addresses
   ADD CONSTRAINT addresses_site_id_fkey 
   FOREIGN KEY (site_id) REFERENCES core.sites(id) ON DELETE SET NULL;
 
 -- Project-Site junction foreign keys
 ALTER TABLE core.project_sites
+  DROP CONSTRAINT IF EXISTS project_sites_project_id_fkey;
+ALTER TABLE core.project_sites
   ADD CONSTRAINT project_sites_project_id_fkey 
   FOREIGN KEY (project_id) REFERENCES core.projects(id) ON DELETE CASCADE;
 
+ALTER TABLE core.project_sites
+  DROP CONSTRAINT IF EXISTS project_sites_site_id_fkey;
 ALTER TABLE core.project_sites
   ADD CONSTRAINT project_sites_site_id_fkey 
   FOREIGN KEY (site_id) REFERENCES core.sites(id) ON DELETE CASCADE;
 
 -- Project-Address junction foreign keys
 ALTER TABLE core.project_addresses
+  DROP CONSTRAINT IF EXISTS project_addresses_project_id_fkey;
+ALTER TABLE core.project_addresses
   ADD CONSTRAINT project_addresses_project_id_fkey 
   FOREIGN KEY (project_id) REFERENCES core.projects(id) ON DELETE CASCADE;
 
+ALTER TABLE core.project_addresses
+  DROP CONSTRAINT IF EXISTS project_addresses_address_id_fkey;
 ALTER TABLE core.project_addresses
   ADD CONSTRAINT project_addresses_address_id_fkey 
   FOREIGN KEY (address_id) REFERENCES core.addresses(id) ON DELETE CASCADE;
 
 -- Project Workers foreign keys
 ALTER TABLE core.project_workers
+  DROP CONSTRAINT IF EXISTS project_workers_project_id_fkey;
+ALTER TABLE core.project_workers
   ADD CONSTRAINT project_workers_project_id_fkey 
   FOREIGN KEY (project_id) REFERENCES core.projects(id) ON DELETE CASCADE;
 
+ALTER TABLE core.project_workers
+  DROP CONSTRAINT IF EXISTS project_workers_user_id_fkey;
 ALTER TABLE core.project_workers
   ADD CONSTRAINT project_workers_user_id_fkey 
   FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 ALTER TABLE core.project_workers
+  DROP CONSTRAINT IF EXISTS project_workers_job_id_fkey;
+ALTER TABLE core.project_workers
   ADD CONSTRAINT project_workers_job_id_fkey 
   FOREIGN KEY (job_id) REFERENCES core.jobs(id) ON DELETE SET NULL;
 
+ALTER TABLE core.project_workers
+  DROP CONSTRAINT IF EXISTS project_workers_approved_by_fkey;
 ALTER TABLE core.project_workers
   ADD CONSTRAINT project_workers_approved_by_fkey 
   FOREIGN KEY (approved_by) REFERENCES auth.users(id) ON DELETE SET NULL;
@@ -442,21 +498,25 @@ ALTER TABLE core.project_workers
 -- UPDATED_AT TRIGGERS
 -- =========================================================
 
+DROP TRIGGER IF EXISTS trg_projects_updated_at ON core.projects;
 CREATE TRIGGER trg_projects_updated_at
   BEFORE UPDATE ON core.projects
   FOR EACH ROW
   EXECUTE FUNCTION core.set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_sites_updated_at ON core.sites;
 CREATE TRIGGER trg_sites_updated_at
   BEFORE UPDATE ON core.sites
   FOR EACH ROW
   EXECUTE FUNCTION core.set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_addresses_updated_at ON core.addresses;
 CREATE TRIGGER trg_addresses_updated_at
   BEFORE UPDATE ON core.addresses
   FOR EACH ROW
   EXECUTE FUNCTION core.set_updated_at();
 
+DROP TRIGGER IF EXISTS trg_project_workers_updated_at ON core.project_workers;
 CREATE TRIGGER trg_project_workers_updated_at
   BEFORE UPDATE ON core.project_workers
   FOR EACH ROW

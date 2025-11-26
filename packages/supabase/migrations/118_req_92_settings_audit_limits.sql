@@ -32,6 +32,7 @@ COMMENT ON TABLE core.organization_settings
 COMMENT ON COLUMN core.organization_settings.storage_warning_thresholds
   IS 'Array of percentages (0-1) used to trigger storage warning banners.';
 
+DROP TRIGGER IF EXISTS organization_settings_set_updated_at ON core.organization_settings;
 CREATE TRIGGER organization_settings_set_updated_at
   BEFORE UPDATE ON core.organization_settings
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -80,6 +81,7 @@ CREATE TABLE IF NOT EXISTS core.subscription_tier_limits (
 COMMENT ON TABLE core.subscription_tier_limits
   IS 'Baseline resource allocations for each subscription tier.';
 
+DROP TRIGGER IF EXISTS subscription_tier_limits_set_updated_at ON core.subscription_tier_limits;
 CREATE TRIGGER subscription_tier_limits_set_updated_at
   BEFORE UPDATE ON core.subscription_tier_limits
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -111,6 +113,7 @@ CREATE INDEX IF NOT EXISTS organization_limit_overrides_org_idx
   ON core.organization_limit_overrides(organization_id)
   WHERE active = TRUE;
 
+DROP TRIGGER IF EXISTS organization_limit_overrides_set_updated_at ON core.organization_limit_overrides;
 CREATE TRIGGER organization_limit_overrides_set_updated_at
   BEFORE UPDATE ON core.organization_limit_overrides
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

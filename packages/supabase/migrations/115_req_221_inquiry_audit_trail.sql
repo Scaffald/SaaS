@@ -39,11 +39,13 @@ CREATE INDEX IF NOT EXISTS idx_inquiry_audit_actor ON core.inquiry_audit_log(act
 ALTER TABLE core.inquiry_audit_log ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Only allow inserts (automatic logging)
+DROP POLICY IF EXISTS inquiry_audit_insert_only ON core.inquiry_audit_log;
 CREATE POLICY inquiry_audit_insert_only ON core.inquiry_audit_log
   FOR INSERT
   WITH CHECK (true);
 
 -- Policy: Allow select for authorized users (candidate or organization members)
+DROP POLICY IF EXISTS inquiry_audit_select_authorized ON core.inquiry_audit_log;
 CREATE POLICY inquiry_audit_select_authorized ON core.inquiry_audit_log
   FOR SELECT
   USING (
@@ -71,10 +73,12 @@ CREATE POLICY inquiry_audit_select_authorized ON core.inquiry_audit_log
   );
 
 -- Deny updates and deletes (immutable audit log)
+DROP POLICY IF EXISTS inquiry_audit_no_update ON core.inquiry_audit_log;
 CREATE POLICY inquiry_audit_no_update ON core.inquiry_audit_log
   FOR UPDATE
   USING (false);
 
+DROP POLICY IF EXISTS inquiry_audit_no_delete ON core.inquiry_audit_log;
 CREATE POLICY inquiry_audit_no_delete ON core.inquiry_audit_log
   FOR DELETE
   USING (false);

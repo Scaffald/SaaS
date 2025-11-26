@@ -55,6 +55,7 @@ CREATE INDEX IF NOT EXISTS hire_agreements_application_idx
 CREATE INDEX IF NOT EXISTS hire_agreements_status_idx
   ON core.hire_agreements (status);
 
+DROP TRIGGER IF EXISTS hire_agreements_set_updated_at ON core.hire_agreements;
 CREATE TRIGGER hire_agreements_set_updated_at
   BEFORE UPDATE ON core.hire_agreements
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();
@@ -132,6 +133,7 @@ CREATE INDEX IF NOT EXISTS circumvention_reports_agreement_idx
 CREATE INDEX IF NOT EXISTS circumvention_reports_type_idx
   ON core.circumvention_reports (violation_type);
 
+DROP TRIGGER IF EXISTS circumvention_reports_set_updated_at ON core.circumvention_reports;
 CREATE TRIGGER circumvention_reports_set_updated_at
   BEFORE UPDATE ON core.circumvention_reports
   FOR EACH ROW EXECUTE FUNCTION core.set_updated_at();

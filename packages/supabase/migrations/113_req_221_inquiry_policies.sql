@@ -12,7 +12,6 @@ BEGIN;
 
 -- Drop and recreate the write policy to include created_by check
 DROP POLICY IF EXISTS app_inquiries_write ON core.application_inquiries;
-
 CREATE POLICY app_inquiries_write ON core.application_inquiries
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -51,7 +50,6 @@ CREATE POLICY app_inquiries_write ON core.application_inquiries
 
 -- Update policy to allow editing by creator or organization members
 DROP POLICY IF EXISTS app_inquiries_update ON core.application_inquiries;
-
 CREATE POLICY app_inquiries_update ON core.application_inquiries
   FOR UPDATE TO authenticated
   USING (
@@ -107,6 +105,7 @@ CREATE POLICY app_inquiries_update ON core.application_inquiries
 
 ALTER TABLE core.inquiry_sections ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS inquiry_sections_read ON core.inquiry_sections;
 CREATE POLICY inquiry_sections_read ON core.inquiry_sections
   FOR SELECT TO authenticated
   USING (
@@ -133,6 +132,7 @@ CREATE POLICY inquiry_sections_read ON core.inquiry_sections
     )
   );
 
+DROP POLICY IF EXISTS inquiry_sections_insert ON core.inquiry_sections;
 CREATE POLICY inquiry_sections_insert ON core.inquiry_sections
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -160,6 +160,7 @@ CREATE POLICY inquiry_sections_insert ON core.inquiry_sections
     )
   );
 
+DROP POLICY IF EXISTS inquiry_sections_update ON core.inquiry_sections;
 CREATE POLICY inquiry_sections_update ON core.inquiry_sections
   FOR UPDATE TO authenticated
   USING (
@@ -193,6 +194,7 @@ CREATE POLICY inquiry_sections_update ON core.inquiry_sections
 
 ALTER TABLE core.inquiry_comments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS inquiry_comments_read ON core.inquiry_comments;
 CREATE POLICY inquiry_comments_read ON core.inquiry_comments
   FOR SELECT TO authenticated
   USING (
@@ -220,6 +222,8 @@ CREATE POLICY inquiry_comments_read ON core.inquiry_comments
     )
   );
 
+DROP POLICY IF EXISTS inquiry_comments_insert ON core.inquiry_comments;
+DROP POLICY IF EXISTS inquiry_comments_insert ON core.inquiry_comments;
 CREATE POLICY inquiry_comments_insert ON core.inquiry_comments
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -247,6 +251,8 @@ CREATE POLICY inquiry_comments_insert ON core.inquiry_comments
     )
   );
 
+DROP POLICY IF EXISTS inquiry_comments_update ON core.inquiry_comments;
+DROP POLICY IF EXISTS inquiry_comments_update ON core.inquiry_comments;
 CREATE POLICY inquiry_comments_update ON core.inquiry_comments
   FOR UPDATE TO authenticated
   USING (
@@ -305,6 +311,7 @@ CREATE POLICY inquiry_comments_update ON core.inquiry_comments
 
 ALTER TABLE core.inquiry_capability_responses ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS inquiry_capability_responses_read ON core.inquiry_capability_responses;
 CREATE POLICY inquiry_capability_responses_read ON core.inquiry_capability_responses
   FOR SELECT TO authenticated
   USING (
@@ -331,6 +338,8 @@ CREATE POLICY inquiry_capability_responses_read ON core.inquiry_capability_respo
     )
   );
 
+DROP POLICY IF EXISTS inquiry_capability_responses_insert ON core.inquiry_capability_responses;
+DROP POLICY IF EXISTS inquiry_capability_responses_insert ON core.inquiry_capability_responses;
 CREATE POLICY inquiry_capability_responses_insert ON core.inquiry_capability_responses
   FOR INSERT TO authenticated
   WITH CHECK (
@@ -345,6 +354,8 @@ CREATE POLICY inquiry_capability_responses_insert ON core.inquiry_capability_res
     )
   );
 
+DROP POLICY IF EXISTS inquiry_capability_responses_update ON core.inquiry_capability_responses;
+DROP POLICY IF EXISTS inquiry_capability_responses_update ON core.inquiry_capability_responses;
 CREATE POLICY inquiry_capability_responses_update ON core.inquiry_capability_responses
   FOR UPDATE TO authenticated
   USING (
