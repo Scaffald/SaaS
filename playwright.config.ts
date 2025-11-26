@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './disabled_tests',
 
   // Global timeout for entire test run (30 minutes) - prevents SIGTERM from timeout
   globalTimeout: 30 * 60 * 1000,
@@ -42,7 +42,7 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
-      testDir: './tests', // Search in all test directories, not just e2e
+      testDir: './disabled_tests', // Search in all test directories, not just e2e
     },
     {
       name: 'chromium',

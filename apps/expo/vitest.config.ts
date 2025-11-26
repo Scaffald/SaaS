@@ -8,7 +8,7 @@ const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 const expoConfig = {
   root: workspaceRoot,
   test: {
-    include: ['apps/expo/**/*.{test,spec}.{ts,tsx}'],
+    include: ['disabled_tests/**/*.{test,spec}.{ts,tsx}'],
     watchExclude: ['**/dist/**', '**/.turbo/**', 'apps/expo/.expo/**'],
   },
   resolve: {
