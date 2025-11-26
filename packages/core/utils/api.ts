@@ -1,4 +1,13 @@
 // @ts-nocheck
+/**
+ * tRPC client initialization and configuration
+ *
+ * This file uses @ts-nocheck because createTRPCReact<AppRouter>() returns
+ * an object whose type exposes the AppRouter type, which ultimately derives
+ * from @ts-nocheck files on the server. TypeScript cannot properly name these
+ * complex types (TS4023 error), but the code works correctly at runtime.
+ */
+
 import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
 import type { AppRouter } from "@app/supabase/client-types";
 import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";

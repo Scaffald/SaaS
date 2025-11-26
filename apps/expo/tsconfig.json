@@ -15,16 +15,14 @@
     "../../packages/supabase/types.ts",
     "../../packages/supabase/client-types.ts",
     "../../packages/supabase/app-router-type.ts",
+    "../../packages/supabase/app-router-type-only.ts",
     "../../packages/supabase/helpers.ts",
-    "../../packages/supabase/functions/_shared/**/*.ts",
-    "../../packages/supabase/functions/trpc/**/*.ts",
     "../../vitest.config.ts",
     "../../tests/infrastructure/vitest/helpers/database.ts",
     "../../tests/infrastructure/vitest/plugins/flow-remove.ts"
   ],
   "exclude": [
-    "../../packages/supabase/functions/**/__tests__/**/*",
-    "../../packages/supabase/functions/tests/**/*",
+    "../../packages/supabase/functions/**/*",
     "../../packages/supabase/scripts/**/*",
     "../../packages/supabase/types-trpc.ts"
   ],

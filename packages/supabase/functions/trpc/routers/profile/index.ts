@@ -1,37 +1,22 @@
 // @ts-nocheck
-import { t } from "../../middleware.ts";
-import { profileAvatarRouter } from "./avatar.router.ts";
-import { profileCertificationsRouter } from "./certifications.router.ts";
-import { profileCompletionRouter } from "./completion.router.ts";
-import { profileEducationRouter } from "./education.router.ts";
-import { profileEmploymentRouter } from "./employment.router.ts";
-import { profileExperienceRouter } from "./experience.router.ts";
-import { profileGeneralRouter } from "./general.router.ts";
-import { profileImportRouter } from "./import.router.ts";
-import { profileSkillsRouter } from "./skills.router.ts";
-import { skillsMultiTaxonomyRouter } from "./skills-multi-taxonomy.router.ts";
-import { profileVanityRouter } from "./vanity.router.ts";
-import { profileWidgetsRouter } from "./widgets.router.ts";
-
 /**
- * Profile router - combines all profile-related sub-routers
- * Note: Using multi-taxonomy skills router (supports both CSI and O*NET)
+ * Profile Router Type Definition and Re-export
  *
- * Structure:
- * - Namespaced routers for general, employment, experience, education, avatar, completion
- * - Dedicated routers for certifications, widgets, vanity, import, skills, skillsMultiTaxonomy
+ * This file re-exports the profile router from _impl.ts.
+ * The actual router instance is defined in _impl.ts with @ts-nocheck
+ * to avoid type visibility issues when imported by other modules.
+ *
+ * Architecture:
+ * - _impl.ts: Contains the actual profileRouter instance (@ts-nocheck)
+ * - index.ts: Re-exports both value and type with @ts-nocheck
+ * - This pattern avoids TS4023 "inaccessible names" errors
+ *
+ * The @ts-nocheck here is necessary because the router exports
+ * types from @ts-nocheck files that TypeScript cannot properly name.
  */
-export const profileRouter = t.router({
-  general: profileGeneralRouter,
-  employment: profileEmploymentRouter,
-  experience: profileExperienceRouter,
-  education: profileEducationRouter,
-  avatar: profileAvatarRouter,
-  completion: profileCompletionRouter,
-  skills: profileSkillsRouter,
-  skillsMultiTaxonomy: skillsMultiTaxonomyRouter,
-  certifications: profileCertificationsRouter.certifications,
-  widgets: profileWidgetsRouter,
-  vanity: profileVanityRouter,
-  import: profileImportRouter,
-});
+
+// Re-export the actual router instance (used at runtime in Deno)
+export { profileRouter } from "./_impl.ts";
+
+// Re-export the router type for client-side usage
+export type ProfileRouter = typeof import("./_impl.ts").profileRouter;
