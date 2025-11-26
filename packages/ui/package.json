@@ -24,7 +24,7 @@
     "format": "biome format ./src",
     "format:fix": "biome format --write ./src",
     "check-circular-deps": "../../scripts/check-circular-deps.sh ./src",
-    "test": "vitest run",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },

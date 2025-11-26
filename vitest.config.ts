@@ -9,9 +9,13 @@ import { flowRemoveTypesPlugin } from "./tests/infrastructure/vitest/plugins/flo
 
 const workspaceRoot = fileURLToPath(new URL(".", import.meta.url));
 const coverageReportsDirectory = resolve(workspaceRoot, "coverage");
-const quietReporterPath = resolve(
+const summaryReporterPath = resolve(
   workspaceRoot,
-  "tests/infrastructure/vitest/reporters/quiet-progress.ts",
+  "tests/infrastructure/vitest/reporters/summary-reporter.ts",
+);
+const errorReporterPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/reporters/error-reporter.ts",
 );
 const hangingTestReporterPath = resolve(
   workspaceRoot,
@@ -29,6 +33,10 @@ export default defineConfig({
   plugins,
   resolve: {
     alias: [
+      {
+        find: "msw/node",
+        replacement: resolve(workspaceRoot, "node_modules/msw/node"),
+      },
       {
         find: "react-native",
         replacement: reactNativeMockPath,
@@ -75,6 +83,7 @@ export default defineConfig({
     conditions: ["browser", "module", "import", "default"],
   },
   test: {
+    threads: false,
     globals: true,
     environment: "jsdom",
     watch: false,
@@ -83,38 +92,43 @@ export default defineConfig({
     teardownTimeout: 5_000, // 5 seconds for teardown
     retry: 1, // Retry failed tests once
     include: ["{apps,packages}/**/*.{test,spec}.{ts,tsx}"],
-    exclude: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/.expo/**",
-      "**/.tamagui/**",
-      "packages/supabase/functions/trpc/__tests__/**",
-      "packages/supabase/tests/**",
-      "tests/e2e/**",
-      "tests/infrastructure/**",
-      // Temporarily exclude potentially hanging tests (REQ-231)
-      "packages/core/features/profile/__tests__/profile-certifications-left.test.tsx",
-      "packages/core/features/profile/__tests__/profile-employment-left.test.tsx",
-      "packages/core/features/inquiries/components/__tests__/**",
-      "packages/core/features/profile-wizard/**",
-      "packages/core/features/discover/hooks/__tests__/**",
-      "packages/core/features/feedback/__tests__/**",
-      "packages/core/features/profile-completion/**",
-      "packages/core/features/profile-import/**",
-      "packages/core/features/resume/**",
-      "packages/core/utils/auth/__tests__/**",
-      "packages/core/features/work-logs/**",
-      "packages/ui/src/components/image-picker/**",
-      "packages/core/features/office/teams/**",
-      "packages/core/features/personality-assessment/**",
-    ],
+    // Temporarily comment out to run all tests and see what fails
+    // exclude: [
+    //   "**/node_modules/**",
+    //   "**/dist/**",
+    //   "**/.expo/**",
+    //   "**/.tamagui/**",
+    //   "packages/supabase/functions/trpc/__tests__/**",
+    //   "packages/supabase/tests/**",
+    //   "tests/e2e/**",
+    //   "tests/infrastructure/**",
+    //   // Temporarily exclude potentially hanging tests (REQ-231)
+    //   "packages/core/features/profile/__tests__/profile-certifications-left.test.tsx",
+    //   "packages/core/features/profile/__tests__/profile-employment-left.test.tsx",
+    //   "packages/core/features/inquiries/components/__tests__/**",
+    //   "packages/core/features/profile-wizard/**",
+    //   "packages/core/features/discover/hooks/__tests__/**",
+    //   "packages/core/features/feedback/__tests__/**",
+    //   "packages/core/features/profile-completion/**",
+    //   "packages/core/features/profile-import/**",
+    //   "packages/core/features/resume/**",
+    //   "packages/core/utils/auth/__tests__/**",
+    //   "packages/core/features/work-logs/**",
+    //   "packages/ui/src/components/image-picker/**",
+    //   "packages/core/features/office/teams/**",
+    //   "packages/core/features/personality-assessment/**",
+    // ],
     setupFiles: [
       resolve(workspaceRoot, "tests/infrastructure/vitest/setup.ts"),
+      resolve(workspaceRoot, "tests/infrastructure/vitest/mocks/api.ts"),
+      resolve(workspaceRoot, "tests/infrastructure/vitest/mocks/routes.ts"),
+      resolve(workspaceRoot, "tests/infrastructure/vitest/mocks/posthog.ts"),
     ],
-    reporters: [quietReporterPath, "hanging-process", hangingTestReporterPath],
+    reporters: ["default", "hanging-process", hangingTestReporterPath],
     server: {
       deps: {
         inline: [
+          "msw",
           "@testing-library/react-native",
           "expo-router",
           "tamagui",

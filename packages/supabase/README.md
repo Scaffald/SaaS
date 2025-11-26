@@ -68,6 +68,21 @@ pnpm deploy
 
 - [Reference](https://supabase.com/docs/reference/cli/supabase-db-push)
 
+#### Push auth/config with env templating
+
+`packages/supabase/config.toml` intentionally keeps `env(MY_VAR)` placeholders so we never commit secrets.
+Use the helper scripts below to render those values from the matching `.env.*` file before running any
+`supabase config` commands:
+
+```shell
+pnpm supa:config:push            # uses .env
+pnpm supa:config:push:preview    # uses .env.preview
+pnpm supa:config:push:prod       # uses .env.production
+```
+
+Each script loads the proper env file, substitutes the placeholders, runs the Supabase CLI command, then restores
+the template so git stays clean.
+
 #### Start
 
 Start local Supabase instance.

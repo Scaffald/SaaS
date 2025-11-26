@@ -1,30 +1,6 @@
-import fs from 'fs-extra'
-import { setupServer } from 'msw/node'
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { MapboxProvider } from '../packages/ui/src/components/address/providers/mapbox'
-import { createMapboxHandler } from './msw/mapbox'
-import { createOpenAIHandler } from './msw/openai'
-import { createSendgridHandler } from './msw/sendgrid'
-import { createStripeHandler } from './msw/stripe'
-import type { ContractInteraction } from './msw/types'
-
-const interactions: ContractInteraction[] = []
-const recordInteraction = (interaction: ContractInteraction) => interactions.push(interaction)
-
-const server = setupServer(
-  createMapboxHandler(recordInteraction),
-  createOpenAIHandler(recordInteraction),
-  createSendgridHandler(recordInteraction),
-  createStripeHandler(recordInteraction),
-)
-
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-afterEach(() => server.resetHandlers())
-afterAll(async () => {
-  server.close()
-  await fs.outputJson('contracts/generated/contracts.json', interactions, { spaces: 2 })
-})
 
 describe('Third-party API contracts', () => {
   it('satisfies the Mapbox geocoding contract via the provider hook', async () => {

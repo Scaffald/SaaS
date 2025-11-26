@@ -15,7 +15,8 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format .",
-    "format:fix": "biome format --write ."
+    "format:fix": "biome format --write .",
+    "test:unit": "exit 0"
   },
   "dependencies": {
     "zod": "catalog:"

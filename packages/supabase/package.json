@@ -11,8 +11,7 @@
     "download-onet": "pnpx tsx scripts/download-onet.ts",
     "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
     "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts",
-    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh",
-    "test:api": "pnpm test:endpoints"
+    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh"
   },
   "exports": {
     "./types": "./types.ts",

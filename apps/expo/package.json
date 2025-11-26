@@ -38,7 +38,7 @@
     "lint:fix": "biome lint --write ./app",
     "typecheck": "tsc --noEmit",
     "check": "pnpm format:fix && pnpm lint:fix && pnpm typecheck",
-    "test": "vitest run",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "adb:reverse": "adb reverse tcp:8081 tcp:8081"

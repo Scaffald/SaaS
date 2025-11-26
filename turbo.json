@@ -6,6 +6,11 @@
       "dependsOn": ["^build"],
       "outputs": ["tsconfig.tsbuildinfo"]
     },
+    "test:unit": {
+      "cache": true,
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"]
+    },
     "watch": {
       "cache": false,
       "persistent": true
