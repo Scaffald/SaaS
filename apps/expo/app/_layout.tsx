@@ -1,6 +1,7 @@
 import '../tamagui-web.css'
 
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
+import { getVersionDebugPayload } from '@app/core/constants/appVersion'
 import { loadThemePromise, Provider } from '@app/core/provider'
 import { supabase } from '@app/core/utils/supabase/client'
 import type { Session } from '@supabase/auth-js'
@@ -22,6 +23,9 @@ export default function DashboardLayout() {
   const [themeLoaded, setThemeLoaded] = useState(false)
   const [sessionLoadAttempted, setSessionLoadAttempted] = useState(false)
   const [initialSession, setInitialSession] = useState<Session | null>(null)
+  useEffect(() => {
+    console.info('[app version]', getVersionDebugPayload())
+  }, [])
   useEffect(() => {
     supabase.auth
       .getSession()

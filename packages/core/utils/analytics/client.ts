@@ -1,3 +1,4 @@
+import { APP_VERSION } from '@app/core/constants/appVersion'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Constants from 'expo-constants'
 import * as Updates from 'expo-updates'
@@ -49,7 +50,6 @@ const RUNTIME_VERSION =
   Constants.expoConfig?.runtimeVersion ||
   Constants.expoConfig?.version ||
   'unknown'
-const APP_VERSION = (Constants.expoConfig?.version ?? '0.0.0').toString()
 const IOS_BUNDLE_IDENTIFIER = Constants.expoConfig?.ios?.bundleIdentifier
 const ANDROID_PACKAGE = Constants.expoConfig?.android?.package
 

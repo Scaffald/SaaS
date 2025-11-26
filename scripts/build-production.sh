@@ -22,6 +22,14 @@ fi
 # Load production environment
 source .env.production
 
+# Auto-increment application version before building
+echo "🔢 Auto-incrementing application version..."
+if pnpm version:auto; then
+    echo "✅ Version updated"
+else
+    echo "⚠️  Version auto-increment failed; continuing with existing version"
+fi
+
 # Clean previous builds
 echo "🧹 Cleaning previous builds..."
 rm -rf apps/expo/dist
