@@ -1,3 +1,4 @@
+// @ts-nocheck
 // @ts-nocheck - This file is excluded from expo tsconfig but imported for types
 import type { PDFFont, PDFPage } from 'pdf-lib'
 import { PDFDocument, StandardFonts } from 'pdf-lib'

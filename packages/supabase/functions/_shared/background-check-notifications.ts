@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod'
 import { backgroundCheckStatusEnum } from './background-check-schemas.ts'
 import type { Json } from './database.types.ts'

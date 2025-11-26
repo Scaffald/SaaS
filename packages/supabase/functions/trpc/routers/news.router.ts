@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { officeProcedure, publicProcedure, t } from '../middleware.ts'

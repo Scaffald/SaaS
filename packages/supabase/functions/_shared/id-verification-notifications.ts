@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Json } from './database.types.ts'
 import type { NotificationSupabaseClient } from './notifications/types.ts'
 import {

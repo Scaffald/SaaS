@@ -1,3 +1,4 @@
+// @ts-nocheck
 // @ts-nocheck - This file is excluded from expo tsconfig but imported for types
 import { createClient } from '@supabase/supabase-js'
 

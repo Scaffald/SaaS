@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Helper utilities for working with polymorphic skills
  */

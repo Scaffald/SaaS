@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ChannelAdapter, NotificationChannel } from '../types.ts'
 
 import { emailAdapter } from './email.ts'

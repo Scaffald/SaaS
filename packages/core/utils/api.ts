@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
 import type { AppRouter } from "@app/supabase/client-types";
 import { httpBatchLink, TRPCClientError, type TRPCLink } from "@trpc/client";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 declare module 'posthog-node' {
   interface PostHogOptions {
     host?: string

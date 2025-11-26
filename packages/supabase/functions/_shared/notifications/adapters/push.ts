@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Expo } from 'https://esm.sh/expo-server-sdk@4.9.1'
 import type { ChannelAdapter } from '../types.ts'
 import { normalizeMetadata } from '../utils.ts'

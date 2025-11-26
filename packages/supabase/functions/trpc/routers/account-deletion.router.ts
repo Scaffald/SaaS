@@ -1,3 +1,4 @@
+// @ts-nocheck
 // This file uses Deno ESM imports from esm.sh that are not compatible with TypeScript checking
 // The file is only used in Supabase Edge Functions, not in the React Native app
 import { TRPCError } from '@trpc/server'

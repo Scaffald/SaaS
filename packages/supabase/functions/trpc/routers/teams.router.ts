@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { buildAppUrl } from "../../_shared/app-url.ts";

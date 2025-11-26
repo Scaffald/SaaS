@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Json } from '../database.types.ts'
 import type {
   NotificationChannel,

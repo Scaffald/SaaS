@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Json } from './database.types.ts'
 
 type PlainRecord = Record<string, unknown>

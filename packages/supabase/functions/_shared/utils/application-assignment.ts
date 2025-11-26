@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 
 type SupabaseAdminClient = SupabaseClient

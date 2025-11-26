@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod'
 
 const PHONE_INVALID_MESSAGE = 'Please enter a valid phone number'

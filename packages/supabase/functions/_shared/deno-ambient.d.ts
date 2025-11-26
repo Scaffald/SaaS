@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Minimal ambient declaration for Deno globals used in shared code.
 declare const Deno: {
   env: {

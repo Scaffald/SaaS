@@ -1,3 +1,4 @@
+// @ts-nocheck
 // @ts-nocheck - This file is excluded from expo tsconfig but imported for types
 // Suppresses TS6307 errors when TypeScript follows the import chain
 import { t } from '../middleware.ts'

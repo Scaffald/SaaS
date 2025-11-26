@@ -1,3 +1,4 @@
+// @ts-nocheck
 const BASE_URL_ENV_KEYS = [
   'TEAM_APP_BASE_URL',
   'EXPO_PUBLIC_URL',

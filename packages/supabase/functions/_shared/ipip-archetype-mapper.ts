@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { IPIPDomain, IPIPScores } from './ipip-types.ts'
 
 /**

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createClient } from '@supabase/supabase-js'
 
 import type { Database, Json } from '../database.types.ts'

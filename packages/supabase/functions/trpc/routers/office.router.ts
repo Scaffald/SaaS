@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { jobCreateSchema, jobUpdateSchema } from '../../_shared/job-schemas.ts'

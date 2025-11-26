@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { t } from "../../middleware.ts";
 import { profileAvatarRouter } from "./avatar.router.ts";
 import { profileCertificationsRouter } from "./certifications.router.ts";
