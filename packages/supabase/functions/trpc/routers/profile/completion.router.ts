@@ -95,7 +95,7 @@ interface SectionStatus {
   missingFields: string[]
 }
 
-interface CompletionStatusPayload {
+export interface CompletionStatusPayload {
   completionPercentage: number
   milestoneBadges: Array<{
     id: string

@@ -38,7 +38,7 @@ interface SoftSkillCatalogEntry {
   orderIndex: number
 }
 
-interface SoftSkillView extends SoftSkillCatalogEntry {
+export interface SoftSkillView extends SoftSkillCatalogEntry {
   rating: number | null
   selfAssessedAt: string | null
 }

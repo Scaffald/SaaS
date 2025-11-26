@@ -353,7 +353,7 @@ const fetchWorkLogRelationshipCounts = async (
   };
 };
 
-interface ProjectMetadata {
+export interface ProjectMetadata {
   id: string;
   name: string;
   status: string | null;
@@ -1142,7 +1142,7 @@ const createSystemMessage = async (
 
 type SkillTaxonomy = "csi" | "onet";
 
-interface SuggestedSkill {
+export interface SuggestedSkill {
   id: string;
   taxonomy: SkillTaxonomy;
   name: string;

@@ -17,7 +17,7 @@ interface SoftSkillMetadata {
   category: string | null
 }
 
-interface SoftSkillMatchDetail {
+export interface SoftSkillMatchDetail {
   skillId: string
   skillName: string | null
   category: string | null

@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "skipLibCheck": true,
     "paths": {
       "@app/trpc": ["."],
       "@app/trpc/*": ["./*"]

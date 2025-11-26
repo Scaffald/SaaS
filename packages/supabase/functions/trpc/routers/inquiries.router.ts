@@ -147,7 +147,7 @@ async function syncApplicationStatus(
   }
 }
 
-interface ApplicationDetails {
+export interface ApplicationDetails {
   id: string
   status: string | null
   applicationScore: number | null
