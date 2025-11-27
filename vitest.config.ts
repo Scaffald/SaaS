@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { cpus } from "node:os";
 
 import react from "@vitejs/plugin-react";
 import type { PluginOption } from "vite";
@@ -27,6 +28,10 @@ const reactNativeMockPath = resolve(
   workspaceRoot,
   "tests/infrastructure/vitest/mocks/react-native.ts",
 );
+
+// Calculate worker pool size: auto-detect from CPU cores with bounds (min 4, max 8)
+const cpuCount = cpus().length;
+const workerPoolSize = Math.min(Math.max(cpuCount - 1, 4), 8);
 
 export default defineConfig({
   root: workspaceRoot,
@@ -110,5 +115,7 @@ export default defineConfig({
     setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
     testTimeout: 60000, // 60 second timeout per test
     hookTimeout: 30000, // 30 second timeout for setup/teardown
+    pool: 'forks',
+    poolSize: workerPoolSize,
   },
 });

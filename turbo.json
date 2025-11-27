@@ -8,7 +8,6 @@
     },
     "test:unit": {
       "cache": true,
-      "dependsOn": ["build"],
       "outputs": ["coverage/**"]
     },
     "watch": {

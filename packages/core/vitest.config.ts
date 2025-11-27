@@ -8,7 +8,7 @@ const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 const packageConfig = {
   root: workspaceRoot,
   test: {
-    include: ['disabled_tests/**/*.{test,spec}.{ts,tsx}'],
+    include: ['packages/core/**/*.{test,spec}.{ts,tsx}'],
     watchExclude: ['**/dist/**'],
   },
   resolve: {
