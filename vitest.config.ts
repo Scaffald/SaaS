@@ -28,6 +28,22 @@ const reactNativeMockPath = resolve(
   workspaceRoot,
   "tests/infrastructure/vitest/mocks/react-native.ts",
 );
+const jsonReporterPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/reporters/json-reporter.ts",
+);
+const junitReporterPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/reporters/junit-reporter.ts",
+);
+const asyncErrorReporterPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/reporters/async-error-reporter.ts",
+);
+const coverageReporterPath = resolve(
+  workspaceRoot,
+  "tests/infrastructure/vitest/reporters/coverage-reporter.ts",
+);
 
 // Calculate worker pool size: auto-detect from CPU cores with bounds (min 4, max 8)
 const cpuCount = cpus().length;
@@ -117,5 +133,27 @@ export default defineConfig({
     hookTimeout: 30000, // 30 second timeout for setup/teardown
     pool: 'forks',
     poolSize: workerPoolSize,
+    reporters: [
+      'default',
+      summaryReporterPath,
+      errorReporterPath,
+      hangingTestReporterPath,
+      jsonReporterPath,
+      junitReporterPath,
+      asyncErrorReporterPath,
+      coverageReporterPath,
+    ],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'tests/',
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        '**/*.test.tsx',
+        '**/*.spec.tsx',
+      ],
+    },
   },
 });

@@ -111,3 +111,32 @@ console.error = (...args) => {
   // Pass through other errors
   originalError(...args);
 };
+
+// Global unhandled rejection and uncaught exception tracking
+// These are reported by the async-error-reporter for better visibility
+const unhandledErrors: Array<{ type: string; error: any; timestamp: number }> = [];
+
+if (typeof global !== 'undefined') {
+  // Track unhandled promise rejections
+  process.on('unhandledRejection', (reason, promise) => {
+    unhandledErrors.push({
+      type: 'UnhandledPromiseRejection',
+      error: reason,
+      timestamp: Date.now(),
+    });
+    originalError(`[Unhandled Rejection] ${reason instanceof Error ? reason.message : String(reason)}`);
+  });
+
+  // Track uncaught exceptions
+  process.on('uncaughtException', (error) => {
+    unhandledErrors.push({
+      type: 'UncaughtException',
+      error,
+      timestamp: Date.now(),
+    });
+    originalError(`[Uncaught Exception] ${error.message}`);
+  });
+
+  // Expose errors for reporters
+  (global as any).__unhandledErrors__ = unhandledErrors;
+}
