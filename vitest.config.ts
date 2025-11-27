@@ -76,6 +76,27 @@ export default defineConfig({
         ),
       },
       {
+        find: "expo-modules-core",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/expo-modules-core.ts",
+        ),
+      },
+      {
+        find: "expo-localization",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/expo-localization.ts",
+        ),
+      },
+      {
+        find: "@app/core/constants/routes",
+        replacement: resolve(
+          workspaceRoot,
+          "tests/infrastructure/vitest/mocks/routes.ts",
+        ),
+      },
+      {
         find: "@app/styleguide",
         replacement: resolve(workspaceRoot, "packages/ui/src/styleguide"),
       },
@@ -85,6 +106,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    include: ['disabled_tests/**/*.{test,spec}.{ts,tsx}'],
+    include: ['packages/**/*.{test,spec}.{ts,tsx}'],
+    setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
+    testTimeout: 60000, // 60 second timeout per test
+    hookTimeout: 30000, // 30 second timeout for setup/teardown
   },
 });

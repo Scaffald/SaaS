@@ -36,7 +36,12 @@ const mockPostHogInstance = {
   optedOut: false,
 };
 
-const PostHogConstructor = vi.fn(() => mockPostHogInstance);
+// Create a constructor function that works with 'new' keyword
+class PostHogConstructor {
+  constructor() {
+    Object.assign(this, mockPostHogInstance);
+  }
+}
 
 vi.mock("posthog-react-native", () => ({
   default: PostHogConstructor,
