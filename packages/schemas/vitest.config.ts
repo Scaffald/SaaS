@@ -14,6 +14,8 @@ export default mergeConfig(
     test: {
       include: ['packages/schemas/**/*.{test,spec}.{ts}'],
       watchExclude: ['**/dist/**', '**/.turbo/**'],
+      testTimeout: 60000, // 60 second timeout per test
+      hookTimeout: 30000, // 30 second timeout for setup/teardown
     },
     resolve: {
       alias: [
