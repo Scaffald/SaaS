@@ -1,15 +1,15 @@
 {
   "organization_id": "default",
-  "project_id": "0f70d273-f528-4cc4-a1fa-8daab9111973",
-  "project_short_id": "PROJ-2",
-  "project_name": "SCF-Neue",
+  "project_id": "1483a280-b064-40c9-a872-39a627e9997f",
+  "project_short_id": "PROJ-13",
+  "project_name": "SCF-Scaffald",
   "project_description": null,
   "repository": {
-    "id": "2766c9e3-7abb-42c5-b527-8e6b70341b85",
+    "id": "9b193a4e-a4eb-4c36-8d1c-2ef1c8717f97",
     "owner": "Unicorn",
-    "name": "SCF-Neue",
-    "full_name": "Unicorn/SCF-Neue",
-    "url": "git@github.com:Unicorn/SCF-Neue.git"
+    "name": "SCF-Scaffald",
+    "full_name": "Unicorn/SCF-Scaffald"
   },
-  "created_at": "2025-11-03T21:57:43.925Z"
+  "created_at": "2025-11-30T23:18:39.416Z"
 }
+
