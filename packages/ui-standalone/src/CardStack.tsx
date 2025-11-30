@@ -1,6 +1,14 @@
-import { randomUUID } from 'expo-crypto'
 import { type ComponentType, type ReactNode, useEffect, useState } from 'react'
 import { Text, View, XStack } from 'tamagui'
+
+// Platform-agnostic UUID generator
+const randomUUID = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  // Fallback for environments without crypto.randomUUID
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+}
 
 const axises = {
   left: {

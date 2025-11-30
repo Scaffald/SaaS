@@ -21,6 +21,7 @@ export default defineConfig({
     /^react-native\//,
     /^react-native-/,
     'expo',
+    /^expo-/,
     'expo-router',
     'tamagui',
     '@tamagui/core',
