@@ -1,6 +1,7 @@
 export { FileUpload, type FileUploadProps } from './FileUpload'
 export { IconSelector } from './IconSelector'
-export { ImageUpload, type ImageUploadProps } from './ImageUpload'
+// ImageUpload has domain-specific Supabase dependencies - excluded from standalone
+// export { ImageUpload, type ImageUploadProps } from './ImageUpload'
 export {
   ResponsiveSelect,
   type ResponsiveSelectOption,

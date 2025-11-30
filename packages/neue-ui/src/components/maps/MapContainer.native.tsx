@@ -1,15 +1,15 @@
-import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider'
 import type { MapView } from '@rnmapbox/maps'
 import MapboxGL from '@rnmapbox/maps'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { Text, View } from 'tamagui'
+import { Text, useThemeName, View } from 'tamagui'
 import { MapFallback } from './MapFallback'
 import { getMapStyleUrl } from './mapboxStyleConfig'
 import type { MapContainerProps, MapContainerRef } from './types'
 
 export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
   ({ pins, center = [-84.5555, 42.7325], zoom = 7, onPinPress, onMapReady, style }, ref) => {
-    const { resolvedTheme } = useThemeSetting()
+    const themeName = useThemeName()
+    const resolvedTheme = themeName?.includes('dark') ? 'dark' : 'light'
     const mapRef = useRef<MapView | null>(null)
     const [isMapReady, setIsMapReady] = useState(false)
 
