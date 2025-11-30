@@ -72,7 +72,7 @@ export function validateGeoJSONFeatureCollection(data: unknown): data is GeoJSON
  * @throws Error if map bounds are not available
  */
 export function extractViewportBounds(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: mapboxgl.Map type not available in this context
   map: any
 ): ViewportBounds {
   const bounds = map.getBounds()
