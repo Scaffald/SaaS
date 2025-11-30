@@ -62,7 +62,7 @@ jobs:
       - name: 🏗️ Build workspace packages
         run: |
           echo "Building UI package..."
-          pnpm --filter @app/ui build
+          pnpm --filter @scaffald/neue-ui build
           echo "Building Core package..."
           pnpm --filter @app/core build
           echo "Building Schemas package..."

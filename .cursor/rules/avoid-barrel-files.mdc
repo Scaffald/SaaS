@@ -18,11 +18,6 @@ alwaysApply: false
 
 ## Guidelines
 
-### Avoid Barrel Files
-- **DO NOT create** barrel files (`index.ts`/`index.js`) that re-export multiple modules
-- **DO NOT use** barrel file imports like `import { ComponentA, ComponentB } from './components'`
-- **PREFER direct imports** from specific files instead
-
 ### Preferred Import Patterns
 ```typescript
 // ❌ AVOID - Barrel file import
@@ -33,18 +28,6 @@ import { ComponentA } from './components/ComponentA'
 import { ComponentB } from './components/ComponentB'
 import { ComponentC } from './components/ComponentC'
 ```
-
-### When Barrel Files Are Acceptable
-- **In Packages** - When using or updating @app/ui or @app/core packages, in which case these should always use barrel files
-- **Single module exports** - Only export one main component/function per barrel file
-- **Public API boundaries** - At package boundaries where you need to control what's exported
-- **Legacy compatibility** - When migrating existing codebases gradually
-
-### Refactoring Existing Barrel Files
-- **IDENTIFY barrel files** in the codebase using pattern: `**/index.{ts,tsx,js,jsx}`
-- **REPLACE barrel imports** with direct imports
-- **REMOVE unused barrel files** after refactoring
-- **UPDATE import statements** throughout the codebase
 
 ## Implementation Strategy
 1. **AUDIT existing barrel files** in the project
