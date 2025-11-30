@@ -254,4 +254,3 @@ export function createUIConfig(uiConfig?: UIConfig) {
  * Export default scaffald theme as example
  */
 export { themes as defaultTheme } from './scaffald-theme'
-

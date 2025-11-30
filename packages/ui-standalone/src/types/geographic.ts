@@ -13,4 +13,3 @@ export type Coordinate = [longitude: number, latitude: number]
  * Must have at least 3 points to form a valid polygon
  */
 export type Boundary = Coordinate[]
-

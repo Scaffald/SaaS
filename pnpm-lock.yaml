@@ -812,6 +812,9 @@ importers:
       '@hookform/resolvers':
         specifier: 'catalog:'
         version: 3.1.1(react-hook-form@7.63.0(react@19.1.0))
+      '@scaffald/tamagui-ui':
+        specifier: workspace:*
+        version: link:../ui-standalone
       '@tamagui/animations-moti':
         specifier: 'catalog:'
         version: 1.138.0(react-dom@19.1.0(react@19.1.0))(react-native-reanimated@4.1.2(@babel/core@7.28.5)(react-native-worklets@0.6.0(@babel/core@7.28.5)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)

@@ -109,4 +109,3 @@ export const requiredPhoneNumberSchema = z
   .refine((phone) => validatePhoneNumber(phone), {
     message: PHONE_INVALID_MESSAGE,
   })
-
