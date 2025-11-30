@@ -11,7 +11,7 @@ export const TODO_ITEMS: TodoItem[] = [
     id: 'docgen-props',
     title: 'Automate component prop tables',
     summary:
-      'Prop documentation is currently curated by hand. Integrate react-docgen-typescript across @app/ui to surface live prop tables.',
+      'Prop documentation is currently curated by hand. Integrate react-docgen-typescript across @scaffald/tamagui-ui to surface live prop tables.',
     suggestion:
       "Install react-docgen-typescript in the workspace, add a turbo task that emits JSON for each component, and hydrate the Styleguide's <PropTable> component from that output.",
     href: '/styleguide/components/buttons#todo-docgen-props',
