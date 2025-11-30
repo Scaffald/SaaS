@@ -6,7 +6,7 @@ import {
 } from '@app/schemas'
 import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
 import { ResponsiveSelect } from '@app/ui'
-import { UserSearch } from '@app/ui/components/user/UserSearch'
+import { UserSearch } from '@app/core/components/user'
 import { Mail, UserPlus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'

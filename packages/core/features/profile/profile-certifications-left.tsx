@@ -1,9 +1,11 @@
 import { api } from '@app/core/utils/api'
 import {
-  UIButton as Button,
   CertificationCheckbox,
   CertificationChip,
   CertificationSearch,
+} from '@app/core/components/certifications'
+import {
+  UIButton as Button,
   DashboardWidget,
   MonthYearPicker,
   ToggleCard,

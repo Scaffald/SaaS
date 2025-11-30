@@ -4,18 +4,8 @@ export { CardHeader } from './CardHeader'
 export { CardMetadata } from './CardMetadata'
 export { DiscoverCard } from './DiscoverCard'
 export { DashboardWidget } from './DashboardWidget'
-export type { JobCardProps, JobOrganization } from './JobCard'
-export { JobCard } from './JobCard'
+// JobCard, OrganizationCard, ProfileCard moved to @app/core/components
 export { NewsCard } from './NewsCard'
-export type {
-  OrganizationAddress,
-  OrganizationCardProps,
-} from './OrganizationCard'
-export { OrganizationCard } from './OrganizationCard'
-// Domain-specific types
-export type { ProfileBadge, ProfileCardProps } from './ProfileCard'
-// Domain-specific card variants
-export { ProfileCard } from './ProfileCard'
 export { SelectableCard } from './SelectableCard'
 export type {
   ActionButton,

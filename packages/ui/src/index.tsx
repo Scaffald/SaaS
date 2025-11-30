@@ -38,7 +38,7 @@ export { Button as UIButton } from './components/buttons/Button'
 // Individual component exports to avoid circular dependencies
 export { CustomToast } from './components/CustomToast'
 export * from './components/cards'
-export * from './components/certifications'
+// Certifications moved to @app/core/components/certifications
 export * from './components/charts'
 export * from './components/checklist'
 export * from './components/chips'
@@ -64,7 +64,7 @@ export { DashboardLayout } from './components/layouts/DashboardLayout'
 export { OfficeLayout } from './components/layouts/OfficeLayout'
 export { ProfileLayout } from './components/layouts/ProfileLayout'
 export * from './components/maps'
-export { NotificationPopover, type NotificationItem } from './components/NotificationPopover'
+// NotificationPopover moved to @app/core/components/notifications
 export {
   OfficeAccordion,
   type OfficeAccordionProps,
@@ -120,7 +120,7 @@ export * from './components/table/TableColumnVisibilityModal'
 // Table components
 export * from './components/table/TableParts'
 export * from './components/typography'
-export * from './components/university'
+// University components moved to @app/core/components/university
 export {
   type UploadSelection,
   UploadSurface,

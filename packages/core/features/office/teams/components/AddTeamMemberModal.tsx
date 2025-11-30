@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
 import { ResponsiveSelect } from '@app/ui'
-import { UserSearch } from '@app/ui/components/user/UserSearch'
+import { UserSearch } from '@app/core/components/user'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Spinner, Text, XStack, YStack } from 'tamagui'

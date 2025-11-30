@@ -1,6 +1,5 @@
-import type { Boundary } from '@app/schemas'
-// @ts-expect-error - SiteBoundaryDrawer is not exported from @app/ui
-import { SiteBoundaryDrawer } from '@app/ui/src/components/map/SiteBoundaryDrawer'
+import type { Boundary } from '@scaffald/tamagui-ui/types/geographic'
+import { SiteBoundaryDrawer } from '@app/core/components/sites'
 
 export interface SiteBoundaryEditorProps {
   boundary?: Boundary

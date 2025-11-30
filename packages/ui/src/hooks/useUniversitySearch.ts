@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { University } from '../components/university/UniversityAutocomplete'
+import type { University } from '@app/core/components/university'
 
 export interface UseUniversitySearchOptions {
   debounceMs?: number

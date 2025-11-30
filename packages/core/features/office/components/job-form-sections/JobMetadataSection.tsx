@@ -1,4 +1,5 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, UserSearch, XStack, YStack } from '@app/ui'
+import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
+import { UserSearch } from '@app/core/components/user'
 import { useState } from 'react'
 import { Label } from 'tamagui'
 
