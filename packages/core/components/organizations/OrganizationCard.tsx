@@ -2,11 +2,13 @@ import { Building, MapPin, Users } from '@tamagui/lucide-icons'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Text, XStack } from 'tamagui'
-import { CardActions } from './CardActions'
-import { CardHeader } from './CardHeader'
-import { CardMetadata } from './CardMetadata'
-import { SelectableCard } from './SelectableCard'
-import type { MetadataItem } from './types'
+import {
+  CardActions,
+  CardHeader,
+  CardMetadata,
+  SelectableCard,
+  type MetadataItem,
+} from '@app/ui'
 
 /**
  * Organization address data

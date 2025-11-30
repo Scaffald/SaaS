@@ -3,11 +3,14 @@ import type { ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Paragraph, Text, XStack, useWindowDimensions } from 'tamagui'
-import { CardBadges } from './CardBadges'
-import { CardHeader } from './CardHeader'
-import { CardMetadata } from './CardMetadata'
-import { SelectableCard } from './SelectableCard'
-import type { BadgeConfig, MetadataItem } from './types'
+import {
+  CardBadges,
+  CardHeader,
+  CardMetadata,
+  SelectableCard,
+  type BadgeConfig,
+  type MetadataItem,
+} from '@app/ui'
 
 /**
  * Profile card badge configuration

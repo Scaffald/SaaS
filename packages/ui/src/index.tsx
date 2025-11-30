@@ -34,11 +34,21 @@ export {
 // Table components with domain dependencies
 export * from './components/table/DataTable'
 
+// NotificationItem type (from moved NotificationPopover)
+export type { NotificationItem } from '@app/core/components/notifications'
+// UniversityAutocomplete (from moved university components)
+export { UniversityAutocomplete } from '@app/core/components/university'
+
 // Hooks with domain dependencies
 export { useBreadcrumbs } from './hooks/useBreadcrumbs'
-export * from './hooks/useUniversitySearch'
+// useUniversitySearch is already exported from standalone package, but we have a domain-specific version
+// Export it explicitly to override the standalone version
+export {
+  useUniversitySearch,
+  type UseUniversitySearchOptions,
+  type UseUniversitySearchResult,
+} from './hooks/useUniversitySearch'
 
-// Re-export styleguide and config from local (may have domain-specific content)
-export * from './styleguide'
+// Re-export config from local (tamagui.config may have domain-specific settings)
+// Note: themes/scaffald-theme is already exported from standalone package
 export { config } from './tamagui.config'
-export * from './themes/scaffald-theme'

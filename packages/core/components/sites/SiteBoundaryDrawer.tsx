@@ -1,4 +1,4 @@
-import type { Boundary, Coordinate } from '@scaffald/tamagui-ui/types/geographic'
+import type { Boundary, Coordinate } from '@app/ui'
 import { Edit3, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { useEffect, useRef, useState } from 'react'
 import { Button, Card, Input, Text, XStack, YStack } from 'tamagui'

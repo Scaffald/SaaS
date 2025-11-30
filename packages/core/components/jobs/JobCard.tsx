@@ -2,12 +2,15 @@ import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'
 import { Paragraph, Text, XStack } from 'tamagui'
-import { CardActions } from './CardActions'
-import { CardBadges } from './CardBadges'
-import { CardHeader } from './CardHeader'
-import { CardMetadata } from './CardMetadata'
-import { SelectableCard } from './SelectableCard'
-import type { BadgeConfig, MetadataItem } from './types'
+import {
+  CardActions,
+  CardBadges,
+  CardHeader,
+  CardMetadata,
+  SelectableCard,
+  type BadgeConfig,
+  type MetadataItem,
+} from '@app/ui'
 
 /**
  * Job card organization data
