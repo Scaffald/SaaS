@@ -16,8 +16,10 @@ export default defineConfig({
   },
   external: [
     'react',
-    'react-native',
     'react-dom',
+    'react-native',
+    /^react-native\//,
+    /^react-native-/,
     'expo',
     'expo-router',
     'tamagui',
@@ -41,11 +43,14 @@ export default defineConfig({
     'zod',
     'moti',
     'react-native-reanimated',
+    'react-native-gesture-handler',
     'react-dropzone',
     '@dnd-kit/core',
     '@dnd-kit/sortable',
     '@dnd-kit/utilities',
     'awesome-phonenumber',
+    '@react-navigation/elements',
   ],
+  noExternal: [],
 })
 
