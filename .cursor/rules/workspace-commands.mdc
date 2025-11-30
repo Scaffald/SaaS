@@ -114,11 +114,11 @@ alwaysApply: true
 - `pnpm --filter @app/core watch` - Watch core package
 - `pnpm --filter @app/core check:type` - Type check core package
 
-### UI Package (`@app/ui`)
-- `pnpm --filter @app/ui build` - Build UI package
-- `pnpm --filter @app/ui watch` - Watch UI package
-- `pnpm --filter @app/ui check` - Check UI package
-- `pnpm --filter @app/ui format:fix` - Format UI package
+### UI Package (`@scaffald/neue-ui`)
+- `pnpm --filter @scaffald/neue-ui build` - Build UI package
+- `pnpm --filter @scaffald/neue-ui watch` - Watch UI package
+- `pnpm --filter @scaffald/neue-ui check` - Check UI package
+- `pnpm --filter @scaffald/neue-ui format:fix` - Format UI package
 
 ### Expo App (`expo-app`)
 - `pnpm --filter expo-app start` - Start Expo app
