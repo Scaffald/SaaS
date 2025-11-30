@@ -60,7 +60,7 @@ vi.mock('tamagui', async () => {
   }
 })
 
-vi.mock('@app/ui', () => ({
+'@scaffald/tamagui-ui', () => ({
   AddressAutocomplete: ({
     onChange,
     onAddressSelect,

@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
+import { ResponsiveModal } from '@scaffald/tamagui-ui'
 import { ResponsiveSelect } from '@scaffald/tamagui-ui'
 import { UserSearch } from '@app/core/components/user'
 import { useToastController } from '@tamagui/toast'

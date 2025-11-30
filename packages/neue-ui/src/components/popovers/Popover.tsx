@@ -18,7 +18,7 @@ const PopoverContent = styled(TamaguiPopover.Content, {
  * This is a wrapper around Tamagui's Popover component that ensures
  * all Popover.Content instances have a consistent background color by default.
  *
- * Usage: Import Popover from '@app/ui' and use it like Tamagui's Popover.
+ * Usage: Import Popover from '@scaffald/tamagui-ui' and use it like Tamagui's Popover.
  * All Popover.Content components will automatically have bg="$color1" applied.
  */
 export const Popover = withStaticProperties(TamaguiPopover, {

@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@scaffald/tamagui-ui'
-import { extractPlainText } from '@app/ui/components/rich-text'
+import { extractPlainText } from '@scaffald/tamagui-ui'
 import {
   Award,
   Briefcase,

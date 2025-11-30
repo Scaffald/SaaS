@@ -24,7 +24,7 @@ const translateErrorMock = vi.hoisted(() =>
   vi.fn((error: unknown) => (error instanceof Error ? error.message : 'Unknown error'))
 )
 
-vi.mock('@app/ui', () => ({
+'@scaffald/tamagui-ui', () => ({
   Button: ({ children, onPress, ...rest }: { children: ReactNode; onPress?: () => void }) => (
     <button type="button" onClick={onPress} {...rest}>
       {children}

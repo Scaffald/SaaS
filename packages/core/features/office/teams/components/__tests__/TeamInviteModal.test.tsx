@@ -25,12 +25,12 @@ vi.mock('@tamagui/toast', () => ({
   useToastController: () => ({ show: mockShow }),
 }))
 
-vi.mock('@app/ui/components/ResponsiveModal', () => ({
+vi.mock('@scaffald/tamagui-ui', () => ({
   ResponsiveModal: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
     open ? <div data-testid="modal">{children}</div> : null,
 }))
 
-vi.mock('@app/ui/components/user/UserSearch', () => ({
+vi.mock('@app/core/components/user', () => ({
   UserSearch: ({
     onSelect,
   }: {

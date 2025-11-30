@@ -44,7 +44,7 @@ const searchPropsStore = vi.hoisted(() => ({
   latestSelectedIds: [],
 }))
 
-vi.mock('@app/ui', () => {
+'@scaffald/tamagui-ui', () => {
   const passthrough =
     (Tag = 'div') =>
     ({ children, ...rest }) =>

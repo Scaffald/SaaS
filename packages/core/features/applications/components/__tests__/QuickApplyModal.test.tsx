@@ -44,7 +44,7 @@ vi.mock('@tamagui/toast', () => ({
   }),
 }))
 
-vi.mock('@app/ui', () => ({
+'@scaffald/tamagui-ui', () => ({
   AddressAutocomplete: ({
     value,
     onChange,

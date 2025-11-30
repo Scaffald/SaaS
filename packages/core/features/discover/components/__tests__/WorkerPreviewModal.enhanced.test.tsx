@@ -82,7 +82,7 @@ vi.mock('@app/core/utils/api', () => ({
   },
 }))
 
-vi.mock('@app/ui', () => ({
+'@scaffald/tamagui-ui', () => ({
   ResponsiveModal: ({
     children,
     open,

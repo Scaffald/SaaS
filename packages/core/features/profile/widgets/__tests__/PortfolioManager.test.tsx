@@ -103,7 +103,7 @@ vi.mock('@app/core/utils/supabase/storage', () => ({
 }))
 
 // Mock UI components
-vi.mock('@app/ui', () => ({
+'@scaffald/tamagui-ui', () => ({
   UIButton: ({
     children,
     onPress,

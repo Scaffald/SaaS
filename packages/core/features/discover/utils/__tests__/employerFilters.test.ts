@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const extractPlainText = vi.fn();
 
-vi.mock("@app/ui", () => ({
+"@scaffald/tamagui-ui", () => ({
   extractPlainText,
 }));
 

@@ -146,7 +146,7 @@ export function Profile[Section]Right() {
 // apps/expo/app/dashboard/profile/[section]/index.tsx
 import { Profile[Section]Left } from '@app/core/features/profile/profile-[section]-left'
 import { Profile[Section]Right } from '@app/core/features/profile/profile-[section]-right'
-import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { DashboardLayout } from '@app/core/components/layouts'
 
 export default function Profile[Section]Page() {
   return (

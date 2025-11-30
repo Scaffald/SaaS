@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProfileCompletionModal } from '../ProfileCompletionModal'
 
-vi.mock('@app/ui', () => ({
+'@scaffald/tamagui-ui', () => ({
   ResponsiveModal: ({
     open,
     onOpenChange,

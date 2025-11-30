@@ -4,7 +4,7 @@ import {
   TEAM_INVITATION_TTL_MAX,
   TEAM_INVITATION_TTL_MIN,
 } from '@app/schemas'
-import { ResponsiveModal } from '@app/ui/components/ResponsiveModal'
+import { ResponsiveModal } from '@scaffald/tamagui-ui'
 import { ResponsiveSelect } from '@scaffald/tamagui-ui'
 import { UserSearch } from '@app/core/components/user'
 import { Mail, UserPlus } from '@tamagui/lucide-icons'
