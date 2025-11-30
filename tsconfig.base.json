@@ -18,8 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@app/core": ["./packages/core"],
-      "@app/styleguide": ["./packages/ui-standalone/src/styleguide/index.ts"],
-      "@app/styleguide/*": ["./packages/ui-standalone/src/styleguide/*"],
+      "@app/styleguide": ["./packages/neue-ui/src/styleguide/index.ts"],
+      "@app/styleguide/*": ["./packages/neue-ui/src/styleguide/*"],
       "@app/supabase": ["./packages/supabase"],
       "@app/trpc": ["./packages/trpc/src"],
       "@app/trpc/*": ["./packages/trpc/src/*"],

@@ -42,8 +42,8 @@
       "@app/trpc/*": ["packages/trpc/src/*"],
       "@app/schemas": ["packages/schemas/src"],
       "@app/schemas/*": ["packages/schemas/src/*"],
-      "@app/styleguide": ["packages/ui-standalone/src/styleguide/index.ts"],
-      "@app/styleguide/*": ["packages/ui-standalone/src/styleguide/*"],
+      "@app/styleguide": ["packages/neue-ui/src/styleguide/index.ts"],
+      "@app/styleguide/*": ["packages/neue-ui/src/styleguide/*"],
       "expo-clipboard": ["types/expo-clipboard.d.ts"]
     }
   },

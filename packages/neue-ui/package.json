@@ -10,14 +10,14 @@
     "components"
   ],
   "author": "Scaffald",
-  "homepage": "https://github.com/Unicorn/SCF-Neue/tree/main/packages/ui-standalone",
+  "homepage": "https://github.com/Unicorn/SCF-Neue/tree/main/packages/neue-ui",
   "bugs": {
     "url": "https://github.com/Unicorn/SCF-Neue/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Unicorn/SCF-Neue",
-    "directory": "packages/ui-standalone"
+    "directory": "packages/neue-ui"
   },
   "license": "MIT",
   "private": false,
@@ -119,4 +119,3 @@
     "vitest": "^4.0.10"
   }
 }
-

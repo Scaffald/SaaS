@@ -16,7 +16,7 @@ The legacy `@app/ui` package has been **removed**.
 ### Package Structure
 
 - ✅ **Removed**: `packages/ui` (legacy `@app/ui` package)
-- ✅ **Updated**: `packages/ui-standalone` → now `@scaffald/tamagui-ui` (publishable)
+- ✅ **Updated**: `packages/neue-ui` → now `@scaffald/tamagui-ui` (publishable)
 - ✅ **Updated**: `packages/core` → now contains domain-specific UI components
 
 ### Component Locations
@@ -145,7 +145,7 @@ If you have custom TypeScript paths, update them:
 {
   "compilerOptions": {
     "paths": {
-      "@scaffald/tamagui-ui": ["./packages/ui-standalone"]
+      "@scaffald/tamagui-ui": ["./packages/neue-ui"]
     }
   }
 }

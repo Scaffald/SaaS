@@ -72,7 +72,7 @@ export default defineConfig({
       },
       {
         find: "@app/ui",
-        replacement: resolve(workspaceRoot, "packages/ui/src"),
+        replacement: resolve(workspaceRoot, "packages/neue-ui/src"),
       },
       {
         find: "@app/supabase",
@@ -119,7 +119,7 @@ export default defineConfig({
       },
       {
         find: "@app/styleguide",
-        replacement: resolve(workspaceRoot, "packages/ui/src/styleguide"),
+        replacement: resolve(workspaceRoot, "packages/neue-ui/src/styleguide"),
       },
     ],
     conditions: ["browser", "module", "import", "default"],

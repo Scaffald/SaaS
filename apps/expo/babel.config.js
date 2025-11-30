@@ -47,14 +47,12 @@ module.exports = (api) => {
           root: ['../..'],
           alias: {
             '@app/core': '../../packages/core',
-            '@app/ui': '../../packages/ui/src',
-            '@app/ui/*': '../../packages/ui/src/*',
             '@app/supabase': '../../packages/supabase',
             '@app/trpc': '../../packages/trpc/src',
             '@app/trpc/*': '../../packages/trpc/src/*',
             '@app/schemas': '../../packages/schemas/src',
-            '@app/styleguide': '../../packages/ui/src/styleguide',
-            '@app/styleguide/*': '../../packages/ui/src/styleguide/*',
+            '@app/styleguide': '../../packages/neue-ui/src/styleguide',
+            '@app/styleguide/*': '../../packages/neue-ui/src/styleguide/*',
           },
           extensions: ['.js', '.jsx', '.tsx', '.ios.js', '.android.js'],
         },
@@ -63,8 +61,8 @@ module.exports = (api) => {
       [
         '@tamagui/babel-plugin',
         {
-          components: ['@app/ui', 'tamagui'],
-          config: '../../packages/ui/src/tamagui.config.ts',
+          components: ['@scaffald/tamagui-ui', 'tamagui'],
+          config: '../../packages/neue-ui/src/tamagui.config.ts',
           logTimings: true,
           // Extraction enabled for proper native component behavior
           // disableExtraction: process.env.NODE_ENV === 'development',
