@@ -12,18 +12,8 @@ import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
-import {
-  Button,
-  Input,
-  Label,
-  ScrollView,
-  Spinner,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { Button, Input, Label, ScrollView, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import type { z } from 'zod'
 
 import { useTeamFormOptions } from '../hooks/useTeamFormOptions'

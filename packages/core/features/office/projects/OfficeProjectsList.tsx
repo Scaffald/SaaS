@@ -2,12 +2,8 @@ import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
 import { OfficeLayout } from '@app/core/components/layouts'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
-import {
-  Eye,
-  EyeOff,
-  Pencil,
-} from '@tamagui/lucide-icons'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { Eye, EyeOff, Pencil } from '@tamagui/lucide-icons'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -152,10 +148,12 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                       size="$3"
                       options={[
                         { value: '', label: 'All Organizations' },
-                        ...(organizationsData?.organizations ?? []).map((org: { id: string; name: string }) => ({
-                          value: org.id,
-                          label: org.name,
-                        })),
+                        ...(organizationsData?.organizations ?? []).map(
+                          (org: { id: string; name: string }) => ({
+                            value: org.id,
+                            label: org.name,
+                          })
+                        ),
                       ]}
                     />
                   </XStack>
@@ -216,7 +214,9 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                         size="$2"
                         icon={Pencil}
                         onPress={() => {
-                          router.push(buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id }))
+                          router.push(
+                            buildPath(ROUTES.OFFICE.CMS.PROJECTS.DETAIL.EDIT, { id: project.id })
+                          )
                         }}
                       >
                         Edit

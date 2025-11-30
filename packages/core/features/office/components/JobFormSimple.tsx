@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@scaffald/tamagui-ui'
+import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@scaffald/neue-ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'

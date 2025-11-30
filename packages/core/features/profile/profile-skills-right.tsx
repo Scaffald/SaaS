@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { ConfirmationDialog, DashboardWidget } from '@scaffald/tamagui-ui'
+import { ConfirmationDialog, DashboardWidget } from '@scaffald/neue-ui'
 import { Award } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { TRPCClientError } from '@trpc/client'
@@ -151,7 +151,7 @@ export function ProfileSkillsRight() {
         return false
       }
       return true
-    },
+    }
   )
 
   // Detect newly added skills for highlight animation
@@ -276,8 +276,7 @@ export function ProfileSkillsRight() {
                           Proficiency
                         </Text>
                         <Text fontWeight="600" fontSize="$3">
-                          {skill.proficiency_level &&
-                            getProficiencyLabel(skill.proficiency_level)}{' '}
+                          {skill.proficiency_level && getProficiencyLabel(skill.proficiency_level)}{' '}
                           ({skill.proficiency_level}/5)
                         </Text>
                       </YStack>

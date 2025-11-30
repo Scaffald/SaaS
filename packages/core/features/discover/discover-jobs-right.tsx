@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@scaffald/neue-ui'
 import { ChevronsUpDown, Filter, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
@@ -286,7 +286,11 @@ export function DiscoverJobsRight({
                 }}
                 options={[
                   { value: 'relevance', label: 'Relevance' },
-                  { value: 'match_score', label: 'Best Soft Skills Match', disabled: !hasSoftSkillsAssessment },
+                  {
+                    value: 'match_score',
+                    label: 'Best Soft Skills Match',
+                    disabled: !hasSoftSkillsAssessment,
+                  },
                 ]}
                 placeholder="Sort jobs by..."
                 label="Sort"

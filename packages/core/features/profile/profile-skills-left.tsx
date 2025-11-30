@@ -4,7 +4,7 @@ import {
   SaveStatusIndicator,
   SavingModal,
   SkeletonForm,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { Check } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'

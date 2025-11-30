@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@app/schemas'
-import { Button, Input, ScrollView, Separator, Text, XStack, YStack } from '@scaffald/tamagui-ui'
+import { Button, Input, ScrollView, Separator, Text, XStack, YStack } from '@scaffald/neue-ui'
 import { Check, ChevronDown, ChevronUp, MessageSquare } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'

@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { extractPlainText, SkeletonList } from '@scaffald/tamagui-ui'
+import { extractPlainText, SkeletonList } from '@scaffald/neue-ui'
 import type { JSONContent } from '@tiptap/core'
 import { ScrollView, Text, YStack } from 'tamagui'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'
@@ -29,8 +29,11 @@ export function DiscoverJobsLeft({
   sortBy,
 }: DiscoverJobsLeftProps) {
   // Check if soft skills filter is active
-  const useSoftSkillsFilter = (minSoftSkillsMatch !== null && minSoftSkillsMatch !== undefined && minSoftSkillsMatch > 0) || sortBy === 'match_score'
-  const shouldUseSoftSkillsMatch = useSoftSkillsFilter && (jobSource === 'all' || jobSource === 'internal')
+  const useSoftSkillsFilter =
+    (minSoftSkillsMatch !== null && minSoftSkillsMatch !== undefined && minSoftSkillsMatch > 0) ||
+    sortBy === 'match_score'
+  const shouldUseSoftSkillsMatch =
+    useSoftSkillsFilter && (jobSource === 'all' || jobSource === 'internal')
 
   // Fetch external jobs (not affected by soft skills filter)
   const { data: externalData, isLoading: externalLoading } = api.jobs.getExternalJobs.useQuery(
@@ -51,7 +54,7 @@ export function DiscoverJobsLeft({
       },
       {
         enabled: shouldUseSoftSkillsMatch,
-      },
+      }
     )
 
   // Fetch regular internal jobs - always fetch to get full job data
@@ -97,7 +100,8 @@ export function DiscoverJobsLeft({
     }
   }
 
-  const isLoading = externalLoading || internalLoading || (shouldUseSoftSkillsMatch && isLoadingSoftSkillsMatch)
+  const isLoading =
+    externalLoading || internalLoading || (shouldUseSoftSkillsMatch && isLoadingSoftSkillsMatch)
 
   // Combine and filter both job types
   const mixedJobs: MixedJob[] = [

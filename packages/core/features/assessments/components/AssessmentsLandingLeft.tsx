@@ -1,6 +1,6 @@
 import type { RouteConfig } from '@app/core/constants/routes'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardWidget, UIButton as StyledButton, spacing, Text, YStack } from '@scaffald/tamagui-ui'
+import { DashboardWidget, UIButton as StyledButton, spacing, Text, YStack } from '@scaffald/neue-ui'
 import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {

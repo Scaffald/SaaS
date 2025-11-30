@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Button, Text, XStack, YStack } from '@scaffald/tamagui-ui'
+import { Button, Text, XStack, YStack } from '@scaffald/neue-ui'
 import { useState } from 'react'
 import { Label, Spinner } from 'tamagui'
 
@@ -58,10 +58,12 @@ export function SoftSkillsRequirementsSection({
   }
 
   const updateRequirements = (skills: Map<string, number>) => {
-    const requirements: SoftSkillRequirement[] = Array.from(skills.entries()).map(([skill_id, importance]) => ({
-      skill_id,
-      importance,
-    }))
+    const requirements: SoftSkillRequirement[] = Array.from(skills.entries()).map(
+      ([skill_id, importance]) => ({
+        skill_id,
+        importance,
+      })
+    )
     onUpdate({
       required_soft_skills: requirements.length > 0 ? requirements : null,
     })
@@ -76,7 +78,14 @@ export function SoftSkillsRequirementsSection({
 
   if (isLoading) {
     return (
-      <YStack gap="$4" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$4"
+        p="$4"
+        bg="$background"
+        rounded="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <Text fontSize="$6" fontWeight="600">
           Soft Skills Requirements
         </Text>
@@ -92,7 +101,14 @@ export function SoftSkillsRequirementsSection({
 
   if (!softSkillsData || Object.keys(softSkillsData).length === 0) {
     return (
-      <YStack gap="$4" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$4"
+        p="$4"
+        bg="$background"
+        rounded="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <Text fontSize="$6" fontWeight="600">
           Soft Skills Requirements
         </Text>
@@ -106,7 +122,14 @@ export function SoftSkillsRequirementsSection({
   const selectedCount = selectedSkills.size
 
   return (
-    <YStack gap="$4" p="$4" bg="$background" rounded="$4" borderWidth={1} borderColor="$borderColor">
+    <YStack
+      gap="$4"
+      p="$4"
+      bg="$background"
+      rounded="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
       <YStack gap="$2">
         <Text fontSize="$6" fontWeight="600">
           Soft Skills Requirements
@@ -149,7 +172,8 @@ export function SoftSkillsRequirementsSection({
                     {isSelected && (
                       <YStack gap="$1">
                         <Label fontSize="$2" color="$color11">
-                          Importance: {IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]}
+                          Importance:{' '}
+                          {IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]}
                         </Label>
                         <XStack gap="$1">
                           {[1, 2, 3, 4, 5].map((level) => (
@@ -182,13 +206,19 @@ export function SoftSkillsRequirementsSection({
           </Text>
           <YStack gap="$1">
             {Array.from(selectedSkills.entries()).map(([skillId, importance]) => {
-              type SoftSkill = { id?: string; name?: string; category?: string; [key: string]: unknown }
+              type SoftSkill = {
+                id?: string
+                name?: string
+                category?: string
+                [key: string]: unknown
+              }
               const skill = (Object.values(softSkillsData) as Array<SoftSkill[]>)
                 .flat()
                 .find((s) => (s as SoftSkill).id === skillId)
               if (!skill) return null
 
-              const importanceLabel = IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
+              const importanceLabel =
+                IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
                 <Text key={skillId} fontSize="$3" color="$blue11">
                   • {/* biome-ignore lint/suspicious/noExplicitAny: Skills data structure */}
@@ -202,4 +232,3 @@ export function SoftSkillsRequirementsSection({
     </YStack>
   )
 }
-

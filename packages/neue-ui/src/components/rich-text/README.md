@@ -36,7 +36,7 @@ Content is stored as **TipTap JSON** format in the database with auto-generated 
 ### Basic Example
 
 ```tsx
-import { RichTextEditor } from '@scaffald/tamagui-ui'
+import { RichTextEditor } from '@scaffald/neue-ui'
 import type { JSONContent } from '@tiptap/core'
 import { useState } from 'react'
 
@@ -132,7 +132,7 @@ The `about_plain` / `description_plain` columns are automatically maintained by 
 ### Sanitization
 
 ```tsx
-import { sanitizeTipTapJSON } from '@scaffald/tamagui-ui'
+import { sanitizeTipTapJSON } from '@scaffald/neue-ui'
 
 const sanitized = sanitizeTipTapJSON(userContent)
 ```
@@ -140,7 +140,7 @@ const sanitized = sanitizeTipTapJSON(userContent)
 ### Plain Text Extraction
 
 ```tsx
-import { extractPlainText } from '@scaffald/tamagui-ui'
+import { extractPlainText } from '@scaffald/neue-ui'
 
 const plainText = extractPlainText(content)
 const charCount = plainText.length
@@ -149,7 +149,7 @@ const charCount = plainText.length
 ### Validation
 
 ```tsx
-import { validateCharacterLimit } from '@scaffald/tamagui-ui'
+import { validateCharacterLimit } from '@scaffald/neue-ui'
 
 const isValid = validateCharacterLimit(content, 500)
 ```
@@ -157,7 +157,7 @@ const isValid = validateCharacterLimit(content, 500)
 ### Empty Content Check
 
 ```tsx
-import { isContentEmpty } from '@scaffald/tamagui-ui'
+import { isContentEmpty } from '@scaffald/neue-ui'
 
 const isEmpty = isContentEmpty(content)
 ```
@@ -165,7 +165,7 @@ const isEmpty = isContentEmpty(content)
 ### Plain Text Conversion
 
 ```tsx
-import { plainTextToTipTap } from '@scaffald/tamagui-ui'
+import { plainTextToTipTap } from '@scaffald/neue-ui'
 
 // Convert existing plain text to rich text format
 const richText = plainTextToTipTap('Hello world')
@@ -243,7 +243,7 @@ Choose the correct `fieldType` to get appropriate character limits and placehold
 ### 3. Handle Empty State
 
 ```tsx
-import { isContentEmpty } from '@scaffald/tamagui-ui'
+import { isContentEmpty } from '@scaffald/neue-ui'
 
 // Check if content is empty before saving
 if (!isContentEmpty(content)) {
@@ -254,7 +254,7 @@ if (!isContentEmpty(content)) {
 ### 4. Validate Character Limits
 
 ```tsx
-import { validateCharacterLimit, RICH_TEXT_LIMITS } from '@scaffald/tamagui-ui'
+import { validateCharacterLimit, RICH_TEXT_LIMITS } from '@scaffald/neue-ui'
 
 const limit = RICH_TEXT_LIMITS.PROFILE_ABOUT
 if (!validateCharacterLimit(content, limit)) {

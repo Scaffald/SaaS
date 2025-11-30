@@ -9,7 +9,7 @@ import {
 } from '@app/core/features/profile/widgets'
 import { useSessionContext } from '@app/core/utils/supabase/useSessionContext'
 import { api } from '@app/core/utils/api'
-import { type BreadcrumbItem, DashboardWidget } from '@scaffald/tamagui-ui'
+import { type BreadcrumbItem, DashboardWidget } from '@scaffald/neue-ui'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'

@@ -3,7 +3,7 @@ import {
   type CookieConsentStorage,
   CookiePreferencesDialog,
   CookieConsentProvider as UICookieConsentProvider,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import type { ReactNode } from 'react'
 

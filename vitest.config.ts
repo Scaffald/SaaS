@@ -71,7 +71,7 @@ export default defineConfig({
         replacement: resolve(workspaceRoot, "packages/core"),
       },
       {
-        find: "@app/ui",
+        find: "@scaffald/neue-ui",
         replacement: resolve(workspaceRoot, "packages/neue-ui/src"),
       },
       {

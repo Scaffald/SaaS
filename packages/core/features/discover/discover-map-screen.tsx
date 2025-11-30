@@ -7,7 +7,7 @@ import {
   Sheet,
   ToggleSwitch,
   type ViewportBounds,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { captureEvent } from '@app/core/utils/analytics/client'
 import {
   List as ListIcon,

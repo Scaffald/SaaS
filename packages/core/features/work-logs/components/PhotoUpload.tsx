@@ -1,20 +1,10 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@scaffald/tamagui-ui'
+import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@scaffald/neue-ui'
 import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import {
-  Button,
-  Checkbox,
-  Input,
-  Separator,
-  Spinner,
-  Text,
-  View,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Button, Checkbox, Input, Separator, Spinner, Text, View, XStack, YStack } from 'tamagui'
 import { type UploadCandidate, usePhotoUpload } from '../hooks/usePhotoUpload'
 import type { WorkLogPhotoType } from '../types/photos'
 import { PhotoGallery } from './PhotoGallery'

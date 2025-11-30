@@ -8,21 +8,14 @@ import {
   ResponsiveSelect,
   UIButton as StyledButton,
   spacing,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable } from 'react-native'
-import {
-  Input,
-  Separator,
-  Spinner,
-  Text,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Input, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
@@ -115,8 +108,12 @@ export function PrerequisiteWidget() {
       },
       user_types: statusData.data.user_types ?? [],
       industry_id: statusData.data.industry_id ?? '',
-      accepts_privacy_policy: (statusData.data as unknown as { accepts_privacy_policy?: boolean }).accepts_privacy_policy ?? false,
-      accepts_terms_of_service: (statusData.data as unknown as { accepts_terms_of_service?: boolean }).accepts_terms_of_service ?? false,
+      accepts_privacy_policy:
+        (statusData.data as unknown as { accepts_privacy_policy?: boolean })
+          .accepts_privacy_policy ?? false,
+      accepts_terms_of_service:
+        (statusData.data as unknown as { accepts_terms_of_service?: boolean })
+          .accepts_terms_of_service ?? false,
     }
 
     const prefillHash = JSON.stringify(prefillData)

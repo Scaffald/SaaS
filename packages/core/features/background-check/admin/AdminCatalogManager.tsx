@@ -10,7 +10,7 @@ import {
   Text,
   XStack,
   YStack,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { Check, Edit3, PackagePlus, Plus, RefreshCcw, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'

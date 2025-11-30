@@ -15,7 +15,7 @@ const packageConfig = {
     alias: [
       { find: "react-native", replacement: "react-native-web" },
       {
-        find: "@scaffald/tamagui-ui",
+        find: "@scaffald/neue-ui",
         replacement: resolve(workspaceRoot, "packages/neue-ui"),
       },
     ],

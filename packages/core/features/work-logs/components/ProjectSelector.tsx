@@ -1,4 +1,4 @@
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
 import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { memo, useMemo } from 'react'
 import { Button, Spinner, Text, XStack, YStack } from 'tamagui'

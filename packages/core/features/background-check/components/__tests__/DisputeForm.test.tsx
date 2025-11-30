@@ -11,7 +11,7 @@ const uploadMocks = vi.hoisted(() => ({
   triggerError: vi.fn(),
 }))
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   UploadSurface: ({
     children,
     onSelect,

@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
-import { UIButton as Button, DashboardWidget } from '@scaffald/tamagui-ui'
+import { UIButton as Button, DashboardWidget } from '@scaffald/neue-ui'
 import {
   Award,
   ChevronDown,

@@ -10,7 +10,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 
 /**
  * Job card organization data

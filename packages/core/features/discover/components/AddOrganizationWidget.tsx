@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
-import { DashboardWidget } from '@scaffald/tamagui-ui'
+import { DashboardWidget } from '@scaffald/neue-ui'
 import {
   AlertTriangle,
   ArrowRight,

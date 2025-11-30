@@ -1,5 +1,5 @@
-import type { ChecklistItemType } from '@scaffald/tamagui-ui'
-import { Checklist, DashboardWidget } from '@scaffald/tamagui-ui'
+import type { ChecklistItemType } from '@scaffald/neue-ui'
+import { Checklist, DashboardWidget } from '@scaffald/neue-ui'
 import { useProfileCompletion } from './useProfileCompletion'
 
 export interface ProfileCompletionWidgetProps {

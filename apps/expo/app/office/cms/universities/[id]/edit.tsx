@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { OfficeUniversitiesForm } from '@app/core/features/office/office-universities-form'
 import { api } from '@app/core/utils/api'
-import { Spinner, YStack } from '@scaffald/tamagui-ui'
+import { Spinner, YStack } from '@scaffald/neue-ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 
 export default function EditUniversityPage() {

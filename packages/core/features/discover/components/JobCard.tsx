@@ -1,4 +1,4 @@
-import { DiscoverCard } from '@scaffald/tamagui-ui'
+import { DiscoverCard } from '@scaffald/neue-ui'
 import { Briefcase, Building2, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import { Button, Text, XStack, YStack } from 'tamagui'
 import type { JobMapPin } from '../hooks/useJobs'

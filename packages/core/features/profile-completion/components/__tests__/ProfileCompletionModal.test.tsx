@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProfileCompletionModal } from '../ProfileCompletionModal'
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   ResponsiveModal: ({
     open,
     onOpenChange,

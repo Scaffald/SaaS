@@ -5,17 +5,8 @@ import { Info } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
-import {
-  Button,
-  Card,
-  Separator,
-  Spinner,
-  Switch,
-  Text,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { Button, Card, Separator, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
 

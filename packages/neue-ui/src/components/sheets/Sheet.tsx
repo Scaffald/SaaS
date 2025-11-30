@@ -19,7 +19,7 @@ const SheetOverlay = styled(TamaguiSheet.Overlay, {
  * This is a wrapper around Tamagui's Sheet component that ensures
  * all Sheet.Frame instances have a consistent background color by default.
  *
- * Usage: Import Sheet from '@scaffald/tamagui-ui' and use it like Tamagui's Sheet.
+ * Usage: Import Sheet from '@scaffald/neue-ui' and use it like Tamagui's Sheet.
  * All Sheet.Frame components will automatically have bg="$color1" applied.
  */
 export const Sheet = withStaticProperties(TamaguiSheet, {

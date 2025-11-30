@@ -44,7 +44,7 @@ const searchPropsStore = vi.hoisted(() => ({
   latestSelectedIds: [],
 }))
 
-'@scaffald/tamagui-ui', () => {
+'@scaffald/neue-ui', () => {
   const passthrough =
     (Tag = 'div') =>
     ({ children, ...rest }) =>

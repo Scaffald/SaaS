@@ -1,4 +1,4 @@
-import { ToggleSwitch } from '@scaffald/tamagui-ui'
+import { ToggleSwitch } from '@scaffald/neue-ui'
 import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { AnimatePresence, Button, Label, ScrollView, Text, XStack, YStack } from 'tamagui'

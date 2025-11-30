@@ -1,6 +1,12 @@
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator, UIButton } from '@scaffald/tamagui-ui'
+import {
+  Heading,
+  LoadingState,
+  ResponsiveModal,
+  SaveStatusIndicator,
+  UIButton,
+} from '@scaffald/neue-ui'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
@@ -339,7 +345,11 @@ export const SoftSkillsRatingForm: FC = () => {
                                 <Text fontSize="$2" fontWeight="700" color="$color12">
                                   {level.value}
                                 </Text>
-                                <Text fontSize="$2" color="$color11" style={{ textAlign: 'center' }}>
+                                <Text
+                                  fontSize="$2"
+                                  color="$color11"
+                                  style={{ textAlign: 'center' }}
+                                >
                                   {level.label}
                                 </Text>
                               </YStack>

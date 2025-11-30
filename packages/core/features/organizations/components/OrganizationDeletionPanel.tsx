@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { useToast } from '@scaffald/tamagui-ui'
+import { useToast } from '@scaffald/neue-ui'
 import { AlertTriangle, Trash2 } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { AlertDialog, Button, Card, Input, Text, TextArea, XStack, YStack } from 'tamagui'

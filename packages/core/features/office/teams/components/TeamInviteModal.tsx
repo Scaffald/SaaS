@@ -4,23 +4,13 @@ import {
   TEAM_INVITATION_TTL_MAX,
   TEAM_INVITATION_TTL_MIN,
 } from '@app/schemas'
-import { ResponsiveModal } from '@scaffald/tamagui-ui'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { ResponsiveModal } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
 import { UserSearch } from '@app/core/components/user'
 import { Mail, UserPlus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
-import {
-  Button,
-  Input,
-  Label,
-  RadioGroup,
-  Spinner,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Button, Input, Label, RadioGroup, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 

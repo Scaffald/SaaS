@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
 import { useDebounce } from '@app/core/utils/useDebounce'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -136,7 +136,10 @@ export function TeamAutomationSettings({
       allowSelfJoin: debouncedFormState.allowSelfJoin,
       autoAssignJobs: debouncedFormState.autoAssignJobs,
       invitationExpirationDays: debouncedFormState.invitationExpirationDays,
-      workloadStrategy: debouncedFormState.workloadStrategy as 'manual' | 'round_robin' | 'load_balance',
+      workloadStrategy: debouncedFormState.workloadStrategy as
+        | 'manual'
+        | 'round_robin'
+        | 'load_balance',
       workloadSettings: debouncedFormState.workloadSettings,
       analyticsRefreshIntervalMinutes: debouncedFormState.analyticsRefreshIntervalMinutes,
     })

@@ -375,7 +375,7 @@ importers:
       '@rnmapbox/maps':
         specifier: 'catalog:'
         version: 10.1.45(expo@54.0.23)(react-dom@19.1.0(react@19.1.0))(react-native@0.81.5(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
-      '@scaffald/tamagui-ui':
+      '@scaffald/neue-ui':
         specifier: workspace:*
         version: link:../../packages/neue-ui
       '@tamagui/lucide-icons':
@@ -553,7 +553,7 @@ importers:
       '@rehookify/datepicker':
         specifier: ^6.6.6
         version: 6.6.8(react@19.1.0)
-      '@scaffald/tamagui-ui':
+      '@scaffald/neue-ui':
         specifier: workspace:*
         version: link:../neue-ui
       '@supabase/supabase-js':

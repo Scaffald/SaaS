@@ -6,7 +6,7 @@ import { ScreeningStep } from '../ScreeningStep'
 const mockOnAnswersChange = vi.fn()
 const mockOnContinue = vi.fn()
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   AddressAutocomplete: ({
     value,
     onChange,

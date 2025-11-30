@@ -1,4 +1,4 @@
-import { MonthYearPicker, ToggleSwitch } from '@scaffald/tamagui-ui'
+import { MonthYearPicker, ToggleSwitch } from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'

@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button, SkeletonCard, Text, YStack } from '@scaffald/tamagui-ui'
+import { Button, SkeletonCard, Text, YStack } from '@scaffald/neue-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 
@@ -54,7 +54,11 @@ export function InquiryOverviewWidget() {
           </Text>
           <Button
             size="$3"
-            onPress={() => router.push(buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId: application.id }))}
+            onPress={() =>
+              router.push(
+                buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId: application.id })
+              )
+            }
           >
             View Inquiry
           </Button>

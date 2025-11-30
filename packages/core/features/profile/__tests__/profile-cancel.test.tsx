@@ -63,7 +63,7 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-'@scaffald/tamagui-ui', () => {
+'@scaffald/neue-ui', () => {
   const React = require('react') as typeof import('react')
   const Button = ({
     children,

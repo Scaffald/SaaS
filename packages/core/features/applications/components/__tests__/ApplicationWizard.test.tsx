@@ -90,7 +90,7 @@ vi.mock('../SuccessStep', () => ({
   SuccessStep: () => <div data-testid="success-step">Application Submitted</div>,
 }))
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   SaveStatusIndicator: ({ status }: { status: string }) => (
     <div data-testid="save-status">{status}</div>
   ),

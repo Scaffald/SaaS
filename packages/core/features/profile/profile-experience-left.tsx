@@ -7,7 +7,7 @@ import {
   DashboardWidget,
   MonthYearPicker,
   ResponsiveSelect,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, Check, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -113,7 +113,10 @@ export function ProfileExperienceLeft() {
       }
       if (context?.previousSummary) {
         // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-        utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary as any)
+        utils.profile.experience.getExperienceSummary.setData(
+          undefined,
+          context.previousSummary as any
+        )
       }
       failProfileSync()
       toast.show('Error', {

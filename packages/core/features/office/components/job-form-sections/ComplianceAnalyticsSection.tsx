@@ -1,4 +1,4 @@
-import { Input, Text, ToggleSwitch, XStack, YStack } from '@scaffald/tamagui-ui'
+import { Input, Text, ToggleSwitch, XStack, YStack } from '@scaffald/neue-ui'
 import { useState } from 'react'
 import { Label } from 'tamagui'
 

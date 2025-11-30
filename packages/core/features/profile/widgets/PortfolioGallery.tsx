@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, ResponsiveModal } from '@scaffald/tamagui-ui'
+import { DashboardWidget, ResponsiveModal } from '@scaffald/neue-ui'
 import { Eye } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Card, H4, Image, Spinner, Text, XStack, YStack } from 'tamagui'

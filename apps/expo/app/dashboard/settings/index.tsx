@@ -6,7 +6,7 @@ import {
   type NotificationItem,
   NotificationTag,
   ToggleSwitch,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'

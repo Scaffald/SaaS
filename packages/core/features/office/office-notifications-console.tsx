@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { NotificationTag } from '@scaffald/tamagui-ui'
+import { NotificationTag } from '@scaffald/neue-ui'
 import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'

@@ -1,4 +1,4 @@
-import { MonthYearPicker } from '@scaffald/tamagui-ui'
+import { MonthYearPicker } from '@scaffald/neue-ui'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useId, useMemo, useState } from 'react'
 import { Button, Card, Input, Label, Paragraph, Text, XStack, YStack } from 'tamagui'

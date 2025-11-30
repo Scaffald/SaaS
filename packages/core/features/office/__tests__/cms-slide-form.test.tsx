@@ -58,7 +58,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   Save: () => <span data-testid="save-icon" />,
 }))
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   IconSelector: ({
     value,
     onChange,

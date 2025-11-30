@@ -7,7 +7,7 @@ import {
   LoadingState,
   spacing,
   UIButton,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Text, XStack, YStack } from 'tamagui'
@@ -35,7 +35,11 @@ interface EnrichedUserSkill {
  * @param showEdit - Show edit button for own profile
  * @param variant - Display variant (compact or full)
  */
-export function TechnicalSkillsWidget({ userId, showEdit = false, variant = 'full' }: ProfileWidgetProps) {
+export function TechnicalSkillsWidget({
+  userId,
+  showEdit = false,
+  variant = 'full',
+}: ProfileWidgetProps) {
   const router = useRouter()
 
   // Fetch technical skills
@@ -81,14 +85,17 @@ export function TechnicalSkillsWidget({ userId, showEdit = false, variant = 'ful
   const showCompact = variant === 'compact'
 
   // Group skills by taxonomy
-  const groupedSkills = skills.reduce((acc: Record<string, EnrichedUserSkill[]>, skill: EnrichedUserSkill) => {
-    const taxonomy = skill.taxonomy || 'Other'
-    if (!acc[taxonomy]) {
-      acc[taxonomy] = []
-    }
-    acc[taxonomy].push(skill)
-    return acc
-  }, {})
+  const groupedSkills = skills.reduce(
+    (acc: Record<string, EnrichedUserSkill[]>, skill: EnrichedUserSkill) => {
+      const taxonomy = skill.taxonomy || 'Other'
+      if (!acc[taxonomy]) {
+        acc[taxonomy] = []
+      }
+      acc[taxonomy].push(skill)
+      return acc
+    },
+    {}
+  )
 
   const taxonomyOrder = ['onet', 'csi', 'Other']
   const sortedTaxonomies = Object.keys(groupedSkills).sort((a, b) => {
@@ -206,4 +213,3 @@ export function TechnicalSkillsWidget({ userId, showEdit = false, variant = 'ful
     </DashboardWidget>
   )
 }
-

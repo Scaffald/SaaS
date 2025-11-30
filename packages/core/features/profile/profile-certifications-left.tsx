@@ -4,12 +4,7 @@ import {
   CertificationChip,
   CertificationSearch,
 } from '@app/core/components/certifications'
-import {
-  UIButton as Button,
-  DashboardWidget,
-  MonthYearPicker,
-  ToggleCard,
-} from '@scaffald/tamagui-ui'
+import { UIButton as Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@scaffald/neue-ui'
 import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useState } from 'react'
@@ -408,7 +403,8 @@ export function ProfileCertificationsLeft({
 
     if (!isExpanded) {
       // Check if already saved
-      const depth1Items = (certTree?.depth1ByParent[parentId] || []) as unknown as UserCertification[]
+      const depth1Items = (certTree?.depth1ByParent[parentId] ||
+        []) as unknown as UserCertification[]
       const alreadySaved = depth1Items.some(
         (item: UserCertification) => item.certification_id === categoryId
       )
@@ -551,17 +547,19 @@ export function ProfileCertificationsLeft({
               Selected Categories
             </Text>
             <XStack gap="$2" flexWrap="wrap">
-              {(certTree.depth0 as unknown as UserCertification[]).map((item: UserCertification) => (
-                <CertificationChip
-                  key={item.id}
-                  certification={{
-                    id: item.certification_id,
-                    title: item.catalog.title,
-                  }}
-                  onRemove={handleRemoveTopLevel}
-                  disabled={removeTopLevel.isPending}
-                />
-              ))}
+              {(certTree.depth0 as unknown as UserCertification[]).map(
+                (item: UserCertification) => (
+                  <CertificationChip
+                    key={item.id}
+                    certification={{
+                      id: item.certification_id,
+                      title: item.catalog.title,
+                    }}
+                    onRemove={handleRemoveTopLevel}
+                    disabled={removeTopLevel.isPending}
+                  />
+                )
+              )}
             </XStack>
           </YStack>
         )}
@@ -764,27 +762,29 @@ export function ProfileCertificationsLeft({
         {/* Depth 1 categories and depth 2 certifications */}
         <YStack gap="$3">
           {certTree?.depth0 && certTree.depth0.length > 0 ? (
-            (certTree.depth0 as unknown as UserCertification[]).map((topLevel: UserCertification) => {
-              return (
-                <YStack key={topLevel.id} gap="$2">
-                  <Text fontWeight="600" fontSize="$5" color="$blue11">
-                    {topLevel.catalog.title}
-                  </Text>
+            (certTree.depth0 as unknown as UserCertification[]).map(
+              (topLevel: UserCertification) => {
+                return (
+                  <YStack key={topLevel.id} gap="$2">
+                    <Text fontWeight="600" fontSize="$5" color="$blue11">
+                      {topLevel.catalog.title}
+                    </Text>
 
-                  {/* Fetch and display depth 1 categories */}
-                  <Depth1Categories
-                    parentId={topLevel.certification_id}
-                    expandedCategories={expandedCategories}
-                    onToggle={handleToggleCategory}
-                    certTree={certTree}
-                    onCheckCertification={handleCheckCertification}
-                    onSelectForProof={onSelectCertificationForProof}
-                    toggleCertMutation={toggleCert}
-                    recentlyChangedCerts={recentlyChangedCerts}
-                  />
-                </YStack>
-              )
-            })
+                    {/* Fetch and display depth 1 categories */}
+                    <Depth1Categories
+                      parentId={topLevel.certification_id}
+                      expandedCategories={expandedCategories}
+                      onToggle={handleToggleCategory}
+                      certTree={certTree}
+                      onCheckCertification={handleCheckCertification}
+                      onSelectForProof={onSelectCertificationForProof}
+                      toggleCertMutation={toggleCert}
+                      recentlyChangedCerts={recentlyChangedCerts}
+                    />
+                  </YStack>
+                )
+              }
+            )
           ) : (
             <ProfileEmptyState
               icon={Award}

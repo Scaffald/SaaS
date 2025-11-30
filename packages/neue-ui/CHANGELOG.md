@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-11-30
 
 ### Added
-- Initial release of `@scaffald/tamagui-ui` standalone component library
+- Initial release of `@scaffald/neue-ui` standalone component library
 - Comprehensive UI component library for Tamagui and Expo
 - Support for iOS, Android, and Web platforms
 - Configurable theme system with factory utilities
@@ -33,8 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Web
 
 ### Breaking Changes
-- This is the initial release, extracted from `@app/ui` package
-- Some domain-specific components (ImageUpload, domain-specific layouts, etc.) remain in `@app/ui` and are not included in this standalone package
+- This is the initial release, extracted from the legacy `@app/ui` package
+- Domain-specific components (ImageUpload, domain-specific layouts, etc.) have been moved to `@app/core` and are not included in this standalone package
 
 ### Dependencies
 - React >= 18.0.0
@@ -44,5 +44,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - React Hook Form >= 7.0.0
 - Zod >= 3.0.0
 
-[1.0.0]: https://github.com/Unicorn/SCF-Neue/releases/tag/@scaffald/tamagui-ui-v1.0.0
+[1.0.0]: https://github.com/Unicorn/SCF-Neue/releases/tag/@scaffald/neue-ui-v1.0.0
 

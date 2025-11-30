@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { OpenToTravelCard } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
-import { ToggleCard, UIButton as Button, spacing } from '@scaffald/tamagui-ui'
+import { ToggleCard, UIButton as Button, spacing } from '@scaffald/neue-ui'
 import {
   AlertCircle,
   CheckCircle2,

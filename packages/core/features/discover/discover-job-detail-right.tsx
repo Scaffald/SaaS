@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { SoftSkillsMatchIndicator } from '@app/core/features/profile/components/SoftSkillsMatchIndicator'
 import { ROUTES } from '@app/core/constants/routes'
-import { Chip, extractPlainText, UIButton } from '@scaffald/tamagui-ui'
+import { Chip, extractPlainText, UIButton } from '@scaffald/neue-ui'
 import {
   Award,
   Briefcase,
@@ -159,7 +159,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
     {
       enabled: !!jobId && hasSoftSkillsRequirements && !isExternal,
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    },
+    }
   )
 
   if (isLoading) {
@@ -523,7 +523,14 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </Text>
                   </YStack>
                 ) : matchData?.needsSelfAssessment ? (
-                  <YStack gap="$3" bg="$blue2" p="$4" rounded="$4" borderWidth={1} borderColor="$blue7">
+                  <YStack
+                    gap="$3"
+                    bg="$blue2"
+                    p="$4"
+                    rounded="$4"
+                    borderWidth={1}
+                    borderColor="$blue7"
+                  >
                     <Text fontSize="$4" fontWeight="600" color="$blue11">
                       Complete Your Assessment
                     </Text>
@@ -543,20 +550,37 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                   <YStack gap="$4">
                     {/* Skill-by-skill breakdown */}
                     <YStack gap="$2">
-                      {matchData.details.map((detail: { skillId: string; skillName: string; userRating: number | null; requiredImportance: number; meetsRequirement: boolean }) => (
-                        <SoftSkillsMatchIndicator
-                          key={detail.skillId}
-                          skillName={detail.skillName}
-                          userRating={detail.userRating}
-                          requiredImportance={detail.requiredImportance}
-                          meetsRequirement={detail.meetsRequirement}
-                        />
-                      ))}
+                      {matchData.details.map(
+                        (detail: {
+                          skillId: string
+                          skillName: string
+                          userRating: number | null
+                          requiredImportance: number
+                          meetsRequirement: boolean
+                        }) => (
+                          <SoftSkillsMatchIndicator
+                            key={detail.skillId}
+                            skillName={detail.skillName}
+                            userRating={detail.userRating}
+                            requiredImportance={detail.requiredImportance}
+                            meetsRequirement={detail.meetsRequirement}
+                          />
+                        )
+                      )}
                     </YStack>
 
                     {/* Skills to Develop */}
-                    {matchData.details.some((detail: { meetsRequirement: boolean }) => !detail.meetsRequirement) && (
-                      <YStack gap="$2" bg="$yellow2" p="$4" rounded="$4" borderWidth={1} borderColor="$yellow7">
+                    {matchData.details.some(
+                      (detail: { meetsRequirement: boolean }) => !detail.meetsRequirement
+                    ) && (
+                      <YStack
+                        gap="$2"
+                        bg="$yellow2"
+                        p="$4"
+                        rounded="$4"
+                        borderWidth={1}
+                        borderColor="$yellow7"
+                      >
                         <XStack gap="$2" items="center">
                           <TrendingUp size={16} color="$yellow10" />
                           <Text fontSize="$4" fontWeight="600" color="$yellow11">
@@ -565,13 +589,22 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                         </XStack>
                         <YStack gap="$1">
                           {matchData.details
-                            .filter((detail: { meetsRequirement: boolean }) => !detail.meetsRequirement)
-                            .map((detail: { skillId: string; skillName: string; userRating: number | null; requiredImportance: number }) => (
-                              <Text key={detail.skillId} fontSize="$3" color="$yellow11">
-                                • {detail.skillName} (currently {detail.userRating || 0}/5, need{' '}
-                                {detail.requiredImportance}/5)
-                              </Text>
-                            ))}
+                            .filter(
+                              (detail: { meetsRequirement: boolean }) => !detail.meetsRequirement
+                            )
+                            .map(
+                              (detail: {
+                                skillId: string
+                                skillName: string
+                                userRating: number | null
+                                requiredImportance: number
+                              }) => (
+                                <Text key={detail.skillId} fontSize="$3" color="$yellow11">
+                                  • {detail.skillName} (currently {detail.userRating || 0}/5, need{' '}
+                                  {detail.requiredImportance}/5)
+                                </Text>
+                              )
+                            )}
                         </YStack>
                         <UIButton
                           variant="outlined"

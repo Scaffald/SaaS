@@ -40,7 +40,7 @@ vi.mock('@app/core/utils/supabase/storage', () => ({
 }))
 
 // Mock UI components
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),

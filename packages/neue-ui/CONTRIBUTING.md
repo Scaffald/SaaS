@@ -1,6 +1,6 @@
-# Contributing to @scaffald/tamagui-ui
+# Contributing to @scaffald/neue-ui
 
-Thank you for your interest in contributing to @scaffald/tamagui-ui!
+Thank you for your interest in contributing to @scaffald/neue-ui!
 
 ## Development Setup
 
@@ -18,11 +18,11 @@ Thank you for your interest in contributing to @scaffald/tamagui-ui!
    ```
 3. Build the package:
    ```bash
-   pnpm --filter @scaffald/tamagui-ui build
+   pnpm --filter @scaffald/neue-ui build
    ```
 4. Run tests:
    ```bash
-   pnpm --filter @scaffald/tamagui-ui test:unit
+   pnpm --filter @scaffald/neue-ui test:unit
    ```
 
 ## Development Workflow

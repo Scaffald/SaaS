@@ -1,11 +1,6 @@
-import { AddressForm, type AddressResult } from '@scaffald/tamagui-ui'
+import { AddressForm, type AddressResult } from '@scaffald/neue-ui'
 import { useMemo } from 'react'
-import {
-  type FieldPath,
-  type FieldValues,
-  type PathValue,
-  useWatch,
-} from 'react-hook-form'
+import { type FieldPath, type FieldValues, type PathValue, useWatch } from 'react-hook-form'
 import { Text, YStack } from 'tamagui'
 import type { ControlledAddressFormProps, CustomAddressFieldMapping } from './types'
 

@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { SkillsChart } from '@scaffald/tamagui-ui'
+import { SkillsChart } from '@scaffald/neue-ui'
 import { Calendar, TrendingUp } from '@tamagui/lucide-icons'
 import { Button } from 'tamagui'
 import { useMemo, useState, type FC } from 'react'

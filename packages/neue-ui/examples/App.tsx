@@ -1,6 +1,6 @@
 import { TamaguiProvider } from 'tamagui'
-import { config } from '@scaffald/tamagui-ui'
-import { Button, Card, Input, Text, YStack, XStack } from '@scaffald/tamagui-ui'
+import { config } from '@scaffald/neue-ui'
+import { Button, Card, Input, Text, YStack, XStack } from '@scaffald/neue-ui'
 import { useState } from 'react'
 
 export default function App() {
@@ -10,7 +10,7 @@ export default function App() {
     <TamaguiProvider config={config}>
       <YStack flex={1} bg="$background" p="$4" gap="$4">
         <Text fontSize="$8" fontWeight="600">
-          @scaffald/tamagui-ui Example
+          @scaffald/neue-ui Example
         </Text>
 
         <Card p="$4" bg="$color1" borderRadius="$4">
@@ -18,14 +18,8 @@ export default function App() {
             <Text fontSize="$6" fontWeight="600">
               Form Components
             </Text>
-            <Input
-              placeholder="Enter text..."
-              value={inputValue}
-              onChangeText={setInputValue}
-            />
-            <Button onPress={() => alert(`You entered: ${inputValue}`)}>
-              Submit
-            </Button>
+            <Input placeholder="Enter text..." value={inputValue} onChangeText={setInputValue} />
+            <Button onPress={() => alert(`You entered: ${inputValue}`)}>Submit</Button>
           </YStack>
         </Card>
 
@@ -35,20 +29,25 @@ export default function App() {
               Theme Customization
             </Text>
             <Text fontSize="$4" color="$color11">
-              This example uses the default scaffald theme. You can customize
-              colors, tokens, and component styles using the theme factory.
+              This example uses the default scaffald theme. You can customize colors, tokens, and
+              component styles using the theme factory.
             </Text>
           </YStack>
         </Card>
 
         <XStack gap="$2" flexWrap="wrap">
           <Button variant="outlined">Outlined</Button>
-          <Button bg="$blue9" color="white">Primary</Button>
-          <Button bg="$green9" color="white">Success</Button>
-          <Button bg="$red9" color="white">Danger</Button>
+          <Button bg="$blue9" color="white">
+            Primary
+          </Button>
+          <Button bg="$green9" color="white">
+            Success
+          </Button>
+          <Button bg="$red9" color="white">
+            Danger
+          </Button>
         </XStack>
       </YStack>
     </TamaguiProvider>
   )
 }
-

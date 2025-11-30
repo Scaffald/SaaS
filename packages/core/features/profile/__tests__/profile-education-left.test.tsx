@@ -49,7 +49,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   ChevronDown: () => null,
 }))
 
-'@scaffald/tamagui-ui', () => {
+'@scaffald/neue-ui', () => {
   const React = require('react') as typeof import('react')
 
   const createView = (element = 'div') =>

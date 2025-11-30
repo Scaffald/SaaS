@@ -10,7 +10,7 @@ import {
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
-import type { BreadcrumbItem } from '@scaffald/tamagui-ui'
+import type { BreadcrumbItem } from '@scaffald/neue-ui'
 import { DashboardLayout } from '@app/core/components/layouts'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'

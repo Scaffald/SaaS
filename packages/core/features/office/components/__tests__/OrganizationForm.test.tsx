@@ -117,7 +117,7 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   Button: ({
     children,
     onPress,

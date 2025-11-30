@@ -1,4 +1,4 @@
-import { ResponsiveModal } from '@scaffald/tamagui-ui'
+import { ResponsiveModal } from '@scaffald/neue-ui'
 import { PartyPopper, UploadCloud } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'

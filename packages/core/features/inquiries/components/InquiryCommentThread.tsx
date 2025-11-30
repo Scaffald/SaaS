@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import type { InquirySectionName } from '@app/schemas'
-import { Button, Input, Text, XStack, YStack } from '@scaffald/tamagui-ui'
+import { Button, Input, Text, XStack, YStack } from '@scaffald/neue-ui'
 import { MessageSquare, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo, useState } from 'react'

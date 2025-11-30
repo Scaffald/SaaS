@@ -1,6 +1,6 @@
 # API Reference
 
-Complete API documentation for @scaffald/tamagui-ui components.
+Complete API documentation for @scaffald/neue-ui components.
 
 ## Components
 
@@ -8,14 +8,14 @@ Complete API documentation for @scaffald/tamagui-ui components.
 
 #### Input
 ```tsx
-import { Input } from '@scaffald/tamagui-ui'
+import { Input } from '@scaffald/neue-ui'
 
 <Input placeholder="Enter text..." />
 ```
 
 #### PhoneNumberInput
 ```tsx
-import { PhoneNumberInput } from '@scaffald/tamagui-ui'
+import { PhoneNumberInput } from '@scaffald/neue-ui'
 
 <PhoneNumberInput
   value={phone}
@@ -26,7 +26,7 @@ import { PhoneNumberInput } from '@scaffald/tamagui-ui'
 
 #### Checkbox
 ```tsx
-import { Checkbox } from '@scaffald/tamagui-ui'
+import { Checkbox } from '@scaffald/neue-ui'
 
 <Checkbox checked={isChecked} onCheckedChange={setChecked} />
 ```
@@ -35,7 +35,7 @@ import { Checkbox } from '@scaffald/tamagui-ui'
 
 #### Card
 ```tsx
-import { Card } from '@scaffald/tamagui-ui'
+import { Card } from '@scaffald/neue-ui'
 
 <Card p="$4">
   <Text>Card content</Text>
@@ -44,7 +44,7 @@ import { Card } from '@scaffald/tamagui-ui'
 
 #### Sheet
 ```tsx
-import { Sheet } from '@scaffald/tamagui-ui'
+import { Sheet } from '@scaffald/neue-ui'
 
 <Sheet open={isOpen} onOpenChange={setOpen}>
   <Sheet.Frame>
@@ -57,7 +57,7 @@ import { Sheet } from '@scaffald/tamagui-ui'
 
 #### Breadcrumb
 ```tsx
-import { Breadcrumb } from '@scaffald/tamagui-ui'
+import { Breadcrumb } from '@scaffald/neue-ui'
 
 <Breadcrumb
   items={[
@@ -71,7 +71,7 @@ import { Breadcrumb } from '@scaffald/tamagui-ui'
 
 #### Charts
 ```tsx
-import { BarChart, LineChart, PieChart } from '@scaffald/tamagui-ui'
+import { BarChart, LineChart, PieChart } from '@scaffald/neue-ui'
 
 <BarChart data={chartData} />
 ```
@@ -80,7 +80,7 @@ import { BarChart, LineChart, PieChart } from '@scaffald/tamagui-ui'
 
 #### Phone Validation
 ```tsx
-import { formatPhoneNumber, isValidPhoneNumber } from '@scaffald/tamagui-ui/types/phone'
+import { formatPhoneNumber, isValidPhoneNumber } from '@scaffald/neue-ui/types/phone'
 
 const formatted = formatPhoneNumber('1234567890', 'US')
 const isValid = isValidPhoneNumber('1234567890', 'US')
@@ -88,7 +88,7 @@ const isValid = isValidPhoneNumber('1234567890', 'US')
 
 #### Geographic Types
 ```tsx
-import type { Boundary, Coordinate } from '@scaffald/tamagui-ui/types/geographic'
+import type { Boundary, Coordinate } from '@scaffald/neue-ui/types/geographic'
 
 const coordinate: Coordinate = [-84.5555, 42.7325]
 const boundary: Boundary = [
@@ -108,6 +108,6 @@ import {
   Card,
   Input,
   // ... all other components
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 ```
 

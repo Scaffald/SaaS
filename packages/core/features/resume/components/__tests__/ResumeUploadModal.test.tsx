@@ -42,7 +42,7 @@ vi.mock('@tamagui/toast', () => ({
   useToastController: () => ({ show: toastShow }),
 }))
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   ResponsiveModal: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   FileUpload: ({
     onFileSelect,

@@ -65,7 +65,7 @@
     {
       "item": "Automated prop documentation",
       "risk": "Manual drift between implementation and docs",
-      "suggestedDefault": "Use react-docgen-typescript to emit JSON for @app/ui components"
+      "suggestedDefault": "Use react-docgen-typescript to emit JSON for @scaffald/neue-ui components"
     },
     {
       "item": "Production auth gate for /styleguide",

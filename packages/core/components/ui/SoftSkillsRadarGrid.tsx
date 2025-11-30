@@ -1,5 +1,5 @@
 import { type FC, useMemo } from 'react'
-import { IndividualSkillRadarChart } from '@scaffald/tamagui-ui'
+import { IndividualSkillRadarChart } from '@scaffald/neue-ui'
 import type {
   SoftSkill,
   SoftSkillCategory,
@@ -126,4 +126,3 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
     </YStack>
   )
 }
-

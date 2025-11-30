@@ -3,7 +3,7 @@ import {
   FEEDBACK_MAX_LENGTH,
   FEEDBACK_MIN_LENGTH,
 } from '@app/schemas/feedback/feedback.schema'
-import type { UploadSelection } from '@scaffald/tamagui-ui'
+import type { UploadSelection } from '@scaffald/neue-ui'
 import {
   Button,
   FieldError,
@@ -17,7 +17,7 @@ import {
   UploadSurface,
   XStack,
   YStack,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { MessageCircle } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
 import { Controller } from 'react-hook-form'

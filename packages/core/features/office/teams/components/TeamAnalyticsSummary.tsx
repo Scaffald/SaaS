@@ -3,7 +3,7 @@ import type { AppRouter } from '@app/supabase/client-types'
 import { RefreshCw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
 import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface TeamAnalyticsSummaryProps {

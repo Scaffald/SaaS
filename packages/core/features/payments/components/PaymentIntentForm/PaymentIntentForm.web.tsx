@@ -1,4 +1,4 @@
-import { Button, Spinner, Text, XStack, YStack } from '@scaffald/tamagui-ui'
+import { Button, Spinner, Text, XStack, YStack } from '@scaffald/neue-ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import type { PaymentIntent, StripeElementsOptions } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'

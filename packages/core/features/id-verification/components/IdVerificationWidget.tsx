@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, DashboardWidget } from '@scaffald/tamagui-ui'
+import { UIButton as Button, DashboardWidget } from '@scaffald/neue-ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Text, YStack } from 'tamagui'
@@ -8,9 +8,12 @@ import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {
   const router = useRouter()
-  const badgeQuery = api.idVerification.getCurrentVerification.useQuery({}, {
-    staleTime: 60 * 1000,
-  })
+  const badgeQuery = api.idVerification.getCurrentVerification.useQuery(
+    {},
+    {
+      staleTime: 60 * 1000,
+    }
+  )
 
   const status = useMemo(() => deriveStatus(badgeQuery), [badgeQuery])
 

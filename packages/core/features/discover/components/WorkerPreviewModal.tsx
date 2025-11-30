@@ -5,7 +5,7 @@ import { useFollowStatus } from '@app/core/features/user-profile/hooks/useFollow
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
 import { useAdaptiveLoading } from '@app/core/utils/useAdaptiveLoading'
-import { ResponsiveModal } from '@scaffald/tamagui-ui'
+import { ResponsiveModal } from '@scaffald/neue-ui'
 import {
   Award,
   BadgeCheck,

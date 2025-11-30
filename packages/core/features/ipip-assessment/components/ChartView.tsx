@@ -1,5 +1,5 @@
 import type { IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
-import { BarChart, SkillsChart } from '@scaffald/tamagui-ui'
+import { BarChart, SkillsChart } from '@scaffald/neue-ui'
 import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { useMemo } from 'react'
 import { Text, XStack, YStack } from 'tamagui'

@@ -1,12 +1,12 @@
-# Migration Guide: @app/ui to @scaffald/tamagui-ui
+# Migration Guide: @app/ui to @scaffald/neue-ui
 
-This document describes the migration from the legacy `@app/ui` package to the new `@scaffald/tamagui-ui` package and the reorganization of domain-specific components.
+This document describes the migration from the legacy `@app/ui` package to the new `@scaffald/neue-ui` package and the reorganization of domain-specific components.
 
 ## Overview
 
 The UI component library has been split into two packages:
 
-1. **`@scaffald/tamagui-ui`** - Generic, reusable UI components (publishable package)
+1. **`@scaffald/neue-ui`** - Generic, reusable UI components (publishable package)
 2. **`@app/core`** - Domain-specific components that depend on application logic
 
 The legacy `@app/ui` package has been **removed**.
@@ -16,14 +16,14 @@ The legacy `@app/ui` package has been **removed**.
 ### Package Structure
 
 - ✅ **Removed**: `packages/ui` (legacy `@app/ui` package)
-- ✅ **Updated**: `packages/neue-ui` → now `@scaffald/tamagui-ui` (publishable)
+- ✅ **Updated**: `packages/neue-ui` → now `@scaffald/neue-ui` (publishable)
 - ✅ **Updated**: `packages/core` → now contains domain-specific UI components
 
 ### Component Locations
 
-#### Generic Components → `@scaffald/tamagui-ui`
+#### Generic Components → `@scaffald/neue-ui`
 
-All generic, reusable components remain in `@scaffald/tamagui-ui`:
+All generic, reusable components remain in `@scaffald/neue-ui`:
 
 - Form components (Input, Checkbox, Radio, PhoneNumberInput, ToggleSwitch, etc.)
 - Layout components (Card, Stack, Sheet, Dialog, Modal, etc.)
@@ -35,7 +35,7 @@ All generic, reusable components remain in `@scaffald/tamagui-ui`:
 
 **Import from:**
 ```typescript
-import { Button, Card, Input, Breadcrumb } from '@scaffald/tamagui-ui'
+import { Button, Card, Input, Breadcrumb } from '@scaffald/neue-ui'
 ```
 
 #### Domain-Specific Components → `@app/core`
@@ -79,7 +79,7 @@ import { useBreadcrumbs } from '@app/core/hooks'
 ```json
 {
   "dependencies": {
-    "@scaffald/tamagui-ui": "workspace:*"
+    "@scaffald/neue-ui": "workspace:*"
   }
 }
 ```
@@ -95,7 +95,7 @@ import { Button, Card, Input } from '@app/ui'
 
 **After:**
 ```typescript
-import { Button, Card, Input } from '@scaffald/tamagui-ui'
+import { Button, Card, Input } from '@scaffald/neue-ui'
 ```
 
 #### Domain-Specific Components
@@ -121,7 +121,7 @@ import type { Boundary, Coordinate } from '@app/ui'
 
 **After:**
 ```typescript
-import type { Boundary, Coordinate } from '@scaffald/tamagui-ui'
+import type { Boundary, Coordinate } from '@scaffald/neue-ui'
 ```
 
 ### 3. Update TypeScript Configuration
@@ -145,7 +145,7 @@ If you have custom TypeScript paths, update them:
 {
   "compilerOptions": {
     "paths": {
-      "@scaffald/tamagui-ui": ["./packages/neue-ui"]
+      "@scaffald/neue-ui": ["./packages/neue-ui"]
     }
   }
 }
@@ -168,11 +168,11 @@ declare module '@app/ui' {
 **After:**
 ```typescript
 // types.d.ts
-import type { config } from '@scaffald/tamagui-ui'
+import type { config } from '@scaffald/neue-ui'
 
 export type Conf = typeof config
 
-declare module '@scaffald/tamagui-ui' {
+declare module '@scaffald/neue-ui' {
   interface TamaguiCustomConfig extends Conf {}
 }
 ```
@@ -181,7 +181,7 @@ declare module '@scaffald/tamagui-ui' {
 
 ### Generic Components (No Change in Import Path)
 
-These components are still imported from `@scaffald/tamagui-ui` (previously `@app/ui`):
+These components are still imported from `@scaffald/neue-ui` (previously `@app/ui`):
 
 - `Button`, `UIButton`
 - `Card`, `CardStack`
@@ -218,9 +218,9 @@ These components are still imported from `@scaffald/tamagui-ui` (previously `@ap
 
 ### Issue: "Cannot find module '@app/ui'"
 
-**Solution**: Update all imports to use `@scaffald/tamagui-ui` or the new `@app/core` paths.
+**Solution**: Update all imports to use `@scaffald/neue-ui` or the new `@app/core` paths.
 
-### Issue: "Component not found in '@scaffald/tamagui-ui'"
+### Issue: "Component not found in '@scaffald/neue-ui'"
 
 **Solution**: Check if the component is domain-specific. If so, import it from `@app/core` instead.
 
@@ -251,8 +251,8 @@ If you encounter issues during migration:
 
 ## Summary
 
-- **Generic components**: Import from `@scaffald/tamagui-ui`
+- **Generic components**: Import from `@scaffald/neue-ui`
 - **Domain-specific components**: Import from `@app/core/components/*` or `@app/core/hooks`
 - **Legacy package**: `@app/ui` has been removed
-- **New package**: `@scaffald/tamagui-ui` is now the source for all generic UI components
+- **New package**: `@scaffald/neue-ui` is now the source for all generic UI components
 

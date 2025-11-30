@@ -80,7 +80,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
   UIButton: ({
     children,

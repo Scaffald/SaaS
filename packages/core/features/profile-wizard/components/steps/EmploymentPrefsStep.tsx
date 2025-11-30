@@ -1,5 +1,5 @@
 import { ControlledAddressForm } from '@app/core/forms'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'

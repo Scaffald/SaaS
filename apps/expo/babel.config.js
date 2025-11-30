@@ -61,7 +61,7 @@ module.exports = (api) => {
       [
         '@tamagui/babel-plugin',
         {
-          components: ['@scaffald/tamagui-ui', 'tamagui'],
+          components: ['@scaffald/neue-ui', 'tamagui'],
           config: '../../packages/neue-ui/src/tamagui.config.ts',
           logTimings: true,
           // Extraction enabled for proper native component behavior

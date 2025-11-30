@@ -1,7 +1,7 @@
 import type { ApplicationStepType, AttachmentMetadata } from '@app/schemas'
 import { ApplicationStep } from '@app/schemas'
 import { api } from '@app/core/utils/api'
-import { SaveStatusIndicator } from '@scaffald/tamagui-ui'
+import { SaveStatusIndicator } from '@scaffald/neue-ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
 import { Button, ScrollView, Text, XStack, YStack } from 'tamagui'

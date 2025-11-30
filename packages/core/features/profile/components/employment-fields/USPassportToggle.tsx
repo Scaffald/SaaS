@@ -1,5 +1,5 @@
-import { ToggleCard } from '@scaffald/tamagui-ui'
-import type { ToggleCardProps } from '@scaffald/tamagui-ui'
+import { ToggleCard } from '@scaffald/neue-ui'
+import type { ToggleCardProps } from '@scaffald/neue-ui'
 import { MapPin } from '@tamagui/lucide-icons'
 
 export interface USPassportToggleProps
@@ -25,4 +25,3 @@ export function USPassportToggle({
     />
   )
 }
-

@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@scaffald/tamagui-ui'
-import { extractPlainText } from '@scaffald/tamagui-ui'
+import { ResponsiveModal } from '@scaffald/neue-ui'
+import { extractPlainText } from '@scaffald/neue-ui'
 import {
   Award,
   Briefcase,
@@ -203,7 +203,8 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 <XStack gap="$2" items="center">
                   <Calendar size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
-                    Posted {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : 'Recently'}
+                    Posted{' '}
+                    {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : 'Recently'}
                   </Text>
                 </XStack>
               )}
@@ -237,7 +238,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 <XStack gap="$2" flexWrap="wrap">
                   {(job.job_skills || []).map((jobSkill, idx: number) => {
                     const skillName =
-                      jobSkill?.csi_skill?.name || jobSkill?.onet_occupation?.title || 'Unknown Skill'
+                      jobSkill?.csi_skill?.name ||
+                      jobSkill?.onet_occupation?.title ||
+                      'Unknown Skill'
                     const skillKey =
                       jobSkill?.csi_skill?.id?.toString() ||
                       jobSkill?.onet_occupation?.code?.toString() ||
@@ -317,7 +320,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   }
                   fontWeight="600"
                 >
-                  {job.status ? (job.status.charAt(0).toUpperCase() + job.status.slice(1)) : 'Unknown'}
+                  {job.status
+                    ? job.status.charAt(0).toUpperCase() + job.status.slice(1)
+                    : 'Unknown'}
                 </Text>
               </XStack>
             </XStack>

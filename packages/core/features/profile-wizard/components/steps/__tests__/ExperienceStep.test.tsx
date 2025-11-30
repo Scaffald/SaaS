@@ -50,7 +50,7 @@ vi.mock('../StepNavigation', () => ({
   ),
 }))
 
-'@scaffald/tamagui-ui', () => ({
+'@scaffald/neue-ui', () => ({
   MonthYearPicker: ({
     label,
     value,

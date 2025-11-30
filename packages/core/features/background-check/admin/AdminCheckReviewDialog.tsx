@@ -1,23 +1,13 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button, Dialog } from '@scaffald/tamagui-ui'
+import { Button, Dialog } from '@scaffald/neue-ui'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
-import {
-  Input,
-  Label,
-  Separator,
-  Spinner,
-  Switch,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { Input, Label, Separator, Spinner, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
 import { CheckProgressTracker } from '../components/CheckProgressTracker'
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -313,7 +303,9 @@ export function AdminCheckReviewDialog({
       package?: { display_name?: string | null; slug?: string | null } | null
     }
     if (!checkWithPackage?.package) return 'Background check'
-    return checkWithPackage.package.display_name ?? checkWithPackage.package.slug ?? 'Background check'
+    return (
+      checkWithPackage.package.display_name ?? checkWithPackage.package.slug ?? 'Background check'
+    )
   }, [detailedCheck])
 
   return (

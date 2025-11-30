@@ -1,4 +1,13 @@
-import { Button, Input, ResponsiveSelect, Sheet, Text, ToggleSwitch, XStack, YStack } from '@scaffald/tamagui-ui'
+import {
+  Button,
+  Input,
+  ResponsiveSelect,
+  Sheet,
+  Text,
+  ToggleSwitch,
+  XStack,
+  YStack,
+} from '@scaffald/neue-ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Card, Label, Switch } from 'tamagui'
@@ -266,101 +275,101 @@ export function ApplicationProcessSection({
           }}
         >
           <Sheet.Frame p="$4" gap="$4">
-              <YStack gap="$3">
-                <Text fontSize="$6" fontWeight="600">
-                  Add Capability Question
-                </Text>
+            <YStack gap="$3">
+              <Text fontSize="$6" fontWeight="600">
+                Add Capability Question
+              </Text>
 
-                {/* Question Label */}
-                <YStack gap="$2">
-                  <Label>Question Label *</Label>
-                  <Input
-                    placeholder="e.g., Are you able to lift heavy objects?"
-                    value={newQuestion.label || ''}
-                    onChangeText={(text) =>
-                      setNewQuestion({
-                        ...newQuestion,
-                        label: text,
-                        name: text
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, '_')
-                          .replace(/^_+|_+$/g, ''),
-                      })
-                    }
-                  />
-                </YStack>
-
-                {/* Question Type */}
-                <YStack gap="$2">
-                  <Label>Question Type *</Label>
-                  <ResponsiveSelect
-                    value={newQuestion.type || 'boolean'}
-                    onValueChange={(type) =>
-                      setNewQuestion({
-                        ...newQuestion,
-                        type: type as 'boolean' | 'number' | 'text',
-                      })
-                    }
-                    placeholder="Select type"
-                    options={[
-                      { value: 'boolean', label: 'Yes/No' },
-                      { value: 'number', label: 'Numeric' },
-                      { value: 'text', label: 'Text' },
-                    ]}
-                  />
-                </YStack>
-
-                {/* Unit (for number type) */}
-                {newQuestion.type === 'number' && (
-                  <YStack gap="$2">
-                    <Label>Unit (optional)</Label>
-                    <Input
-                      placeholder="e.g., Pounds, Hours, Miles"
-                      value={newQuestion.unit || ''}
-                      onChangeText={(text) => setNewQuestion({ ...newQuestion, unit: text })}
-                    />
-                  </YStack>
-                )}
-
-                {/* Required */}
-                <XStack gap="$2" items="center">
-                  <Switch
-                    checked={newQuestion.required || false}
-                    onCheckedChange={(checked) =>
-                      setNewQuestion({ ...newQuestion, required: checked })
-                    }
-                  />
-                  <Text fontSize="$3">Required</Text>
-                </XStack>
-
-                {/* Actions */}
-                <XStack gap="$3" justify="flex-end" mt="$2">
-                  <Button
-                    variant="outlined"
-                    onPress={() => {
-                      setShowAddQuestionModal(false)
-                      setNewQuestion({
-                        name: '',
-                        label: '',
-                        type: 'boolean',
-                        unit: '',
-                        required: false,
-                      })
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    theme="blue"
-                    onPress={handleAddQuestion}
-                    disabled={!newQuestion.label || !newQuestion.type}
-                  >
-                    Add Question
-                  </Button>
-                </XStack>
+              {/* Question Label */}
+              <YStack gap="$2">
+                <Label>Question Label *</Label>
+                <Input
+                  placeholder="e.g., Are you able to lift heavy objects?"
+                  value={newQuestion.label || ''}
+                  onChangeText={(text) =>
+                    setNewQuestion({
+                      ...newQuestion,
+                      label: text,
+                      name: text
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '_')
+                        .replace(/^_+|_+$/g, ''),
+                    })
+                  }
+                />
               </YStack>
-            </Sheet.Frame>
-            <Sheet.Overlay />
+
+              {/* Question Type */}
+              <YStack gap="$2">
+                <Label>Question Type *</Label>
+                <ResponsiveSelect
+                  value={newQuestion.type || 'boolean'}
+                  onValueChange={(type) =>
+                    setNewQuestion({
+                      ...newQuestion,
+                      type: type as 'boolean' | 'number' | 'text',
+                    })
+                  }
+                  placeholder="Select type"
+                  options={[
+                    { value: 'boolean', label: 'Yes/No' },
+                    { value: 'number', label: 'Numeric' },
+                    { value: 'text', label: 'Text' },
+                  ]}
+                />
+              </YStack>
+
+              {/* Unit (for number type) */}
+              {newQuestion.type === 'number' && (
+                <YStack gap="$2">
+                  <Label>Unit (optional)</Label>
+                  <Input
+                    placeholder="e.g., Pounds, Hours, Miles"
+                    value={newQuestion.unit || ''}
+                    onChangeText={(text) => setNewQuestion({ ...newQuestion, unit: text })}
+                  />
+                </YStack>
+              )}
+
+              {/* Required */}
+              <XStack gap="$2" items="center">
+                <Switch
+                  checked={newQuestion.required || false}
+                  onCheckedChange={(checked) =>
+                    setNewQuestion({ ...newQuestion, required: checked })
+                  }
+                />
+                <Text fontSize="$3">Required</Text>
+              </XStack>
+
+              {/* Actions */}
+              <XStack gap="$3" justify="flex-end" mt="$2">
+                <Button
+                  variant="outlined"
+                  onPress={() => {
+                    setShowAddQuestionModal(false)
+                    setNewQuestion({
+                      name: '',
+                      label: '',
+                      type: 'boolean',
+                      unit: '',
+                      required: false,
+                    })
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  theme="blue"
+                  onPress={handleAddQuestion}
+                  disabled={!newQuestion.label || !newQuestion.type}
+                >
+                  Add Question
+                </Button>
+              </XStack>
+            </YStack>
+          </Sheet.Frame>
+          <Sheet.Overlay />
         </Sheet>
       </YStack>
     </YStack>

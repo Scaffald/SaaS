@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import type { AddressResult } from '@scaffald/tamagui-ui'
+import type { AddressResult } from '@scaffald/neue-ui'
 import {
   AddressForm,
   Button,
@@ -11,8 +11,8 @@ import {
   Text,
   XStack,
   YStack,
-} from '@scaffald/tamagui-ui'
-import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
+import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@scaffald/neue-ui'
 import type { JSONContent } from '@tiptap/core'
 import { Eye, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -1288,12 +1288,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             onPress={() => handleSubmit(false)}
             disabled={Boolean(
               isLoading ||
-              !formData.title ||
-              !formData.description ||
-              !formData.location ||
-              !formData.organization_id ||
-              (formData.scheduled_publish_at &&
-                new Date(formData.scheduled_publish_at) <= new Date())
+                !formData.title ||
+                !formData.description ||
+                !formData.location ||
+                !formData.organization_id ||
+                (formData.scheduled_publish_at &&
+                  new Date(formData.scheduled_publish_at) <= new Date())
             )}
             $sm={{ height: 44, width: '100%' }}
             $md={{ height: undefined, width: undefined }}

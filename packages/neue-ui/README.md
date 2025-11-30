@@ -1,15 +1,15 @@
-# @scaffald/tamagui-ui
+# @scaffald/neue-ui
 
 Comprehensive UI component library for Tamagui and Expo, supporting iOS, Android, and web platforms.
 
 ## Installation
 
 ```bash
-npm install @scaffald/tamagui-ui
+npm install @scaffald/neue-ui
 # or
-pnpm add @scaffald/tamagui-ui
+pnpm add @scaffald/neue-ui
 # or
-yarn add @scaffald/tamagui-ui
+yarn add @scaffald/neue-ui
 ```
 
 ## Peer Dependencies
@@ -27,7 +27,7 @@ This package requires the following peer dependencies:
 ## Quick Start
 
 ```tsx
-import { Button, Card, Input } from '@scaffald/tamagui-ui'
+import { Button, Card, Input } from '@scaffald/neue-ui'
 
 function App() {
   return (
@@ -44,7 +44,7 @@ function App() {
 The package includes a configurable theme system. Use the default scaffald theme or customize it:
 
 ```tsx
-import { createUIConfig } from '@scaffald/tamagui-ui'
+import { createUIConfig } from '@scaffald/neue-ui'
 
 // Customize theme colors
 const customConfig = createUIConfig({
@@ -86,8 +86,8 @@ See [API Reference](./docs/api-reference.md) for complete component documentatio
 The package includes TypeScript definitions and exports types for geographic and phone utilities:
 
 ```tsx
-import type { Boundary, Coordinate } from '@scaffald/tamagui-ui/types/geographic'
-import { formatPhoneNumber, isValidPhoneNumber } from '@scaffald/tamagui-ui/types/phone'
+import type { Boundary, Coordinate } from '@scaffald/neue-ui/types/geographic'
+import { formatPhoneNumber, isValidPhoneNumber } from '@scaffald/neue-ui/types/phone'
 ```
 
 ## Documentation

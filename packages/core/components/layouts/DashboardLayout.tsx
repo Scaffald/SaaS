@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ScrollView, XStack, YStack } from 'tamagui'
-import { Breadcrumb, type BreadcrumbItem } from '@scaffald/tamagui-ui'
+import { Breadcrumb, type BreadcrumbItem } from '@scaffald/neue-ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type DashboardLayoutProps = {
@@ -81,4 +81,3 @@ export const DashboardLayout = ({
     </ScrollView>
   )
 }
-

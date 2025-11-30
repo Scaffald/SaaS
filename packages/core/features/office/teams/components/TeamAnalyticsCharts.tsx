@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { BarChart, LineChart, PieChart } from '@scaffald/tamagui-ui'
+import { BarChart, LineChart, PieChart } from '@scaffald/neue-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'

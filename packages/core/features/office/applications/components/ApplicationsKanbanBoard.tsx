@@ -1,7 +1,7 @@
 import { BulkInquiryModal } from '@app/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@app/core/features/inquiries/components/InquiryComparisonView'
 import { api } from '@app/core/utils/api'
-import { DraggableCard, DroppableColumn, KanbanCard } from '@scaffald/tamagui-ui'
+import { DraggableCard, DroppableColumn, KanbanCard } from '@scaffald/neue-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useEffect, useMemo, useState } from 'react'
@@ -455,38 +455,38 @@ const StatusColumn = ({
       emptyMessage="No applications"
     >
       {applications.map((app) => {
-          // Calculate attachment count
-          const attachmentCount =
-            (app.attachments.resume ? 1 : 0) +
-            (app.attachments.coverLetter ? 1 : 0) +
-            (app.attachments.portfolio ? 1 : 0)
+        // Calculate attachment count
+        const attachmentCount =
+          (app.attachments.resume ? 1 : 0) +
+          (app.attachments.coverLetter ? 1 : 0) +
+          (app.attachments.portfolio ? 1 : 0)
 
-          // Calculate duration in days
-          const durationDays = Math.floor(
-            (Date.now() - new Date(app.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
-          )
+        // Calculate duration in days
+        const durationDays = Math.floor(
+          (Date.now() - new Date(app.appliedAt).getTime()) / (1000 * 60 * 60 * 24)
+        )
 
-          return (
-            <DraggableCard
-              key={app.id}
-              id={app.id}
-              kanbanCardProps={{
-                applicantName: app.candidate.name,
-                applicantAvatar: app.candidate.photo,
-                jobTitle: app.job.title,
-                applicationDate: new Date(app.appliedAt),
-                score: app.score,
-                status: app.status,
-                attachmentCount,
-                commentCount: app.notes.length,
-                durationDays,
-                isSelected: selectedApplicationIds.has(app.id),
-                onToggleSelection: () => onToggleSelection(app.id),
-                onView: () => onSelectApplication(app),
-              }}
-            />
-          )
-        })}
+        return (
+          <DraggableCard
+            key={app.id}
+            id={app.id}
+            kanbanCardProps={{
+              applicantName: app.candidate.name,
+              applicantAvatar: app.candidate.photo,
+              jobTitle: app.job.title,
+              applicationDate: new Date(app.appliedAt),
+              score: app.score,
+              status: app.status,
+              attachmentCount,
+              commentCount: app.notes.length,
+              durationDays,
+              isSelected: selectedApplicationIds.has(app.id),
+              onToggleSelection: () => onToggleSelection(app.id),
+              onView: () => onSelectApplication(app),
+            }}
+          />
+        )
+      })}
     </DroppableColumn>
   )
 }

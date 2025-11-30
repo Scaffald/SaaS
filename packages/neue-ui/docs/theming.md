@@ -1,13 +1,13 @@
 # Theming Guide
 
-@scaffald/tamagui-ui provides a flexible theming system that allows you to customize colors, tokens, and component styles.
+@scaffald/neue-ui provides a flexible theming system that allows you to customize colors, tokens, and component styles.
 
 ## Default Theme
 
 The package includes a default "scaffald" theme with a professional teal-based design system. You can use it as-is:
 
 ```tsx
-import { config } from '@scaffald/tamagui-ui'
+import { config } from '@scaffald/neue-ui'
 
 // Use the default config
 export default config
@@ -18,7 +18,7 @@ export default config
 You can customize individual color scales:
 
 ```tsx
-import { createUIConfig } from '@scaffald/tamagui-ui'
+import { createUIConfig } from '@scaffald/neue-ui'
 
 const customConfig = createUIConfig({
   theme: {

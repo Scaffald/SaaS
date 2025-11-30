@@ -1,6 +1,13 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@scaffald/tamagui-ui'
+import {
+  DashboardWidget,
+  EmptyState,
+  Heading,
+  LoadingState,
+  spacing,
+  UIButton,
+} from '@scaffald/neue-ui'
 import { Briefcase } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Separator, Text, XStack, YStack } from 'tamagui'

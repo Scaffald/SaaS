@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@scaffald/tamagui-ui'
+import { DashboardWidget } from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -77,8 +77,7 @@ export function OfficeUniversitiesForm({
       onUniversitySaved()
     },
     onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to create university'
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create university'
       toast.show('Error', {
         message: errorMessage,
       })
@@ -93,8 +92,7 @@ export function OfficeUniversitiesForm({
       onUniversitySaved()
     },
     onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to update university'
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update university'
       toast.show('Error', {
         message: errorMessage,
       })

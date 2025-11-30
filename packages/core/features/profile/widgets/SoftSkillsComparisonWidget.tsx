@@ -14,7 +14,7 @@ import {
   spacing,
   UIButton,
   type SkillsChartDataset,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
 import { Separator, Text, XStack, YStack } from 'tamagui'

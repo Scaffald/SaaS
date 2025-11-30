@@ -1,4 +1,4 @@
-import { EmptyState, ErrorState, SkeletonList } from '@scaffald/tamagui-ui'
+import { EmptyState, ErrorState, SkeletonList } from '@scaffald/neue-ui'
 import { Search } from '@tamagui/lucide-icons'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
@@ -31,7 +31,10 @@ export interface ResultListRef {
 }
 
 const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
-  ({ profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry }, ref) => {
+  (
+    { profiles, organizations = [], jobs = [], selectedId, onSelect, isLoading, error, onRetry },
+    ref
+  ) => {
     const scrollViewRef = useRef<ScrollView>(null)
 
     // Combine profiles, organizations, and jobs into a single list

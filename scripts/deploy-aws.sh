@@ -268,7 +268,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     # Build workspace packages
     echo -e "${BLUE}Building workspace packages...${NC}"
     cd "$PROJECT_ROOT"
-    pnpm --filter @app/ui build
+    pnpm --filter @scaffald/neue-ui build
     pnpm --filter @app/core build
     pnpm --filter @app/schemas build
     

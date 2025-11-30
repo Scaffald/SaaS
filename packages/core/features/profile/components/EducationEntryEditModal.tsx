@@ -8,21 +8,12 @@ import {
   ResponsiveModal,
   ResponsiveSelect,
   UniversityAutocomplete,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import {
-  Input,
-  Label,
-  Spinner,
-  Text,
-  TextArea,
-  useWindowDimensions,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Input, Label, Spinner, Text, TextArea, useWindowDimensions, XStack, YStack } from 'tamagui'
 import { DEGREE_TYPE_OPTIONS, singleEducationEntrySchema } from '../config'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
 import { normalizeEducationEntry } from '../utils/education-entry'

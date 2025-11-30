@@ -6,7 +6,7 @@ import {
   type DashboardBreadcrumbSegment,
 } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
 import { ProfileLayout } from '@app/core/components/layouts'
-import type { BreadcrumbItem } from '@scaffald/tamagui-ui'
+import type { BreadcrumbItem } from '@scaffald/neue-ui'
 import { usePathname } from 'expo-router'
 import type { ComponentProps } from 'react'
 import { useMemo } from 'react'
@@ -88,4 +88,3 @@ export function ProfilePage({
 
   return <ProfileLayout {...layoutProps} breadcrumbItems={computedBreadcrumbItems} />
 }
-

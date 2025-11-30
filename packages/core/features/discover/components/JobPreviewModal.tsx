@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@scaffald/tamagui-ui'
+import { ResponsiveModal } from '@scaffald/neue-ui'
 import {
   Briefcase,
   Building2,
@@ -43,10 +43,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   const router = useRouter()
 
   // Fetch job data
-  const query = api.jobs.getJobDetails.useQuery(
-    { id: jobId || '' },
-    { enabled: !!jobId && open }
-  )
+  const query = api.jobs.getJobDetails.useQuery({ id: jobId || '' }, { enabled: !!jobId && open })
   const job = query.data as JobData | undefined
   const isLoading = query.isLoading
 
@@ -105,149 +102,142 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
       title={job?.title || 'Job Details'}
       size="medium"
     >
-        {isLoading ? (
-          <YStack py="$8" items="center" justify="center">
-            <Spinner size="large" color="$blue10" />
-            <Text mt="$4" color="$color11">
-              Loading job details...
-            </Text>
-          </YStack>
-        ) : !job ? (
-          <YStack py="$8" items="center">
-            <Text color="$red10" fontSize="$5" fontWeight="600">
-              Job not found
-            </Text>
-          </YStack>
-        ) : (
-          <>
-            {/* Job Header */}
-            <YStack gap="$3" items="center">
-              <YStack
-                width={80}
-                height={80}
-                rounded="$6"
-                bg="$blue4"
-                items="center"
-                justify="center"
-              >
-                <Briefcase size={40} color="$blue10" />
-              </YStack>
+      {isLoading ? (
+        <YStack py="$8" items="center" justify="center">
+          <Spinner size="large" color="$blue10" />
+          <Text mt="$4" color="$color11">
+            Loading job details...
+          </Text>
+        </YStack>
+      ) : !job ? (
+        <YStack py="$8" items="center">
+          <Text color="$red10" fontSize="$5" fontWeight="600">
+            Job not found
+          </Text>
+        </YStack>
+      ) : (
+        <>
+          {/* Job Header */}
+          <YStack gap="$3" items="center">
+            <YStack width={80} height={80} rounded="$6" bg="$blue4" items="center" justify="center">
+              <Briefcase size={40} color="$blue10" />
+            </YStack>
 
-              <YStack gap="$2" items="center">
-                <Text fontSize="$8" fontWeight="700" color="$color12">
-                  {job.title}
-                </Text>
-                {job.organization?.name && (
-                  <XStack gap="$2" items="center">
-                    <Building2 size={16} color="$color10" />
-                    <Text fontSize="$5" color="$color11">
-                      {job.organization.name}
+            <YStack gap="$2" items="center">
+              <Text fontSize="$8" fontWeight="700" color="$color12">
+                {job.title}
+              </Text>
+              {job.organization?.name && (
+                <XStack gap="$2" items="center">
+                  <Building2 size={16} color="$color10" />
+                  <Text fontSize="$5" color="$color11">
+                    {job.organization.name}
+                  </Text>
+                </XStack>
+              )}
+            </YStack>
+
+            {/* Job Type Badge */}
+            {(job.employment_type || job.position_level) && (
+              <XStack gap="$2" flexWrap="wrap" justify="center">
+                {job.employment_type && (
+                  <XStack
+                    bg="$blue2"
+                    px="$3"
+                    py="$1.5"
+                    rounded="$3"
+                    borderWidth={1}
+                    borderColor="$blue5"
+                  >
+                    <Text fontSize="$3" fontWeight="600" color="$blue11">
+                      {formatEmploymentType(job.employment_type)}
                     </Text>
                   </XStack>
                 )}
-              </YStack>
+                {job.position_level && (
+                  <XStack bg="$color3" px="$3" py="$1.5" rounded="$3">
+                    <Text fontSize="$3" fontWeight="600" color="$color11">
+                      {job.position_level}
+                    </Text>
+                  </XStack>
+                )}
+              </XStack>
+            )}
+          </YStack>
 
-              {/* Job Type Badge */}
-              {(job.employment_type || job.position_level) && (
-                <XStack gap="$2" flexWrap="wrap" justify="center">
-                  {job.employment_type && (
-                    <XStack
-                      bg="$blue2"
-                      px="$3"
-                      py="$1.5"
-                      rounded="$3"
-                      borderWidth={1}
-                      borderColor="$blue5"
-                    >
-                      <Text fontSize="$3" fontWeight="600" color="$blue11">
-                        {formatEmploymentType(job.employment_type)}
-                      </Text>
-                    </XStack>
-                  )}
-                  {job.position_level && (
-                    <XStack bg="$color3" px="$3" py="$1.5" rounded="$3">
-                      <Text fontSize="$3" fontWeight="600" color="$color11">
-                        {job.position_level}
-                      </Text>
-                    </XStack>
-                  )}
-                </XStack>
-              )}
-            </YStack>
+          <Separator />
 
-            <Separator />
-
-            {/* Quick Info */}
-            <YStack gap="$3">
-              {job.location && (
-                <XStack gap="$2" items="center">
-                  <MapPin size={18} color="$color10" />
-                  <Text fontSize="$4" color="$color11">
-                    {job.location}
-                  </Text>
-                </XStack>
-              )}
-
-              {job.remote_option && (
-                <XStack gap="$2" items="center">
-                  <Clock size={18} color="$color10" />
-                  <Text fontSize="$4" color="$color11">
-                    {formatRemoteOption(job.remote_option)}
-                  </Text>
-                </XStack>
-              )}
-
-              {(job.pay_range_min_cents || job.pay_range_max_cents) && (
-                <XStack gap="$2" items="center">
-                  <DollarSign size={18} color="$color10" />
-                  <Text fontSize="$4" color="$color11">
-                    {formatPayRange(
-                      job.pay_range_min_cents ?? null,
-                      job.pay_range_max_cents ?? null,
-                      job.pay_range_type ?? null
-                    )}
-                    {job.pay_range_type === 'annual' && ' annually'}
-                  </Text>
-                </XStack>
-              )}
-
-              {job.status === 'open' && (
-                <XStack bg="$green3" px="$3" py="$1.5" rounded="$3">
-                  <Text fontSize="$3" fontWeight="600" color="$green11">
-                    Accepting Applications
-                  </Text>
-                </XStack>
-              )}
-            </YStack>
-
-            {/* Description Preview */}
-            {job.description && (
-              <>
-                <Separator />
-                <YStack gap="$2">
-                  <Text fontSize="$5" fontWeight="600" color="$color12">
-                    Description
-                  </Text>
-                  <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
-                    {job.description}
-                  </Text>
-                </YStack>
-              </>
+          {/* Quick Info */}
+          <YStack gap="$3">
+            {job.location && (
+              <XStack gap="$2" items="center">
+                <MapPin size={18} color="$color10" />
+                <Text fontSize="$4" color="$color11">
+                  {job.location}
+                </Text>
+              </XStack>
             )}
 
-            <Separator />
+            {job.remote_option && (
+              <XStack gap="$2" items="center">
+                <Clock size={18} color="$color10" />
+                <Text fontSize="$4" color="$color11">
+                  {formatRemoteOption(job.remote_option)}
+                </Text>
+              </XStack>
+            )}
 
-            {/* CTA Button */}
-            <Button
-              size="$5"
-              theme="info"
-              iconAfter={<ExternalLink size={18} />}
-              onPress={handleViewFullDetails}
-            >
-              View Full Details & Apply
-            </Button>
-          </>
-        )}
+            {(job.pay_range_min_cents || job.pay_range_max_cents) && (
+              <XStack gap="$2" items="center">
+                <DollarSign size={18} color="$color10" />
+                <Text fontSize="$4" color="$color11">
+                  {formatPayRange(
+                    job.pay_range_min_cents ?? null,
+                    job.pay_range_max_cents ?? null,
+                    job.pay_range_type ?? null
+                  )}
+                  {job.pay_range_type === 'annual' && ' annually'}
+                </Text>
+              </XStack>
+            )}
+
+            {job.status === 'open' && (
+              <XStack bg="$green3" px="$3" py="$1.5" rounded="$3">
+                <Text fontSize="$3" fontWeight="600" color="$green11">
+                  Accepting Applications
+                </Text>
+              </XStack>
+            )}
+          </YStack>
+
+          {/* Description Preview */}
+          {job.description && (
+            <>
+              <Separator />
+              <YStack gap="$2">
+                <Text fontSize="$5" fontWeight="600" color="$color12">
+                  Description
+                </Text>
+                <Text fontSize="$4" color="$color11" lineHeight="$1" numberOfLines={4}>
+                  {job.description}
+                </Text>
+              </YStack>
+            </>
+          )}
+
+          <Separator />
+
+          {/* CTA Button */}
+          <Button
+            size="$5"
+            theme="info"
+            iconAfter={<ExternalLink size={18} />}
+            onPress={handleViewFullDetails}
+          >
+            View Full Details & Apply
+          </Button>
+        </>
+      )}
     </ResponsiveModal>
   )
 }

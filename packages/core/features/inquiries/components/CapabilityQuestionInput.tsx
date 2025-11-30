@@ -1,4 +1,4 @@
-import { Button, Text, ToggleSwitch, XStack, YStack } from '@scaffald/tamagui-ui'
+import { Button, Text, ToggleSwitch, XStack, YStack } from '@scaffald/neue-ui'
 import { Check, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 

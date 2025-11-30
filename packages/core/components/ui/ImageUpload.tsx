@@ -4,7 +4,7 @@ import { AlertCircle, Image as ImageIcon, Trash2, Upload } from '@tamagui/lucide
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { Button, Image, Spinner, Text, XStack, YStack } from 'tamagui'
-import { useFilePicker, MediaTypeOptions } from '@scaffald/tamagui-ui'
+import { useFilePicker, MediaTypeOptions } from '@scaffald/neue-ui'
 
 export interface ImageUploadProps {
   /** Current image URL (for edit mode) */
@@ -466,4 +466,3 @@ export function ImageUpload({
     </YStack>
   )
 }
-

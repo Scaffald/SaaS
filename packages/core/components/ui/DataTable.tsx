@@ -18,7 +18,7 @@ import {
 } from '@tanstack/react-table'
 import { useRef, useState } from 'react'
 import { Button, Input, isWeb, ScrollView, Text, View, XGroup } from 'tamagui'
-import { Table } from '@scaffald/tamagui-ui'
+import { Table } from '@scaffald/neue-ui'
 
 const HEADER_ROW_HEIGHT = 48
 
@@ -331,7 +331,14 @@ export function DataTable<TData>({
           <RowActionOverlay
             row={activeRow}
             position={overlayPosition}
-            onView={onRowView ? (row) => { onRowView(row); handleCloseOverlay() } : undefined}
+            onView={
+              onRowView
+                ? (row) => {
+                    onRowView(row)
+                    handleCloseOverlay()
+                  }
+                : undefined
+            }
             onEdit={handleEdit}
             onDelete={handleDelete}
             onDuplicate={onRowDuplicate ? handleDuplicate : undefined}
@@ -432,4 +439,3 @@ export function DataTable<TData>({
     </View>
   )
 }
-

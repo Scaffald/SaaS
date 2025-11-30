@@ -1,5 +1,5 @@
 import type { AppRouter } from '@app/supabase/client-types'
-import { DiscoverCard } from '@scaffald/tamagui-ui'
+import { DiscoverCard } from '@scaffald/neue-ui'
 import {
   Briefcase,
   Building2,
@@ -64,13 +64,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
-    <DiscoverCard
-      variant="warning"
-      isSelected={isSelected}
-      onPress={onPress}
-      p="$4"
-      gap="$3"
-    >
+    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} p="$4" gap="$3">
       {/* Header: Title and Status */}
       <XStack justify="space-between" items="flex-start" gap="$3">
         <YStack gap="$2" flex={1}>
@@ -180,15 +174,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   )
 }
 
-function MetricItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode
-  label: string
-  value: string
-}) {
+function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <XStack
       gap="$2"

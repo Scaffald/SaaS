@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -105,8 +105,7 @@ export function OfficeCertificationsLeft({
       onCertificationSaved()
     },
     onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to create certification'
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create certification'
       toast.show('Error', {
         message: errorMessage,
       })
@@ -121,8 +120,7 @@ export function OfficeCertificationsLeft({
       onCertificationSaved()
     },
     onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to update certification'
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update certification'
       toast.show('Error', {
         message: errorMessage,
       })
@@ -308,7 +306,9 @@ export function OfficeCertificationsLeft({
                 <Input
                   placeholder="e.g. 2"
                   value={field.value?.toString() || ''}
-                  onChangeText={(text) => field.onChange(text ? Number.parseInt(text, 10) : undefined)}
+                  onChangeText={(text) =>
+                    field.onChange(text ? Number.parseInt(text, 10) : undefined)
+                  }
                   keyboardType="numeric"
                 />
               )}

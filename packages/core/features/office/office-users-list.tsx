@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import type { TableColumnVisibilityOption } from '@scaffald/tamagui-ui'
+import type { TableColumnVisibilityOption } from '@scaffald/neue-ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'

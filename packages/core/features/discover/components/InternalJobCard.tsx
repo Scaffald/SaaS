@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { ROUTES, buildPath } from '@app/core/constants/routes'
-import { Chip, DiscoverCard, extractPlainText } from '@scaffald/tamagui-ui'
+import { Chip, DiscoverCard, extractPlainText } from '@scaffald/neue-ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
@@ -208,7 +208,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
     {
       enabled: hasSoftSkillsRequirements,
       staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    },
+    }
   )
 
   // Extract plain text from description (handles both string and rich text JSON)
@@ -255,11 +255,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               {matchData?.score !== null && matchData?.score !== undefined && (
                 <Chip
                   bg={
-                    matchData.score >= 80
-                      ? '$green9'
-                      : matchData.score >= 60
-                        ? '$yellow9'
-                        : '$red9'
+                    matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9'
                   }
                   color="$color1"
                 >

@@ -1,4 +1,4 @@
-import { Popover } from '@scaffald/tamagui-ui'
+import { Popover } from '@scaffald/neue-ui'
 import { AlertCircle, Bell, Info, ShieldAlert, X } from '@tamagui/lucide-icons'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'

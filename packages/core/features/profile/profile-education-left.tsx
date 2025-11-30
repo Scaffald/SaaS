@@ -7,7 +7,7 @@ import {
   FieldError,
   MonthYearPicker,
   Popover,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { UniversityAutocomplete } from '@app/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown, Plus, X } from '@tamagui/lucide-icons'
@@ -115,29 +115,31 @@ export function ProfileEducationLeft({
   const educationEntries = (educationQuery.data ?? []) as EducationEntry[]
 
   // Mutations
-  const saveEducationMutation = api.profile.education.saveEducation.useMutation(
-    {
-      async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
-        resetProfileSyncError()
-        startProfileSync()
-        await Promise.all([
-          utils.profile.education.getEducation.cancel(),
-          utils.profile.education.getEducationLevel.cancel(),
-        ])
+  const saveEducationMutation = api.profile.education.saveEducation.useMutation({
+    async onMutate(input: SaveEducationInput): Promise<SaveEducationContext> {
+      resetProfileSyncError()
+      startProfileSync()
+      await Promise.all([
+        utils.profile.education.getEducation.cancel(),
+        utils.profile.education.getEducationLevel.cancel(),
+      ])
 
-        const previousEducation = utils.profile.education.getEducation.getData()
-        const previousLevel = utils.profile.education.getEducationLevel.getData()
+      const previousEducation = utils.profile.education.getEducation.getData()
+      const previousLevel = utils.profile.education.getEducationLevel.getData()
 
+      // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
+      utils.profile.education.getEducation.setData(
+        undefined,
+        (input.education_entries ?? []) as any
+      )
+      utils.profile.education.getEducationLevel.setData(undefined, {
+        education_level: input.education_level ?? null,
         // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-        utils.profile.education.getEducation.setData(undefined, (input.education_entries ?? []) as any)
-        utils.profile.education.getEducationLevel.setData(undefined, {
-          education_level: input.education_level ?? null,
-          // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-        } as any)
+      } as any)
 
-        return { previousEducation, previousLevel }
-      },
-      onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
+      return { previousEducation, previousLevel }
+    },
+    onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
         // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
@@ -167,8 +169,7 @@ export function ProfileEducationLeft({
       void invalidateProfileQueries(utils)
     },
     // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-    } as any
-  )
+  } as any)
 
   // University search state
   const [searchQuery, setSearchQuery] = useState('')

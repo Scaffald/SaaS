@@ -1,6 +1,9 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { SoftSkillsCategoryTabs, type SoftSkillCategory } from '../components/SoftSkillsCategoryTabs'
+import {
+  SoftSkillsCategoryTabs,
+  type SoftSkillCategory,
+} from '../components/SoftSkillsCategoryTabs'
 import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
 import { SoftSkillsHistoryTimeline } from '../components/SoftSkillsHistoryTimeline'
 import { SoftSkillsProgressionChart } from '../components/SoftSkillsProgressionChart'
@@ -17,7 +20,7 @@ import {
   TabGroup,
   UIButton,
   type SkillsChartDataset,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
@@ -66,13 +69,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     data: softSkillsData,
     isLoading: isLoadingSoftSkills,
     error: softSkillsError,
-  } = api.profile.skills.getSoftSkills.useQuery(
-    userId ? { userId } : undefined,
-    {
-      enabled: !!userId && activeTab === 'soft-skills',
-      staleTime: 5 * 60 * 1000,
-    },
-  )
+  } = api.profile.skills.getSoftSkills.useQuery(userId ? { userId } : undefined, {
+    enabled: !!userId && activeTab === 'soft-skills',
+    staleTime: 5 * 60 * 1000,
+  })
 
   // Note: Peer comparison data would be fetched here if needed for individual skill displays
   // For now, we only show self-assessments in the skills widget
@@ -162,14 +162,17 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   const showCompact = variant === 'compact'
 
   // Group skills by taxonomy
-  const groupedSkills = skills.reduce((acc: Record<string, EnrichedUserSkill[]>, skill: EnrichedUserSkill) => {
-    const taxonomy = skill.taxonomy || 'Other'
-    if (!acc[taxonomy]) {
-      acc[taxonomy] = []
-    }
-    acc[taxonomy].push(skill)
-    return acc
-  }, {})
+  const groupedSkills = skills.reduce(
+    (acc: Record<string, EnrichedUserSkill[]>, skill: EnrichedUserSkill) => {
+      const taxonomy = skill.taxonomy || 'Other'
+      if (!acc[taxonomy]) {
+        acc[taxonomy] = []
+      }
+      acc[taxonomy].push(skill)
+      return acc
+    },
+    {}
+  )
 
   const taxonomyOrder = ['onet', 'csi', 'Other']
   const sortedTaxonomies = Object.keys(groupedSkills).sort((a, b) => {
@@ -203,7 +206,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         </XStack>
 
         {/* Tabs */}
-        <TabGroup value={activeTab} onValueChange={(value) => setActiveTab(value as 'technical' | 'soft-skills')}>
+        <TabGroup
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as 'technical' | 'soft-skills')}
+        >
           <Tab value="technical" label="Technical Skills" />
           <Tab value="soft-skills" label="Soft Skills" />
         </TabGroup>
@@ -213,201 +219,197 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         {/* Technical Skills Tab Content */}
         {activeTab === 'technical' &&
           (isLoadingSkills ? (
-              <LoadingState message="Loading skills..." />
-            ) : error ? (
-              <YStack gap="$4" items="center" py="$8">
-                <Text color="$red10">Failed to load skills</Text>
-                <Text color="$color11" fontSize="$2">
-                  {(error as unknown as Record<string, unknown>).message}
-                </Text>
-                <UIButton
-                  variant="primary"
-                  size="$2"
-                  onPress={() => {
-                    void (refetch as unknown as () => Promise<unknown>)()
-                  }}
-                  disabled={isFetching}
-                >
-                  Retry
-                </UIButton>
-              </YStack>
-            ) : skills.length === 0 ? (
-          <EmptyState
-            title="No skills added yet"
-            description="Add your skills to showcase your expertise"
-            action={
-              showEdit ? (
-                <UIButton
-                  variant="primary"
+            <LoadingState message="Loading skills..." />
+          ) : error ? (
+            <YStack gap="$4" items="center" py="$8">
+              <Text color="$red10">Failed to load skills</Text>
+              <Text color="$color11" fontSize="$2">
+                {(error as unknown as Record<string, unknown>).message}
+              </Text>
+              <UIButton
+                variant="primary"
+                size="$2"
+                onPress={() => {
+                  void (refetch as unknown as () => Promise<unknown>)()
+                }}
+                disabled={isFetching}
+              >
+                Retry
+              </UIButton>
+            </YStack>
+          ) : skills.length === 0 ? (
+            <EmptyState
+              title="No skills added yet"
+              description="Add your skills to showcase your expertise"
+              action={
+                showEdit ? (
+                  <UIButton
+                    variant="primary"
+                    onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+                  >
+                    Add Skills
+                  </UIButton>
+                ) : undefined
+              }
+            />
+          ) : (
+            <YStack gap="$4">
+              {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
+                <YStack key={taxonomy} gap="$2">
+                  {/* Taxonomy Header */}
+                  <Text fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase">
+                    {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
+                  </Text>
+
+                  {/* Skills in this taxonomy */}
+                  <XStack gap="$2" flexWrap="wrap">
+                    {groupedSkills[taxonomy]
+                      .slice(0, showCompact ? 5 : undefined)
+                      .map((skill: EnrichedUserSkill) => (
+                        <XStack
+                          key={skill.id}
+                          bg="$blue2"
+                          px="$3"
+                          py="$2"
+                          rounded="$3"
+                          borderWidth={1}
+                          borderColor={skill.verified ? '$blue7' : '$blue5'}
+                          gap="$2"
+                          items="center"
+                        >
+                          {skill.verified && <CheckCircle size={14} color="$blue11" />}
+                          <YStack gap="$0.5">
+                            <Text fontSize="$2" fontWeight="500" color="$blue11">
+                              {skill.name}
+                            </Text>
+                            {!showCompact && (
+                              <XStack gap="$2">
+                                {skill.proficiency > 0 && (
+                                  <Text fontSize="$1" color="$blue10">
+                                    {getProficiencyLabel(skill.proficiency)}
+                                  </Text>
+                                )}
+                                {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
+                                  <Text fontSize="$1" color="$blue10">
+                                    • {skill.yearsExperience}y
+                                  </Text>
+                                )}
+                              </XStack>
+                            )}
+                          </YStack>
+                        </XStack>
+                      ))}
+                  </XStack>
+                </YStack>
+              ))}
+
+              {/* Show More link for compact view */}
+              {showCompact && skills.length > 5 && (
+                <Text
+                  color="$blue7"
+                  fontSize="$3"
+                  fontWeight="600"
+                  cursor="pointer"
+                  hoverStyle={{ color: '$blue8' }}
+                  pressStyle={{ color: '$blue9' }}
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                 >
-                  Add Skills
-                </UIButton>
-              ) : undefined
-            }
-          />
-        ) : (
-          <YStack gap="$4">
-            {sortedTaxonomies.slice(0, showCompact ? 1 : undefined).map((taxonomy) => (
-              <YStack key={taxonomy} gap="$2">
-                {/* Taxonomy Header */}
-                <Text fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase">
-                  {taxonomy === 'onet' ? 'O*NET' : taxonomy === 'csi' ? 'CSI' : taxonomy}
+                  View all {skills.length} skills →
                 </Text>
-
-                {/* Skills in this taxonomy */}
-                <XStack gap="$2" flexWrap="wrap">
-                  {groupedSkills[taxonomy]
-                    .slice(0, showCompact ? 5 : undefined)
-                    .map((skill: EnrichedUserSkill) => (
-                      <XStack
-                        key={skill.id}
-                        bg="$blue2"
-                        px="$3"
-                        py="$2"
-                        rounded="$3"
-                        borderWidth={1}
-                        borderColor={skill.verified ? '$blue7' : '$blue5'}
-                        gap="$2"
-                        items="center"
-                      >
-                        {skill.verified && <CheckCircle size={14} color="$blue11" />}
-                        <YStack gap="$0.5">
-                          <Text fontSize="$2" fontWeight="500" color="$blue11">
-                            {skill.name}
-                          </Text>
-                          {!showCompact && (
-                            <XStack gap="$2">
-                              {skill.proficiency > 0 && (
-                                <Text fontSize="$1" color="$blue10">
-                                  {getProficiencyLabel(skill.proficiency)}
-                                </Text>
-                              )}
-                              {skill.yearsExperience !== null && skill.yearsExperience > 0 && (
-                                <Text fontSize="$1" color="$blue10">
-                                  • {skill.yearsExperience}y
-                                </Text>
-                              )}
-                            </XStack>
-                          )}
-                        </YStack>
-                      </XStack>
-                    ))}
-                </XStack>
-              </YStack>
-            ))}
-
-            {/* Show More link for compact view */}
-            {showCompact && skills.length > 5 && (
-              <Text
-                color="$blue7"
-                fontSize="$3"
-                fontWeight="600"
-                cursor="pointer"
-                hoverStyle={{ color: '$blue8' }}
-                pressStyle={{ color: '$blue9' }}
-                onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
-              >
-                View all {skills.length} skills →
-              </Text>
-            )}
-          </YStack>
+              )}
+            </YStack>
           ))}
 
         {/* Soft Skills Tab Content */}
         {activeTab === 'soft-skills' &&
           (isLoadingSoftSkills ? (
-              <LoadingState message="Loading soft skills..." />
-            ) : softSkillsError ? (
-              <YStack gap="$4" items="center" py="$8">
-                <Text color="$red10">Failed to load soft skills</Text>
-                <Text color="$color11" fontSize="$2">
-                  {softSkillsError.message}
-                </Text>
-                <UIButton
-                  variant="primary"
-                  size="$2"
-                  onPress={() => {
-                    router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
-                  }}
-                >
-                  Complete Assessment
-                </UIButton>
-              </YStack>
-            ) : softSkills.length === 0 ? (
-              <EmptyState
-                title="No soft skills assessment"
-                description="Complete your soft skills assessment to see your profile"
-                action={
-                  showEdit ? (
-                    <UIButton
-                      variant="primary"
-                      onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
-                    >
-                      Start Assessment
-                    </UIButton>
-                  ) : undefined
-                }
+            <LoadingState message="Loading soft skills..." />
+          ) : softSkillsError ? (
+            <YStack gap="$4" items="center" py="$8">
+              <Text color="$red10">Failed to load soft skills</Text>
+              <Text color="$color11" fontSize="$2">
+                {softSkillsError.message}
+              </Text>
+              <UIButton
+                variant="primary"
+                size="$2"
+                onPress={() => {
+                  router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)
+                }}
+              >
+                Complete Assessment
+              </UIButton>
+            </YStack>
+          ) : softSkills.length === 0 ? (
+            <EmptyState
+              title="No soft skills assessment"
+              description="Complete your soft skills assessment to see your profile"
+              action={
+                showEdit ? (
+                  <UIButton
+                    variant="primary"
+                    onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+                  >
+                    Start Assessment
+                  </UIButton>
+                ) : undefined
+              }
+            />
+          ) : (
+            <YStack gap="$4">
+              {/* Category Tabs */}
+              <SoftSkillsCategoryTabs
+                activeCategory={activeCategory}
+                onCategoryChange={setActiveCategory}
               />
-            ) : (
-              <YStack gap="$4">
-                {/* Category Tabs */}
-                <SoftSkillsCategoryTabs
-                  activeCategory={activeCategory}
-                  onCategoryChange={setActiveCategory}
-                />
 
-                <Separator />
+              <Separator />
 
-                {/* Skills Chart for Active Category */}
-                {categoryChartData && categoryChartData.length > 0 && (
-                  <YStack gap="$2" items="center">
-                    <Text fontSize="$4" fontWeight="600" color="$color12">
-                      {categoryLabels[activeCategory]} Skills
-                    </Text>
-                    <SkillsChart
-                      datasets={categoryChartData}
-                      height={variant === 'compact' ? 200 : 300}
-                      radius={variant === 'compact' ? 80 : 120}
-                      maxValue={100}
-                      isAnimated={true}
-                    />
-                    <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
-                      Individual skill ratings in {categoryLabels[activeCategory]}
-                    </Text>
-                  </YStack>
-                )}
+              {/* Skills Chart for Active Category */}
+              {categoryChartData && categoryChartData.length > 0 && (
+                <YStack gap="$2" items="center">
+                  <Text fontSize="$4" fontWeight="600" color="$color12">
+                    {categoryLabels[activeCategory]} Skills
+                  </Text>
+                  <SkillsChart
+                    datasets={categoryChartData}
+                    height={variant === 'compact' ? 200 : 300}
+                    radius={variant === 'compact' ? 80 : 120}
+                    maxValue={100}
+                    isAnimated={true}
+                  />
+                  <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>
+                    Individual skill ratings in {categoryLabels[activeCategory]}
+                  </Text>
+                </YStack>
+              )}
 
-                <Separator />
+              <Separator />
 
-                {/* Skills Grid */}
-                <SoftSkillsRadarGrid
-                  skills={softSkills}
-                  activeCategory={activeCategory}
-                  isLoading={false}
-                />
+              {/* Skills Grid */}
+              <SoftSkillsRadarGrid
+                skills={softSkills}
+                activeCategory={activeCategory}
+                isLoading={false}
+              />
 
-                {/* Action Buttons */}
-                {showEdit && (
-                  <XStack justify="flex-end" gap="$2" pt="$2" flexWrap="wrap">
-                    <UIButton
-                      variant="outlined"
-                      size="$3"
-                      onPress={() => setShowHistoryModal(true)}
-                    >
-                      View History
-                    </UIButton>
-                    <UIButton
-                      variant="primary"
-                      size="$3"
-                      onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
-                    >
-                      Update Assessment
-                    </UIButton>
-                  </XStack>
-                )}
-              </YStack>
-            ))}
+              {/* Action Buttons */}
+              {showEdit && (
+                <XStack justify="flex-end" gap="$2" pt="$2" flexWrap="wrap">
+                  <UIButton variant="outlined" size="$3" onPress={() => setShowHistoryModal(true)}>
+                    View History
+                  </UIButton>
+                  <UIButton
+                    variant="primary"
+                    size="$3"
+                    onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
+                  >
+                    Update Assessment
+                  </UIButton>
+                </XStack>
+              )}
+            </YStack>
+          ))}
       </YStack>
 
       {/* History Modal */}

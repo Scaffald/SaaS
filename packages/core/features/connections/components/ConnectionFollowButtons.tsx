@@ -1,15 +1,8 @@
 import { useConnectionStatus } from '@app/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@app/core/features/user-profile/hooks/useFollowStatus'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@scaffald/tamagui-ui'
-import {
-  CheckCircle2,
-  Loader2,
-  UserCheck,
-  UserMinus,
-  UserPlus,
-  X,
-} from '@tamagui/lucide-icons'
+import { DashboardWidget } from '@scaffald/neue-ui'
+import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo } from 'react'
 import { Button, Text, XStack, YStack } from 'tamagui'

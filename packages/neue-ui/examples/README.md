@@ -1,6 +1,6 @@
 # Example App
 
-This is a minimal Expo app demonstrating @scaffald/tamagui-ui component usage.
+This is a minimal Expo app demonstrating @scaffald/neue-ui component usage.
 
 ## Running the Example
 
@@ -32,7 +32,7 @@ pnpm web
 You can customize the theme by modifying `App.tsx`:
 
 ```tsx
-import { createUIConfig } from '@scaffald/tamagui-ui'
+import { createUIConfig } from '@scaffald/neue-ui'
 
 const customConfig = createUIConfig({
   theme: {

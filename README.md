@@ -431,7 +431,7 @@ We use a unified `DashboardLayout` component for all dashboard pages that provid
 ```tsx
 import { ProfileEmploymentLeft } from '@app/core/features/profile/profile-employment-left'
 import { ProfileEmploymentRight } from '@app/core/features/profile/profile-employment-right'
-import { DashboardLayout } from '@app/ui/src/components/layouts/DashboardLayout'
+import { DashboardLayout } from '@app/core/components/layouts'
 
 export default function DashboardPage() {
   return (
@@ -642,7 +642,7 @@ We actively maintain the starter and add new features and updates to it.
 
 Note we're following the [design systems guide](https://tamagui.dev/docs/guides/design-systems) and creating our own package for components.
 
-See `packages/ui` named `@app/ui` for how this works.
+See `packages/neue-ui` named `@scaffald/neue-ui` for how this works.
 
 ### Layout Components
 

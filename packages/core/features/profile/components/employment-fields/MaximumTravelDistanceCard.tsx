@@ -1,11 +1,19 @@
-import { RangeSliderCard } from '@scaffald/tamagui-ui'
-import type { RangeSliderCardProps } from '@scaffald/tamagui-ui'
+import { RangeSliderCard } from '@scaffald/neue-ui'
+import type { RangeSliderCardProps } from '@scaffald/neue-ui'
 import { Plane } from '@tamagui/lucide-icons'
 
 export interface MaximumTravelDistanceCardProps
   extends Omit<
     RangeSliderCardProps,
-    'icon' | 'title' | 'description' | 'min' | 'max' | 'step' | 'formatValue' | 'formatMin' | 'formatMax'
+    | 'icon'
+    | 'title'
+    | 'description'
+    | 'min'
+    | 'max'
+    | 'step'
+    | 'formatValue'
+    | 'formatMin'
+    | 'formatMax'
   > {
   /** Optional override for description */
   description?: string
@@ -45,4 +53,3 @@ export function MaximumTravelDistanceCard({
     />
   )
 }
-

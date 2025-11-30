@@ -11,7 +11,7 @@ import {
   plainTextToTipTap,
   RichTextEditor,
   SkeletonForm,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { useSafeToast } from '@app/core/hooks/useSafeToast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { JSONContent } from '@tiptap/core'
@@ -48,7 +48,8 @@ export function ProfileGeneralLeft() {
   const isSyncing = syncStatus === 'syncing'
 
   // Use tRPC to fetch and update profile data
-  const { data: profileData, isLoading: isLoadingProfile } = api.profile.general.getGeneral.useQuery()
+  const { data: profileData, isLoading: isLoadingProfile } =
+    api.profile.general.getGeneral.useQuery()
   const updateProfileMutation = api.profile.general.updateGeneral.useMutation({
     async onMutate(input: UpdateGeneralInput): Promise<UpdateGeneralContext> {
       resetProfileSyncError()
@@ -57,11 +58,12 @@ export function ProfileGeneralLeft() {
       const previousGeneral = utils.profile.general.getGeneral.getData()
       utils.profile.general.getGeneral.setData(
         undefined,
-        ((current: GeneralProfileFormData | undefined): GeneralProfileFormData => ({
-          ...(current ?? {}),
-          ...(input as unknown as GeneralProfileFormData),
-        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-        } as GeneralProfileFormData)) as any
+        ((current: GeneralProfileFormData | undefined): GeneralProfileFormData =>
+          ({
+            ...(current ?? {}),
+            ...(input as unknown as GeneralProfileFormData),
+            // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
+          }) as GeneralProfileFormData) as any
       )
       return { previousGeneral }
     },

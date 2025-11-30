@@ -46,7 +46,7 @@ vi.mock('../components', () => ({
   },
 }))
 
-'@scaffald/tamagui-ui', () => {
+'@scaffald/neue-ui', () => {
   const React = require('react') as typeof import('react')
   const createView = (element = 'div') =>
     React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(({ children, ...rest }, ref) =>

@@ -1,21 +1,11 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import { ResponsiveSelect } from '@scaffald/tamagui-ui'
+import { ResponsiveSelect } from '@scaffald/neue-ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import {
-  Button,
-  Card,
-  Input,
-  Spinner,
-  Switch,
-  Text,
-  TextArea,
-  XStack,
-  YStack,
-} from 'tamagui'
+import { Button, Card, Input, Spinner, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type ProjectFormData = {
   name: string
@@ -157,10 +147,12 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
                   setFormData((prev) => ({ ...prev, organization_id: value }))
                 }
                 placeholder="Select organization"
-                options={organizationsData.organizations.map((org: { id: string; name: string }) => ({
-                  value: org.id,
-                  label: org.name,
-                }))}
+                options={organizationsData.organizations.map(
+                  (org: { id: string; name: string }) => ({
+                    value: org.id,
+                    label: org.name,
+                  })
+                )}
               />
             )}
           </YStack>

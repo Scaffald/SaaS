@@ -1,4 +1,4 @@
-import { DashboardWidget } from '@scaffald/tamagui-ui'
+import { DashboardWidget } from '@scaffald/neue-ui'
 import { H3, Text, YStack } from 'tamagui'
 
 /**

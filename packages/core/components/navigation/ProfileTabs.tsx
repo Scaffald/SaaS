@@ -3,7 +3,7 @@ import { useTranslation } from '@app/core/utils/useTranslation'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useMemo } from 'react'
 import { useWindowDimensions } from 'tamagui'
-import { Tab, TabGroup, type TabGroupProps } from '@scaffald/tamagui-ui'
+import { Tab, TabGroup, type TabGroupProps } from '@scaffald/neue-ui'
 
 export type ProfileTabsItem = {
   key: string
@@ -133,4 +133,3 @@ export const ProfileTabs = ({
     </TabGroup>
   )
 }
-

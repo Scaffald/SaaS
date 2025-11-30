@@ -1,232 +1,244 @@
-import { api } from '@app/core/utils/api'
-import { supabase } from '@app/core/utils/supabase/client'
-import type { AppRouter } from '@app/supabase/client-types'
-import type { UploadSelection } from '@scaffald/tamagui-ui'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useToastController } from '@tamagui/toast'
-import type { inferRouterOutputs } from '@trpc/server'
-import { Buffer } from 'buffer'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Platform } from 'react-native'
-import { z } from 'zod'
+import { api } from "@app/core/utils/api";
+import { supabase } from "@app/core/utils/supabase/client";
+import type { AppRouter } from "@app/supabase/client-types";
+import type { UploadSelection } from "@scaffald/neue-ui";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToastController } from "@tamagui/toast";
+import type { inferRouterOutputs } from "@trpc/server";
+import { Buffer } from "buffer";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Platform } from "react-native";
+import { z } from "zod";
 
-const MAX_ATTACHMENTS = 5
-const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024
-const SUPPORTED_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png'] as const
+const MAX_ATTACHMENTS = 5;
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+const SUPPORTED_MIME_TYPES = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+] as const;
 
-type SupportedMimeType = (typeof SUPPORTED_MIME_TYPES)[number]
+type SupportedMimeType = (typeof SUPPORTED_MIME_TYPES)[number];
 
-type RouterOutputs = inferRouterOutputs<AppRouter>
+type RouterOutputs = inferRouterOutputs<AppRouter>;
 export type BackgroundCheckDispute =
-  RouterOutputs['backgroundChecks']['listDisputesForCheck'][number]
+  RouterOutputs["backgroundChecks"]["listDisputesForCheck"][number];
 
 export interface DisputeReasonOption {
-  value: string
-  label: string
+  value: string;
+  label: string;
 }
 
 const DISPUTE_REASON_OPTIONS: readonly DisputeReasonOption[] = [
   {
-    value: 'identity_mismatch',
-    label: 'This report belongs to someone else',
+    value: "identity_mismatch",
+    label: "This report belongs to someone else",
   },
   {
-    value: 'outdated_information',
-    label: 'Information is outdated or incomplete',
+    value: "outdated_information",
+    label: "Information is outdated or incomplete",
   },
   {
-    value: 'incorrect_records',
-    label: 'Records contain inaccurate findings',
+    value: "incorrect_records",
+    label: "Records contain inaccurate findings",
   },
   {
-    value: 'missing_context',
-    label: 'Important context or documentation is missing',
+    value: "missing_context",
+    label: "Important context or documentation is missing",
   },
   {
-    value: 'other',
-    label: 'Something else (describe below)',
+    value: "other",
+    label: "Something else (describe below)",
   },
-] as const
+] as const;
 
 const disputeFormSchema = z
   .object({
-    reason: z.string().min(1, 'Select a reason to help our team investigate.'),
+    reason: z.string().min(1, "Select a reason to help our team investigate."),
     otherReason: z
       .string()
       .trim()
-      .max(200, 'Keep your summary brief (200 characters max).')
+      .max(200, "Keep your summary brief (200 characters max).")
       .optional(),
     details: z
       .string()
       .trim()
-      .min(20, 'Share at least 20 characters describing what needs review.')
-      .max(2000, 'Please keep your description under 2000 characters.'),
+      .min(20, "Share at least 20 characters describing what needs review.")
+      .max(2000, "Please keep your description under 2000 characters."),
   })
   .superRefine((value, ctx) => {
-    if (value.reason === 'other' && !value.otherReason?.trim()) {
+    if (value.reason === "other" && !value.otherReason?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['otherReason'],
+        path: ["otherReason"],
         message: 'Describe what needs review when selecting "Something else".',
-      })
+      });
     }
-  })
+  });
 
-export type DisputeFormValues = z.infer<typeof disputeFormSchema>
+export type DisputeFormValues = z.infer<typeof disputeFormSchema>;
 
 type NativeAssetSource = {
-  kind: 'native'
-  uri: string
-  name: string
-  mimeType: string
-  size: number
-}
+  kind: "native";
+  uri: string;
+  name: string;
+  mimeType: string;
+  size: number;
+};
 
 type WebFileSource = {
-  kind: 'web'
-  file: File
-}
+  kind: "web";
+  file: File;
+};
 
-type DisputeAttachmentSource = NativeAssetSource | WebFileSource
+type DisputeAttachmentSource = NativeAssetSource | WebFileSource;
 
 export interface DisputeAttachment {
-  id: string
-  name: string
-  mimeType: string
-  size: number
-  documentType: string
-  source: DisputeAttachmentSource
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  documentType: string;
+  source: DisputeAttachmentSource;
 }
 
 interface UseDisputeOptions {
-  checkId: string | null
-  enabled?: boolean
+  checkId: string | null;
+  enabled?: boolean;
 }
 
 interface UseDisputeResult {
-  form: ReturnType<typeof useForm<DisputeFormValues>>
-  reasonOptions: readonly DisputeReasonOption[]
-  attachments: DisputeAttachment[]
-  addAttachment: (selection: UploadSelection) => Promise<void>
-  removeAttachment: (attachmentId: string) => void
-  submitDispute: () => Promise<boolean>
-  reset: () => void
-  isSubmitting: boolean
-  isUploading: boolean
-  attachmentError: string | null
-  submissionError: string | null
-  disputes: BackgroundCheckDispute[]
-  latestDispute: BackgroundCheckDispute | null
-  hasActiveDispute: boolean
-  isLoadingDisputes: boolean
-  refetchDisputes: () => void
+  form: ReturnType<typeof useForm<DisputeFormValues>>;
+  reasonOptions: readonly DisputeReasonOption[];
+  attachments: DisputeAttachment[];
+  addAttachment: (selection: UploadSelection) => Promise<void>;
+  removeAttachment: (attachmentId: string) => void;
+  submitDispute: () => Promise<boolean>;
+  reset: () => void;
+  isSubmitting: boolean;
+  isUploading: boolean;
+  attachmentError: string | null;
+  submissionError: string | null;
+  disputes: BackgroundCheckDispute[];
+  latestDispute: BackgroundCheckDispute | null;
+  hasActiveDispute: boolean;
+  isLoadingDisputes: boolean;
+  refetchDisputes: () => void;
 }
 
 const DEFAULT_VALUES: DisputeFormValues = {
-  reason: '',
-  otherReason: '',
-  details: '',
-}
+  reason: "",
+  otherReason: "",
+  details: "",
+};
 
 const ensureFileSystem = async () => {
-  if (Platform.OS === 'web') {
-    return null
+  if (Platform.OS === "web") {
+    return null;
   }
 
   try {
-    const FileSystem = await import('expo-file-system/legacy')
-    return FileSystem
+    const FileSystem = await import("expo-file-system/legacy");
+    return FileSystem;
   } catch (error) {
-    console.warn('[useDispute] Unable to load expo-file-system', error)
-    return null
+    console.warn("[useDispute] Unable to load expo-file-system", error);
+    return null;
   }
-}
+};
 
 const createAttachmentId = () => {
-  if (typeof crypto?.randomUUID === 'function') {
-    return crypto.randomUUID()
+  if (typeof crypto?.randomUUID === "function") {
+    return crypto.randomUUID();
   }
-  return `dispute-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
-}
+  return `dispute-${Date.now().toString(36)}-${
+    Math.random().toString(36).slice(2)
+  }`;
+};
 
-export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseDisputeResult {
-  const toast = useToastController()
-  const utils = api.useUtils()
-  const [attachments, setAttachments] = useState<DisputeAttachment[]>([])
-  const [attachmentError, setAttachmentError] = useState<string | null>(null)
-  const [submissionError, setSubmissionError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
-  const previousCheckIdRef = useRef<string | null>(null)
+export function useDispute(
+  { checkId, enabled = true }: UseDisputeOptions,
+): UseDisputeResult {
+  const toast = useToastController();
+  const utils = api.useUtils();
+  const [attachments, setAttachments] = useState<DisputeAttachment[]>([]);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const previousCheckIdRef = useRef<string | null>(null);
 
   const disputeQuery = api.backgroundChecks.listDisputesForCheck.useQuery(
-    { background_check_id: checkId ?? '' },
+    { background_check_id: checkId ?? "" },
     {
       enabled: Boolean(checkId) && enabled,
       staleTime: 30_000,
-    }
-  )
+    },
+  );
 
-  const createUploadUrlMutation = api.backgroundChecks.createUploadUrl.useMutation()
-  const submitDisputeMutation = api.backgroundChecks.submitDispute.useMutation()
+  const createUploadUrlMutation = api.backgroundChecks.createUploadUrl
+    .useMutation();
+  const submitDisputeMutation = api.backgroundChecks.submitDispute
+    .useMutation();
 
   const form = useForm<DisputeFormValues>({
     resolver: zodResolver(disputeFormSchema),
     defaultValues: DEFAULT_VALUES,
-    mode: 'onChange',
-  })
+    mode: "onChange",
+  });
 
   useEffect(() => {
     if (previousCheckIdRef.current !== checkId) {
-      previousCheckIdRef.current = checkId
-      form.reset(DEFAULT_VALUES)
-      setAttachments([])
-      setAttachmentError(null)
-      setSubmissionError(null)
+      previousCheckIdRef.current = checkId;
+      form.reset(DEFAULT_VALUES);
+      setAttachments([]);
+      setAttachmentError(null);
+      setSubmissionError(null);
     }
-  }, [checkId, form])
+  }, [checkId, form]);
 
-  const disputes = useMemo(() => disputeQuery.data ?? [], [disputeQuery.data])
-  const latestDispute = disputes.length > 0 ? disputes[0] : null
+  const disputes = useMemo(() => disputeQuery.data ?? [], [disputeQuery.data]);
+  const latestDispute = disputes.length > 0 ? disputes[0] : null;
 
   const hasActiveDispute = useMemo(
     () =>
       disputes.some(
         (dispute: BackgroundCheckDispute) =>
-          dispute.status === 'pending' || dispute.status === 'under_review'
+          dispute.status === "pending" || dispute.status === "under_review",
       ),
-    [disputes]
-  )
+    [disputes],
+  );
 
   const addAttachment = useCallback(
     async (selection: UploadSelection) => {
       if (!checkId) {
-        setAttachmentError('Select a background check before adding documents.')
-        return
+        setAttachmentError(
+          "Select a background check before adding documents.",
+        );
+        return;
       }
 
       if (attachments.length >= MAX_ATTACHMENTS) {
-        setAttachmentError(`You can attach up to ${MAX_ATTACHMENTS} files.`)
-        return
+        setAttachmentError(`You can attach up to ${MAX_ATTACHMENTS} files.`);
+        return;
       }
 
-      setAttachmentError(null)
+      setAttachmentError(null);
 
-      if (selection.platform === 'web') {
-        const { file } = selection
+      if (selection.platform === "web") {
+        const { file } = selection;
 
         if (!SUPPORTED_MIME_TYPES.includes(file.type as SupportedMimeType)) {
-          setAttachmentError('Only PDF, JPG, and PNG files are supported.')
-          return
+          setAttachmentError("Only PDF, JPG, and PNG files are supported.");
+          return;
         }
 
         if (file.size > MAX_FILE_SIZE_BYTES) {
-          setAttachmentError('Files must be 10MB or smaller.')
-          return
+          setAttachmentError("Files must be 10MB or smaller.");
+          return;
         }
 
-        const id = createAttachmentId()
+        const id = createAttachmentId();
         setAttachments((prev) => [
           ...prev,
           {
@@ -235,49 +247,53 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
             mimeType: file.type,
             size: file.size,
             documentType: `dispute_supporting_${prev.length + 1}`,
-            source: { kind: 'web', file },
+            source: { kind: "web", file },
           },
-        ])
-        return
+        ]);
+        return;
       }
 
-      const asset = selection.asset
-      const fileSystem = await ensureFileSystem()
+      const asset = selection.asset;
+      const fileSystem = await ensureFileSystem();
 
       if (!fileSystem) {
-        setAttachmentError('File uploads are not available on this device.')
-        return
+        setAttachmentError("File uploads are not available on this device.");
+        return;
       }
 
-      const info = await fileSystem.getInfoAsync(asset.uri)
-      const infoSize =
-        typeof (info as { size?: number }).size === 'number'
-          ? (info as { size: number }).size
-          : undefined
-      const size = typeof asset.size === 'number' ? asset.size : (infoSize ?? 0)
+      const info = await fileSystem.getInfoAsync(asset.uri);
+      const infoSize = typeof (info as { size?: number }).size === "number"
+        ? (info as { size: number }).size
+        : undefined;
+      const size = typeof asset.size === "number"
+        ? asset.size
+        : (infoSize ?? 0);
 
       if (size === 0) {
-        setAttachmentError('We could not read that file. Try selecting it again.')
-        return
+        setAttachmentError(
+          "We could not read that file. Try selecting it again.",
+        );
+        return;
       }
 
       if (size > MAX_FILE_SIZE_BYTES) {
-        setAttachmentError('Files must be 10MB or smaller.')
-        return
+        setAttachmentError("Files must be 10MB or smaller.");
+        return;
       }
 
-      const mimeType = (asset.type ?? 'application/octet-stream').toLowerCase()
+      const mimeType = (asset.type ?? "application/octet-stream").toLowerCase();
       if (!SUPPORTED_MIME_TYPES.includes(mimeType as SupportedMimeType)) {
-        setAttachmentError('Only PDF, JPG, and PNG files are supported.')
-        return
+        setAttachmentError("Only PDF, JPG, and PNG files are supported.");
+        return;
       }
 
-      const name =
-        asset.name ??
-        asset.uri.split('/').pop() ??
-        `dispute-supporting-${attachments.length + 1}.${mimeType.split('/')[1] ?? 'bin'}`
+      const name = asset.name ??
+        asset.uri.split("/").pop() ??
+        `dispute-supporting-${attachments.length + 1}.${
+          mimeType.split("/")[1] ?? "bin"
+        }`;
 
-      const id = createAttachmentId()
+      const id = createAttachmentId();
       setAttachments((prev) => [
         ...prev,
         {
@@ -287,137 +303,161 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
           size,
           documentType: `dispute_supporting_${prev.length + 1}`,
           source: {
-            kind: 'native',
+            kind: "native",
             uri: asset.uri,
             name,
             mimeType,
             size,
           },
         },
-      ])
+      ]);
     },
-    [attachments.length, checkId]
-  )
+    [attachments.length, checkId],
+  );
 
   const removeAttachment = useCallback((attachmentId: string) => {
-    setAttachments((prev) => prev.filter((attachment) => attachment.id !== attachmentId))
-  }, [])
+    setAttachments((prev) =>
+      prev.filter((attachment) => attachment.id !== attachmentId)
+    );
+  }, []);
 
-  const convertAttachmentToBytes = useCallback(async (attachment: DisputeAttachment) => {
-    if (attachment.source.kind === 'web') {
-      const buffer = await attachment.source.file.arrayBuffer()
-      return new Uint8Array(buffer)
-    }
+  const convertAttachmentToBytes = useCallback(
+    async (attachment: DisputeAttachment) => {
+      if (attachment.source.kind === "web") {
+        const buffer = await attachment.source.file.arrayBuffer();
+        return new Uint8Array(buffer);
+      }
 
-    const fileSystem = await ensureFileSystem()
-    if (!fileSystem) {
-      throw new Error('File system unavailable for uploads on this device.')
-    }
+      const fileSystem = await ensureFileSystem();
+      if (!fileSystem) {
+        throw new Error("File system unavailable for uploads on this device.");
+      }
 
-    const base64 = await fileSystem.readAsStringAsync(attachment.source.uri, {
-      encoding: fileSystem.EncodingType.Base64,
-    })
-    return Uint8Array.from(Buffer.from(base64, 'base64'))
-  }, [])
+      const base64 = await fileSystem.readAsStringAsync(attachment.source.uri, {
+        encoding: fileSystem.EncodingType.Base64,
+      });
+      return Uint8Array.from(Buffer.from(base64, "base64"));
+    },
+    [],
+  );
 
   const uploadAttachment = useCallback(
     async (attachment: DisputeAttachment, index: number) => {
       if (!checkId) {
-        throw new Error('Missing background check identifier for dispute.')
+        throw new Error("Missing background check identifier for dispute.");
       }
 
       const uploadRequest = await createUploadUrlMutation.mutateAsync({
         background_check_id: checkId,
-        document_type: attachment.documentType || `dispute_supporting_${index + 1}`,
+        document_type: attachment.documentType ||
+          `dispute_supporting_${index + 1}`,
         file_name: attachment.name,
         mime_type: attachment.mimeType as SupportedMimeType,
         file_size: attachment.size,
-      })
+      });
 
-      const fileBuffer = await convertAttachmentToBytes(attachment)
+      const fileBuffer = await convertAttachmentToBytes(attachment);
       const { error: uploadError } = await supabase.storage
         .from(uploadRequest.bucket)
-        .uploadToSignedUrl(uploadRequest.storagePath, uploadRequest.token, fileBuffer, {
-          contentType: attachment.mimeType,
-          upsert: false,
-        })
+        .uploadToSignedUrl(
+          uploadRequest.storagePath,
+          uploadRequest.token,
+          fileBuffer,
+          {
+            contentType: attachment.mimeType,
+            upsert: false,
+          },
+        );
 
       if (uploadError) {
-        throw new Error(uploadError.message ?? 'Unable to upload supporting document.')
+        throw new Error(
+          uploadError.message ?? "Unable to upload supporting document.",
+        );
       }
 
       return {
         document_type: attachment.documentType,
         file_path: uploadRequest.storagePath,
-      }
+      };
     },
-    [checkId, convertAttachmentToBytes, createUploadUrlMutation]
-  )
+    [checkId, convertAttachmentToBytes, createUploadUrlMutation],
+  );
 
   const submitDispute = useCallback(async () => {
     if (!checkId) {
-      setSubmissionError('Select a background check before submitting a dispute.')
-      return false
+      setSubmissionError(
+        "Select a background check before submitting a dispute.",
+      );
+      return false;
     }
 
-    setSubmissionError(null)
-    setIsSubmitting(true)
+    setSubmissionError(null);
+    setIsSubmitting(true);
 
-    let submissionSucceeded = false
+    let submissionSucceeded = false;
 
     try {
       await form.handleSubmit(async (values) => {
-        const resolvedReason =
-          values.reason === 'other'
-            ? (values.otherReason?.trim() ?? 'Other')
-            : (DISPUTE_REASON_OPTIONS.find((option) => option.value === values.reason)?.label ??
-              values.reason)
+        const resolvedReason = values.reason === "other"
+          ? (values.otherReason?.trim() ?? "Other")
+          : (DISPUTE_REASON_OPTIONS.find((option) =>
+            option.value === values.reason
+          )?.label ??
+            values.reason);
 
-        setIsUploading(true)
-        const supportingDocuments = []
+        setIsUploading(true);
+        const supportingDocuments = [];
         for (const [index, attachment] of attachments.entries()) {
           // eslint-disable-next-line no-await-in-loop -- sequential uploads to reuse signed URL tokens
-          const uploaded = await uploadAttachment(attachment, index)
-          supportingDocuments.push(uploaded)
+          const uploaded = await uploadAttachment(attachment, index);
+          supportingDocuments.push(uploaded);
         }
-        setIsUploading(false)
+        setIsUploading(false);
 
         await submitDisputeMutation.mutateAsync({
           background_check_id: checkId,
           dispute_reason: resolvedReason,
           dispute_details: values.details.trim(),
-          supporting_documents: supportingDocuments.length ? supportingDocuments : undefined,
-        })
+          supporting_documents: supportingDocuments.length
+            ? supportingDocuments
+            : undefined,
+        });
 
-        toast.show('Dispute submitted', {
-          message: 'Our compliance team will review your request shortly.',
-          type: 'success',
-        })
+        toast.show("Dispute submitted", {
+          message: "Our compliance team will review your request shortly.",
+          type: "success",
+        });
 
         await Promise.all([
           utils.backgroundChecks.listChecks.invalidate(),
-          utils.backgroundChecks.getCheck.invalidate({ background_check_id: checkId }),
-          utils.backgroundChecks.listDisputesForCheck.invalidate({ background_check_id: checkId }),
-        ])
+          utils.backgroundChecks.getCheck.invalidate({
+            background_check_id: checkId,
+          }),
+          utils.backgroundChecks.listDisputesForCheck.invalidate({
+            background_check_id: checkId,
+          }),
+        ]);
 
-        setAttachments([])
-        form.reset(DEFAULT_VALUES)
-        submissionSucceeded = true
-      })()
+        setAttachments([]);
+        form.reset(DEFAULT_VALUES);
+        submissionSucceeded = true;
+      })();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to submit dispute.'
-      console.error('[useDispute] Failed to submit dispute', error)
-      setSubmissionError(message)
-      toast.show('Unable to submit dispute', {
+      const message = error instanceof Error
+        ? error.message
+        : "Unable to submit dispute.";
+      console.error("[useDispute] Failed to submit dispute", error);
+      setSubmissionError(message);
+      toast.show("Unable to submit dispute", {
         message,
-        type: 'error',
-      })
+        type: "error",
+      });
     } finally {
-      setIsUploading(false)
-      setIsSubmitting(false)
+      setIsUploading(false);
+      setIsSubmitting(false);
     }
 
-    return submissionSucceeded
+    return submissionSucceeded;
   }, [
     attachments,
     checkId,
@@ -428,18 +468,18 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
     utils.backgroundChecks.getCheck,
     utils.backgroundChecks.listChecks,
     utils.backgroundChecks.listDisputesForCheck,
-  ])
+  ]);
 
   const reset = useCallback(() => {
-    form.reset(DEFAULT_VALUES)
-    setAttachments([])
-    setAttachmentError(null)
-    setSubmissionError(null)
-  }, [form])
+    form.reset(DEFAULT_VALUES);
+    setAttachments([]);
+    setAttachmentError(null);
+    setSubmissionError(null);
+  }, [form]);
 
   const refetchDisputes = useCallback(() => {
-    void disputeQuery.refetch()
-  }, [disputeQuery])
+    void disputeQuery.refetch();
+  }, [disputeQuery]);
 
   return {
     form,
@@ -458,5 +498,5 @@ export function useDispute({ checkId, enabled = true }: UseDisputeOptions): UseD
     hasActiveDispute,
     isLoadingDisputes: disputeQuery.isLoading,
     refetchDisputes,
-  }
+  };
 }

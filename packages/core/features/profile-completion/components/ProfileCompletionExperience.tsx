@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { ProfileWizard } from '@app/core/features/profile-wizard/components/ProfileWizard'
 import { api } from '@app/core/utils/api'
-import { Sheet } from '@scaffald/tamagui-ui'
+import { Sheet } from '@scaffald/neue-ui'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Text, YStack } from 'tamagui'

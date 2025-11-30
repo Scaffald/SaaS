@@ -20,7 +20,7 @@ import {
   LocationListInput,
   SkeletonForm,
   ToggleCard,
-} from '@scaffald/tamagui-ui'
+} from '@scaffald/neue-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
@@ -165,11 +165,12 @@ export function ProfileEmploymentLeft() {
       const previousEmployment = utils.profile.employment.getEmployment.getData()
       utils.profile.employment.getEmployment.setData(
         undefined,
-        (current: EmploymentProfileFormData | undefined) => ({
-          ...(current ?? profileEmploymentDefaults),
-          ...input,
-          // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-        } as any)
+        (current: EmploymentProfileFormData | undefined) =>
+          ({
+            ...(current ?? profileEmploymentDefaults),
+            ...input,
+            // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
+          }) as any
       )
       return { previousEmployment }
     },

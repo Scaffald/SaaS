@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@scaffald/tamagui-ui'
+import { DashboardWidget } from '@scaffald/neue-ui'
 import { Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
 import { Button, H4, Spinner, Text, XStack, YStack } from 'tamagui'
 import { ProfileEmptyState } from './components'
@@ -35,37 +35,38 @@ function formatLocationForDisplay(
   isRemote: boolean
 ): string {
   if (!location) return ''
-  
+
   if (typeof location === 'string') {
     return isRemote ? `${location} (Remote)` : location
   }
-  
+
   if (typeof location === 'object' && location !== null) {
     const addr = location as Record<string, unknown>
-    
+
     // If formattedAddress exists (backward compatibility), use it
     if ('formattedAddress' in addr && typeof addr.formattedAddress === 'string') {
       const locationStr = addr.formattedAddress || ''
       return isRemote ? `${locationStr} (Remote)` : locationStr
     }
-    
+
     // Otherwise, compute from standard address fields
     const street = typeof addr.street === 'string' ? addr.street : ''
     const city = typeof addr.city === 'string' ? addr.city : ''
     const state = typeof addr.state === 'string' ? addr.state : ''
     const zip = typeof addr.zip === 'string' ? addr.zip : ''
-    
+
     // Build formatted address from available parts
     const addressParts = [street, city, state, zip].filter(Boolean)
-    const locationStr = addressParts.length > 0 
-      ? addressParts.join(', ') 
-      : city && state 
-        ? `${city}, ${state}` 
-        : city || state || ''
-    
+    const locationStr =
+      addressParts.length > 0
+        ? addressParts.join(', ')
+        : city && state
+          ? `${city}, ${state}`
+          : city || state || ''
+
     return isRemote ? `${locationStr} (Remote)` : locationStr
   }
-  
+
   return ''
 }
 
