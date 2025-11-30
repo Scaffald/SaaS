@@ -157,7 +157,7 @@ const isValid = validateCharacterLimit(content, 500)
 ### Empty Content Check
 
 ```tsx
-import { isContentEmpty } from '@app/ui/components/rich-text'
+import { isContentEmpty } from '@scaffald/tamagui-ui'
 
 const isEmpty = isContentEmpty(content)
 ```
@@ -243,7 +243,7 @@ Choose the correct `fieldType` to get appropriate character limits and placehold
 ### 3. Handle Empty State
 
 ```tsx
-import { isContentEmpty } from '@app/ui/components/rich-text'
+import { isContentEmpty } from '@scaffald/tamagui-ui'
 
 // Check if content is empty before saving
 if (!isContentEmpty(content)) {
