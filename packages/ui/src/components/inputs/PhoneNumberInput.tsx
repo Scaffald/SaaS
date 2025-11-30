@@ -3,7 +3,7 @@ import {
   getE164Format,
   getPhoneRegionCode,
   isValidPhoneNumber,
-} from '@app/schemas/common/phone'
+} from '@scaffald/tamagui-ui/types/phone'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Adapt, Input, Select, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
 import {

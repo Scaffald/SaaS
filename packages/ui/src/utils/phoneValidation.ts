@@ -6,4 +6,4 @@ export {
   isValidPhoneNumber,
   phoneNumberSchema,
   requiredPhoneNumberSchema,
-} from '@app/schemas/common/phone'
+} from '@scaffald/tamagui-ui/types/phone'
