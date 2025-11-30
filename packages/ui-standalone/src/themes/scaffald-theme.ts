@@ -292,8 +292,8 @@ export const pinkDark = {
   pink12: 'hsla(25, 42%, 92%, 1)',
 }
 
-const lightPalette = [lightTransparent, ...Object.values(grayLight), darkTransparent]
-const darkPalette = [darkTransparent, ...Object.values(grayDark), lightTransparent]
+export const lightPalette = [lightTransparent, ...Object.values(grayLight), darkTransparent]
+export const darkPalette = [darkTransparent, ...Object.values(grayDark), lightTransparent]
 
 export const shadows = {
   shadowColor: 'rgba(0,0,0,0.3)',
@@ -414,3 +414,8 @@ export const themes: Themes =
   process.env.TAMAGUI_ENVIRONMENT === 'client' && process.env.NODE_ENV === 'production'
     ? ({} as Themes)
     : (builtThemes as Themes)
+
+/**
+ * Export scaffald theme as default theme for convenience
+ */
+export const scaffaldTheme = themes

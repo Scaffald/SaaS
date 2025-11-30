@@ -150,6 +150,7 @@ export * from './hooks/useUniversitySearch'
 export * from './styleguide'
 export { config } from './tamagui.config'
 export * from './themes/scaffald-theme'
+export * from './themes/theme-factory'
 export * from './utils'
 // Phone validation utilities
 export * from './types/phone'
