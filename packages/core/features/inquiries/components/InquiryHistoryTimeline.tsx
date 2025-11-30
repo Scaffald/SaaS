@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Text, XStack, YStack } from '@app/ui'
+import { Text, XStack, YStack } from '@scaffald/tamagui-ui'
 import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 import { Avatar, type GetThemeValueForKey } from 'tamagui'

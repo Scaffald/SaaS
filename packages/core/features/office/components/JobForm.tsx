@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import type { AddressResult } from '@app/ui'
+import type { AddressResult } from '@scaffald/tamagui-ui'
 import {
   AddressForm,
   Button,
@@ -11,7 +11,7 @@ import {
   Text,
   XStack,
   YStack,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@app/ui/components/rich-text'
 import type { JSONContent } from '@tiptap/core'
 import { Eye, X } from '@tamagui/lucide-icons'

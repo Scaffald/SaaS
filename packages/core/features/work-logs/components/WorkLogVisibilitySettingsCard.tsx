@@ -2,7 +2,7 @@ import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'
 
-import { DashboardWidget, ToggleSwitch } from '@app/ui'
+import { DashboardWidget, ToggleSwitch } from '@scaffald/tamagui-ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'

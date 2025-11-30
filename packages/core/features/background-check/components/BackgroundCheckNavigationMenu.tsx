@@ -1,5 +1,5 @@
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardWidget, Text, XStack, YStack } from '@app/ui'
+import { DashboardWidget, Text, XStack, YStack } from '@scaffald/tamagui-ui'
 import { ArrowRight } from '@tamagui/lucide-icons'
 import { Link, usePathname } from 'expo-router'
 

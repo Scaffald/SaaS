@@ -1,4 +1,4 @@
-import { EmptyState, ErrorState, SkeletonList } from '@app/ui'
+import { EmptyState, ErrorState, SkeletonList } from '@scaffald/tamagui-ui'
 import { Search } from '@tamagui/lucide-icons'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'

@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { extractPlainText, ResponsiveModal } from '@app/ui'
+import { extractPlainText, ResponsiveModal } from '@scaffald/tamagui-ui'
 import { Briefcase, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'

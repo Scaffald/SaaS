@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { ROUTES, buildPath } from '@app/core/constants/routes'
-import { Chip, DiscoverCard, extractPlainText } from '@app/ui'
+import { Chip, DiscoverCard, extractPlainText } from '@scaffald/tamagui-ui'
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'

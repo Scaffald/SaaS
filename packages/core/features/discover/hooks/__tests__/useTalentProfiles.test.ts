@@ -27,7 +27,7 @@ vi.mock('@tanstack/react-query', () => ({
 }))
 
 import { buildTalentProfilesQuery, useTalentProfiles } from '../useTalentProfiles'
-import type { ViewportBounds } from '@app/ui'
+import type { ViewportBounds } from '@scaffald/tamagui-ui'
 
 describe('useTalentProfiles', () => {
   const mockBounds: ViewportBounds = {

@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume'
-import { DashboardWidget, spacing } from '@app/ui'
+import { DashboardWidget, spacing } from '@scaffald/tamagui-ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import { H3, H4, Text, YStack } from 'tamagui'

@@ -1,4 +1,4 @@
-import { CustomCheckbox } from '@app/ui'
+import { CustomCheckbox } from '@scaffald/tamagui-ui'
 import { useCallback } from 'react'
 import { Label, Text, XStack, YStack } from 'tamagui'
 import type { ParentSkill } from '../../types/profile-skills-types'

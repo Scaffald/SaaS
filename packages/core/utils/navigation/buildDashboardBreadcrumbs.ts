@@ -1,6 +1,6 @@
 import { ROUTES, type RouteConfig } from '@app/core/constants/routes'
 import { i18n } from '@app/core/locales'
-import type { BreadcrumbItem } from '@app/ui'
+import type { BreadcrumbItem } from '@scaffald/tamagui-ui'
 
 type RouteSegment = {
   route: RouteConfig

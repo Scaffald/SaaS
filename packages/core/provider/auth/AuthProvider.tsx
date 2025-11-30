@@ -9,7 +9,7 @@ import {
 import { captureEventWithQueue, flushQueue } from '@app/core/utils/analytics/queue'
 import { clearAllAuthStorage } from '@app/core/utils/auth/clearAuthStorage'
 import { supabase } from '@app/core/utils/supabase/client'
-import { useCookieConsent } from '@app/ui'
+import { useCookieConsent } from '@scaffald/tamagui-ui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import NetInfo from '@react-native-community/netinfo'
 import type { Session } from '@supabase/auth-js'

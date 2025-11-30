@@ -1,12 +1,12 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button, Dialog } from '@app/ui'
+import { Button, Dialog } from '@scaffald/tamagui-ui'
 import { CheckCircle2, DownloadCloud, RefreshCcw } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
-import { ResponsiveSelect } from '@app/ui'
+import { ResponsiveSelect } from '@scaffald/tamagui-ui'
 import {
   Input,
   Label,

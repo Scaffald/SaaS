@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@scaffald/tamagui-ui'
 import { ArrowRight, CheckCircle2 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Progress, Spinner, Text, XStack, YStack } from 'tamagui'

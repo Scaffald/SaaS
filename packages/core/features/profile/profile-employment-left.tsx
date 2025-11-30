@@ -20,7 +20,7 @@ import {
   LocationListInput,
   SkeletonForm,
   ToggleCard,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

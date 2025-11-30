@@ -1,4 +1,4 @@
-import { DashboardWidget, Text } from '@app/ui'
+import { DashboardWidget, Text } from '@scaffald/tamagui-ui'
 import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { Button, YStack } from 'tamagui'

@@ -1,4 +1,4 @@
-import type { MapPinType as MapPin } from '@app/ui'
+import type { MapPinType } from '@scaffald/tamagui-ui'
 import { useCallback, useMemo, useRef, useState } from 'react'
 
 /**

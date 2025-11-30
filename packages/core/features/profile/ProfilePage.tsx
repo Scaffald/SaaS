@@ -5,8 +5,8 @@ import {
   buildDashboardBreadcrumbs,
   type DashboardBreadcrumbSegment,
 } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
-import { ProfileLayout } from '@app/ui'
-import type { BreadcrumbItem } from '@app/ui'
+import { ProfileLayout } from '@app/core/components/layouts'
+import type { BreadcrumbItem } from '@scaffald/tamagui-ui'
 import { usePathname } from 'expo-router'
 import type { ComponentProps } from 'react'
 import { useMemo } from 'react'

@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from '@app/ui'
+import { Text, XStack, YStack } from '@scaffald/tamagui-ui'
 
 interface ComparisonFieldProps {
   label: string

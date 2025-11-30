@@ -3,11 +3,11 @@ import {
   type AddressResult,
   MapContainer,
   type MapContainerRef,
-  type MapPinType,
+  type MapPin as MapPinType,
   Sheet,
   ToggleSwitch,
   type ViewportBounds,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { captureEvent } from '@app/core/utils/analytics/client'
 import {
   List as ListIcon,

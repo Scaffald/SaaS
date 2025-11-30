@@ -1,6 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
-import { extractPlainText, ImageUpload, plainTextToTipTap, RichTextEditor, UIButton } from '@app/ui'
+import { extractPlainText, plainTextToTipTap, RichTextEditor, UIButton } from '@scaffald/tamagui-ui'
+import { ImageUpload } from '@app/core/components/ui'
 import { ArrowDown, ArrowUp, Edit3, Image as ImageIcon, Plus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { JSONContent } from '@tiptap/core'

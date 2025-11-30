@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DataTable } from '@app/ui'
+import { DataTable } from '@app/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToastController } from '@tamagui/toast'
 import { Download, Trash2 } from '@tamagui/lucide-icons'

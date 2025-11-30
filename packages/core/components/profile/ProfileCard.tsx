@@ -10,7 +10,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 
 /**
  * Profile card badge configuration

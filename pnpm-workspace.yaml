@@ -1,7 +1,6 @@
 packages:
   - apps/*
   - packages/core
-  - packages/ui
   - packages/ui-standalone
   - packages/supabase
   - packages/schemas

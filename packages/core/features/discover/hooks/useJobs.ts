@@ -1,5 +1,5 @@
 import { supabase } from '@app/core/utils/supabase/client'
-import type { ViewportBounds } from '@app/ui'
+import type { ViewportBounds } from '@scaffald/tamagui-ui'
 import { useQuery } from '@tanstack/react-query'
 
 // Type for job data on map

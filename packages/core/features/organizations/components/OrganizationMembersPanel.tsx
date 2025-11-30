@@ -1,5 +1,5 @@
 import { type OrganizationInvite, organizationInviteSchema } from '@app/schemas'
-import { Table } from '@app/ui'
+import { Table } from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'

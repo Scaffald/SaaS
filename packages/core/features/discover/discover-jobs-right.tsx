@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@app/ui'
+import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@scaffald/tamagui-ui'
 import { ChevronsUpDown, Filter, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'

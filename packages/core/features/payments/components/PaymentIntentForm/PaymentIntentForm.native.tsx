@@ -1,4 +1,4 @@
-import { Text, YStack } from '@app/ui'
+import { Text, YStack } from '@scaffald/tamagui-ui'
 import { Card } from 'tamagui'
 
 type PaymentIntentFormProps = {

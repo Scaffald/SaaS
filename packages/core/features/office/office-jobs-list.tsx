@@ -1,6 +1,7 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { OfficeLayout, ResponsiveSelect } from '@app/ui'
+import { OfficeLayout } from '@app/core/components/layouts'
+import { ResponsiveSelect } from '@scaffald/tamagui-ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'

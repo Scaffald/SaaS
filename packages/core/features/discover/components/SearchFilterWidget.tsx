@@ -1,4 +1,4 @@
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget } from '@scaffald/tamagui-ui'
 import { X } from '@tamagui/lucide-icons'
 import { Button, Input, Label, Separator, Text, XStack, YStack } from 'tamagui'
 

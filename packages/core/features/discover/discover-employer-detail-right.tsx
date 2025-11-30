@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget } from '@scaffald/tamagui-ui'
 import {
   BellPlus,
   Briefcase,

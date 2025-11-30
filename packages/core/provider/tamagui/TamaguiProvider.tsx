@@ -1,4 +1,4 @@
-import { config } from '@app/ui'
+import { config } from '@scaffald/tamagui-ui'
 import type { ReactNode } from 'react'
 import { isWeb, TamaguiProvider as TamaguiProviderOG, useDidFinishSSR } from 'tamagui'
 import { useRootTheme, useThemeSetting } from '../theme/UniversalThemeProvider'

@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import type { SaveStatus } from '@app/ui'
+import type { SaveStatus } from '@scaffald/tamagui-ui'
 import { useEffect, useState } from 'react'
 
 /**

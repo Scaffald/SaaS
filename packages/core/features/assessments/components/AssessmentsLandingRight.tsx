@@ -1,4 +1,4 @@
-import { DashboardWidget, spacing, Text, YStack } from '@app/ui'
+import { DashboardWidget, spacing, Text, YStack } from '@scaffald/tamagui-ui'
 
 export const AssessmentsLandingRight = () => {
   return (

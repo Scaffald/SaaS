@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { Tab, TabGroup } from '@app/ui'
+import { Tab, TabGroup } from '@scaffald/tamagui-ui'
 
 export type SoftSkillCategory = 'reliability' | 'collaboration' | 'professionalism' | 'technical'
 

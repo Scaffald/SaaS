@@ -4,7 +4,7 @@ import { SoftSkillsCategoryTabs, type SoftSkillCategory } from '../components/So
 import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
 import { SoftSkillsHistoryTimeline } from '../components/SoftSkillsHistoryTimeline'
 import { SoftSkillsProgressionChart } from '../components/SoftSkillsProgressionChart'
-import { SoftSkillsRadarGrid } from '@app/ui'
+import { SoftSkillsRadarGrid } from '@app/core/components/ui'
 import {
   DashboardWidget,
   EmptyState,
@@ -17,7 +17,7 @@ import {
   TabGroup,
   UIButton,
   type SkillsChartDataset,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'

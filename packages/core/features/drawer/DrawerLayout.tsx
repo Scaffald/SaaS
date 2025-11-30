@@ -1,6 +1,7 @@
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 import { api } from '@app/core/utils/api'
-import { shadows, type NotificationItem } from '@app/ui'
+import { shadows } from '@scaffald/tamagui-ui'
+import type { NotificationItem } from '@app/core/components/notifications'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'

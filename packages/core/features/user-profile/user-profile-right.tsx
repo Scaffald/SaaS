@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { useUser } from '@app/core/utils/useUser'
-import { DashboardWidget, ResponsiveModal } from '@app/ui'
+import { DashboardWidget, ResponsiveModal } from '@scaffald/tamagui-ui'
 import { useState } from 'react'
 import { Avatar, H4, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
 import { CertificationsWidget } from '../profile/widgets/CertificationsWidget'

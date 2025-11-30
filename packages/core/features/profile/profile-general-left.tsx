@@ -11,7 +11,7 @@ import {
   plainTextToTipTap,
   RichTextEditor,
   SkeletonForm,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { useSafeToast } from '@app/core/hooks/useSafeToast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { JSONContent } from '@tiptap/core'

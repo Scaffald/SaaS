@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button, Text, XStack, YStack } from '@app/ui'
+import { Button, Text, XStack, YStack } from '@scaffald/tamagui-ui'
 import { Check, MessageSquare } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'

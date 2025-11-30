@@ -10,7 +10,7 @@ import {
   Text,
   XStack,
   YStack,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'

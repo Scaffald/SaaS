@@ -11,7 +11,7 @@ import {
   Text,
   XStack,
   YStack,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { Info } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'

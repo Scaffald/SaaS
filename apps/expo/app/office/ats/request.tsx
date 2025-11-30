@@ -2,7 +2,7 @@ import {
   BackgroundCheckNavigationMenu,
   OrganizationBackgroundCheckRequestForm,
 } from '@app/core/features/background-check'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout } from '@app/core/components/layouts'
 
 export default function OfficeBackgroundCheckRequestScreen() {
   return (

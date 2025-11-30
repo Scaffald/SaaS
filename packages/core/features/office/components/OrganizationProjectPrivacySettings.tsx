@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { ResponsiveSelect } from '@app/ui'
+import { ResponsiveSelect } from '@scaffald/tamagui-ui'
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'

@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
-import { OfficeLayout } from '@app/ui'
+import { OfficeLayout } from '@app/core/components/layouts'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Spinner, Text, YStack } from 'tamagui'
 import { CMSSlideForm } from './cms-slide-form'

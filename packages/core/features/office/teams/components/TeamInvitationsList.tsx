@@ -6,7 +6,7 @@ import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@app/ui'
+import { ResponsiveSelect } from '@scaffald/tamagui-ui'
 import {
   Button,
   Card,

@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { SoftSkillsMatchIndicator } from '@app/core/features/profile/components/SoftSkillsMatchIndicator'
 import { ROUTES } from '@app/core/constants/routes'
-import { Chip, extractPlainText, UIButton } from '@app/ui'
+import { Chip, extractPlainText, UIButton } from '@scaffald/tamagui-ui'
 import {
   Award,
   Briefcase,

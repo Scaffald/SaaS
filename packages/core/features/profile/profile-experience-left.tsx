@@ -7,7 +7,7 @@ import {
   DashboardWidget,
   MonthYearPicker,
   ResponsiveSelect,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, Check, CheckCircle, Plus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

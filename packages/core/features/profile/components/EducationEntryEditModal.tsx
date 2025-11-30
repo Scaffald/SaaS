@@ -8,7 +8,7 @@ import {
   ResponsiveModal,
   ResponsiveSelect,
   UniversityAutocomplete,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useRef, useState } from 'react'

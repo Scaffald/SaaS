@@ -1,7 +1,7 @@
 import { AssessmentProgress, AssessmentWizard } from '@app/core/features/assessments'
 import { LuscherTestStep } from '@app/core/features/personality-assessment/components/LuscherTestStep'
 import { api } from '@app/core/utils/api'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout } from '@app/core/components/layouts'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
 import { Text, YStack } from 'tamagui'

@@ -1,6 +1,6 @@
 import { useStripeConfig } from '@app/core/features/payments/hooks/useStripeConfig'
 import { api } from '@app/core/utils/api'
-import { Button, Spinner, Text, XStack, YStack } from '@app/ui'
+import { Button, Spinner, Text, XStack, YStack } from '@scaffald/tamagui-ui'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { useToastController } from '@tamagui/toast'

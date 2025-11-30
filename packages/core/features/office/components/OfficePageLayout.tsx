@@ -12,8 +12,8 @@ import {
   type TableColumnVisibilityModalProps,
   XStack,
   YStack,
-} from '@app/ui'
-import type { BreadcrumbItem } from '@app/ui'
+} from '@scaffald/tamagui-ui'
+import type { BreadcrumbItem } from '@scaffald/tamagui-ui'
 import { Plus } from '@tamagui/lucide-icons'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'
 import type { Dispatch, ReactNode, SetStateAction } from 'react'

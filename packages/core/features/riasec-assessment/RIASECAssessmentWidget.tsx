@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@scaffald/tamagui-ui'
 import { useRouter } from 'expo-router'
 import { Spinner, Text, YStack } from 'tamagui'
 

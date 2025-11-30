@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { ConfirmationDialog, DashboardWidget } from '@app/ui'
+import { ConfirmationDialog, DashboardWidget } from '@scaffald/tamagui-ui'
 import { Award } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { TRPCClientError } from '@trpc/client'

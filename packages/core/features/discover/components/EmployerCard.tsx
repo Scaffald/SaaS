@@ -1,4 +1,4 @@
-import { DiscoverCard, extractPlainText } from '@app/ui'
+import { DiscoverCard, extractPlainText } from '@scaffald/tamagui-ui'
 import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { Text, XStack, YStack } from 'tamagui'

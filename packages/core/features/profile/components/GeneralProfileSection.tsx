@@ -6,7 +6,7 @@ import {
   UIButton as Button,
   DashboardWidget,
   PhoneNumberInput,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'

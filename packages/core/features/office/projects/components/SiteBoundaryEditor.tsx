@@ -1,4 +1,4 @@
-import type { Boundary } from '@app/ui'
+import type { Boundary } from '@scaffald/tamagui-ui'
 import { SiteBoundaryDrawer } from '@app/core/components/sites'
 
 export interface SiteBoundaryEditorProps {

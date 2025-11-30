@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { useMapPinState } from '../useMapPinState'
-import type { MapPinType } from '@app/ui'
+import type { MapPin as MapPinType } from '@scaffald/tamagui-ui'
 import type { ClusterInfo } from '../useMapPinState'
 
 describe('useMapPinState', () => {

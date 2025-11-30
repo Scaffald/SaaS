@@ -1,8 +1,8 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
 import { api } from '@app/core/utils/api'
-import type { BreadcrumbItem } from '@app/ui'
-import { DashboardLayout } from '@app/ui'
+import type { BreadcrumbItem } from '@scaffald/tamagui-ui'
+import { DashboardLayout } from '@app/core/components/layouts'
 import { useLocalSearchParams } from 'expo-router'
 import { Spinner, Text, YStack } from 'tamagui'
 

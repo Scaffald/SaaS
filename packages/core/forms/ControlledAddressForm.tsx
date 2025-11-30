@@ -1,4 +1,4 @@
-import { AddressForm, type AddressResult } from '@app/ui'
+import { AddressForm, type AddressResult } from '@scaffald/tamagui-ui'
 import { useMemo } from 'react'
 import {
   type FieldPath,

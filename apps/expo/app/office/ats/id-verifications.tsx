@@ -2,7 +2,7 @@ import {
   IdVerificationAdminPage,
   IdVerificationRequestPanel,
 } from '@app/core/features/id-verification'
-import { DashboardLayout } from '@app/ui'
+import { DashboardLayout } from '@app/core/components/layouts'
 import { useState } from 'react'
 
 export default function OfficeIdVerificationsScreen() {

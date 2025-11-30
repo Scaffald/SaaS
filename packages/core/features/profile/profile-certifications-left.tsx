@@ -9,7 +9,7 @@ import {
   DashboardWidget,
   MonthYearPicker,
   ToggleCard,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useState } from 'react'

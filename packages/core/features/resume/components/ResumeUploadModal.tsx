@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { FileUpload, ResponsiveModal, spacing } from '@app/ui'
+import { FileUpload, ResponsiveModal, spacing } from '@scaffald/tamagui-ui'
 import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'

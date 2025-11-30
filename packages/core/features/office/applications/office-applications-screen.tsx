@@ -1,4 +1,4 @@
-import { Button, H2, Spinner, Text, XStack, YStack } from '@app/ui'
+import { Button, H2, Spinner, Text, XStack, YStack } from '@scaffald/tamagui-ui'
 import { useMemo, useState } from 'react'
 import type { ApplicationStatus, MockApplication } from '../mock-data/ats-mock-data'
 import { ApplicationsFilters } from './components/ApplicationsFilters'

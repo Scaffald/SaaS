@@ -1,7 +1,12 @@
 import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { SiteOverlapNotification } from '@app/core/features/notifications/components/SiteOverlapNotification'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, type NotificationItem, NotificationTag, ToggleSwitch } from '@app/ui'
+import {
+  UIButton as Button,
+  type NotificationItem,
+  NotificationTag,
+  ToggleSwitch,
+} from '@scaffald/tamagui-ui'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'

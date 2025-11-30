@@ -1,4 +1,4 @@
-import type { AddressResult } from '@app/ui'
+import type { AddressResult } from '@scaffald/tamagui-ui'
 import type {
   Control,
   FieldPath,

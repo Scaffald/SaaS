@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { useTranslation } from '@app/core/utils/useTranslation'
 import type { WelcomeSlide } from '@app/schemas'
-import { Onboarding, type OnboardingStepInfo, Spinner, StepContent, YStack } from '@app/ui'
+import { Onboarding, type OnboardingStepInfo, Spinner, StepContent, YStack } from '@scaffald/tamagui-ui'
 import type { IconProps } from '@tamagui/helpers-icon'
 import * as LucideIcons from '@tamagui/lucide-icons'
 import type { ComponentType } from 'react'

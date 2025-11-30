@@ -4,7 +4,7 @@ import {
   USResidentToggle,
 } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard } from '@app/ui'
+import { UIButton as Button, CustomCheckbox, DashboardWidget, LocationListInput, ToggleCard } from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

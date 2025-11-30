@@ -1,4 +1,4 @@
-import { UIButton as Button } from '@app/ui'
+import { UIButton as Button } from '@scaffald/tamagui-ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
 import { Text, XStack, YStack } from 'tamagui'

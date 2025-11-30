@@ -8,7 +8,7 @@ import {
   CardMetadata,
   SelectableCard,
   type MetadataItem,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 
 /**
  * Organization address data

@@ -1,5 +1,5 @@
 import { LuscherTestWizard } from '@app/core/features/luscher-test'
-import { AssessmentsLayout } from '@app/ui'
+import { AssessmentsLayout } from '@app/core/components/layouts'
 
 /**
  * Luscher Test Assessment Page

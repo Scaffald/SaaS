@@ -1,4 +1,4 @@
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget } from '@scaffald/tamagui-ui'
 import type { ComponentType, ReactNode } from 'react'
 import { ScrollView, Spinner, Text, YStack, type YStackProps } from 'tamagui'
 

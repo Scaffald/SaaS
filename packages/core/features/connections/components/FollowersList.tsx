@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DataTable } from '@app/ui'
+import { DataTable } from '@app/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
 import { Avatar, Input, Spinner, Text, XStack, YStack } from 'tamagui'

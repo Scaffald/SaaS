@@ -1,4 +1,4 @@
-import { DiscoverCard } from '@app/ui'
+import { DiscoverCard } from '@scaffald/tamagui-ui'
 import { Building, MapPin, Users } from '@tamagui/lucide-icons'
 import { forwardRef, memo } from 'react'
 import type { TamaguiElement } from 'tamagui'

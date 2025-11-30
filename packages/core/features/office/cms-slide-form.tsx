@@ -1,5 +1,6 @@
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
-import { IconSelector, ImageUpload, ToggleSwitch } from '@app/ui'
+import { IconSelector, ToggleSwitch } from '@scaffald/tamagui-ui'
+import { ImageUpload } from '@app/core/components/ui'
 import { Save } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, Form, H4, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'

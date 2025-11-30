@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@app/ui'
+import { DashboardWidget, EmptyState, Heading, LoadingState, spacing, UIButton } from '@scaffald/tamagui-ui'
 import { Award, CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Linking } from 'react-native'

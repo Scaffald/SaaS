@@ -1,6 +1,6 @@
 import type { OrganizationLocation } from '@app/schemas'
-import type { AddressResult } from '@app/ui'
-import { AddressAutocomplete } from '@app/ui'
+import type { AddressResult } from '@scaffald/tamagui-ui'
+import { AddressAutocomplete } from '@scaffald/tamagui-ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'

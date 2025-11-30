@@ -1,4 +1,4 @@
-import { DashboardWidget } from '@app/ui'
+import { DashboardWidget } from '@scaffald/tamagui-ui'
 import { H3, Text } from 'tamagui'
 
 interface ProfileRightPanelProps {

@@ -1,6 +1,6 @@
 import { OfficeNotificationsConsole } from '@app/core/features/office/office-notifications-console'
 import { OfficeStorageDashboard } from '@app/core/features/office/office-storage-dashboard'
-import { OfficeLayout } from '@app/ui'
+import { OfficeLayout } from '@app/core/components/layouts'
 import { Separator, YStack } from 'tamagui'
 
 export default function OfficeIndex() {

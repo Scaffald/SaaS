@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, Dialog } from '@app/ui'
+import { DashboardWidget, Dialog } from '@scaffald/tamagui-ui'
 import { Check, Loader2, RefreshCw, X as XIcon } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'

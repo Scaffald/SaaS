@@ -2,7 +2,7 @@ import { Copy } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
-import { Dialog } from '@app/ui'
+import { Dialog } from '@scaffald/tamagui-ui'
 
 interface DuplicateButtonProps {
   /**

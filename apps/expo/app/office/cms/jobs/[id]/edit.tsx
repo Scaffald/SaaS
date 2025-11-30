@@ -1,6 +1,6 @@
 import { JobForm } from '@app/core/features/office/components/JobForm'
 import { api } from '@app/core/utils/api'
-import { Spinner, YStack } from '@app/ui'
+import { Spinner, YStack } from '@scaffald/tamagui-ui'
 import { useLocalSearchParams } from 'expo-router'
 
 export default function EditJobPage() {

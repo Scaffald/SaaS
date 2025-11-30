@@ -1,4 +1,4 @@
-import { extractPlainText } from '@app/ui'
+import { extractPlainText } from '@scaffald/tamagui-ui'
 import type { JSONContent } from '@tiptap/core'
 
 import type { Employer } from '../components/EmployerCard'

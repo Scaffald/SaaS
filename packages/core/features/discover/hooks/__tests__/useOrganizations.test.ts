@@ -22,7 +22,7 @@ vi.mock('@tanstack/react-query', () => ({
 }))
 
 import { useOrganizations } from '../useOrganizations'
-import type { ViewportBounds } from '@app/ui'
+import type { ViewportBounds } from '@scaffald/tamagui-ui'
 
 describe('useOrganizations', () => {
   const mockBounds: ViewportBounds = {

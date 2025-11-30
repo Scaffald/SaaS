@@ -6,7 +6,6 @@
     "types.d.ts",
     "../../types/custom-modules.d.ts",
     "../../types/flow-remove-types.d.ts",
-    "../../packages/ui",
     "../../packages/api",
     "../../packages/core",
     "../../packages/schemas/src/**/*.ts",
@@ -37,16 +36,14 @@
     "paths": {
       "@app/core": ["packages/core"],
       "@app/core/*": ["packages/core/*"],
-      "@app/ui": ["packages/ui"],
-      "@app/ui/*": ["packages/ui/src/*"],
       "@app/supabase": ["packages/supabase"],
       "@app/supabase/*": ["packages/supabase/*"],
       "@app/trpc": ["packages/trpc/src"],
       "@app/trpc/*": ["packages/trpc/src/*"],
       "@app/schemas": ["packages/schemas/src"],
       "@app/schemas/*": ["packages/schemas/src/*"],
-      "@app/styleguide": ["packages/ui/src/styleguide/index.ts"],
-      "@app/styleguide/*": ["packages/ui/src/styleguide/*"],
+      "@app/styleguide": ["packages/ui-standalone/src/styleguide/index.ts"],
+      "@app/styleguide/*": ["packages/ui-standalone/src/styleguide/*"],
       "expo-clipboard": ["types/expo-clipboard.d.ts"]
     }
   },

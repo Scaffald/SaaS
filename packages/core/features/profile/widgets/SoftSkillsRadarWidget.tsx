@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { SoftSkillsRadarGrid } from '@app/ui'
+import { SoftSkillsRadarGrid } from '@app/core/components/ui'
 import {
   SoftSkillsCategoryTabs,
   type SoftSkillCategory,
@@ -14,7 +14,7 @@ import {
   ResponsiveModal,
   spacing,
   UIButton,
-} from '@app/ui'
+} from '@scaffald/tamagui-ui'
 import { Download } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useToastController } from '@tamagui/toast'

@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Button, CustomCheckbox, ResponsiveModal, Spinner, Text, XStack, YStack } from '@app/ui'
+import { Button, CustomCheckbox, ResponsiveModal, Spinner, Text, XStack, YStack } from '@scaffald/tamagui-ui'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
 import { Card, TextArea } from 'tamagui'

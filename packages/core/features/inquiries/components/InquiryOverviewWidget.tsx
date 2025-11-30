@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button, SkeletonCard, Text, YStack } from '@app/ui'
+import { Button, SkeletonCard, Text, YStack } from '@scaffald/tamagui-ui'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 

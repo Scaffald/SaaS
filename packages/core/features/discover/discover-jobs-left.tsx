@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { extractPlainText, SkeletonList } from '@app/ui'
+import { extractPlainText, SkeletonList } from '@scaffald/tamagui-ui'
 import type { JSONContent } from '@tiptap/core'
 import { ScrollView, Text, YStack } from 'tamagui'
 import { type ExternalJob, ExternalJobCard } from './components/ExternalJobCard'

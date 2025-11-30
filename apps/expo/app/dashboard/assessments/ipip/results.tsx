@@ -1,5 +1,5 @@
 import { IPIPResultsPage } from '@app/core/features/ipip-assessment/components/IPIPResultsPage'
-import { AssessmentsLayout } from '@app/ui'
+import { AssessmentsLayout } from '@app/core/components/layouts'
 
 /**
  * IPIP Results Page Route

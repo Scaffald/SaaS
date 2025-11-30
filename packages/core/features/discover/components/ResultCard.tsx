@@ -1,5 +1,5 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
-import { DiscoverCard } from '@app/ui'
+import { DiscoverCard } from '@scaffald/tamagui-ui'
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'

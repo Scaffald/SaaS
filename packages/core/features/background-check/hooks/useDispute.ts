@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { supabase } from '@app/core/utils/supabase/client'
 import type { AppRouter } from '@app/supabase/client-types'
-import type { UploadSelection } from '@app/ui'
+import type { UploadSelection } from '@scaffald/tamagui-ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'

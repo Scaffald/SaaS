@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { SizableText, YStack } from 'tamagui'
-import { SearchSelect, type SearchSelectOption } from '@app/ui'
+import { SearchSelect, type SearchSelectOption } from '@scaffald/tamagui-ui'
 
 export interface University {
   id: string

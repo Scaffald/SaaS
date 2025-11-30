@@ -1,6 +1,6 @@
 import { InquiryOverviewWidget } from '@app/core/features/inquiries/components/InquiryOverviewWidget'
 import { api } from '@app/core/utils/api'
-import { SkeletonCard } from '@app/ui'
+import { SkeletonCard } from '@scaffald/tamagui-ui'
 import { YStack } from 'tamagui'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'

@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@app/ui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@scaffald/tamagui-ui'
 import { useRouter } from 'expo-router'
 import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
 

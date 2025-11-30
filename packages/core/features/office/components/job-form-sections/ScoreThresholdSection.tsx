@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from '@app/ui'
+import { Text, XStack, YStack } from '@scaffald/tamagui-ui'
 import { useState } from 'react'
 import { Label, Slider } from 'tamagui'
 

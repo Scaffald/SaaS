@@ -1,5 +1,5 @@
-import { ToggleCard } from '@app/ui'
-import type { ToggleCardProps } from '@app/ui'
+import { ToggleCard } from '@scaffald/tamagui-ui'
+import type { ToggleCardProps } from '@scaffald/tamagui-ui'
 import { Plane } from '@tamagui/lucide-icons'
 import { YStack } from 'tamagui'
 import { MaximumTravelDistanceCard } from './MaximumTravelDistanceCard'

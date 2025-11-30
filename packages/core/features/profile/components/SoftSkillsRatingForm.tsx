@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { ROUTES } from '@app/core/constants/routes'
-import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator, UIButton } from '@app/ui'
+import { Heading, LoadingState, ResponsiveModal, SaveStatusIndicator, UIButton } from '@scaffald/tamagui-ui'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'

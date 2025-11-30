@@ -1,5 +1,5 @@
 import type { AppRouter } from '@app/supabase/client-types'
-import { DiscoverCard } from '@app/ui'
+import { DiscoverCard } from '@scaffald/tamagui-ui'
 import {
   Briefcase,
   Building2,

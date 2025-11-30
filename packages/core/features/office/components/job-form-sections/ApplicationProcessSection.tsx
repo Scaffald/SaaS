@@ -1,4 +1,4 @@
-import { Button, Input, ResponsiveSelect, Sheet, Text, ToggleSwitch, XStack, YStack } from '@app/ui'
+import { Button, Input, ResponsiveSelect, Sheet, Text, ToggleSwitch, XStack, YStack } from '@scaffald/tamagui-ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Card, Label, Switch } from 'tamagui'

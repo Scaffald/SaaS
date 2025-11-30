@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Tab, TabGroup } from '@app/ui'
+import { Tab, TabGroup } from '@scaffald/tamagui-ui'
 import { useMemo, useState } from 'react'
 import { Tabs, Text, YStack } from 'tamagui'
 import { ConnectionsList } from './components/ConnectionsList'

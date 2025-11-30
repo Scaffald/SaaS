@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { OfficeLayout } from '@app/ui'
+import { OfficeLayout } from '@app/core/components/layouts'
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useState } from 'react'

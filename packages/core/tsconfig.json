@@ -20,8 +20,10 @@
   "extends": "../../tsconfig.base",
   "include": [
     "assets",
+    "components",
     "features",
     "forms",
+    "hooks",
     "provider",
     "utils",
     "locales",
@@ -31,7 +33,6 @@
     "types",
     "package.json",
     "../../package.json",
-    "../ui/src",
     "../api/src",
     "../../supabase/types.ts",
     "../../supabase/helpers.ts",

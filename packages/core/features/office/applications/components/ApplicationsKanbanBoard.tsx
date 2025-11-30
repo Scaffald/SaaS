@@ -1,7 +1,7 @@
 import { BulkInquiryModal } from '@app/core/features/inquiries/components/BulkInquiryModal'
 import { InquiryComparisonView } from '@app/core/features/inquiries/components/InquiryComparisonView'
 import { api } from '@app/core/utils/api'
-import { DraggableCard, DroppableColumn, KanbanCard } from '@app/ui'
+import { DraggableCard, DroppableColumn, KanbanCard } from '@scaffald/tamagui-ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useEffect, useMemo, useState } from 'react'

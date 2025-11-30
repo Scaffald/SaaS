@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@app/ui'
+import { ResponsiveModal } from '@scaffald/tamagui-ui'
 import {
   Briefcase,
   Building2,

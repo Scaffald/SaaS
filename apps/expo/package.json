@@ -44,7 +44,7 @@
     "adb:reverse": "adb reverse tcp:8081 tcp:8081"
   },
   "dependencies": {
-    "@app/ui": "workspace:*",
+    "@scaffald/tamagui-ui": "workspace:*",
     "@babel/runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@react-native-community/netinfo": "catalog:",
