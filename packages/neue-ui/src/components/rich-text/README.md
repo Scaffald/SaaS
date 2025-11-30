@@ -36,7 +36,7 @@ Content is stored as **TipTap JSON** format in the database with auto-generated 
 ### Basic Example
 
 ```tsx
-import { RichTextEditor } from '@app/ui/components/rich-text'
+import { RichTextEditor } from '@scaffald/tamagui-ui'
 import type { JSONContent } from '@tiptap/core'
 import { useState } from 'react'
 
@@ -132,7 +132,7 @@ The `about_plain` / `description_plain` columns are automatically maintained by 
 ### Sanitization
 
 ```tsx
-import { sanitizeTipTapJSON } from '@app/ui/components/rich-text'
+import { sanitizeTipTapJSON } from '@scaffald/tamagui-ui'
 
 const sanitized = sanitizeTipTapJSON(userContent)
 ```
@@ -140,7 +140,7 @@ const sanitized = sanitizeTipTapJSON(userContent)
 ### Plain Text Extraction
 
 ```tsx
-import { extractPlainText } from '@app/ui/components/rich-text'
+import { extractPlainText } from '@scaffald/tamagui-ui'
 
 const plainText = extractPlainText(content)
 const charCount = plainText.length
@@ -149,7 +149,7 @@ const charCount = plainText.length
 ### Validation
 
 ```tsx
-import { validateCharacterLimit } from '@app/ui/components/rich-text'
+import { validateCharacterLimit } from '@scaffald/tamagui-ui'
 
 const isValid = validateCharacterLimit(content, 500)
 ```
@@ -165,7 +165,7 @@ const isEmpty = isContentEmpty(content)
 ### Plain Text Conversion
 
 ```tsx
-import { plainTextToTipTap } from '@app/ui/components/rich-text'
+import { plainTextToTipTap } from '@scaffald/tamagui-ui'
 
 // Convert existing plain text to rich text format
 const richText = plainTextToTipTap('Hello world')
@@ -254,7 +254,7 @@ if (!isContentEmpty(content)) {
 ### 4. Validate Character Limits
 
 ```tsx
-import { validateCharacterLimit, RICH_TEXT_LIMITS } from '@app/ui/components/rich-text'
+import { validateCharacterLimit, RICH_TEXT_LIMITS } from '@scaffald/tamagui-ui'
 
 const limit = RICH_TEXT_LIMITS.PROFILE_ABOUT
 if (!validateCharacterLimit(content, limit)) {

@@ -203,7 +203,7 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         title: 'Charts',
         href: '/styleguide/data-display/charts',
-        description: 'Comprehensive chart catalogue leveraging @app/ui primitives.',
+        description: 'Comprehensive chart catalogue leveraging @scaffald/tamagui-ui primitives.',
         tags: ['data', 'visualization'],
       },
     ],

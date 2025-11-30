@@ -42,7 +42,7 @@ const DialogContent = styled(TamaguiDialog.Content, {
  * all Dialog.Overlay and Dialog.Content instances have consistent
  * styling, animations, and behavior by default.
  *
- * Usage: Import Dialog from '@app/ui' and use it like Tamagui's Dialog.
+ * Usage: Import Dialog from '@scaffald/tamagui-ui' and use it like Tamagui's Dialog.
  * All Dialog.Overlay and Dialog.Content components will automatically
  * have standardized styling applied.
  *
