@@ -44,7 +44,7 @@
     "adb:reverse": "adb reverse tcp:8081 tcp:8081"
   },
   "dependencies": {
-    "@unicornlove/ui": "workspace:*",
+    "@unicornlove/ui": "^1.0.0",
     "@babel/runtime": "catalog:",
     "@react-native-async-storage/async-storage": "catalog:",
     "@react-native-community/netinfo": "catalog:",

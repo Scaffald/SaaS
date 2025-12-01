@@ -1,7 +1,6 @@
 packages:
   - apps/*
   - packages/core
-  - packages/ui
   - packages/supabase
   - packages/schemas
   - packages/trpc
