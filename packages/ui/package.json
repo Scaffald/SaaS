@@ -10,14 +10,13 @@
     "components"
   ],
   "author": "Scaffald",
-  "homepage": "https://github.com/Unicorn/SCF-Scaffald/tree/main/packages/ui",
+  "homepage": "https://github.com/Unicorn/unicornlove-ui",
   "bugs": {
-    "url": "https://github.com/Unicorn/SCF-Scaffald/issues"
+    "url": "https://github.com/Unicorn/unicornlove-ui/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Unicorn/SCF-Scaffald",
-    "directory": "packages/ui"
+    "url": "https://github.com/Unicorn/unicornlove-ui"
   },
   "license": "MIT",
   "private": false,
