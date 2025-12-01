@@ -297,7 +297,16 @@ export function DataTable<TData>({
                       cursor={useOverlay ? 'pointer' : 'default'}
                       onPress={(event) => {
                         if (useOverlay) {
-                          handleRowClick(row.original, row.id, event)
+                          // Convert native event to web-compatible format
+                          const webEvent = isWeb
+                            ? (event as unknown as {
+                                nativeEvent?: { clientX?: number; clientY?: number }
+                                clientX?: number
+                                clientY?: number
+                                currentTarget?: HTMLElement | null
+                              })
+                            : undefined
+                          handleRowClick(row.original, row.id, webEvent)
                         }
                       }}
                       rowLocation={rowIdx === tableRows.length - 1 ? 'last' : 'middle'}

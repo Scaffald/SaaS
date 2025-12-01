@@ -1,9 +1,7 @@
 import {
   Button,
-  DataTable,
   H2,
   Input,
-  OfficeLayout,
   TableActionBar,
   type TableActionBarProps,
   TableAddRecordModal,
@@ -13,6 +11,8 @@ import {
   XStack,
   YStack,
 } from '@unicornlove/ui'
+import { DataTable } from '@app/core/components/ui/DataTable'
+import { OfficeLayout } from '@app/core/components/layouts/OfficeLayout'
 import type { BreadcrumbItem } from '@unicornlove/ui'
 import { Plus } from '@tamagui/lucide-icons'
 import type { ColumnDef, Updater, VisibilityState } from '@tanstack/react-table'

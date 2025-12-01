@@ -21,7 +21,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
   const { width } = useWindowDimensions() // Keep for actual dimension calculations
   // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
   const isSmallScreen = width <= 800
-  const now = useMemo(() => new Date(), [teamId, rangeDays])
+  const now = useMemo(() => new Date(), [])
 
   const start = useMemo(() => {
     const startDate = new Date(now)

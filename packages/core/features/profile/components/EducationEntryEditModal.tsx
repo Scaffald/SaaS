@@ -7,8 +7,8 @@ import {
   MonthYearPicker,
   ResponsiveModal,
   ResponsiveSelect,
-  UniversityAutocomplete,
 } from '@unicornlove/ui'
+import { UniversityAutocomplete } from '@app/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useRef, useState } from 'react'

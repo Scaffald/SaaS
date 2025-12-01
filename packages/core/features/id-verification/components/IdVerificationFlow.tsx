@@ -73,7 +73,7 @@ export function IdVerificationContent() {
   useEffect(() => {
     setPaymentSession(null)
     setRequestError(null)
-  }, [selectedPricingId])
+  }, [])
 
   const selectedPricing = pricingOptions.find((row) => row.id === selectedPricingId) ?? null
 

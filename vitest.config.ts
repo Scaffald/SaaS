@@ -134,7 +134,8 @@ export default defineConfig({
     testTimeout: 60000, // 60 second timeout per test
     hookTimeout: 30000, // 30 second timeout for setup/teardown
     pool: "forks",
-    poolSize: workerPoolSize,
+    // Note: poolSize was removed in newer Vitest versions
+    // Use minWorkers/maxWorkers in poolOptions.forks if needed
     reporters: [
       "default",
       summaryReporterPath,

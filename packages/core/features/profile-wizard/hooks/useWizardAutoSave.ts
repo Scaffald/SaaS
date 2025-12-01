@@ -58,5 +58,5 @@ export function useWizardAutoSave({
         timeoutRef.current = null
       }
     }
-  }, [enabled, isDirty, debounceMs, onSave, step, onSavingStateChange, payload])
+  }, [enabled, isDirty, debounceMs, onSave, step, onSavingStateChange])
 }

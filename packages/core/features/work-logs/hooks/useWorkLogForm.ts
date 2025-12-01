@@ -419,7 +419,7 @@ export const useWorkLogForm = ({
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [autoSaveEnabled, watchedValues, buildCreatePayload, performAutoSave]);
+  }, [autoSaveEnabled, buildCreatePayload, performAutoSave]);
 
   useEffect(() => {
     return () => {

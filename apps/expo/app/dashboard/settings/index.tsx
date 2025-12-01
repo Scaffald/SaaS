@@ -1,18 +1,33 @@
 import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { SiteOverlapNotification } from '@app/core/features/notifications/components/SiteOverlapNotification'
 import { api } from '@app/core/utils/api'
-import {
-  UIButton as Button,
-  type NotificationItem,
-  NotificationTag,
-  ToggleSwitch,
-} from '@unicornlove/ui'
+import { UIButton as Button, NotificationTag, ToggleSwitch } from '@unicornlove/ui'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { Input, Label, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+
+type NotificationItem = {
+  id: string
+  type: string
+  severity: 'critical' | 'important' | 'info'
+  title: string
+  preview: string
+  createdAt: string
+  read: boolean
+  ctaUrl?: string
+  ctaLabel?: string
+  channels: string[]
+  metadata?: {
+    notification_type?: string
+    site_id?: string
+    overlapping_site_id?: string
+    overlap_percent?: number
+    threshold?: number
+  } | null
+}
 
 interface ApiNotification {
   id: string

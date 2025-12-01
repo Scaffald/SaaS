@@ -149,7 +149,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     }
 
     return datasets
-  }, [data, skills, activeCategory, categoryLabels, comparisonData])
+  }, [data, skills, activeCategory, comparisonData])
 
   if (isLoading) {
     return (

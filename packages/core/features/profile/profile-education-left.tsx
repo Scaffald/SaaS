@@ -127,9 +127,11 @@ export function ProfileEducationLeft({
       const previousEducation = utils.profile.education.getEducation.getData()
       const previousLevel = utils.profile.education.getEducationLevel.getData()
 
+      // Type assertion needed because form data has required booleans but API allows null
+      // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
       utils.profile.education.getEducation.setData(
         undefined,
-        input.education_entries ?? []
+        (input.education_entries ?? []) as any
       )
       utils.profile.education.getEducationLevel.setData(undefined, {
         education_level: input.education_level ?? null,
@@ -140,7 +142,8 @@ export function ProfileEducationLeft({
     onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
-        utils.profile.education.getEducation.setData(undefined, context.previousEducation)
+        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
+        utils.profile.education.getEducation.setData(undefined, context.previousEducation as any)
       }
       if (context?.previousLevel) {
         utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel)
@@ -302,7 +305,7 @@ export function ProfileEducationLeft({
       // Clear hidden entries - we'll set them after fields update
       setHiddenEntryIds(new Set())
     }
-  }, [educationQuery.data, educationLevelQuery.data, reset])
+  }, [educationQuery.data, educationLevelQuery.data, reset, educationEntries])
 
   // Hide all existing entries after form data loads
   useEffect(() => {

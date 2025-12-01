@@ -3,7 +3,7 @@ import {
   type AddressResult,
   MapContainer,
   type MapContainerRef,
-  type MapPin as MapPinType,
+  type MapPinType,
   Sheet,
   ToggleSwitch,
   type ViewportBounds,
@@ -144,7 +144,7 @@ export const DiscoverMapScreen = () => {
   }, [state.lastSearchLocation, location])
 
   // Convert profiles, organizations, and jobs to map pins with selected state
-  const mapPins: MapPinType[] = useMemo(() => {
+  const mapPins: Array<MapPinType> = useMemo(() => {
     const workerPins = showWorkers
       ? talentProfiles.map((profile) => ({
           id: profile.id,
@@ -452,14 +452,7 @@ export const DiscoverMapScreen = () => {
         }, 200)
       }
     },
-    [
-      clearHoverState,
-      getPinType,
-      isSmallScreen,
-      showHoverCardForPin,
-      updateResultsRailVisible,
-      setMobileViewMode,
-    ]
+    [clearHoverState, getPinType, isSmallScreen, showHoverCardForPin, updateResultsRailVisible]
   )
 
   const handleReset = useCallback(() => {

@@ -294,7 +294,7 @@ export function AdminBackgroundChecksPage() {
         ),
       },
     ],
-    [setSelectedDispute]
+    []
   )
 
   const summaryStats = useMemo(() => {

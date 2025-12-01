@@ -119,8 +119,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
         console.warn('Failed to track job view:', error)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [job, isExternal])
+  }, [job, isExternal, trackEventMutation.mutate])
 
   if (isLoading) {
     return (

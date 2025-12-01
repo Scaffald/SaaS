@@ -125,7 +125,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         fillOpacity: 0.3,
       },
     ]
-  }, [softSkills, activeCategory, categoryLabels])
+  }, [softSkills, activeCategory])
 
   if (isLoading) {
     return (

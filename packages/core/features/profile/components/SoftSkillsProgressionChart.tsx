@@ -98,7 +98,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
     })
 
     return previousSkills
-  }, [versions, currentSkills, currentData])
+  }, [versions, currentSkills])
 
   const categoryLabels: Record<SoftSkillCategory, string> = {
     reliability: 'Reliability',

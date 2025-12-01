@@ -124,7 +124,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         rotationTimeoutRef.current = null
       }
     }
-  }, [showCarouselControls, isBenefitLoading, currentBenefitIndex, totalBenefits, advanceBenefit])
+  }, [showCarouselControls, isBenefitLoading, advanceBenefit])
 
   if (isStatusLoading) {
     return (

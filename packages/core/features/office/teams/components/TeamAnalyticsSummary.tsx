@@ -40,7 +40,7 @@ function formatNumber(value?: number | null) {
 export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
   const [range, setRange] = useState<number>(7)
 
-  const now = useMemo(() => new Date(), [range, teamId])
+  const now = useMemo(() => new Date(), [])
   const startDateIso = useMemo(() => {
     const start = new Date(now)
     start.setDate(start.getDate() - (range - 1))

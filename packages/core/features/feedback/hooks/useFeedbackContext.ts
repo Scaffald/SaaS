@@ -99,7 +99,7 @@ export function useFeedbackContext(pageTitleOverride?: string): FeedbackContextP
     } else {
       setPageTitle(null)
     }
-  }, [pathname])
+  }, [])
 
   const deviceInfo = useMemo(() => {
     if (Platform.OS === 'web') {

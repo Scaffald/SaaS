@@ -83,8 +83,7 @@ export function OccupationSearch({
         console.warn('Failed to track occupation search:', error)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, data?.occupations, isLoading])
+  }, [debouncedSearch, data?.occupations, isLoading, trackEventMutation.mutate])
 
   // Get selected occupation title
   useEffect(() => {

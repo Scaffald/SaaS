@@ -1,4 +1,25 @@
-import type { MapPinType } from "@unicornlove/ui";
+// Define MapPinType locally to avoid import conflicts with MapPin component
+// This matches the MapPin interface from @unicornlove/ui
+export type MapPinType = {
+  id: string;
+  coordinate: [number, number]; // [longitude, latitude]
+  title: string;
+  subtitle?: string;
+  score?: number;
+  hourlyRate?: number;
+  availability?: "available" | "unavailable";
+  organization?: "Individual" | "Organization" | "Job";
+  color?: string;
+  pinType?: "worker" | "organization" | "job";
+  avatarUrl?: string | null;
+  badges?: Array<{
+    id: string;
+    label: string;
+    tone: "success" | "warning" | "danger";
+  }>;
+  selected?: boolean;
+  data?: any;
+};
 import { useCallback, useMemo, useRef, useState } from "react";
 
 /**

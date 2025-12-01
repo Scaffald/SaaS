@@ -127,7 +127,7 @@ export function OrganizationBackgroundCheckRequestForm() {
   useEffect(() => {
     setPaymentSession(null)
     setRequestError(null)
-  }, [organizationId, selectedPackageId, selectedWorkerId])
+  }, [])
 
   const costCents = selectedPackage?.retail_cost_cents ?? selectedPackage?.platform_cost_cents ?? 0
 

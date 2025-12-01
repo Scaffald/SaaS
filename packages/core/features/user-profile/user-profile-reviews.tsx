@@ -72,7 +72,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
       console.warn('Failed to track review view:', error)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, currentUserId, isLoading, reviewsData, reviews.length])
+  }, [userId, currentUserId, isLoading, reviewsData, reviews.length, trackEventMutation.mutate])
 
   if (isLoading) {
     return (

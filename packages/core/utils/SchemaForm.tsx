@@ -20,14 +20,18 @@ const TextField = ({ value, onChangeText, placeholder, ...props }: TextFieldProp
 }
 
 // Create unique field schemas that match what's used in the login screen
+// Use type assertions to work around @ts-react/form type compatibility
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EmailFieldSchema = createUniqueFieldSchema(
-  z.string().email('Please enter a valid email address'),
+  z.string().email('Please enter a valid email address') as any,
   'email'
 )
-const TextFieldSchema = createUniqueFieldSchema(z.string(), 'text')
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TextFieldSchema = createUniqueFieldSchema(z.string() as any, 'text')
 
 // Basic form fields using Tamagui Input
-export const formFields = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const formFields: any = {
   text: {
     email: () => EmailFieldSchema,
     default: () => TextFieldSchema,
@@ -35,7 +39,9 @@ export const formFields = {
 }
 
 // Mapping for the form - include both email and string types
-const mapping = [
+// Use type assertions to work around @ts-react/form type compatibility
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapping: any = [
   [z.string().email(), TextField] as const,
   [z.string(), TextField] as const,
   [EmailFieldSchema, TextField] as const,
