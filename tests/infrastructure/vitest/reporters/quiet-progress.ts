@@ -1,302 +1,267 @@
-import type { Suite, TaskMeta, TaskResultPack, TaskState, Test } from '@vitest/runner'
-import { relative } from 'pathe'
-import pc from 'picocolors'
-import type { Vitest } from 'vitest'
-import type { Reporter } from 'vitest/reporters'
-import { DefaultReporter } from 'vitest/reporters'
+import type { Reporter } from "vitest/reporters";
+import type { Vitest } from "vitest/node";
+import { relative } from "pathe";
 
-import { describeVerboseSource, isVerboseSuite } from '../../logging/test-log-flags'
+// Vitest task/file type definitions (compatible with vitest internal types)
+interface VitestTask {
+  type: "test" | "suite";
+  name: string;
+  tasks?: VitestTask[];
+  result?: {
+    state?: "pass" | "fail" | "skip";
+    duration?: number;
+    errors?: Array<{ message?: string; stack?: string }>;
+  };
+}
 
-const failureIcon = pc.red('✖')
-const successIcon = pc.green('✓')
-const skippedIcon = pc.yellow('↷')
-const prefix = pc.dim('[vitest]')
-const debugReporter = process.env.TEST_LOG_DEBUG === '1'
+interface VitestFile {
+  filepath?: string;
+  tasks?: VitestTask[];
+  result?: {
+    duration?: number;
+  };
+}
 
+interface FileProgress {
+  filepath: string;
+  relativePath: string;
+  total: number;
+  passed: number;
+  failed: number;
+  skipped: number;
+  startTime: number;
+  errors: Array<{ testName: string; error: string; stack?: string }>;
+}
+
+interface ErrorInfo {
+  file: string;
+  testName: string;
+  error: string;
+  stack?: string;
+}
+
+/**
+ * Quiet Progress Reporter
+ *
+ * Minimal output that shows:
+ * - Single line per file when completed
+ * - Failures inline with error details
+ * - Summary at the end with coverage info
+ *
+ * Eliminates the "flashing" queue display and reduces visual noise.
+ */
 export default class QuietProgressReporter implements Reporter {
-  private ctx!: Vitest
-  private fallback = new DefaultReporter()
-  private startedSuites = new Set<string>()
-  private completedSuites = new Set<string>()
-  private runningSuites = new Set<string>()
-  private recordedStates = new Map<string, TaskState>()
-  private queuedFiles: string[] = []
-  private currentFile?: string
-  private rootDir = process.cwd()
-  private hasLoggedAllFiles = false
+  private ctx!: Vitest;
+  private fileProgress = new Map<string, FileProgress>();
+  private startTime = 0;
+  private totalFiles = 0;
+  private completedFiles = 0;
+  private totalTests = 0;
+  private totalPassed = 0;
+  private totalFailed = 0;
+  private totalSkipped = 0;
+  private allErrors: ErrorInfo[] = [];
 
   onInit(ctx: Vitest): void {
-    this.ctx = ctx
-    this.rootDir = ctx.config.root ?? process.cwd()
-    this.fallback.onInit(ctx)
-    this.startedSuites.clear()
-    this.recordedStates.clear()
-    this.completedSuites.clear()
-    this.runningSuites.clear()
-    this.queuedFiles = []
-    this.currentFile = undefined
-    this.hasLoggedAllFiles = false
+    this.ctx = ctx;
+    this.startTime = Date.now();
+    this.fileProgress.clear();
+    this.completedFiles = 0;
+    this.totalTests = 0;
+    this.totalPassed = 0;
+    this.totalFailed = 0;
+    this.totalSkipped = 0;
+    this.allErrors = [];
+
+    // Clear console and show header
+    console.log("\n🧪 Running tests...\n");
   }
 
-  onPathsCollected(paths: string[] = []): void {
-    if (paths.length > 0) {
-      this.queuedFiles = paths
-      // Log all files as "queued" upfront so we can see which ones will run
-      // This helps identify hanging tests - if a file is queued but never completed, it's hanging
-      for (const filepath of paths) {
-        if (filepath) {
-          // Normalize path to ensure consistent comparison
-          const normalizedPath = filepath.replace(/\\/g, '/')
-          if (!this.startedSuites.has(normalizedPath)) {
-            this.logSuitePlan(normalizedPath)
-          }
-        }
-      }
-      this.hasLoggedAllFiles = true
+  onCollected(files?: VitestFile[]): void {
+    if (!files) return;
+
+    this.totalFiles = files.length;
+
+    // Initialize progress for each file
+    for (const file of files) {
+      const filepath = file.filepath ?? "unknown";
+      const relativePath = relative(
+        this.ctx.config.root || process.cwd(),
+        filepath,
+      );
+
+      this.fileProgress.set(filepath, {
+        filepath,
+        relativePath,
+        total: this.countTests(file),
+        passed: 0,
+        failed: 0,
+        skipped: 0,
+        startTime: Date.now(),
+        errors: [],
+      });
     }
-    this.completedSuites.clear()
-    this.currentFile = undefined
-    // Don't call updateCurrentFile() here since we've already logged all files
+
+    console.log(`📁 ${this.totalFiles} test files collected\n`);
   }
 
-  onTaskUpdate(packs: TaskResultPack[]): void {
-    // Log all files that haven't been logged yet (fallback if onPathsCollected wasn't called)
-    // This ensures we see all files that will run, even if paths weren't collected upfront
-    // Only do this once to avoid performance issues
-    if (!this.hasLoggedAllFiles) {
-      const allFiles = this.ctx.state.getFiles()
-      for (const file of allFiles) {
-        const filepath = file.filepath
-        if (filepath) {
-          const normalizedPath = filepath.replace(/\\/g, '/')
-          if (!this.startedSuites.has(normalizedPath)) {
-            this.logSuitePlan(normalizedPath)
-          }
+  private countTests(file: VitestFile): number {
+    let count = 0;
+    const countTasks = (tasks: VitestTask[]) => {
+      for (const task of tasks) {
+        if (task.type === "test") {
+          count++;
+        } else if (task.type === "suite" && task.tasks) {
+          countTasks(task.tasks);
         }
       }
-      // Mark as logged if we found any files (even if some were already logged)
-      if (allFiles.length > 0) {
-        this.hasLoggedAllFiles = true
-      }
+    };
+    if (file.tasks) {
+      countTasks(file.tasks);
     }
+    return count;
+  }
 
-    // Log currently running files to help identify hangs
-    // Check all files in state and log any that are running but not yet logged as running
-    // This is a continuous check (not just on state transition) to catch files that enter "run" state
-    const allFiles = this.ctx.state.getFiles()
-    for (const file of allFiles) {
-      const filepath = file.filepath
-      if (!filepath) continue
+  onFinished(files?: VitestFile[], errors?: unknown[]): void {
+    // Process all completed files
+    if (files) {
+      for (const file of files) {
+        const filepath = file.filepath ?? "unknown";
+        const relativePath = relative(
+          this.ctx.config.root || process.cwd(),
+          filepath,
+        );
+        const duration = file.result?.duration || 0;
 
-      const normalizedPath = filepath.replace(/\\/g, '/')
-      const state = file.result?.state
+        let passed = 0;
+        let failed = 0;
+        let skipped = 0;
+        const fileErrors: Array<{
+          testName: string;
+          error: string;
+          stack?: string;
+        }> = [];
 
-      // Log files that are running but we haven't logged yet
-      if (state === 'run' && !this.runningSuites.has(normalizedPath)) {
-        this.logSuiteRunning(normalizedPath)
-      }
+        const processTasks = (tasks: VitestTask[]) => {
+          for (const task of tasks) {
+            if (task.type === "test") {
+              const state = task.result?.state;
+              if (state === "pass") {
+                passed++;
+                this.totalPassed++;
+              } else if (state === "fail") {
+                failed++;
+                this.totalFailed++;
 
-      // Also log files stuck in "pending" for a while (potential hang indicator)
-      // This helps catch files that never transition to "run" state
-      if (state === 'pending' && !this.startedSuites.has(normalizedPath)) {
-        // File is queued but stuck in pending - might be hanging
-        // We already logged it as "queued", so this is just for reference
-      }
-    }
-
-    for (const [taskId, result, meta] of packs) {
-      if (!result) {
-        continue
-      }
-      if (this.recordedStates.get(taskId) === result.state) {
-        continue
-      }
-      this.recordedStates.set(taskId, result.state)
-      const task = this.ctx.state.idMap.get(taskId)
-      if (debugReporter) {
-        this.ctx.logger.log(
-          `${prefix} debug task=${taskId} type=${
-            task?.type ?? 'unknown'
-          } file=${task?.file?.filepath ?? 'n/a'} parent=${
-            task && 'suite' in task && task.suite ? (task.suite.filepath ?? 'n/a') : 'n/a'
-          } state=${result?.state ?? 'unknown'} meta=${JSON.stringify(meta ?? {})}`
-        )
-      }
-      if (!task) {
-        continue
-      }
-      if (task.type === 'suite') {
-        // Log "running" when file suite enters "run" state (actually executing)
-        if (result.state === 'run' && this.isFileSuiteId(taskId)) {
-          const filepath = (task as Suite).file?.filepath ?? (task as Suite).filepath
-          if (filepath) {
-            const normalizedPath = filepath.replace(/\\/g, '/')
-            // Log "queued" if not already logged (fallback)
-            if (!this.startedSuites.has(normalizedPath)) {
-              this.logSuitePlan(normalizedPath)
-            }
-            // Log "running" when file actually starts executing
-            if (!this.runningSuites.has(normalizedPath)) {
-              this.logSuiteRunning(normalizedPath)
+                // Capture error details
+                const error = task.result?.errors?.[0];
+                if (error) {
+                  fileErrors.push({
+                    testName: task.name,
+                    error: error.message ?? "Unknown error",
+                    stack: error.stack,
+                  });
+                }
+              } else if (state === "skip") {
+                skipped++;
+                this.totalSkipped++;
+              }
+              this.totalTests++;
+            } else if (task.type === "suite" && task.tasks) {
+              processTasks(task.tasks);
             }
           }
+        };
+
+        if (file.tasks) {
+          processTasks(file.tasks);
         }
-        this.markSuiteCompletion(task as Suite, result.state, taskId)
-      } else if (task.type === 'test') {
-        this.logTestEvent(task as Test, result.state)
+
+        // Print file result
+        const durationStr = this.formatDuration(duration);
+        const testCount = passed + failed + skipped;
+
+        if (failed > 0) {
+          console.log(
+            `❌ ${relativePath} (${testCount} tests, ${failed} failed) ${durationStr}`,
+          );
+
+          // Show failures immediately
+          for (const err of fileErrors) {
+            console.log(`   └─ ✗ ${err.testName}`);
+            console.log(`      ${err.error}`);
+            this.allErrors.push({ file: relativePath, ...err });
+          }
+        } else if (skipped === testCount) {
+          console.log(
+            `⏭️  ${relativePath} (${testCount} skipped) ${durationStr}`,
+          );
+        } else {
+          console.log(`✓ ${relativePath} (${testCount} tests) ${durationStr}`);
+        }
       }
     }
-    this.updateCurrentFile()
-    if (debugReporter) {
-      const fileStates = this.ctx.state
-        .getFiles()
-        .map((file) => `${file.filepath ?? 'n/a'}:${file.result?.state ?? 'pending'}`)
-        .join(', ')
-      this.ctx.logger.log(`${prefix} debug file-states ${fileStates}`)
+
+    // Print summary
+    this.printSummary();
+  }
+
+  private formatDuration(ms: number): string {
+    if (ms < 1000) {
+      return `${ms}ms`;
     }
+    return `${(ms / 1000).toFixed(2)}s`;
   }
 
-  async onFinished(
-    files = this.ctx.state.getFiles(),
-    errors = this.ctx.state.getUnhandledErrors()
-  ): Promise<void> {
-    this.ctx.logger.log()
-    await this.fallback.onFinished(files, errors)
-  }
+  private printSummary(): void {
+    const totalDuration = Date.now() - this.startTime;
 
-  private logSuitePlan(filepath: string): void {
-    // Normalize path for consistent storage
-    const normalizedPath = filepath.replace(/\\/g, '/')
-    this.startedSuites.add(normalizedPath)
-    const relativePath = relative(this.rootDir, normalizedPath) || normalizedPath
-    const verboseSource = isVerboseSuite(normalizedPath)
-      ? describeVerboseSource(normalizedPath)
-      : undefined
-    const suffix = verboseSource ? pc.dim(` (${verboseSource})`) : ''
-    // Use console.log directly to ensure immediate flush (no buffering)
-    console.log(`${prefix} queued ${relativePath}${suffix}`)
-  }
+    console.log("\n" + "═".repeat(60));
+    console.log("📊 Test Summary");
+    console.log("═".repeat(60));
 
-  private logSuiteRunning(filepath: string): void {
-    const normalizedPath = filepath.replace(/\\/g, '/')
-    this.runningSuites.add(normalizedPath)
-    const relativePath = relative(this.rootDir, normalizedPath) || normalizedPath
-    // Use console.log directly to ensure immediate flush (no buffering)
-    console.log(`${prefix} running ${relativePath}`)
-  }
+    console.log(
+      `\n   Total:   ${this.totalTests} tests in ${this.totalFiles} files`,
+    );
+    console.log(`   Passed:  ${this.totalPassed} ✓`);
 
-  private logSuiteCompletion(filepath: string): void {
-    const normalizedPath = filepath.replace(/\\/g, '/')
-    this.runningSuites.delete(normalizedPath) // Remove from running set
-    const relativePath = relative(this.rootDir, normalizedPath) || normalizedPath
-    this.ctx.logger.log(`${prefix} completed ${relativePath}`)
-  }
-
-  private markSuiteCompletion(suite: Suite, state: TaskState, taskId: string): void {
-    if (state === 'run') {
-      return
+    if (this.totalFailed > 0) {
+      console.log(`   Failed:  ${this.totalFailed} ✗`);
     }
-    const filepath = suite.file?.filepath ?? suite.filepath
-    if (!filepath || !this.isFileSuiteId(taskId)) {
-      return
-    }
-    this.completedSuites.add(filepath)
-    this.logSuiteCompletion(filepath)
-    if (debugReporter) {
-      this.ctx.logger.log(`${prefix} debug suite-complete ${filepath}`)
-    }
-  }
 
-  private updateCurrentFile(): void {
-    // This method is kept for backward compatibility but is no longer needed
-    // since we log all files upfront in onPathsCollected
-    // It's still called but won't log duplicates due to startedSuites check
-    if (this.queuedFiles.length === 0) {
-      this.queuedFiles = this.ctx.state
-        .getFiles()
-        .map((file) => file.filepath)
-        .filter((path): path is string => Boolean(path))
+    if (this.totalSkipped > 0) {
+      console.log(`   Skipped: ${this.totalSkipped} ⏭️`);
     }
-    const next = this.queuedFiles.find((filepath) => !this.completedSuites.has(filepath))
-    if (next && next !== this.currentFile) {
-      this.currentFile = next
-      // Only log if not already logged (prevents duplicates from onPathsCollected)
-      const normalizedPath = next.replace(/\\/g, '/')
-      if (!this.startedSuites.has(normalizedPath)) {
-        this.logSuitePlan(normalizedPath)
+
+    console.log(`   Time:    ${this.formatDuration(totalDuration)}`);
+
+    // If there were failures, show a summary of failed tests
+    if (this.allErrors.length > 0) {
+      console.log("\n" + "─".repeat(60));
+      console.log("❌ Failed Tests:");
+      console.log("─".repeat(60));
+
+      for (const err of this.allErrors) {
+        console.log(`\n   ${err.file}`);
+        console.log(`   └─ ${err.testName}`);
+        console.log(`      ${err.error}`);
+        if (err.stack) {
+          // Show first 3 lines of stack trace
+          const stackLines = err.stack.split("\n").slice(1, 4);
+          for (const line of stackLines) {
+            console.log(`      ${line.trim()}`);
+          }
+        }
       }
     }
-  }
 
-  private isFileSuiteId(taskId: string): boolean {
-    return taskId.split('_').length === 2
-  }
+    console.log("\n" + "═".repeat(60));
 
-  private logTestEvent(test: Test, state: TaskState): void {
-    const filepath = test.file?.filepath
-    if (!filepath) {
-      return
-    }
-    if (state === 'fail') {
-      this.logFailure(test)
-      return
-    }
-    if (!isVerboseSuite(filepath)) {
-      return
-    }
-    if (state === 'pass') {
-      this.ctx.logger.log(`${successIcon} ${this.composeTestLabel(test)}`)
-    } else if (state === 'skip' || state === 'todo') {
-      this.ctx.logger.log(`${skippedIcon} ${this.composeTestLabel(test)} (${state})`)
-    }
-  }
-
-  private composeTestLabel(test: Test): string {
-    const relativePath = test.file?.filepath ? this.relativeToRoot(test.file.filepath) : ''
-    const scope = this.buildSuiteChain(test)
-    const locationPrefix = relativePath ? `${relativePath} › ` : ''
-    return `${locationPrefix}${scope}`
-  }
-
-  private relativeToRoot(filepath: string): string {
-    return relative(this.rootDir, filepath) || filepath
-  }
-
-  private buildSuiteChain(test: Test): string {
-    const names: string[] = []
-    let cursor = test.suite
-    while (cursor) {
-      if (cursor.name) {
-        names.unshift(cursor.name)
-      }
-      cursor = cursor.suite
-    }
-    names.push(test.name)
-    return names.join(' › ')
-  }
-
-  private logFailure(test: Test): void {
-    this.ctx.logger.log(`${failureIcon} ${this.composeTestLabel(test)}`)
-    const errors = test.result?.errors ?? []
-    if (errors.length === 0) {
-      return
-    }
-    for (const error of errors) {
-      if (!error) {
-        continue
-      }
-      const message = error.message ?? ''
-      if (message) {
-        this.ctx.logger.log(pc.red(message))
-      }
-      const stack =
-        error.stack ??
-        (typeof error.cause === 'object' && error.cause && 'stack' in error.cause
-          ? String((error.cause as { stack?: string }).stack ?? '')
-          : undefined)
-      if (stack) {
-        this.ctx.logger.log(pc.dim(stack))
-      }
+    // Final status
+    if (this.totalFailed === 0) {
+      console.log("✅ All tests passed!\n");
+    } else {
+      console.log(`❌ ${this.totalFailed} test(s) failed\n`);
     }
   }
 }
