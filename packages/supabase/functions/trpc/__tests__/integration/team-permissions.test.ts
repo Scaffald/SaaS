@@ -3,11 +3,11 @@ import {
   assertExists,
 } from "jsr:@std/assert";
 
-import { callTRPCEndpoint } from "../setup.ts";
+import { callTRPCEndpoint } from '../setup';
 import {
   createAdminClient,
   setupTeamManagementFixture,
-} from "./seed-utils.ts";
+} from './seed-utils';
 
 Deno.test({
   name: "Team permissions - admin role has full access",

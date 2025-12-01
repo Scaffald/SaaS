@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
-import type { Database } from "../_shared/database.types.ts";
-import { supabaseServiceKey, supabaseUrl } from "./context.ts";
-import type { Context } from "./context.ts";
-import { t } from "./middleware.ts";
+import type { Database } from '../_shared/database.types';
+import { supabaseServiceKey, supabaseUrl } from './context';
+import type { Context } from './context';
+import { t } from './middleware';
 
 /**
  * Check if user has a specific role with optional scope

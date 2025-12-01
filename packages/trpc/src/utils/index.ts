@@ -1,2 +1,2 @@
-export * from './phone.ts'
-export * from './pdf-extract.ts'
+export * from './phone'
+export * from './pdf-extract'

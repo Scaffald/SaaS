@@ -3,7 +3,7 @@ import {
   assertExists,
 } from "jsr:@std/assert";
 
-import { callTRPCEndpoint, loadCachedTokens } from "../setup.ts";
+import { callTRPCEndpoint, loadCachedTokens } from '../setup';
 
 const TEST_JOB_ID = "00000000-0000-0000-0000-000000000000";
 

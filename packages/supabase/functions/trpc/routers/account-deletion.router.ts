@@ -4,8 +4,8 @@ import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts'
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
+import type { Context } from '../context'
+import { officeProcedure, protectedProcedure, t } from '../middleware'
 
 const STRIPE_API_VERSION = '2024-06-20'
 

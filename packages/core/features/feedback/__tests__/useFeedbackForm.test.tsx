@@ -1,4 +1,4 @@
-import { FEEDBACK_MAX_LENGTH, FEEDBACK_MIN_LENGTH } from '@app/schemas/feedback/feedback.schema'
+import { FEEDBACK_MAX_LENGTH, FEEDBACK_MIN_LENGTH } from '@app/schemas/feedback'
 import { act, renderHook } from '@testing-library/react'
 import { Platform } from 'react-native'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

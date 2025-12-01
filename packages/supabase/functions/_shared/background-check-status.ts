@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { backgroundCheckStatusEnum } from "./background-check-schemas.ts";
+import { backgroundCheckStatusEnum } from './background-check-schemas';
 
 export type BackgroundCheckStatus = z.infer<typeof backgroundCheckStatusEnum>;
 

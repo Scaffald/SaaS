@@ -1,4 +1,4 @@
-import type { Json } from '../database.types.ts'
+import type { Json } from '../database.types'
 import type {
   NotificationChannel,
   NotificationEventPayload,
@@ -6,7 +6,7 @@ import type {
   NotificationSeverity,
   NotificationSupabaseClient,
   NotificationType,
-} from './types.ts'
+} from './types'
 import {
   createServiceSupabaseClient,
   enqueueDelivery,
@@ -17,7 +17,7 @@ import {
   getUserPreferences,
   insertNotification,
   planRouting,
-} from './utils.ts'
+} from './utils'
 
 export interface DigestProcessSummary {
   processed: number

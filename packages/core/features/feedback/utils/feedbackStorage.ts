@@ -1,4 +1,4 @@
-import type { FeedbackPendingSubmission } from "@app/schemas/feedback/feedback.schema";
+import type { FeedbackPendingSubmission } from "@app/schemas/feedback";
 import { Platform } from "react-native";
 
 const STORAGE_KEY = "@scf-scaffald/feedback/pending-submissions";

@@ -2,21 +2,21 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 // Deno requires file extension in Deno runtime
-import type { Database } from "../../_shared/database.types.ts";
+import type { Database } from '../../_shared/database.types';
 // Deno requires file extension in Deno runtime
-import { insertNotification } from "../../_shared/notifications/utils.ts";
+import { insertNotification } from '../../_shared/notifications/utils';
 // Deno requires file extension in Deno runtime
 import type {
   WorkLogExportSnapshot,
   WorkLogExportTimeEntry,
-} from "../../_shared/work-log-export.ts";
+} from '../../_shared/work-log-export';
 // Deno requires file extension in Deno runtime
 import {
   buildWorkLogCsv,
   buildWorkLogPdf,
-} from "../../_shared/work-log-export.ts";
+} from '../../_shared/work-log-export';
 // Deno requires file extension in Deno runtime
-import { notifyWorkLogCollaborator } from "../../_shared/work-log-notifications.ts";
+import { notifyWorkLogCollaborator } from '../../_shared/work-log-notifications';
 // Deno requires file extension in Deno runtime
 import {
   addCollaboratorSchema,
@@ -41,15 +41,15 @@ import {
   uploadWorkLogPhotoSchema,
   verifyWorkLogSchema,
   workLogStatusSchema,
-} from "../../_shared/work-log-schemas.ts";
+} from '../../_shared/work-log-schemas';
 import {
   officeProcedure,
   protectedProcedure,
   publicProcedure,
   t,
-} from "../middleware.ts";
+} from '../middleware';
 // Deno requires file extension in Deno runtime
-import { enrichUserSkills } from "./utils/skill-enrichment.ts";
+import { enrichUserSkills } from './utils/skill-enrichment';
 
 type DbClient = SupabaseClient<Database>;
 type WorkLogRow = Database["core"]["Tables"]["work_logs"]["Row"];

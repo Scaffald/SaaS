@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { supabaseAnonKey, supabaseUrl } from "../../context.ts";
-import { protectedProcedure, t } from "../../middleware.ts";
+import { supabaseAnonKey, supabaseUrl } from '../../context';
+import { protectedProcedure, t } from '../../middleware';
 
 /**
  * Multi-Taxonomy Skills Router

@@ -28,4 +28,4 @@ export {
   verifyWorkLogSchema,
   workLogStatusSchema,
   workLogVisibilitySchema,
-} from '../../../core/features/work-logs/schemas.ts'
+} from '../../../core/features/work-logs/schemas'

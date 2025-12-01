@@ -1,8 +1,8 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 import { ZodError } from 'zod'
 
-import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
-import { NotificationChannel, NotificationEventPayload, notificationEventSchema } from '../_shared/notifications/types.ts'
+import { corsHeaders, createCorsResponse } from '../_shared/cors'
+import { NotificationChannel, NotificationEventPayload, notificationEventSchema } from '../_shared/notifications/types'
 import {
   createServiceSupabaseClient,
   enqueueDelivery,
@@ -17,7 +17,7 @@ import {
   mergeChannelSets,
   planRouting,
   upsertDigestQueue,
-} from '../_shared/notifications/utils.ts'
+} from '../_shared/notifications/utils'
 
 interface PublishResult {
   recipientId: string

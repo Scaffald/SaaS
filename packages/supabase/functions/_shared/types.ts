@@ -9,7 +9,7 @@ import {
   profileUpdateSchema,
   userPrivateEmploymentUpdateSchema,
   userPrivateUpdateSchema,
-} from "./schemas/profile.ts";
+} from './schemas/profile';
 
 // Inferred TypeScript types from Zod schemas
 export type ProfileGeneralInput = z.infer<typeof profileGeneralSchema>;

@@ -1,6 +1,6 @@
 import { Expo } from "expo-server-sdk";
-import type { ChannelAdapter } from "../types.ts";
-import { normalizeMetadata } from "../utils.ts";
+import type { ChannelAdapter } from '../types';
+import { normalizeMetadata } from '../utils';
 
 const expo = new Expo({
   accessToken: Deno.env.get("EXPO_ACCESS_TOKEN") ?? undefined,

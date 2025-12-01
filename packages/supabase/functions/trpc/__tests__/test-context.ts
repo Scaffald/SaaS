@@ -7,7 +7,7 @@
  */
 
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createTestClient, isTokenExpired, loadCachedTokens } from './setup.ts'
+import { createTestClient, isTokenExpired, loadCachedTokens } from './setup'
 
 /**
  * Test context with pre-authenticated clients

@@ -64,8 +64,8 @@ export function ConfirmationDialog({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay key="overlay" />
-        <Dialog.Content key="content" width={500}>
+        <Dialog.Overlay />
+        <Dialog.Content width={500}>
           <Dialog.Title>{title}</Dialog.Title>
           <Dialog.Description>{message}</Dialog.Description>
           <XStack gap="$3" alignItems="center" justifyContent="flex-end">

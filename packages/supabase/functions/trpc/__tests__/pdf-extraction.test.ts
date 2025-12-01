@@ -2,9 +2,9 @@ import {
   assert,
   assertEquals,
   assertStringIncludes,
-} from "https://deno.land/std@0.218.0/assert/mod.ts";
+} from 'https://deno.land/std@0.218.0/assert/mod';
 
-import { extractTextFromPdf } from "../../_shared/pdf/extract-text.ts";
+import { extractTextFromPdf } from '../../_shared/pdf/extract-text';
 
 const fixturesBaseUrl = new URL("./fixtures/pdf/", import.meta.url);
 

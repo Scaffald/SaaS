@@ -1,10 +1,10 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 
-import { corsHeaders } from '../_shared/cors.ts'
-import { notifyIdVerificationExpirationReminder } from '../_shared/id-verification-notifications.ts'
-import { readReminderTimestamp, writeReminderTimestamp } from '../_shared/id-verification-utils.ts'
-import type { NotificationSupabaseClient } from '../_shared/notifications/types.ts'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
+import { corsHeaders } from '../_shared/cors'
+import { notifyIdVerificationExpirationReminder } from '../_shared/id-verification-notifications'
+import { readReminderTimestamp, writeReminderTimestamp } from '../_shared/id-verification-utils'
+import type { NotificationSupabaseClient } from '../_shared/notifications/types'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils'
 
 type ReminderWindow = 30 | 7
 

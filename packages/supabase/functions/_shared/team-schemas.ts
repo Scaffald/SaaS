@@ -35,4 +35,4 @@ export {
   teamRoleKeySchema,
   teamUpdateSchema,
   teamWorkloadSnapshotInputSchema,
-} from '../../../schemas/src/teams/index.ts'
+} from '../../../schemas/src/teams/index'

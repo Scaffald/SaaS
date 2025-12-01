@@ -13,9 +13,8 @@ import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Separator, Slider, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import { softSkillsUpdateSchema } from '@app/schemas/profile/soft-skills.schema'
+import { softSkillsUpdateSchema, type SoftSkillsUpdateInput } from '@app/schemas/profile'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
-import type { SoftSkillsUpdateInput } from '@app/schemas/profile/soft-skills.schema'
 
 type SoftSkillsFormData = SoftSkillsUpdateInput
 

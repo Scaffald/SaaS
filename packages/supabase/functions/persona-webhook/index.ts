@@ -1,9 +1,9 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 import { z } from 'zod'
 
-import { corsHeaders } from '../_shared/cors.ts'
-import { addMonths, mergeMetadata, patchPersonaMetadata } from '../_shared/id-verification-utils.ts'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
+import { corsHeaders } from '../_shared/cors'
+import { addMonths, mergeMetadata, patchPersonaMetadata } from '../_shared/id-verification-utils'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils'
 
 const SIGNATURE_HEADER = 'persona-signature'
 const SUCCESS_STATUSES = ['approved', 'completed', 'passed', 'succeeded']

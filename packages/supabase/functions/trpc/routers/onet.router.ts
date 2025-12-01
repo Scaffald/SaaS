@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { protectedProcedure, publicProcedure, t } from "../middleware.ts";
+import { protectedProcedure, publicProcedure, t } from '../middleware';
 
 /**
  * O*NET Router - Handles career assessment and occupation data

@@ -7,11 +7,11 @@ import {
 import {
   callTRPCEndpoint,
   createAdminClient,
-} from "../setup.ts";
+} from '../setup';
 import {
   ensureTeamUserRecords,
   setupTeamManagementFixture,
-} from "./seed-utils.ts";
+} from './seed-utils';
 
 async function createInviteeUser() {
   const adminClient = createAdminClient();

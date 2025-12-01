@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { t } from '../middleware.ts'
+import { t } from '../middleware'
 
 /**
  * Viewport bounds schema for spatial queries

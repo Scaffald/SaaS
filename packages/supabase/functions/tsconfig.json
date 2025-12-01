@@ -3,6 +3,7 @@
     "allowImportingTsExtensions": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
     "esModuleInterop": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
@@ -11,11 +12,17 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "noImplicitAny": false,
+    "paths": {
+      "@app/trpc": ["../../trpc/src"],
+      "@app/trpc/*": ["../../trpc/src/*"],
+      "@app/schemas": ["../../schemas/src"],
+      "@app/schemas/*": ["../../schemas/src/*"]
+    },
     "skipLibCheck": true,
     "strict": false,
     "types": ["npm:@types/deno"]
   },
   "exclude": ["node_modules"],
   "extends": "../../../tsconfig.base.json",
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx", "../../trpc/src/types/**/*.d.ts"]
 }

@@ -2,7 +2,7 @@ import {
   FEEDBACK_ALLOWED_MIME_TYPES,
   FEEDBACK_MAX_LENGTH,
   FEEDBACK_MIN_LENGTH,
-} from '@app/schemas/feedback/feedback.schema'
+} from '@app/schemas/feedback'
 import type { UploadSelection } from '@unicornlove/ui'
 import {
   Button,

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { phoneNumberSchema } from "./phone.ts";
+import { phoneNumberSchema } from './phone';
 
 /**
  * Single soft skill rating (self assessment or requirements)

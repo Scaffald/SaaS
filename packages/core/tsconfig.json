@@ -6,8 +6,12 @@
     "paths": {
       "@app/core": ["."],
       "@app/core/*": ["./*"],
-      "@app/supabase": ["../../supabase"],
-      "@app/supabase/*": ["../../supabase/*"],
+      "@app/schemas": ["../schemas/src"],
+      "@app/schemas/*": ["../schemas/src/*"],
+      "@app/supabase": ["../supabase"],
+      "@app/supabase/*": ["../supabase/*"],
+      "@app/trpc": ["../trpc/src"],
+      "@app/trpc/*": ["../trpc/src/*"],
       "expo-clipboard": ["../../types/expo-clipboard.d.ts"]
     },
     "plugins": []

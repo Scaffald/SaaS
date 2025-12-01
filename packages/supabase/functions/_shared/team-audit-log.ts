@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { Database, Json } from "./database.types.ts";
+import type { Database, Json } from './database.types';
 
 type ServiceSupabaseClient = SupabaseClient<Database>;
 

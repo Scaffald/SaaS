@@ -3,7 +3,7 @@ import {
   profileEmploymentInputSchema,
   type UserPrivateEmploymentUpdate,
 } from "@app/trpc/schemas";
-import { protectedProcedure, t } from "../../middleware.ts";
+import { protectedProcedure, t } from '../../middleware';
 
 /**
  * Profile Employment router - handles employment-related profile data

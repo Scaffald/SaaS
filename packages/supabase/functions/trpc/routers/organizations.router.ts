@@ -4,9 +4,9 @@ import {
   isOrganizationAdminRole,
   isSuperAdmin,
   loadUserRoleAssignments,
-} from "../../_shared/permissions/team-permissions.ts";
-import type { Context } from "../context.ts";
-import { protectedProcedure, t } from "../middleware.ts";
+} from '../../_shared/permissions/team-permissions';
+import type { Context } from '../context';
+import { protectedProcedure, t } from '../middleware';
 
 const ORG_DOCUMENT_BUCKET = "organization-documents";
 const DOCUMENT_UPLOAD_URL_TTL_SECONDS = 60 * 10;

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { officeProcedure, t } from '../../middleware.ts'
+import { officeProcedure, t } from '../../middleware'
 
 const getGhostProfilesInputSchema = z.object({
   limit: z.number().min(1).max(100).default(25),

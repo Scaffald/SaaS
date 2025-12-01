@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useFeedbackSubmit } from "../hooks/useFeedbackSubmit";
-import type { FeedbackPendingSubmission } from "@app/schemas/feedback/feedback.schema";
+import type { FeedbackPendingSubmission } from "@app/schemas/feedback";
 
 const submitMutation = { mutateAsync: vi.fn() };
 const uploadMutation = { mutateAsync: vi.fn() };

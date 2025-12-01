@@ -1,14 +1,14 @@
-import { serve } from "https://deno.land/std@0.223.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.223.0/http/server';
 import { Expo } from "expo-server-sdk";
 
-import { corsHeaders, createCorsResponse } from "../_shared/cors.ts";
-import { NotificationChannel } from "../_shared/notifications/types.ts";
+import { corsHeaders, createCorsResponse } from '../_shared/cors';
+import { NotificationChannel } from '../_shared/notifications/types';
 import {
   chunkArray,
   createServiceSupabaseClient,
   normalizeMetadata,
   recordDeliveryEvent,
-} from "../_shared/notifications/utils.ts";
+} from '../_shared/notifications/utils';
 
 const expo = new Expo({
   accessToken: Deno.env.get("EXPO_ACCESS_TOKEN") ?? undefined,

@@ -1,3 +1,4 @@
+import type { AdaptWhen } from '@tamagui/adapt'
 import type { ReactNode } from 'react'
 import { Adapt } from 'tamagui'
 import { Sheet } from '../sheets/Sheet'
@@ -46,7 +47,7 @@ export function AdaptiveSelectSheet({
   overlayAnimation = 'lazy',
 }: AdaptiveSelectSheetProps) {
   return (
-    <Adapt when="sm" platform="touch">
+    <Adapt when={"sm" as unknown as AdaptWhen} platform="touch">
       <Sheet
         native={native}
         modal

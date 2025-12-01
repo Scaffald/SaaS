@@ -3,8 +3,8 @@ import {
   assertExists,
 } from "jsr:@std/assert";
 
-import { callTRPCEndpoint, loadCachedTokens } from "../setup.ts";
-import { ensurePublicWorker } from "./seed-utils.ts";
+import { callTRPCEndpoint, loadCachedTokens } from '../setup';
+import { ensurePublicWorker } from './seed-utils';
 
 Deno.test({
   name: "Workers router - getWorkers returns list",

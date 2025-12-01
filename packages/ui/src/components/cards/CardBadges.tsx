@@ -31,30 +31,27 @@ export const CardBadges = memo(
 
     return (
       <XStack gap="$2" flexWrap="wrap" alignItems="center">
-        {displayBadges.map((badge) => {
-          const chipProps = {
-            backgroundColor: badge.bg ?? '$blue10',
-            color: typeof badge.color === 'string' ? badge.color : '$color1',
-            fontSize: '$2' as const,
-            paddingHorizontal: '$2' as const,
-            paddingVertical: '$1' as const,
-          }
-          const chipContent = badge.icon ? (
-            <XStack alignItems="center" gap="$1">
-              <XStack marginRight="$1" alignItems="center">
-                {badge.icon}
+        {displayBadges.map((badge) => (
+          <Chip
+            key={badge.key}
+            backgroundColor={badge.bg ?? '$blue10'}
+            color={typeof badge.color === 'string' ? badge.color : '$color1'}
+            fontSize="$2"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+          >
+            {badge.icon ? (
+              <XStack alignItems="center" gap="$1">
+                <XStack marginRight="$1" alignItems="center">
+                  {badge.icon}
+                </XStack>
+                <Text>{badge.label}</Text>
               </XStack>
-              {badge.label}
-            </XStack>
-          ) : (
-            badge.label
-          )
-          return (
-            <Chip key={badge.key} {...chipProps}>
-              {chipContent}
-            </Chip>
-          )
-        })}
+            ) : (
+              <Text>{badge.label}</Text>
+            )}
+          </Chip>
+        ))}
         {overflowCount > 0 && (
           <Text fontSize="$2" color={overflowColor}>
             +{overflowCount} more

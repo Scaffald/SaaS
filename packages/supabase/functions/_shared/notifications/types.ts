@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import type { Database, Json } from "../database.types.ts";
+import type { Database, Json } from '../database.types';
 
 export type NotificationSupabaseClient = SupabaseClient<Database>;
 

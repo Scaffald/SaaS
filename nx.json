@@ -59,12 +59,6 @@
         "testTargetName": "test",
         "buildTargetName": "build"
       }
-    },
-    {
-      "plugin": "@nx/vitest",
-      "options": {
-        "testTargetName": "test"
-      }
     }
   ],
   "nxCloudAccessToken": "",

@@ -6,7 +6,7 @@ import {
   type FeedbackSubmitInput,
   feedbackPendingSubmissionSchema,
   feedbackUploadRequestSchema,
-} from '@app/schemas/feedback/feedback.schema'
+} from '@app/schemas/feedback'
 import { useToastController } from '@tamagui/toast'
 import { Buffer } from 'buffer'
 import { randomUUID } from 'expo-crypto'

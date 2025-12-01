@@ -5,8 +5,8 @@ import {
   PROFILE_WIZARD_STEPS,
   type ProfileWizardStepId,
 } from '@app/trpc/schemas'
-import type { Context } from '../../context.ts'
-import { protectedProcedure, t } from '../../middleware.ts'
+import type { Context } from '../../context'
+import { protectedProcedure, t } from '../../middleware'
 
 function formatErrorPayload(error: unknown): string {
   if (error instanceof Error) {

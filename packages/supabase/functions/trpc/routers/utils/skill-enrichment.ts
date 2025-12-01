@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
-import type { Database } from '../../_shared/database.types.ts'
+import type { Database } from '../../_shared/database.types'
 
 type DbClient = SupabaseClient<Database>
 type UserSkillRow = Database['core']['Tables']['user_skills']['Row']

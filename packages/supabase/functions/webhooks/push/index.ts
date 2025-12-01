@@ -1,12 +1,12 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 
-import { corsHeaders, createCorsResponse } from '../../_shared/cors.ts'
-import type { NotificationChannel } from '../../_shared/notifications/types.ts'
+import { corsHeaders, createCorsResponse } from '../../_shared/cors'
+import type { NotificationChannel } from '../../_shared/notifications/types'
 import {
   createServiceSupabaseClient,
   isValidDeliveryStatus,
   recordDeliveryEvent,
-} from '../../_shared/notifications/utils.ts'
+} from '../../_shared/notifications/utils'
 
 interface PushWebhookPayload {
   provider?: string

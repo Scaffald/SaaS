@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
-import type { Context } from '../context.ts'
-import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
+import type { Context } from '../context'
+import { officeProcedure, protectedProcedure, t } from '../middleware'
 
 async function ensureOrganizationAccess(ctx: Context, organizationId: string) {
   if (!ctx.user?.id) {

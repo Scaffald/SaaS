@@ -1,7 +1,7 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server';
 import { createClient } from "@supabase/supabase-js";
-import { corsHeaders } from "../_shared/cors.ts";
-import type { Database } from "../_shared/database.types.ts";
+import { corsHeaders } from '../_shared/cors';
+import type { Database } from '../_shared/database.types';
 
 interface NewsArticle {
   guid: string;

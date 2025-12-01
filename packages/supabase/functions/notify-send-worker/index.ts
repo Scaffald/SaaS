@@ -1,18 +1,18 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 
-import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
-import { getAdapter } from '../_shared/notifications/adapters/index.ts'
+import { corsHeaders, createCorsResponse } from '../_shared/cors'
+import { getAdapter } from '../_shared/notifications/adapters/index'
 import {
   NotificationChannel,
   NotificationDeliveryRow,
   NotificationRow,
-} from '../_shared/notifications/types.ts'
+} from '../_shared/notifications/types'
 import {
   calculateNextAttempt,
   createServiceSupabaseClient,
   isValidDeliveryStatus,
   recordDeliveryEvent,
-} from '../_shared/notifications/utils.ts'
+} from '../_shared/notifications/utils'
 
 interface DeliveryRecord extends NotificationDeliveryRow {
   notification: NotificationRow

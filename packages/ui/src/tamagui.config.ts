@@ -20,7 +20,7 @@ export const tamaguiConfig = createTamagui({
   media: defaultConfig.media,
 
   onlyAllowShorthands: false,
-  shorthands: defaultConfig.shorthands,
+  // shorthands: {}, // defaultConfig.shorthands,
   themes,
   // Explicitly include tokens to ensure available during static extraction
   tokens: defaultConfig.tokens,

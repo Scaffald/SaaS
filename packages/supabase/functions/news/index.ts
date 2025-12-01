@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/cors.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server';
+import { corsHeaders } from '../_shared/cors';
 
 type NewsSource = {
   id: string;

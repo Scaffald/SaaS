@@ -1,9 +1,9 @@
 import {
   assertEquals,
   assert,
-} from "https://deno.land/std@0.218.0/assert/mod.ts";
+} from 'https://deno.land/std@0.218.0/assert/mod';
 
-import { normalizeOpenAiResumePayload } from "../routers/resume.router.ts";
+import { normalizeOpenAiResumePayload } from '../routers/resume.router';
 
 Deno.test("normalizeOpenAiResumePayload wraps single objects into arrays", () => {
   const normalized = normalizeOpenAiResumePayload({

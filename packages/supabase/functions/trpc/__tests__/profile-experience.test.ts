@@ -3,12 +3,12 @@
  * Tests for work experience CRUD operations
  */
 
-import { assertEquals, assertExists } from "https://deno.land/std@0.218.0/assert/mod.ts";
+import { assertEquals, assertExists } from 'https://deno.land/std@0.218.0/assert/mod';
 import {
   createAdminClient,
   createTestClient,
   registerUserWithMagicLink,
-} from "./setup.ts";
+} from './setup';
 
 // Test user email
 const TEST_USER_EMAIL = `experience-test-${Date.now()}@example.com`;

@@ -1,8 +1,8 @@
-import { assertEquals } from "https://deno.land/std@0.218.0/assert/mod.ts";
+import { assertEquals } from 'https://deno.land/std@0.218.0/assert/mod';
 
-import { appRouter } from "../routers/_app.ts";
-import { createAdminClient } from "./setup.ts";
-import { getTestContext, requireAuthSetup } from "./test-context.ts";
+import { appRouter } from '../routers/_app';
+import { createAdminClient } from './setup';
+import { getTestContext, requireAuthSetup } from './test-context';
 
 Deno.test({
   name: "notifications preferences can be saved and restored",

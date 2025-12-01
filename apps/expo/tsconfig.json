@@ -24,7 +24,9 @@
   "exclude": [
     "../../packages/supabase/functions/**/*",
     "../../packages/supabase/scripts/**/*",
-    "../../packages/supabase/types-trpc.ts"
+    "../../packages/supabase/types-trpc.ts",
+    "../../packages/ui/src/**/*.stories.ts",
+    "../../packages/ui/src/**/*.stories.tsx"
   ],
   "extends": "../../tsconfig.base",
   "include": [

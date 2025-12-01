@@ -1,6 +1,6 @@
 // This file is excluded from expo tsconfig but imported for types
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../_shared/database.types.ts";
+import type { Database } from '../_shared/database.types';
 
 const DEFAULT_LOCAL_SUPABASE_URL = "http://127.0.0.1:54321";
 const DEFAULT_LOCAL_SUPABASE_ANON_KEY =

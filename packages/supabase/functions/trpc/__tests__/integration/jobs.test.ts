@@ -3,8 +3,8 @@ import {
   assertExists,
 } from "jsr:@std/assert";
 
-import { callTRPCEndpoint } from "../setup.ts";
-import { seedExternalJob } from "./seed-utils.ts";
+import { callTRPCEndpoint } from '../setup';
+import { seedExternalJob } from './seed-utils';
 
 Deno.test({
   name: "Jobs router - getExternalJobs returns payload",

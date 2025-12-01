@@ -1,10 +1,10 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server';
 import { z } from "zod";
 
 import {
   createServiceClient,
   updateFeedbackStatus,
-} from "../_shared/feedback-sync.ts";
+} from '../_shared/feedback-sync';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

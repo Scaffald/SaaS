@@ -1,8 +1,8 @@
 import {
   assertEquals,
   assert,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
-import { calculateMilestones } from "../routers/profile/completion.router.ts";
+} from 'https://deno.land/std@0.208.0/assert/mod';
+import { calculateMilestones } from '../routers/profile/completion.router';
 
 Deno.test("calculateMilestones tracks newly earned thresholds", () => {
   const timestamp = new Date("2025-01-01T12:00:00Z").toISOString();

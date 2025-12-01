@@ -1,17 +1,17 @@
-import { serve } from "https://deno.land/std@0.223.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.223.0/http/server';
 import { z } from "zod";
-import { notifyBackgroundCheckStatusChange } from "../_shared/background-check-notifications.ts";
+import { notifyBackgroundCheckStatusChange } from '../_shared/background-check-notifications';
 import {
   appendStatusHistory,
   BACKGROUND_CHECK_SYNC_COLUMNS,
   BackgroundCheckStatus,
   mapProviderStatus,
   mergeMetadata,
-} from "../_shared/background-check-status.ts";
-import { corsHeaders } from "../_shared/cors.ts";
-import { createNationSearchClient } from "../_shared/nationsearch/client.ts";
-import type { NotificationSupabaseClient } from "../_shared/notifications/types.ts";
-import { createServiceSupabaseClient } from "../_shared/notifications/utils.ts";
+} from '../_shared/background-check-status';
+import { corsHeaders } from '../_shared/cors';
+import { createNationSearchClient } from '../_shared/nationsearch/client';
+import type { NotificationSupabaseClient } from '../_shared/notifications/types';
+import { createServiceSupabaseClient } from '../_shared/notifications/utils';
 
 const SIGNATURE_HEADER = "x-nationsearch-signature";
 const IDEMPOTENCY_HEADER = "x-nationsearch-idempotency";

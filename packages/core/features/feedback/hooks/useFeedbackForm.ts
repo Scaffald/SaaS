@@ -4,7 +4,7 @@ import {
   type FeedbackType,
   feedbackTextSchema,
   feedbackTypeSchema,
-} from '@app/schemas/feedback/feedback.schema'
+} from '@app/schemas/feedback'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo, useState } from 'react'
 import { type UseFormReturn, useForm } from 'react-hook-form'

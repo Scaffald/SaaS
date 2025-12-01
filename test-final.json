@@ -1,0 +1,1930 @@
+{
+  "graph": {
+    "nodes": {
+      "supabase": {
+        "name": "supabase",
+        "type": "lib",
+        "data": {
+          "root": "packages/supabase",
+          "name": "supabase",
+          "tags": [
+            "npm:private",
+            "scope:backend",
+            "type:data"
+          ],
+          "metadata": {
+            "targetGroups": {
+              "NPM Scripts": [
+                "convert-onet",
+                "download-onet",
+                "seed",
+                "seed:news-feeds",
+                "seed:news-import",
+                "seed:onet",
+                "seed:universities",
+                "test:endpoints",
+                "test:permissions"
+              ]
+            },
+            "js": {
+              "packageName": "@app/supabase",
+              "packageVersion": "0.0.0",
+              "packageExports": {
+                "./client-types": "./client-types.ts",
+                "./functions/_shared/client-types": "./functions/_shared/client-types.ts",
+                "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",
+                "./functions/_shared/types": "./functions/_shared/types.ts",
+                "./types": "./types.ts"
+              },
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "targets": {
+            "convert-onet": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "convert-onet"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/convert-onet-sql.ts",
+                "runCommand": "pnpm run convert-onet"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "download-onet": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "download-onet"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/download-onet.ts",
+                "runCommand": "pnpm run download-onet"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "seed": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "seed"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/seed-all.ts",
+                "runCommand": "pnpm run seed"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "seed:news-feeds": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "seed:news-feeds"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/seed-news-feeds.ts",
+                "runCommand": "pnpm run seed:news-feeds"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "seed:news-import": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "seed:news-import"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/trigger-news-import.ts",
+                "runCommand": "pnpm run seed:news-import"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "seed:onet": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "seed:onet"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/seed-onet.ts",
+                "runCommand": "pnpm run seed:onet"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "seed:universities": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "seed:universities"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/seed-universities.ts",
+                "runCommand": "pnpm run seed:universities"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:endpoints": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:endpoints"
+              },
+              "metadata": {
+                "scriptContent": "bash functions/trpc/__tests__/run-tests.sh",
+                "runCommand": "pnpm run test:endpoints"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:permissions": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:permissions"
+              },
+              "metadata": {
+                "scriptContent": "pnpx tsx scripts/test-external-jobs-permissions.ts",
+                "runCommand": "pnpm run test:permissions"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --build",
+                "cwd": "packages/supabase"
+              },
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "dependsOn": [],
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "production",
+                "^production"
+              ],
+              "cache": true
+            },
+            "test": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "vitest run",
+                "cwd": "packages/supabase"
+              },
+              "outputs": [
+                "{workspaceRoot}/tests/reports/coverage/supabase"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/vitest.config.ts",
+                "{workspaceRoot}/tests/infrastructure/**/*"
+              ],
+              "cache": true
+            },
+            "lint": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint .",
+                "cwd": "packages/supabase"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "lint:fix": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint --write .",
+                "cwd": "packages/supabase"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --noEmit",
+                "cwd": "packages/supabase"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/tsconfig.base.json"
+              ],
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "cache": true
+            },
+            "generate": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "dotenv -e ../../.env -- supabase gen types typescript --local > types.ts",
+                "cwd": "packages/supabase"
+              },
+              "outputs": [
+                "{projectRoot}/types.ts"
+              ],
+              "configurations": {},
+              "parallelism": true
+            },
+            "start": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "supabase start",
+                "cwd": "packages/supabase"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "stop": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "supabase stop",
+                "cwd": "packages/supabase"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "functions:serve": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "supabase functions serve --env-file .env",
+                "cwd": "packages/supabase"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "packages/supabase",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      },
+      "schemas": {
+        "name": "schemas",
+        "type": "lib",
+        "data": {
+          "root": "packages/schemas",
+          "metadata": {
+            "targetGroups": {
+              "NPM Scripts": [
+                "format",
+                "format:fix",
+                "test:coverage",
+                "test:unit",
+                "test:watch"
+              ]
+            },
+            "js": {
+              "packageName": "@app/schemas",
+              "packageVersion": "0.0.1",
+              "packageExports": {
+                ".": "./src/index.ts",
+                "./common": "./src/common/index.ts",
+                "./common/phone": "./src/common/phone.ts",
+                "./profile": "./src/profile/index.ts"
+              },
+              "packageMain": "./src/index.ts",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "targets": {
+            "test": {
+              "executor": "@nx/vitest:test",
+              "options": {
+                "config": "packages/schemas/vitest.config.ts",
+                "passWithNoTests": true
+              },
+              "outputs": [
+                "{workspaceRoot}/tests/reports/coverage/schemas"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/vitest.config.ts",
+                "{workspaceRoot}/tests/infrastructure/**/*"
+              ],
+              "cache": true
+            },
+            "typecheck": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --noEmit",
+                "cwd": "packages/schemas"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/tsconfig.base.json"
+              ],
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "cache": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "pnpm exec nx watch --projects schemas --includeDependentProjects -- pnpm exec nx build-deps schemas"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "format": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "format"
+              },
+              "metadata": {
+                "scriptContent": "biome format .",
+                "runCommand": "pnpm run format"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "format:fix": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "format:fix"
+              },
+              "metadata": {
+                "scriptContent": "biome format --write .",
+                "runCommand": "pnpm run format:fix"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:coverage": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:coverage"
+              },
+              "metadata": {
+                "scriptContent": "vitest run --coverage",
+                "runCommand": "pnpm run test:coverage"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:unit": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:unit"
+              },
+              "metadata": {
+                "scriptContent": "vitest run",
+                "runCommand": "pnpm run test:unit"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:watch"
+              },
+              "metadata": {
+                "scriptContent": "vitest",
+                "runCommand": "pnpm run test:watch"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --build",
+                "cwd": "packages/schemas"
+              },
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ],
+              "cache": true
+            },
+            "lint": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint .",
+                "cwd": "packages/schemas"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "lint:fix": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint --write .",
+                "cwd": "packages/schemas"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "projectType": "library",
+          "name": "schemas",
+          "tags": [
+            "npm:private",
+            "scope:shared",
+            "type:util"
+          ],
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "packages/schemas/src",
+          "implicitDependencies": []
+        }
+      },
+      "core": {
+        "name": "core",
+        "type": "lib",
+        "data": {
+          "root": "packages/core",
+          "metadata": {
+            "targetGroups": {
+              "NPM Scripts": [
+                "check:type",
+                "test:coverage",
+                "test:unit",
+                "test:watch"
+              ]
+            },
+            "js": {
+              "packageName": "@app/core",
+              "packageVersion": "0.0.0",
+              "packageMain": "index.ts",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "targets": {
+            "test": {
+              "executor": "@nx/vitest:test",
+              "options": {
+                "config": "packages/core/vitest.config.ts",
+                "passWithNoTests": true
+              },
+              "outputs": [
+                "{workspaceRoot}/tests/reports/coverage/core"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/vitest.config.ts",
+                "{workspaceRoot}/tests/infrastructure/**/*"
+              ],
+              "cache": true
+            },
+            "typecheck": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --noEmit",
+                "cwd": "packages/core"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/tsconfig.base.json"
+              ],
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "cache": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "pnpm exec nx watch --projects core --includeDependentProjects -- pnpm exec nx build-deps core"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "check:type": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "check:type"
+              },
+              "metadata": {
+                "scriptContent": "tsc --noEmit",
+                "runCommand": "pnpm run check:type"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:coverage": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:coverage"
+              },
+              "metadata": {
+                "scriptContent": "vitest run --coverage",
+                "runCommand": "pnpm run test:coverage"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:unit": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:unit"
+              },
+              "metadata": {
+                "scriptContent": "vitest run",
+                "runCommand": "pnpm run test:unit"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:watch"
+              },
+              "metadata": {
+                "scriptContent": "vitest",
+                "runCommand": "pnpm run test:watch"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --build",
+                "cwd": "packages/core"
+              },
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ],
+              "cache": true
+            },
+            "lint": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint .",
+                "cwd": "packages/core"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "lint:fix": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint --write .",
+                "cwd": "packages/core"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "watch": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --watch",
+                "cwd": "packages/core"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "projectType": "library",
+          "name": "core",
+          "tags": [
+            "npm:private",
+            "scope:core",
+            "type:feature"
+          ],
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "packages/core",
+          "implicitDependencies": []
+        }
+      },
+      "trpc": {
+        "name": "trpc",
+        "type": "lib",
+        "data": {
+          "root": "packages/trpc",
+          "name": "trpc",
+          "tags": [
+            "npm:private",
+            "scope:shared",
+            "type:util"
+          ],
+          "metadata": {
+            "targetGroups": {
+              "NPM Scripts": [
+                "format",
+                "format:fix",
+                "test:unit"
+              ]
+            },
+            "js": {
+              "packageName": "@app/trpc",
+              "packageVersion": "0.0.1",
+              "packageExports": {
+                ".": "./src/index.ts",
+                "./schemas": "./src/schemas/index.ts",
+                "./types": "./src/types/index.ts",
+                "./utils": "./src/utils/index.ts"
+              },
+              "packageMain": "./src/index.ts",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "targets": {
+            "format": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "format"
+              },
+              "metadata": {
+                "scriptContent": "biome format .",
+                "runCommand": "pnpm run format"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "format:fix": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "format:fix"
+              },
+              "metadata": {
+                "scriptContent": "biome format --write .",
+                "runCommand": "pnpm run format:fix"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:unit": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:unit"
+              },
+              "metadata": {
+                "scriptContent": "exit 0",
+                "runCommand": "pnpm run test:unit"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --build",
+                "cwd": "packages/trpc"
+              },
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ],
+              "cache": true
+            },
+            "lint": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint .",
+                "cwd": "packages/trpc"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "lint:fix": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint --write .",
+                "cwd": "packages/trpc"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --noEmit",
+                "cwd": "packages/trpc"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/tsconfig.base.json"
+              ],
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "cache": true
+            }
+          },
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "packages/trpc/src",
+          "projectType": "library",
+          "implicitDependencies": []
+        }
+      },
+      "ui": {
+        "name": "ui",
+        "type": "lib",
+        "data": {
+          "root": "packages/ui",
+          "metadata": {
+            "targetGroups": {
+              "NPM Scripts": [
+                "build-storybook",
+                "build:esbuild",
+                "check",
+                "check:type",
+                "format",
+                "format:fix",
+                "prepublishOnly",
+                "release",
+                "release:dry-run",
+                "storybook",
+                "sync:to-standalone",
+                "test:coverage",
+                "test:unit",
+                "test:watch"
+              ]
+            },
+            "description": "Comprehensive UI component library for Tamagui and Expo. NOTE: Hybrid maintenance - developed in monorepo (packages/ui/), published from standalone repo. See AI_AGENTS_README.md and .cursor/rules/ui-package-hybrid.mdc for workflow.",
+            "js": {
+              "packageName": "@unicornlove/ui",
+              "packageVersion": "1.0.0",
+              "packageExports": {
+                ".": {
+                  "types": "./dist/index.d.ts",
+                  "import": "./dist/index.mjs",
+                  "require": "./dist/index.js"
+                },
+                "./types/geographic": {
+                  "types": "./dist/types/geographic.d.ts",
+                  "import": "./dist/types/geographic.mjs",
+                  "require": "./dist/types/geographic.js"
+                },
+                "./types/phone": {
+                  "types": "./dist/types/phone.d.ts",
+                  "import": "./dist/types/phone.mjs",
+                  "require": "./dist/types/phone.js"
+                }
+              },
+              "packageMain": "./dist/index.js",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "targets": {
+            "test": {
+              "executor": "@nx/vitest:test",
+              "options": {
+                "config": "packages/ui/vitest.config.ts",
+                "passWithNoTests": true
+              },
+              "outputs": [
+                "{workspaceRoot}/tests/reports/coverage/ui"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/vitest.config.ts",
+                "{workspaceRoot}/tests/infrastructure/**/*"
+              ],
+              "cache": true
+            },
+            "typecheck": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --noEmit",
+                "cwd": "packages/ui"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/tsconfig.base.json"
+              ],
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "cache": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "pnpm exec nx watch --projects ui --includeDependentProjects -- pnpm exec nx build-deps ui"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build-storybook": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build-storybook"
+              },
+              "metadata": {
+                "scriptContent": "storybook build",
+                "runCommand": "pnpm run build-storybook"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "build:esbuild": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "build:esbuild"
+              },
+              "metadata": {
+                "scriptContent": "node scripts/build.mjs",
+                "runCommand": "pnpm run build:esbuild"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "check": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "check"
+              },
+              "metadata": {
+                "scriptContent": "tamagui check",
+                "runCommand": "pnpm run check"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "check:type": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "check:type"
+              },
+              "metadata": {
+                "scriptContent": "tsc --noEmit",
+                "runCommand": "pnpm run check:type"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "format": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "format"
+              },
+              "metadata": {
+                "scriptContent": "biome format ./src",
+                "runCommand": "pnpm run format"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "format:fix": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "format:fix"
+              },
+              "metadata": {
+                "scriptContent": "biome format --write ./src",
+                "runCommand": "pnpm run format:fix"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "prepublishOnly": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "prepublishOnly"
+              },
+              "metadata": {
+                "scriptContent": "pnpm build",
+                "runCommand": "pnpm run prepublishOnly"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "release": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "release"
+              },
+              "metadata": {
+                "scriptContent": "semantic-release",
+                "runCommand": "pnpm run release"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "release:dry-run": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "release:dry-run"
+              },
+              "metadata": {
+                "scriptContent": "semantic-release --dry-run",
+                "runCommand": "pnpm run release:dry-run"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "storybook": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "storybook"
+              },
+              "metadata": {
+                "scriptContent": "storybook dev -p 6006",
+                "runCommand": "pnpm run storybook"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "sync:to-standalone": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "sync:to-standalone"
+              },
+              "metadata": {
+                "scriptContent": "./scripts/sync-to-standalone.sh",
+                "runCommand": "pnpm run sync:to-standalone"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:coverage": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:coverage"
+              },
+              "metadata": {
+                "scriptContent": "vitest run --coverage",
+                "runCommand": "pnpm run test:coverage"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:unit": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:unit"
+              },
+              "metadata": {
+                "scriptContent": "vitest run",
+                "runCommand": "pnpm run test:unit"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:watch"
+              },
+              "metadata": {
+                "scriptContent": "vitest",
+                "runCommand": "pnpm run test:watch"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "nx-release-publish": {
+              "executor": "@nx/js:release-publish",
+              "dependsOn": [
+                "^nx-release-publish"
+              ],
+              "options": {},
+              "configurations": {},
+              "parallelism": true
+            },
+            "build": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "pnpm exec tsup",
+                "cwd": "packages/ui"
+              },
+              "outputs": [
+                "{projectRoot}/dist"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "dependsOn": [
+                "^build"
+              ],
+              "inputs": [
+                "production",
+                "^production"
+              ],
+              "cache": true
+            },
+            "lint": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint .",
+                "cwd": "packages/ui"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "lint:fix": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint --write .",
+                "cwd": "packages/ui"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "watch": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "pnpm exec tsup --watch",
+                "cwd": "packages/ui"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "projectType": "library",
+          "name": "ui",
+          "tags": [
+            "npm:public",
+            "npm:tamagui",
+            "npm:expo",
+            "npm:react-native",
+            "npm:ui",
+            "npm:components",
+            "scope:shared",
+            "type:ui"
+          ],
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "packages/ui/src",
+          "implicitDependencies": []
+        }
+      },
+      ".braingrid": {
+        "name": ".braingrid",
+        "type": "lib",
+        "data": {
+          "root": ".braingrid",
+          "created_at": "2025-11-30T23:18:39.416Z",
+          "organization_id": "default",
+          "project_description": null,
+          "project_id": "1483a280-b064-40c9-a872-39a627e9997f",
+          "project_name": "SCF-Scaffald",
+          "project_short_id": "PROJ-13",
+          "repository": {
+            "full_name": "Unicorn/SCF-Scaffald",
+            "id": "9b193a4e-a4eb-4c36-8d1c-2ef1c8717f97",
+            "name": "SCF-Scaffald",
+            "owner": "Unicorn"
+          },
+          "name": ".braingrid",
+          "implicitDependencies": [],
+          "targets": {},
+          "tags": []
+        }
+      },
+      "expo-app": {
+        "name": "expo-app",
+        "type": "app",
+        "data": {
+          "root": "apps/expo",
+          "metadata": {
+            "targetGroups": {
+              "NPM Scripts": [
+                "adb:reverse",
+                "check",
+                "clean",
+                "eas:build:dev:device:android",
+                "eas:build:dev:device:ios",
+                "eas:build:dev:simulator:ios:local",
+                "eas:submit:dev:android",
+                "eas:submit:dev:ios",
+                "eas:submit:staging:android",
+                "eas:submit:staging:ios",
+                "eas:update:dev:android",
+                "eas:update:dev:ios",
+                "eas:update:staging:android",
+                "eas:update:staging:ios",
+                "ios:check-xcode-version",
+                "ios:run",
+                "start:dev-client",
+                "test:coverage",
+                "test:unit",
+                "test:watch",
+                "web:build:release",
+                "web:serve"
+              ]
+            },
+            "js": {
+              "packageName": "expo-app",
+              "packageVersion": "1.0.4",
+              "packageMain": "expo-router/entry",
+              "isInPackageManagerWorkspaces": true
+            }
+          },
+          "targets": {
+            "test": {
+              "executor": "@nx/vitest:test",
+              "options": {
+                "config": "apps/expo/vitest.config.ts",
+                "passWithNoTests": true
+              },
+              "outputs": [
+                "{workspaceRoot}/tests/reports/coverage/expo-app"
+              ],
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/vitest.config.ts",
+                "{workspaceRoot}/tests/infrastructure/**/*"
+              ],
+              "cache": true
+            },
+            "typecheck": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "tsc --noEmit",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/tsconfig.base.json"
+              ],
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ],
+              "cache": true
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "pnpm exec nx watch --projects expo-app --includeDependentProjects -- pnpm exec nx build-deps expo-app"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "adb:reverse": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "adb:reverse"
+              },
+              "metadata": {
+                "scriptContent": "adb reverse tcp:8081 tcp:8081",
+                "runCommand": "pnpm run adb:reverse"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "check": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "check"
+              },
+              "metadata": {
+                "scriptContent": "pnpm format:fix && pnpm lint:fix && pnpm typecheck",
+                "runCommand": "pnpm run check"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "clean": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "clean"
+              },
+              "metadata": {
+                "scriptContent": "react-native-clean-project",
+                "runCommand": "pnpm run clean"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:dev:device:android": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:build:dev:device:android"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:device --platform android",
+                "runCommand": "pnpm run eas:build:dev:device:android"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:dev:device:ios": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:build:dev:device:ios"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:device --platform ios",
+                "runCommand": "pnpm run eas:build:dev:device:ios"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:dev:simulator:ios:local": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:build:dev:simulator:ios:local"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:simulator --platform ios --local",
+                "runCommand": "pnpm run eas:build:dev:simulator:ios:local"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:submit:dev:android": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:submit:dev:android"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=development APP_ENV=development eas submit --profile staging --platform android",
+                "runCommand": "pnpm run eas:submit:dev:android"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:submit:dev:ios": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:submit:dev:ios"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=development APP_ENV=development eas submit --profile staging --platform ios",
+                "runCommand": "pnpm run eas:submit:dev:ios"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:submit:staging:android": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:submit:staging:android"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=staging APP_ENV=staging eas submit --profile staging --platform android",
+                "runCommand": "pnpm run eas:submit:staging:android"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:submit:staging:ios": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:submit:staging:ios"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=staging APP_ENV=staging eas submit --profile staging --platform ios",
+                "runCommand": "pnpm run eas:submit:staging:ios"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:update:dev:android": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:update:dev:android"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=development APP_ENV=development eas update --channel staging --platform android",
+                "runCommand": "pnpm run eas:update:dev:android"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:update:dev:ios": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:update:dev:ios"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=development APP_ENV=development eas update --channel staging --platform ios",
+                "runCommand": "pnpm run eas:update:dev:ios"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:update:staging:android": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:update:staging:android"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=staging APP_ENV=staging eas update --channel staging --platform android",
+                "runCommand": "pnpm run eas:update:staging:android"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:update:staging:ios": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "eas:update:staging:ios"
+              },
+              "metadata": {
+                "scriptContent": "cross-env NODE_ENV=staging APP_ENV=staging eas update --channel staging --platform ios",
+                "runCommand": "pnpm run eas:update:staging:ios"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "ios:check-xcode-version": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "ios:check-xcode-version"
+              },
+              "metadata": {
+                "scriptContent": "sh -c 'XC_VERSION=$(xcodebuild -version | grep Xcode | awk \"{print \\$2}\"); if [ $(echo $XC_VERSION | awk \"{print int(\\$1)}\") -lt 16 ]; then echo \"⚠️ Xcode ≥ 16 is required for Expo SDK 53. You have $XC_VERSION. You can bypass this check by running \\\"pnpm ios:run\\\" but you may encounter native build errors.\"; exit 1; fi'",
+                "runCommand": "pnpm run ios:check-xcode-version"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "ios:run": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "ios:run"
+              },
+              "metadata": {
+                "scriptContent": "cross-env LANG=en_US.UTF-8 RCT_NEW_ARCH_ENABLED=1 expo run:ios",
+                "runCommand": "pnpm run ios:run"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "start:dev-client": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "start:dev-client"
+              },
+              "metadata": {
+                "scriptContent": "expo start --dev-client",
+                "runCommand": "pnpm run start:dev-client"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:coverage": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:coverage"
+              },
+              "metadata": {
+                "scriptContent": "vitest run --coverage",
+                "runCommand": "pnpm run test:coverage"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:unit": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:unit"
+              },
+              "metadata": {
+                "scriptContent": "vitest run",
+                "runCommand": "pnpm run test:unit"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "test:watch": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "test:watch"
+              },
+              "metadata": {
+                "scriptContent": "vitest",
+                "runCommand": "pnpm run test:watch"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "web:build:release": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "web:build:release"
+              },
+              "metadata": {
+                "scriptContent": "pnpm web:build",
+                "runCommand": "pnpm run web:build:release"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "web:serve": {
+              "executor": "nx:run-script",
+              "options": {
+                "script": "web:serve"
+              },
+              "metadata": {
+                "scriptContent": "serve dist",
+                "runCommand": "pnpm run web:serve"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "nx-release-publish": {
+              "executor": "@nx/js:release-publish",
+              "dependsOn": [
+                "^nx-release-publish"
+              ],
+              "options": {},
+              "configurations": {},
+              "parallelism": true
+            },
+            "android": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "expo run:android",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:dev:android": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development --platform android",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:dev:ios": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development --platform ios",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:dev:simulator:android": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:simulator --platform android",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:dev:simulator:ios": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:simulator --platform ios",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:staging:android": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "cross-env NODE_ENV=staging APP_ENV=staging eas build --profile staging --platform android",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "eas:build:staging:ios": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "cross-env NODE_ENV=staging APP_ENV=staging eas build --profile staging --platform ios",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "format": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome format ./app",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "format:fix": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome format --write ./app",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "ios": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "expo run:ios",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "lint": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint ./app",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/biome.json"
+              ],
+              "outputs": [],
+              "cache": true
+            },
+            "lint:fix": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "biome lint --write ./app",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "prebuild": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "expo prebuild --skip-dependency-update react-native,react",
+                "cwd": "apps/expo"
+              },
+              "outputs": [
+                "{projectRoot}/ios",
+                "{projectRoot}/android"
+              ],
+              "configurations": {},
+              "parallelism": true
+            },
+            "start": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "expo start -c",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "web": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "expo start --web",
+                "cwd": "apps/expo"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "web:build": {
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "expo export --platform web",
+                "cwd": "apps/expo"
+              },
+              "outputs": [
+                "{projectRoot}/dist"
+              ],
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "projectType": "application",
+          "name": "expo-app",
+          "tags": [
+            "npm:public",
+            "scope:app",
+            "type:expo"
+          ],
+          "$schema": "../../node_modules/nx/schemas/project-schema.json",
+          "sourceRoot": "apps/expo",
+          "implicitDependencies": [
+            "core",
+            "ui"
+          ]
+        }
+      },
+      "scaffald": {
+        "name": "scaffald",
+        "type": "lib",
+        "data": {
+          "root": ".",
+          "metadata": {},
+          "targets": {
+            "test": {
+              "cache": true,
+              "inputs": [
+                "default",
+                "^production",
+                "{workspaceRoot}/vitest.config.ts",
+                "{workspaceRoot}/tests/infrastructure/**/*"
+              ],
+              "outputs": [
+                "{workspaceRoot}/tests/reports/coverage/{projectName}"
+              ],
+              "metadata": {
+                "technologies": [
+                  "vite",
+                  "vitest"
+                ],
+                "description": "Run Vitest tests",
+                "help": {
+                  "command": "pnpm exec vitest --help",
+                  "example": {
+                    "options": {
+                      "bail": 1,
+                      "coverage": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "options": {
+                "cwd": ".",
+                "command": "vitest"
+              },
+              "configurations": {},
+              "parallelism": true
+            },
+            "typecheck": {
+              "cache": true,
+              "inputs": [
+                "default",
+                "{workspaceRoot}/tsconfig.base.json"
+              ],
+              "options": {
+                "cwd": ".",
+                "command": "tsc --noEmit -p tsconfig.json"
+              },
+              "metadata": {
+                "description": "Runs type-checking for the project.",
+                "technologies": [
+                  "typescript"
+                ],
+                "help": {
+                  "command": "pnpm exec tsc -p tsconfig.json --help",
+                  "example": {
+                    "options": {
+                      "noEmit": true
+                    }
+                  }
+                }
+              },
+              "executor": "nx:run-commands",
+              "configurations": {},
+              "parallelism": true,
+              "outputs": [
+                "{projectRoot}/tsconfig.tsbuildinfo"
+              ]
+            },
+            "build-deps": {
+              "dependsOn": [
+                "^build"
+              ],
+              "configurations": {},
+              "options": {},
+              "parallelism": true,
+              "executor": "nx:noop"
+            },
+            "watch-deps": {
+              "continuous": true,
+              "dependsOn": [
+                "build-deps"
+              ],
+              "executor": "nx:run-commands",
+              "options": {
+                "command": "pnpm exec nx watch --projects scaffald --includeDependentProjects -- pnpm exec nx build-deps scaffald"
+              },
+              "configurations": {},
+              "parallelism": true
+            }
+          },
+          "projectType": "library",
+          "name": "scaffald",
+          "implicitDependencies": [],
+          "tags": []
+        }
+      }
+    },
+    "dependencies": {
+      "supabase": [
+        {
+          "source": "supabase",
+          "target": "trpc",
+          "type": "static"
+        },
+        {
+          "source": "supabase",
+          "target": "schemas",
+          "type": "static"
+        },
+        {
+          "source": "supabase",
+          "target": "core",
+          "type": "static"
+        }
+      ],
+      "schemas": [],
+      "core": [
+        {
+          "source": "core",
+          "target": "ui",
+          "type": "static"
+        },
+        {
+          "source": "core",
+          "target": "schemas",
+          "type": "static"
+        },
+        {
+          "source": "core",
+          "target": "supabase",
+          "type": "static"
+        }
+      ],
+      "trpc": [],
+      "ui": [],
+      ".braingrid": [],
+      "expo-app": [
+        {
+          "source": "expo-app",
+          "target": "core",
+          "type": "implicit"
+        },
+        {
+          "source": "expo-app",
+          "target": "ui",
+          "type": "implicit"
+        },
+        {
+          "source": "expo-app",
+          "target": "ui",
+          "type": "static"
+        },
+        {
+          "source": "expo-app",
+          "target": "supabase",
+          "type": "static"
+        },
+        {
+          "source": "expo-app",
+          "target": "schemas",
+          "type": "static"
+        }
+      ],
+      "scaffald": [
+        {
+          "source": "scaffald",
+          "target": "ui",
+          "type": "static"
+        }
+      ]
+    }
+  }
+}

@@ -3,8 +3,8 @@ import {
   assertExists,
 } from "jsr:@std/assert";
 
-import { callTRPCEndpoint } from "../setup.ts";
-import { setupTeamManagementFixture } from "./seed-utils.ts";
+import { callTRPCEndpoint } from '../setup';
+import { setupTeamManagementFixture } from './seed-utils';
 
 Deno.test({
   name: "Teams router - list requires authentication",

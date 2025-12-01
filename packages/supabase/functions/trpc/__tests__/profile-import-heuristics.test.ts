@@ -2,8 +2,8 @@ import {
   assertArrayIncludes,
   assertEquals,
   assert,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
-import { heuristicParseResume } from "../routers/profile/import.router.ts";
+} from 'https://deno.land/std@0.208.0/assert/mod';
+import { heuristicParseResume } from '../routers/profile/import.router';
 
 Deno.test("heuristicParseResume extracts baseline sections", () => {
   const sampleResume = `

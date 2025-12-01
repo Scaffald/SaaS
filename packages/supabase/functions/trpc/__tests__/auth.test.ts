@@ -15,7 +15,7 @@ import {
   assertEquals,
   assertExists,
   assertNotEquals,
-} from "https://deno.land/std@0.208.0/assert/mod.ts";
+} from 'https://deno.land/std@0.208.0/assert/mod';
 import {
   completeMagicLinkAuth,
   createTestClient,
@@ -28,7 +28,7 @@ import {
   TEST_MAILPIT_URL,
   TEST_SUPABASE_URL,
   callTRPCEndpoint,
-} from "./setup.ts";
+} from './setup';
 
 // Test users
 const TEST_USER_EMAIL = `test-${Date.now()}@example.com`;

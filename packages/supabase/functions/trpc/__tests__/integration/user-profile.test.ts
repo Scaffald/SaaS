@@ -3,7 +3,7 @@ import {
   assertExists,
   assertStringIncludes,
 } from "jsr:@std/assert";
-import { createAdminClient, loadCachedTokens } from "../setup.ts";
+import { createAdminClient, loadCachedTokens } from '../setup';
 
 const TRPC_URL = "http://127.0.0.1:54321/functions/v1/trpc";
 

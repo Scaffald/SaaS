@@ -739,9 +739,8 @@ export function AvatarCropModal({
   return (
     <Dialog modal open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay key="overlay" />
+        <Dialog.Overlay />
         <Dialog.Content
-          key="content"
           gap="$0"
           width={displaySize + 128}
           maxWidth="90vw"

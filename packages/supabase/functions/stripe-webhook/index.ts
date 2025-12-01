@@ -1,8 +1,8 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 import Stripe from 'stripe'
 
-import { corsHeaders } from '../_shared/cors.ts'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
+import { corsHeaders } from '../_shared/cors'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils'
 
 type PaymentIntent = Stripe.PaymentIntent
 

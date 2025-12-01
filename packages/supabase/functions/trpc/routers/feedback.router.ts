@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server'
-import type { Context } from '../context.ts'
+import type { Context } from '../context'
 
 import {
   FEEDBACK_ALLOWED_MIME_TYPES,
@@ -7,8 +7,8 @@ import {
   feedbackHistoryQuerySchema,
   feedbackSubmitSchema,
   feedbackUploadRequestSchema,
-} from '../../_shared/feedback-schemas.ts'
-import { protectedProcedure, t } from '../middleware.ts'
+} from '../../_shared/feedback-schemas'
+import { protectedProcedure, t } from '../middleware'
 
 const FEEDBACK_BUCKET_ID = 'feedback-screenshots'
 const DEFAULT_HISTORY_LIMIT = 20

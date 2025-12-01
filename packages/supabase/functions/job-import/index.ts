@@ -1,6 +1,6 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from 'https://deno.land/std@0.168.0/http/server';
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../_shared/database.types.ts";
+import type { Database } from '../_shared/database.types';
 
 const corsHeaders = {
   "Access-Control-Allow-Headers":

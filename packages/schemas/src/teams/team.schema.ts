@@ -6,8 +6,8 @@ import {
   teamInvitationPolicySchema,
   teamRoleKeySchema,
   teamVisibilitySchema,
-} from './constants.ts'
-import { jsonSchema } from './json.ts'
+} from './constants'
+import { jsonSchema } from './json'
 
 export const teamIdSchema = z.string().uuid('Team ID must be a valid UUID')
 

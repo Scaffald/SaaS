@@ -1,13 +1,13 @@
-import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
+import { serve } from 'https://deno.land/std@0.223.0/http/server'
 import { z } from 'zod'
 
-import { buildAppUrl, resolveAppBaseUrl } from '../_shared/app-url.ts'
-import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
+import { buildAppUrl, resolveAppBaseUrl } from '../_shared/app-url'
+import { corsHeaders, createCorsResponse } from '../_shared/cors'
 import {
   type NotificationEventPayload,
   notificationEventSchema,
-} from '../_shared/notifications/types.ts'
-import { createServiceSupabaseClient } from '../_shared/notifications/utils.ts'
+} from '../_shared/notifications/types'
+import { createServiceSupabaseClient } from '../_shared/notifications/utils'
 
 const SENDGRID_ENDPOINT = 'https://api.sendgrid.com/v3/mail/send'
 

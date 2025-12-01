@@ -1,3 +1,4 @@
+import type { AdaptWhen } from '@tamagui/adapt'
 import { ChevronRight } from '@tamagui/lucide-icons'
 import { Link, useRouter } from 'expo-router'
 import { Fragment, memo, useCallback, useMemo, useState } from 'react'
@@ -222,7 +223,7 @@ export const Breadcrumb = memo(function Breadcrumb({
             </Text>
           </XStack>
         </Popover.Trigger>
-        <Adapt when="sm" platform="touch">
+        <Adapt when={'sm' as unknown as AdaptWhen} platform="touch">
           <Sheet
             modal
             open={ellipsisOpen}

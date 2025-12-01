@@ -7,7 +7,13 @@ export default defineConfig({
     "types/phone": "src/types/phone.ts",
   },
   format: ["esm", "cjs"],
-  dts: true, // Type declarations enabled - using manual .d.ts files for complex components
+  dts: {
+    sourcemap: false, // Disable sourcemaps for DTS to avoid sourcemap resolution errors
+    compilerOptions: {
+      skipLibCheck: true,
+      declarationMap: false,
+    },
+  }, // Type declarations enabled - using manual .d.ts files for complex components
   splitting: false,
   sourcemap: true,
   clean: true,
@@ -67,6 +73,7 @@ export default defineConfig({
     "@dnd-kit/utilities",
     "awesome-phonenumber",
     "@react-navigation/elements",
+    /^@tamagui\/types/,
   ],
   noExternal: [],
 });
