@@ -45,14 +45,18 @@ import {
   useAdaptiveProfileSync,
 } from './utils/profile-sync-store'
 
+// API response types from tRPC router
+type EducationApiResponse = EducationEntry[]
+type EducationLevelApiResponse = { education_level: string | null }
+
 interface SaveEducationInput {
   education_level?: string | null
   education_entries?: EducationEntryFormValues[]
 }
 
 interface SaveEducationContext {
-  previousEducation?: EducationEntry[] | undefined
-  previousLevel?: { education_level: string | null } | undefined
+  previousEducation?: EducationApiResponse | undefined
+  previousLevel?: EducationLevelApiResponse | undefined
 }
 
 interface SaveEducationOutput {
@@ -128,22 +132,24 @@ export function ProfileEducationLeft({
       const previousLevel = utils.profile.education.getEducationLevel.getData()
 
       // Type assertion needed because form data has required booleans but API allows null
+      // Form data is compatible but has slightly different optionality
       utils.profile.education.getEducation.setData(
         undefined,
-        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
-        (input.education_entries ?? []) as any
+        (input.education_entries ?? []) as EducationApiResponse,
       )
       utils.profile.education.getEducationLevel.setData(undefined, {
         education_level: input.education_level ?? null,
       })
 
-      return { previousEducation, previousLevel }
+      return {
+        previousEducation: previousEducation as EducationApiResponse | undefined,
+        previousLevel: previousLevel as EducationLevelApiResponse | undefined,
+      }
     },
     onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
-        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
-        utils.profile.education.getEducation.setData(undefined, context.previousEducation as any)
+        utils.profile.education.getEducation.setData(undefined, context.previousEducation)
       }
       if (context?.previousLevel) {
         utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel)
@@ -167,8 +173,8 @@ export function ProfileEducationLeft({
       }
       void invalidateProfileQueries(utils)
     },
-    // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-  } as any)
+    // Type assertion needed due to tRPC mutation callback type inference limitations
+  } as never)
 
   // University search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -559,8 +565,8 @@ export function ProfileEducationLeft({
                 key={field.id}
                 ref={(el) => {
                   if (el) {
-                    // biome-ignore lint/suspicious/noExplicitAny: Ref assignment for dynamic entry management
-                    entryRefs.current[entryId] = el as any
+                    // YStack ref is compatible with HTMLElement for scroll operations
+                    entryRefs.current[entryId] = el as HTMLElement
                   }
                 }}
                 gap="$3"

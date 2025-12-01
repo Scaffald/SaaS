@@ -165,20 +165,18 @@ export function ProfileEmploymentLeft() {
       const previousEmployment = utils.profile.employment.getEmployment.getData()
       utils.profile.employment.getEmployment.setData(
         undefined,
-        (current: EmploymentProfileFormData | undefined) =>
+        (current: EmploymentProfileFormData | undefined): EmploymentProfileFormData =>
           ({
             ...(current ?? profileEmploymentDefaults),
             ...input,
-            // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-          }) as any
+          }) as EmploymentProfileFormData,
       )
       return { previousEmployment }
     },
     onError: (error: unknown, _input: UpdateEmploymentInput, context?: UpdateEmploymentContext) => {
       console.error('Error saving employment:', error)
       if (context?.previousEmployment) {
-        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-        utils.profile.employment.getEmployment.setData(undefined, context.previousEmployment as any)
+        utils.profile.employment.getEmployment.setData(undefined, context.previousEmployment)
       }
       failProfileSync()
       toast.show('Error', {

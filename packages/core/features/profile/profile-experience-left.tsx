@@ -55,14 +55,18 @@ import {
 
 type ExperienceEntries = NonNullable<ExperienceProfileFormData['experience_entries']>
 
+// API response types from tRPC router
+type ExperienceApiResponse = ExperienceEntry[]
+type ExperienceSummaryApiResponse = { career_level: string | null }
+
 interface SaveExperienceInput {
   career_level: ExperienceProfileFormData['career_level'] | null
   experience_entries: ExperienceEntries
 }
 
 interface SaveExperienceContext {
-  previousExperience?: ExperienceEntries | undefined
-  previousSummary?: { career_level: ExperienceProfileFormData['career_level'] | null } | undefined
+  previousExperience?: ExperienceApiResponse | undefined
+  previousSummary?: ExperienceSummaryApiResponse | undefined
 }
 
 /**
@@ -96,20 +100,18 @@ export function ProfileExperienceLeft() {
       const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
       // Type assertions needed because form data types don't exactly match API response types
-      // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
-      utils.profile.experience.getExperience.setData(undefined, input.experience_entries as any)
+      // Form data is compatible but has slightly different optionality
+      utils.profile.experience.getExperience.setData(
+        undefined,
+        input.experience_entries as ExperienceApiResponse
+      )
       utils.profile.experience.getExperienceSummary.setData(undefined, {
-        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
-        career_level: (input.career_level ?? null) as any,
+        career_level: (input.career_level ?? null) as string | null,
       })
 
       return {
-        previousExperience:
-          // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
-          previousExperience as any,
-        previousSummary:
-          // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
-          previousSummary as any,
+        previousExperience: previousExperience as ExperienceApiResponse | undefined,
+        previousSummary: previousSummary as ExperienceSummaryApiResponse | undefined,
       }
     },
     onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
@@ -118,11 +120,7 @@ export function ProfileExperienceLeft() {
         utils.profile.experience.getExperience.setData(undefined, context.previousExperience)
       }
       if (context?.previousSummary) {
-        utils.profile.experience.getExperienceSummary.setData(
-          undefined,
-          // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
-          context.previousSummary as any
-        )
+        utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary)
       }
       failProfileSync()
       toast.show('Error', {
@@ -141,8 +139,8 @@ export function ProfileExperienceLeft() {
       }
       void invalidateProfileQueries(utils)
     },
-    // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC mutation callback types
-  } as any)
+    // Type assertion needed due to tRPC mutation callback type inference limitations
+  } as never)
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'success'>('idle')
   const [saveBanner, setSaveBanner] = useState<{
     type: 'success' | 'error'
@@ -300,10 +298,13 @@ export function ProfileExperienceLeft() {
     let totalMonths = 0
 
     for (const entry of entries) {
-      if (!entry.start_date) continue
+      if (!entry.start_date || typeof entry.start_date !== 'string') continue
 
       const start = new Date(entry.start_date)
-      const end = entry.is_current || !entry.end_date ? new Date() : new Date(entry.end_date)
+      const end =
+        entry.is_current || !entry.end_date || typeof entry.end_date !== 'string'
+          ? new Date()
+          : new Date(entry.end_date)
 
       const months =
         (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())

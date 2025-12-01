@@ -138,11 +138,16 @@ export function EmploymentSection({
     setIsLoading(true)
     try {
       if (mode === 'admin' && userId) {
-        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-        await updateEmploymentMutation.mutateAsync({ userId, data: updatedData as any })
+        // Form schema is compatible with API schema but has slightly different structure
+        await updateEmploymentMutation.mutateAsync({
+          userId,
+          data: updatedData as unknown as Parameters<typeof updateEmploymentMutation.mutateAsync>[0]['data'],
+        })
       } else {
-        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-        await updateEmploymentMutation.mutateAsync(updatedData as any)
+        // Form schema is compatible with API schema but has slightly different structure
+        await updateEmploymentMutation.mutateAsync(
+          updatedData as unknown as Parameters<typeof updateEmploymentMutation.mutateAsync>[0],
+        )
       }
     } finally {
       setIsLoading(false)

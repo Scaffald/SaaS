@@ -58,20 +58,18 @@ export function ProfileGeneralLeft() {
       const previousGeneral = utils.profile.general.getGeneral.getData()
       utils.profile.general.getGeneral.setData(
         undefined,
-        ((current: GeneralProfileFormData | undefined): GeneralProfileFormData =>
+        (current: GeneralProfileFormData | undefined): GeneralProfileFormData =>
           ({
             ...(current ?? {}),
             ...(input as unknown as GeneralProfileFormData),
-            // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-          }) as GeneralProfileFormData) as any
+          }) as GeneralProfileFormData,
       )
       return { previousGeneral }
     },
     onError: (error: unknown, _input: UpdateGeneralInput, context?: UpdateGeneralContext) => {
       console.error('Error saving profile:', error)
       if (context?.previousGeneral) {
-        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-        utils.profile.general.getGeneral.setData(undefined, context.previousGeneral as any)
+        utils.profile.general.getGeneral.setData(undefined, context.previousGeneral)
       }
       failProfileSync()
       toast.show('Error', {
