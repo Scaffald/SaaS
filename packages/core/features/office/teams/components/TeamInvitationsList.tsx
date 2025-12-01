@@ -76,11 +76,11 @@ export function TeamInvitationsList({
   })
 
   useEffect(() => {
-    if (!invitationsQuery.isFetched) {
+    if (!invitationsQuery.isFetched || !refreshKey) {
       return
     }
     void invitationsQuery.refetch()
-  }, [refreshKey])
+  }, [refreshKey, invitationsQuery.isFetched, invitationsQuery.refetch])
 
   const invitations = useMemo<InvitationRecord[]>(() => {
     return (invitationsQuery.data?.invitations ?? []) as InvitationRecord[]

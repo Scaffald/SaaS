@@ -34,7 +34,7 @@ export function useProfileSkillsQueries() {
     if (!primaryIndustryId && hasInitializedRef.current) {
       hasInitializedRef.current = false;
     }
-  }, [primaryIndustryId]); // Only depend on primaryIndustryId, not selectedIndustryId
+  }, [primaryIndustryId, selectedIndustryId]); // Include selectedIndustryId to satisfy exhaustive deps
 
   // Process industries data
   const industries: ProfileIndustry[] = useMemo(() => {
@@ -74,13 +74,11 @@ export function useProfileSkillsQueries() {
   }, [industries, selectedIndustryId]);
 
   // Get existing skill IDs - use stable data reference with memoization
-  // Use JSON.stringify for deep comparison to prevent recreating array when reference changes but data is same
-  const userSkillsDataStr = JSON.stringify(userSkillsQuery.data?.skills ?? []);
   const userSkills = useMemo(() => {
     const skills = userSkillsQuery.data?.skills || [];
     // Create a new array reference only when the data actually changes
     return skills;
-  }, [userSkillsDataStr]);
+  }, [userSkillsQuery.data?.skills]);
 
   const existingSkillIds = useMemo(
     () =>
@@ -139,7 +137,6 @@ export function useProfileSkillsQueries() {
       isLoadingIndustries,
       industries,
       selectedIndustryId,
-      setSelectedIndustryId,
       selectedIndustrySlug,
       primaryIndustryId,
       existingSkillIds,

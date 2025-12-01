@@ -64,13 +64,13 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
     return Math.min(100, Math.round((storageUsage.usedBytes / storageUsage.limitBytes) * 100))
   }, [storageUsage.limitBytes, storageUsage.usedBytes])
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setCaption('')
     setPhotoType('general')
     setShowOnProfile(false)
-  }
+  }, [])
 
-  const ensureReady = () => {
+  const ensureReady = useCallback(() => {
     if (!isReady) {
       toast.show('Save Draft First', {
         message:
@@ -87,7 +87,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       return false
     }
     return true
-  }
+  }, [isReady, canUploadMore, maxPhotos, toast])
 
   const buildCandidateFromSelection = useCallback(
     (selection: UploadSelection): UploadCandidate | null => {
@@ -150,7 +150,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       await uploadPhoto({ candidate })
       resetForm()
     },
-    [buildCandidateFromSelection, ensureReady, uploadPhoto]
+    [buildCandidateFromSelection, ensureReady, uploadPhoto, resetForm]
   )
 
   const handleCapturePhoto = useCallback(async () => {
@@ -209,7 +209,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
     } finally {
       setIsCapturing(false)
     }
-  }, [caption, ensureReady, photoType, showOnProfile, toast, uploadPhoto])
+  }, [caption, ensureReady, photoType, showOnProfile, toast, uploadPhoto, resetForm])
 
   return (
     <YStack gap="$4">

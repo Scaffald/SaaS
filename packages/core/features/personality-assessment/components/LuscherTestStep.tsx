@@ -43,7 +43,7 @@ export function LuscherTestStep({
       )
       setSelectedOrder(initialChoices)
     }
-  }, [step]) // Always reshuffle when step changes (luscher1 vs luscher2)
+  }, [initialChoices]) // Reshuffle when initialChoices change
 
   const handleColorPress = (colorValue: MainColor) => {
     if (selectedOrder.includes(colorValue)) {

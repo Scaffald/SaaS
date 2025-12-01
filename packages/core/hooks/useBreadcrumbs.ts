@@ -89,7 +89,7 @@ export function useBreadcrumbs(
   const { autoGenerate = false, customItems } = options;
   const pathname = usePathname();
   const [manualItems, setManualItems] = useState<BreadcrumbItem[] | null>(null);
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const translateRoute = useCallback(
     (route?: RouteConfig | null) => {
       if (!route) {
@@ -97,7 +97,7 @@ export function useBreadcrumbs(
       }
       return t(route.titleKey);
     },
-    [locale, t],
+    [t],
   );
 
   // Find matching route for a given path
@@ -159,8 +159,8 @@ export function useBreadcrumbs(
     [findMatchingRoute],
   );
 
-  // Get sibling routes for a given path
-  const getSiblingRoutes = useCallback(
+  // Get sibling routes for a given path (currently unused)
+  const _getSiblingRoutes = useCallback(
     (path: string, currentRoute: RouteConfig | null): BreadcrumbSibling[] => {
       if (!currentRoute) {
         return [];
@@ -208,7 +208,7 @@ export function useBreadcrumbs(
 
       return siblings;
     },
-    [findMatchingRoute, translateRoute],
+    [translateRoute],
   );
 
   // Find all routes sharing a common parent path (for intermediate segments)
@@ -543,10 +543,10 @@ export function useBreadcrumbs(
     [
       findMatchingRoute,
       findParentRoute,
-      getSiblingRoutes,
       generateBreadcrumbsFromPath,
       findRoutesAtPath,
       translateRoute,
+      t,
     ],
   );
 
