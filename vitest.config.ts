@@ -1,6 +1,5 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { cpus } from "node:os";
 
 import react from "@vitejs/plugin-react";
 import type { PluginOption } from "vite";
@@ -9,18 +8,9 @@ import { defineConfig } from "vitest/config";
 import { flowRemoveTypesPlugin } from "./tests/infrastructure/vitest/plugins/flow-remove";
 
 const workspaceRoot = fileURLToPath(new URL(".", import.meta.url));
-const coverageReportsDirectory = resolve(workspaceRoot, "coverage");
-const summaryReporterPath = resolve(
+const quietProgressReporterPath = resolve(
   workspaceRoot,
-  "tests/infrastructure/vitest/reporters/summary-reporter.ts",
-);
-const errorReporterPath = resolve(
-  workspaceRoot,
-  "tests/infrastructure/vitest/reporters/error-reporter.ts",
-);
-const hangingTestReporterPath = resolve(
-  workspaceRoot,
-  "tests/infrastructure/vitest/reporters/hanging-test-reporter.ts",
+  "tests/infrastructure/vitest/reporters/quiet-progress.ts",
 );
 
 const plugins: PluginOption[] = [react(), flowRemoveTypesPlugin()];
@@ -28,26 +18,6 @@ const reactNativeMockPath = resolve(
   workspaceRoot,
   "tests/infrastructure/vitest/mocks/react-native.ts",
 );
-const jsonReporterPath = resolve(
-  workspaceRoot,
-  "tests/infrastructure/vitest/reporters/json-reporter.ts",
-);
-const junitReporterPath = resolve(
-  workspaceRoot,
-  "tests/infrastructure/vitest/reporters/junit-reporter.ts",
-);
-const asyncErrorReporterPath = resolve(
-  workspaceRoot,
-  "tests/infrastructure/vitest/reporters/async-error-reporter.ts",
-);
-const coverageReporterPath = resolve(
-  workspaceRoot,
-  "tests/infrastructure/vitest/reporters/coverage-reporter.ts",
-);
-
-// Calculate worker pool size: auto-detect from CPU cores with bounds (min 4, max 8)
-const cpuCount = cpus().length;
-const workerPoolSize = Math.min(Math.max(cpuCount - 1, 4), 8);
 
 export default defineConfig({
   root: workspaceRoot,
@@ -131,21 +101,12 @@ export default defineConfig({
     setupFiles: [
       resolve(workspaceRoot, "tests/infrastructure/vitest/setup.ts"),
     ],
-    testTimeout: 60000, // 60 second timeout per test
-    hookTimeout: 30000, // 30 second timeout for setup/teardown
+    testTimeout: 10000, // 10 second timeout per test - fail fast on hanging tests
+    hookTimeout: 5000, // 5 second timeout for setup/teardown
     pool: "forks",
     // Note: poolSize was removed in newer Vitest versions
     // Use minWorkers/maxWorkers in poolOptions.forks if needed
-    reporters: [
-      "default",
-      summaryReporterPath,
-      errorReporterPath,
-      hangingTestReporterPath,
-      jsonReporterPath,
-      junitReporterPath,
-      asyncErrorReporterPath,
-      coverageReporterPath,
-    ],
+    reporters: [quietProgressReporterPath],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
