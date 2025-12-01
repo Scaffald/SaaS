@@ -12,13 +12,23 @@ echo "🔒 Setting up branch protection for ${ORG}/${REPO_NAME}..."
 # Get repository ID
 REPO_ID=$(gh api "repos/${ORG}/${REPO_NAME}" --jq '.id')
 
-# Create branch protection rule
+# Create branch protection rule using JSON
 gh api "repos/${ORG}/${REPO_NAME}/branches/${BRANCH}/protection" \
   --method PUT \
-  -f required_status_checks='{"strict":true,"contexts":["test","lint"]}' \
-  -f enforce_admins=true \
-  -f required_pull_request_reviews='{"required_approving_review_count":1,"dismiss_stale_reviews":true}' \
-  -f restrictions=null
+  --input - <<EOF
+{
+  "required_status_checks": {
+    "strict": true,
+    "contexts": ["test", "lint"]
+  },
+  "enforce_admins": true,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 1,
+    "dismiss_stale_reviews": true
+  },
+  "restrictions": null
+}
+EOF
 
 echo "✅ Branch protection configured for ${BRANCH} branch"
 echo ""
