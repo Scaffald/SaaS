@@ -3856,7 +3856,7 @@ export const workLogsRouter = t.router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      const { workLog, role } = await getWorkLogAccess(
+      const { workLog: _workLog, role } = await getWorkLogAccess(
         supabase,
         input.workLogId,
         user.id,

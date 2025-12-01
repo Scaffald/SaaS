@@ -53,7 +53,7 @@ async function triggerNewsImport() {
     })
 
     const text = await response.text()
-    let data
+    let data: unknown
 
     try {
       data = JSON.parse(text)
