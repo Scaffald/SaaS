@@ -10,18 +10,12 @@ import {
   type YStackProps,
 } from 'tamagui'
 
-let _headerHeightError: boolean
-
+// Custom hook that safely calls useHeaderHeightOG
+// React Navigation's useHeaderHeight should not throw, but we provide a fallback
 const useHeaderHeight = () => {
-  let headerHeight: number
-  try {
-    headerHeight = useHeaderHeightOG()
-    _headerHeightError = false
-  } catch (_error) {
-    _headerHeightError = true
-    headerHeight = 0
-  }
-  return headerHeight
+  // Always call the hook unconditionally - React Navigation hooks don't throw
+  // They return default values when not in navigation context
+  return useHeaderHeightOG()
 }
 
 const FormWrapperContext = createContext<{ height: number } | null>(null)

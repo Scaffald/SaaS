@@ -41,30 +41,9 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       },
     }))
 
-    if (!MapboxGL) {
-      return (
-        <MapFallback
-          pinsCount={pins.length}
-          message="Mapbox React Native SDK not installed.{'\n'}Run: pnpm add @rnmapbox/maps"
-          style={style}
-        />
-      )
-    }
-
-    // Set Mapbox access token for native
-    const accessToken =
-      process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
-      process.env.MAPBOX_PUBLIC_TOKEN ??
-      'pk.eyJ1Ijoic2NhZmZhbGQiLCJhIjoiY204Nmh5NWZ5MDRycTJrcHo0NHc1em5vZCJ9.w8FJ5p2msraGyyOeeLanhg'
-
-    MapboxGL.setAccessToken(accessToken)
-
-    const MapView = MapboxGL.MapView
-    const Camera = MapboxGL.Camera
-    const PointAnnotation = MapboxGL.PointAnnotation
-
+    // All hooks must be called before any early returns
     useEffect(() => {
-      if (!isMapReady || !onMapReady) {
+      if (!isMapReady || !onMapReady || !MapboxGL) {
         return
       }
 
@@ -121,6 +100,29 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
 
       void emitInitialBounds()
     }, [center, isMapReady, onMapReady, zoom])
+
+    // Early return after all hooks
+    if (!MapboxGL) {
+      return (
+        <MapFallback
+          pinsCount={pins.length}
+          message="Mapbox React Native SDK not installed.{'\n'}Run: pnpm add @rnmapbox/maps"
+          style={style}
+        />
+      )
+    }
+
+    // Set Mapbox access token for native
+    const accessToken =
+      process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
+      process.env.MAPBOX_PUBLIC_TOKEN ??
+      'pk.eyJ1Ijoic2NhZmZhbGQiLCJhIjoiY204Nmh5NWZ5MDRycTJrcHo0NHc1em5vZCJ9.w8FJ5p2msraGyyOeeLanhg'
+
+    MapboxGL.setAccessToken(accessToken)
+
+    const MapView = MapboxGL.MapView
+    const Camera = MapboxGL.Camera
+    const PointAnnotation = MapboxGL.PointAnnotation
 
     return (
       <View flex={1} style={style}>

@@ -163,7 +163,7 @@ export function useSearch<T>(config: UseSearchConfig<T>): UseSearchResult<T> {
     } else {
       setDefaultLocalResults()
     }
-  }, [normalizedStaticOptions, query, filterLocalResults, setDefaultLocalResults])
+  }, [query, filterLocalResults, setDefaultLocalResults])
 
   useEffect(() => {
     return () => {

@@ -1127,8 +1127,14 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               map.removeImage(imageId)
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            map.addImage(imageId, canvas as any, { pixelRatio: 2 })
+            // Extract ImageData from canvas for Mapbox
+            const ctx = canvas.getContext('2d')
+            if (!ctx) {
+              console.warn('Unable to get 2D context from canvas')
+              return
+            }
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+            map.addImage(imageId, imageData, { pixelRatio: 2 })
             avatarImageCacheRef.current.set(imageId, {
               url: nextUrl,
               borderColor: pinColors.worker,
@@ -1146,7 +1152,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
       return () => {
         isCancelled = true
       }
-    }, [pins, isMapReady, pinColors.worker, mapStyle])
+    }, [pins, isMapReady, pinColors.worker])
 
     // Pin states are now handled by Mapbox layers
     // Opacity and visibility can be controlled via layer paint properties if needed

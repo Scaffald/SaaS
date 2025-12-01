@@ -96,7 +96,7 @@ export const officeProfilesRouter = t.router({
             const firstName = row.profile?.first_name ?? ''
             const lastName = row.profile?.last_name ?? ''
             const target = `${displayName} ${email} ${firstName} ${lastName}`.toLowerCase()
-            return target.includes(input.query!.toLowerCase())
+            return target.includes(input.query?.toLowerCase() ?? '')
           })
         : rows
       const total = filteredRows.length

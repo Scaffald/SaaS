@@ -11,70 +11,70 @@
 
 declare module 'stripe' {
   export default class Stripe {
-    constructor(apiKey: string, options?: any)
+    constructor(apiKey: string, options?: unknown)
 
     // Customers
     customers: {
-      create(params?: any): Promise<Customer>
-      retrieve(id: string, params?: any): Promise<Customer>
-      update(id: string, params?: any): Promise<Customer>
-      del(id: string, params?: any): Promise<DeletedCustomer>
-      list(params?: any): Promise<{ data: Customer[] }>
+      create(params?: unknown): Promise<Customer>
+      retrieve(id: string, params?: unknown): Promise<Customer>
+      update(id: string, params?: unknown): Promise<Customer>
+      del(id: string, params?: unknown): Promise<DeletedCustomer>
+      list(params?: unknown): Promise<{ data: Customer[] }>
     }
 
     // Payment Methods
     paymentMethods: {
-      create(params?: any): Promise<PaymentMethod>
-      retrieve(id: string, params?: any): Promise<PaymentMethod>
-      update(id: string, params?: any): Promise<PaymentMethod>
-      list(params?: any): Promise<{ data: PaymentMethod[] }>
-      detach(id: string, params?: any): Promise<PaymentMethod>
+      create(params?: unknown): Promise<PaymentMethod>
+      retrieve(id: string, params?: unknown): Promise<PaymentMethod>
+      update(id: string, params?: unknown): Promise<PaymentMethod>
+      list(params?: unknown): Promise<{ data: PaymentMethod[] }>
+      detach(id: string, params?: unknown): Promise<PaymentMethod>
     }
 
     // Payment Intents
     paymentIntents: {
-      create(params?: any): Promise<PaymentIntent>
-      retrieve(id: string, params?: any): Promise<PaymentIntent>
-      update(id: string, params?: any): Promise<PaymentIntent>
-      confirm(id: string, params?: any): Promise<PaymentIntent>
-      cancel(id: string, params?: any): Promise<PaymentIntent>
-      list(params?: any): Promise<{ data: PaymentIntent[] }>
+      create(params?: unknown): Promise<PaymentIntent>
+      retrieve(id: string, params?: unknown): Promise<PaymentIntent>
+      update(id: string, params?: unknown): Promise<PaymentIntent>
+      confirm(id: string, params?: unknown): Promise<PaymentIntent>
+      cancel(id: string, params?: unknown): Promise<PaymentIntent>
+      list(params?: unknown): Promise<{ data: PaymentIntent[] }>
     }
 
     // Setup Intents
     setupIntents: {
-      create(params?: any): Promise<SetupIntent>
-      retrieve(id: string, params?: any): Promise<SetupIntent>
-      update(id: string, params?: any): Promise<SetupIntent>
-      confirm(id: string, params?: any): Promise<SetupIntent>
-      cancel(id: string, params?: any): Promise<SetupIntent>
-      list(params?: any): Promise<{ data: SetupIntent[] }>
+      create(params?: unknown): Promise<SetupIntent>
+      retrieve(id: string, params?: unknown): Promise<SetupIntent>
+      update(id: string, params?: unknown): Promise<SetupIntent>
+      confirm(id: string, params?: unknown): Promise<SetupIntent>
+      cancel(id: string, params?: unknown): Promise<SetupIntent>
+      list(params?: unknown): Promise<{ data: SetupIntent[] }>
     }
 
     // Subscriptions
     subscriptions: {
-      create(params?: any): Promise<Subscription>
-      retrieve(id: string, params?: any): Promise<Subscription>
-      update(id: string, params?: any): Promise<Subscription>
-      del(id: string, params?: any): Promise<DeletedSubscription>
-      list(params?: any): Promise<{ data: Subscription[] }>
+      create(params?: unknown): Promise<Subscription>
+      retrieve(id: string, params?: unknown): Promise<Subscription>
+      update(id: string, params?: unknown): Promise<Subscription>
+      del(id: string, params?: unknown): Promise<DeletedSubscription>
+      list(params?: unknown): Promise<{ data: Subscription[] }>
     }
 
     // Prices
     prices: {
-      create(params?: any): Promise<Price>
-      retrieve(id: string, params?: any): Promise<Price>
-      update(id: string, params?: any): Promise<Price>
-      list(params?: any): Promise<{ data: Price[] }>
+      create(params?: unknown): Promise<Price>
+      retrieve(id: string, params?: unknown): Promise<Price>
+      update(id: string, params?: unknown): Promise<Price>
+      list(params?: unknown): Promise<{ data: Price[] }>
     }
 
     // Products
     products: {
-      create(params?: any): Promise<Product>
-      retrieve(id: string, params?: any): Promise<Product>
-      update(id: string, params?: any): Promise<Product>
-      del(id: string, params?: any): Promise<DeletedProduct>
-      list(params?: any): Promise<{ data: Product[] }>
+      create(params?: unknown): Promise<Product>
+      retrieve(id: string, params?: unknown): Promise<Product>
+      update(id: string, params?: unknown): Promise<Product>
+      del(id: string, params?: unknown): Promise<DeletedProduct>
+      list(params?: unknown): Promise<{ data: Product[] }>
     }
 
     // Webhook Events
@@ -84,42 +84,42 @@ declare module 'stripe' {
 
     // Charges
     charges: {
-      create(params?: any): Promise<Charge>
-      retrieve(id: string, params?: any): Promise<Charge>
-      update(id: string, params?: any): Promise<Charge>
-      list(params?: any): Promise<{ data: Charge[] }>
+      create(params?: unknown): Promise<Charge>
+      retrieve(id: string, params?: unknown): Promise<Charge>
+      update(id: string, params?: unknown): Promise<Charge>
+      list(params?: unknown): Promise<{ data: Charge[] }>
     }
 
     // Refunds
     refunds: {
-      create(params?: any): Promise<Refund>
-      retrieve(id: string, params?: any): Promise<Refund>
-      update(id: string, params?: any): Promise<Refund>
-      list(params?: any): Promise<{ data: Refund[] }>
+      create(params?: unknown): Promise<Refund>
+      retrieve(id: string, params?: unknown): Promise<Refund>
+      update(id: string, params?: unknown): Promise<Refund>
+      list(params?: unknown): Promise<{ data: Refund[] }>
     }
 
     // Disputes
     disputes: {
-      retrieve(id: string, params?: any): Promise<Dispute>
-      update(id: string, params?: any): Promise<Dispute>
-      close(id: string, params?: any): Promise<Dispute>
-      list(params?: any): Promise<{ data: Dispute[] }>
+      retrieve(id: string, params?: unknown): Promise<Dispute>
+      update(id: string, params?: unknown): Promise<Dispute>
+      close(id: string, params?: unknown): Promise<Dispute>
+      list(params?: unknown): Promise<{ data: Dispute[] }>
     }
 
     // Invoices
     invoices: {
-      create(params?: any): Promise<Invoice>
-      retrieve(id: string, params?: any): Promise<Invoice>
-      update(id: string, params?: any): Promise<Invoice>
-      finalize(id: string, params?: any): Promise<Invoice>
-      send(id: string, params?: any): Promise<Invoice>
-      list(params?: any): Promise<{ data: Invoice[] }>
+      create(params?: unknown): Promise<Invoice>
+      retrieve(id: string, params?: unknown): Promise<Invoice>
+      update(id: string, params?: unknown): Promise<Invoice>
+      finalize(id: string, params?: unknown): Promise<Invoice>
+      send(id: string, params?: unknown): Promise<Invoice>
+      list(params?: unknown): Promise<{ data: Invoice[] }>
     }
 
     // Bank Accounts
     customers: {
-      createSource(customerId: string, params?: any): Promise<BankAccount>
-      deleteSource(customerId: string, sourceId: string, params?: any): Promise<DeletedBankAccount>
+      createSource(customerId: string, params?: unknown): Promise<BankAccount>
+      deleteSource(customerId: string, sourceId: string, params?: unknown): Promise<DeletedBankAccount>
     }
   }
 
@@ -137,9 +137,9 @@ declare module 'stripe' {
     discount: Discount | null
     email: string | null
     invoice_prefix: string
-    invoice_settings: { custom_fields: any[] | null; default_payment_method: string | null; footer: string | null }
+    invoice_settings: { custom_fields: unknown[] | null; default_payment_method: string | null; footer: string | null }
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     name: string | null
     next_invoice_sequence: number
     phone: string | null
@@ -163,7 +163,7 @@ declare module 'stripe' {
     created: number
     customer: string | null
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     type: string
   }
 
@@ -197,7 +197,7 @@ declare module 'stripe' {
 
   export interface CardGeneratedFrom {
     charge: string | null
-    payment_method_details: Record<string, any> | null
+    payment_method_details: Record<string, unknown> | null
   }
 
   export interface CardNetworks {
@@ -210,14 +210,14 @@ declare module 'stripe' {
   }
 
   export interface CardWallet {
-    amex_express_checkout?: Record<string, any>
-    apple_pay?: Record<string, any>
+    amex_express_checkout?: Record<string, unknown>
+    apple_pay?: Record<string, unknown>
     dynamic_last4: string | null
-    google_pay?: Record<string, any>
-    masterpass?: Record<string, any>
-    samsung_pay?: Record<string, any>
+    google_pay?: Record<string, unknown>
+    masterpass?: Record<string, unknown>
+    samsung_pay?: Record<string, unknown>
     type: string
-    visa_checkout?: Record<string, any>
+    visa_checkout?: Record<string, unknown>
   }
 
   export interface PaymentIntent {
@@ -242,11 +242,11 @@ declare module 'stripe' {
     description: string | null
     last_payment_error: PaymentError | null
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     next_action: NextAction | null
     on_behalf_of: string | null
     payment_method: string | null
-    payment_method_options: Record<string, any>
+    payment_method_options: Record<string, unknown>
     payment_method_types: string[]
     processing: Processing | null
     receipt_email: string | null
@@ -276,11 +276,11 @@ declare module 'stripe' {
     latest_attempt: string | null
     livemode: boolean
     mandate: string | null
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     next_action: NextAction | null
     on_behalf_of: string | null
     payment_method: string | null
-    payment_method_options: Record<string, any>
+    payment_method_options: Record<string, unknown>
     payment_method_types: string[]
     single_use_mandate: string | null
     status: 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing' | 'canceled' | 'succeeded'
@@ -315,7 +315,7 @@ declare module 'stripe' {
     items: SubscriptionItem[]
     latest_invoice: string | Invoice | null
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     next_pending_invoice_item_invoice: number | null
     on_behalf_of: string | null
     pause_collection: PauseCollection | null
@@ -349,7 +349,7 @@ declare module 'stripe' {
     custom_unit_amount: CustomUnitAmount | null
     livemode: boolean
     lookup_key: string | null
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     nickname: string | null
     product: string | Product
     recurring: Recurring | null
@@ -372,7 +372,7 @@ declare module 'stripe' {
     description: string | null
     images: string[]
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     name: string
     package_dimensions: PackageDimensions | null
     shippable: boolean | null
@@ -416,14 +416,14 @@ declare module 'stripe' {
     fraud_details: FraudDetails | null
     invoice: string | null
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     on_behalf_of: string | null
     order: string | null
     outcome: Outcome | null
     paid: boolean
     payment_intent: string | null
     payment_method: string | null
-    payment_method_details: Record<string, any>
+    payment_method_details: Record<string, unknown>
     receipt_email: string | null
     receipt_number: string | null
     receipt_url: string | null
@@ -448,7 +448,7 @@ declare module 'stripe' {
     charge: string | null
     created: number
     currency: string
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     reason: string | null
     receipt_number: string | null
     source_transfer_reversal: string | null
@@ -470,7 +470,7 @@ declare module 'stripe' {
     network_reason_code: string
     object: 'dispute'
     payment_intent: string | null
-    payment_method_details: Record<string, any>
+    payment_method_details: Record<string, unknown>
     reason: string
     status: 'warning_needs_response' | 'warning_under_review' | 'warning_closed' | 'needs_response' | 'under_review' | 'charge_refunded' | 'won' | 'lost' | 'warning_evidence_submitted'
     status_transitions: {
@@ -529,7 +529,7 @@ declare module 'stripe' {
       url: string
     }
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     next_payment_attempt: number | null
     number: string | null
     on_behalf_of: string | null
@@ -537,7 +537,7 @@ declare module 'stripe' {
     paid_out_of_band: boolean
     payment_intent: string | null
     payment_settings: {
-      payment_method_options: Record<string, any> | null
+      payment_method_options: Record<string, unknown> | null
       payment_method_types: string[] | null
       default_mandate: string | null
       save_default_payment_method: 'off' | 'on_subscription' | null
@@ -629,7 +629,7 @@ declare module 'stripe' {
     duration_in_months: number | null
     livemode: boolean
     max_redemptions: number | null
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     name: string | null
     percent_off: number | null
     redeem_by: number | null
@@ -669,7 +669,7 @@ declare module 'stripe' {
   export interface NextAction {
     redirect_to_url: { return_url: string; url: string } | null
     type: string
-    use_stripe_sdk: Record<string, any> | null
+    use_stripe_sdk: Record<string, unknown> | null
   }
 
   export interface Processing {
@@ -698,7 +698,7 @@ declare module 'stripe' {
     inclusive: boolean
     jurisdiction: string | null
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     percentage: number
     state: string | null
     tax_type: string | null
@@ -709,7 +709,7 @@ declare module 'stripe' {
     object: 'subscription_item'
     billing_thresholds: BillingThresholds | null
     created: number
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     price: Price
     quantity: number | null
     subscription: string
@@ -722,7 +722,7 @@ declare module 'stripe' {
   }
 
   export interface PaymentSettings {
-    payment_method_options: Record<string, any> | null
+    payment_method_options: Record<string, unknown> | null
     payment_method_types: string[] | null
     default_mandate: string | null
     save_default_payment_method: 'off' | 'on_subscription' | null
@@ -799,8 +799,8 @@ declare module 'stripe' {
   }
 
   export interface EventData {
-    object: Record<string, any>
-    previous_attributes?: Record<string, any>
+    object: Record<string, unknown>
+    previous_attributes?: Record<string, unknown>
   }
 
   export interface EventRequest {
@@ -967,7 +967,7 @@ declare module 'stripe' {
     discounts: Discount[]
     invoice_item: string
     livemode: boolean
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     period: Period
     plan: Plan | null
     price: Price | null
@@ -1007,7 +1007,7 @@ declare module 'stripe' {
     interval_count: number
     livemode: boolean
     lookup_key: string | null
-    metadata: Record<string, any>
+    metadata: Record<string, unknown>
     meter: string | null
     nickname: string | null
     product: string
@@ -1086,7 +1086,7 @@ declare module 'stripe' {
       default_payment_method?: string
       footer?: string | null
     }
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
     name?: string
     next_invoice_sequence?: number
     payment_method?: string
@@ -1103,7 +1103,7 @@ declare module 'stripe' {
     billing_details?: BillingDetails
     card?: CardData
     expand?: string[]
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   }
 
   export interface CardData {
@@ -1130,12 +1130,12 @@ declare module 'stripe' {
       period_of_use?: { end_date?: number; start_date?: number }
       type: 'india'
     }
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
     off_session?: boolean
     on_behalf_of?: string
     payment_method?: string
     payment_method_data?: PaymentMethodData
-    payment_method_options?: Record<string, any>
+    payment_method_options?: Record<string, unknown>
     payment_method_types?: string[]
     receipt_email?: string
     return_url?: string
@@ -1168,11 +1168,11 @@ declare module 'stripe' {
     mandate_data?: {
       customer_acceptance: { accepted_at?: number; online?: { ip_address: string; user_agent: string } | { accepted_at?: number } }
     }
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
     on_behalf_of?: string
     payment_method?: string
     payment_method_data?: PaymentMethodData
-    payment_method_options?: Record<string, any>
+    payment_method_options?: Record<string, unknown>
     payment_method_types?: string[]
     return_url?: string
     single_use?: boolean
@@ -1196,7 +1196,7 @@ declare module 'stripe' {
     description?: string
     expand?: string[]
     from_plan?: string
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
     off_session?: boolean
     on_behalf_of?: string
     payment_behavior?: 'allow_incomplete' | 'default' | 'error_if_incomplete' | 'pending_if_incomplete'
@@ -1218,7 +1218,7 @@ declare module 'stripe' {
     quantity?: number
     tax_rates?: string[]
     billing_thresholds?: BillingThresholds
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   }
 
   export interface PriceCreateParams {
@@ -1229,7 +1229,7 @@ declare module 'stripe' {
     custom_unit_amount?: CustomUnitAmount
     expand?: string[]
     lookup_key?: string
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
     nickname?: string
     recurring?: Recurring
     tax_behavior?: 'exclusive' | 'inclusive' | 'unspecified'
@@ -1260,7 +1260,7 @@ declare module 'stripe' {
     id?: string
     images?: string[]
     livemode?: boolean
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
     name: string
     package_dimensions?: PackageDimensions
     shippable?: boolean

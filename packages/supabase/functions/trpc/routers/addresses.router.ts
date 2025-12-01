@@ -197,7 +197,11 @@ export const addressesRouter = t.router({
 
       const { id, ...updates } = input
 
-      const updateData: any = {}
+      const updateData: {
+        site_id?: string | null
+        property_type?: 'residential' | 'commercial' | 'industrial' | 'mixed_use' | 'other' | null
+        metadata?: Record<string, unknown>
+      } = {}
       if (updates.site_id !== undefined) updateData.site_id = updates.site_id
       if (updates.property_type !== undefined) updateData.property_type = updates.property_type
       if (updates.metadata !== undefined) updateData.metadata = updates.metadata

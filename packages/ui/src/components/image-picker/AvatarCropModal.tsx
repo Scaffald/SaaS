@@ -368,7 +368,7 @@ export function AvatarCropModal({
     if (imageLoaded && imageDimensions.width > 0 && imageDimensions.height > 0) {
       setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
     }
-  }, [constrainCropPosition, imageDimensions, imageLoaded, zoom])
+  }, [constrainCropPosition, imageDimensions, imageLoaded])
 
   useEffect(() => {
     if (!imageLoaded) return
@@ -392,7 +392,7 @@ export function AvatarCropModal({
       .onEnd(() => {
         setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
       })
-  }, [constrainCropPosition, imageLoaded])
+  }, [constrainCropPosition, imageLoaded, zoom])
 
   const panGesture = useMemo(() => {
     if (Platform.OS === 'web' || !imageLoaded) return null
