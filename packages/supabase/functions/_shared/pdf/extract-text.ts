@@ -1,4 +1,3 @@
-// @ts-nocheck
 type ExtractSource = "unpdf" | "fallback";
 
 // Lazy loading for large packages to reduce bundle size

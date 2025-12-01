@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { ChannelAdapter } from '../types.ts'
 import { normalizeMetadata } from '../utils.ts'
 

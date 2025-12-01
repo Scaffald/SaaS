@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
 import { z } from "zod";
 
