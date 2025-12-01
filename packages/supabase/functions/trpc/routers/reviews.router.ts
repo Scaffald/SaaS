@@ -44,7 +44,6 @@ const reviewAnalyticsRowSchema = z.object({
     .optional(),
 });
 
-type ReviewAnalyticsRow = z.infer<typeof reviewAnalyticsRowSchema>;
 type SkillSummary = z.infer<typeof nestedSkillSummarySchema>;
 
 const resolveRelation = <T>(relation: MaybeArray<T>): T | undefined => {

@@ -28,11 +28,6 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./styleguide": {
-      "types": "./dist/styleguide/index.d.ts",
-      "import": "./dist/styleguide/index.mjs",
-      "require": "./dist/styleguide/index.js"
-    },
     "./types/geographic": {
       "types": "./dist/types/geographic.d.ts",
       "import": "./dist/types/geographic.mjs",
@@ -76,13 +71,13 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "~3.1.0",
-    "@tamagui/animations-moti": "^1.138.0",
-    "@tamagui/animations-react-native": "^1.138.0",
-    "@tamagui/font-inter": "^1.138.0",
-    "@tamagui/helpers-icon": "^1.138.0",
-    "@tamagui/lucide-icons": "^1.138.0",
-    "@tamagui/theme-builder": "^1.138.0",
-    "@tamagui/toast": "^1.138.0",
+    "@tamagui/animations-moti": "^1.138.6",
+    "@tamagui/animations-react-native": "^1.138.6",
+    "@tamagui/font-inter": "^1.138.6",
+    "@tamagui/helpers-icon": "^1.138.6",
+    "@tamagui/lucide-icons": "^1.138.6",
+    "@tamagui/theme-builder": "^1.138.6",
+    "@tamagui/toast": "^1.138.6",
     "@tanstack/react-table": "~8.20.5",
     "@tiptap/core": "^2.27.1",
     "@tiptap/extension-placeholder": "^2.27.1",
@@ -107,12 +102,12 @@
     "vitest": "^4.0.10"
   },
   "peerDependencies": {
-    "@tamagui/core": ">=1.138.0",
+    "@tamagui/core": ">=1.138.6",
     "expo": ">=51.0.0",
     "react": ">=18.0.0",
     "react-hook-form": ">=7.0.0",
     "react-native": ">=0.74.0",
-    "tamagui": ">=1.138.0",
+    "tamagui": ">=1.138.6",
     "zod": ">=3.0.0"
   },
   "peerDependenciesMeta": {

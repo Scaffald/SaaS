@@ -98,7 +98,13 @@ export const sitesRouter = t.router({
 
       const { id, ...updates } = input
 
-      const updateData: any = {}
+      const updateData: {
+        site_identifier?: string
+        area_sqft?: number | null
+        zoning_classification?: string | null
+        jurisdiction?: string | null
+        [key: string]: unknown
+      } = {}
       if (updates.site_identifier !== undefined)
         updateData.site_identifier = updates.site_identifier
       if (updates.area_sqft !== undefined) updateData.area_sqft = updates.area_sqft

@@ -46,8 +46,6 @@ module.exports = (api) => {
           alias: {
             '@app/core': '../../packages/core',
             '@app/schemas': '../../packages/schemas/src',
-            '@app/styleguide': '../../packages/ui/src/styleguide',
-            '@app/styleguide/*': '../../packages/ui/src/styleguide/*',
             '@app/supabase': '../../packages/supabase',
             '@app/trpc': '../../packages/trpc/src',
             '@app/trpc/*': '../../packages/trpc/src/*',

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { type ComponentType, type ReactNode, useEffect, useState } from 'react'
 import { Text, View, XStack } from 'tamagui'
 

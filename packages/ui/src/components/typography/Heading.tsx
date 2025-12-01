@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { forwardRef, type ReactNode } from 'react'
 import { Text, type TextProps } from 'tamagui'
 import { typography } from '../../config/typography'

@@ -204,7 +204,15 @@ export const projectsRouter = t.router({
         })
       }
 
-      const updateData: any = {}
+      const updateData: {
+        name?: string
+        description?: string | null
+        status?: string
+        start_date?: string | null
+        end_date?: string | null
+        location_visibility?: string
+        location_visibility_override?: boolean
+      } = {}
       if (updates.name !== undefined) updateData.name = updates.name.trim()
       if (updates.description !== undefined)
         updateData.description = updates.description?.trim() || null
@@ -676,7 +684,10 @@ export const projectsRouter = t.router({
         })
       }
 
-      const updateData: any = {
+      const updateData: {
+        status: string
+        notes?: string
+      } = {
         status: 'rejected',
       }
 

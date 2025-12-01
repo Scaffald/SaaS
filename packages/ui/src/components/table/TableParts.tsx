@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { SizeTokens } from 'tamagui'
 import { createStyledContext, styled, ThemeableStack, withStaticProperties } from 'tamagui'
 

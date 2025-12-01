@@ -91,12 +91,12 @@ Place configuration files in the `config/` folder:
 4. **Maintainable** - Clear separation of concerns
 5. **Type Safety** - Consistent component naming for better TypeScript support
 
-### Turbo Generator
+### Nx Generator
 
 Use the `route` generator to quickly create new routes:
 
 ```bash
-pnpm turbo gen route --name="profile-overview"
+pnpm gen route --name="profile-overview"
 ```
 
 This will create all necessary files following the naming convention.

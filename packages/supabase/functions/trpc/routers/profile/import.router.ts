@@ -243,9 +243,9 @@ function sanitizeString(value: unknown): string | null {
   }
   const trimmed = value.trim();
   if (!trimmed) return null;
-  // Remove control characters (ASCII 0-31 and 127)
-  const controlCharPattern = /[\u0000-\u001F\u007F]+/g
-  const withoutControl = trimmed.replace(controlCharPattern, "");
+  // Remove control characters (ASCII 0-31 and 127) using character class
+  const controlChars = String.fromCharCode(...Array.from({ length: 32 }, (_, i) => i), 127)
+  const withoutControl = trimmed.replace(new RegExp(`[${controlChars.replace(/[[\]\\]/g, '\\$&')}]+`, 'g'), "")
   const strippedScripts = withoutControl.replace(
     /<script.*?>.*?<\/script>/gim,
     "",

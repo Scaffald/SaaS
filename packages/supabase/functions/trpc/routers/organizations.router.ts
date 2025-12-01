@@ -824,7 +824,7 @@ export const organizationsRouter = t.router({
   inviteMember: protectedProcedure
     .input(inviteMemberInputSchema)
     .mutation(async ({ ctx, input }) => {
-      const access = await ensureOrganizationAccess(ctx, input.organizationId, {
+      await ensureOrganizationAccess(ctx, input.organizationId, {
         requireAdmin: true,
       });
 
@@ -1349,7 +1349,7 @@ export const organizationsRouter = t.router({
 
   removeMember: protectedProcedure.input(removeMemberSchema).mutation(
     async ({ ctx, input }) => {
-      const access = await ensureOrganizationAccess(ctx, input.organizationId, {
+      await ensureOrganizationAccess(ctx, input.organizationId, {
         requireAdmin: true,
       });
 
@@ -1858,7 +1858,7 @@ export const organizationsRouter = t.router({
           target_user_id: input.targetUserId ?? null,
           external_email: input.externalEmail ?? null,
           expires_at: input.expiresAt ?? null,
-          created_by: ctx.user!.id,
+          created_by: ctx.user.id,
         })
         .select("*")
         .single();
@@ -2017,7 +2017,7 @@ export const organizationsRouter = t.router({
             description: input.description ?? null,
             parent_folder_id: input.parentFolderId ?? null,
             depth,
-            updated_by: ctx.user!.id,
+            updated_by: ctx.user.id,
           })
           .eq("id", input.folderId)
           .select("*")
@@ -2042,8 +2042,8 @@ export const organizationsRouter = t.router({
           description: input.description ?? null,
           parent_folder_id: input.parentFolderId ?? null,
           depth,
-          created_by: ctx.user!.id,
-          updated_by: ctx.user!.id,
+          created_by: ctx.user.id,
+          updated_by: ctx.user.id,
         })
         .select("*")
         .single();
@@ -2200,7 +2200,7 @@ export const organizationsRouter = t.router({
         email: input.email ?? null,
         is_active: input.isActive ?? true,
         metadata: {},
-        updated_by: ctx.user!.id,
+        updated_by: ctx.user.id,
       };
 
       if (input.locationId) {
@@ -2228,7 +2228,7 @@ export const organizationsRouter = t.router({
         .from("organization_locations")
         .insert({
           ...payload,
-          created_by: ctx.user!.id,
+          created_by: ctx.user.id,
         })
         .select("*")
         .single();
@@ -2359,8 +2359,8 @@ export const organizationsRouter = t.router({
           existing?.session_timeout_minutes ?? 60,
         ip_allow_list: input.ipAllowList ?? existing?.ip_allow_list ?? [],
         storage_warning_thresholds: STORAGE_WARNING_LEVELS,
-        created_by: existing?.created_by ?? ctx.user!.id,
-        updated_by: ctx.user!.id,
+        created_by: existing?.created_by ?? ctx.user.id,
+        updated_by: ctx.user.id,
       };
 
       const { data, error } = await ctx.supabase

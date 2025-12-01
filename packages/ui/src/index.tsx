@@ -146,8 +146,6 @@ export * from './config/typography'
 // useBreadcrumbs has domain dependencies - exclude from standalone
 // Hooks
 export * from './hooks/useUniversitySearch'
-// Styleguide
-export * from './styleguide'
 export { config } from './tamagui.config'
 export * from './themes/scaffald-theme'
 export * from './themes/theme-factory'

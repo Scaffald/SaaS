@@ -21,7 +21,6 @@ import {
   teamIdSchema,
   teamInvitationCancelSchema,
   teamInvitationCreateSchema,
-  teamInvitationIdSchema,
   teamInvitationResendSchema,
   teamInvitationRespondSchema,
   teamInvitationStatusFilterSchema,
@@ -386,8 +385,8 @@ function coerceDateInput(value?: string | null): string | null {
   return parsed.toISOString();
 }
 
-function transformTeam(record: Record<string, any>) {
-  const defaultRole = record.default_role as Record<string, any> | null;
+function transformTeam(record: Record<string, unknown>) {
+  const defaultRole = record.default_role as Record<string, unknown> | null;
 
   return {
     id: record.id as string,
@@ -434,9 +433,9 @@ function transformTeam(record: Record<string, any>) {
   };
 }
 
-function transformMember(record: Record<string, any>) {
-  const role = record.role as Record<string, any> | null;
-  const user = record.user as Record<string, any> | null;
+function transformMember(record: Record<string, unknown>) {
+  const role = record.role as Record<string, unknown> | null;
+  const user = record.user as Record<string, unknown> | null;
 
   return {
     id: record.id as string,
@@ -467,11 +466,11 @@ function transformMember(record: Record<string, any>) {
   };
 }
 
-function transformInvitation(record: Record<string, any>) {
-  const role = record.role as Record<string, any> | null;
-  const team = record.team as Record<string, any> | null;
-  const organization = team && (team.organization as Record<string, any> | null)
-    ? (team.organization as Record<string, any>)
+function transformInvitation(record: Record<string, unknown>) {
+  const role = record.role as Record<string, unknown> | null;
+  const team = record.team as Record<string, unknown> | null;
+  const organization = team && (team.organization as Record<string, unknown> | null)
+    ? (team.organization as Record<string, unknown>)
     : null;
 
   return {
@@ -989,7 +988,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const member = transformMember(data as Record<string, any>);
+        const member = transformMember(data as Record<string, unknown>);
 
         await recordTeamAuditLog({
           supabaseAdmin,
@@ -1147,7 +1146,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const member = transformMember(data as Record<string, any>);
+        const member = transformMember(data as Record<string, unknown>);
 
         const roleChanged = updates.role_id !== undefined &&
           existingMember.role_id !== member.role?.id;
@@ -1286,7 +1285,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const member = transformMember(data as Record<string, any>);
+        const member = transformMember(data as Record<string, unknown>);
 
         await recordTeamAuditLog({
           supabaseAdmin,
@@ -1390,7 +1389,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const member = transformMember(data as Record<string, any>);
+        const member = transformMember(data as Record<string, unknown>);
 
         if (input.status === "removed") {
           await recordTeamAuditLog({
@@ -1629,7 +1628,7 @@ function buildMembersRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const member = transformMember(data as Record<string, any>);
+        const member = transformMember(data as Record<string, unknown>);
         const team = data.team as {
           id: string;
           organization_id: string;
@@ -1740,7 +1739,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
 
         return {
           invitations: (data ?? []).map((record: Record<string, unknown>) =>
-            transformInvitation(record as Record<string, any>)
+            transformInvitation(record as Record<string, unknown>)
           ),
         };
       }),
@@ -1818,7 +1817,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
 
         return {
           invitations: (data ?? []).map((record: Record<string, unknown>) =>
-            transformInvitation(record as Record<string, any>)
+            transformInvitation(record as Record<string, unknown>)
           ),
         };
       }),
@@ -1928,7 +1927,7 @@ function buildInvitationsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        const invitation = transformInvitation(data as Record<string, any>);
+        const invitation = transformInvitation(data as Record<string, unknown>);
 
         await recordTeamAuditLog({
           supabaseAdmin,

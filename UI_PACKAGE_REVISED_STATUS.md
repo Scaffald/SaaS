@@ -9,7 +9,6 @@
 
 ### Original Plan vs. Reality
 
-**Original Assessment**: ~35 TypeScript errors in styleguide components
 **Actual Finding**: **2,575 TypeScript errors across the entire package**
 
 ### Impact
@@ -136,7 +135,6 @@ This suggests the team is **already aware of these type compatibility issues** a
 
 **Action**:
 1. Add `"skipLibCheck": false` → `"skipLibCheck": true` in tsconfig.json (already set)
-2. Add styleguide/demo files to exclude list
 3. Run tests with `pnpm test` (ignores typecheck)
 4. Proceed with test coverage goals
 
@@ -243,7 +241,6 @@ Timeline: Still 70-95 hours BUT...
 2. Is there a type generation step that needs to run?
 3. Was there a recent Tamagui version update that broke types?
 4. Should `skipLibCheck` be set to `true`?
-5. Should styleguide components be fully excluded?
 
 ---
 

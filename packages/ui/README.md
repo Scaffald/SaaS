@@ -27,8 +27,8 @@ This package requires the following peer dependencies:
 - `react` >= 18.0.0
 - `react-native` >= 0.74.0 (optional, for React Native)
 - `expo` >= 51.0.0 (optional, for Expo)
-- `tamagui` >= 1.138.0
-- `@tamagui/core` >= 1.138.0
+- `tamagui` >= 1.138.6
+- `@tamagui/core` >= 1.138.6
 - `react-hook-form` >= 7.0.0
 - `zod` >= 3.0.0
 

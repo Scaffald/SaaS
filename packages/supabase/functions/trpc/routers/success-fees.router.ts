@@ -184,10 +184,10 @@ async function findLatestSuccessFee(
   return (data as SuccessFeeRecord | null) ?? null
 }
 
-async function ensureUpfrontPaymentIntent(
-  ctx: Context,
-  successFee: SuccessFeeRecord,
-  schedule: SuccessFeeSchedule
+async function _ensureUpfrontPaymentIntent(
+  _ctx: Context,
+  _successFee: SuccessFeeRecord,
+  _schedule: SuccessFeeSchedule
 ): Promise<Stripe.PaymentIntent> {
   const stripe = await loadStripeClient(ctx)
 

@@ -91,10 +91,6 @@ export default defineConfig({
         ),
       },
       {
-        find: "@app/styleguide",
-        replacement: resolve(workspaceRoot, "packages/ui/src/styleguide"),
-      },
-      {
         find: "@test-helpers",
         replacement: resolve(
           workspaceRoot,

@@ -9,7 +9,6 @@
 - **Existing Tests**: 7 test files (6% coverage)
 - **Gap**: 109 components without comprehensive test coverage
 - **Linting Status**: 4 errors (React hook violations, `any` types)
-- **TypeScript Status**: Multiple errors in styleguide/config files
 
 ---
 
@@ -30,22 +29,6 @@
 
 ---
 
-### 1.2 Fix TypeScript Errors in Styleguide
-
-**Files with TypeScript errors**:
-- `src/styleguide/components/Sidebar.tsx` - Type compatibility errors (children, styling props)
-- `src/styleguide/components/StyleguidePage.tsx` - Type compatibility errors
-- `src/styleguide/components/TodoCallout.tsx` - Type compatibility errors
-- `src/tamagui.config.ts` - AnimationDriver type mismatch
-
-**Root Cause**: Tamagui v3 type system strictness with children and style props
-
-**Approach**:
-1. Review Tamagui v3 type definitions
-2. Update component props to match expected types
-3. Fix animation config if needed
-
-**Status**: ❌ Not started
 
 ---
 
@@ -188,7 +171,6 @@ describe('MyComponent', () => {
 ### Week 1: Foundation (Linting & Setup)
 1. ✅ Fix FormWrapper.native.tsx hook issue
 2. ✅ Fix MapContainer.native.tsx hook issue
-3. ✅ Fix TypeScript errors in styleguide
 4. ✅ Fix remaining `any` types
 5. ✅ Update vitest.setup.ts with centralized utilities
 
@@ -287,7 +269,6 @@ describe('MapContainer', () => {
 ## Phase 7: Quality Metrics
 
 ### Coverage Targets
-- **Line Coverage**: 95%+ (excluding styleguide)
 - **Branch Coverage**: 85%+
 - **Function Coverage**: 95%+
 - **Statement Coverage**: 95%+
@@ -300,7 +281,6 @@ describe('MapContainer', () => {
 - ✅ Async handling done correctly
 
 ### Excluded from Coverage
-- `src/styleguide/` - Demo/documentation code
 - `.storybook/` - Storybook stories
 - `**/*.d.ts` - Type definitions
 - `src/tamagui.config.ts` - Configuration
@@ -333,7 +313,6 @@ describe('MapContainer', () => {
 - [ ] All 4 linting errors fixed
 - [ ] All TypeScript errors resolved
 - [ ] 310+ test cases written
-- [ ] 95%+ line coverage (excluding styleguide)
 - [ ] All tests passing
 - [ ] No test flakiness
 - [ ] Documentation updated
@@ -345,7 +324,6 @@ describe('MapContainer', () => {
 
 1. **Immediately** (Today):
    - Fix 4 linting errors in FormWrapper.native.tsx and MapContainer.native.tsx
-   - Fix TypeScript errors in styleguide components
 
 2. **Short Term** (This week):
    - Set up test infrastructure

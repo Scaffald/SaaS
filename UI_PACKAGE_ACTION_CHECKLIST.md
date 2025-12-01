@@ -200,12 +200,6 @@ export interface MapPin {
 
 ## PHASE 2: TYPESCRIPT FIXES (Est. 3-4 hours)
 
-### Task 2.1: Fix Styleguide Components - Tamagui v3 Typing
-
-**Files Affected**:
-- `src/styleguide/components/Sidebar.tsx` (~10 errors)
-- `src/styleguide/components/StyleguidePage.tsx` (~10 errors)
-- `src/styleguide/components/TodoCallout.tsx` (~10 errors)
 
 **Root Issue**: Tamagui v3 strict component typing
 
@@ -241,7 +235,6 @@ interface YStackProps {
 
 **Estimated Time**:
 - Sidebar.tsx: 30 min
-- StyleguidePage.tsx: 30 min
 - TodoCallout.tsx: 30 min
 - **Total**: 90 min
 
@@ -347,16 +340,12 @@ git add packages/ui/src/components/FormWrapper.native.tsx
 git add packages/ui/src/components/maps/MapContainer.native.tsx
 git add packages/ui/src/components/maps/MapContainer.tsx
 git add packages/ui/src/components/maps/types.ts
-git add packages/ui/src/styleguide/components/Sidebar.tsx
-git add packages/ui/src/styleguide/components/StyleguidePage.tsx
-git add packages/ui/src/styleguide/components/TodoCallout.tsx
 git add packages/ui/src/tamagui.config.ts
 
 git commit -m "fix(ui): resolve all linting and TypeScript errors
 
 - Fix React hook violations in FormWrapper.native.tsx and MapContainer.native.tsx
 - Replace 'any' types with proper typing in maps components
-- Fix Tamagui v3 type compatibility in styleguide components
 - Update tamagui config with proper AnimationDriver typing
 
 Results:

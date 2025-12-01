@@ -156,8 +156,6 @@
     "transactions": "Transaction History",
     "violations": "Violation Reports"
   },
-  "styleguide": "Styleguide",
-  "styleguideApprovalQueue": "Styleguide Approval Queue",
   "teams": {
     "invitations": {
       "accept": "Accept Team Invitation"

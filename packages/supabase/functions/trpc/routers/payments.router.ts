@@ -2,7 +2,6 @@
 import { TRPCError } from '@trpc/server'
 import type Stripe from 'stripe'
 import { z } from 'zod'
-import type { Database } from '../_shared/database.types.ts'
 import type { Context } from '../context.ts'
 import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
@@ -337,8 +336,6 @@ async function getOrCreateStripeCustomer(
 
   return customerId
 }
-
-type DbPaymentMethodRow = Database['core']['Tables']['organization_payment_methods']['Row']
 
 export const paymentsRouter = t.router({
   /**

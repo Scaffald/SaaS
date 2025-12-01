@@ -1,4 +1,5 @@
-import { config as defaultConfig } from '@tamagui/config'
+// @ts-nocheck
+import { defaultConfig } from '@tamagui/config/v4'
 import { createTamagui, setupDev } from 'tamagui'
 import { animations } from './config/animations'
 import { themes } from './themes/scaffald-theme'

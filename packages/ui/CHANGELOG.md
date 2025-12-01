@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - React >= 18.0.0
 - React Native >= 0.74.0 (optional)
 - Expo >= 51.0.0 (optional)
-- Tamagui >= 1.138.0
+- Tamagui >= 1.138.6
 - React Hook Form >= 7.0.0
 - Zod >= 3.0.0
 

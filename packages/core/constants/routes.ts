@@ -22,7 +22,6 @@ import {
   Fingerprint,
   GraduationCap,
   HardDrive,
-  Palette,
   ShieldCheck,
   Users,
 } from "@tamagui/lucide-icons";
@@ -72,20 +71,6 @@ const ROUTES_CONFIG = {
     titleKey: "routes.home",
     protected: false,
     exact: true,
-  },
-
-  STYLEGUIDE: {
-    path: "/styleguide",
-    titleKey: "routes.styleguide",
-    protected: false,
-    exact: true,
-    icon: Palette,
-    APPROVAL_QUEUE: {
-      path: "/styleguide/approval-queue",
-      titleKey: "routes.styleguideApprovalQueue",
-      protected: false,
-      exact: true,
-    },
   },
 
   AUTH: {
