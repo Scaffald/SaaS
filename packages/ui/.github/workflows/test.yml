@@ -20,8 +20,3 @@ jobs:
       - run: pnpm install
       - run: pnpm test:unit
       - run: pnpm test:coverage
-      - uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage/coverage-final.json
-          fail_ci_if_error: false
-

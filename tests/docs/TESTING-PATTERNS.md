@@ -92,7 +92,7 @@ When you call `page.goto('/dashboard')` AGAIN after `signInAsAdmin()`:
 
 ### The Diagnostic Evidence
 
-From `scripts/diagnose-dashboard.mjs` output:
+Example diagnostic output showing the issue:
 
 ```
 ✅ Dashboard loaded in 2440ms

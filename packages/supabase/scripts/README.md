@@ -161,11 +161,6 @@ Permission testing script for external jobs feature.
 Overall: ✅ ALL TESTS PASSED
 ```
 
-### import-jobs.ts
-Legacy job import script (superseded by seed-all.ts).
-
-Use `seed-all.ts` for new development.
-
 ## Development Workflow
 
 ### Initial Setup

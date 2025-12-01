@@ -51,6 +51,8 @@ The UI package exists in **TWO locations** for different purposes:
 
 - `packages/ui/scripts/sync-to-standalone.sh` - Syncs changes from monorepo to standalone repo
 - `packages/ui/scripts/setup-local-dev.sh` - Switch between npm/link/workspace modes
+- `packages/ui/scripts/test-build-publish.sh` - Test build and publish workflow (verifies package is ready)
+- `packages/ui/scripts/publish-alpha.sh` - Publish alpha version to npm
 - `packages/ui/scripts/sync-and-publish.sh` - Complete sync and publish workflow
 
 ### Environment Variables

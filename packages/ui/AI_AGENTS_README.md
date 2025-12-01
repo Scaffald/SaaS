@@ -36,9 +36,18 @@ Three modes available via `./packages/ui/scripts/setup-local-dev.sh`:
 2. **link mode**: Links standalone repo for testing
 3. **workspace mode**: Fast iteration with file reference
 
+### Scripts Available
+
+- `sync-to-standalone.sh` - Sync changes from monorepo to standalone repo
+- `setup-local-dev.sh` - Switch between npm/link/workspace modes
+- `test-build-publish.sh` - Test build and publish workflow (verifies package is ready)
+- `publish-alpha.sh` - Publish alpha version to npm
+- `sync-and-publish.sh` - Complete sync and publish workflow
+
 ### Full Documentation
 
 - `.cursor/rules/ui-package-hybrid.mdc` - Complete workflow and rules
 - `DEVELOPER_SETUP.md` - Developer setup guide
+- `PUBLISHING_GUIDE.md` - Publishing workflow and instructions
 - `README.md` - Package documentation
 

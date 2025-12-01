@@ -131,7 +131,24 @@ export UNICORNLOVE_UI_DIR=/custom/path/to/unicornlove-ui
    ./packages/ui/scripts/sync-to-standalone.sh
    ```
 
-2. **In standalone repo**:
+2. **Test build and publish workflow**:
+   ```bash
+   ./packages/ui/scripts/test-build-publish.sh
+   ```
+   This verifies:
+   - No catalog: references remain
+   - Package builds successfully
+   - Tests pass
+   - Type checking passes
+   - Lint and format checks pass
+   - Semantic-release dry run works
+
+3. **Publish alpha version** (for testing):
+   ```bash
+   ./packages/ui/scripts/publish-alpha.sh
+   ```
+
+4. **Or publish manually in standalone repo**:
    ```bash
    cd "${UNICORNLOVE_UI_DIR:-../_packages/unicornlove-ui}"
    pnpm build
@@ -140,7 +157,7 @@ export UNICORNLOVE_UI_DIR=/custom/path/to/unicornlove-ui
    npm publish
    ```
 
-3. **Update monorepo** (optional, if switching to npm mode):
+5. **Update monorepo** (optional, if switching to npm mode):
    ```bash
    ./packages/ui/scripts/setup-local-dev.sh npm
    pnpm install
@@ -172,6 +189,16 @@ Syncs changes from monorepo to standalone repository.
 ```
 
 Uses `UNICORNLOVE_UI_DIR` environment variable if set, otherwise tries common locations.
+
+### `test-build-publish.sh`
+
+Tests the complete build and publish workflow in the standalone repository.
+
+```bash
+./packages/ui/scripts/test-build-publish.sh
+```
+
+Verifies that the package can be built, tested, and is ready for publishing. Requires the standalone repository to be set up first.
 
 ## Troubleshooting
 
