@@ -28,6 +28,34 @@ vi.mock('@tamagui/toast', () => ({
 vi.mock('@unicornlove/ui', () => ({
   ResponsiveModal: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
     open ? <div data-testid="modal">{children}</div> : null,
+  ResponsiveSelect: ({
+    value,
+    onValueChange,
+    options,
+    placeholder,
+    'data-testid': dataTestId,
+    testID,
+  }: {
+    value?: string | null
+    onValueChange: (value: string) => void
+    options: Array<{ value: string; label: string }>
+    placeholder?: string
+    'data-testid'?: string
+    testID?: string
+  }) => (
+    <select
+      data-testid={dataTestId ?? testID ?? 'responsive-select'}
+      value={value ?? ''}
+      onChange={(event) => onValueChange(event.target.value)}
+    >
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ),
 }))
 
 vi.mock('@app/core/components/user', () => ({
