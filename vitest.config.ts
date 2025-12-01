@@ -53,6 +53,10 @@ export default defineConfig({
         replacement: resolve(workspaceRoot, "packages/schemas/src"),
       },
       {
+        find: "@app/trpc",
+        replacement: resolve(workspaceRoot, "packages/trpc/src"),
+      },
+      {
         find: "@testing-library/react-native",
         replacement: resolve(
           workspaceRoot,
@@ -103,13 +107,19 @@ export default defineConfig({
     ],
     testTimeout: 10000, // 10 second timeout per test - fail fast on hanging tests
     hookTimeout: 5000, // 5 second timeout for setup/teardown
-    pool: "forks",
-    // Note: poolSize was removed in newer Vitest versions
-    // Use minWorkers/maxWorkers in poolOptions.forks if needed
+    // Using threads pool - shares memory, lower overhead than forks
+    pool: "threads",
+    // Limit concurrent tests to reduce memory pressure
+    maxConcurrency: 3,
+    // Run test files sequentially to prevent resource exhaustion
+    sequence: {
+      concurrent: false, // Don't run tests concurrently within a file
+    },
     reporters: [quietProgressReporterPath],
     coverage: {
       provider: "v8",
-      reporter: ["text", "json", "html"],
+      reporter: ["text", "text-summary", "json", "html"],
+      reportsDirectory: "./coverage",
       exclude: [
         "node_modules/",
         "tests/",
@@ -117,7 +127,18 @@ export default defineConfig({
         "**/*.spec.ts",
         "**/*.test.tsx",
         "**/*.spec.tsx",
+        "**/*.d.ts",
+        "**/types/**",
+        "**/__mocks__/**",
+        "**/mocks/**",
       ],
+      // Enforce minimum coverage thresholds
+      thresholds: {
+        lines: 60,
+        functions: 60,
+        branches: 50,
+        statements: 60,
+      },
     },
   },
 });

@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event'
 import type { CSSProperties, ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+// Mock Tamagui components before import
+vi.mock('tamagui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
     const styleProps: Record<string, unknown> = {
       ...(props.style as Record<string, unknown> | undefined),
@@ -20,6 +20,8 @@ vi.mock('tamagui', async () => {
         }
         continue
       }
+      // Skip $sm and other responsive props
+      if (key.startsWith('$')) continue
       switch (key) {
         case 'position':
         case 'px':
@@ -27,6 +29,7 @@ vi.mock('tamagui', async () => {
         case 'gap':
         case 'justify':
         case 'items':
+          break
         case 'b':
           styleProps.bottom = value
           break
@@ -76,15 +79,13 @@ vi.mock('tamagui', async () => {
     return { style: styleProps, passthrough } as const
   }
 
-  const MockButton = ({
-    children,
-    onPress,
-    ...rest
-  }: {
-    children: ReactNode
+  const MockButton = (props: {
+    children?: ReactNode
     onPress?: () => void
     style?: CSSProperties
+    [key: string]: unknown
   }) => {
+    const { children, onPress, ...rest } = props
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <button type="button" onClick={onPress} style={style} {...passthrough}>
@@ -93,7 +94,8 @@ vi.mock('tamagui', async () => {
     )
   }
 
-  const MockXStack = ({ children, ...rest }: { children: ReactNode; style?: CSSProperties }) => {
+  const MockXStack = (props: { children?: ReactNode; style?: CSSProperties; [key: string]: unknown }) => {
+    const { children, ...rest } = props
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <div data-testid="x-stack" style={style} {...passthrough}>
@@ -103,7 +105,6 @@ vi.mock('tamagui', async () => {
   }
 
   return {
-    ...actual,
     XStack: MockXStack,
     Button: MockButton,
   }
@@ -116,7 +117,8 @@ vi.mock('@tamagui/lucide-icons', () => ({
   List: () => <span data-testid="icon-list" />,
 }))
 
-const { FilterBar } = await import('../FilterBar')
+// Import component after mocks are set up
+import { FilterBar } from '../FilterBar'
 
 describe('FilterBar', () => {
   it('calls handlers when buttons pressed and toggles states', async () => {

@@ -18,8 +18,21 @@ vi.mock('../../hooks/useResumeWizard', () => ({
 }))
 
 vi.mock('@tamagui/lucide-icons', () => ({
+  // Icons used by ResumeImportWidget
   FileText: () => <span data-testid="icon-file-text" />,
   ShieldCheck: () => <span data-testid="icon-shield-check" />,
+  // Icons used by routes.ts (transitive dependency)
+  AlertTriangle: () => <span data-testid="alert-triangle" />,
+  Bell: () => <span data-testid="bell" />,
+  Briefcase: () => <span data-testid="briefcase" />,
+  Building2: () => <span data-testid="building2" />,
+  ClipboardCheck: () => <span data-testid="clipboard-check" />,
+  CreditCard: () => <span data-testid="credit-card" />,
+  Fingerprint: () => <span data-testid="fingerprint" />,
+  GraduationCap: () => <span data-testid="graduation-cap" />,
+  HardDrive: () => <span data-testid="hard-drive" />,
+  Palette: () => <span data-testid="palette" />,
+  Users: () => <span data-testid="users" />,
 }))
 
 vi.mock('tamagui', () => {

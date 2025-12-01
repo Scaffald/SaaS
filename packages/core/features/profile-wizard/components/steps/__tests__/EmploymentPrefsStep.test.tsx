@@ -133,9 +133,7 @@ vi.mock('tamagui', () => {
     <span data-value={value}>{children}</span>
   )
 
-  const isSelectItemElement = (
-    element: ReactNode
-  ): element is ReactElement<{ value: string; children?: ReactNode }> => {
+  const isSelectItemElement = (element: ReactNode): boolean => {
     return isValidElement(element) && element.type === SelectItem
   }
 
@@ -146,7 +144,8 @@ vi.mock('tamagui', () => {
         return
       }
       if (isSelectItemElement(child)) {
-        options.push({ value: child.props.value, label: child.props.children })
+        const props = child.props as { value: string; children?: ReactNode }
+        options.push({ value: props.value, label: props.children })
         return
       }
       const nestedChildren = (child.props as { children?: ReactNode }).children

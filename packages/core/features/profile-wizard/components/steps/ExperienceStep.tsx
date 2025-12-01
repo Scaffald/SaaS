@@ -166,6 +166,7 @@ export function ExperienceStep({
               checked={Boolean(field.value)}
               onCheckedChange={field.onChange}
               aria-label="I currently work here"
+              data-testid="toggle-current-job"
             />
           )}
         />

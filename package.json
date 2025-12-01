@@ -80,6 +80,7 @@
     "test:contracts": "vitest run contracts/contract-suite.test.ts --config vitest.contracts.config.ts",
     "test:core": "pnpm --filter @app/core test",
     "test:coverage": "vitest run --coverage",
+    "test:deno:types": "cd packages/supabase/functions && deno check **/*.ts",
     "test:deps": "pnpm check-deps && pnpm check-circular-deps",
     "test:expo": "pnpm --filter expo-app test",
     "test:health": "ts-node scripts/test-health-analyzer.ts",

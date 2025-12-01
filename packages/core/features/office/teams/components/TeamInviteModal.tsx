@@ -137,7 +137,12 @@ export function TeamInviteModal({
       : 'Invite an existing organization member without sending an email.'
 
   return (
-    <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Invite team member">
+    <ResponsiveModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Invite team member"
+      testID="modal"
+    >
       <YStack gap="$4">
         <YStack gap="$2">
           <Text color="$color11">{inviteTypeDescription}</Text>

@@ -1,25 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { UserProfilePanel } from '../UserProfilePanel'
 
-// Mock expo-router
-const mockPush = vi.fn()
-vi.mock('expo-router', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}))
-
-// Mock toast
-const mockShow = vi.fn()
-vi.mock('@tamagui/toast', () => ({
-  useToastController: () => ({
-    show: mockShow,
-  }),
-}))
-
-// Mock API
+// Mock data - defined before any mocks that reference it
 const mockPreviewData = {
   id: 'user-123',
   displayName: 'John Doe',
@@ -47,16 +30,38 @@ const mockPreviewData = {
   ],
 }
 
+// Mock functions - must be defined before vi.mock calls that use them
+const mockPush = vi.fn()
+const mockShow = vi.fn()
 const mockUseQuery = vi.fn()
+
+// Mock expo-router
+vi.mock('expo-router', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}))
+
+// Mock toast
+vi.mock('@tamagui/toast', () => ({
+  useToastController: () => ({
+    show: mockShow,
+  }),
+}))
+
+// Mock API - using inline function to avoid hoisting issues
 vi.mock('@app/core/utils/api', () => ({
   api: {
     userProfile: {
       getPreview: {
-        useQuery: mockUseQuery,
+        useQuery: (...args: unknown[]) => mockUseQuery(...args),
       },
     },
   },
 }))
+
+// Import component after mocks are set up
+import { UserProfilePanel } from '../UserProfilePanel'
 
 // Mock getStorageUrl
 vi.mock('@app/core/utils/supabase/storage', () => ({

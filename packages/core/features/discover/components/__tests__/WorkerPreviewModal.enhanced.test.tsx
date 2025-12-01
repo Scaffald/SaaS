@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-import { WorkerPreviewModal } from '../WorkerPreviewModal'
 
+// All mocks must be defined before import
 vi.mock('expo-router', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -83,31 +84,26 @@ vi.mock('@app/core/utils/api', () => ({
 }))
 
 vi.mock('@unicornlove/ui', () => ({
-  ResponsiveModal: ({
-    children,
-    open,
-    title,
-  }: {
-    children: React.ReactNode
-    open: boolean
-    title: string
-  }) =>
-    open ? (
+  ResponsiveModal: (props: { children: ReactNode; open: boolean; title: string }) =>
+    props.open ? (
       <div data-testid="worker-preview-modal">
-        <h2>{title}</h2>
-        {children}
+        <h2>{props.title}</h2>
+        {props.children}
       </div>
     ) : null,
   Spinner: () => <div>Loading...</div>,
 }))
 
 vi.mock('tamagui', () => ({
-  YStack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  XStack: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
-  H4: ({ children }: { children: React.ReactNode }) => <h4>{children}</h4>,
-  ScrollView: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  YStack: (props: { children: ReactNode }) => <div>{props.children}</div>,
+  XStack: (props: { children: ReactNode }) => <div>{props.children}</div>,
+  Text: (props: { children: ReactNode }) => <span>{props.children}</span>,
+  H4: (props: { children: ReactNode }) => <h4>{props.children}</h4>,
+  ScrollView: (props: { children: ReactNode }) => <div>{props.children}</div>,
 }))
+
+// Import component after all mocks are set up
+import { WorkerPreviewModal } from '../WorkerPreviewModal'
 
 describe('WorkerPreviewModal Enhanced Content', () => {
   it('should display top 8-10 skills (not just 5)', () => {

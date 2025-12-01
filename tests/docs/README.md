@@ -36,11 +36,11 @@ Shared test infrastructure:
 ### Documentation (`tests/docs/`)
 Testing documentation and guides:
 - `README.md` - This file (main testing guide)
+- `TODO.md` - **Consolidated TODO list for all test work** ⭐
 - `CONTRIBUTING.md` - Contribution guidelines
 - `TESTING-PATTERNS.md` - Testing patterns and best practices
-- `MIGRATION-BASELINE.md` - Pre-migration test metrics
-- `MIGRATION-RESULTS.md` - Post-migration test metrics
-- `REMOVED-TESTS.md` - Log of removed tests
+- `MIGRATION-BASELINE.md` - Pre-migration test metrics (historical reference)
+- `MIGRATION-RESULTS.md` - Post-migration test metrics (historical reference)
 
 ## Running Tests
 
@@ -142,22 +142,57 @@ alias: [
 
 ### Helpers
 Test helpers are in `tests/infrastructure/vitest/helpers/`:
-- `database.ts` - Supabase test client helpers
-  - `createTestClient()` - Create anonymous Supabase client
-  - `createServiceRoleClient()` - Create service role Supabase client
-  - `setupTestDatabase()` - Setup test database state
-  - `teardownTestDatabase()` - Cleanup test database state
 
-Example usage:
+#### Database Helpers (`database.ts`)
+- `createTestClient()` - Create anonymous Supabase client
+- `createServiceRoleClient()` - Create service role Supabase client
+- `setupTestDatabase()` - Setup test database state
+- `teardownTestDatabase()` - Cleanup test database state
+
+#### Supabase Mock Factory (`supabase-mock.ts`) ⭐ NEW
+Comprehensive Supabase mocking for unit tests:
+- `createMockSupabaseClient()` - Full client mock (auth, storage, realtime)
+- `createMockQueryBuilder()` - Chainable query builder (`.select()`, `.eq()`, `.in()`, etc.)
+- `mockSupabaseResponse()` - Configure specific responses per table/method
+- `createMockUser()` / `createMockSession()` - Auth mock helpers
+- `resetSupabaseMocks()` - Clean state between tests
+
+**Example usage:**
 ```typescript
-import { createServiceRoleClient } from '../../../../../../tests/infrastructure/vitest/helpers/database'
+import { 
+  createMockSupabaseClient, 
+  mockSupabaseResponse 
+} from '@/tests/infrastructure/vitest/helpers/supabase-mock'
 
 describe('My Feature', () => {
-  it('should work with database', async () => {
-    const supabase = await createServiceRoleClient()
-    // Test implementation
+  const client = createMockSupabaseClient({
+    auth: { user: { id: 'user-123', email: 'test@example.com' } }
+  })
+
+  it('should fetch users', async () => {
+    mockSupabaseResponse(client, {
+      table: 'users',
+      method: 'select',
+      data: [{ id: '1', name: 'Test User' }],
+    })
+
+    // Your test using the mocked client
+    const result = await client.from('users').select('*')
+    expect(result.data).toHaveLength(1)
   })
 })
+```
+
+**Query Builder Example:**
+```typescript
+// The mock supports full chaining
+const result = await client
+  .schema('core')
+  .from('users')
+  .select('id, name')
+  .eq('status', 'active')
+  .order('created_at', { ascending: false })
+  .limit(10)
 ```
 
 ### Playwright Helpers
@@ -212,6 +247,6 @@ See `MIGRATION-RESULTS.md` for detailed migration metrics and `MIGRATION-BASELIN
 
 ## Additional Resources
 
+- [TODO.md](./TODO.md) - **Consolidated TODO list for all test work** ⭐
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - How to contribute tests
 - [TESTING-PATTERNS.md](./TESTING-PATTERNS.md) - Testing patterns and best practices
-- [REMOVED-TESTS.md](./REMOVED-TESTS.md) - Log of removed tests

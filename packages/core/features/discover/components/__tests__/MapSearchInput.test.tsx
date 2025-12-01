@@ -6,13 +6,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const selectHandler = vi.fn()
 const closeHandler = vi.fn()
 
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
+// Mock Tamagui before imports
+vi.mock('tamagui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
-    const style = { ...(props.style as Record<string, unknown> | undefined) }
+    const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(props)) {
       if (key === 'style') continue
+      // Skip responsive props
+      if (key.startsWith('$')) continue
       switch (key) {
         case 'position':
         case 'top':
@@ -33,7 +35,8 @@ vi.mock('tamagui', async () => {
     return { style, passthrough } as const
   }
 
-  const MockXStack = ({ children, ...rest }: { children: ReactNode; style?: CSSProperties }) => {
+  const MockXStack = (props: { children?: ReactNode; style?: CSSProperties; [key: string]: unknown }) => {
+    const { children, ...rest } = props
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <div data-testid="x-stack" style={style} {...passthrough}>
@@ -42,7 +45,8 @@ vi.mock('tamagui', async () => {
     )
   }
 
-  const MockYStack = ({ children, ...rest }: { children: ReactNode; style?: CSSProperties }) => {
+  const MockYStack = (props: { children?: ReactNode; style?: CSSProperties; [key: string]: unknown }) => {
+    const { children, ...rest } = props
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <div data-testid="y-stack" style={style} {...passthrough}>
@@ -52,20 +56,15 @@ vi.mock('tamagui', async () => {
   }
 
   return {
-    ...actual,
-    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    AnimatePresence: (props: { children: ReactNode }) => <>{props.children}</>,
     XStack: MockXStack,
     YStack: MockYStack,
-    Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+    Text: (props: { children: ReactNode }) => <span>{props.children}</span>,
   }
 })
 
 vi.mock('@unicornlove/ui', () => ({
-  AddressAutocomplete: ({
-    onChange,
-    onAddressSelect,
-    value,
-  }: {
+  AddressAutocomplete: (props: {
     onChange: (value: string) => void
     onAddressSelect: (result: {
       coordinates: { lng: number; lat: number }
@@ -74,11 +73,11 @@ vi.mock('@unicornlove/ui', () => ({
     value: string
   }) => (
     <div>
-      <input aria-label="search" value={value} onChange={(event) => onChange(event.target.value)} />
+      <input aria-label="search" value={props.value} onChange={(event) => props.onChange(event.target.value)} />
       <button
         type="button"
         onClick={() =>
-          onAddressSelect({
+          props.onAddressSelect({
             coordinates: { lng: -80.1, lat: 35.2 },
             formattedAddress: 'Charlotte, NC',
           })
@@ -94,11 +93,11 @@ vi.mock('@tamagui/lucide-icons', () => ({
   AlertCircle: () => <span data-testid="alert-icon" />,
 }))
 
-const { MapSearchInput } = await import('../MapSearchInput')
+// Import component after mocks are set up
+import { MapSearchInput } from '../MapSearchInput'
 
 describe('MapSearchInput', () => {
   beforeEach(() => {
-    vi.resetModules()
     selectHandler.mockReset()
     closeHandler.mockReset()
   })

@@ -26,6 +26,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   ChevronDown: () => <span data-testid="chevron-down" />,
   Check: () => <span data-testid="check" />,
   Clock: () => <span data-testid="clock" />,
+  Palette: () => <span data-testid="palette" />, // Added for transitive dependencies
 }))
 
 vi.mock('@app/core/utils/useTranslation', () => ({

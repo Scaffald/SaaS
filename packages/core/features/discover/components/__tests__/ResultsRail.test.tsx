@@ -6,14 +6,15 @@ import { describe, expect, it, vi } from 'vitest'
 
 const mockScrollToCard = vi.fn()
 
-vi.mock('tamagui', async () => {
-  const actual = await vi.importActual<typeof import('tamagui')>('tamagui')
-
+// Mock Tamagui before imports
+vi.mock('tamagui', () => {
   const mapStyleProps = (props: Record<string, unknown>) => {
-    const style = { ...(props.style as Record<string, unknown> | undefined) }
+    const style: Record<string, unknown> = { ...(props.style as Record<string, unknown> | undefined) }
     const passthrough: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(props)) {
       if (key === 'style') continue
+      // Skip responsive props
+      if (key.startsWith('$')) continue
       switch (key) {
         case 'position':
         case 'top':
@@ -44,7 +45,8 @@ vi.mock('tamagui', async () => {
     return { style, passthrough } as const
   }
 
-  const MockYStack = ({ children, ...rest }: { children: ReactNode; style?: CSSProperties }) => {
+  const MockYStack = (props: { children?: ReactNode; style?: CSSProperties; [key: string]: unknown }) => {
+    const { children, ...rest } = props
     const { style, passthrough } = mapStyleProps(rest)
     return (
       <div data-testid="y-stack" style={style} {...passthrough}>
@@ -54,7 +56,6 @@ vi.mock('tamagui', async () => {
   }
 
   return {
-    ...actual,
     YStack: MockYStack,
   }
 })
@@ -62,34 +63,32 @@ vi.mock('tamagui', async () => {
 vi.mock('../ResultList', () => ({
   ResultList: forwardRef(
     (
-      {
-        onSelect,
-        selectedId,
-      }: {
+      props: {
         onSelect: (id: string) => void
         selectedId: string | null
       },
-      ref
+      ref: React.Ref<{ scrollToCard: (id: string) => void } | null>
     ) => {
       mockScrollToCard.mockClear()
-      if (ref) {
+      if (ref && typeof ref === 'object' && ref !== null) {
         ;(ref as React.MutableRefObject<{ scrollToCard: (id: string) => void } | null>).current = {
           scrollToCard: mockScrollToCard,
         }
       }
       return (
         <div>
-          <button type="button" onClick={() => onSelect('profile-1')}>
+          <button type="button" onClick={() => props.onSelect('profile-1')}>
             select-profile
           </button>
-          <div data-testid="selected">{selectedId}</div>
+          <div data-testid="selected">{props.selectedId}</div>
         </div>
       )
     }
   ),
 }))
 
-const { ResultsRail } = await import('../ResultsRail')
+// Import component after mocks are set up
+import { ResultsRail } from '../ResultsRail'
 
 describe('ResultsRail', () => {
   it('toggles visibility styles based on isVisible flag', () => {

@@ -12,6 +12,11 @@ vi.mock('../StepNavigation', () => ({
     onBack,
     onSaveForLater,
     onSkip,
+    nextLabel = 'Next',
+    backLabel = 'Back',
+    skipLabel = 'Skip This Step',
+    saveLabel = 'Save & Continue Later',
+    isLastStep = false,
   }: {
     canGoNext: boolean
     isSaving: boolean
@@ -19,22 +24,27 @@ vi.mock('../StepNavigation', () => ({
     onBack: () => void
     onSaveForLater?: () => void
     onSkip?: () => void
+    nextLabel?: string
+    backLabel?: string
+    skipLabel?: string
+    saveLabel?: string
+    isLastStep?: boolean
   }) => (
     <div>
       <button type="button" disabled={!canGoNext || isSaving} onClick={onNext}>
-        Continue
+        {isLastStep ? 'Finish' : nextLabel}
       </button>
       <button type="button" onClick={onBack}>
-        Back
+        {backLabel}
       </button>
       {onSaveForLater ? (
         <button type="button" onClick={onSaveForLater}>
-          Save & Continue Later
+          {saveLabel}
         </button>
       ) : null}
       {onSkip ? (
         <button type="button" onClick={onSkip}>
-          Skip
+          {skipLabel}
         </button>
       ) : null}
     </div>
@@ -151,6 +161,17 @@ vi.mock('tamagui', () => {
     </label>
   )
 
+  const CardHeader = ({
+    children,
+    ...rest
+  }: {
+    children?: ReactNode
+  } & Record<string, unknown>) => (
+    <div data-testid="card-header" {...rest}>
+      {children}
+    </div>
+  )
+
   const Card = ({
     children,
     ...rest
@@ -162,16 +183,8 @@ vi.mock('tamagui', () => {
     </div>
   )
 
-  Card.Header = ({
-    children,
-    ...rest
-  }: {
-    children?: ReactNode
-  } & Record<string, unknown>) => (
-    <div data-testid="card-header" {...rest}>
-      {children}
-    </div>
-  )
+  // Attach Header to Card so Card.Header works - must be done before return
+  ;(Card as any).Header = CardHeader
 
   return {
     YStack: Stack,
@@ -182,7 +195,7 @@ vi.mock('tamagui', () => {
     Paragraph,
     Label,
     Card,
-    CardHeader: Card.Header,
+    CardHeader: CardHeader, // Also export separately for direct access
   }
 })
 
@@ -214,7 +227,7 @@ describe('CertificationsStep', () => {
       ],
     }
 
-    render(
+    const { container } = render(
       <CertificationsStep
         initialData={initialData}
         isSaving={false}
@@ -226,6 +239,14 @@ describe('CertificationsStep', () => {
         onStepStateChange={onStepStateChange}
       />
     )
+
+    // First verify component renders something
+    const bodyContent = container.querySelector('body')?.innerHTML || ''
+    if (!bodyContent || bodyContent.trim() === '') {
+      // Component didn't render - this is the root issue
+      screen.debug(container)
+      throw new Error('Component rendered empty body. This indicates a rendering issue that needs to be fixed first.')
+    }
 
     expect(screen.getByText('OSHA 30-Hour Construction Safety')).toBeInTheDocument()
     expect(screen.getByText('OSHA')).toBeInTheDocument()

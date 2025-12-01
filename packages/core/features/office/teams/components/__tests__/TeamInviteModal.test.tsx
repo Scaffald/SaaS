@@ -26,8 +26,15 @@ vi.mock('@tamagui/toast', () => ({
 }))
 
 vi.mock('@unicornlove/ui', () => ({
-  ResponsiveModal: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
-    open ? <div data-testid="modal">{children}</div> : null,
+  ResponsiveModal: ({
+    open,
+    children,
+    testID,
+  }: {
+    open: boolean
+    children: React.ReactNode
+    testID?: string
+  }) => (open ? <div data-testid={testID ?? 'modal'}>{children}</div> : null),
   ResponsiveSelect: ({
     value,
     onValueChange,

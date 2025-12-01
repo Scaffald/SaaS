@@ -36,12 +36,15 @@ const mockPostHogInstance = {
   optedOut: false,
 };
 
-// Create a constructor function that works with 'new' keyword
-class PostHogConstructor {
-  constructor() {
-    Object.assign(this, mockPostHogInstance);
-  }
-}
+// Create a spyable constructor function that works with 'new' keyword
+// Returns the mock instance directly so state is shared
+const PostHogConstructor = vi.fn(function PostHogConstructor(
+  apiKey: string,
+  options?: unknown,
+) {
+  // Return the shared mock instance so state (like optedOut) is shared
+  return mockPostHogInstance;
+});
 
 vi.mock("posthog-react-native", () => ({
   default: PostHogConstructor,

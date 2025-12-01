@@ -20,7 +20,11 @@ export const MilestoneBadge = memo(function MilestoneBadge({ milestone }: Milest
       rounded="$3"
       opacity={milestone.achieved ? 1 : 0.7}
     >
-      <Trophy size={16} color={milestone.achieved ? '$green10' : '$color10'} />
+      <Trophy
+        size={16}
+        color={milestone.achieved ? '$green10' : '$color10'}
+        data-testid="trophy-icon"
+      />
       <YStack>
         <Text fontSize="$2" fontWeight="600" color={milestone.achieved ? '$green11' : '$color11'}>
           {milestone.label}

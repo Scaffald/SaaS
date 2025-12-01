@@ -284,6 +284,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   ChevronDown: () => <span data-testid="chevron-icon" />,
   Plus: () => <span data-testid="plus-icon" />,
   X: () => <span data-testid="x-icon" />,
+  Palette: () => <span data-testid="palette-icon" />, // Added for transitive dependencies
 }))
 
 vi.mock('expo-crypto', () => ({
