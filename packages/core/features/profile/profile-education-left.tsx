@@ -127,27 +127,23 @@ export function ProfileEducationLeft({
       const previousEducation = utils.profile.education.getEducation.getData()
       const previousLevel = utils.profile.education.getEducationLevel.getData()
 
-      // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
       utils.profile.education.getEducation.setData(
         undefined,
-        (input.education_entries ?? []) as any
+        input.education_entries ?? []
       )
       utils.profile.education.getEducationLevel.setData(undefined, {
         education_level: input.education_level ?? null,
-        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-      } as any)
+      })
 
       return { previousEducation, previousLevel }
     },
     onError: (error: unknown, _input: SaveEducationInput, context?: SaveEducationContext) => {
       console.error('Error saving education:', error)
       if (context?.previousEducation) {
-        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-        utils.profile.education.getEducation.setData(undefined, context.previousEducation as any)
+        utils.profile.education.getEducation.setData(undefined, context.previousEducation)
       }
       if (context?.previousLevel) {
-        // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-        utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel as any)
+        utils.profile.education.getEducationLevel.setData(undefined, context.previousLevel)
       }
       failProfileSync()
       toast.show('Save Failed', {

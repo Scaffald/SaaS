@@ -104,7 +104,16 @@ export function DataTable<TData>({
   const activeRow = activeRowId ? tableRows.find((row) => row.id === activeRowId)?.original : null
 
   // Handle row click - calculate position and open overlay
-  const handleRowClick = (_row: TData, rowId: string, event?: any) => {
+  const handleRowClick = (
+    _row: TData,
+    rowId: string,
+    event?: {
+      nativeEvent?: { clientX?: number; clientY?: number }
+      clientX?: number
+      clientY?: number
+      currentTarget?: HTMLElement | null
+    }
+  ) => {
     if (useOverlay && isWeb) {
       // Calculate position relative to table container
       // Try to get position from event or from row element
@@ -113,8 +122,8 @@ export function DataTable<TData>({
 
       if (event) {
         // Try to get position from mouse/touch event
-        const clientX = (event as any).nativeEvent?.clientX ?? (event as any).clientX
-        const clientY = (event as any).nativeEvent?.clientY ?? (event as any).clientY
+        const clientX = event.nativeEvent?.clientX ?? event.clientX
+        const clientY = event.nativeEvent?.clientY ?? event.clientY
 
         if (clientX !== undefined && clientY !== undefined) {
           const containerRect = (tableContainerRef.current as HTMLElement)?.getBoundingClientRect()
@@ -187,7 +196,7 @@ export function DataTable<TData>({
 
   return (
     <View flex={1} flexDirection="column" position="relative">
-      <View ref={tableContainerRef as any} position="relative" flex={1}>
+      <View ref={tableContainerRef} position="relative" flex={1}>
         <ScrollView flex={1} showsVerticalScrollIndicator showsHorizontalScrollIndicator>
           <ScrollView horizontal>
             <View width="100%">

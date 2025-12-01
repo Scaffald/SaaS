@@ -95,27 +95,22 @@ export function ProfileExperienceLeft() {
       const previousExperience = utils.profile.experience.getExperience.getData()
       const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
-      // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-      utils.profile.experience.getExperience.setData(undefined, input.experience_entries as any)
+      utils.profile.experience.getExperience.setData(undefined, input.experience_entries)
       utils.profile.experience.getExperienceSummary.setData(undefined, {
         career_level: input.career_level ?? null,
-        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData - null values in data
-      } as any)
+      })
 
-      // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation - return values with null fields
-      return { previousExperience, previousSummary } as any
+      return { previousExperience, previousSummary }
     },
     onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
       console.error('Error saving experience:', error)
       if (context?.previousExperience) {
-        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
-        utils.profile.experience.getExperience.setData(undefined, context.previousExperience as any)
+        utils.profile.experience.getExperience.setData(undefined, context.previousExperience)
       }
       if (context?.previousSummary) {
-        // biome-ignore lint/suspicious/noExplicitAny: Type inference limitation with tRPC setData
         utils.profile.experience.getExperienceSummary.setData(
           undefined,
-          context.previousSummary as any
+          context.previousSummary
         )
       }
       failProfileSync()

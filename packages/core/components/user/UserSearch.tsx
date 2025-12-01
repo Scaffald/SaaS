@@ -196,7 +196,6 @@ export function UserSearch({
         >
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user: User) => {
-              const userName = getUserDisplayName(user)
               return (
                 <XStack
                   key={user.id}

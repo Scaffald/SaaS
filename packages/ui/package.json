@@ -67,7 +67,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "release": "semantic-release",
-    "release:dry-run": "semantic-release --dry-run"
+    "release:dry-run": "semantic-release --dry-run",
+    "sync:to-standalone": "./scripts/sync-to-standalone.sh"
   },
   "peerDependencies": {
     "react": ">=18.0.0",

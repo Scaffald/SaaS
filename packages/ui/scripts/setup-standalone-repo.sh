@@ -69,6 +69,49 @@ fi
 # Remove any accidentally copied monorepo-specific files
 rm -rf dist node_modules .turbo 2>/dev/null || true
 
+# Replace catalog: references in devDependencies with explicit versions
+echo ""
+echo "🔧 Replacing catalog: references in devDependencies..."
+# Catalog versions from pnpm-workspace.yaml
+# Use the helper script or inline replacements
+if [ -f "${SOURCE_DIR}/scripts/fix-dev-dependencies.sh" ]; then
+  bash "${SOURCE_DIR}/scripts/fix-dev-dependencies.sh" "${TARGET_DIR}/package.json"
+else
+  # Inline replacements (macOS sed syntax)
+  if grep -q '"@biomejs/biome": "catalog:"' package.json 2>/dev/null; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' 's/"@biomejs\/biome": "catalog:"/"@biomejs\/biome": "~2.3.6"/' package.json
+    else
+      sed -i 's/"@biomejs\/biome": "catalog:"/"@biomejs\/biome": "~2.3.6"/' package.json
+    fi
+    echo "  ✓ @biomejs/biome"
+  fi
+  if grep -q '"@types/node": "catalog:"' package.json 2>/dev/null; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' 's/"@types\/node": "catalog:"/"@types\/node": "~20.0.0"/' package.json
+    else
+      sed -i 's/"@types\/node": "catalog:"/"@types\/node": "~20.0.0"/' package.json
+    fi
+    echo "  ✓ @types/node"
+  fi
+  if grep -q '"@types/react": "catalog:"' package.json 2>/dev/null; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
+    else
+      sed -i 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
+    fi
+    echo "  ✓ @types/react"
+  fi
+  if grep -q '"typescript": "catalog:"' package.json 2>/dev/null; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      sed -i '' 's/"typescript": "catalog:"/"typescript": "~5.9.2"/' package.json
+    else
+      sed -i 's/"typescript": "catalog:"/"typescript": "~5.9.2"/' package.json
+    fi
+    echo "  ✓ typescript"
+  fi
+fi
+
 # Step 4: Initial commit
 echo ""
 echo "💾 Step 4: Creating initial commit..."

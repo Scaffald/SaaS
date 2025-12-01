@@ -14,7 +14,7 @@ export type PinVisibilityState =
  * Individual pin state tracking
  */
 export interface PinState {
-  pin: MapPin;
+  pin: MapPinType;
   visibility: PinVisibilityState;
   clusterId?: number;
   opacity: number;
@@ -66,15 +66,15 @@ export interface UseMapPinStateReturn {
   /**
    * Pins that are currently visible (not hidden or transitioning out)
    */
-  visiblePins: MapPin[];
+  visiblePins: MapPinType[];
   /**
    * Pins that are currently clustered
    */
-  clusteredPins: MapPin[];
+  clusteredPins: MapPinType[];
   /**
    * Pins that are currently transitioning
    */
-  transitioningPins: MapPin[];
+  transitioningPins: MapPinType[];
   /**
    * Update pin visibility state
    */
@@ -90,7 +90,7 @@ export interface UseMapPinStateReturn {
   /**
    * Main function to process new pins and clusters
    */
-  processPins: (newPins: MapPin[], clusters: ClusterInfo[]) => void;
+  processPins: (newPins: MapPinType[], clusters: ClusterInfo[]) => void;
   /**
    * Clear all pin states
    */
@@ -128,7 +128,7 @@ export function useMapPinState(
   const [pinStates, setPinStates] = useState<Map<string, PinState>>(new Map());
 
   // Cache of previous pins for comparison
-  const previousPinsRef = useRef<MapPin[]>([]);
+  const previousPinsRef = useRef<MapPinType[]>([]);
 
   // Transition queue
   const transitionQueueRef = useRef<TransitionQueueItem[]>([]);
@@ -256,7 +256,7 @@ export function useMapPinState(
    * Main function to process new pins and clusters
    */
   const processPins = useCallback(
-    (newPins: MapPin[], clusters: ClusterInfo[]) => {
+    (newPins: MapPinType[], clusters: ClusterInfo[]) => {
       const nextStates = new Map<string, PinState>();
 
       // Create a map of cluster IDs to their info for quick lookup
@@ -325,7 +325,7 @@ export function useMapPinState(
 
   // Compute derived state
   const visiblePins = useMemo(() => {
-    const pins: MapPin[] = [];
+    const pins: MapPinType[] = [];
     for (const state of pinStates.values()) {
       if (
         state.visibility === "visible" ||
@@ -338,7 +338,7 @@ export function useMapPinState(
   }, [pinStates]);
 
   const clusteredPins = useMemo(() => {
-    const pins: MapPin[] = [];
+    const pins: MapPinType[] = [];
     for (const state of pinStates.values()) {
       if (state.clusterId !== undefined && state.visibility === "hidden") {
         pins.push(state.pin);
@@ -348,7 +348,7 @@ export function useMapPinState(
   }, [pinStates]);
 
   const transitioningPins = useMemo(() => {
-    const pins: MapPin[] = [];
+    const pins: MapPinType[] = [];
     for (const state of pinStates.values()) {
       if (
         state.visibility === "transitioning-in" ||
