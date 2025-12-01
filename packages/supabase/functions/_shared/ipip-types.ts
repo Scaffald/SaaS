@@ -1,4 +1,3 @@
-// @ts-nocheck
 export type IPIPKeyed = 'plus' | 'minus'
 export type IPIPDomain = 'A' | 'E' | 'N' | 'C' | 'O'
 export type IPIPFacet = '1' | '2' | '3' | '4' | '5' | '6'

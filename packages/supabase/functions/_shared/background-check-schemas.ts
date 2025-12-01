@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod'
 
 export const BACKGROUND_CHECK_ALLOWED_MIME_TYPES = [

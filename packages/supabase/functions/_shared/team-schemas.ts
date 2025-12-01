@@ -1,4 +1,3 @@
-// @ts-nocheck
 export {
   TEAM_INVITATION_ACTIONS,
   TEAM_INVITATION_STATUSES,
