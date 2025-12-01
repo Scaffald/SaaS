@@ -46,19 +46,27 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 - Create reusable, cross-platform components in `packages/ui/`
 - Document components thoroughly with JSDoc
 
-### 7. `avoid-barrel-files.mdc`
+### 7. `ui-package-hybrid.mdc`
+**UI Package Hybrid Maintenance** - Auto-attached to UI package files:
+- Understand dual repository structure (monorepo + standalone)
+- Development in `packages/ui/` (source of truth), publishing from standalone repo
+- Monorepo consumes published npm package `@unicornlove/ui@^1.0.1`
+- Use sync workflow for publishing changes
+- See detailed workflow and rules in this file
+
+### 8. `avoid-barrel-files.mdc`
 **Build performance optimization**:
 - Avoid barrel files (index.ts re-exports) for better build performance
 - Use direct imports instead of barrel imports
 - Improves tree-shaking and hot reload performance
 
-### 8. `route-naming-convention.mdc`
+### 9. `route-naming-convention.mdc`
 **Consistent route structure**:
 - Dashboard routes follow `<parent>-<child>-{left|right|screen}.tsx` pattern
 - Components named `ParentChildLeft`, `ParentChildRight`, `ParentChildScreen`
 - Configuration files in `config/` folders
 
-### 9. `typescript-typing.mdc`
+### 10. `typescript-typing.mdc`
 **TypeScript typing standards** - Auto-attached to TypeScript files:
 - Never use `any` type - prefer `unknown` or proper typing
 - Always define explicit types for functions and components
@@ -66,7 +74,7 @@ This directory contains streamlined Cursor rules that establish guard rails and 
 - Validate external data with type guards
 - Use generic types for reusable code
 
-### 10. `testing-logging.mdc`
+### 11. `testing-logging.mdc`
 **Testing workflow reminders** - Always applied:
 - Quiet reporters log only suite lifecycle + failures for Vitest/Playwright
 - Use `TEST_LOG_VERBOSE=1` (global) or `// @testlog verbose` (per file) to re-enable success logs

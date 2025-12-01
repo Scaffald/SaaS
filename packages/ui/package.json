@@ -1,7 +1,7 @@
 {
   "name": "@unicornlove/ui",
   "version": "1.0.0",
-  "description": "Comprehensive UI component library for Tamagui and Expo",
+  "description": "Comprehensive UI component library for Tamagui and Expo. NOTE: Hybrid maintenance - developed in monorepo (packages/ui/), published from standalone repo. See AI_AGENTS_README.md and .cursor/rules/ui-package-hybrid.mdc for workflow.",
   "keywords": [
     "tamagui",
     "expo",

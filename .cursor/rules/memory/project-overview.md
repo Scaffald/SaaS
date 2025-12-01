@@ -58,8 +58,14 @@ SCF-Scaffald/
 - React Query for data fetching
 - Authentication and user management
 
-### `packages/ui`
-- Cross-platform UI component library
+### `packages/ui` (Hybrid Maintenance)
+- **Status**: Cross-platform UI component library with hybrid maintenance
+- **Development**: Primary development in `packages/ui/` (monorepo, source of truth)
+- **Publishing**: Standalone repository for npm publishing (`@unicornlove/ui`)
+- **Consumption**: Monorepo uses published npm package `@unicornlove/ui@^1.0.1`
+- **Workflow**: Develop → Sync → Publish → Consume
+- **NOTE**: NOT in workspace, but serves as source of truth for development
+- **See**: `.cursor/rules/ui-package-hybrid.mdc` for complete workflow details
 - Built with Tamagui for styling
 - Reusable components for both web and mobile
 - Design system and themes

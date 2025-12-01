@@ -53,6 +53,18 @@ alwaysApply: true
 - **MAKE components cross-platform** and well-documented
 - **REFACTOR components** to be clean and modular
 
+## UI Package Hybrid Maintenance
+
+**CRITICAL**: The `@unicornlove/ui` package uses a hybrid maintenance approach:
+
+- **packages/ui/**: Primary development location (NOT in workspace, but source of truth)
+- **Consumption**: Monorepo uses published npm package `@unicornlove/ui@^1.0.1`
+- **Workflow**: Edit in monorepo → Sync to standalone → Publish → Consume via npm
+- **Scripts**: `./packages/ui/scripts/sync-to-standalone.sh` for syncing changes
+- **Modes**: npm (default), link, or workspace via `setup-local-dev.sh`
+- **NEVER suggest deleting `packages/ui/`** - it's the development source of truth
+- **See**: `.cursor/rules/ui-package-hybrid.mdc` for complete details
+
 ## Development Workflow
 1. **Check if servers are running** before suggesting to start them
 2. **Use workspace-specific commands** for each app

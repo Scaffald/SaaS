@@ -204,6 +204,45 @@ import { ComponentB } from './components/ComponentB'
 - **Rationale**: Gain a low-cost, first-party path for transactional notifications while preserving the ability to layer marketing tooling later.
 - **Future Enhancements**: add retries/DLQs, secure the Lambda endpoints (IAM/API Gateway), port existing DNS records before switching name servers, integrate with Supabase queues.
 
+### 11. Hybrid UI Package Maintenance (REQ-311)
+**Decision**: Maintain `@unicornlove/ui` package in both monorepo and standalone repository
+
+**Rationale**:
+- Published package available for external use and distribution
+- Fast development iteration within monorepo context
+- Clean separation for publishing and versioning
+- Support for external contributors via standalone repo
+- Maintains tight integration with application during development
+
+**Implementation**:
+- **Development**: `packages/ui/` in monorepo (source of truth)
+- **Publishing**: Standalone repository (typically `/Users/clay/Development/_packages/unicornlove-ui` or custom via `UNICORNLOVE_UI_DIR`)
+- **Consumption**: Monorepo uses published npm package `@unicornlove/ui@^1.0.1`
+- **Sync**: Automated sync workflow from monorepo to standalone repo
+
+**Workflow**:
+1. Edit components in `packages/ui/src/` (monorepo)
+2. Sync to standalone repo: `./packages/ui/scripts/sync-to-standalone.sh`
+3. Build and publish from standalone repo
+4. Monorepo consumes published package via npm
+
+**Key Points**:
+- `packages/ui/` is NOT in workspace (not in `pnpm-workspace.yaml`)
+- All imports use `@unicornlove/ui` package name (253+ imports)
+- Sync scripts handle catalog: reference replacements automatically
+- Supports multiple local dev modes (npm, link, workspace)
+- Portable setup with no hardcoded paths
+
+**Trade-offs**:
+- ✅ Fast iteration with full app context
+- ✅ Clean publishing workflow
+- ✅ Support for external contributors
+- ✅ Independent versioning and releases
+- ❌ Requires sync workflow between repos
+- ❌ Two locations to maintain
+
+**See Also**: `.cursor/rules/ui-package-hybrid.mdc` for detailed workflow
+
 ## Performance Decisions
 
 ### Build Optimization

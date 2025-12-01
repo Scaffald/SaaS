@@ -2,6 +2,14 @@
 
 Comprehensive UI component library for Tamagui and Expo, supporting iOS, Android, and web platforms.
 
+## ⚠️ For AI Agents: Hybrid Maintenance Setup
+
+**CRITICAL**: This package uses a hybrid maintenance approach. The package exists in TWO locations:
+- **Monorepo**: `packages/ui/` (development source of truth)
+- **Standalone**: Standalone repository for npm publishing
+
+See `AI_AGENTS_README.md` and `.cursor/rules/ui-package-hybrid.mdc` for complete workflow details.
+
 ## Installation
 
 ```bash
