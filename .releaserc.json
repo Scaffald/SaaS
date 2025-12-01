@@ -5,10 +5,9 @@
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
     [
-      "@semantic-release/npm",
+      "@semantic-release/exec",
       {
-        "pkgRoot": "apps/expo",
-        "npmPublish": false
+        "prepareCmd": "node scripts/update-version.mjs ${nextRelease.version}"
       }
     ],
     [
