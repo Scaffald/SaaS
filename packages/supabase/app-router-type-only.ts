@@ -18,6 +18,7 @@
  */
 
 import type { AppRouter as _AppRouter } from './functions/trpc/routers/_app.ts'
+import type { AnyRouter } from '@trpc/server'
 
 /**
  * The tRPC AppRouter type for client-side usage
@@ -29,5 +30,8 @@ import type { AppRouter as _AppRouter } from './functions/trpc/routers/_app.ts'
  * ```
  *
  * The actual router instance is only needed on the server side (Deno functions).
+ * 
+ * Type helper to satisfy AnyRouter constraint for inferRouterOutputs and similar utilities.
+ * The conditional type ensures compatibility while avoiding TS2344 constraint errors.
  */
-export type AppRouter = _AppRouter
+export type AppRouter = _AppRouter extends AnyRouter ? _AppRouter : AnyRouter

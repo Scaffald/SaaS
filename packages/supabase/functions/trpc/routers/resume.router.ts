@@ -32,6 +32,10 @@ const RESUME_SECTIONS = [
 
 type ResumeSection = (typeof RESUME_SECTIONS)[number];
 
+// Type aliases for schema inference to avoid TS2344 errors
+type ProfileGeneralInput = typeof profileGeneralInputSchema extends z.ZodType<infer T> ? T : never;
+type ProfileEmploymentInput = typeof profileEmploymentInputSchema extends z.ZodType<infer T> ? T : never;
+
 // Lazy loading for large packages to reduce bundle size
 let mammothModule: typeof import("mammoth") | null = null;
 
@@ -816,7 +820,7 @@ async function updateResumeParsingStatus(
 async function upsertProfileGeneral(
   supabase: DbClient,
   userId: string,
-  data: z.infer<typeof profileGeneralInputSchema>,
+  data: ProfileGeneralInput,
 ): Promise<void> {
   const now = new Date().toISOString();
   const userUpdate: Record<string, unknown> = {
@@ -897,7 +901,7 @@ async function upsertProfileGeneral(
 async function upsertEmploymentPreferences(
   supabase: DbClient,
   userId: string,
-  data: z.infer<typeof profileEmploymentInputSchema>,
+  data: ProfileEmploymentInput,
 ): Promise<void> {
   // Convert hourly_rate (dollars) to hourly_rate_cents for database storage
   const hourlyRateCents =

@@ -1,10 +1,12 @@
-import type { ComponentType } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import type { SheetProps, ViewProps } from 'tamagui'
 
-declare const SheetFrame: ComponentType<ViewProps>
-declare const SheetOverlay: ComponentType<ViewProps>
+type ViewPropsWithChildren = Omit<ViewProps, 'children'> & { children?: ReactNode }
+
+declare const SheetFrame: ComponentType<ViewPropsWithChildren>
+declare const SheetOverlay: ComponentType<ViewPropsWithChildren>
 declare const TamaguiSheet: ComponentType<SheetProps> & {
-  Handle: ComponentType<ViewProps>
+  Handle: ComponentType<ViewPropsWithChildren>
 }
 
 export type SheetComponent = ComponentType<SheetProps> & {

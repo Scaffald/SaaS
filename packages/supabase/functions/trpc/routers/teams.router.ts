@@ -686,11 +686,14 @@ async function ensureOrganizationRoles(
   return roleMap;
 }
 
+// Type alias to avoid TS2344 constraint error
+type TeamRoleKey = typeof teamRoleKeySchema extends z.ZodType<infer T> ? T : never;
+
 async function resolveRoleId(options: {
   supabaseAdmin: SupabaseAdminClient;
   organizationId: string;
   roleId?: string | null;
-  roleKey?: z.infer<typeof teamRoleKeySchema> | null;
+  roleKey?: TeamRoleKey | null;
   teamId?: string;
 }) {
   if (options.roleId) {

@@ -1,13 +1,15 @@
 import type { ComponentType, ReactNode } from 'react'
 import type { DialogProps, ViewProps } from 'tamagui'
 
-declare const DialogOverlay: ComponentType<ViewProps>
-declare const DialogContent: ComponentType<ViewProps>
+type ViewPropsWithChildren = Omit<ViewProps, 'children'> & { children?: ReactNode }
+
+declare const DialogOverlay: ComponentType<ViewPropsWithChildren>
+declare const DialogContent: ComponentType<ViewPropsWithChildren>
 declare const TamaguiDialog: ComponentType<DialogProps> & {
   Portal: ComponentType<{ children?: ReactNode }>
-  Title: ComponentType<ViewProps>
-  Description: ComponentType<ViewProps>
-  Close: ComponentType<ViewProps>
+  Title: ComponentType<ViewPropsWithChildren>
+  Description: ComponentType<ViewPropsWithChildren>
+  Close: ComponentType<ViewPropsWithChildren>
 }
 
 export type DialogComponent = ComponentType<DialogProps> & {

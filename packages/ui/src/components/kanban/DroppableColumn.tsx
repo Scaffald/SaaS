@@ -40,7 +40,7 @@ export const DroppableColumn = ({
   })
 
   const columnContent = (
-    <SortableContext id={id.toString()} alignItems={items} strategy={verticalListSortingStrategy}>
+    <SortableContext id={id.toString()} items={items} strategy={verticalListSortingStrategy}>
       <div
         ref={setNodeRef}
         style={{

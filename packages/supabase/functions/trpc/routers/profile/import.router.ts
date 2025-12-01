@@ -111,9 +111,12 @@ async function extractTextFromDocx(fileBytes: Uint8Array): Promise<string> {
   }
 }
 
+// Type alias to avoid TS2344 constraint error
+type ResumeFileType = typeof resumeFileTypeEnum extends z.ZodType<infer T> ? T : never;
+
 async function extractResumeText(
   fileBytes: Uint8Array,
-  fileType: z.infer<typeof resumeFileTypeEnum>,
+  fileType: ResumeFileType,
 ): Promise<string> {
   switch (fileType) {
     case "application/pdf":

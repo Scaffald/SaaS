@@ -1,4 +1,3 @@
-import type { ComponentType } from 'react'
 import { styled, Popover as TamaguiPopover, withStaticProperties } from 'tamagui'
 import type { PopoverProps } from 'tamagui'
 
@@ -23,35 +22,28 @@ const PopoverContent = styled(TamaguiPopover.Content, {
  * Usage: Import Popover from '@unicornlove/ui' and use it like Tamagui's Popover.
  * All Popover.Content components will automatically have backgroundColor="$color1" applied.
  */
-// Type definition for Popover with static properties
-type PopoverComponent = ComponentType<PopoverProps> & {
+// Type definition: include all Popover static properties from Tamagui, override Content
+type PopoverComponent = typeof TamaguiPopover & {
   Content: typeof PopoverContent
-  // Include other Popover static properties from Tamagui
-  Anchor: typeof TamaguiPopover.Anchor
-  Trigger: typeof TamaguiPopover.Trigger
-  Portal: typeof TamaguiPopover.Portal
-  Overlay: typeof TamaguiPopover.Overlay
-  Title: typeof TamaguiPopover.Title
-  Description: typeof TamaguiPopover.Description
-  Close: typeof TamaguiPopover.Close
-  Sheet: typeof TamaguiPopover.Sheet
-  FocusScope: typeof TamaguiPopover.FocusScope
-  Adapt: typeof TamaguiPopover.Adapt
 }
+
+// Use type assertion to access static properties that TypeScript doesn't see on the base type
+// These properties exist at runtime but aren't in the TypeScript type definition
+const TamaguiPopoverWithStatics = TamaguiPopover as typeof TamaguiPopover & Record<string, unknown>
 
 // Use double assertion to bypass type inference for declaration generation
 export const Popover = withStaticProperties(TamaguiPopover, {
   Content: PopoverContent,
-  Anchor: TamaguiPopover.Anchor,
-  Trigger: TamaguiPopover.Trigger,
-  Portal: TamaguiPopover.Portal,
-  Overlay: TamaguiPopover.Overlay,
-  Title: TamaguiPopover.Title,
-  Description: TamaguiPopover.Description,
-  Close: TamaguiPopover.Close,
-  Sheet: TamaguiPopover.Sheet,
-  FocusScope: TamaguiPopover.FocusScope,
-  Adapt: TamaguiPopover.Adapt,
+  Anchor: TamaguiPopoverWithStatics.Anchor,
+  Trigger: TamaguiPopoverWithStatics.Trigger,
+  Portal: TamaguiPopoverWithStatics.Portal,
+  Overlay: TamaguiPopoverWithStatics.Overlay,
+  Title: TamaguiPopoverWithStatics.Title,
+  Description: TamaguiPopoverWithStatics.Description,
+  Close: TamaguiPopoverWithStatics.Close,
+  Sheet: TamaguiPopoverWithStatics.Sheet,
+  FocusScope: TamaguiPopoverWithStatics.FocusScope,
+  Adapt: TamaguiPopoverWithStatics.Adapt,
 }) as unknown as PopoverComponent
 
 export type { PopoverProps }
