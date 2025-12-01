@@ -71,7 +71,7 @@ async function updateConnectionAnalytics(
  * Create an activity event
  */
 async function createActivityEvent(
-  supabase: any,
+  supabase: Context['supabase'],
   userId: string,
   eventType: string,
   targetType: string | null,
