@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Industry keyword mappings for job classification
 // Keywords are matched case-insensitively against job title, description, and category
 

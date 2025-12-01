@@ -1,7 +1,8 @@
-// @ts-nocheck
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 
-type SupabaseAdminClient = SupabaseClient
+import type { Database } from '../database.types.ts'
+
+type SupabaseAdminClient = SupabaseClient<Database>
 
 const ASSIGNABLE_ROLE_KEYS = ['admin', 'lead', 'recruiter']
 

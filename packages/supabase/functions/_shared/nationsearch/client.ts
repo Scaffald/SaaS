@@ -1,4 +1,3 @@
-// @ts-nocheck
 const DEFAULT_TIMEOUT_MS = 15_000
 const SIGNATURE_HEADER = 'x-nationsearch-signature'
 const IDEMPOTENCY_HEADER = 'Idempotency-Key'

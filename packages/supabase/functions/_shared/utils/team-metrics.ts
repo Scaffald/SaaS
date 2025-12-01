@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database } from '../database.types.ts'
@@ -18,7 +17,7 @@ export async function refreshTeamMetricsSnapshot({
   metricDate,
   captureWorkloads = true,
 }: RefreshTeamMetricsOptions) {
-  const admin = supabaseAdmin as SupabaseClient<any>
+  const admin = supabaseAdmin as SupabaseClient<Database>
   const { data, error } = await admin.rpc('refresh_team_daily_metrics', {
     p_team_id: teamId,
     p_metric_date: metricDate ?? null,
@@ -44,7 +43,7 @@ export async function refreshAllTeamMetrics({
   supabaseAdmin: SupabaseAdminClient
   metricDate?: string
 }) {
-  const admin = supabaseAdmin as SupabaseClient<any>
+  const admin = supabaseAdmin as SupabaseClient<Database>
   const { data, error } = await admin.rpc('refresh_all_team_metrics', {
     p_metric_date: metricDate ?? null,
   })

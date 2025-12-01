@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import type { Database, Json } from './database.types.ts'
@@ -35,7 +34,7 @@ export async function recordTeamAuditLog({
   memberUserId,
   metadata,
 }: RecordTeamAuditLogOptions): Promise<void> {
-  const adminClient = supabaseAdmin as SupabaseClient<any>
+  const adminClient = supabaseAdmin as SupabaseClient<Database>
 
   const { error } = await adminClient
     .schema('core')
