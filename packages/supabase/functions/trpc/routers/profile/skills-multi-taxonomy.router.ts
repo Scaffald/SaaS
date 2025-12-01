@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { createClient } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";

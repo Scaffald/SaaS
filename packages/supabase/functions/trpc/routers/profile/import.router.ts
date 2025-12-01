@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Buffer } from "node:buffer";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";

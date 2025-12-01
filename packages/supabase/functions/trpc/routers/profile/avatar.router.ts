@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { TRPCError } from '@trpc/server'
 import { uploadAvatarInputSchema } from '@app/trpc/schemas'
 import { protectedProcedure, t } from '../../middleware.ts'

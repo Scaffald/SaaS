@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Buffer } from "node:buffer";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { TRPCError } from "@trpc/server";

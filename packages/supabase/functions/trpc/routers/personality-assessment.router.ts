@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { mapToArchetype } from '../../_shared/ipip-archetype-mapper.ts'
