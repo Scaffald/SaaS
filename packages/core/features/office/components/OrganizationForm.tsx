@@ -183,9 +183,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       toast.show('Success', { message: 'Organization created successfully' })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
-    // biome-ignore lint/suspicious/noExplicitAny: Mutation error type from tRPC
-    onError: (error: any) => {
-      toast.show('Error', { message: error?.message || 'Failed to create organization' })
+    onError: (error: unknown) => {
+      toast.show('Error', { message: error instanceof Error ? error.message : 'Failed to create organization' })
     },
   })
 
@@ -194,9 +193,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       toast.show('Success', { message: 'Organization updated successfully' })
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
-    // biome-ignore lint/suspicious/noExplicitAny: Mutation error type from tRPC
-    onError: (error: any) => {
-      toast.show('Error', { message: error?.message || 'Failed to update organization' })
+    onError: (error: unknown) => {
+      toast.show('Error', { message: error instanceof Error ? error.message : 'Failed to update organization' })
     },
   })
 

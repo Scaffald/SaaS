@@ -338,8 +338,7 @@ export const SoftSkillsRatingForm: FC = () => {
                                 key={level.value}
                                 flex={1}
                                 minWidth={64}
-                                // biome-ignore lint/suspicious/noExplicitAny: Tamagui type compatibility
-                                {...({ style: { alignItems: 'center' } } as any)}
+                                style={{ alignItems: 'center' }}
                                 opacity={sliderValue === level.value ? 1 : 0.6}
                               >
                                 <Text fontSize="$2" fontWeight="700" color="$color12">

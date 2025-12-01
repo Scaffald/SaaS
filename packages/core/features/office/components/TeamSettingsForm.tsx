@@ -119,12 +119,11 @@ export function TeamSettingsForm({
       await utils.teams.byId.invalidate({ teamId })
       setTimeout(() => setStatus('idle'), 2000)
     },
-    // biome-ignore lint/suspicious/noExplicitAny: Mutation error type from tRPC
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       setStatus('error')
       pendingMetadataRef.current = null
       toast.show('Unable to update settings', {
-        message: error?.message ?? 'Please try again shortly.',
+        message: error instanceof Error ? error.message : 'Please try again shortly.',
         type: 'error',
       })
     },
