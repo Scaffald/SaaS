@@ -1,3 +1,39 @@
+# [1.1.0](https://github.com/Unicorn/SCF-Scaffald/compare/v1.0.0...v1.1.0) (2025-12-01)
+
+
+### Bug Fixes
+
+* address noExplicitAny issues in test files and simpler cases ([5535244](https://github.com/Unicorn/SCF-Scaffald/commit/553524492ad1d99f5d18abd9659d4cb219edf4cc))
+* complete noExplicitAny cleanup - all instances resolved ([7387484](https://github.com/Unicorn/SCF-Scaffald/commit/73874848ecb0683c68ed912f36f8ccab89629043))
+* complete Tamagui shorthand migration - fix remaining issues ([7237d3c](https://github.com/Unicorn/SCF-Scaffald/commit/7237d3c98a69bd3c597a66a4e33949d6aa786ad5))
+* continue addressing noExplicitAny in profile files ([b1ce47a](https://github.com/Unicorn/SCF-Scaffald/commit/b1ce47a91365f7b3f8c8d964b3f7b5343fadb9c6))
+* fix px/py property access in NotificationTag component ([574e517](https://github.com/Unicorn/SCF-Scaffald/commit/574e517de40978ec70af137fb1fcc510784aaba3))
+* replace remaining any type in connections.router.ts ([7087808](https://github.com/Unicorn/SCF-Scaffald/commit/70878086c5650ada6f42c01d0f529a6c646bdd10))
+* resolve additional linting issues ([e7601ca](https://github.com/Unicorn/SCF-Scaffald/commit/e7601ca2a2f3dc646f77f4e05ccbb8ce0427ca34))
+* resolve additional linting issues (part 2) ([0cbd457](https://github.com/Unicorn/SCF-Scaffald/commit/0cbd4572223d6ea6eff6da1618233239d6bc478a))
+* resolve all remaining exhaustive dependencies warnings ([77edf18](https://github.com/Unicorn/SCF-Scaffald/commit/77edf184d89d1edcd4ce35b02c27fa3f44987687))
+* resolve all TS2307 module resolution errors ([02a64a9](https://github.com/Unicorn/SCF-Scaffald/commit/02a64a9569b5b8b021c607a206e6fb455aee32d2))
+* resolve exhaustive dependencies warnings in high-priority files ([df546f9](https://github.com/Unicorn/SCF-Scaffald/commit/df546f95a9918953e2825cf6c6b0d9070fd11603))
+* resolve final 2 linting errors ([9c34ed9](https://github.com/Unicorn/SCF-Scaffald/commit/9c34ed90d23959b2b2eae017df82739717be9c55))
+* resolve final linting issues ([1863981](https://github.com/Unicorn/SCF-Scaffald/commit/1863981ece170b5877583bc72b0e80c8664a86e8))
+* resolve linting issues ([9237ef6](https://github.com/Unicorn/SCF-Scaffald/commit/9237ef6f23664642917962ec6735dd4fcc89413c))
+* resolve more exhaustive dependencies warnings ([1f4fdef](https://github.com/Unicorn/SCF-Scaffald/commit/1f4fdef73ccb22654fbbeef62dc499d3ab3af4fc))
+* resolve pnpm install warnings and ensure dependency version consistency ([fe0a4d3](https://github.com/Unicorn/SCF-Scaffald/commit/fe0a4d32c0644f35f66f8320770a58711e470a62))
+* resolve React hook dependency linting issues ([8d6bad0](https://github.com/Unicorn/SCF-Scaffald/commit/8d6bad0466a0ad19c399803af196de147992402b))
+* resolve remaining linting issues (part 3) ([48d9a47](https://github.com/Unicorn/SCF-Scaffald/commit/48d9a4729adefd0ebe79e6b9ec3d30ad589d5db7))
+* resolve TS2344 Zod type constraint errors ([a673be4](https://github.com/Unicorn/SCF-Scaffald/commit/a673be49faeebc1b03e545029ca2c9171ea8e596))
+* **tests:** add missing mock exports and fix API mocks ([3409685](https://github.com/Unicorn/SCF-Scaffald/commit/3409685151eb9e9762b24a4d0af90ec264b28772))
+* **tests:** add ResponsiveSelect mock to EmploymentPrefsStep test ([fc5dbcb](https://github.com/Unicorn/SCF-Scaffald/commit/fc5dbcbffd558662e32e70d1aa038e1198d2cd67))
+* **tests:** resolve critical mock and import issues ([e7728ba](https://github.com/Unicorn/SCF-Scaffald/commit/e7728ba976cd0122cb8ccc641aa5ec8aba203ae9))
+* **tests:** resolve mock hoisting and missing export issues ([823a2a8](https://github.com/Unicorn/SCF-Scaffald/commit/823a2a84c21956561ff2649c4dab197e4f63fe83))
+
+
+### Features
+
+* complete Nx migration from Turborepo ([913527a](https://github.com/Unicorn/SCF-Scaffald/commit/913527a1350c69e2c017f0c924fb6359a0f7a907))
+* **ui:** complete REQ-311 setup - publish package and configure local dev ([c9f7cd2](https://github.com/Unicorn/SCF-Scaffald/commit/c9f7cd2ce85696d73892f5e68cbdc0535214c3ed))
+* **ui:** update REQ-311 progress and add sync workflow for hybrid maintenance ([f956eb6](https://github.com/Unicorn/SCF-Scaffald/commit/f956eb672e4bae00be532089b0e0ee784705f55e))
+
 # 1.0.0 (2025-12-01)
 
 
