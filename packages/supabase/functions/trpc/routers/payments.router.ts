@@ -340,23 +340,6 @@ async function getOrCreateStripeCustomer(
 
 type DbPaymentMethodRow = Database['core']['Tables']['organization_payment_methods']['Row']
 
-function serializePaymentMethod(row: DbPaymentMethodRow) {
-  return {
-    id: row.id,
-    organizationId: row.organization_id,
-    brand: row.brand,
-    last4: row.last4,
-    expMonth: row.exp_month,
-    expYear: row.exp_year,
-    billingName: row.billing_name,
-    billingEmail: row.billing_email,
-    billingCountry: row.billing_country,
-    isDefault: row.is_default,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  }
-}
-
 export const paymentsRouter = t.router({
   /**
    * Expose publishable Stripe configuration to authenticated clients.
@@ -475,7 +458,7 @@ export const paymentsRouter = t.router({
         updated_at: new Date().toISOString(),
       }
 
-      let result
+      let result: { data: unknown; error: unknown } | undefined
       if (input.id) {
         const { data, error } = await supabaseAdmin
           .schema('core')
@@ -710,7 +693,7 @@ export const paymentsRouter = t.router({
         .filter((t: { status: string }) => t.status === 'succeeded')
         .reduce(
           (acc: Record<string, number>, t: { created_at: string; amount_cents?: number | null }) => {
-            const date = new Date(t.created_at).toISOString().split('T')[0]!
+            const date = new Date(t.created_at).toISOString().split('T')[0] ?? ''
             acc[date] = (acc[date] ?? 0) + (t.amount_cents ?? 0)
             return acc
           },
@@ -1512,7 +1495,7 @@ export const paymentsRouter = t.router({
         currency: 'usd',
         customer: customerId,
         payment_method: input.paymentMethodId,
-        confirm: input.paymentMethodId ? true : false,
+        confirm: !!input.paymentMethodId,
         description: `Account credit deposit - ${input.amountCents / 100} USD`,
         metadata: {
           organization_id: input.organizationId,

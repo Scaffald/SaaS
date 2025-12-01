@@ -908,7 +908,7 @@ export const inquiriesRouter = router({
       addDefaultField(defaults, fields, 'workingHoursStart', DEFAULT_WORKING_HOURS.start)
       addDefaultField(defaults, fields, 'workingHoursEnd', DEFAULT_WORKING_HOURS.end)
 
-      const addressData = (job.address ?? null) as Record<string, any> | null
+      const addressData = (job.address ?? null) as Record<string, unknown> | null
       const addressTimezone =
         addressData && typeof addressData.timezone === 'string'
           ? (addressData.timezone as string)
@@ -1722,7 +1722,7 @@ export const inquiriesRouter = router({
 
       if (application?.user_id) {
         const job = application.jobs as Record<string, unknown> | null
-        const orgName = job?.organizations?.name || 'Organization'
+        const orgName = (job?.organizations as { name?: string } | null)?.name || 'Organization'
         const jobTitle = job?.title || 'Job'
 
         // Notify candidate that inquiry has been sent
@@ -1840,7 +1840,7 @@ export const inquiriesRouter = router({
       // Notify the other party
       if (isApplicant) {
         // Candidate commented, notify organization members
-        const job = application.jobs as any
+        const job = application.jobs as Record<string, unknown> | null
         if (job?.organization_id) {
           // Get organization owner
           const { data: org } = await supabase
@@ -2036,7 +2036,7 @@ export const inquiriesRouter = router({
           other: 'Other',
         }
         const sectionLabel = sectionLabels[input.sectionName] || input.sectionName
-        const job = application.jobs as any
+        const job = application.jobs as Record<string, unknown> | null
 
         if (allAccepted) {
           // All sections accepted - notify organization
@@ -2161,7 +2161,7 @@ export const inquiriesRouter = router({
 
       if (application) {
         const candidateName = await getUserDisplayName(supabase, user.id)
-        const job = application.jobs as any
+        const job = application.jobs as Record<string, unknown> | null
 
         // Notify organization of capability response
         if (job?.organization_id) {
@@ -2374,7 +2374,7 @@ export const inquiriesRouter = router({
 
     // Notify candidate if inquiry was sent
     if (application && inquiry.status !== 'draft' && hasTermsChanged) {
-      const job = application.jobs as any
+      const job = application.jobs as Record<string, unknown> | null
       const orgName = job?.organizations?.name || 'Organization'
 
       await insertNotification(supabase, {

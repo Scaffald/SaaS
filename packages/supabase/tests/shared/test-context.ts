@@ -3,7 +3,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createAdminClient, createTestClient, isTokenExpired, loadCachedTokens } from './setup.ts'
+import { createTestClient, isTokenExpired, loadCachedTokens } from './setup.ts'
 
 export interface TestContext {
   anon: SupabaseClient

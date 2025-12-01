@@ -658,7 +658,10 @@ export const organizationsRouter = t.router({
         .eq("user_id", ctx.user.id);
 
       const isAdmin = roleAssignments?.some(
-        (assignment: any) =>
+        (assignment: {
+          role: { name: string; scope: string } | null
+          scope_org_id: string | null
+        }) =>
           assignment.role &&
           (assignment.scope_org_id === input.organization_id ||
             (assignment.role.name === "admin" &&
@@ -733,7 +736,10 @@ export const organizationsRouter = t.router({
         .eq("user_id", ctx.user.id);
 
       const isAdmin = roleAssignments?.some(
-        (assignment: any) =>
+        (assignment: {
+          role: { name: string; scope: string } | null
+          scope_org_id: string | null
+        }) =>
           assignment.role &&
           (assignment.scope_org_id === input.organization_id ||
             (assignment.role.name === "admin" &&
@@ -833,7 +839,7 @@ export const organizationsRouter = t.router({
         .from("invites")
         .insert({
           organization_id: input.organizationId,
-          issuer_user_id: ctx.user!.id,
+          issuer_user_id: ctx.user.id,
           target_type: "organization",
           target_id: input.organizationId,
           invitee_email: normalizedEmail,
@@ -1229,7 +1235,7 @@ export const organizationsRouter = t.router({
         });
       }
 
-      const members = new Map<string, any>();
+      const members = new Map<string, Record<string, unknown>>();
       (data ?? []).forEach(
         (
           assignment: {
@@ -1327,7 +1333,10 @@ export const organizationsRouter = t.router({
               lastActionAt: entry.created_at,
             });
           }
-          const stats = activityMap.get(entry.actor_user_id)!;
+          const stats = activityMap.get(entry.actor_user_id)
+          if (!stats) {
+            throw new Error(`Missing activity stats for user ${entry.actor_user_id}`)
+          }
           stats.actions += 1;
           if (entry.created_at && stats.lastActionAt < entry.created_at) {
             stats.lastActionAt = entry.created_at;
@@ -1465,8 +1474,8 @@ export const organizationsRouter = t.router({
             category: input.category,
             tags: input.tags ?? [],
             is_template: input.isTemplate ?? false,
-            created_by: ctx.user!.id,
-            updated_by: ctx.user!.id,
+            created_by: ctx.user.id,
+            updated_by: ctx.user.id,
             storage_bucket: ORG_DOCUMENT_BUCKET,
             storage_prefix: `${input.organizationId}`,
             template_variables: [],
@@ -1571,7 +1580,7 @@ export const organizationsRouter = t.router({
           size_bytes: input.fileSize,
           mime_type: input.mimeType,
           checksum: input.checksum ?? null,
-          uploaded_by: ctx.user!.id,
+          uploaded_by: ctx.user.id,
           notes: input.notes ?? null,
         })
         .select("id, version_number, created_at, storage_object_path")

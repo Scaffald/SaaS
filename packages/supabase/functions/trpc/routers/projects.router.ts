@@ -38,7 +38,10 @@ async function canEditProject(supabase: Context['supabase'], userId: string, pro
   }
 
   return roleAssignments.some(
-    (assignment: any) =>
+    (assignment: {
+      role: { name: string; scope: string } | null
+      scope_org_id: string | null
+    }) =>
       assignment.role &&
       (assignment.scope_org_id === project.organization_id ||
         (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||
@@ -65,7 +68,10 @@ async function isOrganizationMember(
   }
 
   return roleAssignments.some(
-    (assignment: any) =>
+    (assignment: {
+      role: { name: string; scope: string } | null
+      scope_org_id: string | null
+    }) =>
       assignment.role &&
       (assignment.scope_org_id === organizationId ||
         (assignment.role.name === 'admin' && assignment.role.scope === 'platform') ||

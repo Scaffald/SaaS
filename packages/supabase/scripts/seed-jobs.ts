@@ -166,8 +166,8 @@ function extractCompensation(text: string): {
   const match = text.match(salaryPattern)
 
   if (match) {
-    const min = Number.parseInt(match[1]) * (match[1].includes('k') ? 1000 : 1)
-    const max = match[2] ? Number.parseInt(match[2]) * (match[2].includes('k') ? 1000 : 1) : null
+    const min = Number.parseInt(match[1], 10) * (match[1].includes('k') ? 1000 : 1)
+    const max = match[2] ? Number.parseInt(match[2], 10) * (match[2].includes('k') ? 1000 : 1) : null
     const period = match[3] ? (match[3].includes('hour') ? 'hourly' : 'yearly') : 'yearly'
 
     return {

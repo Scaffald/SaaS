@@ -1038,7 +1038,7 @@ async function upsertEducationEntries(
 async function upsertCertifications(
   supabase: DbClient,
   userId: string,
-  entries: Array<z.infer<typeof parsedCertificationSchema>>,
+  _entries: Array<z.infer<typeof parsedCertificationSchema>>,
   strategy: "replace" | "append" | "keepExisting",
 ): Promise<void> {
   // Note: The user_certifications table requires a certification_id (FK to certifications taxonomy).
@@ -1131,8 +1131,8 @@ async function upsertSkills(
       return {
         user_id: userId,
         skill_taxonomy: hasCsiMatch ? "csi" : "onet",
-        csi_skill_id: hasCsiMatch ? skill.csiMatch!.id : null,
-        onet_occupation_id: hasCsiMatch ? null : skill.onetMatch!.id,
+        csi_skill_id: hasCsiMatch ? (skill.csiMatch?.id ?? null) : null,
+        onet_occupation_id: hasCsiMatch ? null : (skill.onetMatch?.id ?? null),
         proficiency_level: 3,
       };
     });

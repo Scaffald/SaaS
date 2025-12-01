@@ -868,7 +868,10 @@ export const reviewsRouter = t.router({
                 skillId,
               });
             }
-            const skill = skillRatings.get(skillId)!;
+            const skill = skillRatings.get(skillId)
+            if (!skill) {
+              throw new Error(`Missing skill rating for skillId ${skillId}`)
+            }
             skill.total += sr.score;
             skill.count += 1;
           }
@@ -886,7 +889,10 @@ export const reviewsRouter = t.router({
             if (!categoryRatings.has(cr.category)) {
               categoryRatings.set(cr.category, { total: 0, count: 0 });
             }
-            const cat = categoryRatings.get(cr.category)!;
+            const cat = categoryRatings.get(cr.category)
+            if (!cat) {
+              throw new Error(`Missing category rating for category ${cr.category}`)
+            }
             cat.total += cr.rating;
             cat.count += 1;
           }
@@ -917,7 +923,10 @@ export const reviewsRouter = t.router({
                 category: skillCategory,
               });
             }
-            map.get(skillName)!.count += 1;
+            const entry = map.get(skillName)
+            if (entry) {
+              entry.count += 1
+            }
           }
         }
       }
@@ -941,7 +950,10 @@ export const reviewsRouter = t.router({
             totalRating: 0,
           });
         }
-        const data = timelineData.get(monthKey)!;
+        const data = timelineData.get(monthKey)
+        if (!data) {
+          throw new Error(`Missing timeline data for month ${monthKey}`)
+        }
         data.count += 1;
 
         // Calculate average from category ratings

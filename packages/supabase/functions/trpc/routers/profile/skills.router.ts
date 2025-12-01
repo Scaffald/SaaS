@@ -423,7 +423,7 @@ export const profileSkillsRouter = t.router({
         })
       }
 
-      const targetVersion = shouldCreateNewVersion ? (latestVersion ?? 0) + 1 : latestVersion!
+      const targetVersion = shouldCreateNewVersion ? (latestVersion ?? 0) + 1 : (latestVersion ?? 0)
       const timestamp = new Date().toISOString()
 
       const payload = Array.from(ratingMap.entries()).map(([skillId, rating]) => ({
@@ -524,7 +524,10 @@ export const profileSkillsRouter = t.router({
           entries: [],
         })
       }
-      const bucket = historyMap.get(row.version)!
+      const bucket = historyMap.get(row.version)
+      if (!bucket) {
+        throw new Error(`Missing history bucket for version ${row.version}`)
+      }
       if (!bucket.selfAssessedAt && row.self_assessed_at) {
         bucket.selfAssessedAt = row.self_assessed_at
       }

@@ -19,7 +19,6 @@ import {
 import {
   appendStatusHistory,
   BACKGROUND_CHECK_BASE_COLUMNS,
-  BACKGROUND_CHECK_SYNC_COLUMNS,
   BackgroundCheckStatus,
   mapProviderStatus,
   mergeMetadata,
@@ -1794,6 +1793,10 @@ export const backgroundChecksRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const { data: pkg, error: pkgError } = await supabase
         .schema('core')
         .from('background_check_packages')
@@ -1848,7 +1851,7 @@ export const backgroundChecksRouter = t.router({
         .schema('core')
         .from('background_checks')
         .insert({
-          user_id: user!.id,
+          user_id: user.id,
           package_id: pkg.id,
           check_type_ids: checkTypeIds,
           custom_configuration: input.custom_configuration ?? {},
@@ -1884,7 +1887,7 @@ export const backgroundChecksRouter = t.router({
 
       await recordBackgroundCheckConsent(ctx, {
         backgroundCheckId: record.id,
-        workerUserId: user!.id,
+        workerUserId: user.id,
         consent: input.consent,
         source: 'worker_self_service',
       })
@@ -1896,7 +1899,7 @@ export const backgroundChecksRouter = t.router({
         const payload = {
           package_code: pkg.slug ?? '',
           user: {
-            id: user!.id,
+            id: user.id,
             email: ctx.user?.email ?? undefined,
           },
           metadata: {
@@ -1995,13 +1998,17 @@ export const backgroundChecksRouter = t.router({
   listChecks: protectedProcedure.query(async ({ ctx }) => {
     const { supabase, user } = ctx
 
+    if (!user) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
+    }
+
     const { data, error } = await supabase
       .schema('core')
       .from('background_checks')
       .select(
         'id, status, package_id, completed_at, created_at, expires_at, invited_at, provider_check_id, findings, metadata, package:background_check_packages(id, display_name, slug)'
       )
-      .eq('user_id', user!.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -2047,7 +2054,7 @@ export const backgroundChecksRouter = t.router({
           'id, status, status_history, package_id, check_type_ids, provider_check_id, summary, findings, component_statuses, metadata, created_at, updated_at, expires_at, estimated_completion_date'
         )
         .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (checkError) {
@@ -2243,6 +2250,10 @@ export const backgroundChecksRouter = t.router({
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const { data, error } = await supabase
         .schema('core')
         .from('background_check_disputes')
@@ -2250,7 +2261,7 @@ export const backgroundChecksRouter = t.router({
           'id, dispute_reason, dispute_details, supporting_documents, status, created_at, updated_at, resolved_at, resolution, resolution_notes'
         )
         .eq('background_check_id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -2285,12 +2296,16 @@ export const backgroundChecksRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const { data: check, error: checkError } = await supabase
         .schema('core')
         .from('background_checks')
         .select('id')
         .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (checkError) {
@@ -2323,7 +2338,7 @@ export const backgroundChecksRouter = t.router({
       }
 
       const storagePath = buildDocumentStoragePath(
-        user!.id,
+        user.id,
         input.background_check_id,
         input.file_name
       )
@@ -2335,7 +2350,7 @@ export const backgroundChecksRouter = t.router({
       if (error || !data) {
         console.error('[backgroundChecks.createUploadUrl] failed to create signed URL', {
           background_check_id: input.background_check_id,
-          user_id: user!.id,
+          user_id: user.id,
           message: error?.message,
         })
         throw new TRPCError({
@@ -2361,12 +2376,16 @@ export const backgroundChecksRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const { data: existing, error: checkError } = await supabase
         .schema('core')
         .from('background_checks')
         .select('id')
         .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (checkError) {
@@ -2398,7 +2417,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      const expectedPrefix = `${user!.id}/${input.background_check_id}/`
+      const expectedPrefix = `${user.id}/${input.background_check_id}/`
       if (!input.storage_path.startsWith(expectedPrefix)) {
         throw new TRPCError({
           code: 'FORBIDDEN',
@@ -2416,7 +2435,7 @@ export const backgroundChecksRouter = t.router({
           file_name: input.file_name,
           file_size: input.file_size,
           mime_type: input.mime_type,
-          uploaded_by_user_id: user!.id,
+          uploaded_by_user_id: user.id,
           metadata: input.metadata ?? {},
         })
         .select('id, document_type, file_name')
@@ -2446,7 +2465,7 @@ export const backgroundChecksRouter = t.router({
         .from('background_checks')
         .select('metadata')
         .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (fetchError) {
@@ -2485,7 +2504,7 @@ export const backgroundChecksRouter = t.router({
         .from('background_checks')
         .update({ metadata: updatedMetadata })
         .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
 
       if (updateError) {
         throw new TRPCError({
@@ -2573,6 +2592,10 @@ export const backgroundChecksRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, supabaseAdmin, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const { data: document, error: fetchError } = await supabase
         .schema('core')
         .from('background_check_documents')
@@ -2614,7 +2637,7 @@ export const backgroundChecksRouter = t.router({
         .from('background_check_access_log')
         .insert({
           background_check_id: document.background_check_id,
-          accessed_by_user_id: user!.id,
+          accessed_by_user_id: user.id,
           access_type: 'document_download',
           accessed_data: {
             document_id: input.document_id,
@@ -2635,6 +2658,10 @@ export const backgroundChecksRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const { data: existing, error: checkError } = await supabase
         .schema('core')
         .from('background_checks')
@@ -2642,7 +2669,7 @@ export const backgroundChecksRouter = t.router({
           'id, status, status_history, requested_by_user_id, package:background_check_packages(display_name, slug)'
         )
         .eq('id', input.background_check_id)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (checkError) {
@@ -2679,7 +2706,7 @@ export const backgroundChecksRouter = t.router({
         .from('background_check_disputes')
         .insert({
           background_check_id: input.background_check_id,
-          user_id: user!.id,
+          user_id: user.id,
           dispute_reason: input.dispute_reason,
           dispute_details: input.dispute_details,
           supporting_documents: input.supporting_documents ?? [],
@@ -2704,7 +2731,7 @@ export const backgroundChecksRouter = t.router({
           occurred_at: new Date().toISOString(),
           actor: 'worker',
           notes: input.dispute_reason ?? null,
-          submitter_user_id: user!.id,
+          submitter_user_id: user.id,
         })
 
         const { error: disputeStatusError } = await supabase
@@ -2728,12 +2755,12 @@ export const backgroundChecksRouter = t.router({
         await notifyBackgroundCheckStatusChange({
           supabase: ctx.supabaseAdmin,
           status: 'disputed',
-          workerId: user!.id,
+          workerId: user.id,
           requesterId: existing.requested_by_user_id ?? null,
           checkId: input.background_check_id,
           packageName: existing.package?.display_name ?? existing.package?.slug ?? null,
           summary: input.dispute_reason ?? input.dispute_details ?? null,
-          actorId: user!.id,
+          actorId: user.id,
         })
       } catch (error) {
         console.error('[backgroundChecks.submitDispute] failed to send dispute notification', error)
@@ -2749,6 +2776,10 @@ export const backgroundChecksRouter = t.router({
     .input(z.object({ organization_id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       const { supabase, user } = ctx
+
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
 
       const { data, error } = await supabase
         .schema('core')
@@ -2773,7 +2804,7 @@ export const backgroundChecksRouter = t.router({
       `
         )
         .eq('organization_id', input.organization_id)
-        .eq('requested_by_user_id', user!.id)
+        .eq('requested_by_user_id', user.id)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -2901,7 +2932,7 @@ export const backgroundChecksRouter = t.router({
           paid_by: 'organization',
           cost_cents: input.cost_cents,
           metadata: input.metadata ?? {},
-          requested_by_user_id: user!.id,
+          requested_by_user_id: user.id,
           invited_at: new Date().toISOString(),
         })
         .select(
@@ -2931,7 +2962,7 @@ export const backgroundChecksRouter = t.router({
           },
           metadata: {
             background_check_id: record.id,
-            requested_by: user!.id,
+            requested_by: user.id,
           },
           custom_configuration: input.custom_configuration ?? {},
         }
@@ -2944,7 +2975,7 @@ export const backgroundChecksRouter = t.router({
             status: 'invited',
             occurred_at: new Date().toISOString(),
             actor: 'organization',
-            requested_by: user!.id,
+            requested_by: user.id,
           })
 
           const metadataPatch = mergeMetadata(record.metadata, {
@@ -3025,10 +3056,10 @@ export const backgroundChecksRouter = t.router({
         await notifyBackgroundCheckInvitation({
           supabase: ctx.supabaseAdmin,
           workerId: input.worker_user_id,
-          invitedById: user!.id,
+          invitedById: user.id,
           checkId: record.id,
           packageName: pkg.display_name ?? pkg.slug ?? null,
-          actorId: user!.id,
+          actorId: user.id,
         })
       } catch (error) {
         console.error(
@@ -3062,7 +3093,7 @@ export const backgroundChecksRouter = t.router({
         })
       }
 
-      if (!check || check.requested_by_user_id !== user!.id) {
+      if (!check || check.requested_by_user_id !== user.id) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Background check not found for organization',
@@ -3246,7 +3277,7 @@ export const backgroundChecksRouter = t.router({
         occurred_at: new Date().toISOString(),
         actor: 'admin',
         notes: input.notes ?? null,
-        reviewer_user_id: user!.id,
+        reviewer_user_id: user.id,
       })
 
       const { data: updated, error: updateError } = await supabase
@@ -3283,7 +3314,7 @@ export const backgroundChecksRouter = t.router({
           checkId: updated.id,
           packageName: updated.package?.display_name ?? updated.package?.slug ?? null,
           summary: input.summary ?? updated.summary ?? null,
-          actorId: user!.id,
+          actorId: user.id,
         })
       } catch (error) {
         console.error(
@@ -3422,6 +3453,10 @@ export const backgroundChecksRouter = t.router({
     .mutation(async ({ ctx, input }) => {
       const { supabase, user } = ctx
 
+      if (!user) {
+        throw new TRPCError({ code: 'UNAUTHORIZED' })
+      }
+
       const { data, error } = await supabase
         .schema('core')
         .from('background_check_disputes')
@@ -3430,7 +3465,7 @@ export const backgroundChecksRouter = t.router({
           resolution: input.resolution ?? null,
           resolution_notes: input.resolution_notes ?? null,
           resolved_at: new Date().toISOString(),
-          resolved_by_user_id: user!.id,
+          resolved_by_user_id: user.id,
         })
         .eq('id', input.dispute_id)
         .select('id, status, resolved_at, resolution, resolution_notes')

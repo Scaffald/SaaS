@@ -2553,7 +2553,7 @@ export const officeRouter = t.router({
    * Get all skills
    * TODO: Update to query from polymorphic skill sources (CSI, O*NET)
    */
-  getSkills: officeProcedure.query(async ({ ctx }) => {
+  getSkills: officeProcedure.query(async ({ ctx: _ctx }) => {
     // For now, return empty array since the skills table no longer exists
     // This needs to be updated to query csi.masterformat and onet.occupation_data
     return { skills: [] }

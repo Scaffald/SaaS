@@ -1,4 +1,3 @@
-import { Buffer } from "node:buffer";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { extractTextFromPdf as sharedExtractTextFromPdf } from "@app/trpc/utils";
@@ -244,7 +243,9 @@ function sanitizeString(value: unknown): string | null {
   }
   const trimmed = value.trim();
   if (!trimmed) return null;
-  const withoutControl = trimmed.replace(/[\u0000-\u001F\u007F]+/g, "");
+  // Remove control characters (ASCII 0-31 and 127)
+  const controlCharPattern = /[\u0000-\u001F\u007F]+/g
+  const withoutControl = trimmed.replace(controlCharPattern, "");
   const strippedScripts = withoutControl.replace(
     /<script.*?>.*?<\/script>/gim,
     "",
@@ -447,7 +448,7 @@ async function clearImportMetadata(
 export const profileImportRouter = t.router({
   parseResume: protectedProcedure.input(resumeParseInputSchema).mutation(
     async ({ ctx, input }) => {
-      const { supabase, user } = ctx;
+      const { user } = ctx;
       if (!user) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
