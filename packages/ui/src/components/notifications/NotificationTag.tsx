@@ -34,8 +34,8 @@ export const NotificationTag = ({
         backgroundColor="$color3"
         borderRadius="$3"
         alignItems="center"
-        paddingHorizontal={sizing.px}
-        paddingVertical={sizing.py}
+        paddingHorizontal={sizing.paddingHorizontal}
+        paddingVertical={sizing.paddingVertical}
       >
         <Text fontSize={sizing.fontSize} fontWeight="600" color={textColorToken} {...textProps}>
           {children}
