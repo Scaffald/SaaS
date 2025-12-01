@@ -1,7 +1,6 @@
 import { ChevronDown, Check } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import {
-  Adapt,
   Button,
   ScrollView,
   Select,
@@ -10,7 +9,7 @@ import {
   XStack,
   YStack,
 } from 'tamagui'
-import { Sheet } from '../sheets/Sheet'
+import { AdaptiveSelectSheet } from './AdaptiveSelectSheet'
 
 export interface ResponsiveSelectOption {
   value: string
@@ -222,32 +221,16 @@ export function ResponsiveSelect({
           <Select.Value placeholder={placeholder}>{displayValue}</Select.Value>
         </Select.Trigger>
 
-        <Adapt when="sm" platform="touch">
-          <Sheet
-            native
-            modal
-            dismissOnSnapToBottom
-            animationConfig={{
-              type: 'spring',
-              damping: 20,
-              mass: 1.2,
-              stiffness: 250,
-            }}
-          >
-            <Sheet.Frame>
-              <Sheet.ScrollView>
-                <Adapt.Contents />
-              </Sheet.ScrollView>
-            </Sheet.Frame>
-            <Sheet.Overlay
-              animation="lazy"
-              enterStyle={{ opacity: 0 }}
-              exitStyle={{ opacity: 0 }}
-            />
-          </Sheet>
-        </Adapt>
-
-        <Select.Content zIndex={200000} {...contentProps}>
+        <AdaptiveSelectSheet
+          native
+          animationConfig={{
+            type: 'spring',
+            damping: 20,
+            mass: 1.2,
+            stiffness: 250,
+          }}
+        >
+          <Select.Content zIndex={200000} {...contentProps}>
           <Select.ScrollUpButton />
           <Select.Viewport>
             <Select.Group>
@@ -270,6 +253,7 @@ export function ResponsiveSelect({
           </Select.Viewport>
           <Select.ScrollDownButton />
         </Select.Content>
+        </AdaptiveSelectSheet>
       </Select>
 
       {error && (

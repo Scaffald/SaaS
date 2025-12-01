@@ -1,6 +1,6 @@
 import { Calendar } from '@tamagui/lucide-icons'
-import { Adapt, Select, Text, YStack } from 'tamagui'
-import { Sheet } from '../sheets/Sheet'
+import { Select, Text, YStack } from 'tamagui'
+import { AdaptiveSelectSheet } from '../select/AdaptiveSelectSheet'
 
 interface MonthYearPickerProps {
   value: Date | null | undefined
@@ -114,29 +114,19 @@ export function MonthYearPicker({
             <Select.Value placeholder="Month" />
           </Select.Trigger>
 
-          <Adapt when={'sm' as any} platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  {/* @ts-ignore - Adapt.Contents type inference issue in DTS generation */}
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-
-          <Select.Content zIndex={200000}>
-            <Select.Viewport>
-              <Select.Group>
-                {MONTH_OPTIONS.map((month, index) => (
-                  <Select.Item key={month.value} value={month.value} index={index}>
-                    <Select.ItemText>{month.label}</Select.ItemText>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-          </Select.Content>
+          <AdaptiveSelectSheet>
+            <Select.Content zIndex={200000}>
+              <Select.Viewport>
+                <Select.Group>
+                  {MONTH_OPTIONS.map((month, index) => (
+                    <Select.Item key={month.value} value={month.value} index={index}>
+                      <Select.ItemText>{month.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+            </Select.Content>
+          </AdaptiveSelectSheet>
         </Select>
 
         <Select value={selectedYear} onValueChange={handleYearChange} size="$4">
@@ -149,29 +139,19 @@ export function MonthYearPicker({
             <Select.Value placeholder="Year" />
           </Select.Trigger>
 
-          <Adapt when={'sm' as any} platform="touch">
-            <Sheet modal dismissOnSnapToBottom>
-              <Sheet.Frame>
-                <Sheet.ScrollView>
-                  {/* @ts-ignore - Adapt.Contents type inference issue in DTS generation */}
-                  <Adapt.Contents />
-                </Sheet.ScrollView>
-              </Sheet.Frame>
-              <Sheet.Overlay />
-            </Sheet>
-          </Adapt>
-
-          <Select.Content zIndex={200000}>
-            <Select.Viewport>
-              <Select.Group>
-                {YEAR_OPTIONS.map((year, index) => (
-                  <Select.Item key={year.value} value={year.value} index={index}>
-                    <Select.ItemText>{year.label}</Select.ItemText>
-                  </Select.Item>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-          </Select.Content>
+          <AdaptiveSelectSheet>
+            <Select.Content zIndex={200000}>
+              <Select.Viewport>
+                <Select.Group>
+                  {YEAR_OPTIONS.map((year, index) => (
+                    <Select.Item key={year.value} value={year.value} index={index}>
+                      <Select.ItemText>{year.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Select.Viewport>
+            </Select.Content>
+          </AdaptiveSelectSheet>
         </Select>
       </YStack>
       {error && (

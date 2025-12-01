@@ -36,7 +36,6 @@
     "src/components/table/TableParts.tsx",
     "src/components/typography/Heading.tsx",
     "src/config/animations.ts",
-    "src/components/date-picker/MonthYearPicker.tsx",
     "**/*.d.ts"
   ],
   "include": ["src/**/*"]

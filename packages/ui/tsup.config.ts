@@ -7,12 +7,7 @@ export default defineConfig({
     "types/phone": "src/types/phone.ts",
   },
   format: ["esm", "cjs"],
-  dts: {
-    resolve: true,
-    compilerOptions: {
-      skipLibCheck: true,
-    },
-  }, // Type declarations enabled - using manual .d.ts files for complex components
+  dts: true, // Type declarations enabled - using manual .d.ts files for complex components
   splitting: false,
   sourcemap: true,
   clean: true,

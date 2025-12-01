@@ -49,11 +49,10 @@ export const CardBadges = memo(
           ) : (
             badge.label
           )
-          const ChipWithKey = Chip as any
           return (
-            <ChipWithKey key={badge.key} {...chipProps}>
-              {chipContent as any}
-            </ChipWithKey>
+            <Chip key={badge.key} {...chipProps}>
+              {chipContent}
+            </Chip>
           )
         })}
         {overflowCount > 0 && (

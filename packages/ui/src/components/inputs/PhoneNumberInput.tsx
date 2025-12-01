@@ -5,7 +5,7 @@ import {
   isValidPhoneNumber,
 } from '../../types/phone'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Adapt, Input, Select, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { Input, Select, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
 import {
   COUNTRIES,
   type Country,
@@ -13,7 +13,7 @@ import {
   getDefaultCountry,
 } from '../../config/countries'
 import { FieldError } from '../field-error/FieldError'
-import { Sheet } from '../sheets/Sheet'
+import { AdaptiveSelectSheet } from '../select/AdaptiveSelectSheet'
 
 const DEBOUNCE_DELAY_MS = 500
 const PHONE_INVALID_MESSAGE = 'Please enter a valid phone number'
@@ -70,7 +70,7 @@ export const PhoneNumberInput = ({
   // Use window dimensions for conditional rendering
   // Breakpoint: 800px (matches Tamagui $sm/$md breakpoint)
   const { width } = useWindowDimensions()
-  const isMobile = width <= 800
+  const _isMobile = width <= 800
 
   // Helper function to format phone number for display
   const formatPhoneForDisplay = useCallback((phoneValue: string, countryCode: string) => {
@@ -263,32 +263,16 @@ export const PhoneNumberInput = ({
               </Select.Value>
             </Select.Trigger>
 
-            <Adapt when={isMobile} platform="touch">
-              <Sheet
-                native
-                modal
-                dismissOnSnapToBottom
-                animationConfig={{
-                  type: 'spring',
-                  damping: 20,
-                  mass: 1.2,
-                  stiffness: 250,
-                }}
-              >
-                <Sheet.Frame>
-                  <Sheet.ScrollView>
-                    <Adapt.Contents />
-                  </Sheet.ScrollView>
-                </Sheet.Frame>
-                <Sheet.Overlay
-                  animation="lazy"
-                  enterStyle={{ opacity: 0 }}
-                  exitStyle={{ opacity: 0 }}
-                />
-              </Sheet>
-            </Adapt>
-
-            <Select.Content zIndex={200000}>
+            <AdaptiveSelectSheet
+              native
+              animationConfig={{
+                type: 'spring',
+                damping: 20,
+                mass: 1.2,
+                stiffness: 250,
+              }}
+            >
+              <Select.Content zIndex={200000}>
               <Select.ScrollUpButton />
               <Select.Viewport>
                 {countries.map((country, index) => (
@@ -303,6 +287,7 @@ export const PhoneNumberInput = ({
               </Select.Viewport>
               <Select.ScrollDownButton />
             </Select.Content>
+            </AdaptiveSelectSheet>
           </Select>
         </YStack>
       </YStack>

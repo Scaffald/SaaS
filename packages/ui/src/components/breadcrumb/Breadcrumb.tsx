@@ -222,7 +222,7 @@ export const Breadcrumb = memo(function Breadcrumb({
             </Text>
           </XStack>
         </Popover.Trigger>
-        <Adapt when={'sm' as any} platform="touch">
+        <Adapt when="sm" platform="touch">
           <Sheet
             modal
             open={ellipsisOpen}
