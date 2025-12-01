@@ -12,7 +12,7 @@
     "expo": "~54.0.0",
     "react": "19.1.0",
     "react-native": "0.81.5",
-    "@unicornlove/ui": "workspace:*",
+    "@unicornlove/ui": "^1.0.0",
     "tamagui": "^1.138.0",
     "@tamagui/core": "^1.138.0",
     "react-hook-form": "~7.63.0",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@types/react": "~19.1.0",
-    "typescript": "~5.9.2"
+    "typescript": "catalog:"
   },
   "private": true
 }

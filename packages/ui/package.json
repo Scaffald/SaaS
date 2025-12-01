@@ -22,10 +22,8 @@
   "private": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
@@ -54,7 +52,8 @@
     "*.css"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "node scripts/build.mjs",
+    "build:with-types": "tsup",
     "prepublishOnly": "pnpm build",
     "check": "tamagui check",
     "check:type": "tsc --noEmit",
@@ -114,12 +113,12 @@
     "awesome-phonenumber": "~7.5.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "~2.3.6",
+    "@biomejs/biome": "catalog:",
     "@testing-library/jest-dom": "^6.4.2",
-    "@types/node": "~20.0.0",
-    "@types/react": "~19.1.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "tsup": "^8.0.0",
-    "typescript": "~5.9.2",
+    "typescript": "catalog:",
     "vitest": "^4.0.10"
   }
 }
