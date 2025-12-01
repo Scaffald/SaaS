@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import type { Context } from '../context.ts'
 import { protectedProcedure, t } from '../middleware.ts'
 
 // =========================================================
@@ -18,7 +18,7 @@ const viewedUserIdSchema = z.object({
 /**
  * Get user's primary role type (worker/employer/customer)
  */
-async function getUserRoleType(supabase: any, userId: string): Promise<string | null> {
+async function getUserRoleType(supabase: Context['supabase'], userId: string): Promise<string | null> {
   const { data: preferences } = await supabase
     .schema('core')
     .from('preferences')
@@ -37,7 +37,7 @@ async function getUserRoleType(supabase: any, userId: string): Promise<string | 
 /**
  * Get user's industry ID
  */
-async function getUserIndustryId(supabase: any, userId: string): Promise<string | null> {
+async function getUserIndustryId(supabase: Context['supabase'], userId: string): Promise<string | null> {
   const { data: user } = await supabase
     .schema('core')
     .from('users')

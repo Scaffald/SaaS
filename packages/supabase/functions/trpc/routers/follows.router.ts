@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import type { Context } from '../context.ts'
 import { protectedProcedure, t } from '../middleware.ts'
 
 // =========================================================
@@ -19,7 +19,7 @@ const targetUserIdSchema = z.object({
  * Upsert connection analytics for a user, incrementing or decrementing counters
  */
 async function updateConnectionAnalytics(
-  supabase: any,
+  supabase: Context['supabase'],
   userId: string,
   updates: {
     followers_count?: number
