@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Reusable CORS headers for Edge Functions
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

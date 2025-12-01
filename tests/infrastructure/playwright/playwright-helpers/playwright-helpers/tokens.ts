@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Utility for reading cached Supabase tokens produced by the Deno tests.
 import { readFile } from 'fs/promises'
 import { join } from 'path'

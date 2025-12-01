@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import type { Page } from '@playwright/test'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
