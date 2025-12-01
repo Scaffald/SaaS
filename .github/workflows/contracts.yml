@@ -24,7 +24,7 @@ jobs:
         with:
           filters: |
             contracts:
-              - 'contracts/**'
+              - 'tests/reports/contracts/**'
               - 'vitest.contracts.config.ts'
               - '.github/workflows/contracts.yml'
               - 'packages/ui/src/components/address/providers/**'
@@ -66,5 +66,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: generated-contracts
-          path: contracts/generated
+          path: tests/reports/contracts/generated
           if-no-files-found: error

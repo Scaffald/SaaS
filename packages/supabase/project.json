@@ -19,7 +19,7 @@
         "command": "vitest run",
         "cwd": "packages/supabase"
       },
-      "outputs": ["{workspaceRoot}/coverage/supabase"]
+      "outputs": ["{workspaceRoot}/tests/reports/coverage/supabase"]
     },
     "lint": {
       "executor": "nx:run-commands",

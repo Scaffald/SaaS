@@ -13,7 +13,6 @@
       "!!**/node_modules",
       "!!**/build",
       "!!**/dist",
-      "!!**/artifacts",
       "!!**/.vscode",
       "!!**/.tamagui",
       "!!**/ios",
@@ -22,7 +21,7 @@
       "!!**/*.test.tsx",
       "!!**/*.css",
       "!!**/packages/fonts/types/index.d.ts",
-      "!!**/coverage",
+      "!!**/tests/reports/coverage",
       "!!**/.turbo",
       "!!**/.nx"
     ]

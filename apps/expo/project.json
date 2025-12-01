@@ -106,12 +106,12 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "config": "apps/expo/vitest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["{workspaceRoot}/coverage/expo-app"]
+      "outputs": ["{workspaceRoot}/tests/reports/coverage/expo-app"]
     },
     "typecheck": {
       "executor": "nx:run-commands",

@@ -1,4 +1,25 @@
 {
+  "name": "@app/supabase",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./client-types": "./client-types.ts",
+    "./functions/_shared/client-types": "./functions/_shared/client-types.ts",
+    "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",
+    "./functions/_shared/types": "./functions/_shared/types.ts",
+    "./types": "./types.ts"
+  },
+  "scripts": {
+    "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
+    "download-onet": "pnpx tsx scripts/download-onet.ts",
+    "seed": "pnpx tsx scripts/seed-all.ts",
+    "seed:news-feeds": "pnpx tsx scripts/seed-news-feeds.ts",
+    "seed:news-import": "pnpx tsx scripts/trigger-news-import.ts",
+    "seed:onet": "pnpx tsx scripts/seed-onet.ts",
+    "seed:universities": "pnpx tsx scripts/seed-universities.ts",
+    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh",
+    "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts"
+  },
   "dependencies": {
     "@supabase/supabase-js": "catalog:",
     "@trpc/server": "catalog:",
@@ -16,26 +37,5 @@
     "typescript": "catalog:",
     "uuid": "^13.0.0",
     "xlsx": "^0.18.5"
-  },
-  "exports": {
-    "./client-types": "./client-types.ts",
-    "./functions/_shared/client-types": "./functions/_shared/client-types.ts",
-    "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",
-    "./functions/_shared/types": "./functions/_shared/types.ts",
-    "./types": "./types.ts"
-  },
-  "name": "@app/supabase",
-  "private": true,
-  "scripts": {
-    "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
-    "download-onet": "pnpx tsx scripts/download-onet.ts",
-    "seed": "pnpx tsx scripts/seed-all.ts",
-    "seed:news-feeds": "pnpx tsx scripts/seed-news-feeds.ts",
-    "seed:news-import": "pnpx tsx scripts/trigger-news-import.ts",
-    "seed:onet": "pnpx tsx scripts/seed-onet.ts",
-    "seed:universities": "pnpx tsx scripts/seed-universities.ts",
-    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh",
-    "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts"
-  },
-  "version": "0.0.0"
+  }
 }

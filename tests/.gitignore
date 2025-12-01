@@ -1,9 +1,8 @@
 # Auth state files
 .auth/
 
-# Test results
-test-results/
-playwright-report/
+# Test reports
+reports/
 
 # Screenshots and videos
 screenshots/

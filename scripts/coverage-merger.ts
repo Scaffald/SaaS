@@ -20,7 +20,7 @@ interface CoverageData {
 }
 
 export function mergeCoverageData(): CoverageData {
-  const coverageDir = resolve(__dirname, '../coverage');
+  const coverageDir = resolve(__dirname, '../tests/reports/coverage');
   const mergedCoverage: CoverageData = {};
 
   try {

@@ -74,7 +74,7 @@ export default class JSONReporter implements Reporter {
       errors: this.errors,
     };
 
-    const reportPath = `${this.ctx.config.root}/coverage/test-results.json`;
+    const reportPath = `${this.ctx.config.root}/tests/reports/coverage/test-results.json`;
     mkdirSync(dirname(reportPath), { recursive: true });
     writeFileSync(reportPath, JSON.stringify(output, null, 2));
 

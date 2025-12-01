@@ -1,11 +1,7 @@
 {
-  "dependencies": {
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "catalog:",
-    "typescript": "catalog:"
-  },
+  "name": "@app/trpc",
+  "version": "0.0.1",
+  "private": true,
   "exports": {
     ".": "./src/index.ts",
     "./schemas": "./src/schemas/index.ts",
@@ -13,8 +9,7 @@
     "./utils": "./src/utils/index.ts"
   },
   "main": "./src/index.ts",
-  "name": "@app/trpc",
-  "private": true,
+  "types": "./src/index.ts",
   "scripts": {
     "format": "biome format .",
     "format:fix": "biome format --write .",
@@ -23,6 +18,11 @@
     "test:unit": "exit 0",
     "typecheck": "tsc --noEmit"
   },
-  "types": "./src/index.ts",
-  "version": "0.0.1"
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "typescript": "catalog:"
+  }
 }

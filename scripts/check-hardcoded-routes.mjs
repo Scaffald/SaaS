@@ -14,13 +14,9 @@ const IGNORE_DIRS = new Set([
   'android',
   'dist',
   'build',
-  'coverage',
-  'artifacts',
-  'playwright-report',
+  'reports',
 ])
-const ALLOWLIST = new Set([
-  path.join(ROOT, 'packages/core/constants/routes.ts'),
-])
+const ALLOWLIST = new Set([path.join(ROOT, 'packages/core/constants/routes.ts')])
 
 const PATTERNS = [
   {
@@ -86,7 +82,7 @@ async function checkFile(filePath) {
     console.error('\n❌ Hardcoded route paths detected:')
     for (const violation of violations) {
       console.error(
-        `  - ${path.relative(ROOT, violation.filePath)}:${violation.line}\n    ${violation.reason}: ${violation.snippet}`,
+        `  - ${path.relative(ROOT, violation.filePath)}:${violation.line}\n    ${violation.reason}: ${violation.snippet}`
       )
     }
     console.error('\nPlease replace string literals with ROUTES constants.')
@@ -98,4 +94,3 @@ async function checkFile(filePath) {
   console.error('Failed to run route check:', error)
   process.exit(1)
 })
-

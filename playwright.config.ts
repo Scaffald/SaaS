@@ -45,7 +45,7 @@ export default defineConfig({
   // Reporters: quiet for CI, HTML for local debugging
   reporter: [
     ["./tests/infrastructure/playwright/quiet-reporter.ts"],
-    ["html", { outputFolder: "playwright-report", open: "never" }],
+    ["html", { outputFolder: "tests/reports/playwright", open: "never" }],
   ],
 
   use: {

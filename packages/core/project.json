@@ -14,12 +14,12 @@
       "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"]
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "config": "packages/core/vitest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["{workspaceRoot}/coverage/core"]
+      "outputs": ["{workspaceRoot}/tests/reports/coverage/core"]
     },
     "lint": {
       "executor": "nx:run-commands",

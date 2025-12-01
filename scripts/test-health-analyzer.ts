@@ -103,7 +103,7 @@ interface HealthReport {
 const SLOW_THRESHOLD_MS = 5000; // 5 seconds
 const VERY_SLOW_THRESHOLD_MS = 10000; // 10 seconds
 const FLAKY_THRESHOLD = 0.3; // 30% inconsistency
-const HISTORY_FILE = resolve(scriptDir, '../coverage/test-history.json');
+const HISTORY_FILE = resolve(scriptDir, '../tests/reports/coverage/test-history.json');
 const MAX_HISTORY_RUNS = 50; // Keep last 50 runs per test
 
 /**
@@ -299,7 +299,7 @@ function saveTestHistory(currentRun: JSONReportOutput, history: Map<string, Test
  * Analyze test health and provide actionable insights
  */
 export function analyzeTestHealth(): HealthReport {
-  const reportPath = resolve(scriptDir, '../coverage/test-results.json');
+  const reportPath = resolve(scriptDir, '../tests/reports/coverage/test-results.json');
   const history = loadTestHistory();
 
   const report: HealthReport = {
@@ -447,7 +447,7 @@ export function analyzeTestHealth(): HealthReport {
 
     // Check for async errors
     try {
-      const asyncErrorPath = resolve(scriptDir, '../coverage/async-errors.json');
+      const asyncErrorPath = resolve(scriptDir, '../tests/reports/coverage/async-errors.json');
       if (existsSync(asyncErrorPath)) {
         const asyncErrorData = JSON.parse(readFileSync(asyncErrorPath, 'utf-8'));
         report.asyncErrors = asyncErrorData.errors?.map((e: any) => e.error || e.message) || [];

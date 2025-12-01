@@ -55,7 +55,7 @@ async function runTestOrchestrator() {
       const metrics: TestMetrics = {
         timestamp: new Date().toISOString(),
         workerCount,
-        totalTests: 0, // Will be populated from coverage/test-results.json
+        totalTests: 0, // Will be populated from tests/reports/coverage/test-results.json
         passed: 0,
         failed: 0,
         skipped: 0,

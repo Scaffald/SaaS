@@ -93,7 +93,7 @@ export default class JUnitReporter implements Reporter {
 
     xml += '</testsuites>\n';
 
-    const reportPath = `${this.ctx.config.root}/coverage/junit.xml`;
+    const reportPath = `${this.ctx.config.root}/tests/reports/coverage/junit.xml`;
     mkdirSync(dirname(reportPath), { recursive: true });
     writeFileSync(reportPath, xml);
 

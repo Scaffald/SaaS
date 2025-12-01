@@ -55,7 +55,7 @@ export default class AsyncErrorReporter implements Reporter {
       console.warn(`Total async errors: ${this.asyncErrors.length}\n`);
 
       // Write to JSON file for CI systems
-      const reportPath = `${this.ctx.config.root}/coverage/async-errors.json`;
+      const reportPath = `${this.ctx.config.root}/tests/reports/coverage/async-errors.json`;
       mkdirSync(dirname(reportPath), { recursive: true });
       writeFileSync(
         reportPath,

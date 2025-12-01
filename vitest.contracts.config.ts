@@ -25,7 +25,7 @@ export default defineConfig({
     ...baseConfig.test,
     environment: 'node',
     exclude: [],
-    include: ['contracts/**/*.{contract,test,spec}.{ts,tsx}'],
+    include: ['tests/reports/contracts/**/*.{contract,test,spec}.{ts,tsx}'],
     watch: false,
   },
 })

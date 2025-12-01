@@ -14,12 +14,12 @@
       "outputs": ["{projectRoot}/dist"]
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "options": {
         "config": "packages/ui/vitest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["{workspaceRoot}/coverage/ui"]
+      "outputs": ["{workspaceRoot}/tests/reports/coverage/ui"]
     },
     "lint": {
       "executor": "nx:run-commands",

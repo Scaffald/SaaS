@@ -42,7 +42,7 @@ export default class CoverageReporter implements Reporter {
       summary: this.calculateSummary(),
     };
 
-    const reportPath = `${this.ctx.config.root}/coverage/coverage-report.json`;
+    const reportPath = `${this.ctx.config.root}/tests/reports/coverage/coverage-report.json`;
     mkdirSync(dirname(reportPath), { recursive: true });
     writeFileSync(reportPath, JSON.stringify(report, null, 2));
 

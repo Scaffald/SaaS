@@ -32,7 +32,7 @@
         "{workspaceRoot}/vitest.config.ts",
         "{workspaceRoot}/tests/infrastructure/**/*"
       ],
-      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
+      "outputs": ["{workspaceRoot}/tests/reports/coverage/{projectName}"],
       "cache": true
     },
     "lint": {

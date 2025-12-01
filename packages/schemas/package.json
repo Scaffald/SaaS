@@ -1,12 +1,7 @@
 {
-  "dependencies": {
-    "awesome-phonenumber": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "catalog:",
-    "typescript": "catalog:"
-  },
+  "name": "@app/schemas",
+  "version": "0.0.1",
+  "private": true,
   "exports": {
     ".": "./src/index.ts",
     "./common": "./src/common/index.ts",
@@ -14,8 +9,7 @@
     "./profile": "./src/profile/index.ts"
   },
   "main": "./src/index.ts",
-  "name": "@app/schemas",
-  "private": true,
+  "types": "./src/index.ts",
   "scripts": {
     "format": "biome format .",
     "format:fix": "biome format --write .",
@@ -26,6 +20,12 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
-  "types": "./src/index.ts",
-  "version": "0.0.1"
+  "dependencies": {
+    "awesome-phonenumber": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "typescript": "catalog:"
+  }
 }
