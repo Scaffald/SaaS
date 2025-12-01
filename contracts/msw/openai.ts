@@ -1,26 +1,26 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse, http } from 'msw'
 
 import type { ContractInteractionRecorder } from './types'
 
 const openAiResponse = {
-  id: 'chatcmpl-contract-1',
-  object: 'chat.completion',
-  created: 1_700_000_000,
-  model: 'gpt-4-turbo-preview',
   choices: [
     {
+      finish_reason: 'stop',
       index: 0,
       message: {
-        role: 'assistant',
         content:
           '{"general":{"fullName":"Casey Contractor"},"experience":[{"company":"ACME","title":"Engineer"}]}' as const,
+        role: 'assistant',
       },
-      finish_reason: 'stop',
     },
   ],
+  created: 1_700_000_000,
+  id: 'chatcmpl-contract-1',
+  model: 'gpt-4-turbo-preview',
+  object: 'chat.completion',
   usage: {
-    prompt_tokens: 1200,
     completion_tokens: 200,
+    prompt_tokens: 1200,
     total_tokens: 1400,
   },
 }
@@ -33,20 +33,20 @@ export const createOpenAIHandler = (record: ContractInteractionRecorder) =>
     expect(Array.isArray(body.messages)).toBe(true)
 
     record({
-      provider: 'openai',
       name: 'OpenAI chat completions',
+      provider: 'openai',
       request: {
-        method: request.method,
-        url: request.url,
+        body,
         headers: {
           authorization: request.headers.get('authorization'),
           'content-type': request.headers.get('content-type'),
         },
-        body,
+        method: request.method,
+        url: request.url,
       },
       response: {
-        status: 200,
         body: openAiResponse,
+        status: 200,
       },
     })
 
