@@ -33,13 +33,10 @@ This document consolidates all remaining test infrastructure work.
 - app-router-type → app-router-type.ts
 ```
 
-**B. Missing Exports (4 errors)**
+**B. Missing Exports (4 errors)** - ✅ RESOLVED
 ```typescript
-// _shared/feedback-sync.ts - add 'export' keyword
-export function updateFeedbackStatus(...)
-
-// trpc/__tests__/integration/seed-utils.ts
-export function createAdminClient(...)
+// _shared/feedback-sync.ts - ✅ Added 'export' keyword to updateFeedbackStatus
+// trpc/__tests__/setup.ts - ✅ createAdminClient already exported
 ```
 
 **C. pdf-lib Types (4 errors)** - Add types to import_map.json or use different import pattern
@@ -129,28 +126,28 @@ const supabase = createClient<Database, 'core'>()
 - [ ] Create minimal reproduction
 - [ ] Compare with working component tests
 
-### Mock Hoisting Issues (4 test files)
+### ✅ Mock Hoisting Issues (4 test files) - RESOLVED
 
 **Error:** `vi.mock factory - no top level variables inside`
 
-**Affected:**
-- `profile-employment-left.test.tsx`
-- `PortfolioGallery.test.tsx`
-- `PortfolioManager.test.tsx`
-- `usePhotoUpload.test.ts`
+**Fixed Files:**
+- ✅ `profile-employment-left.test.tsx` - uses dynamic imports after mocks
+- ✅ `PortfolioGallery.test.tsx` - uses `vi.hoisted()`
+- ✅ `PortfolioManager.test.tsx` - uses `vi.hoisted()`
+- ✅ `usePhotoUpload.test.ts` - uses `vi.hoisted()`
 
-**Fix:** Refactor mocks to avoid hoisting issues
+**Fix Applied:** Refactored mocks using `vi.hoisted()` or dynamic imports
 
-### Missing Mock Exports (3 test files)
+### ✅ Missing Mock Exports (3 test files) - RESOLVED
 
 **Error:** `No "Palette" export is defined on "@tamagui/lucide-icons" mock`
 
-**Affected:**
-- `DrawerLink.chevron.test.tsx`
-- `OrganizationForm.test.tsx`
-- `ResumeImportWidget.test.tsx`
+**Fixed Files:**
+- ✅ `DrawerLink.chevron.test.tsx` - has Palette export
+- ✅ `OrganizationForm.test.tsx` - has Palette export
+- ✅ `ResumeImportWidget.test.tsx` - has Palette export
 
-**Fix:** Add missing exports to mocks
+**Fix Applied:** Added missing Palette export to `@tamagui/lucide-icons` mocks
 
 ---
 

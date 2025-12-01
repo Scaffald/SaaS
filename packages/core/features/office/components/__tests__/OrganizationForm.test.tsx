@@ -34,6 +34,13 @@ vi.mock('@app/core/utils/api', () => ({
       getProjectsWithOverrides: { useQuery: getProjectsWithOverridesQueryMock.useQuery },
       updateLocationVisibility: { useMutation: updateLocationVisibilityMock.useMutation },
     },
+    useUtils: () => ({
+      organizations: {
+        getOrganization: {
+          invalidate: vi.fn(),
+        },
+      },
+    }),
   },
 }))
 
@@ -165,6 +172,26 @@ vi.mock('@unicornlove/ui', () => ({
       </button>
     </div>
   ),
+  ResponsiveSelect: ({
+    value,
+    onValueChange,
+    options,
+    placeholder,
+  }: {
+    value?: string | null
+    onValueChange: (value: string) => void
+    options: Array<{ value: string; label: string }>
+    placeholder?: string
+  }) => (
+    <select value={value ?? ''} onChange={(event) => onValueChange(event.target.value)}>
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ),
 }))
 
 const selectState = { onChange: (_value: string) => {} }
@@ -280,11 +307,25 @@ vi.mock('tamagui', async () => {
 })
 
 vi.mock('@tamagui/lucide-icons', () => ({
+  // Icons used by OrganizationForm
   Check: () => <span data-testid="check-icon" />,
   ChevronDown: () => <span data-testid="chevron-icon" />,
   Plus: () => <span data-testid="plus-icon" />,
   X: () => <span data-testid="x-icon" />,
-  Palette: () => <span data-testid="palette-icon" />, // Added for transitive dependencies
+  Palette: () => <span data-testid="palette-icon" />,
+  // Icons used by routes.ts (transitive dependency)
+  AlertTriangle: () => <span data-testid="alert-triangle" />,
+  Bell: () => <span data-testid="bell" />,
+  Briefcase: () => <span data-testid="briefcase" />,
+  Building2: () => <span data-testid="building2" />,
+  ClipboardCheck: () => <span data-testid="clipboard-check" />,
+  CreditCard: () => <span data-testid="credit-card" />,
+  FileText: () => <span data-testid="file-text" />,
+  Fingerprint: () => <span data-testid="fingerprint" />,
+  GraduationCap: () => <span data-testid="graduation-cap" />,
+  HardDrive: () => <span data-testid="hard-drive" />,
+  ShieldCheck: () => <span data-testid="shield-check" />,
+  Users: () => <span data-testid="users" />,
 }))
 
 vi.mock('expo-crypto', () => ({

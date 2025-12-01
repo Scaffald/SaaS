@@ -124,7 +124,7 @@ export function buildBraingridPayload(
   };
 }
 
-async function updateFeedbackStatus(
+export async function updateFeedbackStatus(
   supabase: ReturnType<typeof createServiceClient>,
   feedbackId: string,
   update: Partial<FeedbackRow>,
