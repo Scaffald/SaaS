@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Link2 } from '@tamagui/lucide-icons'
 import { useCallback } from 'react'
 import { H2, H3, isWeb, Paragraph, Text, XStack, YStack } from 'tamagui'

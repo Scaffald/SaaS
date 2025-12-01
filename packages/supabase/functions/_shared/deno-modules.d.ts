@@ -1,4 +1,3 @@
-// @ts-nocheck
 declare module '@supabase/supabase-js'
 
 // Type declarations for Deno standard library URL imports

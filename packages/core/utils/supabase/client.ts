@@ -1,19 +1,20 @@
-// @ts-nocheck
 import type { Database } from '@app/supabase/types'
 import { createClient } from '@supabase/supabase-js'
 import Constants from 'expo-constants'
 import { Platform } from 'react-native'
 
 // Platform-specific imports
-let storage: typeof import('@react-native-async-storage/async-storage').default | undefined
+type AsyncStorageType = typeof import('@react-native-async-storage/async-storage').default
+let storage: AsyncStorageType | undefined
 
 if (Platform.OS === 'web') {
   // Web: Use localStorage (default browser storage)
   storage = undefined // Supabase will use localStorage by default
 } else {
   // Native: Use AsyncStorage
-  import('react-native-url-polyfill/auto') // Required for React Native
-  const AsyncStorage = require('@react-native-async-storage/async-storage').default
+  void import('react-native-url-polyfill/auto') // Required for React Native
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const AsyncStorage = require('@react-native-async-storage/async-storage').default as AsyncStorageType
   storage = AsyncStorage
 }
 

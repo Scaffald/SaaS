@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { ROUTES } from '@app/core/constants/routes'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'

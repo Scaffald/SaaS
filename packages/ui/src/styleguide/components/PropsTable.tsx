@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
 
 type PropRow = {

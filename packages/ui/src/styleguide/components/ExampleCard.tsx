@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { ReactNode } from 'react'
 import { Separator, Text, View, YStack } from 'tamagui'
 import { CodeBlock } from './CodeBlock'

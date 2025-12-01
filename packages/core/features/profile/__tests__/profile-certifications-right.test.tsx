@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { FC, ReactNode } from 'react'
@@ -27,7 +26,8 @@ type TamaguiMockProps = {
 }
 
 vi.mock('tamagui', () => {
-  const React = require('react')
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const React = require('react') as typeof import('react')
 
   const createComponent = (tag = 'div') => {
     const Component: FC<TamaguiMockProps & Record<string, unknown>> = ({ onPress, children }) => {

@@ -1,11 +1,8 @@
-// @ts-nocheck
 /**
  * tRPC client initialization and configuration
  *
- * This file uses @ts-nocheck because createTRPCReact<AppRouter>() returns
- * an object whose type exposes the AppRouter type, which ultimately derives
- * from @ts-nocheck files on the server. TypeScript cannot properly name these
- * complex types (TS4023 error), but the code works correctly at runtime.
+ * Note: AppRouter type is derived from Deno edge function files, but type checking
+ * still occurs when using the type in this file.
  */
 
 import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
@@ -17,6 +14,7 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { clearAllAuthStorage } from "./auth/clearAuthStorage";
 import { supabase } from "./supabase/client";
+
 // Create tRPC React client with proper typing from shared supabase package
 // Note: AppRouter is a placeholder type to avoid importing Deno-specific code
 // The actual router types are provided at runtime

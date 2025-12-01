@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Link } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isWeb, ScrollView, Separator, Text, View, XStack, YStack } from 'tamagui'

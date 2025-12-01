@@ -1,7 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { Platform } from 'react-native'
-// biome-ignore lint/correctness/noUnusedImports: Test setup uses these for test framework
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { clearAllAuthStorage, isSessionExpired } from '../clearAuthStorage'
 
@@ -35,6 +34,44 @@ const setPlatform = (os: typeof Platform.OS) => {
   })
 }
 
+// Mock document.cookie with proper getter/setter to avoid biome-ignore
+let mockCookies: string[] = []
+
+Object.defineProperty(document, 'cookie', {
+  configurable: true,
+  get: () => mockCookies.join('; '),
+  set: (value: string) => {
+    const [name] = value.split('=')
+    if (value.endsWith('=') || !value.includes('=')) {
+      // Clearing cookie - remove it
+      mockCookies = mockCookies.filter((cookie) => !cookie.startsWith(`${name}=`))
+    } else {
+      // Setting cookie - add or update
+      const existingIndex = mockCookies.findIndex((cookie) => cookie.startsWith(`${name}=`))
+      if (existingIndex >= 0) {
+        mockCookies[existingIndex] = value
+      } else {
+        mockCookies.push(value)
+      }
+    }
+  },
+})
+
+const clearMockCookies = () => {
+  mockCookies = []
+}
+
+const setMockCookie = (cookie: string) => {
+  // Directly manipulate the mock array to avoid document.cookie assignment
+  const [name] = cookie.split('=')
+  const existingIndex = mockCookies.findIndex((c) => c.startsWith(`${name}=`))
+  if (existingIndex >= 0) {
+    mockCookies[existingIndex] = cookie
+  } else {
+    mockCookies.push(cookie)
+  }
+}
+
 describe('clearAllAuthStorage', () => {
   vi.spyOn(console, 'log').mockImplementation(() => {})
   vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -47,8 +84,7 @@ describe('clearAllAuthStorage', () => {
     asyncStorageMock.multiRemove.mockReset()
     localStorage.clear()
     sessionStorage.clear()
-    // biome-ignore lint/suspicious/noDocumentCookie: Test setup clearing cookies
-    document.cookie = ''
+    clearMockCookies()
   })
 
   afterAll(() => {
@@ -66,8 +102,7 @@ describe('clearAllAuthStorage', () => {
     localStorage.setItem('sb-auth-token', 'abc')
     localStorage.setItem('regular-key', 'keep')
     sessionStorage.setItem('authSession', '123')
-    // biome-ignore lint/suspicious/noDocumentCookie: Test setup setting cookies
-    document.cookie = 'sb-auth-token=abc'
+    setMockCookie('sb-auth-token=abc')
 
     const queryClient = { clear: vi.fn() } as unknown as QueryClient
 

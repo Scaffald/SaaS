@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { Copy } from '@tamagui/lucide-icons'
 import { useCallback, useMemo } from 'react'
 import { isWeb, ScrollView, Text, View, YStack } from 'tamagui'

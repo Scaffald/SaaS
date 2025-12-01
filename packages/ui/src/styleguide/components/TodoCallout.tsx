@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { AlertTriangle } from '@tamagui/lucide-icons'
 import { Paragraph, Text, View, XStack, YStack } from 'tamagui'
 import { TODO_ITEMS } from '../data/todos'

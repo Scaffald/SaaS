@@ -1,8 +1,6 @@
-// @ts-nocheck
-
 import { Slot, usePathname } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { ScrollView, Theme, View, XStack, YStack } from 'tamagui'
+import { ScrollView, Text, Theme, View, XStack, YStack } from 'tamagui'
 import { FLAT_NAV_ITEMS, NAV_SECTIONS } from '../navigation'
 import { StyleguideSidebar } from './Sidebar'
 // TopNav has domain dependencies - exclude from standalone
