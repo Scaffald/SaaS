@@ -37,7 +37,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Development Tools
 - **pnpm** (v10.17.1) - Package manager with workspaces
-- **Turbo** - Monorepo build system
+- **Nx** - Monorepo build system and task orchestration
 - **Biome** - Code formatting and linting
 - **TypeScript** - Type safety
 - **Playwright** - E2E testing

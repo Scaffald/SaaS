@@ -1,5 +1,0 @@
-
-> @app/trpc@0.0.1 lint:fix /Users/clay/Development/SCF-Scaffald/packages/trpc
-> biome lint --write .
-
-Checked 12 files in 48ms. No fixes applied.

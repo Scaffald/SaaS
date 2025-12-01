@@ -1,5 +1,0 @@
-
-> expo-app@1.0.4 format:fix /Users/clay/Development/SCF-Scaffald/apps/expo
-> biome format --write ./app
-
-Formatted 93 files in 28ms. No fixes applied.

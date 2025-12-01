@@ -1,5 +1,0 @@
-
-> @app/schemas@0.0.1 lint:fix /Users/clay/Development/SCF-Scaffald/packages/schemas
-> biome lint --write .
-
-Checked 35 files in 35ms. No fixes applied.

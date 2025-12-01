@@ -1,12 +1,13 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { mergeConfig } from "vitest/config";
+import baseConfig from "../../vitest.config";
 
+const workspaceRoot = fileURLToPath(new URL("../..", import.meta.url));
 const packageRoot = fileURLToPath(new URL(".", import.meta.url));
 
-export default defineConfig({
-  plugins: [react()],
+const packageConfig = {
+  root: workspaceRoot,
   resolve: {
     alias: [
       { find: "react-native", replacement: "react-native-web" },
@@ -17,9 +18,8 @@ export default defineConfig({
     ],
   },
   test: {
-    globals: true,
-    environment: "jsdom",
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    include: ["packages/ui/src/**/*.{test,spec}.{ts,tsx}"],
+    watchExclude: ["**/dist/**"],
     setupFiles: [resolve(packageRoot, "vitest.setup.ts")],
     coverage: {
       provider: "v8",
@@ -33,4 +33,6 @@ export default defineConfig({
       ],
     },
   },
-});
+};
+
+export default mergeConfig(baseConfig, packageConfig);

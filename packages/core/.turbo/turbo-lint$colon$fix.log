@@ -1,5 +1,0 @@
-
-> @app/core@0.0.0 lint:fix /Users/clay/Development/SCF-Scaffald/packages/core
-> biome lint --write .
-
-Checked 656 files in 184ms. No fixes applied.

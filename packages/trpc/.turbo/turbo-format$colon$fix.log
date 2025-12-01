@@ -1,5 +1,0 @@
-
-> @app/trpc@0.0.1 format:fix /Users/clay/Development/SCF-Scaffald/packages/trpc
-> biome format --write .
-
-Formatted 12 files in 37ms. No fixes applied.

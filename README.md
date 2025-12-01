@@ -411,7 +411,7 @@ Place configuration files in the `config/` folder:
 3. **Scalable** - Easy to add new routes following the same pattern
 4. **Maintainable** - Clear separation of concerns
 5. **Type Safety** - Consistent component naming for better TypeScript support
-6. **Fast Development** - Turbo generator for quick setup
+6. **Fast Development** - Nx generator for quick setup
 
 ## Layouts
 
@@ -735,7 +735,7 @@ This project includes cursor rules to help maintain code quality and consistency
 
 ### Using Generators
 
-We provide several turbo generators to speed up development:
+We provide several Nx generators to speed up development:
 
 ```bash
 # Create a new component

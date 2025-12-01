@@ -3,7 +3,7 @@
 
 ## Project Overview
 
-This is a [Tamagui](https://tamagui.dev), [solito](https://solito.dev), [Expo](https://expo.dev), and [Supabase](https://supabase.com) project. It is a monorepo managed with [pnpm](https://pnpm.io) and [Turbo](https://turbo.build). The project includes a web app, an iOS app, and an Android app.
+This is a [Tamagui](https://tamagui.dev), [solito](https://solito.dev), [Expo](https://expo.dev), and [Supabase](https://supabase.com) project. It is a monorepo managed with [pnpm](https://pnpm.io) and [Nx](https://nx.dev). The project includes a web app, an iOS app, and an Android app.
 
 The project is structured as a monorepo with the following workspaces:
 
