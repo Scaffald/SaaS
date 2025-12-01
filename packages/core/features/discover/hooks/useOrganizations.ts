@@ -1,5 +1,5 @@
 import { supabase } from "@app/core/utils/supabase/client";
-import type { ViewportBounds } from "@scaffald/neue-ui";
+import type { ViewportBounds } from "@unicornlove/ui";
 import { useQuery } from "@tanstack/react-query";
 
 // Type for organization data

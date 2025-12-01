@@ -1,4 +1,4 @@
-import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@scaffald/neue-ui'
+import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
 import { UserSearch } from '@app/core/components/user'
 import { useState } from 'react'
 import { Label } from 'tamagui'

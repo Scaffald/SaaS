@@ -6,7 +6,7 @@ import type { NormalizedScores } from '../../utils/scoreNormalizer'
 
 import { ChartView } from '../ChartView'
 
-'@scaffald/neue-ui', () => ({
+'@unicornlove/ui', () => ({
   __esModule: true as const,
   SkillsChart: (props: { datasets: { data: unknown[] }[] }) => (
     <div data-testid="skills-chart">points:{props.datasets[0]?.data?.length ?? 0}</div>

@@ -1,6 +1,6 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, DashboardWidget } from '@scaffald/neue-ui'
+import { UIButton as Button, DashboardWidget } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { Text, YStack } from 'tamagui'

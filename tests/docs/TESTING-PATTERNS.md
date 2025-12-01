@@ -1,4 +1,4 @@
-# Playwright Testing Patterns for SCF-Neue
+# Playwright Testing Patterns for SCF-Scaffald
 
 ## Critical Pattern: Authentication and Navigation
 

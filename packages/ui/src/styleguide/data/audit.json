@@ -1,0 +1,81 @@
+{
+  "componentSources": {
+    "forms": "packages/core/forms",
+    "icons": "@tamagui/lucide-icons",
+    "maps": "packages/ui/src/components/maps",
+    "uiPackage": "packages/ui/src"
+  },
+  "deployment": {
+    "ci": ".github/workflows/integrity.yaml",
+    "target": "Expo web export"
+  },
+  "design": {
+    "brandName": "Scaffald",
+    "colors": "packages/core/assets/brand-colors.ts",
+    "logo": "packages/core/assets/ScaffaldLogo.tsx",
+    "tagline": "Infrastructure for workforce compliance",
+    "typography": "Inter via Expo font loading"
+  },
+  "docs": {
+    "existingExamples": [
+      "apps/expo/app/dashboard",
+      "apps/expo/app/office",
+      "packages/ui/src/components/charts",
+      "packages/ui/src/components/forms"
+    ],
+    "stories": []
+  },
+  "languages": ["TypeScript", "TSX", "JSON"],
+  "risks": [
+    "Expo web bundle may grow due to embedded code samples",
+    "Need to ensure color contrast meets WCAG when mapping Bootstrap variants"
+  ],
+  "search": {
+    "libraries": [],
+    "notes": "No existing global search utilities located"
+  },
+  "security": {
+    "auth": "Supabase session provider in apps/expo/app/_layout.tsx",
+    "guard": "Not yet applied to /styleguide"
+  },
+  "styleSystem": {
+    "css": "Tamagui theme runtime generating CSS-in-JS for web",
+    "library": "Tamagui",
+    "tokens": [
+      "packages/ui/src/tamagui.config.ts",
+      "packages/ui/src/themes/scaffald-theme.ts",
+      "packages/core/assets/brand-colors.ts"
+    ]
+  },
+  "techStack": {
+    "basePath": "/styleguide",
+    "buildTooling": ["Expo CLI", "Metro", "Turbo", "pnpm"],
+    "entry": "apps/expo/expo-router/entry",
+    "framework": "Expo Router (React Native + Tamagui)",
+    "packageManager": "pnpm@10.17.1",
+    "runtime": "Expo SDK 53 targeting web and native",
+    "workspace": "pnpm workspaces (apps/*, packages/*)"
+  },
+  "testing": {
+    "lint": "biome via pnpm lint",
+    "typecheck": "tsc",
+    "ui": "No dedicated visual regression tooling detected"
+  },
+  "unknowns": [
+    {
+      "item": "Automated prop documentation",
+      "risk": "Manual drift between implementation and docs",
+      "suggestedDefault": "Use react-docgen-typescript to emit JSON for @unicornlove/ui components"
+    },
+    {
+      "item": "Production auth gate for /styleguide",
+      "risk": "Showcase could leak implementation details",
+      "suggestedDefault": "Reuse Provider session context to limit access to admin roles"
+    },
+    {
+      "item": "Search indexing",
+      "risk": "Runtime indexing may increase bundle size",
+      "suggestedDefault": "Generate Lunr-compatible index at build time"
+    }
+  ]
+}

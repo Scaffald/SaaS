@@ -1,5 +1,5 @@
 import { type OrganizationInvite, organizationInviteSchema } from '@app/schemas'
-import { Table } from '@scaffald/neue-ui'
+import { Table } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'

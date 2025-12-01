@@ -7,7 +7,7 @@ import {
   FieldError,
   MonthYearPicker,
   Popover,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { UniversityAutocomplete } from '@app/core/components/university'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDown, Plus, X } from '@tamagui/lucide-icons'

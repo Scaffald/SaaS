@@ -4,8 +4,8 @@ import {
   TEAM_INVITATION_TTL_MAX,
   TEAM_INVITATION_TTL_MIN,
 } from '@app/schemas'
-import { ResponsiveModal } from '@scaffald/neue-ui'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveModal } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { UserSearch } from '@app/core/components/user'
 import { Mail, UserPlus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

@@ -2,7 +2,7 @@
   "dependencies": {
     "@app/schemas": "workspace:*",
     "@app/supabase": "workspace:*",
-    "@scaffald/neue-ui": "workspace:*",
+    "@unicornlove/ui": "workspace:*",
     "@react-navigation/drawer": "^7.5.8",
     "@rehookify/datepicker": "^6.6.6",
     "@supabase/supabase-js": "catalog:",

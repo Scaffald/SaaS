@@ -1,7 +1,7 @@
 import { InquiryHistoryTimeline } from '@app/core/features/inquiries/components/InquiryHistoryTimeline'
 import { InquiryViewOrganization } from '@app/core/features/inquiries/components/InquiryViewOrganization'
 import { api } from '@app/core/utils/api'
-import { Text, YStack } from '@scaffald/neue-ui'
+import { Text, YStack } from '@unicornlove/ui'
 import { useLocalSearchParams } from 'expo-router'
 import { ScrollView, Spinner } from 'tamagui'
 

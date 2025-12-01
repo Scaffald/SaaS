@@ -6,7 +6,7 @@ import { ReviewStep } from '../ReviewStep'
 const mockOnEdit = vi.fn()
 const mockOnSubmit = vi.fn()
 
-'@scaffald/neue-ui', () => ({
+'@unicornlove/ui', () => ({
   Checkbox: ({
     checked,
     onCheckedChange,

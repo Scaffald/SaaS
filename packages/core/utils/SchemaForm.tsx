@@ -1,6 +1,6 @@
 /* c8 ignore file */
 
-import { FieldError, FormWrapper } from '@scaffald/neue-ui'
+import { FieldError, FormWrapper } from '@unicornlove/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import type { ComponentProps, ReactNode } from 'react'
 import { useFormContext } from 'react-hook-form'

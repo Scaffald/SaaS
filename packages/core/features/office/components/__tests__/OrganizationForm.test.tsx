@@ -117,7 +117,7 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-'@scaffald/neue-ui', () => ({
+'@unicornlove/ui', () => ({
   Button: ({
     children,
     onPress,

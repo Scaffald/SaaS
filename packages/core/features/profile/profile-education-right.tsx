@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, Dialog } from '@scaffald/neue-ui'
+import { DashboardWidget, Dialog } from '@unicornlove/ui'
 import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'

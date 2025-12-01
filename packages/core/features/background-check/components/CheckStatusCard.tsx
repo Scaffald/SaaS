@@ -1,5 +1,5 @@
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import { AlertTriangle, Eye, RefreshCcw } from '@tamagui/lucide-icons'
 import { memo, useMemo } from 'react'
 import { Button, Progress, Text, XStack, YStack } from 'tamagui'

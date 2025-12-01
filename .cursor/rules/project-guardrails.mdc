@@ -1,10 +1,10 @@
 ---
-description: "SCF-Neue Project Guard Rails - Essential development practices and tooling guidelines"
+description: "SCF-Scaffald Project Guard Rails - Essential development practices and tooling guidelines"
 globs: ["**/*"]
 alwaysApply: true
 ---
 
-# SCF-Neue Project Guard Rails
+# SCF-Scaffald Project Guard Rails
 
 ## Package Manager & Tooling
 - **ALWAYS use `pnpm` instead of `npm` or `pnpm`** - This is a pnpm workspace monorepo

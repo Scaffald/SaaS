@@ -6,7 +6,7 @@ import {
   type DashboardBreadcrumbSegment,
 } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
 import { DashboardLayout } from '@app/core/components/layouts'
-import type { BreadcrumbItem } from '@scaffald/neue-ui'
+import type { BreadcrumbItem } from '@unicornlove/ui'
 import { usePathname } from 'expo-router'
 import type { ComponentProps } from 'react'
 import { useMemo } from 'react'

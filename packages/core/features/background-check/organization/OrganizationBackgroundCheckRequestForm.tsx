@@ -9,7 +9,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Button, Input, Label, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>

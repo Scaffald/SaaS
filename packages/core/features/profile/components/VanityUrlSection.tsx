@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { copyToClipboard } from '@app/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@app/core/utils/slugify'
-import { UIButton as Button, DashboardWidget } from '@scaffald/neue-ui'
+import { UIButton as Button, DashboardWidget } from '@unicornlove/ui'
 import { AlertCircle, Check, Clock, Copy } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'

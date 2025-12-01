@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Tab, TabGroup } from '@scaffald/neue-ui'
+import { Tab, TabGroup } from '@unicornlove/ui'
 import { useMemo, useState } from 'react'
 import { Tabs, Text, YStack } from 'tamagui'
 import { ConnectionsList } from './components/ConnectionsList'

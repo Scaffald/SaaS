@@ -7,7 +7,7 @@ import {
   LoadingState,
   spacing,
   UIButton,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { Award, CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Linking } from 'react-native'

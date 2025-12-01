@@ -1,4 +1,4 @@
-import { Popover, ToggleSwitch } from '@scaffald/neue-ui'
+import { Popover, ToggleSwitch } from '@unicornlove/ui'
 import { ChevronDown, SlidersHorizontal } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Button, Label, Text, XStack, YStack } from 'tamagui'

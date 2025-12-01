@@ -14,7 +14,7 @@ import {
   ResponsiveModal,
   spacing,
   UIButton,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { Download } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useToastController } from '@tamagui/toast'

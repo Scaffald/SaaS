@@ -1,4 +1,4 @@
-# Cline Rules for SCF-Neue
+# Cline Rules for SCF-Scaffald
 
 ## Primary Rule Source
 **All project rules and guidelines are located in `.cursor/rules/` directory.**

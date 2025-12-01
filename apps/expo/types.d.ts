@@ -1,5 +1,5 @@
-export type Conf = typeof import("@scaffald/neue-ui").config;
+export type Conf = typeof import("@unicornlove/ui").config;
 
-declare module "@scaffald/neue-ui" {
+declare module "@unicornlove/ui" {
   interface TamaguiCustomConfig extends Conf {}
 }

@@ -4,7 +4,7 @@ import {
   CertificationChip,
   CertificationSearch,
 } from '@app/core/components/certifications'
-import { UIButton as Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@scaffald/neue-ui'
+import { UIButton as Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@unicornlove/ui'
 import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useState } from 'react'

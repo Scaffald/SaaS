@@ -16,7 +16,7 @@ vi.mock("@app/core/utils/supabase/client", () => ({
 }));
 
 import { buildJobsQuery } from "../useJobs";
-import type { ViewportBounds } from "@scaffald/neue-ui";
+import type { ViewportBounds } from "@unicornlove/ui";
 
 describe("buildJobsQuery", () => {
   const mockBounds: ViewportBounds = {

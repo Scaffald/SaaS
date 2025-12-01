@@ -49,7 +49,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   Check: () => null,
 }))
 
-'@scaffald/neue-ui', () => {
+'@unicornlove/ui', () => {
   const View = ({ children, ...rest }: { children?: ReactNode } & Record<string, unknown>) => (
     <div {...rest}>{children}</div>
   )

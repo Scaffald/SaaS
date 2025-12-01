@@ -1,6 +1,6 @@
 # Contributing to the Playwright Test Suite
 
-This guide will help you write effective, maintainable Playwright tests for the SCF-Neue application.
+This guide will help you write effective, maintainable Playwright tests for the SCF-Scaffald application.
 
 ## Table of Contents
 

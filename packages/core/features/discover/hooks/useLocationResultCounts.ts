@@ -1,5 +1,5 @@
 import { api } from "@app/core/utils/api";
-import type { ViewportBounds } from "@scaffald/neue-ui";
+import type { ViewportBounds } from "@unicornlove/ui";
 
 /**
  * Calculate approximate viewport bounds from a location point

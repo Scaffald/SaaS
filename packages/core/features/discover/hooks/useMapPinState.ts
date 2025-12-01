@@ -1,4 +1,4 @@
-import type { MapPinType } from "@scaffald/neue-ui";
+import type { MapPinType } from "@unicornlove/ui";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 /**

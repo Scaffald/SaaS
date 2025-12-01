@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@scaffald/neue-ui'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveModal } from '@unicornlove/ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { UserSearch } from '@app/core/components/user'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'

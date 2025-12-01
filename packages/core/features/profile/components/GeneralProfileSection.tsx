@@ -6,7 +6,7 @@ import {
   UIButton as Button,
   DashboardWidget,
   PhoneNumberInput,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'

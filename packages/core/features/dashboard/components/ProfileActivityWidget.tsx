@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import {
   ArrowDown,
   ArrowUp,
@@ -146,48 +146,46 @@ export function ProfileActivityWidget() {
               </Text>
             ) : (
               <YStack gap="$2">
-                {profileViews.views
-                  .slice(0, 5)
-                  .map(
-                    (view: {
-                      id: string
-                      viewer?: {
-                        avatar_url: string | null
-                        display_name?: string | null
-                        username?: string | null
-                      } | null
-                      viewed_at?: string
-                    }) => (
-                      <XStack key={view.id} items="center" gap="$2">
-                        <Avatar circular size={32}>
-                          {view.viewer?.avatar_url ? (
-                            <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
-                          ) : (
-                            <Avatar.Fallback bg="$blue4">
-                              <Text fontSize="$3" fontWeight="600" color="$blue10">
-                                {view.viewer?.display_name?.charAt(0) ||
-                                  view.viewer?.username?.charAt(0) ||
-                                  '?'}
-                              </Text>
-                            </Avatar.Fallback>
-                          )}
-                        </Avatar>
-                        <YStack flex={1} gap="$1">
-                          <Text fontSize="$3" fontWeight="600" color="$color12">
-                            {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
-                          </Text>
-                          {view.viewed_at && (
-                            <Text fontSize="$2" color="$color10">
-                              {new Date(view.viewed_at).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                              })}
+                {profileViews.views.slice(0, 5).map(
+                  (view: {
+                    id: string
+                    viewer?: {
+                      avatar_url: string | null
+                      display_name?: string | null
+                      username?: string | null
+                    } | null
+                    viewed_at?: string
+                  }) => (
+                    <XStack key={view.id} items="center" gap="$2">
+                      <Avatar circular size={32}>
+                        {view.viewer?.avatar_url ? (
+                          <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
+                        ) : (
+                          <Avatar.Fallback bg="$blue4">
+                            <Text fontSize="$3" fontWeight="600" color="$blue10">
+                              {view.viewer?.display_name?.charAt(0) ||
+                                view.viewer?.username?.charAt(0) ||
+                                '?'}
                             </Text>
-                          )}
-                        </YStack>
-                      </XStack>
-                    )
-                  )}
+                          </Avatar.Fallback>
+                        )}
+                      </Avatar>
+                      <YStack flex={1} gap="$1">
+                        <Text fontSize="$3" fontWeight="600" color="$color12">
+                          {view.viewer?.display_name || view.viewer?.username || 'Anonymous'}
+                        </Text>
+                        {view.viewed_at && (
+                          <Text fontSize="$2" color="$color10">
+                            {new Date(view.viewed_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </Text>
+                        )}
+                      </YStack>
+                    </XStack>
+                  )
+                )}
               </YStack>
             )}
           </YStack>
@@ -211,48 +209,46 @@ export function ProfileActivityWidget() {
               </Text>
             ) : (
               <YStack gap="$2">
-                {followers
-                  .slice(0, 5)
-                  .map(
-                    (follow: {
-                      id: string
-                      user?: {
-                        avatar_url: string | null
-                        display_name?: string | null
-                        username?: string | null
-                      } | null
-                      created_at?: string
-                    }) => (
-                      <XStack key={follow.id} items="center" gap="$2">
-                        <Avatar circular size={32}>
-                          {follow.user?.avatar_url ? (
-                            <Avatar.Image source={{ uri: follow.user.avatar_url }} />
-                          ) : (
-                            <Avatar.Fallback bg="$green4">
-                              <Text fontSize="$3" fontWeight="600" color="$green10">
-                                {follow.user?.display_name?.charAt(0) ||
-                                  follow.user?.username?.charAt(0) ||
-                                  '?'}
-                              </Text>
-                            </Avatar.Fallback>
-                          )}
-                        </Avatar>
-                        <YStack flex={1} gap="$1">
-                          <Text fontSize="$3" fontWeight="600" color="$color12">
-                            {follow.user?.display_name || follow.user?.username || 'User'}
-                          </Text>
-                          {follow.created_at && (
-                            <Text fontSize="$2" color="$color10">
-                              {new Date(follow.created_at).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                              })}
+                {followers.slice(0, 5).map(
+                  (follow: {
+                    id: string
+                    user?: {
+                      avatar_url: string | null
+                      display_name?: string | null
+                      username?: string | null
+                    } | null
+                    created_at?: string
+                  }) => (
+                    <XStack key={follow.id} items="center" gap="$2">
+                      <Avatar circular size={32}>
+                        {follow.user?.avatar_url ? (
+                          <Avatar.Image source={{ uri: follow.user.avatar_url }} />
+                        ) : (
+                          <Avatar.Fallback bg="$green4">
+                            <Text fontSize="$3" fontWeight="600" color="$green10">
+                              {follow.user?.display_name?.charAt(0) ||
+                                follow.user?.username?.charAt(0) ||
+                                '?'}
                             </Text>
-                          )}
-                        </YStack>
-                      </XStack>
-                    )
-                  )}
+                          </Avatar.Fallback>
+                        )}
+                      </Avatar>
+                      <YStack flex={1} gap="$1">
+                        <Text fontSize="$3" fontWeight="600" color="$color12">
+                          {follow.user?.display_name || follow.user?.username || 'User'}
+                        </Text>
+                        {follow.created_at && (
+                          <Text fontSize="$2" color="$color10">
+                            {new Date(follow.created_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </Text>
+                        )}
+                      </YStack>
+                    </XStack>
+                  )
+                )}
               </YStack>
             )}
           </YStack>
@@ -293,72 +289,70 @@ export function ProfileActivityWidget() {
               </Text>
             ) : (
               <YStack gap="$2">
-                {pendingRequests.received
-                  .slice(0, 3)
-                  .map(
-                    (request: {
-                      id: string
-                      user?: {
-                        avatar_url: string | null
-                        display_name?: string | null
-                        username?: string | null
-                      } | null
-                      created_at?: string
-                    }) => (
-                      <XStack key={request.id} items="center" gap="$2" justify="space-between">
-                        <XStack items="center" gap="$2" flex={1}>
-                          <Avatar circular size={32}>
-                            {request.user?.avatar_url ? (
-                              <Avatar.Image source={{ uri: request.user.avatar_url }} />
-                            ) : (
-                              <Avatar.Fallback bg="$purple4">
-                                <Text fontSize="$3" fontWeight="600" color="$purple10">
-                                  {request.user?.display_name?.charAt(0) ||
-                                    request.user?.username?.charAt(0) ||
-                                    '?'}
-                                </Text>
-                              </Avatar.Fallback>
-                            )}
-                          </Avatar>
-                          <YStack flex={1} gap="$1">
-                            <Text fontSize="$3" fontWeight="600" color="$color12">
-                              {request.user?.display_name || request.user?.username || 'User'}
-                            </Text>
-                            {request.created_at && (
-                              <Text fontSize="$2" color="$color10">
-                                {new Date(request.created_at).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                })}
+                {pendingRequests.received.slice(0, 3).map(
+                  (request: {
+                    id: string
+                    user?: {
+                      avatar_url: string | null
+                      display_name?: string | null
+                      username?: string | null
+                    } | null
+                    created_at?: string
+                  }) => (
+                    <XStack key={request.id} items="center" gap="$2" justify="space-between">
+                      <XStack items="center" gap="$2" flex={1}>
+                        <Avatar circular size={32}>
+                          {request.user?.avatar_url ? (
+                            <Avatar.Image source={{ uri: request.user.avatar_url }} />
+                          ) : (
+                            <Avatar.Fallback bg="$purple4">
+                              <Text fontSize="$3" fontWeight="600" color="$purple10">
+                                {request.user?.display_name?.charAt(0) ||
+                                  request.user?.username?.charAt(0) ||
+                                  '?'}
                               </Text>
-                            )}
-                          </YStack>
-                        </XStack>
-                        <XStack gap="$1">
-                          <Button
-                            size="$2"
-                            circular
-                            icon={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
-                            theme="success"
-                            onPress={() => handleAcceptRequest(request.id)}
-                            disabled={
-                              acceptRequestMutation.isPending || declineRequestMutation.isPending
-                            }
-                          />
-                          <Button
-                            size="$2"
-                            circular
-                            icon={declineRequestMutation.isPending ? Loader2 : X}
-                            variant="outlined"
-                            onPress={() => handleDeclineRequest(request.id)}
-                            disabled={
-                              acceptRequestMutation.isPending || declineRequestMutation.isPending
-                            }
-                          />
-                        </XStack>
+                            </Avatar.Fallback>
+                          )}
+                        </Avatar>
+                        <YStack flex={1} gap="$1">
+                          <Text fontSize="$3" fontWeight="600" color="$color12">
+                            {request.user?.display_name || request.user?.username || 'User'}
+                          </Text>
+                          {request.created_at && (
+                            <Text fontSize="$2" color="$color10">
+                              {new Date(request.created_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </Text>
+                          )}
+                        </YStack>
                       </XStack>
-                    )
-                  )}
+                      <XStack gap="$1">
+                        <Button
+                          size="$2"
+                          circular
+                          icon={acceptRequestMutation.isPending ? Loader2 : CheckCircle2}
+                          theme="success"
+                          onPress={() => handleAcceptRequest(request.id)}
+                          disabled={
+                            acceptRequestMutation.isPending || declineRequestMutation.isPending
+                          }
+                        />
+                        <Button
+                          size="$2"
+                          circular
+                          icon={declineRequestMutation.isPending ? Loader2 : X}
+                          variant="outlined"
+                          onPress={() => handleDeclineRequest(request.id)}
+                          disabled={
+                            acceptRequestMutation.isPending || declineRequestMutation.isPending
+                          }
+                        />
+                      </XStack>
+                    </XStack>
+                  )
+                )}
                 {pendingRequests.received.length > 3 && (
                   <>
                     <Separator />

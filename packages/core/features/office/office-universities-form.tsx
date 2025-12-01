@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

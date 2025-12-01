@@ -22,8 +22,8 @@
       "env": {
         "APP_VERSION": "1.0.0",
         "SENTRY_ORG": "your-org",
-        "SENTRY_PROJECT": "scf-neue",
-        "SENTRY_RELEASE": "scf-neue@1.0.0"
+        "SENTRY_PROJECT": "scf-scaffald",
+        "SENTRY_RELEASE": "scf-scaffald@1.0.0"
       }
     },
     "production-web": {
@@ -32,8 +32,8 @@
       "env": {
         "APP_VERSION": "1.0.0",
         "SENTRY_ORG": "your-org",
-        "SENTRY_PROJECT": "scf-neue",
-        "SENTRY_RELEASE": "scf-neue@1.0.0"
+        "SENTRY_PROJECT": "scf-scaffald",
+        "SENTRY_RELEASE": "scf-scaffald@1.0.0"
       }
     }
   },

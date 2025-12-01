@@ -71,8 +71,8 @@ export default defineConfig({
         replacement: resolve(workspaceRoot, "packages/core"),
       },
       {
-        find: "@scaffald/neue-ui",
-        replacement: resolve(workspaceRoot, "packages/neue-ui/src"),
+        find: "@unicornlove/ui",
+        replacement: resolve(workspaceRoot, "packages/ui/src"),
       },
       {
         find: "@app/supabase",
@@ -119,22 +119,24 @@ export default defineConfig({
       },
       {
         find: "@app/styleguide",
-        replacement: resolve(workspaceRoot, "packages/neue-ui/src/styleguide"),
+        replacement: resolve(workspaceRoot, "packages/ui/src/styleguide"),
       },
     ],
     conditions: ["browser", "module", "import", "default"],
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    include: ['packages/**/*.{test,spec}.{ts,tsx}'],
-    setupFiles: [resolve(workspaceRoot, 'tests/infrastructure/vitest/setup.ts')],
+    environment: "jsdom",
+    include: ["packages/**/*.{test,spec}.{ts,tsx}"],
+    setupFiles: [
+      resolve(workspaceRoot, "tests/infrastructure/vitest/setup.ts"),
+    ],
     testTimeout: 60000, // 60 second timeout per test
     hookTimeout: 30000, // 30 second timeout for setup/teardown
-    pool: 'forks',
+    pool: "forks",
     poolSize: workerPoolSize,
     reporters: [
-      'default',
+      "default",
       summaryReporterPath,
       errorReporterPath,
       hangingTestReporterPath,
@@ -144,15 +146,15 @@ export default defineConfig({
       coverageReporterPath,
     ],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
       exclude: [
-        'node_modules/',
-        'tests/',
-        '**/*.test.ts',
-        '**/*.spec.ts',
-        '**/*.test.tsx',
-        '**/*.spec.tsx',
+        "node_modules/",
+        "tests/",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/*.test.tsx",
+        "**/*.spec.tsx",
       ],
     },
   },

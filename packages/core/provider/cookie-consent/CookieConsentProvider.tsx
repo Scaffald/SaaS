@@ -2,7 +2,7 @@ import {
   CookieConsentBanner,
   CookiePreferencesDialog,
   CookieConsentProvider as UICookieConsentProvider,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import type { ReactNode } from 'react'
 
 const STORAGE_KEY = 'scf-cookie-consent'

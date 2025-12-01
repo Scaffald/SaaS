@@ -4,7 +4,7 @@ import { ProfileCertificationsHighlightProvider } from '@app/core/features/profi
 import { ProfileCertificationsLeft } from '@app/core/features/profile/profile-certifications-left'
 import { ProfileEducationLeft } from '@app/core/features/profile/profile-education-left'
 import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
-import { Button, H2, ScrollView, Separator, Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Button, H2, ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Card } from 'tamagui'
 

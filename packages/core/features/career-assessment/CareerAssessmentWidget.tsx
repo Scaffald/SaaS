@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@scaffald/neue-ui'
+import { DashboardWidget, UIButton as StyledButton, spacing } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'

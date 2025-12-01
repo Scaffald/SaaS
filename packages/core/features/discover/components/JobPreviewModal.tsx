@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@scaffald/neue-ui'
+import { ResponsiveModal } from '@unicornlove/ui'
 import {
   Briefcase,
   Building2,

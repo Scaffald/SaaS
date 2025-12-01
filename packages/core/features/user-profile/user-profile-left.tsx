@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
-import { ResponsiveModal } from '@scaffald/neue-ui'
+import { ResponsiveModal } from '@unicornlove/ui'
 import { AlertTriangle, CheckCircle } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'

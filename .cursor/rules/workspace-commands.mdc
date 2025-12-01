@@ -4,7 +4,7 @@ globs: ["**/*"]
 alwaysApply: true
 ---
 
-# SCF-Neue Workspace Commands Reference
+# SCF-Scaffald Workspace Commands Reference
 
 ## Development Commands
 ### Core Development
@@ -114,11 +114,11 @@ alwaysApply: true
 - `pnpm --filter @app/core watch` - Watch core package
 - `pnpm --filter @app/core check:type` - Type check core package
 
-### UI Package (`@scaffald/neue-ui`)
-- `pnpm --filter @scaffald/neue-ui build` - Build UI package
-- `pnpm --filter @scaffald/neue-ui watch` - Watch UI package
-- `pnpm --filter @scaffald/neue-ui check` - Check UI package
-- `pnpm --filter @scaffald/neue-ui format:fix` - Format UI package
+### UI Package (`@unicornlove/ui`)
+- `pnpm --filter @unicornlove/ui build` - Build UI package
+- `pnpm --filter @unicornlove/ui watch` - Watch UI package
+- `pnpm --filter @unicornlove/ui check` - Check UI package
+- `pnpm --filter @unicornlove/ui format:fix` - Format UI package
 
 ### Expo App (`expo-app`)
 - `pnpm --filter expo-app start` - Start Expo app

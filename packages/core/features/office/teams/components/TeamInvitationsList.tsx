@@ -6,7 +6,7 @@ import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Button, Card, type GetThemeValueForKey, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type InvitationsListOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']

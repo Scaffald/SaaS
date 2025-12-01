@@ -2,7 +2,7 @@ import { Trash2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
-import { Dialog } from '@scaffald/neue-ui'
+import { Dialog } from '@unicornlove/ui'
 
 interface DeleteButtonProps {
   /**

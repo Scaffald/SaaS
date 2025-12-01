@@ -4,13 +4,7 @@ import { ReviewWizard } from '@app/core/features/reviews/components/ReviewWizard
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import {
-  DashboardWidget,
-  LoadingState,
-  ResponsiveModal,
-  spacing,
-  UIButton,
-} from '@scaffald/neue-ui'
+import { DashboardWidget, LoadingState, ResponsiveModal, spacing, UIButton } from '@unicornlove/ui'
 import { MessageSquarePlus } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Avatar, Button, Text, XStack, YStack } from 'tamagui'

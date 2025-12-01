@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Button, Input, ScrollView, Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Button, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { Card } from 'tamagui'

@@ -44,7 +44,7 @@ const searchPropsStore = vi.hoisted(() => ({
   latestSelectedIds: [],
 }))
 
-'@scaffald/neue-ui', () => {
+'@unicornlove/ui', () => {
   const passthrough =
     (Tag = 'div') =>
     ({ children, ...rest }) =>

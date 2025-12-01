@@ -7,7 +7,7 @@ import { RefreshCcw } from '@tamagui/lucide-icons'
 import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import {
   Button,
   Card,

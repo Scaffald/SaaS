@@ -1,6 +1,6 @@
 import { ROUTES } from "@app/core/constants/routes";
 import { i18n } from "@app/core/locales";
-import type { OfficeAccordionSection, OfficeTabsItem } from "@scaffald/neue-ui";
+import type { OfficeAccordionSection, OfficeTabsItem } from "@unicornlove/ui";
 
 export const CMS_TABS: OfficeTabsItem[] = [
   {

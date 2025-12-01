@@ -1,6 +1,6 @@
-# SCF-Neue Cursor Rules
+# SCF-Scaffald Cursor Rules
 
-This directory contains streamlined Cursor rules that establish guard rails and development practices for the SCF-Neue project.
+This directory contains streamlined Cursor rules that establish guard rails and development practices for the SCF-Scaffald project.
 
 ## Core Rules (Always Applied)
 

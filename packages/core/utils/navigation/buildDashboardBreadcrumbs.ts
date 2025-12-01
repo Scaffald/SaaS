@@ -1,6 +1,6 @@
 import { type RouteConfig, ROUTES } from "@app/core/constants/routes";
 import { i18n } from "@app/core/locales";
-import type { BreadcrumbItem } from "@scaffald/neue-ui";
+import type { BreadcrumbItem } from "@unicornlove/ui";
 
 type RouteSegment = {
   route: RouteConfig;

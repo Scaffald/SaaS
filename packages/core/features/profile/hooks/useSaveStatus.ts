@@ -1,5 +1,5 @@
 import { api } from "@app/core/utils/api";
-import type { SaveStatus } from "@scaffald/neue-ui";
+import type { SaveStatus } from "@unicornlove/ui";
 import { useEffect, useState } from "react";
 
 /**

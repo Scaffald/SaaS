@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@scaffald/neue-ui'
-import { extractPlainText } from '@scaffald/neue-ui'
+import { ResponsiveModal } from '@unicornlove/ui'
+import { extractPlainText } from '@unicornlove/ui'
 import {
   Award,
   Briefcase,

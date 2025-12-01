@@ -18,7 +18,7 @@ import {
 } from '@tanstack/react-table'
 import { useRef, useState } from 'react'
 import { Button, Input, isWeb, ScrollView, Text, View, XGroup } from 'tamagui'
-import { Table } from '@scaffald/neue-ui'
+import { Table } from '@unicornlove/ui'
 
 const HEADER_ROW_HEIGHT = 48
 

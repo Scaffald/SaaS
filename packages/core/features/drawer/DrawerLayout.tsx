@@ -1,6 +1,6 @@
 import { useNotificationDeviceRegistration } from '@app/core/hooks/useNotificationDeviceRegistration'
 import { api } from '@app/core/utils/api'
-import { shadows } from '@scaffald/neue-ui'
+import { shadows } from '@unicornlove/ui'
 import type { NotificationItem } from '@app/core/components/notifications'
 import { DrawerActions } from '@react-navigation/native'
 import { Menu } from '@tamagui/lucide-icons'

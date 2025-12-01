@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Dialog } from '@scaffald/neue-ui'
+import { Dialog } from '@unicornlove/ui'
 import { Download, X } from '@tamagui/lucide-icons'
 import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
 

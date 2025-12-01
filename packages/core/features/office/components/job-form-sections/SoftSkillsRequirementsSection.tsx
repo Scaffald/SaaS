@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Button, Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 import { useState } from 'react'
 import { Label, Spinner } from 'tamagui'
 

@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { HelpCircle, Info } from '@tamagui/lucide-icons'
 
 export function InquiryHelpSidebar() {

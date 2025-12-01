@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { ResponsiveModal } from '@scaffald/neue-ui'
+import { ResponsiveModal } from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
 import { Button, Text, TextArea, YStack } from 'tamagui'

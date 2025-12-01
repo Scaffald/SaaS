@@ -2,7 +2,7 @@ import { InquiryHistoryTimeline } from '@app/core/features/inquiries/components/
 import { InquiryViewOrganization } from '@app/core/features/inquiries/components/InquiryViewOrganization'
 
 import type { AppRouter } from '@app/supabase/client-types'
-import { Button, YStack } from '@scaffald/neue-ui'
+import { Button, YStack } from '@unicornlove/ui'
 import type { inferRouterOutputs } from '@trpc/server'
 
 type InquiryQueryOutput = NonNullable<

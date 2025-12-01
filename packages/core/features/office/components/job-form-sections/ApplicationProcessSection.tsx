@@ -7,7 +7,7 @@ import {
   ToggleSwitch,
   XStack,
   YStack,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Card, Label, Switch } from 'tamagui'

@@ -4,7 +4,7 @@ import { AlertTriangle } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Button, Dialog, Label, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 const RESOLUTION_STATUSES = [

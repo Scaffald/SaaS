@@ -1,5 +1,5 @@
 import { useProfileCompletion } from '@app/core/features/dashboard/completion/useProfileCompletion'
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import { CheckCircle, ChevronRight, Circle } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'

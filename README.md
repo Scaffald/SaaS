@@ -1,4 +1,4 @@
-[![Test Suite](https://github.com/Unicorn/SCF-Neue/actions/workflows/test.yml/badge.svg)](https://github.com/Unicorn/SCF-Neue/actions/workflows/test.yml)
+[![Test Suite](https://github.com/Unicorn/SCF-Scaffald/actions/workflows/test.yml/badge.svg)](https://github.com/Unicorn/SCF-Scaffald/actions/workflows/test.yml)
 
 ## Getting Started
 
@@ -642,7 +642,7 @@ We actively maintain the starter and add new features and updates to it.
 
 Note we're following the [design systems guide](https://tamagui.dev/docs/guides/design-systems) and creating our own package for components.
 
-See `packages/neue-ui` named `@scaffald/neue-ui` for how this works.
+See `packages/ui` named `@unicornlove/ui` for how this works.
 
 ### Layout Components
 

@@ -1,5 +1,5 @@
 import type { ProfileWizardStepId } from '@app/supabase/client-types'
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import { LinearGradient } from '@tamagui/linear-gradient'
 import { ChevronLeft, ChevronRight, Sparkles } from '@tamagui/lucide-icons'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'

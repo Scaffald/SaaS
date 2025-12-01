@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import { Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
 import { Button, H4, Spinner, Text, XStack, YStack } from 'tamagui'
 import { ProfileEmptyState } from './components'

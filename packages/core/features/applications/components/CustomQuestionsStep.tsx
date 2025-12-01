@@ -1,5 +1,5 @@
 import type { CustomQuestionAnswer } from '@app/schemas'
-import { ToggleSwitch } from '@scaffald/neue-ui'
+import { ToggleSwitch } from '@unicornlove/ui'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Button, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'

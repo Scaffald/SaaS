@@ -1,4 +1,4 @@
-# SCF-Neue Project Overview
+# SCF-Scaffald Project Overview
 
 ## Project Type
 **pnpm Workspace Monorepo** - Cross-platform React Native application with Expo Web support and shared packages
@@ -31,7 +31,7 @@
 ## Monorepo Structure
 
 ```
-SCF-Neue/
+SCF-Scaffald/
 ├── apps/
 │   └── expo/           # React Native app (iOS, Android, Web via Expo)
 ├── packages/

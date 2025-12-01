@@ -7,7 +7,7 @@ import {
   ResponsiveModal,
   spacing,
   UIButton,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
 import { useState } from 'react'

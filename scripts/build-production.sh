@@ -41,7 +41,7 @@ pnpm install --frozen-lockfile
 
 # Build workspace packages
 echo "🏗️  Building workspace packages..."
-pnpm --filter @scaffald/neue-ui build
+pnpm --filter @unicornlove/ui build
 pnpm --filter @app/core build
 pnpm --filter @app/schemas build
 

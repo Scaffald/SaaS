@@ -3,7 +3,7 @@ import { useTranslation } from '@app/core/utils/useTranslation'
 import { usePathname } from '@app/core/utils/usePathname'
 import { useMemo } from 'react'
 import { useWindowDimensions } from 'tamagui'
-import { Tab, TabGroup, type TabGroupProps } from '@scaffald/neue-ui'
+import { Tab, TabGroup, type TabGroupProps } from '@unicornlove/ui'
 
 export type AssessmentsTabsItem = {
   key: string

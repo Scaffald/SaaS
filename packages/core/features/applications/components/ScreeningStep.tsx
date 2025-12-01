@@ -1,6 +1,6 @@
 import type { ScreeningAnswers } from '@app/schemas'
-import type { AddressResult } from '@scaffald/neue-ui'
-import { AddressAutocomplete, ResponsiveSelect } from '@scaffald/neue-ui'
+import type { AddressResult } from '@unicornlove/ui'
+import { AddressAutocomplete, ResponsiveSelect } from '@unicornlove/ui'
 import { useState } from 'react'
 import { Button, Input, Label, Text, XStack, YStack } from 'tamagui'
 

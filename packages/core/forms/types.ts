@@ -1,4 +1,4 @@
-import type { AddressResult } from "@scaffald/neue-ui";
+import type { AddressResult } from "@unicornlove/ui";
 import type {
   Control,
   FieldPath,

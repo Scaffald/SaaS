@@ -12,7 +12,7 @@ import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Button, Input, Label, ScrollView, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 import type { z } from 'zod'
 

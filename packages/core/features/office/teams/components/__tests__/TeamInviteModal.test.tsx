@@ -25,7 +25,7 @@ vi.mock('@tamagui/toast', () => ({
   useToastController: () => ({ show: mockShow }),
 }))
 
-vi.mock('@scaffald/neue-ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   ResponsiveModal: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
     open ? <div data-testid="modal">{children}</div> : null,
 }))

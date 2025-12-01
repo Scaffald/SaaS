@@ -1,4 +1,4 @@
-import { CustomToast } from '@scaffald/neue-ui'
+import { CustomToast } from '@unicornlove/ui'
 import { ToastProvider as ToastProviderOG } from '@tamagui/toast'
 import type { ReactNode } from 'react'
 

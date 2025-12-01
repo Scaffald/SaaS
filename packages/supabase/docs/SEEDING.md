@@ -2,7 +2,7 @@
 
 ## Overview
 
-The SCF-Neue project uses a multi-step seeding process that separates concerns:
+The SCF-Scaffald project uses a multi-step seeding process that separates concerns:
 
 1. **Database migrations** create the schema (via `pnpm supa:reset`)
 2. **Base seed data** (`seed.sql`) creates industries, organizations, users, and soft skills

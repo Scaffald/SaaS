@@ -20,7 +20,7 @@ import {
   TabGroup,
   UIButton,
   type SkillsChartDataset,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'

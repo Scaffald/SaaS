@@ -1,6 +1,6 @@
 # Deployment Scripts
 
-This directory contains deployment scripts for the SCF-Neue project.
+This directory contains deployment scripts for the SCF-Scaffald project.
 
 ## Helper Scripts
 
@@ -357,7 +357,7 @@ pnpm supa status
 
 - **Supabase Dashboard**: https://supabase.com/dashboard/project/_
 - **AWS CloudWatch**: https://console.aws.amazon.com/cloudwatch/
-- **GitHub Actions**: https://github.com/YOUR-ORG/SCF-Neue/actions
+- **GitHub Actions**: https://github.com/YOUR-ORG/SCF-Scaffald/actions
 
 ## Legacy Scripts Archive
 

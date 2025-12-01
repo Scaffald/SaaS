@@ -20,7 +20,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   ChevronDown: () => null,
 }))
 
-'@scaffald/neue-ui', () => {
+'@unicornlove/ui', () => {
   const React = require('react') as typeof import('react')
 
   const UIButton = ({

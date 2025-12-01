@@ -1,4 +1,4 @@
-import { DashboardWidget, spacing, Text, YStack } from '@scaffald/neue-ui'
+import { DashboardWidget, spacing, Text, YStack } from '@unicornlove/ui'
 
 export const AssessmentsLandingRight = () => {
   return (

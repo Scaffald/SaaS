@@ -30,7 +30,7 @@ import {
   buildTalentProfilesQuery,
   useTalentProfiles,
 } from "../useTalentProfiles";
-import type { ViewportBounds } from "@scaffald/neue-ui";
+import type { ViewportBounds } from "@unicornlove/ui";
 
 describe("useTalentProfiles", () => {
   const mockBounds: ViewportBounds = {

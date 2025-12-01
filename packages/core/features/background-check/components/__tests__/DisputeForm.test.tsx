@@ -11,7 +11,7 @@ const uploadMocks = vi.hoisted(() => ({
   triggerError: vi.fn(),
 }))
 
-'@scaffald/neue-ui', () => ({
+'@unicornlove/ui', () => ({
   UploadSurface: ({
     children,
     onSelect,

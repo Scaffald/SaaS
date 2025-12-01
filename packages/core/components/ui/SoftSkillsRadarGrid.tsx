@@ -1,5 +1,5 @@
 import { type FC, useMemo } from 'react'
-import { IndividualSkillRadarChart } from '@scaffald/neue-ui'
+import { IndividualSkillRadarChart } from '@unicornlove/ui'
 import type {
   SoftSkill,
   SoftSkillCategory,

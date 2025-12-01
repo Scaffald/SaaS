@@ -1,5 +1,5 @@
 import { useUser } from '@app/core/utils/useUser'
-import { Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { Check, MessageSquare } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
 

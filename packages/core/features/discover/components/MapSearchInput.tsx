@@ -1,5 +1,5 @@
-import type { AddressResult } from '@scaffald/neue-ui'
-import { AddressAutocomplete } from '@scaffald/neue-ui'
+import type { AddressResult } from '@unicornlove/ui'
+import { AddressAutocomplete } from '@unicornlove/ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
 import { AnimatePresence, Text, XStack, YStack } from 'tamagui'

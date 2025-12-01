@@ -1,4 +1,4 @@
-import { Button, ResponsiveSelect, Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Button, ResponsiveSelect, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
 
 interface ApplicationsFiltersProps {

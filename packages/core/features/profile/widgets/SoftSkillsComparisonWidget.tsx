@@ -14,7 +14,7 @@ import {
   spacing,
   UIButton,
   type SkillsChartDataset,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
 import { Separator, Text, XStack, YStack } from 'tamagui'

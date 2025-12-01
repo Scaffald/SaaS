@@ -1,4 +1,4 @@
-import { Text, ToggleSwitch, XStack, YStack } from '@scaffald/neue-ui'
+import { Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
 import { HelpCircle } from '@tamagui/lucide-icons'
 import { useState } from 'react'
 import { Label } from 'tamagui'

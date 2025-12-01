@@ -1,6 +1,6 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { Text } from '@scaffald/neue-ui'
+import { Text } from '@unicornlove/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'

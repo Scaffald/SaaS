@@ -1,4 +1,4 @@
-# SCF-Neue (Scaffald) - Claude Code Context
+# SCF-Scaffald (Scaffald) - Claude Code Context
 
 ## Application Overview
 
@@ -43,7 +43,7 @@
 ## Project Structure
 
 ```
-SCF-Neue/
+SCF-Scaffald/
 ├── apps/
 │   └── expo/              # React Native app (primary, includes Expo Web)
 ├── packages/

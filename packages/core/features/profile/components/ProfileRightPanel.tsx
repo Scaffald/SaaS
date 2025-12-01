@@ -1,4 +1,4 @@
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import { H3, Text } from 'tamagui'
 
 interface ProfileRightPanelProps {

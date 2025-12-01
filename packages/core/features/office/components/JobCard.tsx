@@ -1,5 +1,5 @@
 import type { AppRouter } from '@app/supabase/client-types'
-import { DiscoverCard } from '@scaffald/neue-ui'
+import { DiscoverCard } from '@unicornlove/ui'
 import {
   Briefcase,
   Building2,

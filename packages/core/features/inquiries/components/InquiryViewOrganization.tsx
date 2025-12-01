@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { useInquirySubscription } from '@app/core/utils/supabase/useInquirySubscription'
 import type { InquirySectionName } from '@app/schemas'
-import { ScrollView, Separator, Text, XStack, YStack } from '@scaffald/neue-ui'
+import { ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { Check } from '@tamagui/lucide-icons'
 import { type ReactNode, useMemo } from 'react'
 import { Card } from 'tamagui'

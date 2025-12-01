@@ -5,7 +5,7 @@ import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Button, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
 
 type MentionOption = {

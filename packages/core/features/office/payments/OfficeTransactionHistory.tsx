@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import { DataTable } from '@app/core/components/ui'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Download, FileText, RefreshCw } from '@tamagui/lucide-icons'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'

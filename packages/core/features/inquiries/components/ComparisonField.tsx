@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 interface ComparisonFieldProps {
   label: string

@@ -1,6 +1,6 @@
 # tRPC Function Structure
 
-This directory contains the modular tRPC API implementation for the SCF-Neue application.
+This directory contains the modular tRPC API implementation for the SCF-Scaffald application.
 
 ## Directory Structure
 

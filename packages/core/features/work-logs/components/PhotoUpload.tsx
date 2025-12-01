@@ -1,4 +1,4 @@
-import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@scaffald/neue-ui'
+import { ResponsiveSelect, type UploadSelection, UploadSurface } from '@unicornlove/ui'
 import { Camera, ImagePlus, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { randomUUID } from 'expo-crypto'

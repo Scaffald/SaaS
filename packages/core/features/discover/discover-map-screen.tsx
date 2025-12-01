@@ -7,7 +7,7 @@ import {
   Sheet,
   ToggleSwitch,
   type ViewportBounds,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { captureEvent } from '@app/core/utils/analytics/client'
 import {
   List as ListIcon,

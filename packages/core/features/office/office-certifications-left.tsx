@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@scaffald/neue-ui'
+import { CustomCheckbox, DashboardWidget, ResponsiveSelect } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Save, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

@@ -22,7 +22,7 @@ vi.mock('../MilestoneBadge', () => ({
   ),
 }))
 
-'@scaffald/neue-ui', () => ({
+'@unicornlove/ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => (
     <div data-testid="dashboard-widget">{children}</div>
   ),

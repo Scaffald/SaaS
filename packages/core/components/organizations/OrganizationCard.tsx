@@ -8,7 +8,7 @@ import {
   CardMetadata,
   SelectableCard,
   type MetadataItem,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 
 /**
  * Organization address data

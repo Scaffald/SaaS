@@ -10,7 +10,7 @@ import {
   DashboardWidget,
   LocationListInput,
   ToggleCard,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

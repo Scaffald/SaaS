@@ -8,7 +8,7 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Button, Label, Spinner, Text, XStack, YStack } from 'tamagui'
 
 import { getStatusMetadata } from '../components/status.utils'

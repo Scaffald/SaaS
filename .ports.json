@@ -1,6 +1,6 @@
 {
-  "project": "SCF-Neue",
-  "description": "SCF-Neue monorepo (Expo app + local Supabase)",
+  "project": "SCF-Scaffald",
+  "description": "SCF-Scaffald monorepo (Expo app + local Supabase)",
   "ports": {
     "expo-dev-server": {
       "port": 8081,

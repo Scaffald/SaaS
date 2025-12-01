@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { useAllOrganizations } from '@app/core/utils/useAllOrganizations'
-import type { AddressResult } from '@scaffald/neue-ui'
+import type { AddressResult } from '@unicornlove/ui'
 import {
   AddressForm,
   Button,
@@ -11,8 +11,8 @@ import {
   Text,
   XStack,
   YStack,
-} from '@scaffald/neue-ui'
-import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
+import { extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/ui'
 import type { JSONContent } from '@tiptap/core'
 import { Eye, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'

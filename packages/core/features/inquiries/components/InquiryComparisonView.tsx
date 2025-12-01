@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { Button, ScrollView, Text, XStack, YStack } from '@scaffald/neue-ui'
+import { Button, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 import { useMemo } from 'react'
 import { ComparisonColumn, type InquiryComparisonRecord } from './ComparisonColumn'
 

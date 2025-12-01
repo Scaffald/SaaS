@@ -7,7 +7,7 @@ import {
   LoadingState,
   spacing,
   UIButton,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { Briefcase } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Separator, Text, XStack, YStack } from 'tamagui'

@@ -7,7 +7,7 @@ import {
   Text,
   XStack,
   YStack,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
 import { Card, TextArea } from 'tamagui'

@@ -6,7 +6,7 @@ import {
   ResponsiveModal,
   SaveStatusIndicator,
   UIButton,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'

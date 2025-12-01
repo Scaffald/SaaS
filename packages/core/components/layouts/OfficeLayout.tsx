@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions, XStack, YStack } from 'tamagui'
 import type { StackProps } from 'tamagui'
-import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@scaffald/neue-ui'
+import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@unicornlove/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
 type OfficeLayoutProps = {

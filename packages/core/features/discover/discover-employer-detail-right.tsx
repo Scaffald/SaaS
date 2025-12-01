@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import {
   BellPlus,
   Briefcase,

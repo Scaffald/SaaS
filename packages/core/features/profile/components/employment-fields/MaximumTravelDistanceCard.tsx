@@ -1,5 +1,5 @@
-import { RangeSliderCard } from '@scaffald/neue-ui'
-import type { RangeSliderCardProps } from '@scaffald/neue-ui'
+import { RangeSliderCard } from '@unicornlove/ui'
+import type { RangeSliderCardProps } from '@unicornlove/ui'
 import { Plane } from '@tamagui/lucide-icons'
 
 export interface MaximumTravelDistanceCardProps

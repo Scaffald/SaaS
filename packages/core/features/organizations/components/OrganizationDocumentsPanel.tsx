@@ -1,4 +1,4 @@
-import { Table } from '@scaffald/neue-ui'
+import { Table } from '@unicornlove/ui'
 import { useMemo } from 'react'
 import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack } from 'tamagui'
 import {

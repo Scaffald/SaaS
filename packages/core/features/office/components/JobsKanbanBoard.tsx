@@ -1,7 +1,7 @@
 import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
-import { DraggableCard, DroppableColumn } from '@scaffald/neue-ui'
+import { DraggableCard, DroppableColumn } from '@unicornlove/ui'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import type { inferRouterOutputs } from '@trpc/server'

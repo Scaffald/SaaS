@@ -10,7 +10,7 @@ import {
   SelectableCard,
   type BadgeConfig,
   type MetadataItem,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 
 /**
  * Profile card badge configuration

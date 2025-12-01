@@ -1,4 +1,4 @@
-import { DashboardWidget } from '@scaffald/neue-ui'
+import { DashboardWidget } from '@unicornlove/ui'
 import { X } from '@tamagui/lucide-icons'
 import { Button, Input, Label, Separator, Text, XStack, YStack } from 'tamagui'
 

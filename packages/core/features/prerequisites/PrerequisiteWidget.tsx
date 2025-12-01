@@ -8,7 +8,7 @@ import {
   ResponsiveSelect,
   UIButton as StyledButton,
   spacing,
-} from '@scaffald/neue-ui'
+} from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'

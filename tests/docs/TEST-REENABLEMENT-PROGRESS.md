@@ -47,7 +47,7 @@ This document tracks the incremental re-enablement of unit tests that were disab
 
 | Package | Files | Tests | Status | Results |
 |---------|-------|-------|--------|---------|
-| `@scaffald/neue-ui` | ~110 | ~150 | 🏃 Running | Many tests execute, some warnings |
+| `@unicornlove/ui` | ~110 | ~150 | 🏃 Running | Many tests execute, some warnings |
 | `@app/core` | ~80 | ~120 | 🏃 Running | Multiple failures, component/hook issues |
 | `@app/schemas` | ~10 | ~15 | 🏃 Running | Address tests running |
 | Integration/Contract | ~40 | ~70 | 🏃 Running | API and integration tests |
@@ -80,7 +80,7 @@ Example: `packages/ui/src/components/buttons/__tests__/Button.test.tsx`
 Example: Any test requiring database connection
 
 ### Analysis Status
-- [ ] @scaffald/neue-ui tests analyzed
+- [ ] @unicornlove/ui tests analyzed
 - [ ] @app/core tests analyzed
 - [ ] @app/schemas tests analyzed
 - [ ] Integration tests analyzed

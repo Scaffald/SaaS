@@ -24,7 +24,7 @@ const searchCertificationsMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
 const getJobMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
 
 // Mock rich-text before other mocks to ensure it's hoisted
-vi.mock('@scaffald/neue-ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   RichTextEditor: ({
     value,
     onChange,
@@ -102,7 +102,7 @@ vi.mock('@tamagui/toast', () => ({ useToastController: () => toastMock }))
 
 vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
 
-vi.mock('@scaffald/neue-ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   ScrollView: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   YStack: ({ children, ...rest }: { children: ReactNode; [key: string]: unknown }) => (
     <div {...rest}>{children}</div>

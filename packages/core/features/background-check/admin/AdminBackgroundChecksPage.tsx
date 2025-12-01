@@ -8,7 +8,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { ResponsiveSelect } from '@scaffald/neue-ui'
+import { ResponsiveSelect } from '@unicornlove/ui'
 import { Button, Card, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
 
 import {

@@ -4,7 +4,7 @@ import { ROUTES } from '@app/core/constants/routes'
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { api } from '@app/core/utils/api'
 import { buildSkillLookup } from '../utils/data-normalizers'
-import { ToggleSwitch } from '@scaffald/neue-ui'
+import { ToggleSwitch } from '@unicornlove/ui'
 import {
   Activity,
   DownloadCloud,

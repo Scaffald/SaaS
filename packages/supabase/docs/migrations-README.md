@@ -5,7 +5,7 @@
 
 ## Overview
 
-This directory contains the consolidated migration structure for SCF-Neue. All application tables are organized in the `core` schema, with reference data in separate schemas (`data`, `cms`, `onet`).
+This directory contains the consolidated migration structure for SCF-Scaffald. All application tables are organized in the `core` schema, with reference data in separate schemas (`data`, `cms`, `onet`).
 
 ## Migration Structure
 
