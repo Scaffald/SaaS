@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Exploration script for admin-route-explore-006: /dashboard
  * This script explores the main dashboard page as an admin user

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * EXPLORATION SCRIPT for Admin /dashboard/profile/certifications
  * Task ID: f84f77ca-059e-4f1a-b740-36b777d4ce21

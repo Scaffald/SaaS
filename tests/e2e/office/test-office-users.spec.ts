@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Office Users Management Tests
  *

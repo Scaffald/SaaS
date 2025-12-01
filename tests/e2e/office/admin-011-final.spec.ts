@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Admin Map Discovery UI Exploration
  * Task: admin-route-explore-011

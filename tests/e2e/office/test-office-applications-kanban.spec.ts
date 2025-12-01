@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * E2E Tests: Office Applications Kanban Board
  *

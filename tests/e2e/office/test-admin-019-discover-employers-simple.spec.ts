@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Simplified Admin Test for Employer Discovery Route
  * Testing with increased timeout to diagnose auth/profile issues
