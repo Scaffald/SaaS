@@ -5,13 +5,17 @@ import { usePhotoUpload } from "../usePhotoUpload";
 import * as api from "@app/core/utils/api";
 import { useToastController } from "@tamagui/toast";
 
-const mockUseUtils = vi.fn(() => ({
-  workLogs: {
-    getById: {
-      invalidate: vi.fn(),
+const mockMocks = vi.hoisted(() => ({
+  mockUseUtils: vi.fn(() => ({
+    workLogs: {
+      getById: {
+        invalidate: vi.fn(),
+      },
     },
-  },
+  })),
 }));
+
+const { mockUseUtils } = mockMocks;
 
 vi.mock("@app/core/utils/api", () => ({
   api: {
@@ -32,7 +36,7 @@ vi.mock("@app/core/utils/api", () => ({
         useMutation: vi.fn(),
       },
     },
-    useUtils: mockUseUtils,
+    useUtils: mockMocks.mockUseUtils,
   },
 }));
 
@@ -89,7 +93,7 @@ describe("usePhotoUpload", () => {
       data: { signedUrl: "https://example.com/signed-url.jpg" },
       error: null,
     });
-    mockUseUtils.mockReturnValue({
+    mockMocks.mockUseUtils.mockReturnValue({
       workLogs: {
         getById: {
           invalidate: vi.fn().mockResolvedValue(undefined),
@@ -279,7 +283,7 @@ describe("usePhotoUpload", () => {
 
   it("refreshes photos", async () => {
     const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(mockUseUtils).mockReturnValue({
+    vi.mocked(mockMocks.mockUseUtils).mockReturnValue({
       workLogs: {
         getById: {
           invalidate: mockInvalidate,
@@ -314,7 +318,7 @@ describe("usePhotoUpload", () => {
     mockUploadMutation.mockResolvedValue(mockUploadResponse);
 
     const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(mockUseUtils).mockReturnValue({
+    vi.mocked(mockMocks.mockUseUtils).mockReturnValue({
       workLogs: {
         getById: {
           invalidate: mockInvalidate,
@@ -482,7 +486,7 @@ describe("usePhotoUpload", () => {
     );
 
     const mockInvalidate = vi.fn().mockResolvedValue(undefined);
-    vi.mocked(mockUseUtils).mockReturnValue({
+    vi.mocked(mockMocks.mockUseUtils).mockReturnValue({
       workLogs: {
         getById: {
           invalidate: mockInvalidate,

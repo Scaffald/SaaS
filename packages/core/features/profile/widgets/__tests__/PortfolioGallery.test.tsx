@@ -23,16 +23,21 @@ const mockPortfolioItems = [
   },
 ]
 
-const mockUseQuery = vi.fn()
+const mockMocks = vi.hoisted(() => ({
+  mockUseQuery: vi.fn(),
+}))
+
 vi.mock('@app/core/utils/api', () => ({
   api: {
     portfolio: {
       list: {
-        useQuery: mockUseQuery,
+        useQuery: mockMocks.mockUseQuery,
       },
     },
   },
 }))
+
+const { mockUseQuery } = mockMocks
 
 // Mock getStorageUrl
 vi.mock('@app/core/utils/supabase/storage', () => ({

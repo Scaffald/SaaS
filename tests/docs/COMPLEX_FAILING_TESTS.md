@@ -10,8 +10,30 @@ These tests fail to even load due to syntax or import resolution errors:
 ### 1. **EmploymentPrefsStep.test.tsx** - Syntax Error
 - **Error:** `SyntaxError: Unexpected token 'typeof'`
 - **Impact:** Entire test file blocked
-- **Complexity:** High - Likely TypeScript compilation issue
+- **Root Cause:** Vitest's TypeScript transform has trouble parsing `z.infer<typeof employmentSchema>` in the component file during the transform phase
+- **Complexity:** High - Requires vitest config fix or component refactoring
 - **Priority:** 🔴 CRITICAL - Blocks all tests in file
+- **Possible Solutions:**
+  1. Update vitest config to handle `typeof` in type definitions better
+  2. Refactor component to avoid `z.infer<typeof>` pattern (use explicit type)
+  3. Use a different import/transform strategy
+  4. Check if there's a vitest plugin or config option to fix this
+
+### 1b. **routeHierarchy.test.ts** - Syntax Error
+- **Error:** `SyntaxError: Unexpected token 'typeof'`
+- **Impact:** Entire test file blocked
+- **Root Cause:** Vitest's TypeScript transform has trouble parsing `type RouteMap = typeof ROUTES;` in `routeHierarchy.ts` during the transform phase
+- **Complexity:** High - Same issue as EmploymentPrefsStep
+- **Priority:** 🔴 CRITICAL - Blocks all tests in file
+- **Possible Solutions:** Same as EmploymentPrefsStep
+
+### 1c. **login-screen.test.tsx** - Syntax Error
+- **Error:** `SyntaxError: Unexpected token 'typeof'`
+- **Impact:** Entire test file blocked
+- **Root Cause:** Imports `ROUTES` from `@app/core/constants/routes`, which triggers the same `typeof` parsing issue
+- **Complexity:** High - Same systemic issue
+- **Priority:** 🔴 CRITICAL - Blocks all tests in file
+- **Note:** This is a systemic issue affecting any test that imports from `routes.ts` or files using `typeof` in type definitions
 
 ### 2. **ApplicationWizard.test.tsx** - Import Resolution
 - **Error:** `Failed to resolve import "@app/trpc/schemas" from "packages/supabase/client-types.ts"`

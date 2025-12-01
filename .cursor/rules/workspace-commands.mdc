@@ -36,6 +36,7 @@ alwaysApply: true
 - `pnpm test:integration` - Integration testing
 - `pnpm test:tamagui` - Tamagui-specific checks
 - `pnpm test:performance` - Performance testing
+- `pnpm test:deno:types` - Deno type checking for Edge Functions
 
 ## Supabase Commands
 ### Core Operations

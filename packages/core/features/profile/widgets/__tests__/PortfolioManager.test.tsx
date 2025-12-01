@@ -35,51 +35,63 @@ const mockPortfolioItems = [
   },
 ]
 
-const mockUseQuery = vi.fn()
-const mockCreateMutation = vi.fn()
-const mockUpdateMutation = vi.fn()
-const mockDeleteMutation = vi.fn()
-const mockReorderMutation = vi.fn()
-const mockUploadImageMutation = vi.fn()
-const mockInvalidate = vi.fn()
+const mockMocks = vi.hoisted(() => ({
+  mockUseQuery: vi.fn(),
+  mockCreateMutation: vi.fn(),
+  mockUpdateMutation: vi.fn(),
+  mockDeleteMutation: vi.fn(),
+  mockReorderMutation: vi.fn(),
+  mockUploadImageMutation: vi.fn(),
+  mockInvalidate: vi.fn(),
+}))
+
+const {
+  mockUseQuery,
+  mockCreateMutation,
+  mockUpdateMutation,
+  mockDeleteMutation,
+  mockReorderMutation,
+  mockUploadImageMutation,
+  mockInvalidate,
+} = mockMocks
 
 vi.mock('@app/core/utils/api', () => ({
   api: {
     portfolio: {
       list: {
-        useQuery: mockUseQuery,
+        useQuery: mockMocks.mockUseQuery,
       },
       create: {
         useMutation: () => ({
-          mutate: mockCreateMutation,
+          mutate: mockMocks.mockCreateMutation,
           mutateAsync: vi.fn(),
           isPending: false,
         }),
       },
       update: {
         useMutation: () => ({
-          mutate: mockUpdateMutation,
+          mutate: mockMocks.mockUpdateMutation,
           mutateAsync: vi.fn(),
           isPending: false,
         }),
       },
       delete: {
         useMutation: () => ({
-          mutate: mockDeleteMutation,
+          mutate: mockMocks.mockDeleteMutation,
           mutateAsync: vi.fn(),
           isPending: false,
         }),
       },
       reorder: {
         useMutation: () => ({
-          mutate: mockReorderMutation,
+          mutate: mockMocks.mockReorderMutation,
           mutateAsync: vi.fn(),
           isPending: false,
         }),
       },
       uploadImage: {
         useMutation: () => ({
-          mutate: mockUploadImageMutation,
+          mutate: mockMocks.mockUploadImageMutation,
           mutateAsync: vi.fn().mockResolvedValue({
             imageUrl: 'https://example.com/uploaded.jpg',
             filePath: 'portfolio/user-123/uploaded.jpg',
@@ -90,7 +102,7 @@ vi.mock('@app/core/utils/api', () => ({
     useUtils: () => ({
       portfolio: {
         list: {
-          invalidate: mockInvalidate,
+          invalidate: mockMocks.mockInvalidate,
         },
       },
     }),
@@ -290,11 +302,26 @@ vi.mock('tamagui', () => {
 
 // Mock lucide icons
 vi.mock('@tamagui/lucide-icons', () => ({
+  // Icons used by PortfolioManager
   Plus: () => <span data-testid="plus-icon">Plus</span>,
   Edit3: () => <span data-testid="edit-icon">Edit3</span>,
   ArrowUp: () => <span data-testid="arrow-up-icon">ArrowUp</span>,
   ArrowDown: () => <span data-testid="arrow-down-icon">ArrowDown</span>,
   Image: () => <span data-testid="image-icon">Image</span>,
+  // Icons used by routes.ts (transitive dependency)
+  AlertTriangle: () => <span data-testid="alert-triangle" />,
+  Bell: () => <span data-testid="bell" />,
+  Briefcase: () => <span data-testid="briefcase" />,
+  Building2: () => <span data-testid="building2" />,
+  ClipboardCheck: () => <span data-testid="clipboard-check" />,
+  CreditCard: () => <span data-testid="credit-card" />,
+  FileText: () => <span data-testid="file-text" />,
+  Fingerprint: () => <span data-testid="fingerprint" />,
+  GraduationCap: () => <span data-testid="graduation-cap" />,
+  HardDrive: () => <span data-testid="hard-drive" />,
+  Palette: () => <span data-testid="palette" />,
+  ShieldCheck: () => <span data-testid="shield-check" />,
+  Users: () => <span data-testid="users" />,
 }))
 
 describe('PortfolioManager', () => {

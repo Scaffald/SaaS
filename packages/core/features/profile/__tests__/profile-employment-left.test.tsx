@@ -378,7 +378,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-let employmentData: EmploymentProfileFormData = { ...profileEmploymentDefaults }
+let employmentData: EmploymentProfileFormData
 
 vi.mock('@app/core/utils/api', async () => {
   const actualModule = (await vi.importActual('@app/core/utils/api')) as Record<string, unknown>
@@ -387,62 +387,66 @@ vi.mock('@app/core/utils/api', async () => {
     ...actualModule,
     api: {
       profile: {
-        getEmployment: {
-          useQuery: () => mockUseQuery(),
-        },
-        updateEmployment: {
-          useMutation: (options?: {
-            onMutate?: (input: EmploymentProfileFormData) => Promise<void> | void
-            onSuccess?: (
-              result: { success: boolean },
-              input: EmploymentProfileFormData,
-              context: unknown
-            ) => Promise<void> | void
-            onError?: (
-              error: unknown,
-              input: EmploymentProfileFormData,
-              context: unknown
-            ) => Promise<void> | void
-            onSettled?: (
-              result: { success: boolean } | undefined,
-              error: unknown
-            ) => Promise<void> | void
-          }) => ({
-            mutateAsync: async (input: EmploymentProfileFormData) => {
-              if (options?.onMutate) {
-                await options.onMutate(input)
-              }
+        employment: {
+          getEmployment: {
+            useQuery: () => mockUseQuery(),
+          },
+          updateEmployment: {
+            useMutation: (options?: {
+              onMutate?: (input: EmploymentProfileFormData) => Promise<void> | void
+              onSuccess?: (
+                result: { success: boolean },
+                input: EmploymentProfileFormData,
+                context: unknown
+              ) => Promise<void> | void
+              onError?: (
+                error: unknown,
+                input: EmploymentProfileFormData,
+                context: unknown
+              ) => Promise<void> | void
+              onSettled?: (
+                result: { success: boolean } | undefined,
+                error: unknown
+              ) => Promise<void> | void
+            }) => ({
+              mutateAsync: async (input: EmploymentProfileFormData) => {
+                if (options?.onMutate) {
+                  await options.onMutate(input)
+                }
 
-              try {
-                const result = await mockMutateAsync(input)
-                if (options?.onSuccess) {
-                  await options.onSuccess(result, input, undefined)
+                try {
+                  const result = await mockMutateAsync(input)
+                  if (options?.onSuccess) {
+                    await options.onSuccess(result, input, undefined)
+                  }
+                  if (options?.onSettled) {
+                    await options.onSettled(result, undefined)
+                  }
+                  return result
+                } catch (error) {
+                  if (options?.onError) {
+                    await options.onError(error, input, undefined)
+                  }
+                  if (options?.onSettled) {
+                    await options.onSettled(undefined, error)
+                  }
+                  throw error
                 }
-                if (options?.onSettled) {
-                  await options.onSettled(result, undefined)
-                }
-                return result
-              } catch (error) {
-                if (options?.onError) {
-                  await options.onError(error, input, undefined)
-                }
-                if (options?.onSettled) {
-                  await options.onSettled(undefined, error)
-                }
-                throw error
-              }
-            },
-            isLoading: false,
-          }),
+              },
+              isLoading: false,
+            }),
+          },
         },
       },
       useContext: () => ({
         profile: {
-          getEmployment: {
-            cancel: vi.fn(),
-            getData: vi.fn(() => employmentData),
-            setData: vi.fn(),
-            invalidate: vi.fn(),
+          employment: {
+            getEmployment: {
+              cancel: vi.fn(),
+              getData: vi.fn(() => employmentData),
+              setData: vi.fn(),
+              invalidate: vi.fn(),
+            },
           },
         },
       }),
@@ -450,13 +454,17 @@ vi.mock('@app/core/utils/api', async () => {
   }
 })
 
-import {
+// Import after mocks to avoid hoisting issues
+const {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
-} from '@app/core/utils/api'
-import { ProfileEmploymentLeft } from '../profile-employment-left'
+} = await import('@app/core/utils/api')
+const { ProfileEmploymentLeft } = await import('../profile-employment-left')
+
+// Initialize employmentData after imports
+employmentData = { ...profileEmploymentDefaults }
 
 const renderEmploymentForm = () => render(<ProfileEmploymentLeft />)
 

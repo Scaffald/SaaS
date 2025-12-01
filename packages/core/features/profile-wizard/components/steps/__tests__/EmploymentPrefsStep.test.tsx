@@ -3,7 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { Children, isValidElement, type ReactElement, type ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { EmploymentPrefsStep } from '../EmploymentPrefsStep'
+// TODO: Fix syntax error - vitest has trouble parsing z.infer<typeof employmentSchema>
+// in the component file. This is a known issue with vitest's TypeScript transform.
+// Possible solutions:
+// 1. Update vitest config to handle typeof in type definitions
+// 2. Refactor component to avoid z.infer<typeof> pattern
+// 3. Use a different import strategy
 
 vi.mock('../StepNavigation', () => ({
   StepNavigation: ({
@@ -225,6 +230,9 @@ vi.mock('tamagui', () => {
     Button,
   }
 })
+
+// Use dynamic import to avoid parsing issues with z.infer<typeof>
+const { EmploymentPrefsStep } = await import('../EmploymentPrefsStep')
 
 describe('EmploymentPrefsStep', () => {
   const onContinue = vi.fn()
