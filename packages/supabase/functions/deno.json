@@ -3,7 +3,6 @@
   "nodeModulesDir": "auto",
   "importMap": "./import_map.json",
   "compilerOptions": {
-    "allowJs": true,
     "lib": ["esnext", "deno.window", "deno.ns"],
     "strict": false,
     "noImplicitAny": false
@@ -13,5 +12,5 @@
       "exclude": ["no-explicit-any"]
     }
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "_types/stripe.d.ts", "_shared/deno-ambient.d.ts"]
 }
