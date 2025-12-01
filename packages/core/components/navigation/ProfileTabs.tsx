@@ -60,7 +60,7 @@ export const ProfileTabs = ({
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
   const isSmallScreen = width <= 800
-  const { t, locale } = useTranslation()
+  const { t } = useTranslation()
 
   // Get child routes for /dashboard/profile
   const childRoutes = useMemo(() => {
@@ -92,7 +92,7 @@ export const ProfileTabs = ({
         label: t(route.titleKey),
         href: route.path,
       })),
-    [directChildRoutes, locale, t]
+    [directChildRoutes, t]
   )
 
   // Find the currently active tab value

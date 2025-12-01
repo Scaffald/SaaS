@@ -60,7 +60,7 @@ vi.mock('tamagui', async () => {
   }
 })
 
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   AddressAutocomplete: ({
     onChange,
     onAddressSelect,

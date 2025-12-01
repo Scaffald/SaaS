@@ -116,8 +116,7 @@ export function ApplicationWizard({
       // Silent error handling - don't impact user flow
       console.warn('Failed to track application started:', error)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only run once on mount
+  }, [jobId, jobTitle, organizationName, trackEventMutation.mutate])
 
   // Define application steps - only include custom questions if there are any
   const steps: Array<{ id: ApplicationStepType; label: string }> = [

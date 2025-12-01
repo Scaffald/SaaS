@@ -77,7 +77,7 @@ export const OfficeLayout = ({
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
   const isSmallScreen = width <= 800
-  const { t, locale } = useTranslation()
+  const { t } = useTranslation()
 
   // Auto-generate breadcrumbs if enabled and no manual override
   const { breadcrumbs } = useBreadcrumbs({
@@ -122,7 +122,7 @@ export const OfficeLayout = ({
         label: t(route.titleKey),
         href: route.path,
       })),
-    [locale, t, topLevelRoutes]
+    [t, topLevelRoutes]
   )
 
   const activeTopRoute = useMemo(() => {
@@ -170,7 +170,7 @@ export const OfficeLayout = ({
         label: t(route.titleKey),
         href: route.path,
       }))
-  }, [activeTopRoute, locale, t])
+  }, [activeTopRoute, t])
 
   const activeSecondaryValue = useMemo(() => {
     if (secondaryTabItems.length === 0) {

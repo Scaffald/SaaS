@@ -12,6 +12,26 @@ export interface Attachments {
   portfolio?: AttachmentMetadata
 }
 
+/**
+ * Check if a file type is valid
+ */
+const isValidFileType = (file: File): boolean => {
+  const validTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ]
+  return validTypes.includes(file.type)
+}
+
+/**
+ * Check if file size is valid (max 5MB)
+ */
+const isValidFileSize = (file: File): boolean => {
+  const maxSize = 5 * 1024 * 1024 // 5MB
+  return file.size <= maxSize
+}
+
 export interface AttachmentsStepProps {
   /**
    * Current attachments
@@ -84,26 +104,6 @@ export function AttachmentsStep({
    */
   const getAttachment = (type: AttachmentType): AttachmentMetadata | undefined => {
     return attachments[type]
-  }
-
-  /**
-   * Check if a file type is valid
-   */
-  const isValidFileType = (file: File): boolean => {
-    const validTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ]
-    return validTypes.includes(file.type)
-  }
-
-  /**
-   * Check if file size is valid (max 5MB)
-   */
-  const isValidFileSize = (file: File): boolean => {
-    const maxSize = 5 * 1024 * 1024 // 5MB
-    return file.size <= maxSize
   }
 
   /**

@@ -63,7 +63,7 @@ vi.mock('react-hook-form', () => {
   }
 })
 
-'@unicornlove/ui', () => {
+vi.mock('@unicornlove/ui', () => {
   const React = require('react') as typeof import('react')
   const Button = ({
     children,

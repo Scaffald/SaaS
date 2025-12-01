@@ -3,7 +3,7 @@ import { DataTable } from '@app/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToastController } from '@tamagui/toast'
 import { UserMinus } from '@tamagui/lucide-icons'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 interface FollowingData {
@@ -55,11 +55,14 @@ export function FollowingList() {
     })
   }, [following, searchTerm])
 
-  const handleUnfollow = async (_followId: string, userId: string) => {
-    if (confirm('Are you sure you want to unfollow this user?')) {
-      await unfollowMutation.mutateAsync({ targetUserId: userId })
-    }
-  }
+  const handleUnfollow = useCallback(
+    async (_followId: string, userId: string) => {
+      if (confirm('Are you sure you want to unfollow this user?')) {
+        await unfollowMutation.mutateAsync({ targetUserId: userId })
+      }
+    },
+    [unfollowMutation.mutateAsync]
+  )
 
   const columns = useMemo<ColumnDef<Following>[]>(
     () => [
@@ -131,7 +134,7 @@ export function FollowingList() {
         },
       },
     ],
-    [unfollowMutation.isPending]
+    [unfollowMutation.isPending, handleUnfollow]
   )
 
   if (isLoading) {

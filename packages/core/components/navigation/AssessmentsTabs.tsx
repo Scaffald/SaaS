@@ -52,7 +52,7 @@ export const AssessmentsTabs = ({
   const currentPath = pathname ?? ''
   const { width } = useWindowDimensions()
   const isSmallScreen = width <= 800
-  const { t, locale } = useTranslation()
+  const { t } = useTranslation()
 
   const childRoutes = useMemo(() => getChildRoutes('/dashboard/assessments'), [])
 
@@ -70,7 +70,7 @@ export const AssessmentsTabs = ({
         label: t(route.titleKey),
         href: route.path,
       })),
-    [directChildRoutes, locale, t]
+    [directChildRoutes, t]
   )
 
   const activeValue = useMemo(() => {

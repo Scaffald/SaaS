@@ -272,9 +272,6 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
-      react-window:
-        specifier: ^2.2.3
-        version: 2.2.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
@@ -348,6 +345,9 @@ importers:
       semantic-release:
         specifier: ^23.0.0
         version: 23.1.1(typescript@5.9.3)
+      sort-package-json:
+        specifier: ^3.5.0
+        version: 3.5.0
       turbo:
         specifier: ^2.6.1
         version: 2.6.1
@@ -394,8 +394,8 @@ importers:
         specifier: 'catalog:'
         version: 11.6.0(typescript@5.9.3)
       '@unicornlove/ui':
-        specifier: ^1.0.0
-        version: 1.0.0(ebf25ff7f06b5f86f098bf061058ad03)
+        specifier: file:../../packages/ui
+        version: file:packages/ui(4fda7bc20bac56e058def419e5439513)
       babel-plugin-module-resolver:
         specifier: 'catalog:'
         version: 4.1.0
@@ -587,8 +587,8 @@ importers:
         specifier: 'catalog:'
         version: 11.5.1(@tanstack/react-query@5.90.2(react@19.1.0))(@trpc/client@11.5.1(@trpc/server@11.6.0(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.6.0(typescript@5.9.3))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
       '@unicornlove/ui':
-        specifier: file:../../../_packages/unicornlove-ui
-        version: file:../_packages/unicornlove-ui(8631e0813576ef86368b914a8732838b)
+        specifier: file:../ui
+        version: file:packages/ui(8631e0813576ef86368b914a8732838b)
       awesome-phonenumber:
         specifier: 'catalog:'
         version: 7.5.0
@@ -3795,24 +3795,8 @@ packages:
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
 
-  '@unicornlove/ui@1.0.0':
-    resolution: {integrity: sha512-QAxVwBYHafmQL+q4aDxhH+M2f9GGGY6rZp+Q5VXYW1VuA1gHaUwzxzmv3LV8d5E/DBR2Je0Rose1R/7/8qPs2w==}
-    peerDependencies:
-      '@tamagui/core': '>=1.138.0'
-      expo: '>=51.0.0'
-      react: '>=18.0.0'
-      react-hook-form: '>=7.0.0'
-      react-native: '>=0.74.0'
-      tamagui: '>=1.138.0'
-      zod: '>=3.0.0'
-    peerDependenciesMeta:
-      expo:
-        optional: true
-      react-native:
-        optional: true
-
-  '@unicornlove/ui@file:../_packages/unicornlove-ui':
-    resolution: {directory: ../_packages/unicornlove-ui, type: directory}
+  '@unicornlove/ui@file:packages/ui':
+    resolution: {directory: packages/ui, type: directory}
     peerDependencies:
       '@tamagui/core': '>=1.138.0'
       expo: '>=51.0.0'
@@ -4784,9 +4768,17 @@ packages:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
 
+  detect-indent@7.0.2:
+    resolution: {integrity: sha512-y+8xyqdGLL+6sh0tVeHcfP/QDd8gUgbasolJJpY7NgeQGSZ739bDtSiaiDgtoicy+mtYB81dKLxO9xRhCyIB3A==}
+    engines: {node: '>=12.20'}
+
   detect-libc@2.1.1:
     resolution: {integrity: sha512-ecqj/sy1jcK1uWrwpR67UhYrIFQ+5WlGxth34WquCbamhFA6hkkwiu37o6J5xCHdo1oixJRfVRw+ywV+Hq/0Aw==}
     engines: {node: '>=8'}
+
+  detect-newline@4.0.1:
+    resolution: {integrity: sha512-qE3Veg1YXzGHQhlA6jzebZN2qVf6NX+A7m7qlhCGG30dJixrAQhYOsJjsnBjJkCSmuOPpCk30145fr8FV0bzog==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
@@ -5569,6 +5561,9 @@ packages:
       react: '*'
       react-native: '*'
       react-native-svg: '*'
+
+  git-hooks-list@4.1.1:
+    resolution: {integrity: sha512-cmP497iLq54AZnv4YRAEMnEyQ1eIn4tGKbmswqwmFV4GBnAqE8NLtWxxdXa++AalfgL5EBH4IxTPyquEuGY/jA==}
 
   git-log-parser@1.2.1:
     resolution: {integrity: sha512-PI+sPDvHXNPl5WNOErAK05s3j0lgwUzMN6o8cyQrDaKfT3qd7TmNJKeXX+SknI5I0QhG5fVPAEwSY4tRGDtYoQ==}
@@ -7761,12 +7756,6 @@ packages:
     peerDependencies:
       react: ^19.2.0
 
-  react-window@2.2.3:
-    resolution: {integrity: sha512-gTRqQYC8ojbiXyd9duYFiSn2TJw0ROXCgYjenOvNKITWzK0m0eCvkUsEUM08xvydkMh7ncp+LE0uS3DeNGZxnQ==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
-
   react@19.1.0:
     resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
     engines: {node: '>=0.10.0'}
@@ -8140,6 +8129,14 @@ packages:
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
+
+  sort-object-keys@2.0.1:
+    resolution: {integrity: sha512-R89fO+z3x7hiKPXX5P0qim+ge6Y60AjtlW+QQpRozrrNcR1lw9Pkpm5MLB56HoNvdcLHL4wbpq16OcvGpEDJIg==}
+
+  sort-package-json@3.5.0:
+    resolution: {integrity: sha512-moY4UtptUuP5sPuu9H9dp8xHNel7eP5/Kz/7+90jTvC0IOiPH2LigtRM/aSFSxreaWoToHUVUpEV4a2tAs2oKQ==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -15033,7 +15030,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@unicornlove/ui@1.0.0(ebf25ff7f06b5f86f098bf061058ad03)':
+  '@unicornlove/ui@file:packages/ui(4fda7bc20bac56e058def419e5439513)':
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
@@ -15058,6 +15055,7 @@ snapshots:
       expo-router: 6.0.14(e9042b843c8a38febd258a6490793acc)
       moti: 0.25.4(react-dom@19.1.0(react@19.1.0))(react-native-reanimated@4.1.2(@babel/core@7.26.10)(react-native-worklets@0.6.0(@babel/core@7.26.10)(react-native@0.81.5(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react@19.1.0)
       react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
       react-dropzone: 14.3.8(react@19.1.0)
       react-hook-form: 7.63.0(react@19.1.0)
       react-native-reanimated: 4.1.2(@babel/core@7.26.10)(react-native-worklets@0.6.0(@babel/core@7.26.10)(react-native@0.81.5(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.26.10)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
@@ -15077,7 +15075,6 @@ snapshots:
       - '@types/react-dom'
       - expo-constants
       - expo-linking
-      - react-dom
       - react-native-gesture-handler
       - react-native-safe-area-context
       - react-native-screens
@@ -15087,7 +15084,7 @@ snapshots:
       - react-server-dom-webpack
       - supports-color
 
-  '@unicornlove/ui@file:../_packages/unicornlove-ui(8631e0813576ef86368b914a8732838b)':
+  '@unicornlove/ui@file:packages/ui(8631e0813576ef86368b914a8732838b)':
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
@@ -16334,7 +16331,11 @@ snapshots:
 
   destroy@1.2.0: {}
 
+  detect-indent@7.0.2: {}
+
   detect-libc@2.1.1: {}
+
+  detect-newline@4.0.1: {}
 
   detect-node-es@1.1.0: {}
 
@@ -17346,6 +17347,8 @@ snapshots:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.28.5)(@types/react@19.1.16)(react@19.1.0)
       react-native-svg: 15.12.1(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.16)(react@19.1.0))(react@19.1.0)
+
+  git-hooks-list@4.1.1: {}
 
   git-log-parser@1.2.1:
     dependencies:
@@ -19879,11 +19882,6 @@ snapshots:
       react-is: 19.2.0
       scheduler: 0.27.0
 
-  react-window@2.2.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
-    dependencies:
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
-
   react@19.1.0: {}
 
   read-cache@1.0.0:
@@ -20351,6 +20349,18 @@ snapshots:
     dependencies:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
+
+  sort-object-keys@2.0.1: {}
+
+  sort-package-json@3.5.0:
+    dependencies:
+      detect-indent: 7.0.2
+      detect-newline: 4.0.1
+      git-hooks-list: 4.1.1
+      is-plain-obj: 4.1.0
+      semver: 7.7.2
+      sort-object-keys: 2.0.1
+      tinyglobby: 0.2.15
 
   source-map-js@1.2.1: {}
 

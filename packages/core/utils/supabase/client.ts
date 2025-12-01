@@ -28,13 +28,13 @@ const resolvedSupabaseAnonKey =
 
 if (!resolvedSupabaseUrl) {
   throw new Error(
-    `EXPO_PUBLIC_SUPABASE_URL is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_URL and restart the server.`
+    'EXPO_PUBLIC_SUPABASE_URL is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_URL and restart the server.'
   )
 }
 
 if (!resolvedSupabaseAnonKey) {
   throw new Error(
-    `EXPO_PUBLIC_SUPABASE_ANON_KEY is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_ANON_KEY and restart the server.`
+    'EXPO_PUBLIC_SUPABASE_ANON_KEY is not set. Please update the root .env with EXPO_PUBLIC_SUPABASE_ANON_KEY and restart the server.'
   )
 }
 

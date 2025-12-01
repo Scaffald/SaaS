@@ -80,7 +80,7 @@ vi.mock('tamagui', () => {
   }
 })
 
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   DashboardWidget: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
   UIButton: ({
     children,

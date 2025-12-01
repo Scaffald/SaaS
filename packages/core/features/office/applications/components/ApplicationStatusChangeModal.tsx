@@ -98,22 +98,12 @@ export const ApplicationStatusChangeModal = ({
 
   const successFeeStatus = successFeeStatusQuery.data
 
-  const hireInputsKey = hireInputs
-    ? [
-        hireInputs.organizationId,
-        hireInputs.workerUserId,
-        hireInputs.jobId,
-        hireInputs.applicationId,
-        hireInputs.totalHireValueCents,
-        hireInputs.jobDurationDays,
-        hireInputs.hireStartDate,
-      ].join(':')
-    : 'missing'
+  // Removed hireInputsKey - using hireInputs directly in dependencies
 
   useEffect(() => {
     if (!open) return
     setResumeAttempted(false)
-  }, [hireInputsKey, open])
+  }, [open])
 
   useEffect(() => {
     if (!open || !isHire) {
@@ -184,8 +174,8 @@ export const ApplicationStatusChangeModal = ({
   }, [
     open,
     isHire,
-    hireInputsKey,
-    successFeeMutation,
+    hireInputs,
+    successFeeMutation.mutateAsync,
     successFeeStatus?.status,
     successFeeStatusQuery.isLoading,
     resumeAttempted,

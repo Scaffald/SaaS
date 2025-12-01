@@ -41,7 +41,7 @@ vi.mock('../StepNavigation', () => ({
   ),
 }))
 
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   MonthYearPicker: ({
     label,
     value,

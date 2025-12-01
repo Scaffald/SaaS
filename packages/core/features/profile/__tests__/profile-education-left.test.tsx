@@ -49,7 +49,7 @@ vi.mock('@tamagui/lucide-icons', () => ({
   ChevronDown: () => null,
 }))
 
-'@unicornlove/ui', () => {
+vi.mock('@unicornlove/ui', () => {
   const React = require('react') as typeof import('react')
 
   const createView = (element = 'div') =>

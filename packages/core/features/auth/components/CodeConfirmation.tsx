@@ -45,7 +45,7 @@ export function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeCo
     if (Object.keys(formState.errors).length > 0) {
       setValid(false)
     }
-  }, [formState.isValidating])
+  }, [formState.errors])
 
   // shake animation
   useEffect(() => {

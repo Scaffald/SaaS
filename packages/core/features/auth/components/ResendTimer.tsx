@@ -53,7 +53,7 @@ export function ResendTimer({ onComplete, onResendClick }: ResendTimerProps) {
       }
       startTimeRef.current = null
     }
-  }, [isTimerActive, seconds === 0, onComplete])
+  }, [isTimerActive, seconds, onComplete])
 
   if (!isTimerActive) {
     return (

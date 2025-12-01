@@ -2,17 +2,6 @@
   "name": "@app/supabase",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "seed": "pnpx tsx scripts/seed-all.ts",
-    "seed:onet": "pnpx tsx scripts/seed-onet.ts",
-    "seed:universities": "pnpx tsx scripts/seed-universities.ts",
-    "seed:news-feeds": "pnpx tsx scripts/seed-news-feeds.ts",
-    "seed:news-import": "pnpx tsx scripts/trigger-news-import.ts",
-    "download-onet": "pnpx tsx scripts/download-onet.ts",
-    "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
-    "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts",
-    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh"
-  },
   "exports": {
     "./types": "./types.ts",
     "./client-types": "./client-types.ts",
@@ -20,13 +9,24 @@
     "./functions/_shared/types": "./functions/_shared/types.ts",
     "./functions/_shared/client-types": "./functions/_shared/client-types.ts"
   },
+  "scripts": {
+    "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
+    "download-onet": "pnpx tsx scripts/download-onet.ts",
+    "seed": "pnpx tsx scripts/seed-all.ts",
+    "seed:news-feeds": "pnpx tsx scripts/seed-news-feeds.ts",
+    "seed:news-import": "pnpx tsx scripts/trigger-news-import.ts",
+    "seed:onet": "pnpx tsx scripts/seed-onet.ts",
+    "seed:universities": "pnpx tsx scripts/seed-universities.ts",
+    "test:endpoints": "bash functions/trpc/__tests__/run-tests.sh",
+    "test:permissions": "pnpx tsx scripts/test-external-jobs-permissions.ts"
+  },
   "dependencies": {
     "@supabase/supabase-js": "catalog:",
     "@trpc/server": "catalog:",
     "adm-zip": "^0.5.16",
     "csv-parse": "^6.1.0",
-    "pg-copy-streams": "^6.0.5",
     "pdf-lib": "^1.17.1",
+    "pg-copy-streams": "^6.0.5",
     "posthog-node": "^4.18.0",
     "zod": "catalog:"
   },

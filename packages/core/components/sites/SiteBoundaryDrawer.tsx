@@ -11,6 +11,24 @@ export interface SiteBoundaryDrawerProps {
   zoom?: number
 }
 
+// Calculate area in square feet (simplified calculation)
+const calculateArea = (coords: Boundary): number => {
+  if (coords.length < 3) return 0
+
+  // Use shoelace formula for polygon area
+  let area = 0
+  for (let i = 0; i < coords.length; i++) {
+    const j = (i + 1) % coords.length
+    area += coords[i][0] * coords[j][1]
+    area -= coords[j][0] * coords[i][1]
+  }
+
+  // Convert to square feet (approximate, assumes WGS84)
+  // More accurate calculation would use PostGIS on the backend
+  const areaSqMeters = (Math.abs(area) / 2) * 111000 * 111000 // Rough conversion
+  return areaSqMeters * 10.764 // Convert to square feet
+}
+
 /**
  * Site Boundary Drawer Component
  *
@@ -35,24 +53,6 @@ export function SiteBoundaryDrawer({
   const [coordinates, setCoordinates] = useState<Boundary>(boundary)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
-
-  // Calculate area in square feet (simplified calculation)
-  const calculateArea = (coords: Boundary): number => {
-    if (coords.length < 3) return 0
-
-    // Use shoelace formula for polygon area
-    let area = 0
-    for (let i = 0; i < coords.length; i++) {
-      const j = (i + 1) % coords.length
-      area += coords[i][0] * coords[j][1]
-      area -= coords[j][0] * coords[i][1]
-    }
-
-    // Convert to square feet (approximate, assumes WGS84)
-    // More accurate calculation would use PostGIS on the backend
-    const areaSqMeters = (Math.abs(area) / 2) * 111000 * 111000 // Rough conversion
-    return areaSqMeters * 10.764 // Convert to square feet
-  }
 
   useEffect(() => {
     const area = calculateArea(coordinates)

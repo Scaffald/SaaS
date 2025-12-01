@@ -70,8 +70,7 @@ export default function UserProfilePage() {
     }
 
     trackProfileView()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, isOwnProfile, currentUserId])
+  }, [id, isOwnProfile, currentUserId, recordViewMutation])
 
   const breadcrumbs = useMemo<DashboardBreadcrumbSegment[]>(
     () => [

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const extractPlainText = vi.fn();
 
-"@unicornlove/ui", () => ({
+vi.mock("@unicornlove/ui", () => ({
   extractPlainText,
 }));
 

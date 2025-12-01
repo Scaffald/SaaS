@@ -3,7 +3,7 @@ import { DataTable } from '@app/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToastController } from '@tamagui/toast'
 import { Download, Trash2 } from '@tamagui/lucide-icons'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type ConnectionsData = NonNullable<
@@ -75,11 +75,14 @@ export function ConnectionsList() {
     })
   }, [connections, searchTerm])
 
-  const handleRemove = async (connectionId: string) => {
-    if (confirm('Are you sure you want to remove this connection?')) {
-      await removeConnectionMutation.mutateAsync({ connectionId })
-    }
-  }
+  const handleRemove = useCallback(
+    async (connectionId: string) => {
+      if (confirm('Are you sure you want to remove this connection?')) {
+        await removeConnectionMutation.mutateAsync({ connectionId })
+      }
+    },
+    [removeConnectionMutation.mutateAsync]
+  )
 
   const handleExportCSV = () => {
     if (!connections || connections.length === 0) {
@@ -192,7 +195,7 @@ export function ConnectionsList() {
         },
       },
     ],
-    [removeConnectionMutation.isPending]
+    [removeConnectionMutation.isPending, handleRemove]
   )
 
   if (isLoading) {

@@ -53,17 +53,17 @@
       "recommended": true,
       "correctness": {
         "noUnusedVariables": "error",
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "warn"
       },
       "suspicious": {
         "noExplicitAny": "error",
-        "noRedeclare": "off"
+        "noRedeclare": "error"
       },
       "style": {
-        "useImportType": "warn",
+        "useImportType": "error",
         "useNodejsImportProtocol": "off",
         "noNonNullAssertion": "warn",
-        "noUnusedTemplateLiteral": "off"
+        "noUnusedTemplateLiteral": "warn"
       },
       "complexity": {
         "useLiteralKeys": "off"

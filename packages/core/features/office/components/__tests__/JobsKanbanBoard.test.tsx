@@ -34,7 +34,7 @@ vi.mock('@dnd-kit/core', () => ({
   useSensors: vi.fn(() => ({})),
 }))
 
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   DroppableColumn: ({ children, id }: { children: ReactNode; id: string }) => (
     <div data-testid={`droppable-column-${id}`}>{children}</div>
   ),

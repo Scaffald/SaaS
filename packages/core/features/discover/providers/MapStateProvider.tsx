@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
 import { useIsomorphicLayoutEffect } from 'tamagui'
 
@@ -184,19 +184,22 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
   }, [state, isReady])
 
   // Update state with type safety
-  const setState = (newState: MapState | ((prev: MapState) => MapState)) => {
-    setStateInternal(newState)
-  }
+  const setState = useCallback(
+    (newState: MapState | ((prev: MapState) => MapState)) => {
+      setStateInternal(newState)
+    },
+    []
+  )
 
   // Convenience methods for updating specific parts of state
-  const updateSearchLocation = (location: MapState['lastSearchLocation']) => {
+  const updateSearchLocation = useCallback((location: MapState['lastSearchLocation']) => {
     setStateInternal((prev) => ({
       ...prev,
       lastSearchLocation: location,
     }))
-  }
+  }, [])
 
-  const updateFilters = (filters: Partial<MapState['activeFilters']>) => {
+  const updateFilters = useCallback((filters: Partial<MapState['activeFilters']>) => {
     setStateInternal((prev) => ({
       ...prev,
       activeFilters: {
@@ -204,23 +207,23 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
         ...filters,
       },
     }))
-  }
+  }, [])
 
-  const updateResultsRailVisible = (visible: boolean) => {
+  const updateResultsRailVisible = useCallback((visible: boolean) => {
     setStateInternal((prev) => ({
       ...prev,
       resultsRailVisible: visible,
     }))
-  }
+  }, [])
 
-  const updateViewport = (viewport: MapState['viewport']) => {
+  const updateViewport = useCallback((viewport: MapState['viewport']) => {
     setStateInternal((prev) => ({
       ...prev,
       viewport,
     }))
-  }
+  }, [])
 
-  const clearState = () => {
+  const clearState = useCallback(() => {
     setStateInternal(defaultState)
     // Also clear from storage
     if (Platform.OS === 'web') {
@@ -232,7 +235,7 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
         // Ignore errors
       })
     }
-  }
+  }, [])
 
   const contextValue = useMemo<MapStateContextValue>(
     () => ({
@@ -244,7 +247,7 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
       updateViewport,
       clearState,
     }),
-    [state]
+    [state, setState, updateSearchLocation, updateFilters, updateResultsRailVisible, updateViewport, clearState]
   )
 
   // Don't render children until state is loaded

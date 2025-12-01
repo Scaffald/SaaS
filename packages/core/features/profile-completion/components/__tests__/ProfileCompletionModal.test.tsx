@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ProfileCompletionModal } from '../ProfileCompletionModal'
 
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   ResponsiveModal: ({
     open,
     onOpenChange,

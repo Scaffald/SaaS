@@ -3,7 +3,7 @@ import { DataTable } from '@app/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useToastController } from '@tamagui/toast'
 import { CheckCircle2, X } from '@tamagui/lucide-icons'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
 
 type PendingRequestsData = NonNullable<
@@ -106,19 +106,28 @@ export function PendingRequestsList() {
     return [...received, ...sent]
   }, [pendingRequests])
 
-  const handleAccept = async (connectionId: string) => {
-    await acceptMutation.mutateAsync({ connectionId })
-  }
+  const handleAccept = useCallback(
+    async (connectionId: string) => {
+      await acceptMutation.mutateAsync({ connectionId })
+    },
+    [acceptMutation.mutateAsync]
+  )
 
-  const handleDecline = async (connectionId: string) => {
-    await declineMutation.mutateAsync({ connectionId })
-  }
+  const handleDecline = useCallback(
+    async (connectionId: string) => {
+      await declineMutation.mutateAsync({ connectionId })
+    },
+    [declineMutation.mutateAsync]
+  )
 
-  const handleCancel = async (connectionId: string) => {
-    if (confirm('Are you sure you want to cancel this connection request?')) {
-      await cancelMutation.mutateAsync({ connectionId })
-    }
-  }
+  const handleCancel = useCallback(
+    async (connectionId: string) => {
+      if (confirm('Are you sure you want to cancel this connection request?')) {
+        await cancelMutation.mutateAsync({ connectionId })
+      }
+    },
+    [cancelMutation.mutateAsync]
+  )
 
   const columns = useMemo<ColumnDef<RequestRow>[]>(
     () => [
@@ -221,7 +230,7 @@ export function PendingRequestsList() {
         },
       },
     ],
-    [acceptMutation.isPending, declineMutation.isPending, cancelMutation.isPending]
+    [acceptMutation.isPending, declineMutation.isPending, cancelMutation.isPending, handleAccept, handleDecline, handleCancel]
   )
 
   if (isLoading) {

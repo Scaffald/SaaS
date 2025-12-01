@@ -21,6 +21,14 @@ interface User {
   avatar_path: string | null
 }
 
+const getUserDisplayName = (user: User): string => {
+  if (user.first_name || user.last_name) {
+    const name = `${user.first_name || ''} ${user.last_name || ''}`.trim()
+    return name ? `${name} (${user.username})` : user.username
+  }
+  return user.display_name || user.username
+}
+
 /**
  * UserSearch Component
  *
@@ -89,15 +97,7 @@ export function UserSearch({
       setSelectedUserName('')
       setSearchTerm('')
     }
-  }, [value, selectedUser])
-
-  const getUserDisplayName = (user: User): string => {
-    if (user.first_name || user.last_name) {
-      const name = `${user.first_name || ''} ${user.last_name || ''}`.trim()
-      return name ? `${name} (${user.username})` : user.username
-    }
-    return user.display_name || user.username
-  }
+  }, [value, selectedUser, selectedUserName])
 
   const handleSelect = (user: User) => {
     const userName = getUserDisplayName(user)

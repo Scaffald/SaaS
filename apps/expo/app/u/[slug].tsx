@@ -71,8 +71,7 @@ export default function PublicUserProfilePage() {
     }
 
     trackProfileView()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileData?.id, currentUserId, isLoading])
+  }, [profileData, currentUserId, isLoading, recordViewMutation])
 
   // Redirect to dashboard route if viewing own profile
   useEffect(() => {

@@ -128,7 +128,7 @@ export function useApplicationForm(jobId: string, existingApplicationId?: string
       }))
       throw error
     }
-  }, [jobId, state, submitMutation])
+  }, [jobId, state, createDraftMutation.mutateAsync])
 
   /**
    * Save progress for current step

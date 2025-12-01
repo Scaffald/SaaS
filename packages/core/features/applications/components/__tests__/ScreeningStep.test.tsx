@@ -6,7 +6,7 @@ import { ScreeningStep } from '../ScreeningStep'
 const mockOnAnswersChange = vi.fn()
 const mockOnContinue = vi.fn()
 
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   AddressAutocomplete: ({
     value,
     onChange,

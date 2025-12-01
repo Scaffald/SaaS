@@ -44,7 +44,7 @@ const searchPropsStore = vi.hoisted(() => ({
   latestSelectedIds: [],
 }))
 
-'@unicornlove/ui', () => {
+vi.mock('@unicornlove/ui', () => {
   const passthrough =
     (Tag = 'div') =>
     ({ children, ...rest }) =>

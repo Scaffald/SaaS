@@ -243,7 +243,7 @@ export function AdminBackgroundChecksPage() {
         ),
       },
     ],
-    [setSelectedCheck]
+    []
   )
 
   const disputeColumns: ColumnDef<DisputeRow>[] = useMemo(

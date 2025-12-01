@@ -103,7 +103,7 @@ vi.mock('@app/core/utils/supabase/storage', () => ({
 }))
 
 // Mock UI components
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   UIButton: ({
     children,
     onPress,

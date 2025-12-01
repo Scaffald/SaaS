@@ -82,7 +82,7 @@ vi.mock('@app/core/utils/api', () => ({
   },
 }))
 
-'@unicornlove/ui', () => ({
+vi.mock('@unicornlove/ui', () => ({
   ResponsiveModal: ({
     children,
     open,
