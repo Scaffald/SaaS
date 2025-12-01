@@ -4,9 +4,9 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
-    "./profile": "./src/profile/index.ts",
     "./common": "./src/common/index.ts",
-    "./common/phone": "./src/common/phone.ts"
+    "./common/phone": "./src/common/phone.ts",
+    "./profile": "./src/profile/index.ts"
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",

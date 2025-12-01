@@ -12,5 +12,11 @@
       "exclude": ["no-explicit-any"]
     }
   },
-  "exclude": ["node_modules", "_types/stripe.d.ts", "_shared/deno-ambient.d.ts"]
+  "exclude": [
+    "node_modules",
+    "_types/stripe.d.ts",
+    "_shared/deno-ambient.d.ts",
+    "**/*.test.ts",
+    "**/__tests__/**"
+  ]
 }

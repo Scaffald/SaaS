@@ -11,8 +11,8 @@ export default function Screen() {
     <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
       <Stack.Screen
         options={{
-          title: t('auth.verify.title'),
           headerShown: true,
+          title: t('auth.verify.title'),
         }}
       />
       <MagicLinkPending email={params.email} />

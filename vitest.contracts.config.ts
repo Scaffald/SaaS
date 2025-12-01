@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url'
 import { resolve as resolvePath } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import { defineConfig } from 'vitest/config'
 
@@ -13,16 +13,19 @@ export default defineConfig({
       ...(baseConfig.resolve?.alias ?? []),
       {
         find: 'msw/node',
-        replacement: resolvePath(fileURLToPath(new URL('.', import.meta.url)), 'node_modules/msw/lib/node/index.mjs'),
+        replacement: resolvePath(
+          fileURLToPath(new URL('.', import.meta.url)),
+          'node_modules/msw/lib/node/index.mjs'
+        ),
       },
     ],
     conditions: ['node', 'browser', 'module', 'module-sync', 'import', 'default'],
   },
   test: {
     ...baseConfig.test,
-    include: ['contracts/**/*.{contract,test,spec}.{ts,tsx}'],
-    exclude: [],
-    watch: false,
     environment: 'node',
+    exclude: [],
+    include: ['contracts/**/*.{contract,test,spec}.{ts,tsx}'],
+    watch: false,
   },
 })

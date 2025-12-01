@@ -1,4 +1,31 @@
 {
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "baseUrl": "../../",
+    "composite": true,
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "paths": {
+      "@app/core": ["packages/core"],
+      "@app/core/*": ["packages/core/*"],
+      "@app/schemas": ["packages/schemas/src"],
+      "@app/schemas/*": ["packages/schemas/src/*"],
+      "@app/styleguide": ["packages/ui/src/styleguide/index.ts"],
+      "@app/styleguide/*": ["packages/ui/src/styleguide/*"],
+      "@app/supabase": ["packages/supabase"],
+      "@app/supabase/*": ["packages/supabase/*"],
+      "@app/trpc": ["packages/trpc/src"],
+      "@app/trpc/*": ["packages/trpc/src/*"],
+      "expo-clipboard": ["types/expo-clipboard.d.ts"]
+    },
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "../../packages/supabase/functions/**/*",
+    "../../packages/supabase/scripts/**/*",
+    "../../packages/supabase/types-trpc.ts"
+  ],
   "extends": "../../tsconfig.base",
   "include": [
     "app",
@@ -20,32 +47,5 @@
     "../../tests/infrastructure/vitest/helpers/database.ts",
     "../../tests/infrastructure/vitest/plugins/flow-remove.ts"
   ],
-  "exclude": [
-    "../../packages/supabase/functions/**/*",
-    "../../packages/supabase/scripts/**/*",
-    "../../packages/supabase/types-trpc.ts"
-  ],
-  "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "composite": true,
-    "jsx": "react-jsx",
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": "../../",
-    "paths": {
-      "@app/core": ["packages/core"],
-      "@app/core/*": ["packages/core/*"],
-      "@app/supabase": ["packages/supabase"],
-      "@app/supabase/*": ["packages/supabase/*"],
-      "@app/trpc": ["packages/trpc/src"],
-      "@app/trpc/*": ["packages/trpc/src/*"],
-      "@app/schemas": ["packages/schemas/src"],
-      "@app/schemas/*": ["packages/schemas/src/*"],
-      "@app/styleguide": ["packages/ui/src/styleguide/index.ts"],
-      "@app/styleguide/*": ["packages/ui/src/styleguide/*"],
-      "expo-clipboard": ["types/expo-clipboard.d.ts"]
-    }
-  },
   "references": []
 }

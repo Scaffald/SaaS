@@ -1,5 +1,4 @@
 {
-  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "allowJs": true,
@@ -16,6 +15,7 @@
     "strict": false,
     "types": ["npm:@types/deno"]
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "extends": "../../../tsconfig.base.json",
+  "include": ["**/*.ts", "**/*.tsx"]
 }

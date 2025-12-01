@@ -106,6 +106,11 @@ vi.mock('@unicornlove/ui', () => ({
       toggle
     </button>
   ),
+  useFilePicker: vi.fn(() => ({
+    open: vi.fn(),
+    files: [],
+    isOpen: false,
+  })),
 }))
 
 const { CMSSlideForm } = await import('../cms-slide-form')

@@ -1,16 +1,16 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
     "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "composite": true,
     "noEmit": true,
-    "skipLibCheck": true,
     "paths": {
       "@app/trpc": ["."],
       "@app/trpc/*": ["./*"]
-    }
+    },
+    "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "extends": "../../tsconfig.base.json",
+  "include": ["src/**/*.ts"]
 }

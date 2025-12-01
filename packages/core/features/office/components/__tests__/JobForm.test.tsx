@@ -23,7 +23,38 @@ const primaryIndustryMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
 const searchCertificationsMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
 const getJobMock = vi.hoisted(() => ({ useQuery: vi.fn() }))
 
-// Mock rich-text before other mocks to ensure it's hoisted
+vi.mock('@app/core/utils/api', () => ({
+  api: {
+    office: {
+      createJob: { useMutation: createJobMock.useMutation },
+      updateJob: { useMutation: updateJobMock.useMutation },
+      searchCertifications: { useQuery: searchCertificationsMock.useQuery },
+      getJob: { useQuery: getJobMock.useQuery },
+    },
+    teams: {
+      list: { useQuery: teamsListMock.useQuery },
+    },
+    profile: {
+      skillsMultiTaxonomy: {
+        searchSkills: { useMutation: searchSkillsMock.useMutation },
+        getPrimaryIndustry: { useQuery: primaryIndustryMock.useQuery },
+      },
+    },
+  },
+}))
+
+vi.mock('@app/core/utils/useAllOrganizations', () => ({
+  useAllOrganizations: () => ({
+    data: {
+      organizations: [{ id: 'org-1', name: 'Org One', slug: 'org-one', owner_user_id: null }],
+    },
+  }),
+}))
+
+vi.mock('@tamagui/toast', () => ({ useToastController: () => toastMock }))
+
+vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
+
 vi.mock('@unicornlove/ui', () => ({
   RichTextEditor: ({
     value,
@@ -68,41 +99,6 @@ vi.mock('@unicornlove/ui', () => ({
     }
     return ''
   },
-}))
-
-vi.mock('@app/core/utils/api', () => ({
-  api: {
-    office: {
-      createJob: { useMutation: createJobMock.useMutation },
-      updateJob: { useMutation: updateJobMock.useMutation },
-      searchCertifications: { useQuery: searchCertificationsMock.useQuery },
-      getJob: { useQuery: getJobMock.useQuery },
-    },
-    teams: {
-      list: { useQuery: teamsListMock.useQuery },
-    },
-    profile: {
-      skillsMultiTaxonomy: {
-        searchSkills: { useMutation: searchSkillsMock.useMutation },
-        getPrimaryIndustry: { useQuery: primaryIndustryMock.useQuery },
-      },
-    },
-  },
-}))
-
-vi.mock('@app/core/utils/useAllOrganizations', () => ({
-  useAllOrganizations: () => ({
-    data: {
-      organizations: [{ id: 'org-1', name: 'Org One', slug: 'org-one', owner_user_id: null }],
-    },
-  }),
-}))
-
-vi.mock('@tamagui/toast', () => ({ useToastController: () => toastMock }))
-
-vi.mock('expo-router', () => ({ useRouter: () => routerMock }))
-
-vi.mock('@unicornlove/ui', () => ({
   ScrollView: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   YStack: ({ children, ...rest }: { children: ReactNode; [key: string]: unknown }) => (
     <div {...rest}>{children}</div>

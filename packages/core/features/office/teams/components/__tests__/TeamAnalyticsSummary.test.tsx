@@ -61,10 +61,13 @@ vi.mock('tamagui', () => {
 
   const styled = vi.fn((component: unknown) => component)
 
+  const View = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     YStack: Stack,
     XStack: Stack,
+    View,
     Text,
     Button,
     Select,

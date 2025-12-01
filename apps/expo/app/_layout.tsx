@@ -61,8 +61,8 @@ export default function DashboardLayout() {
         <Provider initialSession={initialSession}>
           <ErrorBoundary
             context={{
-              route: segments.join('/') || '/',
               environment: process.env.APP_ENV,
+              route: segments.join('/') || '/',
             }}
           >
             <Stack

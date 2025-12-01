@@ -1,13 +1,13 @@
 {
-  "files": [],
   "compilerOptions": {
     "allowImportingTsExtensions": true,
+    "noEmit": true,
     "outDir": "/tmp",
-    "typeRoots": ["node_modules/@types"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "typeRoots": ["node_modules/@types"]
   },
   "exclude": ["supabase/**/*"],
-  "extends": "./tsconfig.base.json"
+  "extends": "./tsconfig.base.json",
+  "files": []
 }

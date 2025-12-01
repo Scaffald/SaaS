@@ -10,8 +10,8 @@ export default function Screen() {
     <SafeAreaView style={{ flex: 1 }} edges={['bottom', 'left', 'right']}>
       <Stack.Screen
         options={{
-          title: t('auth.success.title'),
           headerShown: true,
+          title: t('auth.success.title'),
         }}
       />
       <SuccessView isVisible={true} />
