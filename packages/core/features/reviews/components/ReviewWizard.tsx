@@ -97,7 +97,7 @@ export function ReviewWizard({ subjectId, subjectName, onCancel, onComplete }: R
 
     initializeDraft()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subjectId, myReviews, isLoadingReviews]) // Run when subjectId, myReviews, or loading state changes
+  }, [subjectId, myReviews, isLoadingReviews, createDraftMutation.mutateAsync, reviewId]) // Run when subjectId, myReviews, or loading state changes
 
   // Setup auto-save - only enabled when we have a reviewId
   useReviewAutoSave({

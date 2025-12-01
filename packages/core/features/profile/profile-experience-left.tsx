@@ -95,12 +95,13 @@ export function ProfileExperienceLeft() {
       const previousExperience = utils.profile.experience.getExperience.getData()
       const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
-      utils.profile.experience.getExperience.setData(undefined, input.experience_entries)
+      // Type assertions needed because form data types don't exactly match API response types
+      utils.profile.experience.getExperience.setData(undefined, input.experience_entries as any)
       utils.profile.experience.getExperienceSummary.setData(undefined, {
-        career_level: input.career_level ?? null,
+        career_level: (input.career_level ?? null) as any,
       })
 
-      return { previousExperience, previousSummary }
+      return { previousExperience: previousExperience as any, previousSummary: previousSummary as any }
     },
     onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
       console.error('Error saving experience:', error)
@@ -108,10 +109,7 @@ export function ProfileExperienceLeft() {
         utils.profile.experience.getExperience.setData(undefined, context.previousExperience)
       }
       if (context?.previousSummary) {
-        utils.profile.experience.getExperienceSummary.setData(
-          undefined,
-          context.previousSummary
-        )
+        utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary as any)
       }
       failProfileSync()
       toast.show('Error', {
@@ -303,7 +301,7 @@ export function ProfileExperienceLeft() {
     const remainingMonths = totalMonths % 12
 
     return { years, months: remainingMonths }
-  }, [watch('experience_entries')])
+  }, [watch])
 
   // Show loading state
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {

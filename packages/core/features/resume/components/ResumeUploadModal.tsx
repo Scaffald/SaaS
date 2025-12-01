@@ -129,13 +129,16 @@ export function ResumeUploadModal({
     [toast]
   )
 
-  const validateFileSize = (size: number): boolean => {
-    if (size > MAX_FILE_BYTES) {
-      handleUploadError('File size exceeds 1MB limit. Please upload a smaller file.')
-      return false
-    }
-    return true
-  }
+  const validateFileSize = useCallback(
+    (size: number): boolean => {
+      if (size > MAX_FILE_BYTES) {
+        handleUploadError('File size exceeds 1MB limit. Please upload a smaller file.')
+        return false
+      }
+      return true
+    },
+    [handleUploadError]
+  )
 
   const activeCandidateRef = useRef<UploadCandidate | null>(null)
 

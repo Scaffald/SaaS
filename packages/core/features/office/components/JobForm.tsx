@@ -577,7 +577,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           timeout = setTimeout(() => handleSearch(query), 300)
         }
       })(),
-      [handleSearch]
+      []
     )
 
     const handleAddSkill = (skill: { id: string; name: string; code: string }) => {
@@ -733,7 +733,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
           timeout = setTimeout(() => handleSearch(query), 300)
         }
       })(),
-      [handleSearch]
+      []
     )
 
     const handleAddCertification = (cert: {
