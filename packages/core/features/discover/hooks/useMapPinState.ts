@@ -18,8 +18,7 @@ export type MapPinType = {
     tone: "success" | "warning" | "danger";
   }>;
   selected?: boolean;
-  // biome-ignore lint/suspicious/noExplicitAny: MapPin data field can be any type depending on pin source
-  data?: any;
+  data?: unknown;
 };
 import { useCallback, useMemo, useRef, useState } from "react";
 

@@ -1,3 +1,4 @@
+import type mapboxgl from 'mapbox-gl'
 import type { ViewportBounds } from './types'
 
 /**
@@ -72,8 +73,7 @@ export function validateGeoJSONFeatureCollection(data: unknown): data is GeoJSON
  * @throws Error if map bounds are not available
  */
 export function extractViewportBounds(
-  // biome-ignore lint/suspicious/noExplicitAny: mapboxgl.Map type not available in this context
-  map: any
+  map: mapboxgl.Map
 ): ViewportBounds {
   const bounds = map.getBounds()
   if (!bounds) {

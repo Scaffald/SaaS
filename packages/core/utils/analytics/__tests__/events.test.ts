@@ -41,8 +41,7 @@ describe('analytics events', () => {
         const result = validateEventProperties('user_signed_in', {
           provider: 'email',
           // Missing is_new_user
-          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
-        } as any)
+        } as unknown)
 
         expect(result.success).toBe(false)
       })
@@ -51,8 +50,7 @@ describe('analytics events', () => {
         const result = validateEventProperties('user_signed_in', {
           provider: 123, // Should be string
           is_new_user: true,
-          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid property types
-        } as any)
+        } as unknown)
 
         expect(result.success).toBe(false)
       })
@@ -61,8 +59,7 @@ describe('analytics events', () => {
         const result = validateEventProperties('user_signed_in', {
           provider: 'email',
           is_new_user: 'true', // Should be boolean
-          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid property types
-        } as any)
+        } as unknown)
 
         expect(result.success).toBe(false)
       })
@@ -94,15 +91,13 @@ describe('analytics events', () => {
       test('rejects invalid reason value', () => {
         const result = validateEventProperties('user_signed_out', {
           reason: 'invalid_reason',
-          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value
-        } as any)
+        } as unknown)
 
         expect(result.success).toBe(false)
       })
 
       test('rejects missing reason', () => {
-        // biome-ignore lint/suspicious/noExplicitAny: Testing missing required properties
-        const result = validateEventProperties('user_signed_out', {} as any)
+        const result = validateEventProperties('user_signed_out', {} as unknown)
 
         expect(result.success).toBe(false)
       })
@@ -151,8 +146,7 @@ describe('analytics events', () => {
         const result = validateEventProperties('job_viewed', {
           job_id: 'job-123',
           // Missing is_external
-          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
-        } as any)
+        } as unknown)
 
         expect(result.success).toBe(false)
       })
@@ -206,8 +200,7 @@ describe('analytics events', () => {
       test('rejects invalid provider', () => {
         const result = validateEventProperties('auth_social_sign_in_started', {
           provider: 'facebook',
-          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid enum value
-        } as any)
+        } as unknown)
 
         expect(result.success).toBe(false)
       })
@@ -268,8 +261,7 @@ describe('analytics events', () => {
         assertValidEventProperties('user_signed_in', {
           provider: 'email',
           // Missing is_new_user
-          // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
-        } as any)
+        } as unknown)
       }).toThrow()
     })
 
@@ -310,8 +302,7 @@ describe('analytics events', () => {
       const result = validateEventProperties('user_signed_in', {
         provider: 'email',
         // Missing is_new_user
-        // biome-ignore lint/suspicious/noExplicitAny: Testing invalid properties (missing required field)
-      } as any)
+      } as unknown)
 
       expect(result.success).toBe(false)
       if (!result.success) {

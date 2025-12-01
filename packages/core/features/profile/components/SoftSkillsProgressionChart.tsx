@@ -202,8 +202,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
         {/* Summary Stats */}
         <XStack gap="$3" flexWrap="wrap">
-          {/* biome-ignore lint/suspicious/noExplicitAny: Tamagui flex prop compatibility */}
-          <YStack gap="$1" p="$3" bg="$green2" rounded="$3" borderWidth={1} borderColor="$green7" {...({ flex: 1, minWidth: 100 } as any)}>
+          <YStack gap="$1" p="$3" bg="$green2" rounded="$3" borderWidth={1} borderColor="$green7" style={{ flex: 1, minWidth: 100 }}>
             <Text fontSize="$2" color="$green10" fontWeight="600">
               Improved
             </Text>
@@ -211,8 +210,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
               {improvedSkills}
             </Text>
           </YStack>
-          {/* biome-ignore lint/suspicious/noExplicitAny: Tamagui flex prop compatibility */}
-          <YStack gap="$1" p="$3" bg="$red2" rounded="$3" borderWidth={1} borderColor="$red7" {...({ flex: 1, minWidth: 100 } as any)}>
+          <YStack gap="$1" p="$3" bg="$red2" rounded="$3" borderWidth={1} borderColor="$red7" style={{ flex: 1, minWidth: 100 }}>
             <Text fontSize="$2" color="$red10" fontWeight="600">
               Declined
             </Text>
@@ -220,8 +218,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
               {declinedSkills}
             </Text>
           </YStack>
-          {/* biome-ignore lint/suspicious/noExplicitAny: Tamagui flex prop compatibility */}
-          <YStack gap="$1" p="$3" bg="$color2" rounded="$3" borderWidth={1} borderColor="$borderColor" {...({ flex: 1, minWidth: 100 } as any)}>
+          <YStack gap="$1" p="$3" bg="$color2" rounded="$3" borderWidth={1} borderColor="$borderColor" style={{ flex: 1, minWidth: 100 }}>
             <Text fontSize="$2" color="$color10" fontWeight="600">
               Stable
             </Text>

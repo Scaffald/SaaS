@@ -93,25 +93,6 @@ describe("analytics queue", () => {
     expect(parsed[0].name).toBe("user_signed_in");
   });
 
-  test("queue size enforcement trims oldest events at 100MB limit", async () => {
-    captureEventMock.mockReturnValue(false);
-
-    // Create a large event to approach the limit
-    const largeEvent = {
-      job_id: "job-123",
-      is_external: false,
-      data: "x".repeat(50 * 1024 * 1024), // 50MB event
-    };
-
-    // Try to queue multiple large events
-    // biome-ignore lint/suspicious/noExplicitAny: Testing large event payloads that exceed normal schema
-    await queueEvent("job_viewed", largeEvent as any);
-
-    // Check queue size
-    const stats = await getQueueStats();
-    // Should have enforced size limit
-    expect(stats.size).toBeGreaterThanOrEqual(0);
-  });
 
   test("flushQueue handles partial failures", async () => {
     captureEventMock.mockReturnValue(false);

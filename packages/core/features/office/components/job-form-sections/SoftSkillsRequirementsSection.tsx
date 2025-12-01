@@ -221,8 +221,7 @@ export function SoftSkillsRequirementsSection({
                 IMPORTANCE_LABELS[importance as keyof typeof IMPORTANCE_LABELS]
               return (
                 <Text key={skillId} fontSize="$3" color="$blue11">
-                  • {/* biome-ignore lint/suspicious/noExplicitAny: Skills data structure */}
-                  {(skill as any).name} ({importanceLabel} - {importance}/5)
+                  • {skill.name} ({importanceLabel} - {importance}/5)
                 </Text>
               )
             })}

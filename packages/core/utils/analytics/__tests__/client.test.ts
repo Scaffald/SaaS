@@ -104,8 +104,10 @@ vi.mock("../events", async () => {
     ...actual,
     validateEventProperties: vi.fn((event: string, properties: unknown) => {
       // Use actual validation for now, can be overridden in tests
-      // biome-ignore lint/suspicious/noExplicitAny: Mock function accepts flexible types for testing
-      return actual.validateEventProperties(event as any, properties as any);
+      return actual.validateEventProperties(
+        event as Parameters<typeof actual.validateEventProperties>[0],
+        properties,
+      );
     }),
   };
 });

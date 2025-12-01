@@ -172,8 +172,7 @@ export function OfficeTeamsList() {
             shadowColor="$color10"
             mr="$4"
             mb="$4"
-            // biome-ignore lint/suspicious/noExplicitAny: Tamagui alignSelf prop compatibility
-            {...({ alignSelf: 'flex-end' } as any)}
+            style={{ alignSelf: 'flex-end' }}
           >
             <XStack gap="$3" items="center">
               <Spinner size="small" />
