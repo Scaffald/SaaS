@@ -128,9 +128,9 @@ export function ProfileEducationLeft({
       const previousLevel = utils.profile.education.getEducationLevel.getData()
 
       // Type assertion needed because form data has required booleans but API allows null
-      // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
       utils.profile.education.getEducation.setData(
         undefined,
+        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
         (input.education_entries ?? []) as any
       )
       utils.profile.education.getEducationLevel.setData(undefined, {

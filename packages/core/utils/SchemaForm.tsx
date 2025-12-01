@@ -21,16 +21,16 @@ const TextField = ({ value, onChangeText, placeholder, ...props }: TextFieldProp
 
 // Create unique field schemas that match what's used in the login screen
 // Use type assertions to work around @ts-react/form type compatibility
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const EmailFieldSchema = createUniqueFieldSchema(
+  // biome-ignore lint/suspicious/noExplicitAny: @ts-react/form has incompatible Zod type requirements
   z.string().email('Please enter a valid email address') as any,
   'email'
 )
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: @ts-react/form has incompatible Zod type requirements
 const TextFieldSchema = createUniqueFieldSchema(z.string() as any, 'text')
 
 // Basic form fields using Tamagui Input
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: Type inference issue with @ts-react/form and Zod
 export const formFields: any = {
   text: {
     email: () => EmailFieldSchema,
@@ -40,7 +40,7 @@ export const formFields: any = {
 
 // Mapping for the form - include both email and string types
 // Use type assertions to work around @ts-react/form type compatibility
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: @ts-react/form has incompatible Zod type requirements
 const mapping: any = [
   [z.string().email(), TextField] as const,
   [z.string(), TextField] as const,

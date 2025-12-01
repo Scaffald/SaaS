@@ -96,11 +96,14 @@ export function ProfileExperienceLeft() {
       const previousSummary = utils.profile.experience.getExperienceSummary.getData()
 
       // Type assertions needed because form data types don't exactly match API response types
+      // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
       utils.profile.experience.getExperience.setData(undefined, input.experience_entries as any)
       utils.profile.experience.getExperienceSummary.setData(undefined, {
+        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
         career_level: (input.career_level ?? null) as any,
       })
 
+      // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
       return { previousExperience: previousExperience as any, previousSummary: previousSummary as any }
     },
     onError: (error: unknown, _input: SaveExperienceInput, context?: SaveExperienceContext) => {
@@ -109,6 +112,7 @@ export function ProfileExperienceLeft() {
         utils.profile.experience.getExperience.setData(undefined, context.previousExperience)
       }
       if (context?.previousSummary) {
+        // biome-ignore lint/suspicious/noExplicitAny: Type mismatch between form schema and API response types
         utils.profile.experience.getExperienceSummary.setData(undefined, context.previousSummary as any)
       }
       failProfileSync()
