@@ -5,7 +5,6 @@
  * REQ-2 Task 11: Test news feed rendering and functionality
  */
 
-// @ts-nocheck
 import { expect, type Page, test } from '@playwright/test'
 import { signInAsTestUser } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 

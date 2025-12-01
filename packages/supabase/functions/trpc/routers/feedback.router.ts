@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+import type { Context } from '../context.ts'
 
 import {
   FEEDBACK_ALLOWED_MIME_TYPES,
@@ -19,7 +19,7 @@ function sanitizeFileName(fileName: string): string {
   return name.length > 255 ? name.slice(-255) : name
 }
 
-async function resolveUserDisplayName(supabase: any, userId: string): Promise<string | null> {
+async function resolveUserDisplayName(supabase: Context['supabase'], userId: string): Promise<string | null> {
   // Fetch display name / username
   const { data: userRow, error: userError } = await supabase
     .schema('core')
