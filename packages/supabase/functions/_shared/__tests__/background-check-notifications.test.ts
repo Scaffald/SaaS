@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Ensure a stable base URL for email templates before importing modules

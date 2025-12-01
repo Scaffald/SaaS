@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Re-export types from consolidated schemas for client-side usage
 
 // AppRouter type for client-side tRPC usage

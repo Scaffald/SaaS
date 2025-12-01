@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 vi.mock('../notifications/utils.ts', async () => {
