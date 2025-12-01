@@ -119,7 +119,7 @@ function calculateFinalDueDate(
   const offset = paymentSchedule === 'standard' ? 30 : Math.max(jobDurationDays, 1)
   const due = new Date(start)
   due.setDate(due.getDate() + offset)
-  return due.toISOString().split('T')[0]!
+  return due.toISOString().split('T')[0] ?? ''
 }
 
 function determinePaymentSchedule(params: {

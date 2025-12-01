@@ -74,13 +74,13 @@ export const profileCertificationsRouter = t.router({
 
         // Filter out certifications user already has
         const certifications = (data || [])
-          .filter((cert: any) => !existingCertIds.has(cert.id))
+          .filter((cert: Record<string, unknown>) => !existingCertIds.has(cert.id as string))
           .slice(0, input.limit)
         const parentIds = certifications
-          .filter((c: any) => c.parent_id)
-          .map((c: any) => c.parent_id)
+          .filter((c: Record<string, unknown>) => c.parent_id)
+          .map((c: Record<string, unknown>) => c.parent_id as string)
 
-        const parentMap = new Map<string, any>()
+        const parentMap = new Map<string, Record<string, unknown>>()
         if (parentIds.length > 0) {
           const { data: parents } = await supabase
             .schema('data')
@@ -96,7 +96,7 @@ export const profileCertificationsRouter = t.router({
         }
 
         // Transform results to include parent information
-        const certificationsWithParent = certifications.map((cert: any) => {
+        const certificationsWithParent = certifications.map((cert: Record<string, unknown>) => {
           const parent = cert.parent_id ? parentMap.get(cert.parent_id) : null
           return {
             ...cert,
@@ -349,7 +349,7 @@ export const profileCertificationsRouter = t.router({
             .eq('id', cert.parent_id)
             .maybeSingle()
 
-          if (parentCategory && parentCategory.parent_id) {
+          if (parentCategory?.parent_id) {
             // Ensure top-level (depth 0) exists
             await ensureActiveUserCertification(parentCategory.parent_id)
           }

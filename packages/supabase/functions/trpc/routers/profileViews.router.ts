@@ -52,7 +52,7 @@ async function getUserIndustryId(supabase: Context['supabase'], userId: string):
  * Update connection analytics with profile view
  */
 async function updateProfileViewAnalytics(
-  supabase: any,
+  supabase: Context['supabase'],
   viewedUserId: string,
   isRecentView: boolean
 ) {
@@ -94,7 +94,7 @@ async function updateProfileViewAnalytics(
  * Create an activity event
  */
 async function createActivityEvent(
-  supabase: any,
+  supabase: Context['supabase'],
   userId: string,
   eventType: string,
   targetType: string | null,

@@ -6,7 +6,7 @@ import {
   applicationWithdrawSchema,
 } from '../../_shared/application-schemas.ts'
 import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas.ts'
-import { JOB_SKILLS_SELECT, transformJobSkills } from '../../_shared/skill-helpers.ts'
+import { transformJobSkills } from '../../_shared/skill-helpers.ts'
 import { protectedProcedure, t } from '../middleware.ts'
 
 type SoftSkillRequirement = z.infer<typeof jobSoftSkillRequirementSchema>
@@ -967,7 +967,7 @@ export const jobsRouter = t.router({
       }
 
       // Update application
-      const { id, ...updateData } = input
+      const { id: _id, ...updateData } = input
       const { data: updated, error: updateError } = await supabase
         .schema('core')
         .from('applications')

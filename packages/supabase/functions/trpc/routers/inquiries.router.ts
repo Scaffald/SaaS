@@ -14,6 +14,7 @@ import {
   sectionAcceptanceSchema,
 } from '../../_shared/inquiry-schemas.ts'
 import { insertNotification } from '../../_shared/notifications/utils.ts'
+import type { Context } from '../context.ts'
 import { protectedProcedure, t } from '../middleware.ts'
 
 // Import state machine utilities (inline since we can't import from core)
@@ -77,11 +78,11 @@ function getApplicationStatusForInquiry(
  * Helper function to update inquiry status with validation
  */
 async function updateInquiryStatus(
-  supabase: any,
+  supabase: Context['supabase'],
   inquiryId: string,
   newStatus: InquiryStatus,
   currentStatus: InquiryStatus,
-  actorId: string
+  _actorId: string
 ): Promise<InquiryStatus> {
   // Validate transition
   if (!canTransitionInquiryStatus(currentStatus, newStatus)) {
@@ -118,7 +119,7 @@ async function updateInquiryStatus(
  * Helper function to sync application status with inquiry status
  */
 async function syncApplicationStatus(
-  supabaseAdmin: any,
+  supabaseAdmin: NonNullable<Context['supabaseAdmin']>,
   applicationId: string,
   inquiryStatus: InquiryStatus
 ): Promise<void> {
@@ -176,7 +177,7 @@ export interface ApplicationDetails {
   } | null
 }
 
-function mapApplicationRecord(application: Record<string, any> | null): {
+function mapApplicationRecord(application: Record<string, unknown> | null): {
   application: ApplicationDetails | null
   capabilityQuestions: JobCapabilityQuestion[]
 } {
@@ -257,7 +258,7 @@ const router = t.router
 /**
  * Helper function to get user display name
  */
-async function getUserDisplayName(supabase: any, userId: string): Promise<string> {
+async function getUserDisplayName(supabase: Context['supabase'], userId: string): Promise<string> {
   const { data } = await supabase
     .schema('core')
     .from('users')
@@ -276,7 +277,7 @@ async function getUserDisplayName(supabase: any, userId: string): Promise<string
  * Helper function to get organization metadata from a job record
  */
 async function getOrganizationInfo(
-  supabase: any,
+  supabase: Context['supabase'],
   jobId: string
 ): Promise<{ id: string | null; name: string | null }> {
   const { data: job } = await supabase
@@ -300,7 +301,7 @@ async function getOrganizationInfo(
  * Returns the application data if access is granted
  */
 async function verifyApplicationAccess(
-  supabase: any,
+  supabase: Context['supabase'],
   userId: string,
   applicationId: string,
   requireOrgAccess = false
@@ -377,7 +378,7 @@ async function verifyApplicationAccess(
 /**
  * Helper function to check if user is the applicant
  */
-async function verifyIsApplicant(supabase: any, userId: string, applicationId: string) {
+async function verifyIsApplicant(supabase: Context['supabase'], userId: string, applicationId: string) {
   const { data: application } = await supabase
     .schema('core')
     .from('applications')
@@ -396,7 +397,7 @@ async function verifyIsApplicant(supabase: any, userId: string, applicationId: s
 /**
  * Ensure the current user is a member/owner of the target organization
  */
-async function ensureOrganizationMembership(supabase: any, userId: string, organizationId: string) {
+async function ensureOrganizationMembership(supabase: Context['supabase'], userId: string, organizationId: string) {
   const { data: organization } = await supabase
     .schema('core')
     .from('organizations')
@@ -436,7 +437,7 @@ async function ensureOrganizationMembership(supabase: any, userId: string, organ
 /**
  * Verify the user has access to the requested template
  */
-async function verifyTemplateAccess(supabase: any, userId: string, templateId: string) {
+async function verifyTemplateAccess(supabase: Context['supabase'], userId: string, templateId: string) {
   const { data: template, error } = await supabase
     .schema('core')
     .from('inquiry_templates')
@@ -459,8 +460,8 @@ async function verifyTemplateAccess(supabase: any, userId: string, templateId: s
  * Resolve the organization ID for a given application record
  */
 async function getApplicationOrganizationId(
-  supabase: any,
-  application: Record<string, any> | null
+  supabase: Context['supabase'],
+  application: Record<string, unknown> | null
 ) {
   const organizationId =
     (application?.job as { organization_id?: string } | null)?.organization_id ??
@@ -1719,8 +1720,8 @@ export const inquiriesRouter = router({
         .eq('id', inquiry.application_id)
         .single()
 
-      if (application && application.user_id) {
-        const job = application.jobs as any
+      if (application?.user_id) {
+        const job = application.jobs as Record<string, unknown> | null
         const orgName = job?.organizations?.name || 'Organization'
         const jobTitle = job?.title || 'Job'
 

@@ -1,6 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
+import type { Context } from '../context.ts'
 import { officeProcedure, protectedProcedure, t } from '../middleware.ts'
 
 const listInputSchema = z.object({
@@ -66,7 +67,7 @@ const notificationSelection = `
 `
 
 function buildListQuery(
-  ctx: { supabase: any; user: { id: string } },
+  ctx: { supabase: Context['supabase']; user: { id: string } },
   input: z.infer<typeof listInputSchema>
 ) {
   const { supabase, user } = ctx
@@ -99,7 +100,7 @@ function buildListQuery(
   return query
 }
 
-function mapPreferences(row: any) {
+function mapPreferences(row: Record<string, unknown> | null) {
   return {
     globalEnabled: row?.global_enabled ?? true,
     channelEnabled: {
@@ -117,7 +118,6 @@ function mapPreferences(row: any) {
 
 export const notificationsRouter = t.router({
   list: protectedProcedure.input(listInputSchema).query(async ({ ctx, input }) => {
-    const { supabase } = ctx
     const { data, error } = await buildListQuery(ctx, input)
 
     if (error) {

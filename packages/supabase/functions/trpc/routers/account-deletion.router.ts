@@ -25,7 +25,7 @@ async function getStripeHttpClient() {
   return Stripe.createFetchHttpClient()
 }
 
-async function loadStripeClient(ctx: Context): Promise<Stripe> {
+async function loadStripeClient(_ctx: Context): Promise<Stripe> {
   if (Deno.env.get('STRIPE_MOCK_MODE') === '1') {
     const Stripe = await getStripeClass()
     return new Stripe('sk_test_mock', {
@@ -306,7 +306,7 @@ export const accountDeletionRouter = t.router({
 
       // 2. Cleanup Stripe data (if any)
       try {
-        const stripe = await loadStripeClient(ctx)
+        const _stripe = await loadStripeClient(ctx)
 
         // Find Stripe customers for this user
         const { data: transactions } = await ctx.supabaseAdmin
