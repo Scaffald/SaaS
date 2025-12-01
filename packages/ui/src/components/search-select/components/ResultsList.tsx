@@ -1,4 +1,4 @@
-import type { ComponentType, CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
 import { ScrollView, SizableText, YStack } from 'tamagui'
@@ -9,22 +9,6 @@ import { ResultItem } from './ResultItem'
 import { ResultsSkeletonLoader } from './SkeletonLoader'
 
 const isWeb = Platform.OS === 'web'
-type FixedSizeListComponent = ComponentType<{
-  height: number
-  width: number | string
-  itemCount: number
-  itemSize: number
-  className?: string
-  itemData?: unknown
-  children: ComponentType<{ index: number; style: CSSProperties; data: unknown }>
-}>
-let FixedSizeList: FixedSizeListComponent | null = null
-
-if (isWeb) {
-  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-  const reactWindow = require('react-window') as { FixedSizeList?: FixedSizeListComponent }
-  FixedSizeList = reactWindow?.FixedSizeList ?? null
-}
 
 export interface ResultsListProps<T> {
   options: SearchSelectOption<T>[]
@@ -38,44 +22,13 @@ export interface ResultsListProps<T> {
   error?: string | null
   emptyContent?: ReactNode
   onRetry?: () => void
+  /** @deprecated Virtualization is no longer supported. This prop is kept for backward compatibility but has no effect. */
   virtualizationThreshold?: number
+  /** @deprecated Virtualization is no longer supported. This prop is kept for backward compatibility but has no effect. */
   itemHeight?: number
   headerContent?: ReactNode
   footerContent?: ReactNode
 }
-
-interface RowData<T> {
-  options: SearchSelectOption<T>[]
-  activeIndex: number
-  selectedSet: Set<string>
-  onOptionPress: (option: SearchSelectOption<T>) => void
-  renderOption?: (option: SearchSelectOption<T>) => ReactNode
-}
-
-// Memoized Row component for react-window
-const VirtualRow = memo(
-  ({ index, style, data }: { index: number; style: CSSProperties; data: RowData<unknown> }) => {
-    const { options, activeIndex, selectedSet, onOptionPress, renderOption } = data
-    const option = options[index]
-    const optionId = `search-result-${index}`
-    const isLast = index === options.length - 1
-
-    return (
-      <YStack style={style} width="100%">
-        <ResultItem
-          option={option}
-          index={index}
-          isActive={activeIndex === index}
-          isSelected={selectedSet.has(option.value)}
-          onPress={onOptionPress}
-          renderOption={renderOption}
-          itemId={optionId}
-          isLast={isLast}
-        />
-      </YStack>
-    )
-  }
-)
 
 function ResultsListComponent<T>({
   options,
@@ -89,23 +42,12 @@ function ResultsListComponent<T>({
   error,
   emptyContent,
   onRetry,
-  virtualizationThreshold = 1000, // Disabled by default - items should have natural height
-  itemHeight = 48, // Only used if virtualization is explicitly enabled
+  virtualizationThreshold: _virtualizationThreshold, // Deprecated - kept for backward compatibility
+  itemHeight: _itemHeight, // Deprecated - kept for backward compatibility
   headerContent,
   footerContent,
 }: ResultsListProps<T>) {
   const selectedSet = useMemo(() => selectedValues ?? new Set<string>(), [selectedValues])
-
-  const itemData = useMemo(
-    () => ({
-      options,
-      activeIndex,
-      selectedSet,
-      onOptionPress,
-      renderOption,
-    }),
-    [options, activeIndex, selectedSet, onOptionPress, renderOption]
-  )
 
   if (loading) {
     return (
@@ -126,36 +68,11 @@ function ResultsListComponent<T>({
     return emptyContent ?? <EmptyState />
   }
 
-  const listboxRole = isWeb ? 'listbox' : undefined
   const activeDescendant = isWeb && activeIndex >= 0 ? `search-result-${activeIndex}` : undefined
 
   const accessibilityProps = isWeb
     ? ({ role: 'listbox', 'aria-activedescendant': activeDescendant } as Record<string, unknown>)
     : {}
-
-  const shouldVirtualize =
-    isWeb && Boolean(FixedSizeList) && options.length >= virtualizationThreshold
-
-  if (shouldVirtualize && FixedSizeList) {
-    const height = Math.min(maxHeight, options.length * itemHeight)
-
-    return (
-      <YStack {...accessibilityProps} width="100%">
-        {headerContent}
-        <FixedSizeList
-          height={height}
-          itemCount={options.length}
-          itemSize={itemHeight}
-          width="100%"
-          className="search-select-virtual-list"
-          itemData={itemData}
-        >
-          {VirtualRow as any}
-        </FixedSizeList>
-        {footerContent}
-      </YStack>
-    )
-  }
 
   return (
     <YStack {...accessibilityProps} width="100%">

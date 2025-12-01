@@ -101,9 +101,9 @@ export interface SearchSelectProps<T> {
   onOpenChange?: (open: boolean) => void
   /** Called when internal search errors */
   onError?: (message: string) => void
-  /** Number of static options before virtualization kicks in */
+  /** @deprecated Virtualization is no longer supported. This prop is kept for backward compatibility but has no effect. */
   virtualizationThreshold?: number
-  /** Row height hint for virtualization */
+  /** @deprecated Virtualization is no longer supported. This prop is kept for backward compatibility but has no effect. */
   virtualizationItemHeight?: number
   /** Show Select All / Clear All helpers */
   allowSelectAll?: boolean

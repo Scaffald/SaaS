@@ -1,8 +1,25 @@
 {
+  "name": "@app/core",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": [
+    "*.css"
+  ],
+  "type": "module",
+  "main": "index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "check:type": "tsc --noEmit",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "test:coverage": "vitest run --coverage",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
+    "watch": "tsc --watch"
+  },
   "dependencies": {
     "@app/schemas": "workspace:*",
     "@app/supabase": "workspace:*",
-    "@unicornlove/ui": "^1.0.1",
     "@react-navigation/drawer": "^7.5.8",
     "@rehookify/datepicker": "^6.6.6",
     "@supabase/supabase-js": "catalog:",
@@ -14,6 +31,7 @@
     "@tanstack/react-table": "catalog:",
     "@trpc/client": "catalog:",
     "@trpc/react-query": "catalog:",
+    "@unicornlove/ui": "file:../ui",
     "awesome-phonenumber": "catalog:",
     "burnt": "catalog:",
     "expo-apple-authentication": "catalog:",
@@ -59,23 +77,5 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "typescript": "catalog:"
-  },
-  "main": "index.ts",
-  "name": "@app/core",
-  "private": true,
-  "scripts": {
-    "check:type": "tsc --noEmit",
-    "lint": "biome lint .",
-    "lint:fix": "biome lint --write .",
-    "test:unit": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
-    "watch": "tsc --watch"
-  },
-  "sideEffects": [
-    "*.css"
-  ],
-  "type": "module",
-  "types": "./index.ts",
-  "version": "0.0.0"
+  }
 }
