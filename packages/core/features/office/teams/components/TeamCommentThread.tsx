@@ -4,7 +4,7 @@ import { MessageCircle, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 type CommentsOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['comments']
 type CommentRecord = NonNullable<CommentsOutput['comments']>[number]
@@ -83,14 +83,14 @@ export function TeamCommentThread({
     <Card
       borderWidth={1}
       borderColor="$borderColor"
-      bg="$color2"
-      p="$4"
+      backgroundColor="$color2"
+      padding="$4"
       gap="$4"
-      px="$3"
-      $md={{ px: undefined }}
+      paddingHorizontal="$3"
+      $md={{ paddingHorizontal: undefined }}
     >
       <YStack gap="$2">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <MessageCircle size={18} accessibilityLabel="Team discussion icon" />
           <Text fontSize="$5" fontWeight="700" accessibilityRole="header">
             Team discussion
@@ -118,10 +118,10 @@ export function TeamCommentThread({
             gap="$2"
             flexWrap="wrap"
             flexDirection="column"
-            items="stretch"
+            alignItems="stretch"
             $md={{
               flexDirection: 'row',
-              items: 'center',
+              alignItems: 'center',
             }}
           >
             {mentionOptions.map((option) => (
@@ -152,11 +152,11 @@ export function TeamCommentThread({
           </Text>
         ) : null}
 
-        <XStack justify="flex-end">
+        <XStack justifyContent="flex-end">
           <Button
             size="$3"
             icon={Send}
-            bg="$color9"
+            backgroundColor="$color9"
             color="$color1"
             onPress={() => void handleSubmit()}
             disabled={isSubmitting || commentBody.trim().length === 0}
@@ -171,7 +171,7 @@ export function TeamCommentThread({
       </YStack>
 
       {commentsQuery.isLoading ? (
-        <YStack items="center" justify="center" py="$4" gap="$2">
+        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading discussion…</Text>
         </YStack>
@@ -204,7 +204,7 @@ export function TeamCommentThread({
                 gap="$1"
                 borderBottomWidth={1}
                 borderColor="$borderColor"
-                pb="$3"
+                paddingBottom="$3"
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={commentAccessibilityLabel}

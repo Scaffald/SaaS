@@ -10,7 +10,7 @@ export interface ProgressBarProps {
   /** Optional size (height) of the progress bar */
   size?: number
   /** Optional background color */
-  bg?: GetThemeValueForKey<'backgroundColor'>
+  backgroundColor?: GetThemeValueForKey<'backgroundColor'>
 }
 
 /**
@@ -26,12 +26,18 @@ export interface ProgressBarProps {
  * ```
  */
 export const ProgressBar = memo(
-  ({ value, color = '$blue9', size = 4, bg = '$color4' }: ProgressBarProps) => {
+  ({ value, color = '$blue9', size = 4, backgroundColor = '$color4' }: ProgressBarProps) => {
     const clampedValue = Math.max(0, Math.min(100, value))
 
     return (
-      <Progress value={clampedValue} max={100} bg={bg} rounded="$1" height={size}>
-        <Progress.Indicator bg={color} rounded="$1" animation="quick" />
+      <Progress
+        value={clampedValue}
+        max={100}
+        backgroundColor={backgroundColor}
+        borderRadius="$1"
+        height={size}
+      >
+        <Progress.Indicator backgroundColor={color} borderRadius="$1" animation="quick" />
       </Progress>
     )
   }

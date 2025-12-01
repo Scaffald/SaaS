@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Button, Card, Checkbox, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Checkbox, Text, XStack, YStack } from '@unicornlove/ui'
 
 import type { DocumentDraft } from '../hooks/useBackgroundCheckForm'
 
@@ -45,11 +45,11 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
               <Card
                 key={docType}
                 bordered
-                rounded="$4"
-                p="$3"
-                bg={isChecked ? '$green3' : '$color2'}
+                borderRadius="$4"
+                padding="$3"
+                backgroundColor={isChecked ? '$green3' : '$color2'}
               >
-                <XStack items="center" gap="$3">
+                <XStack alignItems="center" gap="$3">
                   <Checkbox
                     size="$4"
                     checked={isChecked}
@@ -70,7 +70,7 @@ export const DocumentChecklistStep = memo(function DocumentChecklistStep({
             )
           })
         ) : (
-          <Card bordered rounded="$4" p="$3" bg="$color2">
+          <Card bordered borderRadius="$4" padding="$3" backgroundColor="$color2">
             <Text fontSize="$3" color="$color11">
               No documents are required for this package.
             </Text>

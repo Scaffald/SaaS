@@ -4,7 +4,17 @@ import { useToastController } from '@tamagui/toast'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Checkbox, Input, Separator, Spinner, Text, View, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Checkbox,
+  Input,
+  Separator,
+  Spinner,
+  Text,
+  View,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { type UploadCandidate, usePhotoUpload } from '../hooks/usePhotoUpload'
 import type { WorkLogPhotoType } from '../types/photos'
 import { PhotoGallery } from './PhotoGallery'
@@ -213,7 +223,14 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
 
   return (
     <YStack gap="$4">
-      <YStack borderWidth={1} borderColor="$borderColor" rounded="$4" p="$4" gap="$3" bg="$color2">
+      <YStack
+        borderWidth={1}
+        borderColor="$borderColor"
+        borderRadius="$4"
+        padding="$4"
+        gap="$3"
+        backgroundColor="$color2"
+      >
         <YStack gap="$2">
           <Text fontWeight="700" fontSize="$5">
             Work Log Photos
@@ -225,7 +242,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
         </YStack>
 
         <YStack gap="$2">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600" fontSize="$3">
               Storage Usage
             </Text>
@@ -233,11 +250,11 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
               {formatStorageSummary(storageUsage.usedBytes, storageUsage.limitBytes)}
             </Text>
           </XStack>
-          <View height={10} bg="$color4" rounded="$4" overflow="hidden">
+          <View height={10} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
             <View
               height="100%"
               width={`${usagePercent}%`}
-              bg={usagePercent > 90 ? '$red9' : '$blue9'}
+              backgroundColor={usagePercent > 90 ? '$red9' : '$blue9'}
             />
           </View>
         </YStack>
@@ -246,10 +263,10 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
           <YStack
             borderWidth={1}
             borderColor="$orange8"
-            bg="$orange2"
-            rounded="$4"
-            px="$3"
-            py="$2"
+            backgroundColor="$orange2"
+            borderRadius="$4"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
             gap="$2"
           >
             <Text fontWeight="600" color="$orange11">
@@ -281,7 +298,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                   label: option.label,
                 }))}
               />
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Checkbox
                   checked={showOnProfile}
                   onCheckedChange={(value) => setShowOnProfile(Boolean(value))}
@@ -304,14 +321,14 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                 <YStack gap="$3">
                   <YStack
                     {...(getRootProps() as Record<string, unknown>)}
-                    p="$4"
-                    bg={isDragActive ? '$blue3' : '$color1'}
-                    rounded="$4"
+                    padding="$4"
+                    backgroundColor={isDragActive ? '$blue3' : '$color1'}
+                    borderRadius="$4"
                     borderWidth={2}
                     borderColor={isDragActive ? '$blue9' : '$borderColor'}
                     borderStyle="dashed"
-                    items="center"
-                    justify="center"
+                    alignItems="center"
+                    justifyContent="center"
                     gap="$2"
                   >
                     {Platform.OS === 'web' ? (
@@ -360,14 +377,21 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
                 <Text fontSize="$2" color="$color11">
                   Upload progress
                 </Text>
-                <View height={8} bg="$color4" rounded="$4" overflow="hidden">
-                  <View height="100%" width={`${uploadProgress}%`} bg="$blue9" />
+                <View height={8} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
+                  <View height="100%" width={`${uploadProgress}%`} backgroundColor="$blue9" />
                 </View>
               </YStack>
             )}
 
             {uploadError ? (
-              <YStack borderWidth={1} borderColor="$red8" bg="$red3" rounded="$4" px="$3" py="$2">
+              <YStack
+                borderWidth={1}
+                borderColor="$red8"
+                backgroundColor="$red3"
+                borderRadius="$4"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+              >
                 <Text color="$red11">{uploadError}</Text>
               </YStack>
             ) : null}
@@ -376,7 +400,7 @@ export function PhotoUpload({ workLogId }: PhotoUploadProps) {
       </YStack>
 
       {isLoadingPhotos ? (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Spinner />
           <Text>Loading photos…</Text>
         </XStack>

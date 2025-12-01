@@ -2,7 +2,7 @@ import type { ScreeningAnswers } from '@app/schemas'
 import type { AddressResult } from '@unicornlove/ui'
 import { AddressAutocomplete, ResponsiveSelect } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Button, Input, Label, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Text, XStack, YStack } from '@unicornlove/ui'
 
 const EARLIEST_START_DATE_OPTIONS = [
   { label: 'Immediately', value: 'Immediately' },
@@ -111,7 +111,7 @@ export function ScreeningStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxW={600} p="$4">
+    <YStack gap="$6" width="100%" maxWidth={600} padding="$4">
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -239,7 +239,13 @@ export function ScreeningStep({
           <Label fontSize="$4" fontWeight="600">
             Required skills
           </Label>
-          <YStack p="$3" bg="$gray3" rounded="$3" borderWidth={1} borderColor="$borderColor">
+          <YStack
+            padding="$3"
+            backgroundColor="$gray3"
+            borderRadius="$3"
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
             <Text fontSize="$3" color="$color11">
               {requiredSkills.join(', ')}
             </Text>
@@ -253,7 +259,13 @@ export function ScreeningStep({
           <Label fontSize="$4" fontWeight="600">
             Optional skills
           </Label>
-          <YStack p="$3" bg="$gray3" rounded="$3" borderWidth={1} borderColor="$borderColor">
+          <YStack
+            padding="$3"
+            backgroundColor="$gray3"
+            borderRadius="$3"
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
             <Text fontSize="$3" color="$color11">
               {optionalSkills.join(', ')}
             </Text>
@@ -328,7 +340,13 @@ export function ScreeningStep({
       </YStack>
 
       {/* Continue Button */}
-      <Button size="$5" theme="info" onPress={validateAndContinue} disabled={isSubmitting} mt="$4">
+      <Button
+        size="$5"
+        theme="info"
+        onPress={validateAndContinue}
+        disabled={isSubmitting}
+        marginTop="$4"
+      >
         {isSubmitting ? 'Saving...' : 'Continue'}
       </Button>
     </YStack>

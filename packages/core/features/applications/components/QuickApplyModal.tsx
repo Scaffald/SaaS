@@ -5,7 +5,7 @@ import { AddressAutocomplete, Dialog, ResponsiveSelect } from '@unicornlove/ui'
 import { CheckCircle2, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
-import { Button, Label, ScrollView, Text, XStack, YStack } from 'tamagui'
+import { Button, Label, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface QuickApplyModalProps {
   /**
@@ -260,10 +260,10 @@ export function QuickApplyModal({
     <Dialog modal open={open} onOpenChange={handleClose}>
       <Dialog.Portal>
         <Dialog.Overlay key="overlay" />
-        <Dialog.Content key="content" gap="$4" width="90%" maxW={600} maxH="90%">
+        <Dialog.Content key="content" gap="$4" width="90%" maxWidth={600} maxHeight="90%">
           {/* Header */}
           <YStack gap="$2">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <YStack flex={1} gap="$1">
                 <Text fontSize="$6" fontWeight="700" color="$color12">
                   Apply to {organizationName}
@@ -280,24 +280,24 @@ export function QuickApplyModal({
 
           {/* Success State */}
           {showSuccess ? (
-            <YStack gap="$4" p="$6" items="center" justify="center" flex={1}>
+            <YStack gap="$4" padding="$6" alignItems="center" justifyContent="center" flex={1}>
               <YStack
                 width={80}
                 height={80}
-                rounded="$12"
-                bg="$green2"
+                borderRadius="$12"
+                backgroundColor="$green2"
                 borderWidth={2}
                 borderColor="$green9"
-                items="center"
-                justify="center"
+                alignItems="center"
+                justifyContent="center"
               >
                 <CheckCircle2 size={48} color="$green10" />
               </YStack>
-              <YStack gap="$2" items="center">
-                <Text fontSize="$7" fontWeight="bold" color="$color12" text="center">
+              <YStack gap="$2" alignItems="center">
+                <Text fontSize="$7" fontWeight="bold" color="$color12" textAlign="center">
                   Application Submitted!
                 </Text>
-                <Text fontSize="$4" color="$color11" text="center">
+                <Text fontSize="$4" color="$color11" textAlign="center">
                   Your application to {jobTitle} at {organizationName} has been sent successfully.
                 </Text>
               </YStack>
@@ -305,7 +305,7 @@ export function QuickApplyModal({
           ) : (
             /* Form Content */
             <ScrollView showsVerticalScrollIndicator={false} flex={1}>
-              <YStack gap="$4" p="$4">
+              <YStack gap="$4" padding="$4">
                 {/* Current Location */}
                 <YStack gap="$2">
                   <Label htmlFor="current_location" fontSize="$4" fontWeight="600">
@@ -401,9 +401,9 @@ export function QuickApplyModal({
                       Required skills
                     </Label>
                     <YStack
-                      p="$3"
-                      bg="$gray3"
-                      rounded="$3"
+                      padding="$3"
+                      backgroundColor="$gray3"
+                      borderRadius="$3"
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
@@ -421,9 +421,9 @@ export function QuickApplyModal({
                       Optional skills
                     </Label>
                     <YStack
-                      p="$3"
-                      bg="$gray3"
-                      rounded="$3"
+                      padding="$3"
+                      backgroundColor="$gray3"
+                      borderRadius="$3"
                       borderWidth={1}
                       borderColor="$borderColor"
                     >
@@ -502,8 +502,8 @@ export function QuickApplyModal({
           {!showSuccess && (
             <XStack
               gap="$3"
-              justify="flex-end"
-              pt="$4"
+              justifyContent="flex-end"
+              paddingTop="$4"
               borderTopWidth={1}
               borderTopColor="$borderColor"
             >

@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { CreditCard, DollarSign, Plus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
-import { Button, Card, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type OrganizationCreditsPanelProps = {
   organizationId: string
@@ -78,7 +78,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
   if (isLoading) {
     return (
       <Card bordered padding="$4">
-        <YStack gap="$3" items="center" py="$4">
+        <YStack gap="$3" alignItems="center" paddingVertical="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading account credits…</Text>
         </YStack>
@@ -88,7 +88,7 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <YStack>
           <Text fontSize="$5" fontWeight="600">
             Account Credits
@@ -105,8 +105,8 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
       </XStack>
 
       {/* Balance Display */}
-      <Card p="$4" bg="$color2" borderColor="$borderColor" borderWidth={1}>
-        <XStack gap="$3" items="center">
+      <Card padding="$4" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
+        <XStack gap="$3" alignItems="center">
           <DollarSign size={32} color="$green11" />
           <YStack flex={1}>
             <Text fontSize="$2" color="$color10">
@@ -194,11 +194,11 @@ export function OrganizationCreditsPanel({ organizationId }: OrganizationCredits
                     }) => (
                       <XStack
                         key={entry.id}
-                        justify="space-between"
-                        items="center"
-                        p="$2"
-                        bg="$color2"
-                        rounded="$2"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        padding="$2"
+                        backgroundColor="$color2"
+                        borderRadius="$2"
                       >
                         <YStack flex={1}>
                           <Text fontSize="$3" fontWeight="500">

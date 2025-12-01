@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { OpenToTravelCard } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
-import { ToggleCard, UIButton as Button, spacing } from '@unicornlove/ui'
+import { Button, ToggleCard, spacing } from '@unicornlove/ui'
 import {
   AlertCircle,
   CheckCircle2,
@@ -21,7 +21,7 @@ import {
   Text,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 import {
   type ResumeMergeStrategy,
@@ -453,7 +453,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   if (isLoading) {
     return (
-      <YStack items="center" justify="center" flex={1} gap="$3" py="$10">
+      <YStack alignItems="center" justifyContent="center" flex={1} gap="$3" paddingVertical="$10">
         <Spinner size="large" />
         <Text color="$color11">Loading resume import wizard...</Text>
       </YStack>
@@ -462,7 +462,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
   if (!wizard) {
     return (
-      <YStack items="center" justify="center" flex={1} gap="$3" py="$10">
+      <YStack alignItems="center" justifyContent="center" flex={1} gap="$3" paddingVertical="$10">
         <AlertCircle size={32} color="$red10" />
         <Text fontWeight="700" color="$red11">
           Wizard session not found
@@ -555,7 +555,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       </YStack>
 
       {hasExistingProfileData ? (
-        <YStack gap="$2" bg="$blue3" p="$3" rounded="$4">
+        <YStack gap="$2" backgroundColor="$blue3" padding="$3" borderRadius="$4">
           <Text fontWeight="700" color="$blue11">
             Merge resume with existing profile data
           </Text>
@@ -567,7 +567,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       ) : null}
 
       {mergedErrors && mergedErrors.length > 0 && (
-        <YStack gap="$2" bg="$yellow3" p="$3" rounded="$4">
+        <YStack gap="$2" backgroundColor="$yellow3" padding="$3" borderRadius="$4">
           <Text fontWeight="700" color="$yellow11">
             We couldn’t parse everything in this section.
           </Text>
@@ -580,14 +580,14 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
       )}
 
       <ScrollView flex={1}>
-        <YStack gap={spacing.lg} pb="$8">
+        <YStack gap={spacing.lg} paddingBottom="$8">
           {renderCurrentStep()}
         </YStack>
       </ScrollView>
 
       <Separator />
 
-      <XStack gap="$3" justify="space-between" flexWrap="wrap">
+      <XStack gap="$3" justifyContent="space-between" flexWrap="wrap">
         <XStack gap="$2">
           <Button
             size="$4"
@@ -820,7 +820,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
               description={cert.issuer}
               expandedContent={
                 details.length > 0 ? (
-                  <YStack gap="$1" pt="$2">
+                  <YStack gap="$1" paddingTop="$2">
                     {details.map((detail) => (
                       <Text key={detail} color="$color11" fontSize="$3">
                         • {detail}
@@ -877,7 +877,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
         <YStack gap="$2">
           <Text fontWeight="600">Preferred locations</Text>
           {employmentForm.locations.map((entry) => (
-            <XStack key={entry.id} gap="$2" items="center">
+            <XStack key={entry.id} gap="$2" alignItems="center">
               <Input
                 flex={1}
                 value={entry.value}
@@ -941,8 +941,8 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
           sections={mergeComparisonSections}
           isLoading={mergeComparisonLoading}
         />
-        <YStack gap="$2" bg="$green3" p="$3" rounded="$4">
-          <XStack gap="$2" items="center">
+        <YStack gap="$2" backgroundColor="$green3" padding="$3" borderRadius="$4">
+          <XStack gap="$2" alignItems="center">
             <CheckCircle2 color="$green10" />
             <Text fontWeight="700" color="$green11">
               Ready to finalize
@@ -959,7 +959,7 @@ export function ResumeWizard({ resumeId }: ResumeWizardProps) {
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <YStack gap="$2" bg="$gray3" p="$3" rounded="$4">
+    <YStack gap="$2" backgroundColor="$gray3" padding="$3" borderRadius="$4">
       <Text color="$color11">{message}</Text>
     </YStack>
   )
@@ -981,13 +981,13 @@ function SelectableCard({
   return (
     <YStack
       gap="$2"
-      p="$3"
+      padding="$3"
       borderWidth={1}
       borderColor={checked ? '$blue8' : '$borderColor'}
-      bg={checked ? '$blue3' : '$background'}
-      rounded="$4"
+      backgroundColor={checked ? '$blue3' : '$background'}
+      borderRadius="$4"
     >
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Checkbox
           size="$3"
           checked={checked}
@@ -999,7 +999,7 @@ function SelectableCard({
         </YStack>
       </XStack>
       {!!details?.length && (
-        <YStack gap="$1" pl="$4">
+        <YStack gap="$1" paddingLeft="$4">
           {details.map((detail) => (
             <Text key={detail} color="$color11">
               • {detail}
@@ -1081,7 +1081,7 @@ function MergeStrategySelector({
   }
 
   return (
-    <YStack gap="$2" bg="$color2" p="$3" rounded="$4">
+    <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
       <Text fontWeight="600">Merge strategy</Text>
       <YStack gap="$2">
         {options.map((option) => (
@@ -1092,10 +1092,10 @@ function MergeStrategySelector({
             onPress={() => onChange(section, option.value)}
             borderWidth={1}
             borderColor={strategy === option.value ? '$blue7' : '$color6'}
-            bg={strategy === option.value ? '$blue3' : '$color1'}
-            pressStyle={{ bg: strategy === option.value ? '$blue4' : '$color2' }}
+            backgroundColor={strategy === option.value ? '$blue3' : '$color1'}
+            pressStyle={{ backgroundColor: strategy === option.value ? '$blue4' : '$color2' }}
           >
-            <YStack gap="$1" items="flex-start">
+            <YStack gap="$1" alignItems="flex-start">
               <Text fontWeight="700">{option.label}</Text>
               <Text fontSize="$2" color="$color11">
                 {option.description}

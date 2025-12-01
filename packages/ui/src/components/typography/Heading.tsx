@@ -85,7 +85,7 @@ const headingVariants = {
  * </Heading>
  *
  * // Card title with custom props
- * <Heading variant="h4" mb="$2" numberOfLines={1}>
+ * <Heading variant="h4" marginBottom="$2" numberOfLines={1}>
  *   Job Title
  * </Heading>
  * ```

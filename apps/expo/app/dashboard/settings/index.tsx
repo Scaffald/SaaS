@@ -2,12 +2,12 @@ import { SiteOverlapNotification } from '@app/core/features/notifications/compon
 import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { api } from '@app/core/utils/api'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
-import { UIButton as Button, NotificationTag, ToggleSwitch } from '@unicornlove/ui'
+import { Button, NotificationTag, ToggleSwitch } from '@unicornlove/ui'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useEffect, useMemo, useState } from 'react'
-import { Input, Label, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Input, Label, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type NotificationItem = {
   id: string
@@ -257,7 +257,7 @@ export default function NotificationsCenterScreen() {
   }
 
   return (
-    <ScrollView px="$6" py="$6">
+    <ScrollView paddingHorizontal="$6" paddingVertical="$6">
       <YStack gap="$6">
         <YStack gap="$2">
           <Text fontSize="$9" fontWeight="700">
@@ -272,11 +272,11 @@ export default function NotificationsCenterScreen() {
           gap="$4"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$4"
-          p="$4"
-          bg="$color1"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color1"
         >
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <YStack gap="$1">
               <Text fontSize="$6" fontWeight="600">
                 Preferences
@@ -295,10 +295,10 @@ export default function NotificationsCenterScreen() {
             </Button>
           </XStack>
 
-          <Separator bg="$color3" />
+          <Separator backgroundColor="$color3" />
 
           <YStack gap="$3">
-            <XStack items="center" justify="space-between">
+            <XStack alignItems="center" justifyContent="space-between">
               <Label
                 color="$color12"
                 fontWeight="600"
@@ -320,7 +320,7 @@ export default function NotificationsCenterScreen() {
               />
             </XStack>
 
-            <YStack gap="$2" pl="$2">
+            <YStack gap="$2" paddingLeft="$2">
               {(
                 [
                   { key: 'in_app', label: 'In-app' },
@@ -329,7 +329,7 @@ export default function NotificationsCenterScreen() {
                   { key: 'sms', label: 'SMS' },
                 ] as const
               ).map(({ key, label }) => (
-                <XStack key={key} items="center" justify="space-between">
+                <XStack key={key} alignItems="center" justifyContent="space-between">
                   <Label
                     color="$color11"
                     onPress={() =>
@@ -358,7 +358,7 @@ export default function NotificationsCenterScreen() {
               ))}
             </YStack>
 
-            <Separator bg="$color3" />
+            <Separator backgroundColor="$color3" />
 
             <YStack gap="$2">
               <Text fontWeight="600" color="$color12">
@@ -367,7 +367,7 @@ export default function NotificationsCenterScreen() {
               <Text fontSize="$2" color="$color10">
                 We’ll queue non-critical alerts during these hours.
               </Text>
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Input
                   placeholder="22:00"
                   value={preferences.quietHours?.start ?? ''}
@@ -400,7 +400,7 @@ export default function NotificationsCenterScreen() {
               </XStack>
             </YStack>
 
-            <Separator bg="$color3" />
+            <Separator backgroundColor="$color3" />
 
             <YStack gap="$2">
               <Text fontWeight="600" color="$color12">
@@ -449,14 +449,14 @@ export default function NotificationsCenterScreen() {
             )}
           </YStack>
 
-          <Separator bg="$color3" />
+          <Separator backgroundColor="$color3" />
 
           <YStack gap="$2">
             <Text fontWeight="600" color="$color12">
               Registered devices
             </Text>
             {devicesQuery.isLoading ? (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Spinner size="small" color="$color10" />
                 <Text fontSize="$2" color="$color10">
                   Checking devices…
@@ -467,8 +467,13 @@ export default function NotificationsCenterScreen() {
                 No devices registered yet.
               </Text>
             ) : (
-              <YStack borderWidth={1} borderColor="$borderColor" rounded="$3" overflow="hidden">
-                <XStack bg="$color2" p="$2">
+              <YStack
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$3"
+                overflow="hidden"
+              >
+                <XStack backgroundColor="$color2" padding="$2">
                   <Text flex={2} fontSize="$2" fontWeight="600">
                     Token
                   </Text>
@@ -482,8 +487,8 @@ export default function NotificationsCenterScreen() {
                 {deviceRows.map((device, index) => (
                   <XStack
                     key={device.id}
-                    p="$2"
-                    bg={index % 2 === 0 ? '$color1' : '$color2'}
+                    padding="$2"
+                    backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
                     gap="$2"
                   >
                     <Text flex={2} fontSize="$2" color="$color11" numberOfLines={1}>
@@ -520,7 +525,7 @@ export default function NotificationsCenterScreen() {
               >
                 {item.label}
                 {item.value === 'unread' && unreadCount > 0 && (
-                  <NotificationTag ml="$2" themeName="error">
+                  <NotificationTag marginLeft="$2" themeName="error">
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </NotificationTag>
                 )}
@@ -530,17 +535,17 @@ export default function NotificationsCenterScreen() {
         </XStack>
 
         {notificationsQuery.isLoading ? (
-          <YStack gap="$3" items="center" mt="$4">
+          <YStack gap="$3" alignItems="center" marginTop="$4">
             <Spinner size="large" color="$color10" />
             <Text color="$color11">Loading notifications…</Text>
           </YStack>
         ) : isEmpty ? (
-          <YStack gap="$3" items="center" mt="$5">
+          <YStack gap="$3" alignItems="center" marginTop="$5">
             <Info size={48} color="$color8" />
             <Text fontSize="$5" fontWeight="600" color="$color12">
               You're all caught up!
             </Text>
-            <Text fontSize="$3" color="$color10" text="center">
+            <Text fontSize="$3" color="$color10" textAlign="center">
               New alerts will show up here when there's something you need to review.
             </Text>
           </YStack>
@@ -558,13 +563,13 @@ export default function NotificationsCenterScreen() {
                   key={notification.id}
                   borderWidth={1}
                   borderColor="$borderColor"
-                  rounded="$4"
-                  bg="$color1"
+                  borderRadius="$4"
+                  backgroundColor="$color1"
                 >
-                  <XStack p="$4" gap="$3" items="flex-start">
+                  <XStack padding="$4" gap="$3" alignItems="flex-start">
                     <SeverityIcon IconComponent={IconComponent} severity={notification.severity} />
                     <YStack flex={1} gap="$2">
-                      <XStack justify="space-between" items="center">
+                      <XStack justifyContent="space-between" alignItems="center">
                         <Text fontSize="$4" fontWeight="700" color="$color12">
                           {notification.title}
                         </Text>
@@ -579,7 +584,7 @@ export default function NotificationsCenterScreen() {
                       <Text fontSize="$3" color="$color11">
                         {notification.preview}
                       </Text>
-                      <XStack gap="$3" items="center">
+                      <XStack gap="$3" alignItems="center">
                         <Text fontSize="$2" color="$color10">
                           {formatRelativeTime(notification.createdAt)}
                         </Text>
@@ -592,13 +597,13 @@ export default function NotificationsCenterScreen() {
                     </YStack>
                   </XStack>
 
-                  <Separator bg="$color3" />
+                  <Separator backgroundColor="$color3" />
 
                   {/* Render site overlap notification with actions if type matches */}
                   {notification.metadata?.notification_type === 'site_overlap' &&
                   notification.metadata?.site_id &&
                   notification.metadata?.overlapping_site_id ? (
-                    <XStack p="$3">
+                    <XStack padding="$3">
                       <SiteOverlapNotification
                         notificationId={notification.id}
                         siteId={notification.metadata.site_id}
@@ -611,7 +616,7 @@ export default function NotificationsCenterScreen() {
                       />
                     </XStack>
                   ) : (
-                    <XStack p="$3" gap="$3" justify="flex-end" flexWrap="wrap">
+                    <XStack padding="$3" gap="$3" justifyContent="flex-end" flexWrap="wrap">
                       {!notification.read ? (
                         <Button
                           size="$2"
@@ -650,7 +655,7 @@ export default function NotificationsCenterScreen() {
 
                       {notification.ctaUrl && (
                         <Button size="$2" theme="info" onPress={() => handleNavigate(notification)}>
-                          <XStack gap="$2" items="center">
+                          <XStack gap="$2" alignItems="center">
                             <Text fontSize="$2" fontWeight="600" color="$color12">
                               {notification.ctaLabel ?? 'Open'}
                             </Text>
@@ -666,7 +671,7 @@ export default function NotificationsCenterScreen() {
 
             {notificationsQuery.hasNextPage && (
               <Button
-                mt="$4"
+                marginTop="$4"
                 theme="info"
                 disabled={notificationsQuery.isFetchingNextPage}
                 onPress={() => notificationsQuery.fetchNextPage()}

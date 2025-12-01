@@ -2,7 +2,7 @@ import { EmptyState, ErrorState, SkeletonList } from '@unicornlove/ui'
 import { Search } from '@tamagui/lucide-icons'
 import { forwardRef, memo, useImperativeHandle, useMemo, useRef } from 'react'
 import { Platform } from 'react-native'
-import { ScrollView, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -131,7 +131,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (isLoading) {
       return (
-        <YStack flex={1} gap="$3" p="$3" width="100%">
+        <YStack flex={1} gap="$3" padding="$3" width="100%">
           <SkeletonList count={5} gap="$2" variant="profile" />
         </YStack>
       )
@@ -139,7 +139,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     if (error) {
       return (
-        <YStack flex={1} p="$4" width="100%">
+        <YStack flex={1} padding="$4" width="100%">
           <ErrorState
             title="Failed to load results"
             description="We encountered an error while loading workers. Please try again."
@@ -153,7 +153,13 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
 
     return (
       <YStack flex={1} gap="$3" overflow="hidden" width="100%">
-        <XStack justify="space-between" items="center" shrink={0} pt="$3" px="$3">
+        <XStack
+          justifyContent="space-between"
+          alignItems="center"
+          flexShrink={0}
+          paddingTop="$3"
+          paddingHorizontal="$3"
+        >
           <Text fontWeight="700" fontSize="$5">
             {allResults.length} results
           </Text>
@@ -165,7 +171,7 @@ const ResultListComponent = forwardRef<ResultListRef, ResultListProps>(
           renderToHardwareTextureAndroid
           width="100%"
         >
-          <YStack gap="$3" pb="$6" width="100%">
+          <YStack gap="$3" paddingBottom="$6" width="100%">
             {allResults.length === 0 ? (
               <EmptyState
                 icon={<Search size={48} color="$color9" />}

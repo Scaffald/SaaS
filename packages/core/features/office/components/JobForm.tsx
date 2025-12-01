@@ -18,7 +18,7 @@ import { Eye, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
-import { Card, Switch } from 'tamagui'
+import { Card, Switch } from '@unicornlove/ui'
 import { JobPreviewModal } from './JobPreviewModal'
 import {
   ApplicationProcessSection,
@@ -457,7 +457,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
       createJob.mutate(submitData as unknown as Parameters<typeof createJob.mutate>[0])
     } else if (jobId) {
       // Form data is compatible with mutation input but has slightly different structure
-      updateJob.mutate({ id: jobId, ...submitData } as unknown as Parameters<typeof updateJob.mutate>[0])
+      updateJob.mutate({ id: jobId, ...submitData } as unknown as Parameters<
+        typeof updateJob.mutate
+      >[0])
     }
   }
 
@@ -632,12 +634,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             {selectedSkills.map((skill) => (
               <XStack
                 key={skill.id}
-                bg="$gray3"
-                px="$2"
-                py="$1"
-                rounded="$3"
+                backgroundColor="$gray3"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                borderRadius="$3"
                 gap="$1"
-                items="center"
+                alignItems="center"
               >
                 <Text fontSize="$2">{skill.name}</Text>
                 <Button
@@ -671,8 +673,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     key={skill.id}
                     unstyled
                     onPress={() => handleAddSkill(skill)}
-                    p="$3"
-                    hoverStyle={{ bg: '$gray2' }}
+                    padding="$3"
+                    hoverStyle={{ backgroundColor: '$gray2' }}
                   >
                     <Text>{skill.name}</Text>
                   </Button>
@@ -794,12 +796,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
             {selectedCerts.map((cert) => (
               <XStack
                 key={cert.id}
-                bg="$gray3"
-                px="$2"
-                py="$1"
-                rounded="$3"
+                backgroundColor="$gray3"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                borderRadius="$3"
                 gap="$1"
-                items="center"
+                alignItems="center"
               >
                 <Text fontSize="$2">{cert.name}</Text>
                 <Button
@@ -833,8 +835,8 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
                     key={cert.id}
                     unstyled
                     onPress={() => handleAddCertification(cert)}
-                    p="$3"
-                    hoverStyle={{ bg: '$gray2' }}
+                    padding="$3"
+                    hoverStyle={{ backgroundColor: '$gray2' }}
                   >
                     <Text>{cert.name}</Text>
                   </Button>
@@ -849,7 +851,7 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
 
   return (
     <ScrollView>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         {/* Organization Selector */}
         <YStack gap="$2">
           <Text fontWeight="600">Organization *</Text>
@@ -869,9 +871,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Details Section */}
         <YStack
           gap="$4"
-          p="$4"
-          bg="$background"
-          rounded="$4"
+          padding="$4"
+          backgroundColor="$background"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$borderColor"
         >
@@ -993,9 +995,9 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Application Section */}
         <YStack
           gap="$4"
-          p="$4"
-          bg="$background"
-          rounded="$4"
+          padding="$4"
+          backgroundColor="$background"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$borderColor"
         >
@@ -1154,13 +1156,13 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         {/* Schedule Publish Section */}
         <YStack
           gap="$3"
-          p="$4"
-          bg="$color2"
-          rounded="$4"
+          padding="$4"
+          backgroundColor="$color2"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <XStack gap="$3" items="center" justify="space-between">
+          <XStack gap="$3" alignItems="center" justifyContent="space-between">
             <YStack flex={1} gap="$1">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Schedule Publish
@@ -1237,7 +1239,12 @@ export function JobForm({ mode, jobId, initialData, onSuccess }: JobFormProps) {
         </YStack>
 
         {/* Actions */}
-        <XStack gap="$3" pt="$4" $sm={{ flexDirection: 'column' }} $md={{ flexDirection: 'row' }}>
+        <XStack
+          gap="$3"
+          paddingTop="$4"
+          $sm={{ flexDirection: 'column' }}
+          $md={{ flexDirection: 'row' }}
+        >
           <Button
             data-testid="job-cancel-button"
             flex={1}

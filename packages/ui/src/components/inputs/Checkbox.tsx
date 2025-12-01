@@ -25,8 +25,8 @@ const CheckboxContainer = styled(View, {
   cursor: 'pointer',
   animation: 'quick',
   overflow: 'hidden',
-  items: 'center',
-  justify: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
   borderWidth: 1,
   variants: {
     size: {
@@ -48,11 +48,11 @@ const CheckboxContainer = styled(View, {
     },
     checked: {
       true: {
-        bg: '$blue7',
+        backgroundColor: '$blue7',
         borderColor: '$blue7',
       },
       false: {
-        bg: 'transparent',
+        backgroundColor: 'transparent',
         borderColor: '$borderColor',
       },
     },
@@ -86,8 +86,8 @@ const CheckboxIcon = styled(View, {
   pointerEvents: 'none',
   width: '100%',
   height: '100%',
-  items: 'center',
-  justify: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
   variants: {
     checked: {
       true: {

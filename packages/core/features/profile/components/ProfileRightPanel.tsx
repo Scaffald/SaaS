@@ -1,5 +1,5 @@
 import { DashboardWidget } from '@unicornlove/ui'
-import { H3, Text } from 'tamagui'
+import { H3, Text } from '@unicornlove/ui'
 
 interface ProfileRightPanelProps {
   title: string

@@ -17,7 +17,7 @@ import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, FormProvider } from 'react-hook-form'
 import { Platform } from 'react-native'
-import { Switch, TextArea } from 'tamagui'
+import { Switch, TextArea } from '@unicornlove/ui'
 import { useInquiryEdit } from '../hooks/useInquiryEdit'
 import { useInquiryForm } from '../hooks/useInquiryForm'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
@@ -401,12 +401,17 @@ export function InquiryCreateForm({
       const isAutoFilled = keys.some((key) => autoFilledFields.has(key))
 
       return (
-        <XStack items="center" gap="$2">
+        <XStack alignItems="center" gap="$2">
           <Text fontWeight="600" fontSize="$4">
             {label}
           </Text>
           {isAutoFilled && (
-            <XStack px="$2" py="$1" bg="$green3" rounded="$2">
+            <XStack
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              backgroundColor="$green3"
+              borderRadius="$2"
+            >
               <Text fontSize="$2" color="$green11" fontWeight="600">
                 Auto-filled
               </Text>
@@ -425,19 +430,19 @@ export function InquiryCreateForm({
           {/* Main Form */}
           <YStack flex={1} gap="$4">
             <ScrollView>
-              <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
+              <YStack gap="$6" padding="$4" $sm={{ gap: '$8', padding: '$3' }}>
                 {/* Templates Section */}
                 <YStack
                   gap="$3"
-                  p="$3"
+                  padding="$3"
                   borderWidth={1}
                   borderColor="$borderColor"
-                  bg="$background"
-                  rounded="$4"
+                  backgroundColor="$background"
+                  borderRadius="$4"
                 >
                   <XStack
-                    justify="space-between"
-                    items="center"
+                    justifyContent="space-between"
+                    alignItems="center"
                     gap="$3"
                     $sm={{ flexDirection: 'column' }}
                   >
@@ -512,15 +517,15 @@ export function InquiryCreateForm({
                 {mode === 'create' && (
                   <YStack
                     gap="$3"
-                    p="$3"
+                    padding="$3"
                     borderWidth={1}
                     borderColor="$borderColor"
-                    bg="$background"
-                    rounded="$4"
+                    backgroundColor="$background"
+                    borderRadius="$4"
                   >
                     <XStack
-                      justify="space-between"
-                      items="center"
+                      justifyContent="space-between"
+                      alignItems="center"
                       gap="$3"
                       $sm={{ flexDirection: 'column' }}
                     >
@@ -565,7 +570,13 @@ export function InquiryCreateForm({
                     {smartDefaultsFieldLabels.length > 0 && (
                       <XStack gap="$2" flexWrap="wrap">
                         {smartDefaultsFieldLabels.map((label) => (
-                          <YStack key={label} px="$2" py="$1" bg="$gray3" rounded="$3">
+                          <YStack
+                            key={label}
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            backgroundColor="$gray3"
+                            borderRadius="$3"
+                          >
                             <Text fontSize="$2" color="$color11">
                               {label}
                             </Text>
@@ -578,7 +589,7 @@ export function InquiryCreateForm({
 
                 {/* Employment Section */}
                 <YStack gap="$4">
-                  <XStack items="center" gap="$2">
+                  <XStack alignItems="center" gap="$2">
                     <Text fontSize="$6" fontWeight="700">
                       Employment
                     </Text>
@@ -611,7 +622,7 @@ export function InquiryCreateForm({
                         </XStack>
                       )}
                     />
-                    <XStack items="center" gap="$2">
+                    <XStack alignItems="center" gap="$2">
                       <Controller
                         control={control}
                         name="employmentTypeNegotiable"
@@ -656,7 +667,7 @@ export function InquiryCreateForm({
                         </XStack>
                       )}
                     />
-                    <XStack items="center" gap="$2">
+                    <XStack alignItems="center" gap="$2">
                       <Controller
                         control={control}
                         name="workScheduleNegotiable"
@@ -676,7 +687,7 @@ export function InquiryCreateForm({
 
                   {/* Schedule Shifts */}
                   <YStack gap="$2">
-                    <XStack justify="space-between" items="center">
+                    <XStack justifyContent="space-between" alignItems="center">
                       <Text fontWeight="600" fontSize="$4">
                         Schedule shifts
                       </Text>
@@ -756,7 +767,7 @@ export function InquiryCreateForm({
                         )}
                       </YStack>
                     </XStack>
-                    <XStack items="center" gap="$2">
+                    <XStack alignItems="center" gap="$2">
                       <Controller
                         control={control}
                         name="workingHoursNegotiable"
@@ -798,9 +809,9 @@ export function InquiryCreateForm({
                                   }
                                 }}
                                 size="$3"
-                                px="$3"
-                                rounded="$10"
-                                $sm={{ height: 48, px: '$4' }}
+                                paddingHorizontal="$3"
+                                borderRadius="$10"
+                                $sm={{ height: 48, paddingHorizontal: '$4' }}
                               >
                                 {day.label}
                               </Button>
@@ -809,7 +820,7 @@ export function InquiryCreateForm({
                         </XStack>
                       )}
                     />
-                    <XStack items="center" gap="$2">
+                    <XStack alignItems="center" gap="$2">
                       <Controller
                         control={control}
                         name="workdaysNegotiable"
@@ -877,7 +888,7 @@ export function InquiryCreateForm({
                         </Text>
                       </YStack>
                     </XStack>
-                    <XStack items="center" gap="$2">
+                    <XStack alignItems="center" gap="$2">
                       <Controller
                         control={control}
                         name="employmentDatesNegotiable"
@@ -900,7 +911,7 @@ export function InquiryCreateForm({
 
                 {/* Compensation Section */}
                 <YStack gap="$4">
-                  <XStack items="center" gap="$2">
+                  <XStack alignItems="center" gap="$2">
                     <Text fontSize="$6" fontWeight="700">
                       Compensation
                     </Text>
@@ -928,7 +939,7 @@ export function InquiryCreateForm({
                         />
                       </YStack>
                       <YStack gap="$2" flex={1}>
-                        <XStack items="center" gap="$1">
+                        <XStack alignItems="center" gap="$1">
                           <Text>$</Text>
                           <Controller
                             control={control}
@@ -957,7 +968,7 @@ export function InquiryCreateForm({
                         <Text fontSize="$3" color="$color11">
                           to
                         </Text>
-                        <XStack items="center" gap="$1">
+                        <XStack alignItems="center" gap="$1">
                           <Text>$</Text>
                           <Controller
                             control={control}
@@ -986,7 +997,7 @@ export function InquiryCreateForm({
                     <Text fontSize="$2" color="$color11">
                       Add a range or a single rate
                     </Text>
-                    <XStack items="center" gap="$2">
+                    <XStack alignItems="center" gap="$2">
                       <Controller
                         control={control}
                         name="rateNegotiable"
@@ -1009,7 +1020,7 @@ export function InquiryCreateForm({
 
                 {/* Capabilities Section */}
                 <YStack gap="$4">
-                  <XStack items="center" gap="$2">
+                  <XStack alignItems="center" gap="$2">
                     <Text fontSize="$6" fontWeight="700">
                       Capabilities
                     </Text>
@@ -1017,8 +1028,8 @@ export function InquiryCreateForm({
 
                   {/* Endurance */}
                   <YStack gap="$2">
-                    <XStack justify="space-between" items="center">
-                      <XStack items="center" gap="$2">
+                    <XStack justifyContent="space-between" alignItems="center">
+                      <XStack alignItems="center" gap="$2">
                         <Text fontWeight="600" fontSize="$4">
                           Endurance
                         </Text>
@@ -1049,7 +1060,7 @@ export function InquiryCreateForm({
 
                 {/* Other Section */}
                 <YStack gap="$4">
-                  <XStack items="center" gap="$2">
+                  <XStack alignItems="center" gap="$2">
                     <Text fontSize="$6" fontWeight="700">
                       Other
                     </Text>
@@ -1057,7 +1068,7 @@ export function InquiryCreateForm({
 
                   {/* Willing to Travel */}
                   <YStack gap="$2">
-                    <XStack justify="space-between" items="center">
+                    <XStack justifyContent="space-between" alignItems="center">
                       <Text fontWeight="600" fontSize="$4">
                         Willing to travel
                       </Text>
@@ -1075,7 +1086,7 @@ export function InquiryCreateForm({
                     </XStack>
                     {watchedValues.willingToTravel && (
                       <YStack gap="$2">
-                        <XStack items="center" gap="$1">
+                        <XStack alignItems="center" gap="$1">
                           <Text>up to</Text>
                           <Controller
                             control={control}
@@ -1101,7 +1112,7 @@ export function InquiryCreateForm({
 
                   {/* Willing to Work Overtime */}
                   <YStack gap="$2">
-                    <XStack justify="space-between" items="center">
+                    <XStack justifyContent="space-between" alignItems="center">
                       <Text fontWeight="600" fontSize="$4">
                         Willing to work overtime
                       </Text>
@@ -1121,7 +1132,7 @@ export function InquiryCreateForm({
 
                   {/* Has Driver's License */}
                   <YStack gap="$2">
-                    <XStack justify="space-between" items="center">
+                    <XStack justifyContent="space-between" alignItems="center">
                       <Text fontWeight="600" fontSize="$4">
                         Has driver's license
                       </Text>
@@ -1171,11 +1182,11 @@ export function InquiryCreateForm({
             {/* Form Actions */}
             <XStack
               gap="$3"
-              p="$4"
-              bg="$background"
+              padding="$4"
+              backgroundColor="$background"
               borderTopWidth={1}
               borderTopColor="$borderColor"
-              justify="flex-end"
+              justifyContent="flex-end"
               $sm={{ flexDirection: 'column-reverse' }}
             >
               {onCancel && (
@@ -1224,8 +1235,8 @@ export function InquiryCreateForm({
           {/* Help Sidebar */}
           <YStack
             width={300}
-            p="$4"
-            bg="$color2"
+            padding="$4"
+            backgroundColor="$color2"
             borderLeftWidth={1}
             borderLeftColor="$borderColor"
             $sm={{ display: 'none' }}
@@ -1244,7 +1255,7 @@ export function InquiryCreateForm({
       >
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame p="$4" gap="$4">
+        <Sheet.Frame padding="$4" gap="$4">
           <Text fontSize="$6" fontWeight="700">
             Save template
           </Text>
@@ -1268,7 +1279,7 @@ export function InquiryCreateForm({
               numberOfLines={4}
             />
           </YStack>
-          <XStack gap="$3" justify="flex-end">
+          <XStack gap="$3" justifyContent="flex-end">
             <Button
               variant="outlined"
               onPress={() => setSaveTemplateOpen(false)}
@@ -1296,7 +1307,7 @@ export function InquiryCreateForm({
       >
         <Sheet.Overlay />
         <Sheet.Handle />
-        <Sheet.Frame p="$4" gap="$4">
+        <Sheet.Frame padding="$4" gap="$4">
           <Text fontSize="$6" fontWeight="700">
             Manage templates
           </Text>
@@ -1306,7 +1317,7 @@ export function InquiryCreateForm({
             </Text>
           ) : (
             <Sheet.ScrollView>
-              <YStack gap="$3" py="$2">
+              <YStack gap="$3" paddingVertical="$2">
                 {templateList.map((template) => {
                   const templateId = template.id
                   const usageCount = template.usage_count ?? 0
@@ -1314,17 +1325,17 @@ export function InquiryCreateForm({
                   return (
                     <YStack
                       key={templateId}
-                      p="$3"
+                      padding="$3"
                       gap="$2"
                       borderWidth={1}
                       borderColor="$borderColor"
-                      rounded="$4"
-                      bg="$background"
+                      borderRadius="$4"
+                      backgroundColor="$background"
                     >
                       <XStack
                         gap="$3"
-                        items="center"
-                        justify="space-between"
+                        alignItems="center"
+                        justifyContent="space-between"
                         $sm={{ flexDirection: 'column' }}
                       >
                         <YStack flex={1} gap="$1">

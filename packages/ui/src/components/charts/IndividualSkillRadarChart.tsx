@@ -102,15 +102,15 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
     <Card
       elevate
       bordered
-      bg="$background"
-      p="$3"
+      backgroundColor="$background"
+      padding="$3"
       minHeight={config.chartSize + 80}
       cursor={onPress ? 'pointer' : 'default'}
       onPress={onPress}
     >
-      <YStack gap="$2" items="center">
+      <YStack gap="$2" alignItems="center">
         {/* Skill Name */}
-        <XStack gap="$2" items="center" justify="center" flexWrap="wrap">
+        <XStack gap="$2" alignItems="center" justifyContent="center" flexWrap="wrap">
           <Text fontSize={config.titleSize} fontWeight="600" color="$color12" numberOfLines={2}>
             {skillName}
           </Text>
@@ -127,8 +127,8 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
         <View
           height={config.chartSize}
           width={config.chartSize}
-          items="center"
-          justify="center"
+          alignItems="center"
+          justifyContent="center"
           position="relative"
         >
           <Svg height={config.chartSize} width={config.chartSize}>
@@ -192,7 +192,7 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
         </View>
 
         {/* Rating Value */}
-        <YStack gap="$1" items="center">
+        <YStack gap="$1" alignItems="center">
           <Text fontSize={config.valueSize} fontWeight="700" color="$color12">
             {selfRating.toFixed(1)}/5
           </Text>
@@ -205,15 +205,15 @@ export const IndividualSkillRadarChart: FC<IndividualSkillRadarChartProps> = ({
 
         {/* Legend (if both self and peer are shown) */}
         {peerRating !== undefined && peerRating !== null && (
-          <XStack gap="$3" items="center">
-            <XStack gap="$1" items="center">
-              <View width={12} height={12} bg="$blue10" rounded="$1" />
+          <XStack gap="$3" alignItems="center">
+            <XStack gap="$1" alignItems="center">
+              <View width={12} height={12} backgroundColor="$blue10" borderRadius="$1" />
               <Text fontSize="$1" color="$color11">
                 Self
               </Text>
             </XStack>
-            <XStack gap="$1" items="center">
-              <View width={12} height={12} bg="$green10" rounded="$1" />
+            <XStack gap="$1" alignItems="center">
+              <View width={12} height={12} backgroundColor="$green10" borderRadius="$1" />
               <Text fontSize="$1" color="$color11">
                 Peer
               </Text>

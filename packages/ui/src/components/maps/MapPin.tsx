@@ -37,22 +37,22 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
   }
 
   return (
-    <YStack items="center" onPress={handlePress} pressStyle={{ scale: 0.95 }}>
+    <YStack alignItems="center" onPress={handlePress} pressStyle={{ scale: 0.95 }}>
       {organization === 'Organization' ? (
         /* Organization Pin - Diamond Shape */
         <>
           <View
             width={48}
             height={48}
-            bg={backgroundColor}
+            backgroundColor={backgroundColor}
             borderWidth={selected ? 3 : 2}
             borderColor={selected ? '$color12' : '$color1'}
             position="relative"
-            items="center"
-            justify="center"
+            alignItems="center"
+            justifyContent="center"
             transform={[{ rotate: '45deg' }]}
           >
-            <View transform={[{ rotate: '-45deg' }]} items="center" justify="center">
+            <View transform={[{ rotate: '-45deg' }]} alignItems="center" justifyContent="center">
               <Building size={22} color="white" />
             </View>
           </View>
@@ -67,11 +67,13 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
             borderLeftColor="transparent"
             borderRightColor="transparent"
             borderTopColor={backgroundColor}
-            mt={-8}
+            marginTop={-8}
           />
 
           {/* Selected Indicator */}
-          {selected && <Circle size={12} bg="$blue10" mt={4} animation="quick" />}
+          {selected && (
+            <Circle size={12} backgroundColor="$blue10" marginTop={4} animation="quick" />
+          )}
         </>
       ) : (
         /* Worker Pin - Circle Shape */
@@ -79,13 +81,13 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
           <View
             width={48}
             height={48}
-            rounded="$12"
-            bg={backgroundColor}
+            borderRadius="$12"
+            backgroundColor={backgroundColor}
             borderWidth={selected ? 3 : 2}
             borderColor={selected ? '$color12' : '$color1'}
             position="relative"
-            items="center"
-            justify="center"
+            alignItems="center"
+            justifyContent="center"
           >
             <User size={22} color="white" />
           </View>
@@ -100,11 +102,13 @@ export const MapPin = memo(({ pin, onPress }: MapPinProps) => {
             borderLeftColor="transparent"
             borderRightColor="transparent"
             borderTopColor={'$color12'}
-            mt={-1}
+            marginTop={-1}
           />
 
           {/* Selected Indicator */}
-          {selected && <Circle size={12} bg="$blue10" mt={4} animation="quick" />}
+          {selected && (
+            <Circle size={12} backgroundColor="$blue10" marginTop={4} animation="quick" />
+          )}
         </>
       )}
     </YStack>

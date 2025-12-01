@@ -12,7 +12,7 @@ import {
   Zap,
 } from '@tamagui/lucide-icons'
 import { type ComponentType, memo } from 'react'
-import { Button, Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, H3, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
 export interface WizardStartScreenProps {
@@ -58,10 +58,10 @@ export const WizardStartScreen = memo(function WizardStartScreen({
         </Paragraph>
       </YStack>
 
-      <Card bordered elevate bg="$color2">
+      <Card bordered elevate backgroundColor="$color2">
         <Card.Header padded gap="$4">
           <YStack gap="$3">
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Zap size={20} color="$yellow10" />
               <Text fontSize="$3" fontWeight="600" color="$color12">
                 Fast-Track Your Profile
@@ -82,16 +82,16 @@ export const WizardStartScreen = memo(function WizardStartScreen({
                 const meta = PROFILE_WIZARD_STEP_META[stepId]
                 const StepIcon = STEP_ICONS[stepId] ?? Sparkles
                 return (
-                  <XStack key={stepId} gap="$3" items="center">
+                  <XStack key={stepId} gap="$3" alignItems="center">
                     <Card
-                      bg="$color3"
+                      backgroundColor="$color3"
                       borderColor="$color5"
                       borderWidth={1}
                       width={44}
                       height={44}
-                      items="center"
-                      justify="center"
-                      rounded="$4"
+                      alignItems="center"
+                      justifyContent="center"
+                      borderRadius="$4"
                     >
                       <StepIcon size={20} color="$blue10" />
                     </Card>
@@ -126,10 +126,10 @@ export const WizardStartScreen = memo(function WizardStartScreen({
         </Button>
       </YStack>
 
-      <Card bordered bg="$color2">
+      <Card bordered backgroundColor="$color2">
         <Card.Header padded gap="$3">
           <XStack gap="$3" flexWrap="wrap">
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Clock size={18} color="$blue10" />
               <Text fontSize="$3" fontWeight="600" color="$color12">
                 {estimatedMinutes || ESTIMATED_MINUTES_FALLBACK} minutes

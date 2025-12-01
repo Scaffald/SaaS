@@ -3,7 +3,7 @@ import type { PublicWorkLog, PublicWorkLogPhoto } from '@app/core/features/work-
 import { api } from '@app/core/utils/api'
 import { ShieldCheck } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
-import { Card, Image, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Card, Image, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface WorkLogPortfolioWidgetProps {
   userId: string
@@ -51,7 +51,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
 
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <YStack gap="$2">
           <Text fontSize="$6" fontWeight="700">
             Verified work history
@@ -63,7 +63,7 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
         </YStack>
 
         {isLoading ? (
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <Spinner size="small" />
             <Text color="$color10">Loading work history…</Text>
           </XStack>
@@ -104,13 +104,13 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                   key={group.id}
                   borderWidth={1}
                   borderColor="$color6"
-                  rounded="$4"
-                  px="$3"
-                  py="$3"
+                  borderRadius="$4"
+                  paddingHorizontal="$3"
+                  paddingVertical="$3"
                   gap="$3"
-                  bg="$color2"
+                  backgroundColor="$color2"
                 >
-                  <XStack items="center" justify="space-between">
+                  <XStack alignItems="center" justifyContent="space-between">
                     <YStack gap="$1">
                       <Text fontWeight="700">{group.projectName ?? 'Project'}</Text>
                       {group.organizationName ? (
@@ -118,7 +118,14 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                       ) : null}
                       <Text color="$color10">{dateLabel}</Text>
                     </YStack>
-                    <XStack gap="$2" items="center" px="$2" py="$1" rounded="$4" bg="$green4">
+                    <XStack
+                      gap="$2"
+                      alignItems="center"
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$4"
+                      backgroundColor="$green4"
+                    >
                       <ShieldCheck size={16} color="$green11" />
                       <Text color="$green11" fontSize="$2" fontWeight="600">
                         Verified by Scaffald
@@ -148,7 +155,12 @@ export function WorkLogPortfolioWidget({ userId }: WorkLogPortfolioWidgetProps) 
                               resizeMode="cover"
                             />
                           ) : (
-                            <YStack flex={1} items="center" justify="center" bg="$color3">
+                            <YStack
+                              flex={1}
+                              alignItems="center"
+                              justifyContent="center"
+                              backgroundColor="$color3"
+                            >
                               <Text color="$color10" fontSize="$2">
                                 Photo unavailable
                               </Text>

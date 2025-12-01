@@ -69,14 +69,14 @@ export function ErrorState({
   return (
     <YStack
       flex={1}
-      items="center"
-      justify="center"
+      alignItems="center"
+      justifyContent="center"
       gap={spacing.md}
-      p={spacing['2xl']}
+      padding={spacing['2xl']}
       style={{ minHeight: 300 }}
     >
       {/* Icon */}
-      <YStack items="center">{icon || <AlertCircle size={48} color="$red9" />}</YStack>
+      <YStack alignItems="center">{icon || <AlertCircle size={48} color="$red9" />}</YStack>
 
       {/* Title */}
       <Text
@@ -103,9 +103,9 @@ export function ErrorState({
       {/* Technical error details */}
       {errorMessage && (
         <XStack
-          bg="$red2"
-          p={spacing.md}
-          rounded={borderRadius.md}
+          backgroundColor="$red2"
+          padding={spacing.md}
+          borderRadius={borderRadius.md}
           style={{ maxWidth: 500 }}
           borderWidth={1}
           borderColor="$red5"
@@ -118,7 +118,7 @@ export function ErrorState({
 
       {/* Retry button */}
       {retry && (
-        <YStack mt={spacing.md}>
+        <YStack marginTop={spacing.md}>
           <Button variant="primary" onPress={retry}>
             {retryText}
           </Button>

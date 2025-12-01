@@ -4,7 +4,7 @@ import { Award } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { TRPCClientError } from '@trpc/client'
 import { type ComponentType, useCallback, useEffect, useRef, useState } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { ProfileResultCard, ProfileResultsPanel } from './components'
 import { SkillCompletionProgress } from './components/skills/SkillCompletionProgress'
 import { SkillGuidanceWidget } from './components/skills/SkillGuidanceWidget'
@@ -270,7 +270,7 @@ export function ProfileSkillsRight() {
                     )}
 
                     {/* Proficiency Level */}
-                    <XStack justify="space-between" items="center" pt="$2">
+                    <XStack justifyContent="space-between" alignItems="center" paddingTop="$2">
                       <YStack gap="$1">
                         <Text fontSize="$2" color="$color11">
                           Proficiency

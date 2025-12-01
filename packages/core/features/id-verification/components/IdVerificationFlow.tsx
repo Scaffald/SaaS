@@ -5,7 +5,7 @@ import { AlertCircle } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { formatDistanceToNow } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 type PricingRow = {
@@ -132,7 +132,7 @@ export function IdVerificationContent() {
     <YStack gap="$4">
       {statusCard}
 
-      <Card p="$4" bordered>
+      <Card padding="$4" bordered>
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             Why verify your identity?
@@ -141,7 +141,7 @@ export function IdVerificationContent() {
             Verified profiles are highlighted across search, inquiries, and background checks,
             giving organizations confidence that you are who you say you are.
           </Text>
-          <YStack gap="$1" mt="$2">
+          <YStack gap="$1" marginTop="$2">
             <Text color="$color11">• Badge displayed on your profile and worker cards</Text>
             <Text color="$color11">• Valid for 6 months with automated reminders</Text>
             <Text color="$color11">• Powered by Persona, the same provider used by banks</Text>
@@ -178,7 +178,7 @@ export function IdVerificationContent() {
 export function IdVerificationRight() {
   return (
     <YStack gap="$4">
-      <Card p="$4" bordered>
+      <Card padding="$4" bordered>
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             What happens after payment?
@@ -196,14 +196,14 @@ export function IdVerificationRight() {
         </YStack>
       </Card>
 
-      <Card p="$4" bordered bg="$blue2" borderColor="$blue6">
+      <Card padding="$4" bordered backgroundColor="$blue2" borderColor="$blue6">
         <YStack gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$blue12">
             Need help?
           </Text>
           <Text color="$blue11">
-            Email support@scaffald.com if you run into issues with Persona, need an invoice, or
-            want to request a bulk verification plan for your organization.
+            Email support@scaffald.com if you run into issues with Persona, need an invoice, or want
+            to request a bulk verification plan for your organization.
           </Text>
         </YStack>
       </Card>
@@ -213,9 +213,9 @@ export function IdVerificationRight() {
 
 export function IdVerificationFlow() {
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} backgroundColor="$background">
       <ScrollView flex={1}>
-        <YStack gap="$4" px="$4" pb="$8">
+        <YStack gap="$4" paddingHorizontal="$4" paddingBottom="$8">
           <IdVerificationContent />
         </YStack>
       </ScrollView>
@@ -228,7 +228,7 @@ function renderStatusCard(
 ) {
   if (queryReturn.isLoading) {
     return (
-      <Card p="$4" bordered>
+      <Card padding="$4" bordered>
         <YStack gap="$2">
           <IdVerificationBadge status={null} muted size="md" />
           <Text color="$color11">Loading your verification badge…</Text>
@@ -239,7 +239,7 @@ function renderStatusCard(
 
   if (queryReturn.isError) {
     return (
-      <Card p="$4" bordered bg="$red2" borderColor="$red6">
+      <Card padding="$4" bordered backgroundColor="$red2" borderColor="$red6">
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600" color="$red12">
             Unable to load badge
@@ -252,15 +252,18 @@ function renderStatusCard(
     )
   }
 
-  const badge = queryReturn.data as {
-    badgeStatus?: string
-    badgeExpiresAt?: string
-    verifiedAt?: string
-    verificationLevel?: string | null
-  } | null | undefined
+  const badge = queryReturn.data as
+    | {
+        badgeStatus?: string
+        badgeExpiresAt?: string
+        verifiedAt?: string
+        verificationLevel?: string | null
+      }
+    | null
+    | undefined
   if (!badge) {
     return (
-      <Card p="$4" bordered>
+      <Card padding="$4" bordered>
         <YStack gap="$2">
           <IdVerificationBadge status={null} muted size="md" />
           <Text color="$color11">
@@ -272,7 +275,7 @@ function renderStatusCard(
   }
 
   return (
-    <Card p="$4" bordered>
+    <Card padding="$4" bordered>
       <YStack gap="$2">
         <IdVerificationBadge
           status={badge.badgeStatus as 'active' | 'expired' | 'revoked'}
@@ -288,7 +291,8 @@ function renderStatusCard(
               : 'Contact support to resolve revocation.'}
         </Text>
         <Text color="$color10">
-          Verified on {formatDate(badge.verifiedAt ?? '')} • Level: {badge.verificationLevel ?? 'N/A'}
+          Verified on {formatDate(badge.verifiedAt ?? '')} • Level:{' '}
+          {badge.verificationLevel ?? 'N/A'}
         </Text>
       </YStack>
     </Card>
@@ -310,8 +314,8 @@ function PricingSection({
 }: PricingSectionProps) {
   if (isLoading) {
     return (
-      <Card p="$4" bordered>
-        <YStack gap="$2" items="center">
+      <Card padding="$4" bordered>
+        <YStack gap="$2" alignItems="center">
           <Spinner size="small" />
           <Text color="$color11">Loading verification options…</Text>
         </YStack>
@@ -321,7 +325,7 @@ function PricingSection({
 
   if (pricingOptions.length === 0) {
     return (
-      <Card p="$4" bordered bg="$color2" borderColor="$borderColor">
+      <Card padding="$4" bordered backgroundColor="$color2" borderColor="$borderColor">
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600">
             Verification temporarily unavailable
@@ -345,15 +349,15 @@ function PricingSection({
           return (
             <Card
               key={plan.id}
-              p="$4"
+              padding="$4"
               bordered
               animation="quick"
-              bg={isActive ? '$blue2' : '$color1'}
+              backgroundColor={isActive ? '$blue2' : '$color1'}
               borderColor={isActive ? '$blue8' : '$borderColor'}
               onPress={() => onSelectPlan(plan.id)}
             >
               <YStack gap="$2">
-                <XStack justify="space-between" items="center">
+                <XStack justifyContent="space-between" alignItems="center">
                   <Text fontSize="$4" fontWeight="600">
                     {plan.name}
                   </Text>
@@ -417,8 +421,15 @@ function PaymentSection({
       </YStack>
 
       {requestError && (
-        <YStack gap="$2" p="$3" bg="$red2" borderColor="$red6" borderWidth={1} rounded="$4">
-          <XStack gap="$2" items="center">
+        <YStack
+          gap="$2"
+          padding="$3"
+          backgroundColor="$red2"
+          borderColor="$red6"
+          borderWidth={1}
+          borderRadius="$4"
+        >
+          <XStack gap="$2" alignItems="center">
             <AlertCircle size={18} color="$red11" />
             <Text color="$red11">{requestError}</Text>
           </XStack>

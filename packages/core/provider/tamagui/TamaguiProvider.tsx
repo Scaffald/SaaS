@@ -1,6 +1,10 @@
-import { config } from '@unicornlove/ui'
+import {
+  tamaguiConfig,
+  isWeb,
+  TamaguiProvider as TamaguiProviderOG,
+  useDidFinishSSR,
+} from '@unicornlove/ui'
 import type { ReactNode } from 'react'
-import { isWeb, TamaguiProvider as TamaguiProviderOG, useDidFinishSSR } from 'tamagui'
 import { useRootTheme, useThemeSetting } from '../theme/UniversalThemeProvider'
 
 export const TamaguiProvider = ({ children }: { children: ReactNode }) => {
@@ -15,7 +19,7 @@ export const TamaguiProvider = ({ children }: { children: ReactNode }) => {
         : 'light'
 
   return (
-    <TamaguiProviderOG config={config} disableInjectCSS={false} defaultTheme={defaultTheme}>
+    <TamaguiProviderOG config={tamaguiConfig} disableInjectCSS={false} defaultTheme={defaultTheme}>
       {children}
     </TamaguiProviderOG>
   )

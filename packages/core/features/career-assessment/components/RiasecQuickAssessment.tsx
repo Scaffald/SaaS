@@ -1,4 +1,4 @@
-import { Slider, Text, XStack, YStack } from 'tamagui'
+import { Slider, Text, XStack, YStack } from '@unicornlove/ui'
 import { RIASEC_DIMENSIONS, type RiasecScores } from '../config/career-assessment-schema'
 
 interface RiasecQuickAssessmentProps {
@@ -43,7 +43,7 @@ export function RiasecQuickAssessment({
 
       {RIASEC_DIMENSIONS.map((dimension) => (
         <YStack key={dimension.key} gap="$3">
-          <XStack gap="$3" items="center">
+          <XStack gap="$3" alignItems="center">
             <YStack flex={1} gap="$1">
               <Text fontSize="$4" fontWeight="600">
                 {dimension.label}
@@ -55,10 +55,10 @@ export function RiasecQuickAssessment({
             <XStack
               width={60}
               height={32}
-              items="center"
+              alignItems="center"
               borderWidth={1}
               borderColor="$borderColor"
-              px="$2"
+              paddingHorizontal="$2"
             >
               <Text fontSize="$6" fontWeight="bold">
                 {value[dimension.key]}
@@ -66,7 +66,7 @@ export function RiasecQuickAssessment({
             </XStack>
           </XStack>
 
-          <XStack items="center" gap="$3">
+          <XStack alignItems="center" gap="$3">
             <Text fontSize="$2" color="$color10" width={20}>
               1
             </Text>
@@ -92,7 +92,7 @@ export function RiasecQuickAssessment({
         </YStack>
       ))}
 
-      <YStack gap="$2" p="$3" borderWidth={1} borderColor="$blue6">
+      <YStack gap="$2" padding="$3" borderWidth={1} borderColor="$blue6">
         <Text fontSize="$3" fontWeight="600" color="$blue11">
           💡 What is RIASEC?
         </Text>

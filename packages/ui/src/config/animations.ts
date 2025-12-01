@@ -7,9 +7,6 @@ export const animationDurations = {
   slower: 500,
 } as const;
 
-// Type definition for animations - using a generic type to avoid complex inference
-type AnimationsType = Record<string, unknown>;
-
 export const animations = createAnimations({
   "100ms": {
     type: "timing",
@@ -55,6 +52,6 @@ export const animations = createAnimations({
     duration: 1500,
     loop: true,
   },
-}) as unknown as AnimationsType;
+});
 
 export type AnimationDurationName = keyof typeof animationDurations;

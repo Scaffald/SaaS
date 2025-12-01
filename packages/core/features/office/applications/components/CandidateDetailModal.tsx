@@ -7,7 +7,7 @@ import { ResponsiveModal } from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Button, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, Spinner, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 import { ApplicationDetailsTab } from './ApplicationDetailsTab'
 import { CandidateProfileTab } from './CandidateProfileTab'
@@ -189,10 +189,10 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
       size="large"
     >
       {/* Candidate Header */}
-      <XStack gap="$3" items="center">
+      <XStack gap="$3" alignItems="center">
         <Avatar circular size="$6">
           <Avatar.Image src={application.candidate.photo} />
-          <Avatar.Fallback bg="$blue9">
+          <Avatar.Fallback backgroundColor="$blue9">
             <Text color="white" fontWeight="600" fontSize="$6">
               {application.candidate.name.charAt(0)}
             </Text>
@@ -203,14 +203,20 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           <Text fontSize="$4" opacity={0.7}>
             {application.candidate.title}
           </Text>
-          <Text fontSize="$2" opacity={0.6} mt="$1">
+          <Text fontSize="$2" opacity={0.6} marginTop="$1">
             {application.candidate.location}
           </Text>
         </YStack>
       </XStack>
 
       {/* Score Badge */}
-      <YStack bg={scoreBg} px="$4" py="$3" rounded="$4" items="center">
+      <YStack
+        backgroundColor={scoreBg}
+        paddingHorizontal="$4"
+        paddingVertical="$3"
+        borderRadius="$4"
+        alignItems="center"
+      >
         <Text fontSize="$8" fontWeight="700" color={scoreColor}>
           {application.score}
         </Text>
@@ -302,7 +308,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
         flexDirection="column"
         flex={1}
       >
-        <Tabs.List gap="$2" bg="$color2" p="$1" rounded="$3">
+        <Tabs.List gap="$2" backgroundColor="$color2" padding="$1" borderRadius="$3">
           <Tabs.Tab value="profile" flex={1}>
             <Text fontSize="$3" fontWeight="600">
               Profile
@@ -330,7 +336,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Content value="profile" pt="$4">
+        <Tabs.Content value="profile" paddingTop="$4">
           <CandidateProfileTab
             candidate={application.candidate}
             contactInfo={contactInfoQuery.data ?? undefined}
@@ -339,11 +345,11 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           />
         </Tabs.Content>
 
-        <Tabs.Content value="application" pt="$4">
+        <Tabs.Content value="application" paddingTop="$4">
           <ApplicationDetailsTab application={application} />
         </Tabs.Content>
 
-        <Tabs.Content value="notes" pt="$4">
+        <Tabs.Content value="notes" paddingTop="$4">
           <NotesTab
             applicationId={application.id}
             teamId={teamId}
@@ -351,13 +357,13 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           />
         </Tabs.Content>
 
-        <Tabs.Content value="messages" pt="$4">
+        <Tabs.Content value="messages" paddingTop="$4">
           <MessagesTab messages={application.messages} applicationId={application.id} />
         </Tabs.Content>
 
-        <Tabs.Content value="inquiry" pt="$4">
+        <Tabs.Content value="inquiry" paddingTop="$4">
           {inquiryMode === 'view' && isInquiryLoading && (
-            <YStack p="$4" items="center" gap="$4">
+            <YStack padding="$4" alignItems="center" gap="$4">
               <Spinner size="large" />
               <Text>Loading inquiry...</Text>
             </YStack>
@@ -394,7 +400,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           ) : null}
 
           {inquiryMode === 'view' && !hasInquiry && !isInquiryLoading && (
-            <YStack p="$4" gap="$3">
+            <YStack padding="$4" gap="$3">
               <Text color="$color11">No inquiry has been created for this candidate yet.</Text>
               <Button theme="blue" onPress={() => setInquiryMode('create')}>
                 Start Inquiry
@@ -403,7 +409,7 @@ export const CandidateDetailModal = ({ application, open, onClose }: CandidateDe
           )}
 
           {inquiryMode === 'edit' && (!inquiryData?.inquiry || !inquiryFormValues) && (
-            <YStack p="$4" items="center" gap="$4">
+            <YStack padding="$4" alignItems="center" gap="$4">
               <Spinner size="large" />
               <Text>Preparing inquiry for editing...</Text>
             </YStack>

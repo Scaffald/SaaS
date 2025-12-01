@@ -32,7 +32,7 @@
     "lint": "biome lint ./app",
     "lint:fix": "biome lint --write ./app",
     "prebuild": "expo prebuild --skip-dependency-update react-native,react",
-    "start": "expo start -c",
+    "start": "DEBUG=tamagui expo start -c",
     "start:dev-client": "expo start --dev-client",
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run",

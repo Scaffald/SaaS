@@ -4,10 +4,10 @@ import { Text, Theme, XStack } from 'tamagui'
 
 const badgeSizing: Record<
   'sm' | 'md',
-  { px: SpaceTokens; py: SpaceTokens; fontSize: FontSizeTokens }
+  { paddingHorizontal: SpaceTokens; paddingVertical: SpaceTokens; fontSize: FontSizeTokens }
 > = {
-  sm: { px: '$2', py: '$1', fontSize: '$1' },
-  md: { px: '$3', py: '$1', fontSize: '$2' },
+  sm: { paddingHorizontal: '$2', paddingVertical: '$1', fontSize: '$1' },
+  md: { paddingHorizontal: '$3', paddingVertical: '$1', fontSize: '$2' },
 }
 
 export type NotificationTagProps = {
@@ -29,7 +29,14 @@ export const NotificationTag = ({
 
   return (
     <Theme name={themeName}>
-      <XStack {...rest} bg="$color3" rounded="$3" items="center" px={sizing.px} py={sizing.py}>
+      <XStack
+        {...rest}
+        backgroundColor="$color3"
+        borderRadius="$3"
+        alignItems="center"
+        paddingHorizontal={sizing.px}
+        paddingVertical={sizing.py}
+      >
         <Text fontSize={sizing.fontSize} fontWeight="600" color={textColorToken} {...textProps}>
           {children}
         </Text>

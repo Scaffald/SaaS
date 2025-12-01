@@ -1,16 +1,16 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import {
+  Button,
   DashboardWidget,
   EmptyState,
   Heading,
   LoadingState,
   spacing,
-  UIButton,
 } from '@unicornlove/ui'
 import { GraduationCap } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Separator, Text, XStack, YStack } from 'tamagui'
+import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
 
@@ -58,12 +58,12 @@ export function EducationWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load education</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <UIButton
+          <Button
             variant="primary"
             size="$2"
             onPress={() => {
@@ -72,7 +72,7 @@ export function EducationWidget({
             disabled={isFetching}
           >
             Retry
-          </UIButton>
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -85,16 +85,16 @@ export function EducationWidget({
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Education</Heading>
           {showEdit && (
-            <UIButton
+            <Button
               variant="outlined"
               size="$2"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
             >
               Edit
-            </UIButton>
+            </Button>
           )}
         </XStack>
 
@@ -105,12 +105,12 @@ export function EducationWidget({
             description="Add your education history to complete your profile"
             action={
               showEdit ? (
-                <UIButton
+                <Button
                   variant="primary"
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EDUCATION.path)}
                 >
                   Add Education
-                </UIButton>
+                </Button>
               ) : undefined
             }
           />
@@ -132,7 +132,7 @@ export function EducationWidget({
                   </YStack>
 
                   {/* Duration */}
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Text fontSize="$2" color="$color10">
                       {formatDate(edu.start_date)}
                     </Text>
@@ -144,10 +144,10 @@ export function EducationWidget({
                     </Text>
                     {edu.is_current && (
                       <XStack
-                        bg="$blue2"
-                        px="$2"
-                        py="$0.5"
-                        rounded="$2"
+                        backgroundColor="$blue2"
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        borderRadius="$2"
                         borderWidth={1}
                         borderColor="$blue7"
                       >
@@ -173,7 +173,7 @@ export function EducationWidget({
                   )}
 
                   {/* Separator between items */}
-                  {index < education.length - 1 && <Separator my="$2" />}
+                  {index < education.length - 1 && <Separator marginVertical="$2" />}
                 </YStack>
               ))}
 

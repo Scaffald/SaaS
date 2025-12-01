@@ -14,7 +14,7 @@ import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@unicornlove/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 
 /**
  * Public User Profile Route (Vanity URL)
@@ -100,9 +100,9 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack items="center" justify="center" style={{ minHeight: 400 }}>
+          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
             <Spinner size="large" />
-            <Text mt="$4" color="$color10">
+            <Text marginTop="$4" color="$color10">
               Loading profile...
             </Text>
           </YStack>
@@ -118,7 +118,7 @@ export default function PublicUserProfilePage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack items="center" justify="center" style={{ minHeight: 400 }} gap="$4">
+          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }} gap="$4">
             <Text fontSize="$6" fontWeight="bold" color="$color11">
               Profile Not Found
             </Text>

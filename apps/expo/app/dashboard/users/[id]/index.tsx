@@ -13,7 +13,7 @@ import { api } from '@app/core/utils/api'
 import type { DashboardBreadcrumbSegment } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo } from 'react'
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 
 /**
  * Dynamic User Profile Route

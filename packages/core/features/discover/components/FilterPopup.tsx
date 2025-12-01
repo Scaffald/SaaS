@@ -1,7 +1,7 @@
 import { ToggleSwitch } from '@unicornlove/ui'
 import { ChevronDown, ChevronRight, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { AnimatePresence, Button, Label, ScrollView, Text, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Button, Label, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 
 type FilterPopupProps = {
   isOpen: boolean
@@ -92,18 +92,18 @@ export const FilterPopup = ({
       {isOpen && (
         <XStack
           position="absolute"
-          b={100}
-          l={0}
-          r={railVisible ? 440 : 0}
-          z={60}
+          bottom={100}
+          left={0}
+          right={railVisible ? 440 : 0}
+          zIndex={60}
           animation="quick"
           enterStyle={{ opacity: 0, y: 20 }}
           exitStyle={{ opacity: 0, y: 20 }}
           opacity={1}
           y={0}
-          justify="center"
-          items="center"
-          px="$4"
+          justifyContent="center"
+          alignItems="center"
+          paddingHorizontal="$4"
         >
           <YStack
             width={300}
@@ -111,20 +111,20 @@ export const FilterPopup = ({
             flex={1}
             borderWidth={1}
             borderColor="$borderColor"
-            bg="$background"
+            backgroundColor="$background"
             shadowColor="$shadowColor"
             shadowOffset={{ width: 0, height: 4 }}
             shadowOpacity={0.15}
             shadowRadius={12}
-            rounded="$4"
+            borderRadius="$4"
             overflow="hidden"
           >
             {/* Header */}
             <XStack
-              px="$4"
-              py="$3"
-              justify="space-between"
-              items="center"
+              paddingHorizontal="$4"
+              paddingVertical="$3"
+              justifyContent="space-between"
+              alignItems="center"
               borderBottomWidth={1}
               borderBottomColor="$borderColor"
             >
@@ -143,19 +143,19 @@ export const FilterPopup = ({
 
             {/* Scrollable Content */}
             <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-              <YStack p="$3" gap="$2">
+              <YStack padding="$3" gap="$2">
                 {/* Show Section */}
                 <YStack>
                   <Button
                     unstyled
                     onPress={() => toggleSection('show')}
-                    px="$3"
-                    py="$2"
-                    hoverStyle={{ bg: '$color3' }}
-                    pressStyle={{ bg: '$color4' }}
-                    rounded="$3"
+                    paddingHorizontal="$3"
+                    paddingVertical="$2"
+                    hoverStyle={{ backgroundColor: '$color3' }}
+                    pressStyle={{ backgroundColor: '$color4' }}
+                    borderRadius="$3"
                   >
-                    <XStack justify="space-between" items="center" flex={1}>
+                    <XStack justifyContent="space-between" alignItems="center" flex={1}>
                       <Text fontSize="$4" fontWeight="600">
                         {getSectionHeaderText()}
                       </Text>
@@ -168,10 +168,10 @@ export const FilterPopup = ({
                   </Button>
 
                   {openSections.has('show') && (
-                    <YStack gap="$3" px="$3" py="$3">
+                    <YStack gap="$3" paddingHorizontal="$3" paddingVertical="$3">
                       {/* Workers Toggle */}
                       <YStack gap="$1">
-                        <XStack justify="space-between" items="center">
+                        <XStack justifyContent="space-between" alignItems="center">
                           <Label fontSize="$3" onPress={() => onShowWorkersChange?.(!showWorkers)}>
                             Workers
                           </Label>
@@ -183,14 +183,14 @@ export const FilterPopup = ({
                             }
                           />
                         </XStack>
-                        <Text fontSize="$1" color="$color10" pl="$1">
+                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
                           Show worker profiles on the map
                         </Text>
                       </YStack>
 
                       {/* Employers Toggle */}
                       <YStack gap="$1">
-                        <XStack justify="space-between" items="center">
+                        <XStack justifyContent="space-between" alignItems="center">
                           <Label
                             fontSize="$3"
                             onPress={() => onShowOrganizationsChange?.(!showOrganizations)}
@@ -207,14 +207,14 @@ export const FilterPopup = ({
                             }
                           />
                         </XStack>
-                        <Text fontSize="$1" color="$color10" pl="$1">
+                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
                           Show employer organizations on the map
                         </Text>
                       </YStack>
 
                       {/* Jobs Toggle */}
                       <YStack gap="$1">
-                        <XStack justify="space-between" items="center">
+                        <XStack justifyContent="space-between" alignItems="center">
                           <Label fontSize="$3" onPress={() => onShowJobsChange?.(!showJobs)}>
                             Jobs
                           </Label>
@@ -224,7 +224,7 @@ export const FilterPopup = ({
                             aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
                           />
                         </XStack>
-                        <Text fontSize="$1" color="$color10" pl="$1">
+                        <Text fontSize="$1" color="$color10" paddingLeft="$1">
                           Show job openings on the map
                         </Text>
                       </YStack>
@@ -236,10 +236,10 @@ export const FilterPopup = ({
 
             {/* Footer */}
             <XStack
-              px="$4"
-              py="$3"
+              paddingHorizontal="$4"
+              paddingVertical="$3"
               gap="$2"
-              justify="flex-end"
+              justifyContent="flex-end"
               borderTopWidth={1}
               borderTopColor="$borderColor"
             >

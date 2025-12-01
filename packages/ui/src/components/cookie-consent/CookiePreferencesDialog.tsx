@@ -27,8 +27,8 @@ const CategoryRow = ({
 }) => {
   const disabled = category.required
   return (
-    <YStack gap="$2" p="$3" rounded="$4" bg="$color2">
-      <XStack items="center" justify="space-between" gap="$3">
+    <YStack gap="$2" padding="$3" borderRadius="$4" backgroundColor="$color2">
+      <XStack alignItems="center" justifyContent="space-between" gap="$3">
         <SizableText size="$5" fontWeight="600">
           {category.label}
         </SizableText>
@@ -108,8 +108,8 @@ export const CookiePreferencesDialog = () => {
           size="$5"
           gap="$4"
           width="100%"
-          maxW={520}
-          maxH={600}
+          maxWidth={520}
+          maxHeight={600}
         >
           <Dialog.Title>Manage Cookies</Dialog.Title>
 
@@ -118,7 +118,7 @@ export const CookiePreferencesDialog = () => {
             keep critical features running safely.
           </Paragraph>
 
-          <ScrollView maxH={360} showsVerticalScrollIndicator={false}>
+          <ScrollView maxHeight={360} showsVerticalScrollIndicator={false}>
             <YStack gap="$3">
               {categories.map((category) => (
                 <CategoryRow
@@ -131,7 +131,7 @@ export const CookiePreferencesDialog = () => {
             </YStack>
           </ScrollView>
           <Separator />
-          <XStack gap="$3" justify="flex-end" items="center" flexWrap="wrap">
+          <XStack gap="$3" justifyContent="flex-end" alignItems="center" flexWrap="wrap">
             <Button size="$3" disabled={isSubmitting} onPress={handleSave}>
               Save
             </Button>
@@ -156,7 +156,7 @@ export const CookiePreferencesDialog = () => {
 
           <Unspaced>
             <Dialog.Close asChild>
-              <Button position="absolute" t="$3" r="$3" size="$2" circular icon={X} />
+              <Button position="absolute" top="$3" right="$3" size="$2" circular icon={X} />
             </Dialog.Close>
           </Unspaced>
         </Dialog.Content>

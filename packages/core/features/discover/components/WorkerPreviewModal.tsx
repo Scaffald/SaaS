@@ -26,7 +26,7 @@ import {
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface WorkerPreviewModalProps {
   userId: string | null
@@ -333,14 +333,14 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       size="medium"
     >
       {showLoading ? (
-        <YStack py="$8" items="center" justify="center">
+        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
           <Spinner size="large" color="$blue10" />
-          <Text mt="$4" color="$color11">
+          <Text marginTop="$4" color="$color11">
             Loading profile...
           </Text>
         </YStack>
       ) : isLoading ? null : !profile ? (
-        <YStack py="$8" items="center">
+        <YStack paddingVertical="$8" alignItems="center">
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Profile not found
           </Text>
@@ -348,9 +348,15 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
       ) : (
         <>
           {/* Profile Header */}
-          <YStack gap="$2" items="center">
+          <YStack gap="$2" alignItems="center">
             {profile.avatar_url ? (
-              <YStack width={96} height={96} rounded="$10" overflow="hidden" bg="$color3">
+              <YStack
+                width={96}
+                height={96}
+                borderRadius="$10"
+                overflow="hidden"
+                backgroundColor="$color3"
+              >
                 <img
                   src={profile.avatar_url}
                   alt={profile.name || 'Worker'}
@@ -361,16 +367,16 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
               <YStack
                 width={96}
                 height={96}
-                rounded="$10"
-                bg="$blue4"
-                items="center"
-                justify="center"
+                borderRadius="$10"
+                backgroundColor="$blue4"
+                alignItems="center"
+                justifyContent="center"
               >
                 <User size={48} color="$blue10" />
               </YStack>
             )}
 
-            <YStack gap="$2" items="center">
+            <YStack gap="$2" alignItems="center">
               <Text fontSize="$8" fontWeight="700" color="$color12">
                 {profile.name}
               </Text>
@@ -384,12 +390,12 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             {/* Scaffald Score Badge */}
             {profile.gamified_score !== null && (
               <XStack
-                bg="$blue2"
-                px="$4"
-                py="$2"
-                rounded="$10"
+                backgroundColor="$blue2"
+                paddingHorizontal="$4"
+                paddingVertical="$2"
+                borderRadius="$10"
                 gap="$2"
-                items="center"
+                alignItems="center"
                 borderWidth={1}
                 borderColor="$blue5"
               >
@@ -409,7 +415,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {/* Quick Info */}
           <YStack gap="$2">
             {profile.location && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <MapPin size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {profile.location}
@@ -418,7 +424,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             )}
 
             {profile.hourly_rate_cents && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <DollarSign size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {formatHourlyRate(profile.hourly_rate_cents)}
@@ -431,7 +437,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                 ? profile.calculatedYearsOfExperience
                 : (profile.years_of_experience ?? null)
             ) !== null && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Award size={18} color="$color10" />
                 <Text fontSize="$4" color="$color11">
                   {resolveYearsOfExperience(
@@ -445,7 +451,12 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             )}
 
             {profile.open_to_work && (
-              <XStack bg="$green3" px="$3" py="$1.5" rounded="$3">
+              <XStack
+                backgroundColor="$green3"
+                paddingHorizontal="$3"
+                paddingVertical="$1.5"
+                borderRadius="$3"
+              >
                 <Text fontSize="$3" fontWeight="600" color="$green11">
                   Available for Work
                 </Text>
@@ -473,8 +484,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             <>
               <Separator />
               <YStack gap="$2">
-                <XStack items="center" gap="$2" justify="space-between">
-                  <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2" justifyContent="space-between">
+                  <XStack alignItems="center" gap="$2">
                     <Award size={18} color="$color12" />
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       Top Skills
@@ -495,21 +506,25 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
                           ? `${skill.displayCode} · ${skill.name}`
                           : skill.name
                     return (
-                      <XStack key={skill.id} justify="space-between" items="center">
+                      <XStack key={skill.id} justifyContent="space-between" alignItems="center">
                         <Text fontSize="$4" color="$color11">
                           {label}
                         </Text>
-                        <XStack gap="$2" items="center">
+                        <XStack gap="$2" alignItems="center">
                           <YStack
                             width={100}
                             height={8}
-                            bg="$color4"
-                            rounded="$2"
+                            backgroundColor="$color4"
+                            borderRadius="$2"
                             overflow="hidden"
                           >
-                            <YStack width={`${skill.proficiency}%`} height="100%" bg="$blue10" />
+                            <YStack
+                              width={`${skill.proficiency}%`}
+                              height="100%"
+                              backgroundColor="$blue10"
+                            />
                           </YStack>
-                          <YStack minW={30}>
+                          <YStack minWidth={30}>
                             <Text fontSize="$3" color="$color10">
                               {skill.proficiency}%
                             </Text>
@@ -528,8 +543,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             <>
               <Separator />
               <YStack gap="$2">
-                <XStack items="center" gap="$2" justify="space-between">
-                  <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2" justifyContent="space-between">
+                  <XStack alignItems="center" gap="$2">
                     <BadgeCheck size={18} color="$color12" />
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       Certifications
@@ -564,8 +579,8 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             <>
               <Separator />
               <YStack gap="$2">
-                <XStack items="center" gap="$2" justify="space-between">
-                  <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2" justifyContent="space-between">
+                  <XStack alignItems="center" gap="$2">
                     <Briefcase size={18} color="$color12" />
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       Recent Experience
@@ -598,7 +613,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
             <>
               <Separator />
               <YStack gap="$2">
-                <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2">
                   <GraduationCap size={18} color="$color12" />
                   <Text fontSize="$5" fontWeight="600" color="$color12">
                     Education
@@ -626,7 +641,7 @@ export function WorkerPreviewModal({ userId, open, onOpenChange }: WorkerPreview
           {/* Connect and Follow Buttons (only for other users' profiles) */}
           {!isOwnProfile && userId && (
             <>
-              <XStack gap="$2" flexWrap="wrap" justify="center">
+              <XStack gap="$2" flexWrap="wrap" justifyContent="center">
                 {/* Connect Button */}
                 {connectionButtonState && (
                   <>

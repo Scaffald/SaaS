@@ -1,6 +1,6 @@
 import { PROFICIENCY_LEVELS, getProficiencyLevel } from '../../constants/proficiency-levels'
 import type { ParentSkill } from '../../types/profile-skills-types'
-import { Button, Card, Separator, Slider, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Separator, Slider, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface SkillProficiencySelectorProps {
   /** Selected skill details */
@@ -38,7 +38,7 @@ export function SkillProficiencySelector({
       </Text>
 
       {/* Selected Skill */}
-      <Card bordered bg="$color3">
+      <Card bordered backgroundColor="$color3">
         <Card.Header>
           <YStack gap="$1">
             <Text fontSize="$4" fontWeight="600">
@@ -67,16 +67,16 @@ export function SkillProficiencySelector({
           step={1}
           size="$3"
         >
-          <Slider.Track bg="$color4" height={6}>
-            <Slider.TrackActive bg="$green9" />
+          <Slider.Track backgroundColor="$color4" height={6}>
+            <Slider.TrackActive backgroundColor="$green9" />
           </Slider.Track>
           <Slider.Thumb index={0} circular size="$1" />
         </Slider>
 
         {/* Current Level Display */}
-        <Card bordered bg="$color3">
+        <Card bordered backgroundColor="$color3">
           <Card.Header>
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <YStack>
                 <Text fontWeight="600" fontSize="$4" color="$green9">
                   {currentLevel?.label}
@@ -98,10 +98,10 @@ export function SkillProficiencySelector({
             <XStack
               key={level.value}
               gap="$2"
-              items="center"
+              alignItems="center"
               opacity={proficiency === level.value ? 1 : 0.5}
             >
-              <Text fontWeight="600" minW={30}>
+              <Text fontWeight="600" minWidth={30}>
                 {level.value}
               </Text>
               <Text flex={1} fontSize="$2">
@@ -124,4 +124,3 @@ export function SkillProficiencySelector({
     </YStack>
   )
 }
-

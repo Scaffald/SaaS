@@ -7,11 +7,11 @@ import type { SheetProps } from 'tamagui'
  * This ensures all action sheets have a consistent background globally
  */
 const SheetFrame = styled(TamaguiSheet.Frame, {
-  bg: '$color1',
+  backgroundColor: '$color1',
 })
 
 const SheetOverlay = styled(TamaguiSheet.Overlay, {
-  bg: '$color12',
+  backgroundColor: '$color12',
   opacity: 0.7,
 })
 
@@ -22,7 +22,7 @@ const SheetOverlay = styled(TamaguiSheet.Overlay, {
  * all Sheet.Frame instances have a consistent background color by default.
  *
  * Usage: Import Sheet from '@unicornlove/ui' and use it like Tamagui's Sheet.
- * All Sheet.Frame components will automatically have bg="$color1" applied.
+ * All Sheet.Frame components will automatically have backgroundColor="$color1" applied.
  */
 // Type definition for Sheet with static properties
 type SheetComponent = ComponentType<SheetProps> & {
@@ -30,12 +30,16 @@ type SheetComponent = ComponentType<SheetProps> & {
   Overlay: typeof SheetOverlay
   // Include other Sheet static properties from Tamagui
   Handle: typeof TamaguiSheet.Handle
+  ScrollView: typeof TamaguiSheet.ScrollView
+  Controlled: typeof TamaguiSheet.Controlled
 }
 
 // Use double assertion to bypass type inference for declaration generation
 export const Sheet = withStaticProperties(TamaguiSheet, {
   Frame: SheetFrame,
   Overlay: SheetOverlay,
+  ScrollView: TamaguiSheet.ScrollView,
+  Controlled: TamaguiSheet.Controlled,
 }) as unknown as SheetComponent
 
 export type { SheetProps }

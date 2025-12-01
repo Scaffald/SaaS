@@ -4,8 +4,8 @@ import { getChildRoutes } from '@app/core/utils/navigation/routeHierarchy'
 import { usePathname } from '@app/core/utils/usePathname'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-import { ScrollView, useWindowDimensions, XStack, YStack } from 'tamagui'
-import type { StackProps } from 'tamagui'
+import { ScrollView, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
+import type { StackProps } from '@unicornlove/ui'
 import { Breadcrumb, type BreadcrumbItem, Tab, TabGroup } from '@unicornlove/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
@@ -193,19 +193,19 @@ export const OfficeLayout = ({
   }
 
   return (
-    <ScrollView flex={1} bg="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" pt="$3" pb="$5">
+    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
+      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack px="$3" pt="$3" $md={{ px: '$7' }}>
-            <Breadcrumb items={displayBreadcrumbs} />
+          <XStack paddingHorizontal="$3" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+            <Breadcrumb alignItems={displayBreadcrumbs} />
           </XStack>
         )}
 
         {/* TabGroup Navigation - Top-level office routes */}
         {tabItems.length > 0 && (
           <>
-            <XStack px="$3" $md={{ px: '$7' }}>
+            <XStack paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
               <TabGroup
                 value={activeTabValue}
                 onValueChange={handleTabChange}
@@ -219,7 +219,7 @@ export const OfficeLayout = ({
               </TabGroup>
             </XStack>
             {secondaryTabItems.length > 0 && (
-              <XStack px="$3" $md={{ px: '$7' }}>
+              <XStack paddingHorizontal="$3" $md={{ paddingHorizontal: '$7' }}>
                 <TabGroup
                   value={activeSecondaryValue}
                   onValueChange={handleTabChange}
@@ -239,27 +239,27 @@ export const OfficeLayout = ({
         {/* Content Area - Use programmatic responsive flexDirection */}
         <XStack
           gap="$3"
-          p="$3"
+          padding="$3"
           flexDirection="column"
           {...restContentProps}
           $md={{
             gap: '$8',
-            p: '$7',
+            padding: '$7',
             flexDirection: 'row',
             ...(contentMdProps ?? {}),
           }}
         >
           {hasLeftContent && (
             <YStack
-              minW="100%"
+              minWidth="100%"
               width="100%"
-              maxW="100%"
+              maxWidth="100%"
               flexBasis="auto"
               {...restLeftContainerProps}
               $md={{
-                minW: hasBothColumns ? 300 : 'auto',
+                minWidth: hasBothColumns ? 300 : 'auto',
                 width: hasBothColumns ? '60%' : '100%',
-                maxW: hasBothColumns ? '60%' : '100%',
+                maxWidth: hasBothColumns ? '60%' : '100%',
                 flexBasis: hasBothColumns ? '60%' : 'auto',
                 flex: hasBothColumns ? 1 : undefined,
                 ...(leftMdProps ?? {}),
@@ -270,15 +270,15 @@ export const OfficeLayout = ({
           )}
           {hasRightContent && (
             <YStack
-              minW="100%"
+              minWidth="100%"
               width="100%"
-              maxW="100%"
+              maxWidth="100%"
               flexBasis="auto"
               {...restRightContainerProps}
               $md={{
-                minW: hasBothColumns ? 300 : 'auto',
+                minWidth: hasBothColumns ? 300 : 'auto',
                 width: hasBothColumns ? '40%' : '100%',
-                maxW: hasBothColumns ? '40%' : '100%',
+                maxWidth: hasBothColumns ? '40%' : '100%',
                 flexBasis: hasBothColumns ? '40%' : 'auto',
                 ...(rightMdProps ?? {}),
               }}

@@ -15,6 +15,7 @@ type DiscoverCardProps = Omit<CardProps, 'children'> & {
   tone?: DiscoverCardTone
   variant?: DiscoverCardTone
   elevationLevel?: DiscoverCardElevation
+  p?: CardProps['padding']
 }
 
 const elevationShadow = {
@@ -38,10 +39,10 @@ const elevationPressShadow = {
 const tonePalette: Record<
   DiscoverCardTone,
   {
-    baseBg: CardProps['bg']
-    hoverBg: CardProps['bg']
-    pressBg: CardProps['bg']
-    selectedBg: CardProps['bg']
+    baseBg: CardProps['backgroundColor']
+    hoverBg: CardProps['backgroundColor']
+    pressBg: CardProps['backgroundColor']
+    selectedBg: CardProps['backgroundColor']
     selectedBorderColor: CardProps['borderColor']
     hoverBorderColor: CardProps['borderColor']
     selectedShadow: string
@@ -107,7 +108,7 @@ export const DiscoverCard = memo(
         cursor: cursorProp,
         p,
         width,
-        bg: bgProp,
+        backgroundColor: bgProp,
         borderColor: borderColorProp,
         borderWidth: borderWidthProp,
         boxShadow: boxShadowProp,
@@ -146,7 +147,7 @@ export const DiscoverCard = memo(
               borderColor: resolvedSelected
                 ? palette.selectedBorderColor
                 : palette.hoverBorderColor,
-              bg: resolvedSelected ? palette.selectedBg : palette.hoverBg,
+              backgroundColor: resolvedSelected ? palette.selectedBg : palette.hoverBg,
               boxShadow: hoverShadow,
               ...(hoverStyleProp ?? {}),
             }
@@ -156,7 +157,7 @@ export const DiscoverCard = memo(
         resolvedInteractive && pressStyleProp !== null
           ? {
               scale: 0.98,
-              bg: resolvedSelected ? palette.selectedBg : palette.pressBg,
+              backgroundColor: resolvedSelected ? palette.selectedBg : palette.pressBg,
               boxShadow: pressShadow,
               ...(pressStyleProp ?? {}),
             }
@@ -167,8 +168,8 @@ export const DiscoverCard = memo(
           ref={ref}
           bordered
           cursor={resolvedInteractive ? (cursorProp ?? 'pointer') : cursorProp}
-          p={resolvedPadding}
-          bg={resolvedBg}
+          padding={resolvedPadding}
+          backgroundColor={resolvedBg}
           borderColor={resolvedBorderColor}
           borderWidth={resolvedBorderWidth}
           boxShadow={resolvedShadow}

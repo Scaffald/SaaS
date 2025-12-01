@@ -1,5 +1,5 @@
 import { CheckCircle2, Circle } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 interface Skill {
   id: string
@@ -48,16 +48,16 @@ export function ReviewStepCategoryTags({
             return (
               <XStack
                 key={`strength-${skill.id}`}
-                px="$3"
-                py="$2"
-                bg={isSelected ? '$green3' : '$color3'}
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                backgroundColor={isSelected ? '$green3' : '$color3'}
                 borderWidth={2}
                 borderColor={isSelected ? '$green8' : '$color5'}
-                rounded="$3"
+                borderRadius="$3"
                 gap="$2"
-                items="center"
+                alignItems="center"
                 cursor="pointer"
-                hoverStyle={{ bg: isSelected ? '$green4' : '$color4' }}
+                hoverStyle={{ backgroundColor: isSelected ? '$green4' : '$color4' }}
                 pressStyle={{ scale: 0.97 }}
                 onPress={() => onToggleStrength(skill.id)}
               >
@@ -90,16 +90,16 @@ export function ReviewStepCategoryTags({
             return (
               <XStack
                 key={`improvement-${skill.id}`}
-                px="$3"
-                py="$2"
-                bg={isSelected ? '$red3' : '$color3'}
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                backgroundColor={isSelected ? '$red3' : '$color3'}
                 borderWidth={2}
                 borderColor={isSelected ? '$red8' : '$color5'}
-                rounded="$3"
+                borderRadius="$3"
                 gap="$2"
-                items="center"
+                alignItems="center"
                 cursor="pointer"
-                hoverStyle={{ bg: isSelected ? '$red4' : '$color4' }}
+                hoverStyle={{ backgroundColor: isSelected ? '$red4' : '$color4' }}
                 pressStyle={{ scale: 0.97 }}
                 onPress={() => onToggleImprovement(skill.id)}
               >

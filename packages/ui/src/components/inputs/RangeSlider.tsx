@@ -38,8 +38,8 @@ export interface RangeSliderProps {
 
 const SliderTrack = styled(View, {
   position: 'relative',
-  bg: '$color4',
-  rounded: 6,
+  backgroundColor: '$color4',
+  borderRadius: 6,
   variants: {
     size: {
       small: {
@@ -58,7 +58,7 @@ const SliderTrack = styled(View, {
     disabled: {
       true: {
         opacity: 0.5,
-        bg: '$color3',
+        backgroundColor: '$color3',
       },
       false: {
         opacity: 1,
@@ -69,8 +69,8 @@ const SliderTrack = styled(View, {
 
 const SliderTrackActive = styled(View, {
   position: 'absolute',
-  bg: '$color10',
-  rounded: 6,
+  backgroundColor: '$color10',
+  borderRadius: 6,
   variants: {
     size: {
       small: {
@@ -88,8 +88,8 @@ const SliderTrackActive = styled(View, {
 
 const SliderThumb = styled(View, {
   position: 'absolute',
-  bg: 'white',
-  rounded: 50,
+  backgroundColor: 'white',
+  borderRadius: 50,
   borderWidth: 2,
   borderColor: '$color10',
   cursor: 'pointer',
@@ -100,17 +100,17 @@ const SliderThumb = styled(View, {
       small: {
         width: 18,
         height: 18,
-        t: -5,
+        top: -5,
       },
       medium: {
         width: 22,
         height: 22,
-        t: -6,
+        top: -6,
       },
       large: {
         width: 26,
         height: 26,
-        t: -7,
+        top: -7,
       },
     },
     disabled: {

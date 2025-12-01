@@ -3,7 +3,7 @@ import { DrawerLayout } from '@app/core/features/drawer/DrawerLayout'
 import { useOfficeRouteProtection } from '@app/core/utils/auth/useOfficeRouteProtection'
 import { useRoleProtectedRoute } from '@app/core/utils/auth/useRoleProtectedRoute'
 import { Drawer } from 'expo-router/drawer'
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 
 export default function OfficeLayout() {
   const { isAuthorized, isLoading } = useRoleProtectedRoute(['office'])
@@ -12,9 +12,9 @@ export default function OfficeLayout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading) {
     return (
-      <YStack flex={1} justify="center" items="center">
+      <YStack flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
-        <Text mt="$4">Loading...</Text>
+        <Text marginTop="$4">Loading...</Text>
       </YStack>
     )
   }

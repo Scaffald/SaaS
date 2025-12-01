@@ -56,7 +56,7 @@ export interface KanbanBoardProps {
  *     { id: 'new', title: 'New', color: '$blue9' },
  *     { id: 'screen', title: 'Screening', color: '$yellow9' }
  *   ]}
- *   items={[
+ *   alignItems={[
  *     { id: '1', columnId: 'new', applicantName: 'John', ... }
  *   ]}
  *   onDragEnd={(event) => {
@@ -140,14 +140,14 @@ export const KanbanBoard = ({
       onDragCancel={handleDragCancel}
     >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$3" pb="$4">
+        <XStack gap="$3" paddingBottom="$4">
           {columns.map((column) => {
             const columnItems = itemsByColumn[column.id] || []
             return (
               <DroppableColumn
                 key={column.id}
                 id={column.id}
-                items={columnItems.map((item) => item.id)}
+                alignItems={columnItems.map((item) => item.id)}
                 title={column.title}
                 count={columnItems.length}
                 color={column.color}

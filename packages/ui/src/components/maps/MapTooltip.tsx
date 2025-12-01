@@ -14,14 +14,14 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
   return (
     <View
       position="absolute"
-      bg="$background"
+      backgroundColor="$background"
       borderColor="$color6"
       borderWidth={1}
-      rounded="$4"
-      p="$3"
-      minW={200}
-      maxW={280}
-      z={1000}
+      borderRadius="$4"
+      padding="$3"
+      minWidth={200}
+      maxWidth={280}
+      zIndex={1000}
       style={{
         transform: 'translate(-50%, -100%)',
         top: position?.y ?? 0,
@@ -45,7 +45,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
         {/* Stats Row */}
         <XStack gap="$4" flexWrap="wrap">
           {data.score && (
-            <XStack gap="$1" items="center">
+            <XStack gap="$1" alignItems="center">
               <Text fontSize="$2" fontWeight="600" color="$color10">
                 Score:
               </Text>
@@ -56,7 +56,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
           )}
 
           {data.experienceYears && (
-            <XStack gap="$1" items="center">
+            <XStack gap="$1" alignItems="center">
               <Text fontSize="$2" fontWeight="600" color="$color10">
                 Experience:
               </Text>
@@ -67,7 +67,7 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
           )}
 
           {data.hourlyRate && (
-            <XStack gap="$1" items="center">
+            <XStack gap="$1" alignItems="center">
               <Text fontSize="$2" fontWeight="600" color="$color10">
                 Rate:
               </Text>
@@ -86,7 +86,13 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
             </Text>
             <XStack gap="$1" flexWrap="wrap">
               {data.skills.slice(0, 3).map((skill) => (
-                <View key={skill} bg="$blue4" px="$2" py="$1" rounded="$2">
+                <View
+                  key={skill}
+                  backgroundColor="$blue4"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  borderRadius="$2"
+                >
                   <Text fontSize="$1" color="$blue11">
                     {skill}
                   </Text>
@@ -111,16 +117,16 @@ export const MapTooltip = memo(({ data, visible, position }: MapTooltipProps) =>
               {data.badges.slice(0, 2).map((badge) => (
                 <View
                   key={badge.label}
-                  bg={
+                  backgroundColor={
                     badge.tone === 'success'
                       ? '$green4'
                       : badge.tone === 'warning'
                         ? '$yellow4'
                         : '$red4'
                   }
-                  px="$2"
-                  py="$1"
-                  rounded="$2"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  borderRadius="$2"
                 >
                   <Text
                     fontSize="$1"

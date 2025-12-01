@@ -1,6 +1,6 @@
 import { DashboardWidget } from '@unicornlove/ui'
 import type { ReactNode } from 'react'
-import { ScrollView, YStack, type YStackProps } from 'tamagui'
+import { ScrollView, YStack, type YStackProps } from '@unicornlove/ui'
 
 interface ProfileFormPanelProps extends YStackProps {
   /** Child content for the form panel */

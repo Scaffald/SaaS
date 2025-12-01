@@ -63,11 +63,11 @@ export function LoadingState({ message, size = 'medium', fullScreen = false }: L
   return (
     <YStack
       flex={fullScreen ? 1 : undefined}
-      items="center"
-      justify="center"
+      alignItems="center"
+      justifyContent="center"
       gap={spacing.md}
-      p={spacing.xl}
-      bg={fullScreen ? '$background' : 'transparent'}
+      padding={spacing.xl}
+      backgroundColor={fullScreen ? '$background' : 'transparent'}
       style={containerStyles}
     >
       {/* Spinner with teal color */}

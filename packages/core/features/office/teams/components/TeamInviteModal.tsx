@@ -10,7 +10,17 @@ import { UserSearch } from '@app/core/components/user'
 import { Mail, UserPlus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Input, Label, RadioGroup, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Input,
+  Label,
+  RadioGroup,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
@@ -152,11 +162,11 @@ export function TeamInviteModal({
             orientation="horizontal"
             gap="$3"
           >
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <RadioGroup.Item value="email" id="invite-email" size="$3" />
               <Label htmlFor="invite-email">Email invite</Label>
             </XStack>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <RadioGroup.Item value="user" id="invite-user" size="$3" />
               <Label htmlFor="invite-user">Existing member</Label>
             </XStack>
@@ -211,7 +221,7 @@ export function TeamInviteModal({
         <YStack gap="$2">
           <Label>Team role</Label>
           {isLoadingRoles ? (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Spinner size="small" />
               <Text color="$color11">Loading roles…</Text>
             </XStack>
@@ -271,7 +281,7 @@ export function TeamInviteModal({
           </Text>
         ) : null}
 
-        <XStack gap="$3" justify="flex-end">
+        <XStack gap="$3" justifyContent="flex-end">
           <Button
             variant="outlined"
             disabled={inviteMutation.isPending}
@@ -280,7 +290,7 @@ export function TeamInviteModal({
             Cancel
           </Button>
           <Button
-            bg="$color9"
+            backgroundColor="$color9"
             color="$color1"
             icon={inviteType === 'email' ? Mail : UserPlus}
             onPress={handleSubmit}

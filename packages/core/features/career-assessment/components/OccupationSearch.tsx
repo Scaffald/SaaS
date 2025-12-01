@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
 import { useEffect, useRef, useState } from 'react'
-import { Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface OccupationSearchProps {
   value?: string
@@ -130,7 +130,7 @@ export function OccupationSearch({
 
   return (
     <YStack gap="$2" position="relative" width="100%">
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Input
           flex={1}
           placeholder={placeholder}
@@ -146,17 +146,17 @@ export function OccupationSearch({
       {showDropdown && (
         <YStack
           position="absolute"
-          t="100%"
-          l={0}
-          r={0}
-          mt="$1"
+          top="100%"
+          left={0}
+          right={0}
+          marginTop="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$3"
-          bg="$background"
-          maxH={300}
+          borderRadius="$3"
+          backgroundColor="$background"
+          maxHeight={300}
           overflow="scroll"
-          z={1000}
+          zIndex={1000}
           shadowColor="$shadowColor"
           shadowOffset={{ width: 0, height: 2 }}
           shadowOpacity={0.1}
@@ -165,13 +165,13 @@ export function OccupationSearch({
           {occupations.map((occupation: Occupation) => (
             <XStack
               key={occupation.onetsoc_code}
-              p="$3"
+              padding="$3"
               gap="$2"
               hoverStyle={{
-                bg: '$backgroundHover',
+                backgroundColor: '$backgroundHover',
               }}
               pressStyle={{
-                bg: '$backgroundPress',
+                backgroundColor: '$backgroundPress',
               }}
               cursor="pointer"
               onPress={() => handleSelect(occupation)}
@@ -192,16 +192,16 @@ export function OccupationSearch({
       {debouncedSearch.length >= 2 && queryError && (
         <YStack
           position="absolute"
-          t="100%"
-          l={0}
-          r={0}
-          mt="$1"
+          top="100%"
+          left={0}
+          right={0}
+          marginTop="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$3"
-          bg="$background"
-          p="$3"
-          z={1000}
+          borderRadius="$3"
+          backgroundColor="$background"
+          padding="$3"
+          zIndex={1000}
         >
           <Text fontSize="$3" color="$red10">
             {queryError.message || 'Unable to load occupations. Please try again.'}
@@ -212,16 +212,16 @@ export function OccupationSearch({
       {debouncedSearch.length >= 2 && !isLoading && occupations.length === 0 && showResults && (
         <YStack
           position="absolute"
-          t="100%"
-          l={0}
-          r={0}
-          mt="$1"
+          top="100%"
+          left={0}
+          right={0}
+          marginTop="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$3"
-          bg="$background"
-          p="$3"
-          z={1000}
+          borderRadius="$3"
+          backgroundColor="$background"
+          padding="$3"
+          zIndex={1000}
         >
           <Text fontSize="$3" color="$color11">
             No occupations found for "{debouncedSearch}"

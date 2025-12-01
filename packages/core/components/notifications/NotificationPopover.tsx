@@ -14,7 +14,7 @@ import {
   type TextProps,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 export interface NotificationItem {
   id: string
@@ -40,28 +40,34 @@ export interface NotificationItem {
 type ButtonRef = ElementRef<typeof Button>
 
 const SEVERITY_PILL_STYLES = {
-  critical: { bg: '$red4', color: '$red11' },
-  important: { bg: '$yellow4', color: '$yellow11' },
-  info: { bg: '$blue4', color: '$blue11' },
+  critical: { backgroundColor: '$red4', color: '$red11' },
+  important: { backgroundColor: '$yellow4', color: '$yellow11' },
+  info: { backgroundColor: '$blue4', color: '$blue11' },
 } as const satisfies Record<
   NotificationItem['severity'],
-  { bg: StackProps['bg']; color: TextProps['color'] }
+  { backgroundColor: StackProps['backgroundColor']; color: TextProps['color'] }
 >
 
 interface PillProps {
   label: string
-  bg: StackProps['bg']
+  backgroundColor: StackProps['backgroundColor']
   color: TextProps['color']
 }
 
 const CHANNEL_PILL_STYLE = {
-  bg: '$color3',
+  backgroundColor: '$color3',
   color: '$color11',
-} as const satisfies Pick<PillProps, 'bg' | 'color'>
+} as const satisfies Pick<PillProps, 'backgroundColor' | 'color'>
 
-function Pill({ label, bg, color }: PillProps) {
+function Pill({ label, backgroundColor, color }: PillProps) {
   return (
-    <XStack bg={bg} px="$2" py="$1" rounded="$3" items="center">
+    <XStack
+      backgroundColor={backgroundColor}
+      paddingHorizontal="$2"
+      paddingVertical="$1"
+      borderRadius="$3"
+      alignItems="center"
+    >
       <Text fontSize="$1" fontWeight="600" color={color}>
         {label}
       </Text>
@@ -231,7 +237,7 @@ export function NotificationPopover({
           ref={triggerRef}
           borderStyle="unset"
           borderWidth={0}
-          bg="transparent"
+          backgroundColor="transparent"
           height={30}
           position="relative"
           aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
@@ -241,15 +247,15 @@ export function NotificationPopover({
           {unreadCount > 0 && (
             <YStack
               position="absolute"
-              t={-4}
-              r={-4}
-              bg="$red9"
-              rounded="$10"
-              px="$2"
-              py="$1"
-              minW={20}
-              items="center"
-              justify="center"
+              top={-4}
+              right={-4}
+              backgroundColor="$red9"
+              borderRadius="$10"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              minWidth={20}
+              alignItems="center"
+              justifyContent="center"
               style={{ zIndex: 1 }}
             >
               <Text fontSize="$1" fontWeight="600" color="white">
@@ -269,13 +275,13 @@ export function NotificationPopover({
       >
         {/* Header */}
         <XStack
-          justify="space-between"
-          items="center"
-          p="$4"
+          justifyContent="space-between"
+          alignItems="center"
+          padding="$4"
           borderBottomWidth={1}
           borderBottomColor="$borderColor"
         >
-          <XStack items="center" gap="$3">
+          <XStack alignItems="center" gap="$3">
             <Bell size={20} color="$color11" />
             <Text id="notifications-title" fontSize="$5" fontWeight="700" color="$color12">
               Notifications
@@ -287,7 +293,7 @@ export function NotificationPopover({
               circular
               icon={X}
               onPress={() => handleOpenChange(false)}
-              bg="transparent"
+              backgroundColor="transparent"
               borderWidth={0}
               aria-label="Close notifications"
             />
@@ -296,12 +302,12 @@ export function NotificationPopover({
 
         {/* Content */}
         {isLoading ? (
-          <YStack p="$4" items="center" gap="$3">
+          <YStack padding="$4" alignItems="center" gap="$3">
             <Spinner size="small" color="$color10" />
             <Text color="$color11">Loading notifications...</Text>
           </YStack>
         ) : notifications.length === 0 ? (
-          <YStack p="$4" items="center" gap="$3">
+          <YStack padding="$4" alignItems="center" gap="$3">
             <Bell size={32} color="$color8" opacity={0.5} />
             <Text color="$color11" style={{ textAlign: 'center' }}>
               No notifications
@@ -311,15 +317,15 @@ export function NotificationPopover({
             </Text>
           </YStack>
         ) : (
-          <ScrollView maxH={320} showsVerticalScrollIndicator={false}>
+          <ScrollView maxHeight={320} showsVerticalScrollIndicator={false}>
             <YStack>
               {/* Unread Section */}
               {unreadNotifications.length > 0 && (
                 <>
                   <XStack
-                    p="$3"
-                    px="$4"
-                    bg="$color2"
+                    padding="$3"
+                    paddingHorizontal="$4"
+                    backgroundColor="$color2"
                     borderBottomWidth={1}
                     borderBottomColor="$borderColor"
                   >
@@ -337,21 +343,25 @@ export function NotificationPopover({
                           <Card
                             role="menuitem"
                             tabIndex={0}
-                            p="$3"
-                            bg="$color3"
+                            padding="$3"
+                            backgroundColor="$color3"
                             borderWidth={1}
                             borderColor="$color5"
-                            rounded={0}
-                            pressStyle={{ bg: '$color4' }}
-                            hoverStyle={{ bg: '$color4' }}
+                            borderRadius={0}
+                            pressStyle={{ backgroundColor: '$color4' }}
+                            hoverStyle={{ backgroundColor: '$color4' }}
                             onPress={() => handleNotificationClick(notification)}
                             cursor="pointer"
                             aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <XStack gap="$3" items="flex-start">
+                            <XStack gap="$3" alignItems="flex-start">
                               <IconComponent size={18} color={iconColor} />
                               <YStack flex={1} gap="$2">
-                                <XStack justify="space-between" items="flex-start" gap="$2">
+                                <XStack
+                                  justifyContent="space-between"
+                                  alignItems="flex-start"
+                                  gap="$2"
+                                >
                                   <Text
                                     fontSize="$3"
                                     fontWeight="600"
@@ -361,7 +371,13 @@ export function NotificationPopover({
                                   >
                                     {notification.title}
                                   </Text>
-                                  <YStack width={6} height={6} bg="$blue9" rounded="$10" mt="$1" />
+                                  <YStack
+                                    width={6}
+                                    height={6}
+                                    backgroundColor="$blue9"
+                                    borderRadius="$10"
+                                    marginTop="$1"
+                                  />
                                 </XStack>
                                 <Text
                                   fontSize="$2"
@@ -371,19 +387,21 @@ export function NotificationPopover({
                                 >
                                   {notification.preview}
                                 </Text>
-                                <XStack gap="$2" items="center" mt="$1">
+                                <XStack gap="$2" alignItems="center" marginTop="$1">
                                   <Text fontSize="$1" color="$color10">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
                                   <Pill
                                     label={notification.severity.toUpperCase()}
-                                    bg={SEVERITY_PILL_STYLES[notification.severity].bg}
+                                    backgroundColor={
+                                      SEVERITY_PILL_STYLES[notification.severity].backgroundColor
+                                    }
                                     color={SEVERITY_PILL_STYLES[notification.severity].color}
                                   />
                                   {notification.channels?.length > 0 && (
                                     <Pill
                                       label={notification.channels.join(', ')}
-                                      bg={CHANNEL_PILL_STYLE.bg}
+                                      backgroundColor={CHANNEL_PILL_STYLE.backgroundColor}
                                       color={CHANNEL_PILL_STYLE.color}
                                     />
                                   )}
@@ -391,7 +409,7 @@ export function NotificationPopover({
                                 {notification.ctaLabel && (
                                   <Button
                                     size="$2"
-                                    mt="$2"
+                                    marginTop="$2"
                                     theme="info"
                                     onPress={() => handleNotificationClick(notification)}
                                   >
@@ -402,7 +420,7 @@ export function NotificationPopover({
                             </XStack>
                           </Card>
                           {index < unreadNotifications.length - 1 && (
-                            <Separator bg="$borderColor" />
+                            <Separator backgroundColor="$borderColor" />
                           )}
                         </YStack>
                       )
@@ -413,16 +431,16 @@ export function NotificationPopover({
 
               {/* Separator between sections */}
               {unreadNotifications.length > 0 && readNotifications.length > 0 && (
-                <Separator bg="$borderColor" />
+                <Separator backgroundColor="$borderColor" />
               )}
 
               {/* Read Section */}
               {readNotifications.length > 0 && (
                 <>
                   <XStack
-                    p="$3"
-                    px="$4"
-                    bg="$color2"
+                    padding="$3"
+                    paddingHorizontal="$4"
+                    backgroundColor="$color2"
                     borderBottomWidth={1}
                     borderBottomColor="$borderColor"
                   >
@@ -440,18 +458,18 @@ export function NotificationPopover({
                           <Card
                             role="menuitem"
                             tabIndex={0}
-                            p="$3"
-                            bg="$color2"
+                            padding="$3"
+                            backgroundColor="$color2"
                             borderWidth={0}
-                            rounded={0}
+                            borderRadius={0}
                             opacity={0.7}
-                            pressStyle={{ bg: '$color3', opacity: 1 }}
-                            hoverStyle={{ bg: '$color3', opacity: 1 }}
+                            pressStyle={{ backgroundColor: '$color3', opacity: 1 }}
+                            hoverStyle={{ backgroundColor: '$color3', opacity: 1 }}
                             onPress={() => handleNotificationClick(notification)}
                             cursor="pointer"
                             aria-label={`${notification.title}. ${notification.preview}. ${formatRelativeTime(notification.createdAt)}`}
                           >
-                            <XStack gap="$3" items="flex-start">
+                            <XStack gap="$3" alignItems="flex-start">
                               <IconComponent size={18} color={iconColor} />
                               <YStack flex={1} gap="$2">
                                 <Text
@@ -470,19 +488,21 @@ export function NotificationPopover({
                                 >
                                   {notification.preview}
                                 </Text>
-                                <XStack gap="$2" items="center" mt="$1">
+                                <XStack gap="$2" alignItems="center" marginTop="$1">
                                   <Text fontSize="$1" color="$color10">
                                     {formatRelativeTime(notification.createdAt)}
                                   </Text>
                                   <Pill
                                     label={notification.severity.toUpperCase()}
-                                    bg={SEVERITY_PILL_STYLES[notification.severity].bg}
+                                    backgroundColor={
+                                      SEVERITY_PILL_STYLES[notification.severity].backgroundColor
+                                    }
                                     color={SEVERITY_PILL_STYLES[notification.severity].color}
                                   />
                                   {notification.channels?.length > 0 && (
                                     <Pill
                                       label={notification.channels.join(', ')}
-                                      bg={CHANNEL_PILL_STYLE.bg}
+                                      backgroundColor={CHANNEL_PILL_STYLE.backgroundColor}
                                       color={CHANNEL_PILL_STYLE.color}
                                     />
                                   )}
@@ -490,7 +510,7 @@ export function NotificationPopover({
                                 {notification.ctaLabel && (
                                   <Button
                                     size="$2"
-                                    mt="$2"
+                                    marginTop="$2"
                                     theme="info"
                                     onPress={() => handleNotificationClick(notification)}
                                   >
@@ -500,7 +520,9 @@ export function NotificationPopover({
                               </YStack>
                             </XStack>
                           </Card>
-                          {index < readNotifications.length - 1 && <Separator bg="$borderColor" />}
+                          {index < readNotifications.length - 1 && (
+                            <Separator backgroundColor="$borderColor" />
+                          )}
                         </YStack>
                       )
                     })}

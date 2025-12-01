@@ -11,7 +11,7 @@ import {
   PreferencesWidget,
 } from '@app/core/features/profile/widgets'
 import { useUser } from '@app/core/utils/useUser'
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 
 /**
  * Profile Index - Own profile view

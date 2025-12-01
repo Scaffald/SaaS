@@ -10,7 +10,7 @@ import {
 } from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
-import { Card, TextArea } from 'tamagui'
+import { Card, TextArea } from '@unicornlove/ui'
 import { PaymentIntentForm } from '../../../payments/components/PaymentIntentForm'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 
@@ -238,7 +238,7 @@ export const ApplicationStatusChangeModal = ({
       }}
       title={isRejection ? 'Reject Application' : 'Mark as Hired'}
     >
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         {/* Confirmation message */}
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600">
@@ -263,7 +263,7 @@ export const ApplicationStatusChangeModal = ({
             />
 
             {initializingIntent && !paymentCompleted && (
-              <YStack gap="$1" items="center">
+              <YStack gap="$1" alignItems="center">
                 <Spinner size="small" />
                 <Text color="$color11" fontSize="$3">
                   Preparing payment form…
@@ -272,7 +272,7 @@ export const ApplicationStatusChangeModal = ({
             )}
 
             {!successFeeStatusQuery.isLoading && successFeeStatus?.status === 'upfront_paid' && (
-              <Card p="$3" bg="$green2" borderColor="$green6" borderWidth={1}>
+              <Card padding="$3" backgroundColor="$green2" borderColor="$green6" borderWidth={1}>
                 <Text fontWeight="600" color="$green11">
                   Upfront fee paid on{' '}
                   {successFeeStatus.upfrontPaidAt
@@ -289,8 +289,13 @@ export const ApplicationStatusChangeModal = ({
               hireSummary &&
               successFeeStatus?.status !== 'upfront_paid' && (
                 <YStack gap="$3">
-                  <Card p="$3" bg="$color2" borderColor="$borderColor" borderWidth={1}>
-                    <XStack gap="$2" items="center">
+                  <Card
+                    padding="$3"
+                    backgroundColor="$color2"
+                    borderColor="$borderColor"
+                    borderWidth={1}
+                  >
+                    <XStack gap="$2" alignItems="center">
                       <CustomCheckbox
                         aria-label="Acknowledge success-fee agreement"
                         checked={legalAccepted}
@@ -340,7 +345,7 @@ export const ApplicationStatusChangeModal = ({
         </YStack>
 
         {/* Action buttons */}
-        <XStack gap="$3" ml="auto">
+        <XStack gap="$3" marginLeft="auto">
           <Button
             data-testid="status-change-cancel-button"
             variant="outlined"
@@ -354,9 +359,9 @@ export const ApplicationStatusChangeModal = ({
               data-testid="status-change-confirm-button"
               onPress={handleConfirm}
               disabled={confirmDisabled}
-              bg={isRejection ? '$red9' : '$green9'}
+              backgroundColor={isRejection ? '$red9' : '$green9'}
               hoverStyle={{
-                bg: isRejection ? '$red10' : '$green10',
+                backgroundColor: isRejection ? '$red10' : '$green10',
               }}
             >
               {isLoading ? 'Processing...' : isRejection ? 'Reject Application' : 'Confirm Hire'}
@@ -494,11 +499,11 @@ function HireSummaryCard({
 }) {
   if (hasMissingData) {
     return (
-      <Card p="$3" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
+      <Card padding="$3" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
         <Text fontWeight="600" color="$yellow11">
           Add pay range information to this job before marking the hire.
         </Text>
-        <Text mt="$1" fontSize="$3" color="$yellow11">
+        <Text marginTop="$1" fontSize="$3" color="$yellow11">
           We use the job&apos;s pay range to calculate success fees and payment schedules.
         </Text>
       </Card>
@@ -510,24 +515,24 @@ function HireSummaryCard({
   }
 
   return (
-    <Card p="$4" borderWidth={1} borderColor="$borderColor">
+    <Card padding="$4" borderWidth={1} borderColor="$borderColor">
       <YStack gap="$2">
         <Text fontSize="$4" fontWeight="600">
           Success Fee Overview
         </Text>
-        <XStack justify="space-between">
+        <XStack justifyContent="space-between">
           <Text color="$color11">Total Hire Value</Text>
           <Text fontWeight="600">
             {currencyFormatter.format(hireSummary.totalHireValueCents / 100)}
           </Text>
         </XStack>
-        <XStack justify="space-between">
+        <XStack justifyContent="space-between">
           <Text color="$color11">Upfront ({hireSummary.upfrontPercentage}%)</Text>
           <Text fontWeight="600">
             {currencyFormatter.format(hireSummary.upfrontAmountCents / 100)}
           </Text>
         </XStack>
-        <XStack justify="space-between">
+        <XStack justifyContent="space-between">
           <Text color="$color11">Final ({hireSummary.finalPercentage}%)</Text>
           <Text fontWeight="600">
             {currencyFormatter.format(hireSummary.finalAmountCents / 100)} • Due{' '}

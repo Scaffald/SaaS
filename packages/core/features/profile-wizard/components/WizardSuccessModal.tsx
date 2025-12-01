@@ -1,6 +1,6 @@
 import { ArrowRight, Star, Trophy } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { Button, Card, H3, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, H3, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface WizardSuccessModalProps {
   completionPercentage: number
@@ -24,24 +24,24 @@ export const WizardSuccessModal = memo(function WizardSuccessModal({
   const benefitsToShow = unlockedBenefits.length > 0 ? unlockedBenefits : DEFAULT_BENEFITS
 
   return (
-    <YStack gap="$5" items="center" testID="profile-wizard-success-modal">
-      <YStack gap="$3" items="center">
+    <YStack gap="$5" alignItems="center" testID="profile-wizard-success-modal">
+      <YStack gap="$3" alignItems="center">
         <Trophy size={48} color="$yellow10" />
         <H3>Profile Complete!</H3>
-        <Paragraph color="$color11" text="center" style={{ maxWidth: 400 }}>
+        <Paragraph color="$color11" textAlign="center" style={{ maxWidth: 400 }}>
           Amazing work—your profile is {completionPercentage}% complete. You&apos;re now ready to be
           discovered by top employers and collaborators.
         </Paragraph>
       </YStack>
 
-      <Card bordered bg="$color2" style={{ maxWidth: 440, width: '100%' }}>
+      <Card bordered backgroundColor="$color2" style={{ maxWidth: 440, width: '100%' }}>
         <Card.Header padded gap="$3">
           <Text fontSize="$3" fontWeight="700" color="$color12">
             Benefits Unlocked
           </Text>
           <YStack gap="$2">
             {benefitsToShow.map((benefit) => (
-              <XStack key={benefit} gap="$2" items="center">
+              <XStack key={benefit} gap="$2" alignItems="center">
                 <Star size={18} color="$green9" />
                 <Text fontSize="$3" color="$color11">
                   {benefit}

@@ -3,7 +3,7 @@ import { OrganizationDocumentsPanel } from '@app/core/features/organizations/com
 import { OrganizationMembersPanel } from '@app/core/features/organizations/components/OrganizationMembersPanel'
 import { OrganizationSettingsPanel } from '@app/core/features/organizations/components/OrganizationSettingsPanel'
 import { useLocalSearchParams } from 'expo-router'
-import { Paragraph, YStack } from 'tamagui'
+import { Paragraph, YStack } from '@unicornlove/ui'
 
 export default function DashboardOrganizationsPage() {
   const params = useLocalSearchParams<{ organizationId?: string }>()

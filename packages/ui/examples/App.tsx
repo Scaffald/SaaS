@@ -8,12 +8,12 @@ export default function App() {
 
   return (
     <TamaguiProvider config={config}>
-      <YStack flex={1} bg="$background" p="$4" gap="$4">
+      <YStack flex={1} backgroundColor="$background" padding="$4" gap="$4">
         <Text fontSize="$8" fontWeight="600">
           @unicornlove/ui Example
         </Text>
 
-        <Card p="$4" bg="$color1" borderRadius="$4">
+        <Card padding="$4" backgroundColor="$color1" borderRadius="$4">
           <YStack gap="$3">
             <Text fontSize="$6" fontWeight="600">
               Form Components
@@ -23,7 +23,7 @@ export default function App() {
           </YStack>
         </Card>
 
-        <Card p="$4" bg="$color1" borderRadius="$4">
+        <Card padding="$4" backgroundColor="$color1" borderRadius="$4">
           <YStack gap="$3">
             <Text fontSize="$6" fontWeight="600">
               Theme Customization
@@ -37,13 +37,13 @@ export default function App() {
 
         <XStack gap="$2" flexWrap="wrap">
           <Button variant="outlined">Outlined</Button>
-          <Button bg="$blue9" color="white">
+          <Button backgroundColor="$blue9" color="white">
             Primary
           </Button>
-          <Button bg="$green9" color="white">
+          <Button backgroundColor="$green9" color="white">
             Success
           </Button>
-          <Button bg="$red9" color="white">
+          <Button backgroundColor="$red9" color="white">
             Danger
           </Button>
         </XStack>

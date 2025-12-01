@@ -9,7 +9,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Card, Spinner, Tabs, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
 
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -315,7 +315,7 @@ export function AdminBackgroundChecksPage() {
 
   if (isLoadingRoles) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$2">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
         <Spinner size="large" />
         <Text fontSize="$3" color="$color11">
           Verifying admin access…
@@ -326,7 +326,7 @@ export function AdminBackgroundChecksPage() {
 
   if (!isAdmin) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$3" px="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           Admin access required
         </Text>
@@ -346,8 +346,8 @@ export function AdminBackgroundChecksPage() {
   }
 
   return (
-    <YStack flex={1} bg="$background">
-      <YStack p="$4" gap="$4">
+    <YStack flex={1} backgroundColor="$background">
+      <YStack padding="$4" gap="$4">
         <YStack gap="$2">
           <Text fontSize="$6" fontWeight="700" color="$color12">
             Background check administration
@@ -359,8 +359,8 @@ export function AdminBackgroundChecksPage() {
 
         <XStack gap="$3" flexWrap="wrap">
           <Card
-            p="$3"
-            bg="$color2"
+            padding="$3"
+            backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
@@ -374,8 +374,8 @@ export function AdminBackgroundChecksPage() {
             </Text>
           </Card>
           <Card
-            p="$3"
-            bg="$color2"
+            padding="$3"
+            backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
@@ -389,8 +389,8 @@ export function AdminBackgroundChecksPage() {
             </Text>
           </Card>
           <Card
-            p="$3"
-            bg="$color2"
+            padding="$3"
+            backgroundColor="$color2"
             borderWidth={1}
             borderColor="$borderColor"
             flexGrow={1}
@@ -414,16 +414,16 @@ export function AdminBackgroundChecksPage() {
             orientation="horizontal"
             borderBottomWidth={1}
             borderBottomColor="$borderColor"
-            bg="$background"
+            backgroundColor="$background"
             scrollable
           >
-            <XStack gap="$3" px="$2">
+            <XStack gap="$3" paddingHorizontal="$2">
               <Tabs.Tab
                 value="checks"
                 borderBottomWidth={activeTab === 'checks' ? 2 : 0}
                 borderBottomColor="$blue10"
-                px="$3"
-                py="$2"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
               >
                 Checks
               </Tabs.Tab>
@@ -431,8 +431,8 @@ export function AdminBackgroundChecksPage() {
                 value="disputes"
                 borderBottomWidth={activeTab === 'disputes' ? 2 : 0}
                 borderBottomColor="$blue10"
-                px="$3"
-                py="$2"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
               >
                 Disputes
               </Tabs.Tab>
@@ -440,8 +440,8 @@ export function AdminBackgroundChecksPage() {
                 value="metrics"
                 borderBottomWidth={activeTab === 'metrics' ? 2 : 0}
                 borderBottomColor="$blue10"
-                px="$3"
-                py="$2"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
               >
                 Metrics
               </Tabs.Tab>
@@ -449,8 +449,8 @@ export function AdminBackgroundChecksPage() {
                 value="catalog"
                 borderBottomWidth={activeTab === 'catalog' ? 2 : 0}
                 borderBottomColor="$blue10"
-                px="$3"
-                py="$2"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
               >
                 Catalog
               </Tabs.Tab>
@@ -458,8 +458,8 @@ export function AdminBackgroundChecksPage() {
                 value="audit"
                 borderBottomWidth={activeTab === 'audit' ? 2 : 0}
                 borderBottomColor="$blue10"
-                px="$3"
-                py="$2"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
               >
                 Audit Log
               </Tabs.Tab>
@@ -468,8 +468,8 @@ export function AdminBackgroundChecksPage() {
         </Tabs>
 
         {activeTab === 'checks' ? (
-          <XStack gap="$3" flexWrap="wrap" justify="space-between" items="center">
-            <XStack gap="$2" items="center">
+          <XStack gap="$3" flexWrap="wrap" justifyContent="space-between" alignItems="center">
+            <XStack gap="$2" alignItems="center">
               <ResponsiveSelect
                 value={statusFilter}
                 onValueChange={(value) => setStatusFilter(value as 'all' | BackgroundCheckStatus)}
@@ -557,7 +557,7 @@ export function AdminBackgroundChecksPage() {
       ) : null}
 
       {activeTab === 'metrics' ? (
-        <YStack px="$4" pb="$4">
+        <YStack paddingHorizontal="$4" paddingBottom="$4">
           <AdminMetricsPanel
             metrics={metricsQuery.data}
             isLoading={metricsQuery.isLoading}
@@ -567,7 +567,7 @@ export function AdminBackgroundChecksPage() {
       ) : null}
 
       {activeTab === 'catalog' ? (
-        <YStack px="$4" pb="$4">
+        <YStack paddingHorizontal="$4" paddingBottom="$4">
           <AdminCatalogManager />
         </YStack>
       ) : null}

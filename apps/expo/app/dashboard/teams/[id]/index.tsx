@@ -15,7 +15,7 @@ import { AlertTriangle, RefreshCw, UserPlus } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -159,7 +159,7 @@ export default function DashboardTeamDetailPage() {
       </Button>
       <Button
         size="$2"
-        bg="$color9"
+        backgroundColor="$color9"
         color="$color1"
         icon={UserPlus}
         onPress={() => setIsInviteModalOpen(true)}
@@ -170,7 +170,7 @@ export default function DashboardTeamDetailPage() {
   )
 
   const mainContent = isLoading ? (
-    <YStack items="center" justify="center" py="$6" gap="$2">
+    <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
       <Spinner size="large" />
       <Text color="$color11">Loading team details…</Text>
     </YStack>
@@ -185,11 +185,23 @@ export default function DashboardTeamDetailPage() {
     <YStack gap="$4">
       <TeamOverviewCard team={team} stats={overviewStats} actions={overviewActions} />
 
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+      <Card
+        padding="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color1"
+        gap="$4"
+      >
         <TeamAnalyticsSummary teamId={teamId} />
       </Card>
 
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+      <Card
+        padding="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color1"
+        gap="$4"
+      >
         <TeamAutomationSettings
           teamId={teamId}
           allowSelfJoin={team.allowSelfJoin ?? false}
@@ -201,7 +213,13 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+      <Card
+        padding="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color1"
+        gap="$4"
+      >
         <TeamActivityFeed
           teamId={teamId}
           mentionOptions={mentionOptions}
@@ -209,18 +227,30 @@ export default function DashboardTeamDetailPage() {
         />
       </Card>
 
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+      <Card
+        padding="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color1"
+        gap="$4"
+      >
         <TeamMembersList teamId={teamId} organizationId={team.organizationId} />
       </Card>
 
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color1" gap="$4">
+      <Card
+        padding="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color1"
+        gap="$4"
+      >
         <TeamInvitationsList
           teamId={teamId}
           refreshKey={invitationRefreshKey}
           headerAction={
             <Button
               size="$2"
-              bg="$color9"
+              backgroundColor="$color9"
               color="$color1"
               icon={UserPlus}
               onPress={() => setIsInviteModalOpen(true)}
@@ -277,8 +307,14 @@ function ErrorCard({
   onAction: () => void
 }) {
   return (
-    <Card p="$4" borderWidth={1} borderColor="$borderColor" gap="$3" bg="$color2">
-      <XStack gap="$2" items="center">
+    <Card
+      padding="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+      gap="$3"
+      backgroundColor="$color2"
+    >
+      <XStack gap="$2" alignItems="center">
         <AlertTriangle size={20} color="$yellow10" />
         <Text fontSize="$6" fontWeight="700">
           {title}

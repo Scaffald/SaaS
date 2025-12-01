@@ -6,7 +6,7 @@ import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Control, Controller, useForm } from 'react-hook-form'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Card, Separator, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Separator, Spinner, Switch, Text, XStack, YStack } from '@unicornlove/ui'
 import { z } from 'zod'
 import { useTeamFormOptions } from '../teams/hooks/useTeamFormOptions'
 
@@ -210,7 +210,13 @@ export function TeamSettingsForm({
   const statusColor = status === 'error' ? '$red10' : status === 'saved' ? '$green10' : '$color11'
 
   return (
-    <Card p="$4" borderWidth={1} borderColor="$borderColor" gap="$4" bg="$color2">
+    <Card
+      padding="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+      gap="$4"
+      backgroundColor="$color2"
+    >
       <YStack gap="$2">
         <Text fontSize="$7" fontWeight="700">
           Team settings
@@ -312,8 +318,8 @@ export function TeamSettingsForm({
 
       <Separator />
 
-      <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
-        <XStack gap="$2" items="center">
+      <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
+        <XStack gap="$2" alignItems="center">
           {updateMutation.isPending ? <Spinner size="small" /> : null}
           <Text fontSize="$3" color={statusColor}>
             {statusLabel}
@@ -393,8 +399,14 @@ function SettingsToggle({
       control={control}
       name={name}
       render={({ field }) => (
-        <Card borderWidth={1} borderColor="$borderColor" bg="$color3" p="$3" gap="$2">
-          <XStack justify="space-between" items="center" gap="$3">
+        <Card
+          borderWidth={1}
+          borderColor="$borderColor"
+          backgroundColor="$color3"
+          padding="$3"
+          gap="$2"
+        >
+          <XStack justifyContent="space-between" alignItems="center" gap="$3">
             <YStack flex={1} gap="$1">
               <Text fontWeight="600">{label}</Text>
               <Text fontSize="$3" color="$color11">
@@ -420,13 +432,13 @@ function PermissionBanner() {
   return (
     <XStack
       gap="$3"
-      items="center"
+      alignItems="center"
       borderWidth={1}
       borderColor="$borderColor"
-      bg="$color3"
-      rounded="$4"
-      px="$3"
-      py="$2"
+      backgroundColor="$color3"
+      borderRadius="$4"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
     >
       <Info size={18} color="$color11" />
       <YStack gap="$1">

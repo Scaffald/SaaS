@@ -1,8 +1,8 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 
 /**
  * OccupationAssessmentWidget - Dashboard widget CTA for Occupation Preferences
@@ -15,7 +15,7 @@ export function OccupationAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
@@ -44,9 +44,9 @@ export function OccupationAssessmentWidget() {
           </Text>
         </YStack>
 
-        <StyledButton variant="primary" onPress={handleStart} size="$5">
-          <StyledButton.Text>Add Occupations</StyledButton.Text>
-        </StyledButton>
+        <Button variant="primary" onPress={handleStart} size="$5">
+          <Button.Text>Add Occupations</Button.Text>
+        </Button>
 
         <Text fontSize="$2" color="$color11">
           Takes about 1-2 minutes (optional)

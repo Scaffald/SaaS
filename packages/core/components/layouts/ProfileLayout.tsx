@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from 'tamagui'
+import { ScrollView, XStack, YStack } from '@unicornlove/ui'
 import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 import { ProfileTabs } from '../navigation/ProfileTabs'
@@ -35,28 +35,28 @@ export const ProfileLayout = ({
   const displayBreadcrumbs = breadcrumbItems || breadcrumbs
 
   return (
-    <ScrollView flex={1} bg="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" pt="$3" pb="$5">
+    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
+      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack px="$2" pt="$3" $md={{ px: '$7' }}>
-            <Breadcrumb items={displayBreadcrumbs} />
+          <XStack paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+            <Breadcrumb alignItems={displayBreadcrumbs} />
           </XStack>
         )}
 
         {/* Tab Navigation - positioned at top */}
-        {showTabs && <ProfileTabs mx="$7" mt="$3" />}
+        {showTabs && <ProfileTabs marginHorizontal="$7" marginTop="$3" />}
 
         {/* Content Area - Responsive two-column layout */}
         <XStack
           gap="$3"
-          px="$3"
-          pt="$3"
+          paddingHorizontal="$3"
+          paddingTop="$3"
           flexDirection="column"
           $md={{
             gap: '$8',
-            px: '$7',
-            pt: '$3',
+            paddingHorizontal: '$7',
+            paddingTop: '$3',
             flexDirection: 'row',
           }}
         >
@@ -64,7 +64,7 @@ export const ProfileLayout = ({
             width="100%"
             $md={{
               flex: 3,
-              minW: 300,
+              minWidth: 300,
             }}
           >
             {leftContent}
@@ -73,7 +73,7 @@ export const ProfileLayout = ({
             width="100%"
             $md={{
               flex: 2,
-              minW: 300,
+              minWidth: 300,
             }}
           >
             {rightContent}

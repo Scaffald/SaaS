@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useToastController } from '@tamagui/toast'
 import { CheckCircle2, X } from '@tamagui/lucide-icons'
 import { useCallback, useMemo } from 'react'
-import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type PendingRequestsData = NonNullable<
   ReturnType<typeof api.connections.getPendingRequests.useQuery>['data']
@@ -141,12 +141,12 @@ export function PendingRequestsList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
-                  <Avatar.Fallback bg="$orange4">
+                  <Avatar.Fallback backgroundColor="$orange4">
                     <Text fontSize="$3" fontWeight="600" color="$orange10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
@@ -230,12 +230,19 @@ export function PendingRequestsList() {
         },
       },
     ],
-    [acceptMutation.isPending, declineMutation.isPending, cancelMutation.isPending, handleAccept, handleDecline, handleCancel]
+    [
+      acceptMutation.isPending,
+      declineMutation.isPending,
+      cancelMutation.isPending,
+      handleAccept,
+      handleDecline,
+      handleCancel,
+    ]
   )
 
   if (isLoading) {
     return (
-      <YStack items="center" justify="center" py="$6" gap="$2">
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading pending requests…</Text>
       </YStack>
@@ -251,11 +258,11 @@ export function PendingRequestsList() {
         gap="$3"
         borderWidth={1}
         borderColor="$borderColor"
-        rounded="$4"
-        p="$4"
-        bg="$color2"
-        items="center"
-        justify="center"
+        borderRadius="$4"
+        padding="$4"
+        backgroundColor="$color2"
+        alignItems="center"
+        justifyContent="center"
         style={{ minHeight: 300 }}
       >
         <Text fontWeight="600">No pending requests</Text>

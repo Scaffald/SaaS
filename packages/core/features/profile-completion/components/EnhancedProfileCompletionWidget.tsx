@@ -4,7 +4,16 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import { ChevronLeft, ChevronRight, Sparkles } from '@tamagui/lucide-icons'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ViewStyle } from 'react-native'
-import { AnimatePresence, Button, Card, Progress, styled, Text, XStack, YStack } from 'tamagui'
+import {
+  AnimatePresence,
+  Button,
+  Card,
+  Progress,
+  styled,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { resolveSectionMetadata } from '../constants/sectionMetadata'
 import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import type { CompletionStatus } from '../hooks/useCompletionStatus'
@@ -129,7 +138,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
   if (isStatusLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$6">
+        <YStack gap="$4" alignItems="center" paddingVertical="$6">
           <Text color="$color11">Loading profile insights...</Text>
         </YStack>
       </DashboardWidget>
@@ -165,7 +174,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
         </YStack>
 
         <YStack gap="$3">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$5" fontWeight="600">
               {completionStatus.completionPercentage}%
             </Text>
@@ -175,21 +184,21 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
           </XStack>
           <Progress
             size="$3"
-            bg="$color4"
-            rounded="$5"
+            backgroundColor="$color4"
+            borderRadius="$5"
             height={18}
             value={completionStatus.completionPercentage}
           >
             <Progress.Indicator asChild>
-              <LinearGradient start={[0, 1]} end={[1, 0]} colors={gradient} rounded="$5" />
+              <LinearGradient start={[0, 1]} end={[1, 0]} colors={gradient} borderRadius="$5" />
             </Progress.Indicator>
           </Progress>
         </YStack>
 
-        <Card bordered bg="$color2">
+        <Card bordered backgroundColor="$color2">
           <Card.Header padded gap="$3">
-            <XStack justify="space-between" items="center">
-              <XStack gap="$2" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
+              <XStack gap="$2" alignItems="center">
                 <Sparkles size={20} color="$blue10" />
                 <Text fontWeight="600" fontSize="$3">
                   Profile Suggestion
@@ -204,8 +213,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     chromeless
                     width={32}
                     height={32}
-                    items="center"
-                    justify="center"
+                    alignItems="center"
+                    justifyContent="center"
                     icon={ChevronLeft}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View previous profile suggestion"
@@ -217,8 +226,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                     chromeless
                     width={32}
                     height={32}
-                    items="center"
-                    justify="center"
+                    alignItems="center"
+                    justifyContent="center"
                     icon={ChevronRight}
                     disabled={isBenefitLoading}
                     accessibilityLabel="View next profile suggestion"
@@ -231,7 +240,7 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
             <YStack gap="$3">
               <SuggestionViewport
                 height={suggestionHeight ?? undefined}
-                justify="center"
+                justifyContent="center"
                 style={suggestionHeight == null ? suggestionFallbackStyle : undefined}
               >
                 <AnimatePresence initial={false}>
@@ -276,13 +285,13 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
               </SuggestionViewport>
 
               {showCarouselControls && (
-                <XStack gap="$2" justify="center" items="center">
+                <XStack gap="$2" justifyContent="center" alignItems="center">
                   {benefitDotIndices.map((dotIndex) => (
                     <Button
                       key={`profile-suggestion-dot-${dotIndex}`}
                       width={20}
                       height={20}
-                      p={0}
+                      padding={0}
                       circular
                       chromeless
                       disabled={isBenefitLoading}
@@ -296,8 +305,8 @@ export const EnhancedProfileCompletionWidget = memo(function EnhancedProfileComp
                       <YStack
                         width={8}
                         height={8}
-                        rounded="$10"
-                        bg={dotIndex === currentBenefitIndex ? '$blue9' : '$color6'}
+                        borderRadius="$10"
+                        backgroundColor={dotIndex === currentBenefitIndex ? '$blue9' : '$color6'}
                         opacity={dotIndex === currentBenefitIndex ? 1 : 0.4}
                       />
                     </Button>

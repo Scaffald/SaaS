@@ -1,5 +1,5 @@
 import { BadgeCheck, Calendar } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from 'tamagui'
+import { Card, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface Certification {
   id: string
@@ -24,8 +24,8 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" p="$5">
-        <XStack gap="$2" items="center">
+      <YStack gap="$4" padding="$5">
+        <XStack gap="$2" alignItems="center">
           <BadgeCheck size={24} color="$blue10" />
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Certifications
@@ -34,8 +34,8 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
 
         <YStack gap="$3">
           {certifications.map((cert) => (
-            <Card key={cert.id} bordered bg="$color2">
-              <YStack gap="$2" p="$4">
+            <Card key={cert.id} bordered backgroundColor="$color2">
+              <YStack gap="$2" padding="$4">
                 <Text fontSize="$6" fontWeight="700" color="$color12">
                   {cert.name}
                 </Text>
@@ -45,7 +45,7 @@ export function UserProfileCertifications({ certifications }: UserProfileCertifi
                   </Text>
                 )}
                 {(cert.issue_date || cert.expiration_date) && (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Calendar size={16} color="$color10" />
                     <Text fontSize="$3" color="$color10">
                       {cert.issue_date && `Issued ${formatDate(cert.issue_date)}`}

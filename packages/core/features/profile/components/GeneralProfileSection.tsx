@@ -3,7 +3,7 @@ import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import {
   AddressForm,
   AvatarImagePicker,
-  UIButton as Button,
+  Button,
   DashboardWidget,
   PhoneNumberInput,
 } from '@unicornlove/ui'
@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Input, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 import {
   type GeneralProfileFormData,
   generalProfileDefaults,
@@ -160,7 +160,7 @@ export function GeneralProfileSection({
       } else {
         // Form data is compatible with API schema but has slightly different structure
         await updateProfileMutation.mutateAsync(
-          data as unknown as Parameters<typeof updateProfileMutation.mutateAsync>[0],
+          data as unknown as Parameters<typeof updateProfileMutation.mutateAsync>[0]
         )
       }
     } finally {
@@ -170,7 +170,7 @@ export function GeneralProfileSection({
 
   if (isLoadingProfile) {
     return (
-      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
+      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
         <Text>Loading profile...</Text>
       </YStack>
@@ -181,7 +181,7 @@ export function GeneralProfileSection({
     <DashboardWidget>
       <YStack gap="$4">
         {/* Avatar Section */}
-        <YStack gap="$3" items="center">
+        <YStack gap="$3" alignItems="center">
           <Text fontWeight="600">Profile Photo</Text>
           <AvatarImagePicker
             value={getAvatarUrl(avatarPath) || ''}
@@ -283,7 +283,7 @@ export function GeneralProfileSection({
                 placeholder="Tell us about yourself..."
                 value={typeof field.value === 'string' ? field.value : ''}
                 onChangeText={field.onChange}
-                minH={100}
+                minHeight={100}
                 borderColor={errors.about ? '$red8' : '$borderColor'}
                 editable={!readOnly}
                 opacity={readOnly ? 0.7 : 1}
@@ -330,7 +330,7 @@ export function GeneralProfileSection({
                 autoCapitalize="none"
                 editable={false}
                 opacity={0.7}
-                bg="$color2"
+                backgroundColor="$color2"
                 borderColor="$color6"
               />
             )}
@@ -399,7 +399,7 @@ export function GeneralProfileSection({
 
         {/* Save Button */}
         {!readOnly && (
-          <XStack justify="flex-end" pt="$4">
+          <XStack justifyContent="flex-end" paddingTop="$4">
             <Button
               variant="primary"
               onPress={handleSubmit(onSubmit)}

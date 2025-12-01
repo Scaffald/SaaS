@@ -57,18 +57,18 @@ export function BackgroundCheckNavigationMenu() {
           return (
             <Link key={item.key} href={item.path} asChild>
               <YStack
-                px="$4"
-                py="$3"
+                paddingHorizontal="$4"
+                paddingVertical="$3"
                 gap="$2"
-                rounded="$4"
+                borderRadius="$4"
                 borderWidth={1}
                 borderColor={isActive ? '$blue7' : '$color6'}
-                bg={isActive ? '$blue4' : '$color2'}
+                backgroundColor={isActive ? '$blue4' : '$color2'}
                 hoverStyle={{
-                  bg: isActive ? '$blue5' : '$color3',
+                  backgroundColor: isActive ? '$blue5' : '$color3',
                 }}
                 pressStyle={{
-                  bg: isActive ? '$blue6' : '$color4',
+                  backgroundColor: isActive ? '$blue6' : '$color4',
                 }}
                 cursor="pointer"
                 animation="quick"
@@ -82,7 +82,7 @@ export function BackgroundCheckNavigationMenu() {
                   </Text>
                 </YStack>
 
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Text fontSize="$3" fontWeight="600" color={isActive ? '$blue12' : '$color11'}>
                     View workspace
                   </Text>

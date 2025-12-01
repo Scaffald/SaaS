@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 import { memo } from 'react'
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 import type { JobMapPin } from '../hooks/useJobs'
 import type { OrganizationMapPin } from '../hooks/useOrganizations'
 import type { TalentProfile } from '../types'
@@ -30,14 +30,14 @@ export const ResultsRail = memo(function ResultsRail({
   return (
     <YStack
       position="absolute"
-      t={0}
-      r={0}
+      top={0}
+      right={0}
       height="100%"
       width={320}
-      minW={320}
-      maxW={320}
+      minWidth={320}
+      maxWidth={320}
       gap="$3"
-      px="$3"
+      paddingHorizontal="$3"
       overflow="hidden"
       animation="quick"
       // Hide on mobile ($sm and below), show on desktop ($md)
@@ -45,14 +45,14 @@ export const ResultsRail = memo(function ResultsRail({
       $md={{ display: 'flex' }}
       x={isVisible ? 0 : 320}
       opacity={isVisible ? 1 : 0}
-      bg="$color2"
+      backgroundColor="$color2"
       borderLeftWidth={1}
       borderColor="$borderColor"
       shadowColor="$shadowColor"
       shadowOffset={{ width: -4, height: 0 }}
       shadowOpacity={0.1}
       shadowRadius={12}
-      z={10}
+      zIndex={10}
     >
       <ResultList
         ref={resultListRef}

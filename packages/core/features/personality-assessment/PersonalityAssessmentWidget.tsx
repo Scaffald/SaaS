@@ -1,8 +1,8 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 /**
  * PersonalityAssessmentWidget - Dashboard widget for personality assessment
@@ -22,7 +22,7 @@ export function PersonalityAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
@@ -74,7 +74,7 @@ export function PersonalityAssessmentWidget() {
         {/* Progress Display */}
         {hasStarted && (
           <YStack gap={spacing.xs}>
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 {getStepLabel(currentStep)}
               </Text>
@@ -83,7 +83,7 @@ export function PersonalityAssessmentWidget() {
               </Text>
             </XStack>
             <Progress value={completionScore} max={100}>
-              <Progress.Indicator animation="bouncy" bg="$blue7" />
+              <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
             </Progress>
             <Text fontSize="$2" color="$color11">
               {hasStarted ? 'Continue where you left off' : 'Start your assessment'}
@@ -92,16 +92,16 @@ export function PersonalityAssessmentWidget() {
         )}
 
         {/* Action Button */}
-        <StyledButton
+        <Button
           variant="primary"
           onPress={handleStart}
           size="$5"
-          mt={hasStarted ? spacing.xs : spacing.md}
+          marginTop={hasStarted ? spacing.xs : spacing.md}
         >
-          <StyledButton.Text>
+          <Button.Text>
             {hasStarted ? 'Continue Assessment' : 'Start Assessment'}
-          </StyledButton.Text>
-        </StyledButton>
+          </Button.Text>
+        </Button>
 
         {!hasStarted && (
           <Text fontSize="$2" color="$color11">

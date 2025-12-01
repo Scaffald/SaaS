@@ -1,5 +1,5 @@
 import { Award } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from 'tamagui'
+import { Card, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface Skill {
   id: string
@@ -19,8 +19,8 @@ interface UserProfileSkillsProps {
 export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
   return (
     <Card elevate bordered>
-      <YStack gap="$4" p="$5">
-        <XStack gap="$2" items="center">
+      <YStack gap="$4" padding="$5">
+        <XStack gap="$2" alignItems="center">
           <Award size={24} color="$blue10" />
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Skills & Proficiency
@@ -30,7 +30,7 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
         <YStack gap="$3">
           {skills.map((skill) => (
             <YStack key={skill.id} gap="$2">
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <YStack flex={1}>
                   <Text fontSize="$5" fontWeight="600" color="$color12">
                     {typeof skill.label === 'string' && skill.label.length > 0
@@ -49,8 +49,8 @@ export function UserProfileSkills({ skills }: UserProfileSkillsProps) {
                   {skill.proficiency}%
                 </Text>
               </XStack>
-              <XStack height={8} bg="$color3" rounded="$2" overflow="hidden">
-                <XStack width={`${skill.proficiency}%`} bg="$blue10" />
+              <XStack height={8} backgroundColor="$color3" borderRadius="$2" overflow="hidden">
+                <XStack width={`${skill.proficiency}%`} backgroundColor="$blue10" />
               </XStack>
             </YStack>
           ))}

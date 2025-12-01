@@ -3,7 +3,7 @@ import { useUser } from '@app/core/utils/useUser'
 import { ResponsiveModal } from '@unicornlove/ui'
 import { AlertTriangle, CheckCircle } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { resetProfileSyncError, useAdaptiveProfileSync } from '../profile/utils/profile-sync-store'
 import { ReviewWizard } from '../reviews/components/ReviewWizard'
 import { UserProfileAbout } from './user-profile-about'
@@ -62,9 +62,9 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" py="$10">
+      <YStack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
         <Spinner size="large" color="$blue10" />
-        <Text mt="$4" color="$color11">
+        <Text marginTop="$4" color="$color11">
           Loading profile...
         </Text>
       </YStack>
@@ -73,7 +73,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
 
   if (!profile) {
     return (
-      <YStack flex={1} items="center" justify="center" py="$10">
+      <YStack flex={1} alignItems="center" justifyContent="center" paddingVertical="$10">
         <Text color="$red10" fontSize="$6" fontWeight="600">
           Profile not found
         </Text>
@@ -84,14 +84,14 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
   return (
     <>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <YStack gap="$6" p="$4" pb="$8">
-          <XStack justify="flex-end">
+        <YStack gap="$6" padding="$4" paddingBottom="$8">
+          <XStack justifyContent="flex-end">
             <YStack
-              px="$3"
-              py="$2"
-              rounded="$4"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              borderRadius="$4"
               borderWidth={1}
-              bg={
+              backgroundColor={
                 syncStatus === 'syncing' ? '$blue3' : syncStatus === 'error' ? '$red3' : '$green3'
               }
               borderColor={
@@ -100,7 +100,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
               gap="$1"
               style={{ maxWidth: 200 }}
             >
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 {syncStatus === 'syncing' ? (
                   <Spinner size="small" color="$blue10" />
                 ) : syncStatus === 'error' ? (
@@ -127,7 +127,7 @@ export function UserProfileLeft({ userId }: UserProfileLeftProps) {
                 </Text>
               </XStack>
               {syncStatus === 'error' && (
-                <Button size="$2" variant="outlined" onPress={resetProfileSyncError} mt="$2">
+                <Button size="$2" variant="outlined" onPress={resetProfileSyncError} marginTop="$2">
                   Dismiss
                 </Button>
               )}

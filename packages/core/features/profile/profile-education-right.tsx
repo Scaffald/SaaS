@@ -3,7 +3,7 @@ import { DashboardWidget, Dialog } from '@unicornlove/ui'
 import { AlertCircle, Calendar, GraduationCap, MapPin, Pencil, Trash2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
-import { Button, H4, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, H4, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { ProfileEmptyState } from './components'
 import type { EducationEntry } from './types/education'
 import { formatDateRange } from './utils/date-formatting'
@@ -57,7 +57,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading education data...</Text>
         </YStack>
@@ -69,7 +69,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
   if (educationQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load education data</Text>
         </YStack>
       </DashboardWidget>
@@ -80,7 +80,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
     <DashboardWidget>
       <H4>Saved Education</H4>
 
-      <Text color="$color11" fontSize="$3" mb="$4">
+      <Text color="$color11" fontSize="$3" marginBottom="$4">
         Your education history is displayed here. Edit entries in the left panel.
       </Text>
 
@@ -99,25 +99,25 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
             return (
               <YStack
                 key={edu.id}
-                p="$4"
+                padding="$4"
                 gap="$3"
-                bg="$background"
+                backgroundColor="$background"
                 borderWidth={1}
                 borderColor="$borderColor"
-                rounded="$4"
+                borderRadius="$4"
                 hoverStyle={{
                   borderColor: '$borderColorHover',
-                  bg: '$backgroundHover',
+                  backgroundColor: '$backgroundHover',
                 }}
               >
                 {/* Institution Name with Verification Badge */}
                 <YStack gap="$1">
-                  <XStack gap="$2" items="center" flexWrap="wrap">
+                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
                     <Text fontSize="$6" fontWeight="700" color="$color12">
                       {edu.institution_name}
                     </Text>
                     {!edu.is_verified && (
-                      <XStack gap="$1" items="center">
+                      <XStack gap="$1" alignItems="center">
                         <AlertCircle size={14} color="$orange10" />
                         <Text fontSize="$1" color="$orange10">
                           Pending verification
@@ -128,7 +128,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                   {/* Current Education Badge */}
                   {edu.is_current && (
-                    <XStack gap="$1" items="center">
+                    <XStack gap="$1" alignItems="center">
                       <Text fontSize="$2" fontWeight="600" color="$blue10">
                         Current
                       </Text>
@@ -170,7 +170,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                         Are you sure you want to delete this education entry? This action cannot be
                         undone.
                       </Dialog.Description>
-                      <XStack gap="$3" justify="flex-end" mt="$4">
+                      <XStack gap="$3" justifyContent="flex-end" marginTop="$4">
                         <Button variant="outlined" onPress={() => setDeleteDialogOpen(null)}>
                           Cancel
                         </Button>
@@ -188,9 +188,9 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                 {/* Details */}
                 <YStack gap="$2">
-                  <XStack items="center" flexWrap="wrap" gap="$3">
+                  <XStack alignItems="center" flexWrap="wrap" gap="$3">
                     {(edu.start_date || edu.end_date || edu.is_current) && (
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         <Calendar size={16} color="$color11" />
                         <Text fontSize="$2" color="$color11">
                           {formatDateRange(
@@ -203,7 +203,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
                       </XStack>
                     )}
 
-                    <XStack gap="$2" ml="auto">
+                    <XStack gap="$2" marginLeft="auto">
                       <Button
                         size="$2"
                         variant="outlined"
@@ -235,7 +235,7 @@ export function ProfileEducationRight({ onEditEntry }: ProfileEducationRightProp
 
                   {/* Location */}
                   {edu.location && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <MapPin size={16} color="$color11" />
                       <Text fontSize="$2" color="$color11">
                         {edu.location}

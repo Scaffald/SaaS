@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { CooldownStep } from './components/CooldownStep'
 import { IPIPTestStep } from './components/IPIPTestStep'
 import { LuscherTestStep } from './components/LuscherTestStep'
@@ -46,7 +46,7 @@ export function PersonalityAssessmentWizard() {
   // Loading state
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$4" p="$8">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <Spinner size="large" />
         <Text color="$color11">Loading assessment...</Text>
       </YStack>
@@ -56,7 +56,7 @@ export function PersonalityAssessmentWizard() {
   // Error state
   if (error) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$4" p="$8">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <AlertCircle size={48} color="$red10" />
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading assessment
@@ -88,11 +88,11 @@ export function PersonalityAssessmentWizard() {
   const canGoPrevious = currentStep !== 'luscher1' && currentStep !== 'cooldown'
 
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} backgroundColor="$background">
       {/* Header */}
       <YStack
-        p="$4"
-        bg="$background"
+        padding="$4"
+        backgroundColor="$background"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
         gap="$3"
@@ -112,7 +112,7 @@ export function PersonalityAssessmentWizard() {
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <YStack p="$4" gap="$4">
+        <YStack padding="$4" gap="$4">
           {currentStep === 'luscher1' && (
             <LuscherTestStep
               step="luscher1"
@@ -211,18 +211,21 @@ export function PersonalityAssessmentWizard() {
             <ResultsStep
               assessment={assessment}
               onGenerateReport={(luscherResults) => {
-                generateReport.mutate({ luscherResults }, {
-                  onSuccess: () => {
-                    setCurrentStep('completed')
-                  },
-                })
+                generateReport.mutate(
+                  { luscherResults },
+                  {
+                    onSuccess: () => {
+                      setCurrentStep('completed')
+                    },
+                  }
+                )
               }}
               isLoading={generateReport.isPending}
             />
           )}
 
           {currentStep === 'completed' && (
-            <YStack gap="$4" items="center" p="$8">
+            <YStack gap="$4" alignItems="center" padding="$8">
               <Text fontSize="$8" fontWeight="bold" color="$green10">
                 ✓ Assessment Complete!
               </Text>
@@ -237,8 +240,8 @@ export function PersonalityAssessmentWizard() {
 
       {/* Navigation Footer */}
       {currentStep !== 'completed' && (
-        <YStack p="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <XStack gap="$3" justify="space-between">
+        <YStack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <XStack gap="$3" justifyContent="space-between">
             <Button
               size="$4"
               variant="outlined"

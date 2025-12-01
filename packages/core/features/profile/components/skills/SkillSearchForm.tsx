@@ -1,6 +1,6 @@
 import { CustomCheckbox } from '@unicornlove/ui'
 import { useCallback } from 'react'
-import { Label, Text, XStack, YStack } from 'tamagui'
+import { Label, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 import { SimpleSkillAutocomplete } from './SimpleSkillAutocomplete'
 
@@ -55,14 +55,14 @@ export function SkillSearchForm({
 
   return (
     <YStack gap="$4">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontWeight="600" fontSize="$4">
           Search for Skills
         </Text>
 
         {/* Taxonomy Checkboxes */}
-        <XStack gap="$3" items="center">
-          <XStack gap="$2" items="center">
+        <XStack gap="$3" alignItems="center">
+          <XStack gap="$2" alignItems="center">
             <CustomCheckbox
               checked={searchCSI}
               onCheckedChange={onSearchCSIChange}
@@ -74,7 +74,7 @@ export function SkillSearchForm({
             </Label>
           </XStack>
 
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <CustomCheckbox
               checked={searchONET}
               onCheckedChange={onSearchONETChange}

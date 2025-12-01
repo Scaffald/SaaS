@@ -10,7 +10,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Input, Label, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type PackageSummary = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -214,7 +214,7 @@ export function OrganizationBackgroundCheckRequestForm() {
 
   if (isLoadingOrganizations || isLoadingPackages) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$2">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
         <Spinner size="large" />
         <Text fontSize="$3" color="$color11">
           Loading options…
@@ -225,7 +225,7 @@ export function OrganizationBackgroundCheckRequestForm() {
 
   if (!organizations.length) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$3" px="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           No organizations available
         </Text>
@@ -238,7 +238,7 @@ export function OrganizationBackgroundCheckRequestForm() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <YStack flex={1} gap="$4" px="$4" py="$6">
+      <YStack flex={1} gap="$4" paddingHorizontal="$4" paddingVertical="$6">
         <YStack gap="$1">
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Request Background Check
@@ -364,8 +364,8 @@ export function OrganizationBackgroundCheckRequestForm() {
             />
           </YStack>
 
-          <YStack gap="$2" p="$3" bg="$color3" rounded="$4">
-            <XStack gap="$2" items="center">
+          <YStack gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$4">
+            <XStack gap="$2" alignItems="center">
               <CircleAlert size={18} color="$color11" />
               <Text fontSize="$3" fontWeight="600" color="$color12">
                 Cost summary
@@ -384,7 +384,7 @@ export function OrganizationBackgroundCheckRequestForm() {
           </YStack>
 
           {requestError && (
-            <YStack bg="$red3" p="$3" rounded="$4">
+            <YStack backgroundColor="$red3" padding="$3" borderRadius="$4">
               <Text color="$red11">{requestError}</Text>
             </YStack>
           )}
@@ -432,7 +432,7 @@ export function OrganizationBackgroundCheckRequestForm() {
           <Button
             size="$3"
             variant="outlined"
-            mt="$2"
+            marginTop="$2"
             onPress={() => {
               if (!confirmPaymentMutation.isPending) {
                 setPaymentSession(null)

@@ -4,7 +4,7 @@ import { useUser } from '@app/core/utils/useUser'
 import { useLocalSearchParams, useRouter, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 
 export default function RootIndex() {
   const { user, isPending } = useUser()
@@ -117,7 +117,7 @@ export default function RootIndex() {
   // Show loading state while verifying magic link
   if (isVerifying) {
     return (
-      <YStack flex={1} justify="center" items="center">
+      <YStack flex={1} justifyContent="center" alignItems="center">
         <Text>Verifying your email...</Text>
       </YStack>
     )
@@ -126,11 +126,11 @@ export default function RootIndex() {
   // Show error if verification failed
   if (verificationError) {
     return (
-      <YStack flex={1} justify="center" items="center" p="$4">
-        <Text color="$red10" text="center" mb="$4">
+      <YStack flex={1} justifyContent="center" alignItems="center" padding="$4">
+        <Text color="$red10" textAlign="center" marginBottom="$4">
           Verification failed: {verificationError}
         </Text>
-        <Text text="center">Please try requesting a new magic link.</Text>
+        <Text textAlign="center">Please try requesting a new magic link.</Text>
       </YStack>
     )
   }
@@ -138,7 +138,7 @@ export default function RootIndex() {
   // Show loading state while checking auth or waiting for navigation
   if (isPending || !isRouterReady || !hasNavigated) {
     return (
-      <YStack flex={1} justify="center" items="center">
+      <YStack flex={1} justifyContent="center" alignItems="center">
         <Text>Loading...</Text>
       </YStack>
     )
@@ -146,7 +146,7 @@ export default function RootIndex() {
 
   // This should rarely be reached, but provides a fallback
   return (
-    <YStack flex={1} justify="center" items="center">
+    <YStack flex={1} justifyContent="center" alignItems="center">
       <Text>Initializing...</Text>
     </YStack>
   )

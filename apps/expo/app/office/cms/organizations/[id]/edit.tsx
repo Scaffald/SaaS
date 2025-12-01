@@ -8,7 +8,7 @@ export default function EditOrganizationPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <YStack>Invalid organization ID</YStack>
       </YStack>
     )
@@ -18,7 +18,7 @@ export default function EditOrganizationPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
       </YStack>
     )
@@ -26,7 +26,7 @@ export default function EditOrganizationPage() {
 
   if (!data?.organization) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <YStack>Organization not found</YStack>
       </YStack>
     )

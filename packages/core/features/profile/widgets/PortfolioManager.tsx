@@ -1,12 +1,12 @@
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
-import { extractPlainText, plainTextToTipTap, RichTextEditor, UIButton } from '@unicornlove/ui'
+import { Button, extractPlainText, plainTextToTipTap, RichTextEditor } from '@unicornlove/ui'
 import { ImageUpload } from '@app/core/components/ui'
 import { ArrowDown, ArrowUp, Edit3, Image as ImageIcon, Plus } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { JSONContent } from '@tiptap/core'
 import { useCallback, useState } from 'react'
-import { H4, Image, Input, Text, XStack, YStack } from 'tamagui'
+import { H4, Image, Input, Text, XStack, YStack } from '@unicornlove/ui'
 import { ProfileFormPanel, ProfileResultCard, ProfileResultsPanel } from '../components'
 import type { ProfileWidgetProps } from './types'
 
@@ -375,7 +375,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             <Text fontSize="$3" color="$color11">
               Add projects, work samples, or achievements to showcase your skills and experience.
             </Text>
-            <UIButton
+            <Button
               icon={Plus}
               onPress={() => {
                 setIsAdding(true)
@@ -384,15 +384,15 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
               }}
             >
               Add Portfolio Item
-            </UIButton>
+            </Button>
           </YStack>
         ) : (
           <YStack gap="$4">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <H4>{editingId ? 'Edit Portfolio Item' : 'Add Portfolio Item'}</H4>
-              <UIButton size="$2" variant="outlined" onPress={handleCancel}>
+              <Button size="$2" variant="outlined" onPress={handleCancel}>
                 Cancel
-              </UIButton>
+              </Button>
             </XStack>
 
             {/* Title */}
@@ -435,17 +435,17 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
             </YStack>
 
             {/* Save Button */}
-            <XStack gap="$2" justify="flex-end">
-              <UIButton variant="outlined" onPress={handleCancel}>
+            <XStack gap="$2" justifyContent="flex-end">
+              <Button variant="outlined" onPress={handleCancel}>
                 Cancel
-              </UIButton>
-              <UIButton
+              </Button>
+              <Button
                 variant="primary"
                 onPress={handleSave}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
                 {editingId ? 'Update' : 'Add'} Portfolio Item
-              </UIButton>
+              </Button>
             </XStack>
           </YStack>
         )}
@@ -473,14 +473,14 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                 actions={
                   <XStack gap="$2">
                     {/* Reorder buttons */}
-                    <UIButton
+                    <Button
                       size="$2"
                       variant="outlined"
                       icon={ArrowUp}
                       onPress={() => handleMoveUp(index)}
                       disabled={index === 0 || reorderMutation.isPending}
                     />
-                    <UIButton
+                    <Button
                       size="$2"
                       variant="outlined"
                       icon={ArrowDown}
@@ -488,7 +488,7 @@ export function PortfolioManager({ userId }: ProfileWidgetProps) {
                       disabled={index === portfolioItems.length - 1 || reorderMutation.isPending}
                     />
                     {/* Edit button */}
-                    <UIButton
+                    <Button
                       size="$2"
                       variant="outlined"
                       icon={Edit3}

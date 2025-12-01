@@ -1,8 +1,8 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, Heading, LoadingState, spacing, UIButton } from '@unicornlove/ui'
+import { Button, DashboardWidget, Heading, LoadingState, spacing } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 /**
  * PreferencesWidget
@@ -28,7 +28,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load preferences</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -41,7 +41,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
   if (!data) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$color11">No preferences data available</Text>
         </YStack>
       </DashboardWidget>
@@ -64,16 +64,16 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Work Preferences</Heading>
           {showEdit && (
-            <UIButton
+            <Button
               variant="outlined"
               size="$2"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.EMPLOYMENT.path)}
             >
               Edit
-            </UIButton>
+            </Button>
           )}
         </XStack>
 
@@ -126,10 +126,10 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                   {data.preferred_work_locations.map((location: string) => (
                     <XStack
                       key={location}
-                      bg="$blue2"
-                      px="$3"
-                      py="$1.5"
-                      rounded="$3"
+                      backgroundColor="$blue2"
+                      paddingHorizontal="$3"
+                      paddingVertical="$1.5"
+                      borderRadius="$3"
                       borderWidth={1}
                       borderColor="$blue7"
                     >
@@ -148,7 +148,7 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
               <Text fontWeight="600" fontSize="$3">
                 Travel
               </Text>
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Text fontSize="$3" color="$color11">
                   {data.open_to_travel ? 'Willing to travel' : 'Not willing to travel'}
                 </Text>
@@ -205,10 +205,10 @@ export function PreferencesWidget({ showEdit = false }: { showEdit?: boolean }) 
                   {data.drivers_license_classes.map((license: string) => (
                     <XStack
                       key={license}
-                      bg="$blue2"
-                      px="$3"
-                      py="$1.5"
-                      rounded="$3"
+                      backgroundColor="$blue2"
+                      paddingHorizontal="$3"
+                      paddingVertical="$1.5"
+                      borderRadius="$3"
                       borderWidth={1}
                       borderColor="$blue7"
                     >

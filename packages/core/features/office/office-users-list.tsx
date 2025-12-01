@@ -4,7 +4,7 @@ import type { TableColumnVisibilityOption } from '@unicornlove/ui'
 import { type ColumnDef, createColumnHelper, type VisibilityState } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Paragraph, YStack } from 'tamagui'
+import { Paragraph, YStack } from '@unicornlove/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
 

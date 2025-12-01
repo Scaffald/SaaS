@@ -2,13 +2,13 @@ import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { redirect } from '@app/core/utils/redirect'
 import { supabase } from '@app/core/utils/supabase/client'
-import { Sheet, UIButton as StyledButton, spacing } from '@unicornlove/ui'
+import { Button, Sheet, spacing } from '@unicornlove/ui'
 import { AlertCircle, ExternalLink, RefreshCw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { useEffect, useMemo, useState } from 'react'
 import { Platform, Pressable } from 'react-native'
-import { Paragraph, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
+import { Paragraph, Spinner, Switch, Text, XStack, YStack } from '@unicornlove/ui'
 import type { NewsItem, NewsWidgetProps } from './config/types'
 import { useAggregatedNews } from './hooks/useNewsFeed'
 
@@ -434,20 +434,20 @@ export function NewsWidget({
 
   return (
     <YStack gap={spacing.md}>
-      <XStack justify="space-between" items="center" pt={spacing.sm}>
+      <XStack justifyContent="space-between" alignItems="center" paddingTop={spacing.sm}>
         <Text fontSize="$6" fontWeight="600" color="$color12">
           News
         </Text>
 
-        <XStack gap={spacing.xs} items="center">
+        <XStack gap={spacing.xs} alignItems="center">
           {/* TODO: Implement and refine filter button functionality later */}
-          {/* <StyledButton
+          {/* <Button
             size="$3"
             variant="outlined"
             icon={<Settings2 size={16} />}
             onPress={() => setPreferencesOpen(true)}
           /> */}
-          <StyledButton
+          <Button
             size="$3"
             variant="outlined"
             onPress={() => {
@@ -460,7 +460,7 @@ export function NewsWidget({
       </XStack>
 
       {isLoading && displayNews.length === 0 && !isFallbackLoading ? (
-        <YStack items="center" gap={spacing.sm}>
+        <YStack alignItems="center" gap={spacing.sm}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11" fontSize="$4">
             Loading personalised news...
@@ -469,7 +469,7 @@ export function NewsWidget({
       ) : null}
 
       {isError && displayNews.length === 0 ? (
-        <YStack items="center" gap={spacing.sm}>
+        <YStack alignItems="center" gap={spacing.sm}>
           <AlertCircle size={24} color="$red10" />
           <Text color="$red11" fontSize="$4" style={{ textAlign: 'center' }}>
             Failed to load news feed
@@ -477,7 +477,7 @@ export function NewsWidget({
           <Text color="$color11" fontSize="$3" style={{ textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
-          <StyledButton
+          <Button
             variant="primary"
             onPress={() => {
               void refetch()
@@ -485,7 +485,7 @@ export function NewsWidget({
             size="$3"
           >
             Try Again
-          </StyledButton>
+          </Button>
         </YStack>
       ) : null}
 
@@ -496,14 +496,14 @@ export function NewsWidget({
               {({ pressed }) => (
                 <YStack
                   gap="$2"
-                  p="$3"
-                  bg="$color2"
+                  padding="$3"
+                  backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$color4"
                   opacity={pressed ? 0.7 : 1}
                   style={{ borderRadius: 12 }}
                 >
-                  <XStack justify="space-between" items="flex-start" gap="$3">
+                  <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
                     <Text
                       fontSize="$4"
                       fontWeight="600"
@@ -515,7 +515,7 @@ export function NewsWidget({
                     </Text>
                     <ExternalLink size={16} color="$color10" />
                   </XStack>
-                  <XStack gap="$2" items="center" flexWrap="wrap">
+                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
                     <Text fontSize="$2" color="$color11">
                       {formatTimeAgo(item.pubDate)}
                     </Text>
@@ -533,9 +533,9 @@ export function NewsWidget({
                       {item.reasons.slice(0, 2).map((reason: string, index: number) => (
                         <YStack
                           key={`${item.id}-reason-${index}`}
-                          px="$2"
-                          py="$1"
-                          bg="$blue3"
+                          paddingHorizontal="$2"
+                          paddingVertical="$1"
+                          backgroundColor="$blue3"
                           style={{ borderRadius: 8 }}
                         >
                           <Text fontSize="$1" color="$blue11">
@@ -550,14 +550,14 @@ export function NewsWidget({
             </Pressable>
           ))}
 
-          <StyledButton
+          <Button
             size="$3"
             variant="outlined"
             onPress={handleViewAll}
             iconAfter={<ExternalLink size={16} />}
           >
             View All News
-          </StyledButton>
+          </Button>
         </YStack>
       )}
 
@@ -569,7 +569,7 @@ export function NewsWidget({
         dismissOnSnapToBottom
       >
         <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
-        <Sheet.Frame p="$4" gap="$3">
+        <Sheet.Frame padding="$4" gap="$3">
           <Sheet.Handle />
           <Text fontSize="$5" fontWeight="600">
             Customise Recommendations
@@ -579,7 +579,7 @@ export function NewsWidget({
           </Paragraph>
 
           <YStack gap="$3">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Match my skills</Paragraph>
               <Switch
                 size="$2"
@@ -588,7 +588,7 @@ export function NewsWidget({
               />
             </XStack>
 
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Match my industry</Paragraph>
               <Switch
                 size="$2"
@@ -597,7 +597,7 @@ export function NewsWidget({
               />
             </XStack>
 
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Boost trending stories</Paragraph>
               <Switch
                 size="$2"
@@ -606,7 +606,7 @@ export function NewsWidget({
               />
             </XStack>
 
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Paragraph size="$3">Show recent stories only</Paragraph>
               <Switch
                 size="$2"

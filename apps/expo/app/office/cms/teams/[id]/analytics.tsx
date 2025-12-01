@@ -11,7 +11,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
 import { ScrollView } from 'react-native'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type MembersListOutput = inferRouterOutputs<AppRouter>['teams']['members']['list']
 type MemberRecord = NonNullable<MembersListOutput['members']>[number]
@@ -81,7 +81,7 @@ export default function TeamAnalyticsPage() {
 
   if (teamQuery.isLoading && !team) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$3">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color11">Loading team analytics…</Text>
       </YStack>
@@ -105,9 +105,9 @@ export default function TeamAnalyticsPage() {
 
   return (
     <ScrollView>
-      <YStack gap="$5" p="$4" pb="$8">
-        <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
-          <XStack gap="$2" items="center">
+      <YStack gap="$5" padding="$4" paddingBottom="$8">
+        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
+          <XStack gap="$2" alignItems="center">
             <Button
               size="$2"
               variant="outlined"
@@ -116,7 +116,7 @@ export default function TeamAnalyticsPage() {
             >
               Back to team
             </Button>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <BarChart3 size={20} />
               <YStack>
                 <Text fontSize="$6" fontWeight="700">
@@ -164,8 +164,14 @@ function FallbackCard({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} items="center" justify="center" px="$4">
-      <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$3">
+    <YStack flex={1} alignItems="center" justifyContent="center" paddingHorizontal="$4">
+      <Card
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color2"
+        padding="$4"
+        gap="$3"
+      >
         <Text fontSize="$6" fontWeight="700">
           {title}
         </Text>

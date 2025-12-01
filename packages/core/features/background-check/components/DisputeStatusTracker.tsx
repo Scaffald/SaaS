@@ -1,7 +1,16 @@
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { RefreshCcw } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
-import { Button, Card, type ColorTokens, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  type ColorTokens,
+  Separator,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 import type { BackgroundCheckDispute } from '../hooks/useDispute'
 
@@ -89,7 +98,7 @@ export function DisputeStatusTracker({
 
   if (isLoading) {
     return (
-      <YStack gap="$2" items="center" py="$4">
+      <YStack gap="$2" alignItems="center" paddingVertical="$4">
         <Spinner size="small" color="$color10" />
         <Text fontSize="$2" color="$color10">
           Loading dispute history…
@@ -100,7 +109,14 @@ export function DisputeStatusTracker({
 
   if (!latestDispute) {
     return (
-      <Card bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$4" p="$3" gap="$2">
+      <Card
+        backgroundColor="$color2"
+        borderColor="$borderColor"
+        borderWidth={1}
+        borderRadius="$4"
+        padding="$3"
+        gap="$2"
+      >
         <Text fontSize="$3" fontWeight="600" color="$color12">
           No disputes filed yet
         </Text>
@@ -116,7 +132,7 @@ export function DisputeStatusTracker({
 
   return (
     <YStack gap="$3">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Dispute status
         </Text>
@@ -133,11 +149,11 @@ export function DisputeStatusTracker({
 
       <YStack
         gap="$2"
-        p="$3"
-        bg={toneColors.background}
+        padding="$3"
+        backgroundColor={toneColors.background}
         borderColor={toneColors.border}
         borderWidth={1}
-        rounded="$4"
+        borderRadius="$4"
       >
         <Text fontSize="$3" fontWeight="600" color={toneColors.text}>
           {statusMeta.label}
@@ -154,7 +170,14 @@ export function DisputeStatusTracker({
         </Text>
       </YStack>
 
-      <Card bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$4" p="$3" gap="$3">
+      <Card
+        backgroundColor="$color2"
+        borderColor="$borderColor"
+        borderWidth={1}
+        borderRadius="$4"
+        padding="$3"
+        gap="$3"
+      >
         <Text fontSize="$3" fontWeight="600" color="$color12">
           Dispute history
         </Text>
@@ -174,15 +197,15 @@ export function DisputeStatusTracker({
             return (
               <YStack
                 key={dispute.id}
-                bg="$background"
+                backgroundColor="$background"
                 borderColor="$borderColor"
                 borderWidth={1}
-                rounded="$3"
-                px="$3"
-                py="$2"
+                borderRadius="$3"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
                 gap="$1"
               >
-                <XStack gap="$2" items="center" flexWrap="wrap">
+                <XStack gap="$2" alignItems="center" flexWrap="wrap">
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     {meta.label}
                   </Text>

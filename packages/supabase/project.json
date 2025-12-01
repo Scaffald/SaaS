@@ -11,7 +11,8 @@
         "command": "tsc --build",
         "cwd": "packages/supabase"
       },
-      "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"]
+      "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"],
+      "dependsOn": []
     },
     "test": {
       "executor": "nx:run-commands",

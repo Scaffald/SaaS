@@ -7,7 +7,7 @@ import {
   QUESTIONS_PER_DOMAIN,
 } from '@app/core/features/ipip-assessment/utils/domainGrouping'
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from 'tamagui'
+import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
 import {
   getChoices,
   getQuestions,
@@ -143,8 +143,8 @@ export function IPIPTestStep({
       <YStack
         gap="$6"
         width="100%"
-        items="center"
-        p="$8"
+        alignItems="center"
+        padding="$8"
         style={{ maxWidth: 800, alignSelf: 'center' }}
       >
         <Text fontSize="$8" fontWeight="bold" color="$green10">
@@ -159,7 +159,7 @@ export function IPIPTestStep({
 
   if (!currentQuestion) {
     return (
-      <YStack gap="$4" items="center" p="$8">
+      <YStack gap="$4" alignItems="center" padding="$8">
         <Text fontSize="$5" color="$color11">
           Loading question...
         </Text>
@@ -173,13 +173,13 @@ export function IPIPTestStep({
       {currentDomain && (
         <XStack
           gap="$2"
-          p="$4"
-          bg="$blue2"
-          rounded="$4"
+          padding="$4"
+          backgroundColor="$blue2"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$blue7"
-          justify="space-between"
-          items="center"
+          justifyContent="space-between"
+          alignItems="center"
         >
           <YStack gap="$1">
             <Text fontSize="$5" fontWeight="bold" color="$blue11">
@@ -197,7 +197,7 @@ export function IPIPTestStep({
 
       {/* Progress Bar */}
       <YStack gap="$2">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Question {currentIndex + 1} of 120
           </Text>
@@ -211,7 +211,14 @@ export function IPIPTestStep({
       </YStack>
 
       {/* Question */}
-      <YStack gap="$4" p="$6" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$4"
+        padding="$6"
+        backgroundColor="$color2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <Text
           fontSize="$7"
           fontWeight="bold"
@@ -234,7 +241,7 @@ export function IPIPTestStep({
             disabled={isLoading}
             pressStyle={{ scale: 0.98 }}
             borderColor="$borderColor"
-            hoverStyle={{ borderColor: '$blue8', bg: '$blue2' }}
+            hoverStyle={{ borderColor: '$blue8', backgroundColor: '$blue2' }}
           >
             <Text fontSize="$4" color="$color12" fontWeight="500">
               {choice.text}
@@ -244,7 +251,7 @@ export function IPIPTestStep({
       </YStack>
 
       {/* Navigation */}
-      <XStack gap="$3" justify="space-between">
+      <XStack gap="$3" justifyContent="space-between">
         <Button
           size="$4"
           variant="outlined"

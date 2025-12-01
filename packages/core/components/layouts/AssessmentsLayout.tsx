@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from 'tamagui'
+import { ScrollView, XStack, YStack } from '@unicornlove/ui'
 
 import { AssessmentsTabs } from '../navigation/AssessmentsTabs'
 
@@ -19,19 +19,19 @@ export const AssessmentsLayout = ({
   const hasBothColumns = hasLeftContent && hasRightContent
 
   return (
-    <ScrollView flex={1} bg="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" pt="$3" pb="$5">
-        {showTabs && <AssessmentsTabs mx="$7" mt="$3" />}
+    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
+      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
+        {showTabs && <AssessmentsTabs marginHorizontal="$7" marginTop="$3" />}
 
         <XStack
           gap="$3"
-          px="$3"
-          pt="$3"
+          paddingHorizontal="$3"
+          paddingTop="$3"
           flexDirection="column"
           $md={{
             gap: '$8',
-            px: '$7',
-            pt: '$3',
+            paddingHorizontal: '$7',
+            paddingTop: '$3',
             flexDirection: 'row',
           }}
         >
@@ -40,7 +40,7 @@ export const AssessmentsLayout = ({
               width="100%"
               $md={{
                 flex: hasBothColumns ? 13 : 1,
-                minW: hasBothColumns ? 300 : undefined,
+                minWidth: hasBothColumns ? 300 : undefined,
               }}
             >
               {leftContent}
@@ -51,7 +51,7 @@ export const AssessmentsLayout = ({
               width="100%"
               $md={{
                 flex: hasBothColumns ? 7 : 1,
-                minW: hasBothColumns ? 300 : undefined,
+                minWidth: hasBothColumns ? 300 : undefined,
               }}
             >
               {rightContent}
@@ -62,4 +62,3 @@ export const AssessmentsLayout = ({
     </ScrollView>
   )
 }
-

@@ -4,7 +4,7 @@ import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { isValidPhoneNumber } from '@app/schemas/common/phone'
 import {
   AvatarImagePicker,
-  UIButton as Button,
+  Button,
   ConfirmationDialog,
   DashboardWidget,
   PhoneNumberInput,
@@ -17,7 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import type { JSONContent } from '@tiptap/core'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { type GeneralProfileFormData, generalProfileDefaults, generalProfileSchema } from './config'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
@@ -62,7 +62,7 @@ export function ProfileGeneralLeft() {
           ({
             ...(current ?? {}),
             ...(input as unknown as GeneralProfileFormData),
-          }) as GeneralProfileFormData,
+          }) as GeneralProfileFormData
       )
       return { previousGeneral }
     },
@@ -220,7 +220,7 @@ export function ProfileGeneralLeft() {
 
   if (isLoadingProfile) {
     return (
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <SkeletonForm fields={6} />
       </YStack>
     )
@@ -230,7 +230,7 @@ export function ProfileGeneralLeft() {
     <DashboardWidget>
       <YStack gap="$4">
         {/* Avatar Section */}
-        <YStack gap="$3" items="center">
+        <YStack gap="$3" alignItems="center">
           <Text fontWeight="600">Profile Photo</Text>
           <AvatarImagePicker
             value={getAvatarUrl(avatarPath) || ''}
@@ -396,7 +396,7 @@ export function ProfileGeneralLeft() {
                 autoCapitalize="none"
                 editable={false}
                 opacity={0.7}
-                bg="$color2"
+                backgroundColor="$color2"
                 borderColor="$color6"
               />
             )}
@@ -418,7 +418,7 @@ export function ProfileGeneralLeft() {
         />
 
         {/* Action Buttons */}
-        <XStack justify="flex-end" gap="$3" pt="$4">
+        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
           <Button
             variant="outlined"
             disabled={!isDirty}

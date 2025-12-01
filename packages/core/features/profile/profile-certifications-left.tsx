@@ -4,11 +4,21 @@ import {
   CertificationChip,
   CertificationSearch,
 } from '@app/core/components/certifications'
-import { UIButton as Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@unicornlove/ui'
+import { Button, DashboardWidget, MonthYearPicker, ToggleCard } from '@unicornlove/ui'
 import { Award, PlusCircle, UploadCloud } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useState } from 'react'
-import { Card, H4, Input, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  Card,
+  H4,
+  Input,
+  Separator,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { ProfileEmptyState } from './components'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 import { invalidateProfileQueries } from './utils/profile-sync'
@@ -567,7 +577,7 @@ export function ProfileCertificationsLeft({
         <Separator />
 
         <YStack gap="$3">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600" fontSize="$4">
               Custom Certifications
             </Text>
@@ -590,8 +600,8 @@ export function ProfileCertificationsLeft({
           </XStack>
 
           {showCustomForm && (
-            <Card bordered bg="$color2">
-              <YStack gap="$3" p="$4">
+            <Card bordered backgroundColor="$color2">
+              <YStack gap="$3" padding="$4">
                 <Text fontSize="$2" color="$color11">
                   Add certifications that are not in our catalog. These appear alongside saved
                   certifications on the right panel.
@@ -699,7 +709,7 @@ export function ProfileCertificationsLeft({
 
                 <YStack gap="$2">
                   <Text fontWeight="600">Proof (optional)</Text>
-                  <XStack gap="$2" flexWrap="wrap" items="center">
+                  <XStack gap="$2" flexWrap="wrap" alignItems="center">
                     <Button
                       size="$3"
                       icon={UploadCloud}
@@ -722,7 +732,7 @@ export function ProfileCertificationsLeft({
                   </XStack>
                 </YStack>
 
-                <XStack gap="$3" justify="flex-end">
+                <XStack gap="$3" justifyContent="flex-end">
                   <Button
                     variant="outlined"
                     onPress={() => {
@@ -917,7 +927,7 @@ function Depth2Certifications({
   )
 
   return (
-    <YStack gap="$2" pt="$2">
+    <YStack gap="$2" paddingTop="$2">
       {depth2Certs.map((cert: CertificationWithParent) => {
         const userCert = savedMap.get(cert.id)
         const isChecked = !!userCert
@@ -931,11 +941,11 @@ function Depth2Certifications({
         return (
           <YStack
             key={cert.id}
-            p="$3"
-            rounded="$4"
+            padding="$3"
+            borderRadius="$4"
             borderWidth={1}
             animation="quick"
-            bg={
+            backgroundColor={
               changeStatus === 'added'
                 ? '$green2'
                 : changeStatus === 'removed'
@@ -965,12 +975,12 @@ function Depth2Certifications({
               disabled={toggleMutation.isPending}
             />
             {changeStatus === 'added' && (
-              <Text mt="$2" fontSize="$2" color="$green11">
+              <Text marginTop="$2" fontSize="$2" color="$green11">
                 ✓ Added to profile
               </Text>
             )}
             {changeStatus === 'removed' && (
-              <Text mt="$2" fontSize="$2" color="$red11">
+              <Text marginTop="$2" fontSize="$2" color="$red11">
                 Removed from profile
               </Text>
             )}

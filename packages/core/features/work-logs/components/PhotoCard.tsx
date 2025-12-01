@@ -13,7 +13,7 @@ import {
   View,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 
@@ -135,24 +135,24 @@ export function PhotoCard({
     <YStack
       borderWidth={1}
       borderColor="$borderColor"
-      rounded="$4"
+      borderRadius="$4"
       overflow="hidden"
-      bg="$color2"
+      backgroundColor="$color2"
       width="100%"
     >
-      <View position="relative" aspectRatio={4 / 3} bg="$color3">
+      <View position="relative" aspectRatio={4 / 3} backgroundColor="$color3">
         {photo.signedUrl ? (
           <Image source={{ uri: photo.signedUrl }} width="100%" height="100%" resizeMode="cover" />
         ) : (
           <YStack
             position="absolute"
-            justify="center"
-            items="center"
-            t={0}
-            r={0}
-            b={0}
-            l={0}
-            bg="$color3"
+            justifyContent="center"
+            alignItems="center"
+            top={0}
+            right={0}
+            bottom={0}
+            left={0}
+            backgroundColor="$color3"
           >
             <Spinner color="$color10" />
           </YStack>
@@ -160,13 +160,13 @@ export function PhotoCard({
         {(photo.isRefreshingUrl || isDeleting) && (
           <YStack
             position="absolute"
-            t={0}
-            r={0}
-            b={0}
-            l={0}
-            bg="rgba(0,0,0,0.35)"
-            items="center"
-            justify="center"
+            top={0}
+            right={0}
+            bottom={0}
+            left={0}
+            backgroundColor="rgba(0,0,0,0.35)"
+            alignItems="center"
+            justifyContent="center"
             gap="$2"
           >
             <Spinner color="white" size="large" />
@@ -177,9 +177,9 @@ export function PhotoCard({
         )}
       </View>
 
-      <YStack gap="$3" p="$3">
-        <XStack items="center" justify="space-between" gap="$3">
-          <XStack gap="$2" items="center">
+      <YStack gap="$3" padding="$3">
+        <XStack alignItems="center" justifyContent="space-between" gap="$3">
+          <XStack gap="$2" alignItems="center">
             <Tag size={16} color="$color10" />
             <Text fontWeight="600" fontSize="$3">
               {typeOption?.label ?? 'Uncategorized'}
@@ -249,7 +249,7 @@ export function PhotoCard({
               </XStack>
             </YStack>
           ) : canEditCaption ? (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Text flex={1} color={photo.caption ? '$color12' : '$color9'}>
                 {photo.caption ?? 'No caption provided.'}
               </Text>

@@ -1,6 +1,6 @@
 import { Input, ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Label, TextArea } from 'tamagui'
+import { Label, TextArea } from '@unicornlove/ui'
 
 interface CompensationBenefitsSectionProps {
   benefitsSummary?: string
@@ -73,9 +73,9 @@ export function CompensationBenefitsSection({
   return (
     <YStack
       gap="$4"
-      p="$4"
-      bg="$background"
-      rounded="$4"
+      padding="$4"
+      backgroundColor="$background"
+      borderRadius="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
@@ -98,7 +98,7 @@ export function CompensationBenefitsSection({
       </YStack>
 
       {/* Bonus Structure */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Has bonus structure</Label>
           <Text fontSize="$2" color="$color10">
@@ -125,7 +125,7 @@ export function CompensationBenefitsSection({
       )}
 
       {/* Equity */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Has equity compensation</Label>
           <Text fontSize="$2" color="$color10">
@@ -168,7 +168,7 @@ export function CompensationBenefitsSection({
       </YStack>
 
       {/* Relocation Package */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Has relocation package</Label>
           <Text fontSize="$2" color="$color10">
@@ -195,7 +195,7 @@ export function CompensationBenefitsSection({
       )}
 
       {/* Overtime Eligible */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Overtime eligible</Label>
           <Text fontSize="$2" color="$color10">

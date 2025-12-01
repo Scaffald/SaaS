@@ -6,7 +6,7 @@ import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type InvitationsOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['mine']
 type InvitationRecord = NonNullable<InvitationsOutput['invitations']>[number]
@@ -29,7 +29,14 @@ export function TeamInvitationList({
 
   if (!invitations.length) {
     return (
-      <YStack gap="$2" borderWidth={1} borderColor="$borderColor" rounded="$4" p="$4" bg="$color2">
+      <YStack
+        gap="$2"
+        borderWidth={1}
+        borderColor="$borderColor"
+        borderRadius="$4"
+        padding="$4"
+        backgroundColor="$color2"
+      >
         <Text fontWeight="600">No pending invitations</Text>
         {showEmptyStateDescription ? (
           <Text color="$color11">
@@ -55,19 +62,19 @@ export function TeamInvitationList({
         return (
           <Card
             key={invitation.id}
-            p="$4"
+            padding="$4"
             borderWidth={1}
             borderColor="$borderColor"
             gap="$3"
-            bg="$color1"
+            backgroundColor="$color1"
           >
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <YStack gap="$1" flex={1}>
                 <Text fontWeight="700">{teamName}</Text>
                 <Text fontSize="$3" color="$color11">
                   {organizationName}
                 </Text>
-                <XStack gap="$2" items="center" mt="$2">
+                <XStack gap="$2" alignItems="center" marginTop="$2">
                   <Clock size={16} color="$color11" />
                   <Text fontSize="$3" color="$color11">
                     Sent {sentAt ?? 'recently'}
@@ -75,7 +82,13 @@ export function TeamInvitationList({
                   </Text>
                 </XStack>
               </YStack>
-              <XStack gap="$2" ml="$4" shrink={0} flexWrap="wrap" justify="flex-end">
+              <XStack
+                gap="$2"
+                marginLeft="$4"
+                flexShrink={0}
+                flexWrap="wrap"
+                justifyContent="flex-end"
+              >
                 <Button
                   size="$2"
                   icon={XCircle}
@@ -96,7 +109,7 @@ export function TeamInvitationList({
                 <Button
                   size="$2"
                   icon={CheckCircle}
-                  bg="$color9"
+                  backgroundColor="$color9"
                   color="$color1"
                   disabled={isProcessing}
                   onPress={async () => {
@@ -166,9 +179,15 @@ export function TeamInvitationsWidget() {
   }
 
   return (
-    <Card p="$4" borderColor="$borderColor" borderWidth={1} gap="$4" bg="$color1">
-      <XStack justify="space-between" items="center">
-        <XStack gap="$2" items="center">
+    <Card
+      padding="$4"
+      borderColor="$borderColor"
+      borderWidth={1}
+      gap="$4"
+      backgroundColor="$color1"
+    >
+      <XStack justifyContent="space-between" alignItems="center">
+        <XStack gap="$2" alignItems="center">
           <Users size={20} />
           <Text fontWeight="700">Team invitations</Text>
         </XStack>
@@ -182,7 +201,7 @@ export function TeamInvitationsWidget() {
       </XStack>
 
       {invitationsQuery.isLoading ? (
-        <YStack items="center" justify="center" py="$4" gap="$2">
+        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Checking for invitations…</Text>
         </YStack>

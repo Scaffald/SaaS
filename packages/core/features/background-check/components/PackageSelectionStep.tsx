@@ -1,7 +1,7 @@
 import type { AppRouter } from '@app/supabase/client-types'
 import type { inferRouterOutputs } from '@trpc/server'
 import { memo } from 'react'
-import { Button, Card, ScrollView, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckPackage = RouterOutputs['backgroundChecks']['listPackages'][number]
@@ -35,11 +35,11 @@ const PackageCard = memo(function PackageCard({
     <Card
       elevate
       bordered
-      bg={isSelected ? '$blue3' : '$background'}
+      backgroundColor={isSelected ? '$blue3' : '$background'}
       borderColor={isSelected ? '$blue8' : '$borderColor'}
       borderWidth={2}
-      rounded="$4"
-      p="$4"
+      borderRadius="$4"
+      padding="$4"
       gap="$3"
       onPress={onSelect}
     >
@@ -50,7 +50,7 @@ const PackageCard = memo(function PackageCard({
         <Text fontSize="$3" color="$color11">
           {pkg.description}
         </Text>
-        <XStack gap="$3" items="center">
+        <XStack gap="$3" alignItems="center">
           <Text fontSize="$4" fontWeight="bold" color="$color12">
             {formatCurrency(pkg.retail_cost_cents)}
           </Text>
@@ -101,7 +101,7 @@ export const PackageSelectionStep = memo(function PackageSelectionStep({
       </YStack>
 
       <ScrollView flex={1}>
-        <YStack gap="$3" pb="$6">
+        <YStack gap="$3" paddingBottom="$6">
           {isLoading && (
             <Text fontSize="$3" color="$color10">
               Loading packages…

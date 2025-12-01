@@ -2,7 +2,7 @@ import type { IPIPScores } from '@app/core/features/personality-assessment/lib/i
 import { BarChart, SkillsChart } from '@unicornlove/ui'
 import { VisuallyHidden } from '@tamagui/visually-hidden'
 import { useMemo } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { DOMAIN_NAMES, DOMAIN_ORDER } from '../utils/domainGrouping'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
 
@@ -33,7 +33,7 @@ export function ChartView({
   // Handle missing data gracefully
   if (!scores && completedDomains === 0) {
     return (
-      <YStack gap="$4" p="$4" items="center">
+      <YStack gap="$4" padding="$4" alignItems="center">
         <Text fontSize="$4" color="$color11">
           No chart data available yet. Complete at least one domain to see visualizations.
         </Text>
@@ -96,12 +96,12 @@ export function ChartView({
       {isComplete && archetype && (
         <YStack
           gap="$3"
-          p="$5"
-          bg="$blue2"
-          rounded="$4"
+          padding="$5"
+          backgroundColor="$blue2"
+          borderRadius="$4"
           borderWidth={2}
           borderColor="$blue9"
-          items="center"
+          alignItems="center"
         >
           <Text fontSize="$6" fontWeight="bold" color="$blue11">
             Your Archetype
@@ -110,7 +110,7 @@ export function ChartView({
             {archetype.name}
           </Text>
           {archetype.confidence !== undefined && (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Text fontSize="$4" color="$blue10">
                 Confidence:
               </Text>
@@ -123,14 +123,21 @@ export function ChartView({
       )}
 
       {/* Big Five Radar Chart */}
-      <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$3"
+        padding="$4"
+        backgroundColor="$color2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <Text fontSize="$5" fontWeight="bold" color="$color12">
           Big Five Personality Traits
         </Text>
         <Text fontSize="$3" color="$color11">
           Your scores across the five major personality domains (0-100%)
         </Text>
-        <YStack items="center" p="$4">
+        <YStack alignItems="center" padding="$4">
           <SkillsChart
             datasets={[
               {
@@ -150,7 +157,7 @@ export function ChartView({
             width={300}
             maxValue={100}
             isAnimated={true}
-            bg="transparent"
+            backgroundColor="transparent"
             gridColor="$color5"
             labelColor="$color11"
             labelTextSize={12}
@@ -158,7 +165,7 @@ export function ChartView({
           />
         </YStack>
         {/* Domain Labels with Scores */}
-        <YStack gap="$2" mt="$2">
+        <YStack gap="$2" marginTop="$2">
           {topTraits.map((trait) => {
             const resultColor =
               trait.result === 'high' ? '$green10' : trait.result === 'low' ? '$blue10' : '$gray10'
@@ -166,16 +173,16 @@ export function ChartView({
             return (
               <XStack
                 key={trait.domainName}
-                justify="space-between"
-                items="center"
-                p="$2"
-                bg="$color1"
-                rounded="$2"
+                justifyContent="space-between"
+                alignItems="center"
+                padding="$2"
+                backgroundColor="$color1"
+                borderRadius="$2"
               >
                 <Text fontSize="$4" fontWeight="500" color="$color12">
                   {trait.domainName}
                 </Text>
-                <XStack gap="$3" items="center">
+                <XStack gap="$3" alignItems="center">
                   <Text fontSize="$3" color="$color10">
                     {trait.value}%
                   </Text>
@@ -202,9 +209,9 @@ export function ChartView({
               <YStack
                 key={domain}
                 gap="$2"
-                p="$4"
-                bg="$gray2"
-                rounded="$4"
+                padding="$4"
+                backgroundColor="$gray2"
+                borderRadius="$4"
                 borderWidth={1}
                 borderColor="$gray7"
                 opacity={0.6}
@@ -240,9 +247,9 @@ export function ChartView({
             <YStack
               key={domain}
               gap="$3"
-              p="$4"
-              bg="$color2"
-              rounded="$4"
+              padding="$4"
+              backgroundColor="$color2"
+              borderRadius="$4"
               borderWidth={1}
               borderColor="$borderColor"
             >
@@ -265,7 +272,7 @@ export function ChartView({
                 roundedBottom={true}
               />
               {/* Facet Labels */}
-              <XStack flexWrap="wrap" gap="$2" mt="$2">
+              <XStack flexWrap="wrap" gap="$2" marginTop="$2">
                 {facetKeys.map((facetKey) => {
                   const facet = domainScore.facet[facetKey as keyof typeof domainScore.facet]
                   if (!facet) return null
@@ -280,11 +287,11 @@ export function ChartView({
                     <XStack
                       key={facetKey}
                       gap="$2"
-                      p="$2"
-                      bg="$color1"
-                      rounded="$2"
-                      items="center"
-                      justify="center"
+                      padding="$2"
+                      backgroundColor="$color1"
+                      borderRadius="$2"
+                      alignItems="center"
+                      justifyContent="center"
                       style={{ minWidth: 80 }}
                     >
                       <Text fontSize="$2" fontWeight="600" color="$color10">
@@ -306,9 +313,9 @@ export function ChartView({
       {!isComplete && completedDomains > 0 && (
         <YStack
           gap="$2"
-          p="$4"
-          bg="$yellow2"
-          rounded="$4"
+          padding="$4"
+          backgroundColor="$yellow2"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$yellow7"
           aria-live="polite"

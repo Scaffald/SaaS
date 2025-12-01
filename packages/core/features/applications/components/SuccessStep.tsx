@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { Check, ExternalLink, Home } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface SuccessStepProps {
   /**
@@ -70,9 +70,9 @@ export function SuccessStep({
     <YStack
       gap="$6"
       width="100%"
-      maxW={600}
-      p="$6"
-      items="center"
+      maxWidth={600}
+      padding="$6"
+      alignItems="center"
       aria-live="polite"
       aria-label="Application submitted successfully"
     >
@@ -80,36 +80,36 @@ export function SuccessStep({
       <YStack
         width={80}
         height={80}
-        rounded="$12"
-        bg="$green2"
+        borderRadius="$12"
+        backgroundColor="$green2"
         borderWidth={2}
         borderColor="$green9"
-        items="center"
-        justify="center"
+        alignItems="center"
+        justifyContent="center"
         aria-hidden={true}
       >
         <Check size={48} color="$green10" />
       </YStack>
 
       {/* Success Message */}
-      <YStack gap="$2" items="center">
-        <Text fontSize="$9" fontWeight="700" color="$color12" text="center">
+      <YStack gap="$2" alignItems="center">
+        <Text fontSize="$9" fontWeight="700" color="$color12" textAlign="center">
           Application Submitted Successfully!
         </Text>
-        <Text fontSize="$4" color="$gray11" text="center">
+        <Text fontSize="$4" color="$gray11" textAlign="center">
           Thank you for applying to {jobTitle} at {organizationName}
         </Text>
-        <Text fontSize="$4" color="$gray11" text="center" mt="$2">
+        <Text fontSize="$4" color="$gray11" textAlign="center" marginTop="$2">
           Your application has been received and is under review
         </Text>
       </YStack>
 
       {/* Application ID */}
-      <YStack gap="$2" items="center" mt="$4">
+      <YStack gap="$2" alignItems="center" marginTop="$4">
         <Text fontSize="$3" fontWeight="600" color="$blue10">
           Application ID: {formattedId}
         </Text>
-        <Text fontSize="$2" color="$gray11" text="center">
+        <Text fontSize="$2" color="$gray11" textAlign="center">
           You will receive an email confirmation shortly
         </Text>
       </YStack>
@@ -117,22 +117,22 @@ export function SuccessStep({
       {/* What Happens Next */}
       <YStack
         gap="$3"
-        p="$4"
-        bg="$background"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$background"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
         width="100%"
-        mt="$8"
+        marginTop="$8"
       >
         <Text fontSize="$4" fontWeight="600" color="$color12">
           What happens next:
         </Text>
 
-        <YStack gap="$3" mt="$2">
-          <NextStepItem text="Our team will review your application within 3-5 business days" />
-          <NextStepItem text="You'll receive an email update on your application status" />
-          <NextStepItem text="If selected, we'll contact you to schedule an interview" />
+        <YStack gap="$3" marginTop="$2">
+          <NextStepItem textAlign="Our team will review your application within 3-5 business days" />
+          <NextStepItem textAlign="You'll receive an email update on your application status" />
+          <NextStepItem textAlign="If selected, we'll contact you to schedule an interview" />
         </YStack>
       </YStack>
 
@@ -140,9 +140,9 @@ export function SuccessStep({
       <XStack
         gap="$3"
         width="100%"
-        mt="$8"
+        marginTop="$8"
         flexWrap="wrap"
-        justify="center"
+        justifyContent="center"
         $sm={{ flexDirection: 'column' }}
       >
         {onViewApplication && (
@@ -152,7 +152,7 @@ export function SuccessStep({
             icon={ExternalLink}
             onPress={() => onViewApplication(applicationId)}
             flex={1}
-            minW={200}
+            minWidth={200}
             $sm={{ width: '100%' }}
           >
             View Application Status
@@ -165,7 +165,7 @@ export function SuccessStep({
             variant="outlined"
             onPress={onReturnToJobs}
             flex={1}
-            minW={200}
+            minWidth={200}
             $sm={{ width: '100%' }}
           >
             Browse More Jobs
@@ -178,7 +178,7 @@ export function SuccessStep({
           icon={Home}
           onPress={handleReturnToDashboard}
           flex={1}
-          minW={200}
+          minWidth={200}
           $sm={{ width: '100%' }}
         >
           Return to Dashboard
@@ -193,8 +193,8 @@ export function SuccessStep({
  */
 function NextStepItem({ text }: { text: string }) {
   return (
-    <XStack gap="$3" items="flex-start">
-      <Text fontSize="$3" color="$gray11" mt="$1">
+    <XStack gap="$3" alignItems="flex-start">
+      <Text fontSize="$3" color="$gray11" marginTop="$1">
         •
       </Text>
       <Text fontSize="$3" color="$gray11" flex={1} lineHeight="$1">

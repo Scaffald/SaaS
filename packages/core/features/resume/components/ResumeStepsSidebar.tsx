@@ -1,6 +1,6 @@
 import { AssessmentProgress } from '@app/core/features/assessments'
 import { useMemo } from 'react'
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 
 import { useResumeWizardContext } from '../context/ResumeWizardProvider'
 
@@ -44,7 +44,7 @@ export function ResumeStepsSidebar() {
   }, [completedStepIds, steps.length])
 
   return (
-    <YStack gap="$5" p="$2" $md={{ p: '$1' }}>
+    <YStack gap="$5" padding="$2" $md={{ padding: '$1' }}>
       <YStack gap="$1">
         <Text fontSize="$5" fontWeight="700">
           Resume Steps

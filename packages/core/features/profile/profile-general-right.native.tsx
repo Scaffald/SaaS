@@ -1,5 +1,5 @@
 import { DashboardWidget } from '@unicornlove/ui'
-import { H3, Text, YStack } from 'tamagui'
+import { H3, Text, YStack } from '@unicornlove/ui'
 
 /**
  * Profile General Right Component

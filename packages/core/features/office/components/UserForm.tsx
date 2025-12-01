@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { Button, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Card } from 'tamagui'
+import { Card } from '@unicornlove/ui'
 
 interface UserFormProps {
   userId: string
@@ -94,9 +94,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
   }
 
   return (
-    <ScrollView flex={1} bg="$background">
-      <YStack p="$4" gap="$4">
-        <XStack items="center" justify="space-between">
+    <ScrollView flex={1} backgroundColor="$background">
+      <YStack padding="$4" gap="$4">
+        <XStack alignItems="center" justifyContent="space-between">
           <Text fontSize="$8" fontWeight="bold">
             Edit User
           </Text>
@@ -116,9 +116,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </XStack>
 
         {/* Profile Information */}
-        <Card p="$4">
+        <Card padding="$4">
           <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="600" mb="$2">
+            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
               Profile Information
             </Text>
 
@@ -167,9 +167,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Private Information */}
-        <Card p="$4">
+        <Card padding="$4">
           <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="600" mb="$2">
+            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
               Private Information
             </Text>
 
@@ -219,9 +219,9 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Employment Information */}
-        <Card p="$4">
+        <Card padding="$4">
           <YStack gap="$3">
-            <Text fontSize="$6" fontWeight="600" mb="$2">
+            <Text fontSize="$6" fontWeight="600" marginBottom="$2">
               Employment Information
             </Text>
 
@@ -279,7 +279,7 @@ export function UserForm({ userId, initialProfile, initialPrivateData }: UserFor
         </Card>
 
         {/* Submit Button (mobile-friendly placement) */}
-        <XStack gap="$2" pb="$4">
+        <XStack gap="$2" paddingBottom="$4">
           <Button
             data-testid="cancel-button"
             flex={1}

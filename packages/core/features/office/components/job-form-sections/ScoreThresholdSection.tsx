@@ -1,6 +1,6 @@
 import { Text, XStack, YStack } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Label, Slider } from 'tamagui'
+import { Label, Slider } from '@unicornlove/ui'
 
 interface ScoreThresholdSectionProps {
   minimumScore?: number
@@ -18,7 +18,7 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
   const currentScore = value[0] || 50
 
   return (
-    <YStack gap="$4" p="$4">
+    <YStack gap="$4" padding="$4">
       <YStack gap="$2">
         <XStack gap="$2">
           <Label fontSize="$5" fontWeight="600" flex={1}>
@@ -49,7 +49,7 @@ export function ScoreThresholdSection({ minimumScore, onUpdate }: ScoreThreshold
         </XStack>
       </YStack>
 
-      <YStack gap="$2" p="$3">
+      <YStack gap="$2" padding="$3">
         <Text fontSize="$2" fontWeight="600" color="$blue11">
           Score Guidelines
         </Text>

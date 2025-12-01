@@ -1,6 +1,6 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useCallback, useEffect, useState } from 'react'
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 
 export interface ResultsStepProps {
   feedbackMessage?: string
@@ -169,9 +169,16 @@ export function ResultsStep({
   }, [canViewResults, interpretation, isLoadingInterpretation, loadError, loadInterpretation])
 
   return (
-    <YStack gap="$6" width="100%" self="center" p="$4" style={{ maxWidth: 800 }}>
+    <YStack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
       {/* Feedback Message */}
-      <YStack gap="$4" p="$6" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$4"
+        padding="$6"
+        backgroundColor="$color2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           Test Complete
         </Text>
@@ -181,7 +188,14 @@ export function ResultsStep({
       </YStack>
 
       {/* Results Content */}
-      <YStack gap="$4" p="$6" bg="$color1" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack
+        gap="$4"
+        padding="$6"
+        backgroundColor="$color1"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         {!canViewResults && (
           <Text fontSize="$4" color="$color11">
             Results will appear here once both selections are complete.
@@ -212,7 +226,7 @@ export function ResultsStep({
                     fontSize="$6"
                     fontWeight="bold"
                     color="$color12"
-                    mt={index > 0 ? '$4' : '$0'}
+                    marginTop={index > 0 ? '$4' : '$0'}
                   >
                     {paragraph.replace('## ', '')}
                   </Text>
@@ -225,7 +239,7 @@ export function ResultsStep({
                     fontSize="$5"
                     fontWeight="600"
                     color="$color12"
-                    mt={index > 0 ? '$3' : '$0'}
+                    marginTop={index > 0 ? '$3' : '$0'}
                   >
                     {paragraph.replace('### ', '')}
                   </Text>

@@ -5,7 +5,7 @@ import { Stack } from 'expo-router'
 import { useState } from 'react'
 import { useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { XStack, YStack } from 'tamagui'
+import { XStack, YStack } from '@unicornlove/ui'
 
 export default function Screen() {
   const [hasOnboarded, setHasOnboarded] = useState(false)
@@ -35,8 +35,8 @@ export default function Screen() {
       />
 
       <XStack flex={1}>
-        <YStack flex={2} flexBasis={0} justify="center">
-          <YStack px="$4">
+        <YStack flex={2} flexBasis={0} justifyContent="center">
+          <YStack paddingHorizontal="$4">
             <LoginScreen />
           </YStack>
         </YStack>

@@ -10,7 +10,7 @@ import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { ResponsiveSelect } from '@unicornlove/ui'
 import { OrganizationCreditsPanel } from '../payments/OrganizationCreditsPanel'
 import { OrganizationPaymentMethodsPanel } from '../payments/OrganizationPaymentMethodsPanel'
@@ -190,7 +190,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
-      toast.show('Error', { message: error instanceof Error ? error.message : 'Failed to create organization' })
+      toast.show('Error', {
+        message: error instanceof Error ? error.message : 'Failed to create organization',
+      })
     },
   })
 
@@ -200,7 +202,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
       router.push(ROUTES.OFFICE.CMS.ORGANIZATIONS.path)
     },
     onError: (error: unknown) => {
-      toast.show('Error', { message: error instanceof Error ? error.message : 'Failed to update organization' })
+      toast.show('Error', {
+        message: error instanceof Error ? error.message : 'Failed to update organization',
+      })
     },
   })
 
@@ -209,13 +213,17 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     try {
       if (mode === 'create') {
         // Form data is compatible with mutation input but has extra fields
-        await createMutation.mutateAsync(data as unknown as Parameters<typeof createMutation.mutateAsync>[0])
+        await createMutation.mutateAsync(
+          data as unknown as Parameters<typeof createMutation.mutateAsync>[0]
+        )
       } else {
         if (!organizationId) {
           throw new Error('Organization ID is required for update')
         }
         // Form data is compatible with mutation input but has extra fields
-        await updateMutation.mutateAsync({ id: organizationId, ...data } as unknown as Parameters<typeof updateMutation.mutateAsync>[0])
+        await updateMutation.mutateAsync({ id: organizationId, ...data } as unknown as Parameters<
+          typeof updateMutation.mutateAsync
+        >[0])
       }
     } finally {
       setIsLoading(false)
@@ -223,7 +231,12 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
   }
 
   return (
-    <ScrollView flex={1} bg="$color2" p="$5" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      flex={1}
+      backgroundColor="$color2"
+      padding="$5"
+      showsVerticalScrollIndicator={false}
+    >
       {/* Name */}
       <Controller
         name="name"
@@ -272,7 +285,7 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
               </Text>
             )}
             {slugStatus.state === 'checking' && slugNeedsValidation && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Spinner size="small" />
                 <Text fontSize="$2" color="$color11">
                   Checking availability...
@@ -432,9 +445,9 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
       {/* Submit buttons */}
       <XStack
-        justify="flex-end"
+        justifyContent="flex-end"
         gap="$2"
-        mt="$4"
+        marginTop="$4"
         $sm={{ flexDirection: 'column' }}
         $md={{ flexDirection: 'row' }}
       >

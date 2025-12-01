@@ -1,5 +1,5 @@
 import { X } from '@tamagui/lucide-icons'
-import { Button, Text, XStack } from 'tamagui'
+import { Button, Text, XStack } from '@unicornlove/ui'
 
 interface CertificationChipProps {
   certification: {

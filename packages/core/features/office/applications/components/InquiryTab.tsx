@@ -31,7 +31,7 @@ export function InquiryTab({
   return (
     <YStack gap="$4">
       {onEditInquiry && (
-        <YStack items="flex-end">
+        <YStack alignItems="flex-end">
           <Button size="$3" variant="outlined" onPress={onEditInquiry}>
             {editLabel}
           </Button>

@@ -13,7 +13,7 @@ import {
 } from '@app/schemas'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export default function EditTeamPage() {
   const router = useRouter()
@@ -37,7 +37,7 @@ export default function EditTeamPage() {
 
   if (!teamId) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$4" p="$6">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$6">
         <Text fontSize="$6" fontWeight="700">
           Missing team identifier
         </Text>
@@ -53,16 +53,16 @@ export default function EditTeamPage() {
 
   if (isLoading || isFetching) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
-        <Text mt="$4">Loading team details…</Text>
+        <Text marginTop="$4">Loading team details…</Text>
       </YStack>
     )
   }
 
   if (error || !data?.team) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$3" p="$6">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" padding="$6">
         <Text fontSize="$6" fontWeight="700">
           Unable to load team
         </Text>
@@ -101,7 +101,7 @@ export default function EditTeamPage() {
     : undefined
 
   return (
-    <YStack flex={1} gap="$6" p="$4">
+    <YStack flex={1} gap="$6" padding="$4">
       <TeamForm
         mode="edit"
         organizationId={team.organizationId}
@@ -132,7 +132,12 @@ export default function EditTeamPage() {
         teamId={team.id}
         refreshKey={inviteRefreshKey}
         headerAction={
-          <Button bg="$color9" color="$color1" size="$3" onPress={() => setIsInviteModalOpen(true)}>
+          <Button
+            backgroundColor="$color9"
+            color="$color1"
+            size="$3"
+            onPress={() => setIsInviteModalOpen(true)}
+          >
             Invite member
           </Button>
         }

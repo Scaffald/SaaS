@@ -92,7 +92,7 @@ vi.mock('@unicornlove/ui', () => {
   )
 
   return {
-    UIButton: Button,
+    Button: Button,
     DashboardWidget: ({ children }: { children: ReactNode }) => <View>{children}</View>,
     CustomCheckbox: ({
       'aria-label': ariaLabel,

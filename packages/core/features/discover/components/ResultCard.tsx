@@ -4,8 +4,8 @@ import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-ico
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Button, Paragraph, SizableText, Text, XStack } from 'tamagui'
+import type { TamaguiElement } from '@unicornlove/ui'
+import { Button, Paragraph, SizableText, Text, XStack } from '@unicornlove/ui'
 
 import type { TalentProfile } from '../types'
 
@@ -42,12 +42,19 @@ export const ResultCard = memo(
         isSelected={isSelected}
         onPress={handleCardPress}
       >
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <SizableText size="$5" fontWeight="700" color={isSelected ? '$color1' : '$color12'}>
             {profile.name}
           </SizableText>
-          <XStack items="center" gap="$2">
-            <XStack items="center" gap="$1" bg="$blue3" rounded="$4" px="$2" py="$1">
+          <XStack alignItems="center" gap="$2">
+            <XStack
+              alignItems="center"
+              gap="$1"
+              backgroundColor="$blue3"
+              borderRadius="$4"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+            >
               <Star size={12} color="$blue11" />
               <Text color="$blue11" fontWeight="700" fontSize="$2">
                 {profile.score}
@@ -61,21 +68,21 @@ export const ResultCard = memo(
         </Paragraph>
 
         <XStack flexWrap="wrap" gap="$2">
-          <XStack items="center" gap="$1">
+          <XStack alignItems="center" gap="$1">
             <Clock3 size={14} color={isSelected ? '$color1' : '$color10'} />
             <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
               {profile.experienceYears} years
             </Text>
           </XStack>
           {profile.hourlyRate ? (
-            <XStack items="center" gap="$1">
+            <XStack alignItems="center" gap="$1">
               <DollarSign size={14} color={isSelected ? '$color1' : '$color10'} />
               <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
                 ${profile.hourlyRate}/hr
               </Text>
             </XStack>
           ) : null}
-          <XStack items="center" gap="$1">
+          <XStack alignItems="center" gap="$1">
             <Award size={14} color={isSelected ? '$color1' : '$color10'} />
             <Text color={isSelected ? '$color1' : '$color11'} fontSize="$2">
               {profile.locationLabel}
@@ -87,12 +94,12 @@ export const ResultCard = memo(
           {profile.badges.slice(0, 3).map((badge) => (
             <XStack
               key={badge.id}
-              items="center"
+              alignItems="center"
               gap="$1"
-              px="$1"
-              py="$0.5"
-              rounded="$8"
-              bg={
+              paddingHorizontal="$1"
+              paddingVertical="$0.5"
+              borderRadius="$8"
+              backgroundColor={
                 badge.tone === 'success'
                   ? '$green3'
                   : badge.tone === 'warning'
@@ -130,12 +137,12 @@ export const ResultCard = memo(
 
         <XStack gap="$1" flexWrap="wrap">
           {profile.certifications.slice(0, 2).map((certification) => (
-            <Button key={certification} size="$1" rounded="$8">
+            <Button key={certification} size="$1" borderRadius="$8">
               {certification}
             </Button>
           ))}
           {profile.skills.slice(0, 3).map((skill) => (
-            <Button key={skill} size="$1" rounded="$8">
+            <Button key={skill} size="$1" borderRadius="$8">
               {skill}
             </Button>
           ))}

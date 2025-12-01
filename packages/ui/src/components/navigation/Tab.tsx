@@ -49,23 +49,25 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
       paddingVertical="$2"
       paddingHorizontal="$4"
       minHeight="$2"
-      bg={isUnderlined ? 'transparent' : '$color2'}
+      backgroundColor={isUnderlined ? 'transparent' : '$color2'}
       borderWidth={isUnderlined ? 0 : 1}
       borderColor={isUnderlined ? 'transparent' : '$color4'}
       borderBottomWidth={isUnderlined ? 2 : undefined}
       borderBottomColor={isUnderlined ? (isActive ? '$blue9' : 'transparent') : undefined}
       cursor={disabled ? 'not-allowed' : 'pointer'}
       hoverStyle={
-        isUnderlined ? { borderBottomColor: '$yellow9', bg: 'transparent' } : { bg: '$blue3' }
+        isUnderlined
+          ? { borderBottomColor: '$yellow9', backgroundColor: 'transparent' }
+          : { backgroundColor: '$blue3' }
       }
       pressStyle={
         isUnderlined
           ? {
-              bg: 'transparent',
+              backgroundColor: 'transparent',
               borderBottomColor: '$blue9',
             }
           : {
-              bg: '$blue3',
+              backgroundColor: '$blue3',
               scale: 0.98,
             }
       }
@@ -75,7 +77,7 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
       }}
       {...props}
     >
-      <XStack gap="$2" items="center" justify="center">
+      <XStack gap="$2" alignItems="center" justifyContent="center">
         {children || (
           <Text fontSize="$3" fontWeight={isActive ? '600' : '500'} color={textColor}>
             {label}
@@ -105,20 +107,20 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
  */
 const TabBadge = styled(YStack, {
   name: 'TabBadge',
-  px: '$2',
-  py: '$1',
-  rounded: '$10',
+  paddingHorizontal: '$2',
+  paddingVertical: '$1',
+  borderRadius: '$10',
   width: 20,
-  items: 'center',
-  justify: 'center',
+  alignItems: 'center',
+  justifyContent: 'center',
 
   variants: {
     active: {
       true: {
-        bg: '$color5',
+        backgroundColor: '$color5',
       },
       false: {
-        bg: '$color4',
+        backgroundColor: '$color4',
       },
     },
   } as const,

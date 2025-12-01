@@ -55,14 +55,14 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
   return (
     <YStack
       flex={1}
-      items="center"
-      justify="center"
+      alignItems="center"
+      justifyContent="center"
       gap={spacing.md}
-      p={spacing['2xl']}
+      padding={spacing['2xl']}
       style={{ minHeight: 300 }}
     >
       {/* Icon */}
-      <YStack items="center" opacity={0.6}>
+      <YStack alignItems="center" opacity={0.6}>
         {icon || <Inbox size={48} color="$color9" />}
       </YStack>
 
@@ -89,7 +89,7 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       )}
 
       {/* Action */}
-      {action && <YStack mt={spacing.md}>{action}</YStack>}
+      {action && <YStack marginTop={spacing.md}>{action}</YStack>}
     </YStack>
   )
 }

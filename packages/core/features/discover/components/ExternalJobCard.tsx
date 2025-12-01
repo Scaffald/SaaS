@@ -2,7 +2,7 @@ import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { DiscoverCard } from '@unicornlove/ui'
 import { Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface ExternalJob {
   id: string
@@ -73,20 +73,20 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       variant={job.featured ? 'info' : 'neutral'}
       isSelected={job.featured}
       interactive={false}
-      p="$4"
+      padding="$4"
       gap="$3"
     >
       {/* Header */}
-      <XStack gap="$3" items="flex-start">
+      <XStack gap="$3" alignItems="flex-start">
         {job.company_logo ? (
           <YStack
             width={48}
             height={48}
-            rounded="$2"
+            borderRadius="$2"
             overflow="hidden"
-            bg="$color3"
-            items="center"
-            justify="center"
+            backgroundColor="$color3"
+            alignItems="center"
+            justifyContent="center"
           >
             <img
               src={job.company_logo}
@@ -95,7 +95,14 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
             />
           </YStack>
         ) : (
-          <YStack width={48} height={48} rounded="$2" bg="$blue4" items="center" justify="center">
+          <YStack
+            width={48}
+            height={48}
+            borderRadius="$2"
+            backgroundColor="$blue4"
+            alignItems="center"
+            justifyContent="center"
+          >
             <Building2 size={24} color="$blue10" />
           </YStack>
         )}
@@ -112,7 +119,12 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
         </YStack>
 
         {job.featured && (
-          <YStack px="$2" py="$1" rounded="$2" bg="$blue5">
+          <YStack
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+            backgroundColor="$blue5"
+          >
             <Text fontSize="$2" fontWeight="600" color="$blue11">
               FEATURED
             </Text>
@@ -123,7 +135,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       {/* Meta Info */}
       <XStack gap="$4" flexWrap="wrap">
         {job.job_location && (
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <MapPin size={16} color="$color10" />
             <Text fontSize="$3" color="$color11">
               {job.job_location}
@@ -132,7 +144,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
         )}
 
         {job.job_type && (
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <Clock size={16} color="$color10" />
             <Text fontSize="$3" color="$color11">
               {job.job_type}
@@ -141,7 +153,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
         )}
 
         {compensation && (
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <DollarSign size={16} color="$color10" />
             <Text fontSize="$3" color="$color11">
               {compensation}
@@ -166,14 +178,24 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       {/* Tags */}
       <XStack gap="$2" flexWrap="wrap">
         {primaryIndustry && (
-          <YStack px="$2" py="$1" rounded="$2" bg="$blue3">
+          <YStack
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+            backgroundColor="$blue3"
+          >
             <Text fontSize="$2" color="$blue11">
               {primaryIndustry}
             </Text>
           </YStack>
         )}
         {job.job_category && (
-          <YStack px="$2" py="$1" rounded="$2" bg="$color3">
+          <YStack
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+            backgroundColor="$color3"
+          >
             <Text fontSize="$2" color="$color11">
               {job.job_category}
             </Text>
@@ -184,7 +206,7 @@ export function ExternalJobCard({ job }: ExternalJobCardProps) {
       <Separator />
 
       {/* Actions */}
-      <XStack gap="$2" justify="flex-end">
+      <XStack gap="$2" justifyContent="flex-end">
         <Button
           size="$3"
           theme="info"

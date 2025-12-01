@@ -9,7 +9,8 @@ import Underline from '@tiptap/extension-underline'
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEffect, useMemo } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 import type { RichTextEditorProps } from './types'
 import { RICH_TEXT_LIMITS, RICH_TEXT_PLACEHOLDERS } from './utils/constants'
 import { createEmptyDocument, extractPlainText, sanitizeTipTapJSON } from './utils/sanitize'
@@ -100,8 +101,8 @@ const CharacterCount = ({ current, max }: { current: number; max: number }) => {
     <Text
       fontSize="$2"
       color={isOverLimit ? '$red10' : isNearLimit ? '$yellow10' : '$color'}
-      px="$3"
-      py="$2"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
     >
       {current} / {max}
     </Text>
@@ -206,7 +207,7 @@ export function RichTextEditor({
     <YStack
       borderWidth={1}
       borderColor={error ? '$red9' : '$borderColor'}
-      rounded="$4"
+      borderRadius="$4"
       background="$background"
       overflow="hidden"
       opacity={disabled ? 0.6 : 1}
@@ -218,8 +219,8 @@ export function RichTextEditor({
         <XStack
           borderBottomWidth={1}
           borderColor="$borderColor"
-          px="$2"
-          py="$2"
+          paddingHorizontal="$2"
+          paddingVertical="$2"
           gap="$1"
           background="$gray2"
         >
@@ -244,7 +245,7 @@ export function RichTextEditor({
             disabled={disabled}
             onPress={() => editor.chain().focus().toggleUnderline().run()}
           />
-          <XStack width={1} background="$borderColor" mx="$2" />
+          <XStack width={1} background="$borderColor" marginHorizontal="$2" />
           <ToolbarButtonComponent
             icon={List}
             label="Bullet List"
@@ -297,7 +298,7 @@ export function RichTextEditor({
 
       {/* Error Message */}
       {error && (
-        <Text fontSize="$2" color="$red10" px="$3" pt="$2">
+        <Text fontSize="$2" color="$red10" paddingHorizontal="$3" paddingTop="$2">
           {error}
         </Text>
       )}

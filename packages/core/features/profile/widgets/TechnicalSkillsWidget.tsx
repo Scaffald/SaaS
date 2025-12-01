@@ -1,16 +1,16 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import {
+  Button,
   DashboardWidget,
   EmptyState,
   Heading,
   LoadingState,
   spacing,
-  UIButton,
 } from '@unicornlove/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 
@@ -61,12 +61,12 @@ export function TechnicalSkillsWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <UIButton
+          <Button
             variant="primary"
             size="$2"
             onPress={() => {
@@ -75,7 +75,7 @@ export function TechnicalSkillsWidget({
             disabled={isFetching}
           >
             Retry
-          </UIButton>
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -111,10 +111,10 @@ export function TechnicalSkillsWidget({
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Technical Skills</Heading>
           {showEdit && (
-            <UIButton
+            <Button
               variant="outlined"
               size="$2"
               onPress={() => {
@@ -122,7 +122,7 @@ export function TechnicalSkillsWidget({
               }}
             >
               Edit
-            </UIButton>
+            </Button>
           )}
         </XStack>
 
@@ -133,12 +133,12 @@ export function TechnicalSkillsWidget({
             description="Add your skills to showcase your expertise"
             action={
               showEdit ? (
-                <UIButton
+                <Button
                   variant="primary"
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                 >
                   Add Skills
-                </UIButton>
+                </Button>
               ) : undefined
             }
           />
@@ -158,14 +158,14 @@ export function TechnicalSkillsWidget({
                     .map((skill: EnrichedUserSkill) => (
                       <XStack
                         key={skill.id}
-                        bg="$blue2"
-                        px="$3"
-                        py="$2"
-                        rounded="$3"
+                        backgroundColor="$blue2"
+                        paddingHorizontal="$3"
+                        paddingVertical="$2"
+                        borderRadius="$3"
                         borderWidth={1}
                         borderColor={skill.verified ? '$blue7' : '$blue5'}
                         gap="$2"
-                        items="center"
+                        alignItems="center"
                       >
                         {skill.verified && <CheckCircle size={14} color="$blue11" />}
                         <YStack gap="$0.5">

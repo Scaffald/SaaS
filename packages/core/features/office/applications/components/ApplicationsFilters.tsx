@@ -25,10 +25,18 @@ export const ApplicationsFilters = ({
   jobs,
 }: ApplicationsFiltersProps) => {
   return (
-    <XStack gap="$3" py="$3" px="$4" bg="$color2" rounded="$4" mb="$4" flexWrap="wrap">
+    <XStack
+      gap="$3"
+      paddingVertical="$3"
+      paddingHorizontal="$4"
+      backgroundColor="$color2"
+      borderRadius="$4"
+      marginBottom="$4"
+      flexWrap="wrap"
+    >
       {/* Job Filter */}
       <YStack width={200}>
-        <Text fontSize="$2" mb="$2" opacity={0.7}>
+        <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
           Filter by Job
         </Text>
         <ResponsiveSelect
@@ -53,7 +61,7 @@ export const ApplicationsFilters = ({
 
       {/* Status Filter */}
       <YStack width={200}>
-        <Text fontSize="$2" mb="$2" opacity={0.7}>
+        <Text fontSize="$2" marginBottom="$2" opacity={0.7}>
           Filter by Status
         </Text>
         <ResponsiveSelect
@@ -80,7 +88,7 @@ export const ApplicationsFilters = ({
 
       {/* Clear Filters */}
       {(filters.jobId || filters.status || filters.minScore > 0) && (
-        <YStack justify="flex-end">
+        <YStack justifyContent="flex-end">
           <Button
             size="$3"
             chromeless

@@ -8,7 +8,7 @@ export default function EditJobPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <YStack>Invalid job ID</YStack>
       </YStack>
     )
@@ -18,7 +18,7 @@ export default function EditJobPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
       </YStack>
     )
@@ -26,7 +26,7 @@ export default function EditJobPage() {
 
   if (!data?.job) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <YStack>Job not found</YStack>
       </YStack>
     )

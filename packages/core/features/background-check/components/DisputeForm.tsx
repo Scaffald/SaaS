@@ -13,7 +13,7 @@ import {
   TextArea,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 import type { DisputeAttachment, DisputeFormValues, DisputeReasonOption } from '../hooks/useDispute'
 
@@ -79,13 +79,13 @@ export function DisputeForm({
 
         {hasActiveDispute ? (
           <Card
-            bg="$yellow3"
+            backgroundColor="$yellow3"
             borderColor="$yellow8"
             borderWidth={1}
-            px="$3"
-            py="$2"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
             gap="$2"
-            rounded="$4"
+            borderRadius="$4"
           >
             <Text fontSize="$3" fontWeight="600" color="$yellow11">
               Dispute already in review
@@ -192,13 +192,13 @@ export function DisputeForm({
                 borderWidth={1}
                 borderColor={isDragActive ? '$blue8' : '$borderColor'}
                 borderStyle="dashed"
-                rounded="$4"
-                px="$4"
-                py="$5"
+                borderRadius="$4"
+                paddingHorizontal="$4"
+                paddingVertical="$5"
                 gap="$2"
-                bg="$color2"
-                items="center"
-                justify="center"
+                backgroundColor="$color2"
+                alignItems="center"
+                justifyContent="center"
               >
                 <input {...getInputProps()} />
                 <Upload size={24} color="$blue10" />
@@ -222,7 +222,14 @@ export function DisputeForm({
           </UploadSurface>
 
           {attachmentError ? (
-            <XStack gap="$2" items="center" px="$3" py="$2" bg="$red3" rounded="$3">
+            <XStack
+              gap="$2"
+              alignItems="center"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$red3"
+              borderRadius="$3"
+            >
               <AlertCircle size={16} color="$red10" />
               <Text fontSize="$2" color="$red10">
                 {attachmentError}
@@ -236,15 +243,15 @@ export function DisputeForm({
               {attachments.map((attachment) => (
                 <XStack
                   key={attachment.id}
-                  bg="$color2"
+                  backgroundColor="$color2"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  rounded="$3"
-                  px="$3"
-                  py="$2"
+                  borderRadius="$3"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
                   gap="$3"
-                  items="center"
-                  justify="space-between"
+                  alignItems="center"
+                  justifyContent="space-between"
                 >
                   <YStack flex={1} gap="$1">
                     <Text fontSize="$3" fontWeight="600" color="$color12" numberOfLines={1}>
@@ -269,7 +276,14 @@ export function DisputeForm({
         </YStack>
 
         {submissionError ? (
-          <XStack gap="$2" items="center" px="$3" py="$2" bg="$red3" rounded="$3">
+          <XStack
+            gap="$2"
+            alignItems="center"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
+            backgroundColor="$red3"
+            borderRadius="$3"
+          >
             <AlertCircle size={16} color="$red10" />
             <Text fontSize="$2" color="$red10">
               {submissionError}
@@ -277,7 +291,7 @@ export function DisputeForm({
           </XStack>
         ) : null}
 
-        <XStack gap="$2" justify="flex-end">
+        <XStack gap="$2" justifyContent="flex-end">
           <Button
             size="$3"
             theme="blue"

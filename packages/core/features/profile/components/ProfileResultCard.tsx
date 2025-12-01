@@ -1,6 +1,6 @@
 import { X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Button, Card, type CardProps, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, type CardProps, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface ProfileResultCardProps extends CardProps {
   /** Child content for the card */
@@ -53,7 +53,7 @@ export function ProfileResultCard({
     <Card
       bordered={bordered}
       size="$4"
-      bg={isNew ? '$green2' : undefined}
+      backgroundColor={isNew ? '$green2' : undefined}
       borderColor={isNew ? '$green9' : undefined}
       borderWidth={isNew ? 2 : undefined}
       animation={isNew ? 'quick' : undefined}
@@ -66,7 +66,7 @@ export function ProfileResultCard({
 
         {/* Action buttons */}
         {(onRemove || actions) && (
-          <XStack gap="$2" justify="flex-end" pt="$2">
+          <XStack gap="$2" justifyContent="flex-end" paddingTop="$2">
             {actions}
             {onRemove && (
               <Button
@@ -77,7 +77,7 @@ export function ProfileResultCard({
                 disabled={removeDisabled || isRemoving || isLoading}
               >
                 {isLoading ? (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Spinner size="small" />
                     <Text>Removing...</Text>
                   </XStack>

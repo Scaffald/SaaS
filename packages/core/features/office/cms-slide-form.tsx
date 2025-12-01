@@ -3,7 +3,7 @@ import { IconSelector, ToggleSwitch } from '@unicornlove/ui'
 import { ImageUpload } from '@app/core/components/ui'
 import { Save } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Form, H4, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Form, H4, Input, Label, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 interface CMSSlideFormProps {
   initialData?: WelcomeSlideUpdate
@@ -104,7 +104,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
           </Text>
         </YStack>
 
-        <XStack gap="$3" items="center">
+        <XStack gap="$3" alignItems="center">
           <ToggleSwitch
             checked={isActive}
             onCheckedChange={setIsActive}
@@ -114,7 +114,7 @@ export function CMSSlideForm({ initialData, onSubmit, isLoading }: CMSSlideFormP
           <Label>Active (visible to users)</Label>
         </XStack>
 
-        <XStack gap="$2" justify="flex-end">
+        <XStack gap="$2" justifyContent="flex-end">
           <Button onPress={handleSubmit} icon={Save} disabled={isLoading || !title || !description}>
             {isLoading ? 'Saving...' : 'Save Slide'}
           </Button>

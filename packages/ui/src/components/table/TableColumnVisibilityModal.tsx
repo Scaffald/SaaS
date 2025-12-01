@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Paragraph, Separator, Text, XStack, YStack } from 'tamagui'
 import { Checkbox } from '../inputs/Checkbox'
-import { ResponsiveModal } from '../ResponsiveModal'
+import { ResponsiveModal } from '../modal'
 
 export interface TableColumnVisibilityOption {
   id: string
@@ -58,7 +58,7 @@ export function TableColumnVisibilityModal({
               column.disabled || (!isVisible ? false : !canDisableMore && !column.disabled)
 
             return (
-              <XStack key={column.id} gap="$3" items="center">
+              <XStack key={column.id} gap="$3" alignItems="center">
                 <Checkbox
                   checked={isVisible}
                   disabled={disableToggle}

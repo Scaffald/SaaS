@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Switch, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 import type { ConsentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -47,8 +47,8 @@ export const ConsentStep = memo(function ConsentStep({
       </YStack>
 
       <ScrollView flex={1}>
-        <YStack gap="$4" pb="$6">
-          <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
+        <YStack gap="$4" paddingBottom="$6">
+          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
             <Text fontSize="$4" fontWeight="bold" color="$color12">
               FCRA Disclosure
             </Text>
@@ -57,7 +57,7 @@ export const ConsentStep = memo(function ConsentStep({
             </Text>
           </YStack>
 
-          <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
+          <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
             <Text fontSize="$4" fontWeight="bold" color="$color12">
               Summary of Rights
             </Text>
@@ -67,7 +67,7 @@ export const ConsentStep = memo(function ConsentStep({
           </YStack>
 
           <YStack gap="$3">
-            <XStack gap="$3" items="center">
+            <XStack gap="$3" alignItems="center">
               <Switch
                 size="$3"
                 checked={consent.acceptsDisclosure}

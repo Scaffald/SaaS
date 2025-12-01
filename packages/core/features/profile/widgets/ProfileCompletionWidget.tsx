@@ -4,7 +4,7 @@ import { CheckCircle, ChevronRight, Circle } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect } from 'react'
-import { Button, H4, Progress, Text, XStack, YStack } from 'tamagui'
+import { Button, H4, Progress, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -44,7 +44,7 @@ export function ProfileCompletionWidget({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$4">
+        <YStack gap="$4" alignItems="center" paddingVertical="$4">
           <Text color="$color11">Loading completion status...</Text>
         </YStack>
       </DashboardWidget>
@@ -62,7 +62,7 @@ export function ProfileCompletionWidget({
     <DashboardWidget>
       <YStack gap="$4">
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <H4>Profile Completion</H4>
           {variant === 'full' && (
             <Text fontSize="$3" color="$color11">
@@ -73,7 +73,7 @@ export function ProfileCompletionWidget({
 
         {/* Progress Bar */}
         <YStack gap="$2">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$5" fontWeight="600" color="$color12">
               {completionData.completionPercentage}%
             </Text>
@@ -83,10 +83,15 @@ export function ProfileCompletionWidget({
               </Text>
             )}
           </XStack>
-          <Progress value={completionData.completionPercentage} max={100} bg="$color4" size="$1">
+          <Progress
+            value={completionData.completionPercentage}
+            max={100}
+            backgroundColor="$color4"
+            size="$1"
+          >
             <Progress.Indicator
               animation="bouncy"
-              bg={completionData.completionPercentage === 100 ? '$green10' : '$blue10'}
+              backgroundColor={completionData.completionPercentage === 100 ? '$green10' : '$blue10'}
             />
           </Progress>
         </YStack>
@@ -95,16 +100,16 @@ export function ProfileCompletionWidget({
         {variant === 'full' && nextIncompleteItem && (
           <YStack
             gap="$3"
-            p="$3"
-            bg="$color3"
-            rounded="$3"
+            padding="$3"
+            backgroundColor="$color3"
+            borderRadius="$3"
             borderWidth={1}
             borderColor="$borderColor"
           >
             <Text fontSize="$3" fontWeight="600" color="$color12">
               Next Step
             </Text>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Circle size={16} color="$color10" />
               <YStack flex={1} gap="$1">
                 <Text fontSize="$3" fontWeight="500">
@@ -141,10 +146,10 @@ export function ProfileCompletionWidget({
                 <XStack
                   key={item.id}
                   gap="$2"
-                  items="center"
-                  p="$2"
-                  bg={item.complete ? '$color2' : '$color3'}
-                  rounded="$2"
+                  alignItems="center"
+                  padding="$2"
+                  backgroundColor={item.complete ? '$color2' : '$color3'}
+                  borderRadius="$2"
                   opacity={item.complete ? 0.7 : 1}
                 >
                   {item.complete ? (

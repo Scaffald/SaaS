@@ -1,5 +1,5 @@
 import { UploadCloud } from '@tamagui/lucide-icons'
-import { Button, type ButtonProps } from 'tamagui'
+import { Button, type ButtonProps } from '@unicornlove/ui'
 
 export interface ResumeUploadButtonProps extends Omit<ButtonProps, 'children' | 'text'> {
   onPress: () => void

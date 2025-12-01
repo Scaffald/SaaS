@@ -1,7 +1,7 @@
 import { InquiryOverviewWidget } from '@app/core/features/inquiries/components/InquiryOverviewWidget'
 import { api } from '@app/core/utils/api'
 import { SkeletonCard } from '@unicornlove/ui'
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 import { IPIPAssessmentWidget } from '../ipip-assessment'
 import { OccupationAssessmentWidget } from '../occupation-assessment'
 import { PrerequisiteWidget } from '../prerequisites/PrerequisiteWidget'

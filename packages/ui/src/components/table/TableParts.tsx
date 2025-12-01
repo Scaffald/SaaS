@@ -76,8 +76,8 @@ const Cell = styled(ThemeableStack, {
     },
     alignCells: (val: AlignCells) => {
       return {
-        items: val.y === 'center' ? 'center' : `flex-${val.y}`,
-        justify: val.x === 'center' ? 'center' : `flex-${val.x}`,
+        alignItems: val.y === 'center' ? 'center' : `flex-${val.y}`,
+        justifyContent: val.x === 'center' ? 'center' : `flex-${val.x}`,
       }
     },
     cellLocation: {
@@ -102,7 +102,7 @@ const HeaderCell = styled(ThemeableStack, {
   tag: 'th',
   flexDirection: 'row',
   context: TableContext,
-  py: '$3',
+  paddingVertical: '$3',
 
   variants: {
     cellWidth: {
@@ -115,8 +115,8 @@ const HeaderCell = styled(ThemeableStack, {
 
     alignHeaderCells: (val: AlignHeaderCells) => {
       return {
-        items: val.y === 'center' ? 'center' : `flex-${val.y}`,
-        justify: val.x === 'center' ? 'center' : `flex-${val.x}`,
+        alignItems: val.y === 'center' ? 'center' : `flex-${val.y}`,
+        justifyContent: val.x === 'center' ? 'center' : `flex-${val.x}`,
       }
     },
 

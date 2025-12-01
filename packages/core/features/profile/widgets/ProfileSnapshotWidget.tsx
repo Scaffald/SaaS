@@ -1,9 +1,9 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@unicornlove/ui'
+import { DashboardWidget, spacing } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, H4, Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 /**
  * ProfileSnapshotWidget
@@ -50,7 +50,7 @@ export function ProfileSnapshotWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} items="center" py={spacing['2xl']}>
+        <YStack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading profile...</Text>
         </YStack>
@@ -61,7 +61,7 @@ export function ProfileSnapshotWidget() {
   if (!generalInfo) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} items="center" py={spacing['2xl']}>
+        <YStack gap={spacing.md} alignItems="center" paddingVertical={spacing['2xl']}>
           <Text color="$color11">Profile data unavailable</Text>
         </YStack>
       </DashboardWidget>
@@ -112,7 +112,7 @@ export function ProfileSnapshotWidget() {
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <H4>Profile</H4>
           <Button
             size="$2"
@@ -125,22 +125,22 @@ export function ProfileSnapshotWidget() {
         </XStack>
 
         {/* Avatar & Name Section */}
-        <YStack gap="$3" items="center">
+        <YStack gap="$3" alignItems="center">
           <Avatar circular size="$8">
             <Avatar.Image
               source={{
                 uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
               }}
             />
-            <Avatar.Fallback bg="$color6" />
+            <Avatar.Fallback backgroundColor="$color6" />
           </Avatar>
 
-          <YStack gap="$1" items="center">
+          <YStack gap="$1" alignItems="center">
             <Text fontSize="$5" fontWeight="600">
               {displayName}
             </Text>
             {generalInfo.headline && (
-              <YStack items="center">
+              <YStack alignItems="center">
                 <Text color="$color11" fontSize="$2">
                   {generalInfo.headline}
                 </Text>
@@ -151,10 +151,10 @@ export function ProfileSnapshotWidget() {
           {/* Open to Work Badge */}
           {generalInfo.open_to_work && (
             <XStack
-              bg="$green3"
-              px="$3"
-              py="$1.5"
-              rounded="$10"
+              backgroundColor="$green3"
+              paddingHorizontal="$3"
+              paddingVertical="$1.5"
+              borderRadius="$10"
               borderWidth={1}
               borderColor="$green7"
             >
@@ -167,7 +167,7 @@ export function ProfileSnapshotWidget() {
 
         {/* Current Role */}
         {currentRole && (
-          <YStack gap="$1" bg="$color2" p="$3" rounded="$3">
+          <YStack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
             <Text fontSize="$2" color="$color10">
               Current Role
             </Text>
@@ -188,7 +188,7 @@ export function ProfileSnapshotWidget() {
 
           {/* Completion Bar */}
           <YStack gap="$2">
-            <XStack justify="space-between">
+            <XStack justifyContent="space-between">
               <Text fontSize="$2" color="$color11">
                 Completion
               </Text>
@@ -197,7 +197,7 @@ export function ProfileSnapshotWidget() {
               </Text>
             </XStack>
             <Progress value={completion} max={100}>
-              <Progress.Indicator animation="bouncy" bg="$blue7" />
+              <Progress.Indicator animation="bouncy" backgroundColor="$blue7" />
             </Progress>
           </YStack>
 
@@ -206,11 +206,11 @@ export function ProfileSnapshotWidget() {
             <YStack
               gap="$1"
               flex={1}
-              minW={80}
-              bg="$color2"
-              p={spacing.sm}
-              rounded="$3"
-              items="center"
+              minWidth={80}
+              backgroundColor="$color2"
+              padding={spacing.sm}
+              borderRadius="$3"
+              alignItems="center"
             >
               <Text fontSize="$6" fontWeight="700" color="$blue8">
                 {skills?.length || 0}
@@ -223,11 +223,11 @@ export function ProfileSnapshotWidget() {
             <YStack
               gap="$1"
               flex={1}
-              minW={80}
-              bg="$color2"
-              p={spacing.sm}
-              rounded="$3"
-              items="center"
+              minWidth={80}
+              backgroundColor="$color2"
+              padding={spacing.sm}
+              borderRadius="$3"
+              alignItems="center"
             >
               <Text fontSize="$6" fontWeight="700" color="$green10">
                 {certifications?.length || 0}
@@ -240,11 +240,11 @@ export function ProfileSnapshotWidget() {
             <YStack
               gap="$1"
               flex={1}
-              minW={80}
-              bg="$color2"
-              p={spacing.sm}
-              rounded="$3"
-              items="center"
+              minWidth={80}
+              backgroundColor="$color2"
+              padding={spacing.sm}
+              borderRadius="$3"
+              alignItems="center"
             >
               <Text fontSize="$6" fontWeight="700" color="$blue7">
                 {formattedYearsOfExperience}
@@ -259,7 +259,7 @@ export function ProfileSnapshotWidget() {
         {/* Top Skills Preview */}
         {topSkills.length > 0 && (
           <YStack gap="$2">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$3" fontWeight="600">
                 Top Skills
               </Text>
@@ -285,15 +285,15 @@ export function ProfileSnapshotWidget() {
                 return (
                   <XStack
                     key={skill.id as string}
-                    bg="$color3"
-                    px="$2.5"
-                    py="$1.5"
-                    rounded="$2"
+                    backgroundColor="$color3"
+                    paddingHorizontal="$2.5"
+                    paddingVertical="$1.5"
+                    borderRadius="$2"
                     borderWidth={1}
                     borderColor={skill.verified ? '$green7' : '$color6'}
                   >
                     {skill.verified && (
-                      <Text color="$green10" fontSize="$1" mr="$1">
+                      <Text color="$green10" fontSize="$1" marginRight="$1">
                         ✓
                       </Text>
                     )}
@@ -307,16 +307,16 @@ export function ProfileSnapshotWidget() {
 
         {/* Quick Actions */}
         <YStack gap={spacing.xs}>
-          <StyledButton
+          <Button
             variant="primary"
             size="$3"
             onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.path)}
             width="100%"
           >
             Edit Profile
-          </StyledButton>
+          </Button>
           {completion < 100 && (
-            <YStack items="center">
+            <YStack alignItems="center">
               <Text fontSize="$1" color="$color11">
                 Complete your profile to attract more opportunities
               </Text>

@@ -1,7 +1,7 @@
 import { captureEvent } from '@app/core/utils/analytics/client'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useTranslation } from '@app/core/utils/useTranslation'
-import { Button, Theme } from 'tamagui'
+import { Button, Theme } from '@unicornlove/ui'
 
 import { IconApple } from './IconApple'
 
@@ -31,13 +31,13 @@ export function AppleSignIn() {
   return (
     <Theme inverse>
       <Button
-        rounded="$10"
+        borderRadius="$10"
         flex={1}
-        bg="$background"
+        backgroundColor="$background"
         color="$color"
         borderColor="$borderColor"
         animation="quick"
-        hoverStyle={{ scale: 1.02, bg: '$background' }}
+        hoverStyle={{ scale: 1.02, backgroundColor: '$background' }}
         pressStyle={{ scale: 0.98 }}
         onPress={() => handleOAuthSignIn()}
         icon={IconApple}

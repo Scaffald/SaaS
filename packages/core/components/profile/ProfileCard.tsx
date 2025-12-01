@@ -1,8 +1,8 @@
 import { Award, BadgeCheck, Clock3, DollarSign, Star } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack, useWindowDimensions } from 'tamagui'
+import type { TamaguiElement } from '@unicornlove/ui'
+import { Paragraph, Text, XStack, useWindowDimensions } from '@unicornlove/ui'
 import {
   CardBadges,
   CardHeader,
@@ -116,7 +116,8 @@ export const ProfileCard = memo(
       const profileBadgeConfigs: BadgeConfig[] = badges.slice(0, 3).map((badge) => ({
         key: badge.id,
         label: badge.label,
-        bg: badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
+        backgroundColor:
+          badge.tone === 'success' ? '$green3' : badge.tone === 'warning' ? '$yellow3' : '$red3',
         color:
           badge.tone === 'success' ? '$green11' : badge.tone === 'warning' ? '$yellow11' : '$red11',
         icon:
@@ -132,7 +133,7 @@ export const ProfileCard = memo(
         profileBadgeConfigs.push({
           key: 'overflow',
           label: `+${badges.length - 3} more`,
-          bg: 'transparent',
+          backgroundColor: 'transparent',
           color: isSelected ? '$color1' : '$color10',
         })
       }
@@ -142,13 +143,13 @@ export const ProfileCard = memo(
         ...certifications.slice(0, 2).map((cert, idx) => ({
           key: `cert-${idx}`,
           label: cert,
-          bg: '$red10',
+          backgroundColor: '$red10',
           color: '$color1',
         })),
         ...skills.slice(0, 3).map((skill, idx) => ({
           key: `skill-${idx}`,
           label: skill,
-          bg: '$blue8',
+          backgroundColor: '$blue8',
           color: '$color1',
         })),
       ]
@@ -159,7 +160,7 @@ export const ProfileCard = memo(
         skillBadges.push({
           key: 'skills-overflow',
           label: `+${totalSkillsAndCerts - displayedSkillsAndCerts} more`,
-          bg: '$color3',
+          backgroundColor: '$color3',
           color: '$color11',
         })
       }
@@ -178,10 +179,17 @@ export const ProfileCard = memo(
           }}
         >
           {/* Header with score badge */}
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <CardHeader title={name} isSelected={isSelected} icon={avatar} />
             {score && (
-              <XStack items="center" gap="$1" bg="$blue3" rounded="$4" px="$2" py="$1">
+              <XStack
+                alignItems="center"
+                gap="$1"
+                backgroundColor="$blue3"
+                borderRadius="$4"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 <Star size={12} color="$blue11" />
                 <Text color="$blue11" fontWeight="700" fontSize="$2">
                   {score}
@@ -201,7 +209,7 @@ export const ProfileCard = memo(
 
           {/* Metadata */}
           {metadataItems.length > 0 && (
-            <CardMetadata items={metadataItems} isSelected={isSelected} />
+            <CardMetadata alignItems={metadataItems} isSelected={isSelected} />
           )}
 
           {/* Profile badges (certifications, achievements, etc.) */}
@@ -210,12 +218,12 @@ export const ProfileCard = memo(
               {profileBadgeConfigs.map((badgeConfig) => (
                 <XStack
                   key={badgeConfig.key}
-                  items="center"
+                  alignItems="center"
                   gap="$1"
-                  px="$1"
-                  py="$0.5"
-                  rounded="$8"
-                  bg={
+                  paddingHorizontal="$1"
+                  paddingVertical="$0.5"
+                  borderRadius="$8"
+                  backgroundColor={
                     badgeConfig.bg as typeof badgeConfig.bg extends string
                       ? typeof badgeConfig.bg
                       : never

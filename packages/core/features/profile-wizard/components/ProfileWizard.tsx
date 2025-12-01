@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, Paragraph, ScrollView, Spinner, Text, YStack } from 'tamagui'
+import { Button, Paragraph, ScrollView, Spinner, Text, YStack } from '@unicornlove/ui'
 import { useProfileWizard, type WizardStepPayloads } from '../hooks/useProfileWizard'
 import { useWizardAutoSave } from '../hooks/useWizardAutoSave'
 import type { ProfileWizardStepId } from '../utils/wizardSteps'
@@ -225,7 +225,7 @@ export function ProfileWizard({
   if (showStartScreen) {
     return (
       <ScrollView>
-        <YStack p="$6">
+        <YStack padding="$6">
           <WizardStartScreen
             completionPercentage={state.progress.completionPercentage}
             onStartWizard={() => {
@@ -250,7 +250,7 @@ export function ProfileWizard({
 
   if (isLoading) {
     return (
-      <YStack gap="$4" items="center" justify="center" flex={1} p="$6">
+      <YStack gap="$4" alignItems="center" justifyContent="center" flex={1} padding="$6">
         <Spinner size="large" />
         <Text color="$color11">Loading your profile wizard...</Text>
       </YStack>
@@ -259,11 +259,11 @@ export function ProfileWizard({
 
   if (isError) {
     return (
-      <YStack gap="$3" items="center" justify="center" flex={1} p="$6">
+      <YStack gap="$3" alignItems="center" justifyContent="center" flex={1} padding="$6">
         <Text fontSize="$4" fontWeight="600">
           We couldn't load your wizard
         </Text>
-        <Paragraph color="$color11" text="center">
+        <Paragraph color="$color11" textAlign="center">
           Please refresh and try again. If the issue persists, contact support.
         </Paragraph>
         <Button onPress={onCancel}>Close</Button>
@@ -273,7 +273,7 @@ export function ProfileWizard({
 
   if (state.isCompleting) {
     return (
-      <YStack gap="$4" items="center" justify="center" flex={1} p="$6">
+      <YStack gap="$4" alignItems="center" justifyContent="center" flex={1} padding="$6">
         <Spinner size="large" />
         <Text color="$color11">Wrapping up your profile...</Text>
       </YStack>
@@ -303,7 +303,7 @@ export function ProfileWizard({
 
   if (orderedSteps.length === 0) {
     return (
-      <YStack items="center" justify="center" flex={1} p="$4">
+      <YStack alignItems="center" justifyContent="center" flex={1} padding="$4">
         <Paragraph color="$color11">Loading wizard...</Paragraph>
       </YStack>
     )
@@ -311,7 +311,7 @@ export function ProfileWizard({
 
   return (
     <ScrollView>
-      <YStack gap="$5" p="$6">
+      <YStack gap="$5" padding="$6">
         <ProgressIndicator
           currentStep={state.progress.currentStep}
           completedSteps={state.progress.completedSteps}
@@ -358,7 +358,7 @@ function ButtonRow({ onCancel }: ButtonRowProps) {
       <Button size="$3" variant="outlined" onPress={onCancel}>
         Save & exit wizard
       </Button>
-      <Text fontSize="$2" color="$color10" mt="$1">
+      <Text fontSize="$2" color="$color10" marginTop="$1">
         You can resume anytime from your dashboard.
       </Text>
     </YStack>

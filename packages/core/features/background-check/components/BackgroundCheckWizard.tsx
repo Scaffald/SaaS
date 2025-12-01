@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 
 import { useBackgroundCheckForm } from '../hooks/useBackgroundCheckForm'
 import { ConsentStep } from './ConsentStep'
@@ -111,7 +111,7 @@ export function BackgroundCheckWizard() {
               </Text>
             </YStack>
 
-            <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
+            <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
               <Text fontSize="$4" fontWeight="bold" color="$color12">
                 Summary
               </Text>
@@ -137,13 +137,13 @@ export function BackgroundCheckWizard() {
   }
 
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} backgroundColor="$background">
       <YStack
-        p="$4"
+        padding="$4"
         gap="$3"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
-        bg="$background"
+        backgroundColor="$background"
       >
         <YStack gap="$1">
           <Text fontSize="$7" fontWeight="bold" color="$color12">
@@ -158,7 +158,12 @@ export function BackgroundCheckWizard() {
       </YStack>
 
       {submitError && (
-        <YStack bg="$red3" p="$3" borderBottomWidth={1} borderBottomColor="$red7">
+        <YStack
+          backgroundColor="$red3"
+          padding="$3"
+          borderBottomWidth={1}
+          borderBottomColor="$red7"
+        >
           <Text color="$red11">
             We couldn’t submit your background check: {submitError.message}
           </Text>
@@ -166,14 +171,14 @@ export function BackgroundCheckWizard() {
       )}
 
       <ScrollView flex={1}>
-        <YStack gap="$4" flex={1} px="$4" pb="$6">
+        <YStack gap="$4" flex={1} paddingHorizontal="$4" paddingBottom="$6">
           {renderStepContent()}
         </YStack>
       </ScrollView>
 
       <Separator />
 
-      <XStack p="$4" justify="space-between" bg="$background">
+      <XStack padding="$4" justifyContent="space-between" backgroundColor="$background">
         <Button
           size="$4"
           disabled={currentStepIndex === 0 || currentStep === 'confirmation'}

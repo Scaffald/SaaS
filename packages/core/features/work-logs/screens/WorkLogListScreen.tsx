@@ -5,7 +5,7 @@ import { Activity, CloudOff, DownloadCloud, MessagesSquare, Plus } from '@tamagu
 import { useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { RefreshControl, ScrollView } from 'react-native'
-import { Button, Card, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Paragraph, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
 import { useWorkLogSync } from '../hooks/useWorkLogSync'
@@ -56,8 +56,8 @@ export function WorkLogListScreen() {
         <RefreshControl refreshing={listQuery.isFetching} onRefresh={handleRefresh} />
       }
     >
-      <YStack gap="$4" p="$4" flex={1}>
-        <XStack justify="space-between" items="center">
+      <YStack gap="$4" padding="$4" flex={1}>
+        <XStack justifyContent="space-between" alignItems="center">
           <YStack gap="$1">
             <Text fontSize="$7" fontWeight="700">
               Work Logs
@@ -67,15 +67,19 @@ export function WorkLogListScreen() {
               verification.
             </Paragraph>
           </YStack>
-          <Button size="$4" icon={Plus} onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}>
+          <Button
+            size="$4"
+            icon={Plus}
+            onPress={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)}
+          >
             New Work Log
           </Button>
         </XStack>
 
         {hasOfflineQueue && (
-          <Card bg="$yellow3" borderColor="$yellow7" borderWidth={1}>
-            <YStack gap="$3" p="$3">
-              <XStack gap="$3" items="center">
+          <Card backgroundColor="$yellow3" borderColor="$yellow7" borderWidth={1}>
+            <YStack gap="$3" padding="$3">
+              <XStack gap="$3" alignItems="center">
                 <CloudOff color="#b45309" />
                 <YStack gap="$1" flex={1}>
                   <Text fontWeight="600" color="$yellow11">
@@ -87,7 +91,7 @@ export function WorkLogListScreen() {
                   </Paragraph>
                 </YStack>
               </XStack>
-              <XStack gap="$3" justify="flex-end">
+              <XStack gap="$3" justifyContent="flex-end">
                 <Button
                   size="$3"
                   variant="outlined"
@@ -111,14 +115,14 @@ export function WorkLogListScreen() {
         <Separator />
 
         {listQuery.isLoading ? (
-          <YStack flex={1} items="center" justify="center" gap="$3">
+          <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
             <Spinner size="large" />
             <Text color="$color10">Loading work logs…</Text>
           </YStack>
         ) : items.length === 0 ? (
           <EmptyState onCreate={() => router.push(ROUTES.DASHBOARD.WORK_LOGS.CREATE.path)} />
         ) : (
-          <YStack gap="$3" pb="$6">
+          <YStack gap="$3" paddingBottom="$6">
             {items.map((item) => (
               <Card
                 key={item.id}
@@ -126,10 +130,12 @@ export function WorkLogListScreen() {
                 pressStyle={{ borderColor: '$color8' }}
                 borderColor="$color6"
                 borderWidth={1}
-                onPress={() => router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))}
+                onPress={() =>
+                  router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))
+                }
               >
-                <YStack gap="$3" p="$3">
-                  <XStack justify="space-between" items="center">
+                <YStack gap="$3" padding="$3">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <YStack gap="$1">
                       <Text fontWeight="700" fontSize="$6">
                         {item.project?.name ?? 'Unknown Project'}
@@ -145,10 +151,10 @@ export function WorkLogListScreen() {
 
                   <XStack gap="$2" flexWrap="wrap">
                     <YStack
-                      px="$2"
-                      py="$1"
-                      rounded="$3"
-                      bg={item.visibility === 'public' ? '$green4' : '$gray4'}
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$3"
+                      backgroundColor={item.visibility === 'public' ? '$green4' : '$gray4'}
                     >
                       <Text
                         fontSize="$2"
@@ -159,7 +165,12 @@ export function WorkLogListScreen() {
                       </Text>
                     </YStack>
                     {item.showOnProfile && (
-                      <YStack px="$2" py="$1" rounded="$3" bg="$blue4">
+                      <YStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$3"
+                        backgroundColor="$blue4"
+                      >
                         <Text fontSize="$2" color="$blue11" fontWeight="600">
                           On profile
                         </Text>
@@ -191,14 +202,18 @@ export function WorkLogListScreen() {
                     </Paragraph>
                   )}
 
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <Text color="$color10" fontSize="$3">
                       Updated {item.updatedAt ? formatDate(item.updatedAt) : 'recently'}
                     </Text>
                     <Button
                       size="$3"
                       variant="outlined"
-                      onPress={() => router.push(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id }))}
+                      onPress={() =>
+                        router.push(
+                          buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId: item.id })
+                        )
+                      }
                     >
                       View Details
                     </Button>
@@ -233,12 +248,12 @@ function AnalyticsBanner({
 }: AnalyticsBannerProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$3" p="$3">
+      <YStack gap="$3" padding="$3">
         <Text fontWeight="700" fontSize="$5">
           Quick summary
         </Text>
         {isLoading && !statusSummary ? (
-          <XStack gap="$3" items="center">
+          <XStack gap="$3" alignItems="center">
             <Spinner size="small" />
             <Text color="$color10">Calculating analytics…</Text>
           </XStack>
@@ -282,7 +297,14 @@ interface SummaryTileProps {
 
 function SummaryTile({ label, value, subtitle, color = '$color12' }: SummaryTileProps) {
   return (
-    <YStack bg="$color2" rounded="$4" px="$4" py="$3" gap="$1" shrink={0}>
+    <YStack
+      backgroundColor="$color2"
+      borderRadius="$4"
+      paddingHorizontal="$4"
+      paddingVertical="$3"
+      gap="$1"
+      flexShrink={0}
+    >
       <Text fontWeight="600" color="$color10">
         {label}
       </Text>
@@ -306,7 +328,14 @@ interface MetricPillProps {
 
 function MetricPill({ icon: IconComponent, label, value }: MetricPillProps) {
   return (
-    <XStack bg="$color3" px="$3" py="$2" rounded="$4" gap="$2" items="center">
+    <XStack
+      backgroundColor="$color3"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      borderRadius="$4"
+      gap="$2"
+      alignItems="center"
+    >
       <IconComponent size={16} color="$color10" />
       <Text fontWeight="600">{value}</Text>
       <Text fontSize="$3" color="$color10">
@@ -323,11 +352,11 @@ interface EmptyStateProps {
 function EmptyState({ onCreate }: EmptyStateProps) {
   return (
     <Card borderColor="$color6" borderWidth={1}>
-      <YStack gap="$3" items="center" py="$8" px="$4">
+      <YStack gap="$3" alignItems="center" paddingVertical="$8" paddingHorizontal="$4">
         <Text fontSize="$6" fontWeight="700">
           No work logs yet
         </Text>
-        <Paragraph color="$color10" px="$6" style={{ textAlign: 'center' }}>
+        <Paragraph color="$color10" paddingHorizontal="$6" style={{ textAlign: 'center' }}>
           Create your first work log to start tracking hours, documenting tasks, and collaborating
           with your team.
         </Paragraph>

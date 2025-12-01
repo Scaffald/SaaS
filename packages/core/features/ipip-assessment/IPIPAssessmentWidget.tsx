@@ -1,10 +1,10 @@
 import { ROUTES } from '@app/core/constants/routes'
 import type { IPIPAnswer } from '@app/core/features/personality-assessment/lib/ipip'
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
 import { ArrowRight, CheckCircle2 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Progress, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { useIPIPResults } from './hooks/useIPIPResults'
 import { DOMAIN_NAMES, DOMAIN_ORDER, getCompletedDomainsCount } from './utils/domainGrouping'
 
@@ -21,7 +21,7 @@ export function IPIPAssessmentWidget() {
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
@@ -49,9 +49,9 @@ export function IPIPAssessmentWidget() {
     return (
       <DashboardWidget>
         <YStack gap={spacing.md}>
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <YStack gap={spacing.xs} flex={1}>
-              <XStack items="center" gap="$2">
+              <XStack alignItems="center" gap="$2">
                 <CheckCircle2 size="$1" color="$green10" />
                 <Text fontSize="$6" fontWeight="bold" color="$color12">
                   Personality Assessment
@@ -66,13 +66,13 @@ export function IPIPAssessmentWidget() {
           {/* Results Preview */}
           <YStack
             gap={spacing.sm}
-            p="$3"
-            bg="$color2"
-            rounded="$3"
+            padding="$3"
+            backgroundColor="$color2"
+            borderRadius="$3"
             borderWidth={1}
             borderColor="$borderColor"
           >
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <YStack gap="$1" flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   Your Archetype
@@ -90,7 +90,7 @@ export function IPIPAssessmentWidget() {
 
             {/* Top 3 Domain Scores Preview */}
             {results.normalizedScores && (
-              <YStack gap="$2" mt="$2">
+              <YStack gap="$2" marginTop="$2">
                 <Text fontSize="$3" fontWeight="600" color="$color11">
                   Top Traits
                 </Text>
@@ -103,7 +103,12 @@ export function IPIPAssessmentWidget() {
                   const result = normalized.result
 
                   return (
-                    <XStack key={domain} justify="space-between" items="center" gap="$2">
+                    <XStack
+                      key={domain}
+                      justifyContent="space-between"
+                      alignItems="center"
+                      gap="$2"
+                    >
                       <Text fontSize="$3" color="$color11" flex={1}>
                         {domainName}
                       </Text>
@@ -135,10 +140,10 @@ export function IPIPAssessmentWidget() {
             )}
           </YStack>
 
-          <StyledButton variant="primary" onPress={handleViewResults} size="$5">
-            <StyledButton.Text>View Full Results</StyledButton.Text>
+          <Button variant="primary" onPress={handleViewResults} size="$5">
+            <Button.Text>View Full Results</Button.Text>
             <ArrowRight size="$1" />
-          </StyledButton>
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -161,7 +166,7 @@ export function IPIPAssessmentWidget() {
         {/* Progress Bar */}
         {hasStarted && (
           <YStack gap="$2">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$3" fontWeight="500" color="$color11">
                 Progress
               </Text>
@@ -187,11 +192,11 @@ export function IPIPAssessmentWidget() {
           </YStack>
         )}
 
-        <StyledButton variant="primary" onPress={handleStart} size="$5">
-          <StyledButton.Text>
+        <Button variant="primary" onPress={handleStart} size="$5">
+          <Button.Text>
             {hasStarted ? 'Continue Questions' : 'Start Questions'}
-          </StyledButton.Text>
-        </StyledButton>
+          </Button.Text>
+        </Button>
 
         <Text fontSize="$2" color="$color11">
           {hasStarted ? `${progress}/120 questions answered` : 'Takes about 10-15 minutes'}

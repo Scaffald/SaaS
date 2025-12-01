@@ -1,7 +1,7 @@
 import { ResponsiveSelect } from '@unicornlove/ui'
 import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { memo, useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface ProjectSelectorOrganization {
   id: string
@@ -107,7 +107,7 @@ export const ProjectSelector = memo(function ProjectSelector({
       </YStack>
 
       {isLoading && (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Spinner size="small" />
           <Text fontSize="$3">Loading projects…</Text>
         </XStack>
@@ -116,13 +116,13 @@ export const ProjectSelector = memo(function ProjectSelector({
       {error && (
         <XStack
           gap="$2"
-          items="center"
-          bg="$red3"
+          alignItems="center"
+          backgroundColor="$red3"
           borderColor="$red6"
           borderWidth={1}
-          rounded="$3"
-          px="$3"
-          py="$2"
+          borderRadius="$3"
+          paddingHorizontal="$3"
+          paddingVertical="$2"
         >
           <AlertCircle size={16} color="$red10" />
           <Text flex={1} fontSize="$3" color="$red10">

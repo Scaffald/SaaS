@@ -3,7 +3,7 @@ import { copyToClipboard } from '@app/core/utils/clipboard'
 import { Calendar, Copy, Lock, Share2, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo, useState } from 'react'
-import { Button, Separator, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Switch, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface ShareResultsProps {
   isComplete: boolean
@@ -123,14 +123,14 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
     return (
       <YStack
         gap="$3"
-        p="$4"
-        bg="$color2"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$color2"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
         aria-live="polite"
       >
-        <XStack items="center" gap="$2">
+        <XStack alignItems="center" gap="$2">
           <Lock size="$1" color="$color10" />
           <Text fontSize="$4" fontWeight="600" color="$color11">
             Complete Assessment to Share
@@ -144,9 +144,16 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
   }
 
   return (
-    <YStack gap="$4" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+    <YStack
+      gap="$4"
+      padding="$4"
+      backgroundColor="$color2"
+      borderRadius="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
       <YStack gap="$2">
-        <XStack items="center" gap="$2">
+        <XStack alignItems="center" gap="$2">
           <Share2 size="$1" color="$color11" />
           <Text fontSize="$5" fontWeight="bold" color="$color12">
             Share Your Results
@@ -164,7 +171,13 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           Privacy Settings
         </Text>
 
-        <XStack justify="space-between" items="center" p="$3" bg="$color1" rounded="$3">
+        <XStack
+          justifyContent="space-between"
+          alignItems="center"
+          padding="$3"
+          backgroundColor="$color1"
+          borderRadius="$3"
+        >
           <YStack flex={1} gap="$1">
             <Text fontSize="$4" fontWeight="500" color="$color12">
               Include Archetype
@@ -181,7 +194,13 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           />
         </XStack>
 
-        <XStack justify="space-between" items="center" p="$3" bg="$color1" rounded="$3">
+        <XStack
+          justifyContent="space-between"
+          alignItems="center"
+          padding="$3"
+          backgroundColor="$color1"
+          borderRadius="$3"
+        >
           <YStack flex={1} gap="$1">
             <Text fontSize="$4" fontWeight="500" color="$color12">
               Include Domain Scores
@@ -211,12 +230,12 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
             <Text fontSize="$3" color="$color11">
               Set how many days until the link expires (1-365 days). Leave empty for no expiration.
             </Text>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Button
                 size="$3"
                 variant={expiresInDays === 7 ? 'outlined' : 'outlined'}
                 onPress={() => setExpiresInDays(7)}
-                bg={expiresInDays === 7 ? '$blue3' : undefined}
+                backgroundColor={expiresInDays === 7 ? '$blue3' : undefined}
               >
                 7 days
               </Button>
@@ -224,7 +243,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
                 size="$3"
                 variant="outlined"
                 onPress={() => setExpiresInDays(30)}
-                bg={expiresInDays === 30 ? '$blue3' : undefined}
+                backgroundColor={expiresInDays === 30 ? '$blue3' : undefined}
               >
                 30 days
               </Button>
@@ -232,7 +251,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
                 size="$3"
                 variant="outlined"
                 onPress={() => setExpiresInDays(90)}
-                bg={expiresInDays === 90 ? '$blue3' : undefined}
+                backgroundColor={expiresInDays === 90 ? '$blue3' : undefined}
               >
                 90 days
               </Button>
@@ -240,7 +259,7 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
                 size="$3"
                 variant="outlined"
                 onPress={() => setExpiresInDays(0)}
-                bg={expiresInDays === 0 ? '$blue3' : undefined}
+                backgroundColor={expiresInDays === 0 ? '$blue3' : undefined}
               >
                 Never
               </Button>
@@ -264,10 +283,10 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           </Text>
           <XStack
             gap="$2"
-            items="center"
-            p="$3"
-            bg="$color1"
-            rounded="$3"
+            alignItems="center"
+            padding="$3"
+            backgroundColor="$color1"
+            borderRadius="$3"
             borderWidth={1}
             borderColor="$borderColor"
           >
@@ -307,14 +326,14 @@ export function ShareResults({ isComplete, nextAvailableAt }: ShareResultsProps)
           <Separator />
           <YStack
             gap="$2"
-            p="$3"
-            bg="$yellow2"
-            rounded="$3"
+            padding="$3"
+            backgroundColor="$yellow2"
+            borderRadius="$3"
             borderWidth={1}
             borderColor="$yellow7"
             aria-live="polite"
           >
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Calendar size="$1" color="$yellow11" />
               <Text fontSize="$4" fontWeight="600" color="$yellow11">
                 Retake Available Soon

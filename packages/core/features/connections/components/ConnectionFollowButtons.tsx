@@ -5,7 +5,7 @@ import { DashboardWidget } from '@unicornlove/ui'
 import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface ConnectionFollowButtonsProps {
   targetUserId: string
@@ -211,8 +211,8 @@ export function ConnectionFollowButtons({
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$3" items="center" py="$3">
-          <XStack gap="$2" items="center">
+        <YStack gap="$3" alignItems="center" paddingVertical="$3">
+          <XStack gap="$2" alignItems="center">
             <Loader2 size={16} color="$color10" />
             <Text fontSize="$3" color="$color10">
               Loading connection status...
@@ -225,7 +225,7 @@ export function ConnectionFollowButtons({
 
   return (
     <DashboardWidget>
-      <YStack gap="$3" py="$3">
+      <YStack gap="$3" paddingVertical="$3">
         {/* Connection Button */}
         {connectionButtonState.type === 'connected' && (
           <XStack gap="$2" flexWrap="wrap">

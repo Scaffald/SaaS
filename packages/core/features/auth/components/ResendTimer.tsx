@@ -1,7 +1,7 @@
 import { useTranslation } from '@app/core/utils/useTranslation'
 import { RefreshCcw } from '@tamagui/lucide-icons'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Paragraph } from 'tamagui'
+import { Button, Paragraph } from '@unicornlove/ui'
 
 interface ResendTimerProps {
   onComplete: () => void
@@ -58,8 +58,8 @@ export function ResendTimer({ onComplete, onResendClick }: ResendTimerProps) {
   if (!isTimerActive) {
     return (
       <Button
-        items="center"
-        self="center"
+        alignItems="center"
+        alignSelf="center"
         gap="$2"
         cursor="pointer"
         onPress={handleResendClick}
@@ -73,9 +73,9 @@ export function ResendTimer({ onComplete, onResendClick }: ResendTimerProps) {
   }
 
   return (
-    <Button items="center" self="center" gap="$2" cursor="pointer" chromeless width={200}>
+    <Button alignItems="center" alignSelf="center" gap="$2" cursor="pointer" chromeless width={200}>
       <RefreshCcw size={12} color="$color10" />
-      <Paragraph color="$color10" text="right" fontSize="$1">
+      <Paragraph color="$color10" textAlign="right" fontSize="$1">
         {seconds === 1 ? t('auth.verify.resendInOne') : t('auth.verify.resendIn', { seconds })}
       </Paragraph>
     </Button>

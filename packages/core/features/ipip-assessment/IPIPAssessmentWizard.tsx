@@ -6,11 +6,8 @@ import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Button, Text, YStack } from 'tamagui'
-import {
-  DOMAIN_NAMES,
-  getCompletedDomainsCount,
-} from './utils/domainGrouping'
+import { Button, Text, YStack } from '@unicornlove/ui'
+import { DOMAIN_NAMES, getCompletedDomainsCount } from './utils/domainGrouping'
 
 interface SaveIPIPProgressResult {
   success: boolean
@@ -104,24 +101,24 @@ export function IPIPAssessmentWizard() {
         <YStack
           gap="$6"
           width="100%"
-          items="center"
-          p="$8"
+          alignItems="center"
+          padding="$8"
           style={{ maxWidth: 800, alignSelf: 'center' }}
         >
-          <YStack gap="$4" items="center">
+          <YStack gap="$4" alignItems="center">
             <Text fontSize="$9" fontWeight="bold" color="$green10">
               ✓ {DOMAIN_NAMES[completedDomain]} Complete!
             </Text>
-            <Text fontSize="$5" color="$color11" text="center">
+            <Text fontSize="$5" color="$color11" textAlign="center">
               You've completed {completedDomains} of 5 domains
             </Text>
-            <Text fontSize="$4" color="$color10" text="center">
+            <Text fontSize="$4" color="$color10" textAlign="center">
               Great progress! You're {Math.round((completedDomains / 5) * 100)}% done with the
               assessment.
             </Text>
           </YStack>
 
-          <YStack gap="$3" width="100%" maxW={400}>
+          <YStack gap="$3" width="100%" maxWidth={400}>
             <Button size="$5" theme="info" onPress={handleContinueToNextDomain}>
               Continue to Next Domain
             </Button>

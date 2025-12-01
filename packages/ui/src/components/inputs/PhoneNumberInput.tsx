@@ -12,7 +12,7 @@ import {
   findCountryByCode,
   getDefaultCountry,
 } from '../../config/countries'
-import { FieldError } from '../FieldError'
+import { FieldError } from '../field-error/FieldError'
 import { Sheet } from '../sheets/Sheet'
 
 const DEBOUNCE_DELAY_MS = 500
@@ -229,9 +229,9 @@ export const PhoneNumberInput = ({
           borderColor={resolvedError ? '$red8' : '$borderColor'}
           disabled={disabled}
           inputMode="tel"
-          pl={50} // Make space for country selector
-          pr="$3"
-          py="$3"
+          paddingLeft={50} // Make space for country selector
+          paddingRight="$3"
+          paddingVertical="$3"
           focusStyle={{
             borderColor: '$blue7',
             outlineColor: '$blue7',
@@ -241,20 +241,20 @@ export const PhoneNumberInput = ({
 
         {/* Country Selector - absolutely positioned */}
         <YStack
-          l={4}
+          left={4}
           position="absolute"
           width={78}
           height="calc(100% - 2px)"
-          bg="transparent"
+          backgroundColor="transparent"
           style={{ pointerEvents: disabled ? 'none' : 'auto' }}
         >
           <Select value={selectedCountry.code} onValueChange={handleCountryChange} size="$4">
             <Select.Trigger
               borderWidth={0}
-              bg="transparent"
+              backgroundColor="transparent"
               hoverStyle={{ backgroundColor: 'transparent', transform: 'scale(1.5)' }}
-              px="$3"
-              py="$2"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
               opacity={disabled ? 0.5 : 1}
               width={40}
             >
@@ -293,7 +293,7 @@ export const PhoneNumberInput = ({
               <Select.Viewport>
                 {countries.map((country, index) => (
                   <Select.Item key={country.code} value={country.code} index={index}>
-                    <XStack items="center" gap="$2">
+                    <XStack alignItems="center" gap="$2">
                       <Text fontSize="$3">{country.flag}</Text>
                       <Text fontSize="$3">{country.dialCode}</Text>
                       <Text fontSize="$3">{country.name}</Text>

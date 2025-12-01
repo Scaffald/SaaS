@@ -31,12 +31,12 @@ alwaysApply: true
 ### ✅ Prefer - Tamagui Shorthand Properties
 ```tsx
 <View
-  bg="$blue9"
+  backgroundColor="$blue9"
   bc="$blue10"
-  rounded="$3"
-  px="$4"
-  py="$2" 
-  items="center"
+  borderRadius="$3"
+  paddingHorizontal="$4"
+  paddingVertical="$2" 
+  alignItems="center"
   justify="center"
   boxShadow="0 2px 8px rgba(0,0,0,0.1)"
 />

@@ -5,7 +5,7 @@ import {
 } from '@app/core/features/profile/components/employment-fields'
 import { api } from '@app/core/utils/api'
 import {
-  UIButton as Button,
+  Button,
   CustomCheckbox,
   DashboardWidget,
   LocationListInput,
@@ -16,7 +16,7 @@ import { Calendar, Car, Shield } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import {
   AVAILABILITY_OPTIONS,
   DRIVERS_LICENSE_OPTIONS,
@@ -141,12 +141,14 @@ export function EmploymentSection({
         // Form schema is compatible with API schema but has slightly different structure
         await updateEmploymentMutation.mutateAsync({
           userId,
-          data: updatedData as unknown as Parameters<typeof updateEmploymentMutation.mutateAsync>[0]['data'],
+          data: updatedData as unknown as Parameters<
+            typeof updateEmploymentMutation.mutateAsync
+          >[0]['data'],
         })
       } else {
         // Form schema is compatible with API schema but has slightly different structure
         await updateEmploymentMutation.mutateAsync(
-          updatedData as unknown as Parameters<typeof updateEmploymentMutation.mutateAsync>[0],
+          updatedData as unknown as Parameters<typeof updateEmploymentMutation.mutateAsync>[0]
         )
       }
     } finally {
@@ -156,7 +158,7 @@ export function EmploymentSection({
 
   if (isLoadingEmployment) {
     return (
-      <YStack gap="$4" p="$4" flex={1} justify="center" items="center">
+      <YStack gap="$4" padding="$4" flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
         <Text>Loading employment preferences...</Text>
       </YStack>
@@ -173,7 +175,7 @@ export function EmploymentSection({
             name="hourly_rate"
             control={control}
             render={({ field }) => (
-              <XStack gap="$3" items="center">
+              <XStack gap="$3" alignItems="center">
                 <Input
                   flex={1}
                   placeholder="Enter your hourly rate"
@@ -198,7 +200,7 @@ export function EmploymentSection({
         </YStack>
 
         {/* Preferred Work Locations */}
-        <YStack gap="$3" py="$3">
+        <YStack gap="$3" paddingVertical="$3">
           <Text fontWeight="600">Preferred Work Locations</Text>
           <Controller
             name="preferred_work_locations"
@@ -295,9 +297,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <YStack gap="$2" pt="$2">
+                    <YStack gap="$2" paddingTop="$2">
                       {DRIVERS_LICENSE_OPTIONS.map((license) => (
-                        <XStack key={license} gap="$3" items="center">
+                        <XStack key={license} gap="$3" alignItems="center">
                           <CustomCheckbox
                             checked={field.value?.includes(license) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -370,9 +372,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <YStack gap="$2" pt="$2">
+                    <YStack gap="$2" paddingTop="$2">
                       {MILITARY_STATUS_OPTIONS.map((status) => (
-                        <XStack key={status} gap="$3" items="center">
+                        <XStack key={status} gap="$3" alignItems="center">
                           <CustomCheckbox
                             checked={field.value?.includes(status) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -424,9 +426,9 @@ export function EmploymentSection({
                   }}
                   disabled={readOnly}
                   expandedContent={
-                    <YStack gap="$2" pt="$2">
+                    <YStack gap="$2" paddingTop="$2">
                       {AVAILABILITY_OPTIONS.map((option) => (
-                        <XStack key={option} gap="$3" items="center">
+                        <XStack key={option} gap="$3" alignItems="center">
                           <CustomCheckbox
                             checked={field.value?.includes(option) || false}
                             onCheckedChange={(checked: boolean) => {
@@ -454,7 +456,7 @@ export function EmploymentSection({
 
         {/* Save Button */}
         {!readOnly && (
-          <XStack justify="flex-end" pt="$4">
+          <XStack justifyContent="flex-end" paddingTop="$4">
             <Button
               variant="primary"
               onPress={handleSubmit(onSubmit)}

@@ -2,7 +2,7 @@ import type { AppRouter } from '@app/supabase/client-types'
 import { Briefcase, Mail, Shield, Users } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { Card, Text, XStack, YStack } from 'tamagui'
+import { Card, Text, XStack, YStack } from '@unicornlove/ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -49,10 +49,16 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
     typeof stats?.pendingInvitations === 'number' ? stats.pendingInvitations : undefined
 
   return (
-    <Card p="$4" borderWidth={1} borderColor="$borderColor" gap="$4" bg="$color2">
-      <XStack gap="$4" justify="space-between" flexWrap="wrap">
+    <Card
+      padding="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+      gap="$4"
+      backgroundColor="$color2"
+    >
+      <XStack gap="$4" justifyContent="space-between" flexWrap="wrap">
         <YStack gap="$2" flex={1} style={{ minWidth: 240 }}>
-          <XStack gap="$2" items="center" flexWrap="wrap">
+          <XStack gap="$2" alignItems="center" flexWrap="wrap">
             <Text fontSize="$8" fontWeight="700">
               {team.name || 'Untitled team'}
             </Text>
@@ -64,7 +70,7 @@ export function TeamOverviewCard({ team, stats, actions }: TeamOverviewCardProps
           </Text>
         </YStack>
         {actions ? (
-          <XStack gap="$2" items="flex-start" shrink={0} flexWrap="wrap">
+          <XStack gap="$2" alignItems="flex-start" flexShrink={0} flexWrap="wrap">
             {actions}
           </XStack>
         ) : null}
@@ -117,13 +123,13 @@ function StatItem({ icon, label, value }: { icon: ReactNode; label: string; valu
   return (
     <XStack
       gap="$2"
-      items="center"
+      alignItems="center"
       borderWidth={1}
       borderColor="$borderColor"
-      rounded="$4"
-      px="$3"
-      py="$2"
-      bg="$color3"
+      borderRadius="$4"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      backgroundColor="$color3"
     >
       {icon}
       <YStack>
@@ -149,12 +155,12 @@ function Chip({
   return (
     <XStack
       gap="$2"
-      px="$2"
-      py="$1"
+      paddingHorizontal="$2"
+      paddingVertical="$1"
       borderWidth={1}
       borderColor={border}
-      bg={background}
-      rounded="$4"
+      backgroundColor={background}
+      borderRadius="$4"
     >
       <Text fontSize="$2" color={textColor}>
         {children}

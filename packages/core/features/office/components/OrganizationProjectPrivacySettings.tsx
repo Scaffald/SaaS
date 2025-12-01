@@ -3,7 +3,7 @@ import { ResponsiveSelect } from '@unicornlove/ui'
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface OrganizationProjectPrivacySettingsProps {
   organizationId: string
@@ -72,14 +72,14 @@ export function OrganizationProjectPrivacySettings({
 
   if (isLoading) {
     return (
-      <Card p="$4" bg="$gray2">
+      <Card padding="$4" backgroundColor="$gray2">
         <Spinner />
       </Card>
     )
   }
 
   return (
-    <Card p="$4" bg="$blue2" borderColor="$blue8" borderWidth={1}>
+    <Card padding="$4" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
       <YStack gap="$4">
         <Text fontSize="$6" fontWeight="600">
           Project Location Privacy
@@ -102,7 +102,7 @@ export function OrganizationProjectPrivacySettings({
           />
         </YStack>
 
-        <Card p="$3" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
+        <Card padding="$3" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
           <YStack gap="$2">
             <Text fontWeight="600" fontSize="$3">
               Project Override Statistics
@@ -126,7 +126,7 @@ export function OrganizationProjectPrivacySettings({
           </YStack>
         </Card>
 
-        <XStack justify="flex-end">
+        <XStack justifyContent="flex-end">
           <Button
             theme="blue"
             onPress={handleSave}

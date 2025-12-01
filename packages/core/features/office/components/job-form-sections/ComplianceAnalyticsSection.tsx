@@ -1,6 +1,6 @@
 import { Input, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Label } from 'tamagui'
+import { Label } from '@unicornlove/ui'
 
 interface ComplianceAnalyticsSectionProps {
   eeoJobCategory?: string
@@ -42,9 +42,9 @@ export function ComplianceAnalyticsSection({
   return (
     <YStack
       gap="$4"
-      p="$4"
-      bg="$background"
-      rounded="$4"
+      padding="$4"
+      backgroundColor="$background"
+      borderRadius="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
@@ -69,7 +69,7 @@ export function ComplianceAnalyticsSection({
       </YStack>
 
       {/* Veteran Friendly */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Veteran friendly</Label>
           <Text fontSize="$2" color="$color10">
@@ -84,7 +84,7 @@ export function ComplianceAnalyticsSection({
       </XStack>
 
       {/* Disability Friendly */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Disability friendly</Label>
           <Text fontSize="$2" color="$color10">
@@ -99,7 +99,7 @@ export function ComplianceAnalyticsSection({
       </XStack>
 
       {/* Affirmative Action Plan */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Affirmative action plan</Label>
           <Text fontSize="$2" color="$color10">
@@ -114,7 +114,7 @@ export function ComplianceAnalyticsSection({
       </XStack>
 
       {/* Source Tracking */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Source tracking enabled</Label>
           <Text fontSize="$2" color="$color10">

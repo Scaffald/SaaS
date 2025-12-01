@@ -110,16 +110,16 @@ export function FeedbackWidget() {
 
   return (
     <>
-      <YStack position="absolute" b="$4" r="$4" style={{ zIndex: 1000 }}>
+      <YStack position="absolute" bottom="$4" right="$4" style={{ zIndex: 1000 }}>
         <Button
           size="$6"
           circular
           icon={MessageCircle}
-          bg="$blue9"
+          backgroundColor="$blue9"
           color="$color1"
           elevation="$4"
           pressStyle={{ scale: 0.97 }}
-          hoverStyle={{ bg: '$blue10' }}
+          hoverStyle={{ backgroundColor: '$blue10' }}
           focusStyle={{ outlineColor: '$blue8' }}
           onPress={() => setIsModalOpen(true)}
         >
@@ -127,13 +127,13 @@ export function FeedbackWidget() {
         </Button>
         {pendingCount > 0 ? (
           <YStack
-            mt="$2"
-            px="$3"
-            py="$2"
-            bg="$yellow4"
+            marginTop="$2"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
+            backgroundColor="$yellow4"
             borderWidth={1}
             borderColor="$yellow6"
-            rounded="$3"
+            borderRadius="$3"
             style={{ maxWidth: 220 }}
           >
             <Text fontSize="$2" color="$yellow10">
@@ -152,7 +152,7 @@ export function FeedbackWidget() {
         size="medium"
       >
         <ScrollView showsVerticalScrollIndicator={false}>
-          <YStack gap="$4" px="$2" py="$2">
+          <YStack gap="$4" paddingHorizontal="$2" paddingVertical="$2">
             <Paragraph color="$color11">{INSTRUCTIONS}</Paragraph>
 
             <YStack gap="$2">
@@ -199,7 +199,7 @@ export function FeedbackWidget() {
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="Describe your feedback in detail..."
-                    bg="$color2"
+                    backgroundColor="$color2"
                     borderColor={isBelowMinimum ? '$red7' : '$color6'}
                     textAlignVertical="top"
                     focusStyle={{
@@ -209,7 +209,7 @@ export function FeedbackWidget() {
                   />
                 )}
               />
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <FieldError
                   message={
                     form.formState.errors.feedbackText?.message ??
@@ -239,14 +239,14 @@ export function FeedbackWidget() {
                     {...getRootProps()}
                     borderWidth={1}
                     borderStyle="dashed"
-                    px="$4"
-                    py="$6"
-                    items="center"
-                    justify="center"
+                    paddingHorizontal="$4"
+                    paddingVertical="$6"
+                    alignItems="center"
+                    justifyContent="center"
                     gap="$2"
-                    bg="$color2"
+                    backgroundColor="$color2"
                     borderColor={isDragActive ? '$blue7' : '$color6'}
-                    rounded="$4"
+                    borderRadius="$4"
                   >
                     <input {...getInputProps()} />
                     <Text fontWeight="600">
@@ -255,7 +255,7 @@ export function FeedbackWidget() {
                     <Text fontSize="$2" color="$color9">
                       Accepted formats: PNG, JPG, JPEG, GIF, WebP (max 5MB)
                     </Text>
-                    <Button size="$2" mt="$2" onPress={open}>
+                    <Button size="$2" marginTop="$2" onPress={open}>
                       Choose File
                     </Button>
                   </YStack>
@@ -264,11 +264,11 @@ export function FeedbackWidget() {
 
               {screenshot ? (
                 <YStack
-                  mt="$3"
+                  marginTop="$3"
                   borderWidth={1}
                   borderColor="$color6"
                   overflow="hidden"
-                  rounded="$4"
+                  borderRadius="$4"
                 >
                   {screenshotPreview ? (
                     <Image
@@ -279,11 +279,11 @@ export function FeedbackWidget() {
                     />
                   ) : null}
                   <XStack
-                    px="$3"
-                    py="$2"
-                    items="center"
-                    justify="space-between"
-                    bg="$color2"
+                    paddingHorizontal="$3"
+                    paddingVertical="$2"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    backgroundColor="$color2"
                     gap="$2"
                   >
                     <YStack flex={1}>
@@ -306,7 +306,7 @@ export function FeedbackWidget() {
 
             <Separator />
 
-            <XStack items="center" justify="space-between" gap="$3">
+            <XStack alignItems="center" justifyContent="space-between" gap="$3">
               <YStack gap="$1">
                 <Text fontSize="$2" color="$color9">
                   Captured context:

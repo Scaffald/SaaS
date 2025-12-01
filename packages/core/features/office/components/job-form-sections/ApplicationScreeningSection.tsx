@@ -1,6 +1,6 @@
 import { ResponsiveSelect, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Label } from 'tamagui'
+import { Label } from '@unicornlove/ui'
 
 interface ApplicationScreeningSectionProps {
   requireCurrentLocation: boolean
@@ -67,11 +67,11 @@ export function ApplicationScreeningSection({
   return (
     <YStack gap="$4">
       {/* Current Location */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Current location</Label>
         </YStack>
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_current_location ? '1' : '0'}
           </Text>
@@ -84,11 +84,11 @@ export function ApplicationScreeningSection({
       </XStack>
 
       {/* Willing to Relocate */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Willing to relocate</Label>
         </YStack>
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_relocation_willingness ? '1' : '0'}
           </Text>
@@ -102,11 +102,11 @@ export function ApplicationScreeningSection({
 
       {/* Minimum Years of Experience */}
       <YStack gap="$2">
-        <XStack gap="$3" items="center" justify="space-between">
+        <XStack gap="$3" alignItems="center" justifyContent="space-between">
           <YStack gap="$1" flex={1}>
             <Label>Minimum years of experience</Label>
           </YStack>
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <Text fontSize="$2" color="$color10">
               {localState.minimum_years_experience_enabled ? '1' : '0'}
             </Text>
@@ -135,11 +135,11 @@ export function ApplicationScreeningSection({
       </YStack>
 
       {/* Work Authorization */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Authorized to work in US</Label>
         </YStack>
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_work_authorization ? '1' : '0'}
           </Text>
@@ -152,11 +152,11 @@ export function ApplicationScreeningSection({
       </XStack>
 
       {/* Earliest Start Date */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Earliest start date</Label>
         </YStack>
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {localState.require_earliest_start_date ? '1' : '0'}
           </Text>

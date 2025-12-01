@@ -1,6 +1,6 @@
 import { DashboardWidget } from '@unicornlove/ui'
 import { X } from '@tamagui/lucide-icons'
-import { Button, Input, Label, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface SearchFilterWidgetProps {
   /** Title displayed in the header */
@@ -53,7 +53,7 @@ export function SearchFilterWidget({
 }: SearchFilterWidgetProps) {
   const headerSection = (
     <YStack gap={subtitle ? '$2' : '$1'}>
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$6" fontWeight="700" color="$color12">
           {title}
         </Text>
@@ -89,7 +89,7 @@ export function SearchFilterWidget({
   )
 
   const defaultActiveFiltersContent = searchQuery && (
-    <XStack gap="$2" items="center">
+    <XStack gap="$2" alignItems="center">
       <Text fontSize="$3" color="$color11">
         Search:
       </Text>

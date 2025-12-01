@@ -1,6 +1,6 @@
 import { Input, Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Label } from 'tamagui'
+import { Label } from '@unicornlove/ui'
 
 interface DistributionVisibilitySectionProps {
   isFeatured?: boolean
@@ -41,9 +41,9 @@ export function DistributionVisibilitySection({
   return (
     <YStack
       gap="$4"
-      p="$4"
-      bg="$background"
-      rounded="$4"
+      padding="$4"
+      backgroundColor="$background"
+      borderRadius="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
@@ -55,7 +55,7 @@ export function DistributionVisibilitySection({
       </Text>
 
       {/* Is Featured */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Featured job</Label>
           <Text fontSize="$2" color="$color10">

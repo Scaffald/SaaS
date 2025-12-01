@@ -12,8 +12,8 @@ import type { CardBadgesProps } from './types'
  * ```tsx
  * <CardBadges
  *   badges={[
- *     { key: '1', label: 'React', bg: '$blue10', color: '$color1' },
- *     { key: '2', label: 'TypeScript', bg: '$blue10', color: '$color1' }
+ *     { key: '1', label: 'React', backgroundColor: '$blue10', color: '$color1' },
+ *     { key: '2', label: 'TypeScript', backgroundColor: '$blue10', color: '$color1' }
  *   ]}
  *   maxVisible={3}
  * />
@@ -30,24 +30,32 @@ export const CardBadges = memo(
     }
 
     return (
-      <XStack gap="$2" flexWrap="wrap" items="center">
-        {displayBadges.map((badge) => (
-          <Chip
-            key={badge.key}
-            bg={badge.bg ?? '$blue10'}
-            color={badge.color ?? '$color1'}
-            fontSize="$2"
-            px="$2"
-            py="$1"
-          >
-            {badge.icon && (
-              <XStack mr="$1" items="center">
+      <XStack gap="$2" flexWrap="wrap" alignItems="center">
+        {displayBadges.map((badge) => {
+          const chipProps = {
+            backgroundColor: badge.bg ?? '$blue10',
+            color: typeof badge.color === 'string' ? badge.color : '$color1',
+            fontSize: '$2' as const,
+            paddingHorizontal: '$2' as const,
+            paddingVertical: '$1' as const,
+          }
+          const chipContent = badge.icon ? (
+            <XStack alignItems="center" gap="$1">
+              <XStack marginRight="$1" alignItems="center">
                 {badge.icon}
               </XStack>
-            )}
-            {badge.label}
-          </Chip>
-        ))}
+              {badge.label}
+            </XStack>
+          ) : (
+            badge.label
+          )
+          const ChipWithKey = Chip as any
+          return (
+            <ChipWithKey key={badge.key} {...chipProps}>
+              {chipContent as any}
+            </ChipWithKey>
+          )
+        })}
         {overflowCount > 0 && (
           <Text fontSize="$2" color={overflowColor}>
             +{overflowCount} more

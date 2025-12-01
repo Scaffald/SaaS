@@ -6,7 +6,7 @@ import type { AppRouter } from '@app/supabase/client-types'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -47,7 +47,7 @@ export default function OfficeTeamSettingsPage() {
 
   if ((isLoading || isFetching) && !teamData?.team) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$3">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color11">Loading team settings…</Text>
       </YStack>
@@ -76,7 +76,7 @@ export default function OfficeTeamSettingsPage() {
 
   return (
     <ScrollView>
-      <YStack flex={1} gap="$6" p="$4">
+      <YStack flex={1} gap="$6" padding="$4">
         <XStack>
           <Button
             size="$2"
@@ -89,7 +89,13 @@ export default function OfficeTeamSettingsPage() {
         </XStack>
 
         {team.isArchived ? (
-          <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$3" gap="$2">
+          <Card
+            borderWidth={1}
+            borderColor="$borderColor"
+            backgroundColor="$color2"
+            padding="$3"
+            gap="$2"
+          >
             <Text fontWeight="600">Archived team</Text>
             <Text color="$color11">
               This team has been archived. Update its settings after restoring the team.
@@ -121,8 +127,14 @@ function CenteredMessage({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} items="center" justify="center" gap="$3" px="$4">
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color2" gap="$3">
+    <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+      <Card
+        padding="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color2"
+        gap="$3"
+      >
         <Text fontSize="$6" fontWeight="700">
           {title}
         </Text>

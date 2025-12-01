@@ -21,6 +21,8 @@
       "@app/trpc/*": ["./packages/trpc/src/*"],
       "@test-helpers": ["./tests/infrastructure/vitest/helpers"],
       "@test-helpers/*": ["./tests/infrastructure/vitest/helpers/*"],
+      "@unicornlove/ui": ["./packages/ui/src"],
+      "@unicornlove/ui/*": ["./packages/ui/src/*"],
       "expo-clipboard": ["./types/expo-clipboard.d.ts"],
       "flow-remove-types": ["./types/flow-remove-types.d.ts"]
     },

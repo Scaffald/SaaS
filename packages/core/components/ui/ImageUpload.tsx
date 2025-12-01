@@ -3,7 +3,7 @@ import { getStorageUrl } from '@app/core/utils/supabase/storage'
 import { AlertCircle, Image as ImageIcon, Trash2, Upload } from '@tamagui/lucide-icons'
 import { type ChangeEvent, useCallback, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Image, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Image, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { useFilePicker, MediaTypeOptions } from '@unicornlove/ui'
 
 export interface ImageUploadProps {
@@ -338,9 +338,9 @@ export function ImageUpload({
           isDragActive ? '$blue8' : error ? '$red8' : hasImage ? '$borderColor' : '$borderColor'
         }
         borderStyle={isDragActive ? 'solid' : 'dashed'}
-        rounded="$4"
-        p="$4"
-        bg={isDragActive ? '$blue2' : hasImage ? '$background' : '$background'}
+        borderRadius="$4"
+        padding="$4"
+        backgroundColor={isDragActive ? '$blue2' : hasImage ? '$background' : '$background'}
         opacity={disabled ? 0.5 : 1}
         {...(Platform.OS === 'web' && getRootProps
           ? (getRootProps() as Record<string, unknown>)
@@ -348,25 +348,25 @@ export function ImageUpload({
       >
         {hasImage ? (
           // Image Preview Mode
-          <YStack gap="$3" items="center">
+          <YStack gap="$3" alignItems="center">
             <YStack position="relative">
               <Image
                 source={{ uri: value }}
                 width={200}
                 height={200}
                 resizeMode="contain"
-                rounded="$4"
+                borderRadius="$4"
                 borderWidth={1}
                 borderColor="$borderColor"
               />
               {isUploading && (
                 <YStack
                   position="absolute"
-                  bg="$background"
+                  backgroundColor="$background"
                   opacity={0.8}
-                  items="center"
-                  justify="center"
-                  rounded="$4"
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="$4"
                   style={{ top: 0, left: 0, right: 0, bottom: 0 }}
                 >
                   <Spinner size="large" />
@@ -398,14 +398,21 @@ export function ImageUpload({
           </YStack>
         ) : (
           // Upload Mode
-          <YStack gap="$3" items="center">
+          <YStack gap="$3" alignItems="center">
             {/* Icon */}
-            <YStack width={64} height={64} items="center" justify="center" rounded="$4" bg="$blue3">
+            <YStack
+              width={64}
+              height={64}
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="$4"
+              backgroundColor="$blue3"
+            >
               {isUploading ? <Spinner size="large" /> : <ImageIcon size={32} color="$blue10" />}
             </YStack>
 
             {/* Text */}
-            <YStack gap="$1" items="center">
+            <YStack gap="$1" alignItems="center">
               <Text fontWeight="600" fontSize="$5">
                 {isDragActive ? 'Drop image here' : 'Upload Image'}
               </Text>
@@ -456,7 +463,7 @@ export function ImageUpload({
 
       {/* Error Message */}
       {error && (
-        <XStack gap="$2" items="center" p="$2" bg="$red2" rounded="$3">
+        <XStack gap="$2" alignItems="center" padding="$2" backgroundColor="$red2" borderRadius="$3">
           <AlertCircle size={16} color="$red10" />
           <Text fontSize="$2" color="$red10" flex={1}>
             {error}

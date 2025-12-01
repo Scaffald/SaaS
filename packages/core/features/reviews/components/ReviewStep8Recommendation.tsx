@@ -1,5 +1,5 @@
 import { ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface ReviewStep8RecommendationProps {
   recommendation: boolean | null
@@ -22,7 +22,7 @@ export function ReviewStep8Recommendation({
       </YStack>
 
       {/* Recommendation Buttons */}
-      <XStack gap="$4" justify="center">
+      <XStack gap="$4" justifyContent="center">
         <Button
           size="$6"
           theme={recommendation === true ? 'success' : undefined}
@@ -30,7 +30,7 @@ export function ReviewStep8Recommendation({
           icon={ThumbsUp}
           onPress={() => onChange(true)}
           flex={1}
-          maxW={300}
+          maxWidth={300}
         >
           Yes, Recommend
         </Button>
@@ -42,7 +42,7 @@ export function ReviewStep8Recommendation({
           icon={ThumbsDown}
           onPress={() => onChange(false)}
           flex={1}
-          maxW={300}
+          maxWidth={300}
         >
           No, Don't Recommend
         </Button>
@@ -50,8 +50,13 @@ export function ReviewStep8Recommendation({
 
       {/* Selection Display */}
       {recommendation !== null && (
-        <YStack gap="$3" p="$4" bg={recommendation ? '$green3' : '$red3'} rounded="$4">
-          <XStack gap="$2" items="center" justify="center">
+        <YStack
+          gap="$3"
+          padding="$4"
+          backgroundColor={recommendation ? '$green3' : '$red3'}
+          borderRadius="$4"
+        >
+          <XStack gap="$2" alignItems="center" justifyContent="center">
             {recommendation ? (
               <>
                 <ThumbsUp size={24} color="$green11" />
@@ -68,7 +73,7 @@ export function ReviewStep8Recommendation({
               </>
             )}
           </XStack>
-          <XStack justify="center">
+          <XStack justifyContent="center">
             <Text fontSize="$4" color={recommendation ? '$green11' : '$red11'}>
               {recommendation
                 ? 'Based on your positive experience, you would work with them again.'

@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, XStack, YStack } from 'tamagui'
+import { Progress, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ProfileWizardStepId } from '../utils/wizardSteps'
 import { PROFILE_WIZARD_STEP_META, PROFILE_WIZARD_STEPS } from '../utils/wizardSteps'
 
@@ -20,7 +20,7 @@ export const ProgressIndicator = memo(function ProgressIndicator({
 
   return (
     <YStack gap="$3" aria-live="polite">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$4" fontWeight="700">
           Step {orderedSteps.indexOf(currentStep) + 1} of {orderedSteps.length}
         </Text>
@@ -29,26 +29,26 @@ export const ProgressIndicator = memo(function ProgressIndicator({
         </Text>
       </XStack>
 
-      <Progress size="$2" value={completionPercentage} max={100} bg="$color3">
-        <Progress.Indicator animation="bouncy" bg="$blue10" />
+      <Progress size="$2" value={completionPercentage} max={100} backgroundColor="$color3">
+        <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
       </Progress>
 
       {showStepLabels && (
-        <XStack gap="$3" items="flex-start" mt="$2" flexWrap="wrap">
+        <XStack gap="$3" alignItems="flex-start" marginTop="$2" flexWrap="wrap">
           {orderedSteps.map((stepId, index) => {
             const meta = PROFILE_WIZARD_STEP_META[stepId]
             const isCompleted = completedSteps.includes(stepId)
             const isCurrent = currentStep === stepId
 
             return (
-              <XStack key={stepId} gap="$2" items="center">
+              <XStack key={stepId} gap="$2" alignItems="center">
                 <YStack
                   width={32}
                   height={32}
-                  bg={isCurrent ? '$blue10' : isCompleted ? '$green9' : '$color5'}
-                  items="center"
-                  justify="center"
-                  rounded="$3"
+                  backgroundColor={isCurrent ? '$blue10' : isCompleted ? '$green9' : '$color5'}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="$3"
                   role="img"
                   aria-label={`${meta.title} ${isCurrent ? '(current step)' : isCompleted ? '(completed)' : '(not completed)'}`}
                   aria-current={isCurrent ? 'step' : undefined}

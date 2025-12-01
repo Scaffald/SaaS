@@ -1,5 +1,5 @@
 import { Text, YStack } from '@unicornlove/ui'
-import { Card } from 'tamagui'
+import { Card } from '@unicornlove/ui'
 
 type PaymentIntentFormProps = {
   clientSecret?: string
@@ -17,7 +17,7 @@ export function PaymentIntentForm({ amountCents }: PaymentIntentFormProps) {
   }).format(amountCents / 100)
 
   return (
-    <Card p="$4" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
+    <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
       <YStack gap="$2">
         <Text fontSize="$4" fontWeight="600" color="$yellow12">
           Web payment required

@@ -5,7 +5,17 @@ import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Dialog, Label, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Dialog,
+  Label,
+  Separator,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 const RESOLUTION_STATUSES = [
   { value: 'resolved', label: 'Resolved' },
@@ -111,7 +121,7 @@ export function AdminDisputeResolutionDialog({
           style={{ width: '90%', maxWidth: 640, maxHeight: '85%' }}
         >
           <YStack gap="$4">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Dialog.Title fontSize="$6" fontWeight="700">
                 Resolve dispute
               </Dialog.Title>
@@ -126,13 +136,13 @@ export function AdminDisputeResolutionDialog({
               <YStack gap="$3">
                 <YStack
                   gap="$2"
-                  p="$3"
-                  bg="$color2"
+                  padding="$3"
+                  backgroundColor="$color2"
                   borderWidth={1}
                   borderColor="$borderColor"
-                  rounded="$4"
+                  borderRadius="$4"
                 >
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <AlertTriangle size={18} color="$yellow10" />
                     <Text fontSize="$3" fontWeight="600" color="$color12">
                       {workerName}
@@ -154,7 +164,7 @@ export function AdminDisputeResolutionDialog({
                     value={dispute.dispute_reason ?? ''}
                     editable={false}
                     rows={3}
-                    bg="$color2"
+                    backgroundColor="$color2"
                   />
                 </YStack>
 
@@ -166,7 +176,7 @@ export function AdminDisputeResolutionDialog({
                     value={dispute.dispute_details ?? ''}
                     editable={false}
                     rows={5}
-                    bg="$color2"
+                    backgroundColor="$color2"
                   />
                 </YStack>
 
@@ -202,7 +212,7 @@ export function AdminDisputeResolutionDialog({
                 </YStack>
               </YStack>
             ) : (
-              <YStack gap="$3" items="center" justify="center" py="$6">
+              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Spinner size="large" />
                 <Text fontSize="$3" color="$color10">
                   Loading dispute…
@@ -212,7 +222,7 @@ export function AdminDisputeResolutionDialog({
 
             <Separator />
 
-            <XStack gap="$2" justify="flex-end">
+            <XStack gap="$2" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button size="$3" variant="outlined" disabled={isSubmitting}>
                   Cancel
@@ -225,7 +235,7 @@ export function AdminDisputeResolutionDialog({
                 disabled={!dispute || isSubmitting}
               >
                 {isSubmitting ? (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Spinner size="small" color="$color1" />
                     <Text color="$color1">Resolving…</Text>
                   </XStack>

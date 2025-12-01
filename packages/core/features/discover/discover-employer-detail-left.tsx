@@ -4,7 +4,7 @@ import { DashboardWidget, extractPlainText } from '@unicornlove/ui'
 import { ArrowLeft, Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
-import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type DiscoverEmployerDetailLeftProps = {
   employerId: string
@@ -26,7 +26,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (!employerId) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$3">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Employer not specified
           </Text>
@@ -50,7 +50,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (isLoading || isFetching) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$3">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
           <Spinner size="large" color="$blue10" />
           <Text color="$color11">Loading employer details...</Text>
         </YStack>
@@ -61,7 +61,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   if (!employer) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$3">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Employer not found
           </Text>
@@ -91,7 +91,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
   return (
     <DashboardWidget gap="$4">
       {/* Header with Back Button */}
-      <XStack items="center" gap="$3">
+      <XStack alignItems="center" gap="$3">
         <Button
           size="$3"
           variant="outlined"
@@ -107,7 +107,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
         >
           Back
         </Button>
-        <XStack items="center" gap="$2" flex={1}>
+        <XStack alignItems="center" gap="$2" flex={1}>
           <Building2 size={24} color="$blue10" />
           <Text fontSize="$8" fontWeight="700">
             {employer.name}
@@ -123,7 +123,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
           <Text fontSize="$5" fontWeight="600">
             Industry
           </Text>
-          <XStack items="center" gap="$2">
+          <XStack alignItems="center" gap="$2">
             <Users size={16} color="$color11" />
             <Text fontSize="$4" color="$color11">
               {employer.industries.name}
@@ -149,7 +149,7 @@ export function DiscoverEmployerDetailLeft({ employerId }: DiscoverEmployerDetai
       {/* Location */}
       {employer.address && (
         <YStack gap="$2">
-          <XStack items="center" gap="$2">
+          <XStack alignItems="center" gap="$2">
             <MapPin size={18} color="$color10" />
             <Text fontSize="$5" fontWeight="600">
               Location

@@ -1,4 +1,4 @@
-import { Card, Paragraph, Text, XStack } from 'tamagui'
+import { Card, Paragraph, Text, XStack } from '@unicornlove/ui'
 import type { TalentProfile } from '../types'
 
 interface ProfileSummaryCardProps {
@@ -9,11 +9,11 @@ interface ProfileSummaryCardProps {
 export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps) {
   return (
     <Card
-      self="center"
+      alignSelf="center"
       elevate
       size="$2"
-      bg="$background"
-      p="$3"
+      backgroundColor="$background"
+      padding="$3"
       gap="$2"
       pressStyle={{ scale: 0.98, opacity: 0.9 }}
       onPress={onPress}
@@ -25,13 +25,13 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
       shadowOffset={{ width: 0, height: 4 }}
       shadowOpacity={0.15}
       shadowRadius={12}
-      maxW={320}
+      maxWidth={320}
     >
       <Text fontSize="$5" fontWeight="700" color="$color12">
         {profile.name}
       </Text>
 
-      <XStack gap="$2" items="center" flexWrap="wrap">
+      <XStack gap="$2" alignItems="center" flexWrap="wrap">
         <Paragraph fontSize="$2" color="$color11">
           {profile.experienceYears} years
         </Paragraph>
@@ -48,10 +48,10 @@ export function ProfileSummaryCard({ profile, onPress }: ProfileSummaryCardProps
               key={skill}
               fontSize="$1"
               color="$color10"
-              bg="$color4"
-              px="$2"
-              py="$1"
-              rounded="$2"
+              backgroundColor="$color4"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              borderRadius="$2"
             >
               {skill}
             </Text>

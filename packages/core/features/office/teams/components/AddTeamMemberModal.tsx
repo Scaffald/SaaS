@@ -4,7 +4,7 @@ import { ResponsiveSelect } from '@unicornlove/ui'
 import { UserSearch } from '@app/core/components/user'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
@@ -104,7 +104,7 @@ export function AddTeamMemberModal({
             Role
           </Text>
           {isLoadingRoles ? (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Spinner size="small" />
               <Text color="$color11">Loading roles...</Text>
             </XStack>
@@ -121,7 +121,7 @@ export function AddTeamMemberModal({
           )}
         </YStack>
 
-        <XStack gap="$3" justify="flex-end">
+        <XStack gap="$3" justifyContent="flex-end">
           <Button
             variant="outlined"
             disabled={addMemberMutation.isPending}
@@ -131,7 +131,7 @@ export function AddTeamMemberModal({
           </Button>
           <Button
             onPress={handleSubmit}
-            bg="$color9"
+            backgroundColor="$color9"
             color="$color1"
             disabled={addMemberMutation.isPending}
           >

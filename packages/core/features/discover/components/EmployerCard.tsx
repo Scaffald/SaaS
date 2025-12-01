@@ -1,7 +1,7 @@
 import { DiscoverCard, extractPlainText } from '@unicornlove/ui'
 import { Building2, ExternalLink, MapPin, Users } from '@tamagui/lucide-icons'
 import type { JSONContent } from '@tiptap/core'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface Employer {
   id: string
@@ -38,9 +38,9 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
     <DiscoverCard onPress={() => onViewDetails(employer)}>
       <YStack gap="$3">
         {/* Header */}
-        <XStack justify="space-between" items="flex-start" gap="$3">
+        <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
           <YStack flex={1} gap="$2">
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Building2 size={20} color="$blue10" />
               <Text fontSize="$6" fontWeight="700" color="$color12">
                 {employer.name}
@@ -67,7 +67,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
         {/* Details */}
         <YStack gap="$2">
           {location && (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <MapPin size={16} color="$color10" />
               <Text fontSize="$3" color="$color11">
                 {location}
@@ -76,7 +76,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
           )}
 
           {employer.employee_count_range && (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Users size={16} color="$color10" />
               <Text fontSize="$3" color="$color11">
                 {employer.employee_count_range} employees
@@ -85,7 +85,7 @@ export function EmployerCard({ employer, onViewDetails }: EmployerCardProps) {
           )}
 
           {employer.website_url && (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <ExternalLink size={16} color="$color10" />
               <Text fontSize="$3" color="$blue10" numberOfLines={1}>
                 {employer.website_url.replace(/^https?:\/\//, '')}

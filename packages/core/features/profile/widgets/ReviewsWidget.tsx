@@ -1,17 +1,17 @@
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import {
+  Button,
   DashboardWidget,
   Heading,
   LoadingState,
   ResponsiveModal,
   spacing,
-  UIButton,
 } from '@unicornlove/ui'
 import { randomUUID } from 'expo-crypto'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, Text, XStack, YStack } from 'tamagui'
+import { Card, Text, XStack, YStack } from '@unicornlove/ui'
 import { ReviewWizard } from '../../reviews/components/ReviewWizard'
 import type { ProfileWidgetProps } from './types'
 
@@ -92,12 +92,12 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.md} items="center" py="$6">
+        <YStack gap={spacing.md} alignItems="center" paddingVertical="$6">
           <Text color="$red10">Failed to load reviews</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <UIButton
+          <Button
             variant="primary"
             size="$2"
             onPress={() => {
@@ -106,7 +106,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
             disabled={isFetching}
           >
             Retry
-          </UIButton>
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -117,20 +117,20 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
       <>
         <DashboardWidget>
           <YStack gap={spacing.md}>
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Heading variant="h4">Reviews & Ratings</Heading>
               {canLeaveReview && (
-                <UIButton
+                <Button
                   variant="primary"
                   size="$2"
                   icon={<MessageSquarePlus size={16} />}
                   onPress={handleLeaveReview}
                 >
                   Leave Review
-                </UIButton>
+                </Button>
               )}
             </XStack>
-            <YStack items="center" justify="center" minH={150} gap="$2">
+            <YStack alignItems="center" justifyContent="center" minHeight={150} gap="$2">
               <Text fontSize="$5" color="$color10">
                 No reviews yet
               </Text>
@@ -194,25 +194,25 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
       <DashboardWidget>
         <YStack gap={spacing.md}>
           {/* Header */}
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Heading variant="h4">Reviews & Ratings</Heading>
             {canLeaveReview && (
-              <UIButton
+              <Button
                 variant="primary"
                 size="$2"
                 icon={<MessageSquarePlus size={16} />}
                 onPress={handleLeaveReview}
               >
                 Leave Review
-              </UIButton>
+              </Button>
             )}
           </XStack>
 
           {/* Rating Summary */}
-          <Card bordered bg="$color2">
-            <YStack gap="$3" p="$4">
-              <XStack gap="$4" items="center">
-                <YStack items="center">
+          <Card bordered backgroundColor="$color2">
+            <YStack gap="$3" padding="$4">
+              <XStack gap="$4" alignItems="center">
+                <YStack alignItems="center">
                   <Text fontSize="$10" fontWeight="700" color="$color12">
                     {overallRating.toFixed(1)}
                   </Text>
@@ -236,7 +236,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                     {Object.entries(avgByCategory).map(([category, data]) => {
                       const categoryData = data as { sum: number; count: number }
                       return (
-                        <XStack key={category} gap="$2" items="center">
+                        <XStack key={category} gap="$2" alignItems="center">
                           <Text
                             fontSize="$3"
                             color="$color11"
@@ -245,10 +245,16 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
                           >
                             {category}
                           </Text>
-                          <XStack flex={1} height={6} bg="$color3" rounded="$2" overflow="hidden">
+                          <XStack
+                            flex={1}
+                            height={6}
+                            backgroundColor="$color3"
+                            borderRadius="$2"
+                            overflow="hidden"
+                          >
                             <XStack
                               width={`${(categoryData.sum / categoryData.count / 5) * 100}%`}
-                              bg="$yellow10"
+                              backgroundColor="$yellow10"
                             />
                           </XStack>
                           <Text fontSize="$3" color="$color10" width={30}>
@@ -262,14 +268,28 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               </XStack>
 
               {/* Recommend Stats */}
-              <XStack gap="$3" justify="center">
-                <XStack gap="$2" items="center" px="$3" py="$2" bg="$green3" rounded="$3">
+              <XStack gap="$3" justifyContent="center">
+                <XStack
+                  gap="$2"
+                  alignItems="center"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  backgroundColor="$green3"
+                  borderRadius="$3"
+                >
                   <ThumbsUp size={16} color="$green11" />
                   <Text fontSize="$4" fontWeight="600" color="$green11">
                     {recommendCount} Recommend
                   </Text>
                 </XStack>
-                <XStack gap="$2" items="center" px="$3" py="$2" bg="$red3" rounded="$3">
+                <XStack
+                  gap="$2"
+                  alignItems="center"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  backgroundColor="$red3"
+                  borderRadius="$3"
+                >
                   <ThumbsDown size={16} color="$red11" />
                   <Text fontSize="$4" fontWeight="600" color="$red11">
                     {notRecommendCount} Don't Recommend
@@ -285,15 +305,22 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
               Reviews ({totalReviews})
             </Text>
             {reviewsToShow.map((review: Review) => (
-              <Card key={review.id} bordered bg="$color2">
-                <YStack gap="$3" p="$4">
-                  <XStack justify="space-between" items="flex-start">
+              <Card key={review.id} bordered backgroundColor="$color2">
+                <YStack gap="$3" padding="$4">
+                  <XStack justifyContent="space-between" alignItems="flex-start">
                     <YStack gap="$1">
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         <Text fontSize="$5" fontWeight="700" color="$color12">
                           Anonymous Reviewer
                         </Text>
-                        <XStack gap="$1" items="center" px="$2" py="$0.5" bg="$blue2" rounded="$2">
+                        <XStack
+                          gap="$1"
+                          alignItems="center"
+                          paddingHorizontal="$2"
+                          paddingVertical="$0.5"
+                          backgroundColor="$blue2"
+                          borderRadius="$2"
+                        >
                           <Shield size={12} color="$blue11" />
                           <Text fontSize="$1" color="$blue11" fontWeight="600">
                             VERIFIED
@@ -336,7 +363,7 @@ export function ReviewsWidget({ userId, showEdit = false, variant = 'full' }: Pr
 
                   {/* Recommendation */}
                   {review.reaction !== null && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       {review.reaction === 1 ? (
                         <>
                           <ThumbsUp size={16} color="$green11" />

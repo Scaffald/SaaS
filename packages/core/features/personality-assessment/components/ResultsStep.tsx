@@ -1,6 +1,6 @@
 import { InterpretationLanguage, type MainColor, TwoStageTest } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import type { IPIPAnswer } from '../lib/ipip'
 import { getResults, getScore, type IPIPScores } from '../lib/ipip'
 
@@ -76,9 +76,9 @@ export function ResultsStep({
       {hasReport && (
         <YStack
           gap="$4"
-          p="$6"
-          bg="$color2"
-          rounded="$4"
+          padding="$6"
+          backgroundColor="$color2"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$borderColor"
         >
@@ -98,7 +98,7 @@ export function ResultsStep({
             ))}
           </YStack>
           {assessment.ai_report_generated_at && (
-            <Text fontSize="$2" color="$color10" mt="$2">
+            <Text fontSize="$2" color="$color10" marginTop="$2">
               Generated on {new Date(assessment.ai_report_generated_at).toLocaleDateString()}
             </Text>
           )}
@@ -107,7 +107,14 @@ export function ResultsStep({
 
       {/* Generate Report Button */}
       {!hasReport && !isReadOnly && onGenerateReport && (
-        <YStack gap="$4" p="$6" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue8">
+        <YStack
+          gap="$4"
+          padding="$6"
+          backgroundColor="$blue2"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$blue8"
+        >
           <Text fontSize="$5" fontWeight="600" color="$blue11">
             Generate Your Personality Report
           </Text>
@@ -142,17 +149,17 @@ export function ResultsStep({
                 <YStack
                   key={domain}
                   gap="$3"
-                  p="$4"
-                  bg="$color2"
-                  rounded="$4"
+                  padding="$4"
+                  backgroundColor="$color2"
+                  borderRadius="$4"
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <Text fontSize="$5" fontWeight="600" color="$color12">
                       {domainResult.title}
                     </Text>
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Text fontSize="$4" color="$color11">
                         Score: {score.score}
                       </Text>
@@ -174,7 +181,7 @@ export function ResultsStep({
                   <Text fontSize="$3" color="$color11">
                     {domainResult.summary}
                   </Text>
-                  <YStack gap="$2" mt="$2">
+                  <YStack gap="$2" marginTop="$2">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Your Result:
                     </Text>
@@ -191,7 +198,7 @@ export function ResultsStep({
 
       {/* No Results State */}
       {!ipipScores && !hasReport && (
-        <YStack gap="$4" items="center" p="$8">
+        <YStack gap="$4" alignItems="center" padding="$8">
           <Text fontSize="$5" color="$color11" style={{ textAlign: 'center' }}>
             Complete the assessment to see your results.
           </Text>

@@ -1,6 +1,6 @@
 import { X } from '@tamagui/lucide-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ParentSkill } from '../../types/profile-skills-types'
 
 // Local debounce hook to avoid dependency issues
@@ -117,7 +117,7 @@ export function SimpleSkillAutocomplete({
             if (text.length >= 2) setShowResults(true)
           }}
           placeholder={placeholder}
-          pr={40}
+          paddingRight={40}
           size="$4"
           borderColor="$borderColor"
           focusStyle={{ borderColor: '$blue9' }}
@@ -126,9 +126,9 @@ export function SimpleSkillAutocomplete({
         {value.length > 0 && (
           <Button
             position="absolute"
-            r={4}
-            t={4}
-            b={4}
+            right={4}
+            top={4}
+            bottom={4}
             size="$2"
             circular
             chromeless
@@ -147,20 +147,20 @@ export function SimpleSkillAutocomplete({
           bordered
           elevate
           position="absolute"
-          t="100%"
-          l={0}
-          r={0}
+          top="100%"
+          left={0}
+          right={0}
           marginTop={4}
           maxHeight={300}
           zIndex={2000}
-          bg="$background"
+          backgroundColor="$background"
         >
           <ScrollView>
             <YStack>
               {isLoading || isSearching ? (
-                <YStack p="$4" items="center" justify="center">
+                <YStack padding="$4" alignItems="center" justifyContent="center">
                   <Spinner size="small" />
-                  <Text fontSize="$2" color="$color11" mt="$2">
+                  <Text fontSize="$2" color="$color11" marginTop="$2">
                     Searching...
                   </Text>
                 </YStack>
@@ -170,14 +170,14 @@ export function SimpleSkillAutocomplete({
                   return (
                     <YStack
                       key={skill.id}
-                      p="$3"
-                      pressStyle={{ bg: '$backgroundHover' }}
+                      padding="$3"
+                      pressStyle={{ backgroundColor: '$backgroundHover' }}
                       onPress={() => handleSelect(skill)}
                       borderBottomWidth={1}
                       borderBottomColor="$borderColor"
                       opacity={isExisting ? 0.6 : 1}
                     >
-                      <XStack justify="space-between" items="center">
+                      <XStack justifyContent="space-between" alignItems="center">
                         <YStack flex={1}>
                           <Text fontWeight="600">{skill.name}</Text>
                           {skill.code && (
@@ -196,7 +196,7 @@ export function SimpleSkillAutocomplete({
                   )
                 })
               ) : (
-                <YStack p="$4" items="center">
+                <YStack padding="$4" alignItems="center">
                   <Text color="$color11">No skills found</Text>
                 </YStack>
               )}

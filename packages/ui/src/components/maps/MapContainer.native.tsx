@@ -145,10 +145,10 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
               <View
                 width={48}
                 height={48}
-                rounded="$12"
-                bg={pin.selected ? '$blue10' : '$color9'}
-                items="center"
-                justify="center"
+                borderRadius="$12"
+                backgroundColor={pin.selected ? '$blue10' : '$color9'}
+                alignItems="center"
+                justifyContent="center"
                 shadowColor="black"
                 shadowOffset={{ width: 0, height: 2 }}
                 shadowOpacity={0.25}

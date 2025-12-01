@@ -1,7 +1,8 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 import { FilterChip } from '../chips/FilterChip'
-import { FieldError } from '../FieldError'
+import { FieldError } from '../field-error/FieldError'
 import { Sheet } from '../sheets/Sheet'
 import { ResultsList } from './components/ResultsList'
 import { SearchInput } from './components/SearchInput'
@@ -96,7 +97,13 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
     Boolean(props.onSearch) && trimmedQuery.length > 0 && trimmedQuery.length < minSearchLength
 
   const listHeader = multiMode ? (
-    <XStack px="$3" py="$2" justify="space-between" gap="$3" bg="$color3">
+    <XStack
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      justifyContent="space-between"
+      gap="$3"
+      backgroundColor="$color3"
+    >
       {props.allowSelectAll !== false && (
         <Button size="$2" variant="outlined" onPress={handleSelectAll} disabled={!canSelectMore}>
           {strings.selectAll}
@@ -116,7 +123,7 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
   ) : undefined
 
   const emptyContent = requiresAdditionalCharacters ? (
-    <YStack p="$4" gap="$2" items="center">
+    <YStack padding="$4" gap="$2" alignItems="center">
       <Text fontSize="$3" color="$color11" style={{ textAlign: 'center' }}>
         {strings.minCharacters(minSearchLength)}
       </Text>
@@ -158,9 +165,9 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
         dismissOnSnapToBottom
       >
         <Sheet.Overlay />
-        <Sheet.Frame gap="$3" p="$4">
+        <Sheet.Frame gap="$3" padding="$4">
           <Sheet.Handle />
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Button variant="outlined" onPress={handleCancel} size="$2">
               Cancel
             </Button>
@@ -210,7 +217,7 @@ export function SearchSelectMobile<T>(props: SearchSelectProps<T>) {
 
           {multiMode && props.allowClearAll !== false && selectedOptions.length > 0 ? (
             <Button
-              mt="$2"
+              marginTop="$2"
               size="$2"
               variant="outlined"
               onPress={handleClearSelection}

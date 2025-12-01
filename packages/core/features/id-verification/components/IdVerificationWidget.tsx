@@ -1,9 +1,9 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, DashboardWidget } from '@unicornlove/ui'
+import { Button, DashboardWidget } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 import { IdVerificationBadge } from './IdVerificationBadge'
 
 export function IdVerificationWidget() {

@@ -6,7 +6,7 @@ import { ProfileEducationLeft } from '@app/core/features/profile/profile-educati
 import { ProfileExperienceLeft } from '@app/core/features/profile/profile-experience-left'
 import { Button, H2, ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Card } from 'tamagui'
+import { Card } from '@unicornlove/ui'
 
 export default function EditUserPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -14,18 +14,18 @@ export default function EditUserPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <Text>Invalid user ID</Text>
       </YStack>
     )
   }
 
   return (
-    <ScrollView flex={1} bg="$background">
-      <YStack p="$4" gap="$4">
+    <ScrollView flex={1} backgroundColor="$background">
+      <YStack padding="$4" gap="$4">
         {/* Header */}
         <YStack gap="$3">
-          <XStack items="center" justify="space-between">
+          <XStack alignItems="center" justifyContent="space-between">
             <H2>Edit User Profile</H2>
             <Button onPress={() => router.back()} variant="outlined">
               Back to Users
@@ -58,7 +58,7 @@ export default function EditUserPage() {
           <Text fontSize="$6" fontWeight="600">
             Skills & Expertise
           </Text>
-          <Card bordered bg="$yellow2" p="$3" mb="$2">
+          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
             <Text fontSize="$2" color="$yellow11">
               ⚠️ Note: Skills section currently shows/edits the logged-in admin's skills. Full
               multi-user support coming soon.
@@ -74,7 +74,7 @@ export default function EditUserPage() {
           <Text fontSize="$6" fontWeight="600">
             Work Experience
           </Text>
-          <Card bordered bg="$yellow2" p="$3" mb="$2">
+          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
             <Text fontSize="$2" color="$yellow11">
               ⚠️ Note: Experience section currently shows/edits the logged-in admin's experience.
               Full multi-user support coming soon.
@@ -88,7 +88,7 @@ export default function EditUserPage() {
           <Text fontSize="$6" fontWeight="600">
             Education
           </Text>
-          <Card bordered bg="$yellow2" p="$3" mb="$2">
+          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
             <Text fontSize="$2" color="$yellow11">
               ⚠️ Note: Education section currently shows/edits the logged-in admin's education. Full
               multi-user support coming soon.
@@ -102,7 +102,7 @@ export default function EditUserPage() {
           <Text fontSize="$6" fontWeight="600">
             Certifications
           </Text>
-          <Card bordered bg="$yellow2" p="$3" mb="$2">
+          <Card bordered backgroundColor="$yellow2" padding="$3" marginBottom="$2">
             <Text fontSize="$2" color="$yellow11">
               ⚠️ Note: Certifications section currently shows/edits the logged-in admin's
               certifications. Full multi-user support coming soon.

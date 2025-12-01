@@ -14,6 +14,8 @@
       "@app/supabase/*": ["packages/supabase/*"],
       "@app/trpc": ["packages/trpc/src"],
       "@app/trpc/*": ["packages/trpc/src/*"],
+      "@unicornlove/ui": ["packages/ui/src/index.tsx"],
+      "@unicornlove/ui/*": ["packages/ui/src/*"],
       "expo-clipboard": ["types/expo-clipboard.d.ts"]
     },
     "skipDefaultLibCheck": true,
@@ -33,6 +35,7 @@
     "../../types/flow-remove-types.d.ts",
     "../../packages/api",
     "../../packages/core",
+    "../../packages/ui/src",
     "../../packages/schemas/src/**/*.ts",
     "../../packages/schemas/src/**/*.tsx",
     "../../packages/trpc/src/**/*.ts",

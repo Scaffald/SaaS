@@ -122,11 +122,11 @@ export const LoginScreen = () => {
 
   return (
     <FormProvider {...form}>
-      <YStack gap="$4" p="$4">
-        <YStack gap="$4" mb="$3" items="center">
+      <YStack gap="$4" padding="$4">
+        <YStack gap="$4" marginBottom="$3" alignItems="center">
           <ScaffaldLogo width={200} height={33} />
-          <YStack gap="$2" items="center">
-            <Paragraph text="center">{t('auth.login.description')}</Paragraph>
+          <YStack gap="$2" alignItems="center">
+            <Paragraph textAlign="center">{t('auth.login.description')}</Paragraph>
           </YStack>
         </YStack>
 
@@ -151,10 +151,10 @@ export const LoginScreen = () => {
               onPress={handleSubmit}
               disabled={isSubmitting || requestMagicLink.isPending}
               opacity={isSubmitting || requestMagicLink.isPending ? 0.5 : 1}
-              bg="$blue9"
+              backgroundColor="$blue9"
               color="$blue1"
               animation="quick"
-              hoverStyle={{ scale: 1.02, bg: '$blue9' }}
+              hoverStyle={{ scale: 1.02, backgroundColor: '$blue9' }}
               pressStyle={{ scale: 0.98 }}
             >
               {isSubmitting || requestMagicLink.isPending
@@ -163,7 +163,7 @@ export const LoginScreen = () => {
             </Button>
 
             <SocialLogin />
-            <Paragraph text="center">{t('auth.login.socialDescription')}</Paragraph>
+            <Paragraph textAlign="center">{t('auth.login.socialDescription')}</Paragraph>
           </YStack>
         </Form>
       </YStack>

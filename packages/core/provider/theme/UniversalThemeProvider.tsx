@@ -3,7 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { StatusBar } from 'expo-status-bar'
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { Appearance, Platform, useColorScheme } from 'react-native'
-import { useIsomorphicLayoutEffect } from 'tamagui'
+import { useIsomorphicLayoutEffect } from '@unicornlove/ui'
 
 type ThemeProviderProps = {
   themes: string[]

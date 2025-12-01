@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { Dialog } from '@unicornlove/ui'
 import { Download, X } from '@tamagui/lucide-icons'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type TransactionReceiptModalProps = {
   transactionId: string
@@ -81,19 +81,24 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
           <Dialog.Description>View and download receipt for this transaction.</Dialog.Description>
 
           {receiptQuery.isLoading ? (
-            <YStack items="center" py="$6" gap="$3">
+            <YStack alignItems="center" paddingVertical="$6" gap="$3">
               <Spinner size="large" />
               <Text color="$color10">Loading receipt…</Text>
             </YStack>
           ) : receiptQuery.error ? (
-            <Card p="$4" bg="$red2" borderColor="$red6" borderWidth={1}>
+            <Card padding="$4" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
               <Text color="$red11">Failed to load receipt: {receiptQuery.error.message}</Text>
             </Card>
           ) : receiptQuery.data ? (
             <YStack gap="$4">
-              <Card p="$4" bg="$color2" borderColor="$borderColor" borderWidth={1}>
+              <Card
+                padding="$4"
+                backgroundColor="$color2"
+                borderColor="$borderColor"
+                borderWidth={1}
+              >
                 <YStack gap="$3">
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <Text fontSize="$5" fontWeight="700">
                       {receiptQuery.data.receiptNumber}
                     </Text>
@@ -102,23 +107,23 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
                     </Text>
                   </XStack>
                   <YStack gap="$2">
-                    <XStack justify="space-between">
+                    <XStack justifyContent="space-between">
                       <Text color="$color10">Date:</Text>
                       <Text>{new Date(receiptQuery.data.date).toLocaleString()}</Text>
                     </XStack>
-                    <XStack justify="space-between">
+                    <XStack justifyContent="space-between">
                       <Text color="$color10">Organization:</Text>
                       <Text>{receiptQuery.data.organizationName}</Text>
                     </XStack>
-                    <XStack justify="space-between">
+                    <XStack justifyContent="space-between">
                       <Text color="$color10">Type:</Text>
                       <Text>{receiptQuery.data.transactionType}</Text>
                     </XStack>
-                    <XStack justify="space-between">
+                    <XStack justifyContent="space-between">
                       <Text color="$color10">Status:</Text>
                       <Text fontWeight="600">{receiptQuery.data.status}</Text>
                     </XStack>
-                    <XStack justify="space-between">
+                    <XStack justifyContent="space-between">
                       <Text color="$color10">Payment Intent:</Text>
                       <Text fontSize="$2" style={{ fontFamily: 'monospace' }}>
                         {receiptQuery.data.stripePaymentIntentId}
@@ -128,7 +133,7 @@ Stripe Payment Intent: ${receiptQuery.data.stripePaymentIntentId}
                 </YStack>
               </Card>
 
-              <XStack gap="$2" justify="flex-end">
+              <XStack gap="$2" justifyContent="flex-end">
                 <Button
                   size="$4"
                   variant="outlined"

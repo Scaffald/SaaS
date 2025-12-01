@@ -9,18 +9,24 @@ interface MapFallbackProps {
 
 export function MapFallback({ pinsCount, message, style }: MapFallbackProps) {
   return (
-    <View flex={1} items="center" justify="center" style={style}>
-      <YStack bg="$backgroundHover" rounded="$4" p="$4" items="center" gap="$2">
+    <View flex={1} alignItems="center" justifyContent="center" style={style}>
+      <YStack
+        backgroundColor="$backgroundHover"
+        borderRadius="$4"
+        padding="$4"
+        alignItems="center"
+        gap="$2"
+      >
         <Text fontSize="$6" fontWeight="bold" color="$color12">
           📍
         </Text>
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Mapbox Maps
         </Text>
-        <Text fontSize="$3" color="$color11" text="center">
+        <Text fontSize="$3" color="$color11" textAlign="center">
           {message}
         </Text>
-        <Text fontSize="$2" color="$color10" text="center">
+        <Text fontSize="$2" color="$color10" textAlign="center">
           {pinsCount} pins ready to display
         </Text>
       </YStack>

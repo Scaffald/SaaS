@@ -4,7 +4,7 @@ import { api } from '@app/core/utils/api'
 import { SaveStatusIndicator } from '@unicornlove/ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Button, ScrollView, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 import { useApplicationForm } from '../hooks/useApplicationForm'
 import type { Attachments } from './AttachmentsStep'
 import { AttachmentsStep } from './AttachmentsStep'
@@ -177,16 +177,16 @@ export function ApplicationWizard({
   }
 
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} backgroundColor="$background">
       {/* Header */}
       <YStack
-        p="$4"
-        bg="$background"
+        padding="$4"
+        backgroundColor="$background"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
         gap="$3"
       >
-        <XStack justify="space-between" items="flex-start" width="100%">
+        <XStack justifyContent="space-between" alignItems="flex-start" width="100%">
           <YStack gap="$1" flex={1}>
             <Text fontSize="$6" fontWeight="bold" color="$color12">
               {isEditMode ? 'Update Application' : 'Apply'} to {jobTitle}
@@ -213,8 +213,13 @@ export function ApplicationWizard({
 
       {/* Error Display */}
       {submitError && (
-        <YStack p="$4" bg="$red2" borderBottomWidth={1} borderBottomColor="$red7">
-          <XStack gap="$2" items="center">
+        <YStack
+          padding="$4"
+          backgroundColor="$red2"
+          borderBottomWidth={1}
+          borderBottomColor="$red7"
+        >
+          <XStack gap="$2" alignItems="center">
             <AlertCircle size={20} color="$red10" />
             <Text fontSize="$3" color="$red11" flex={1}>
               {submitError.message || 'An error occurred'}
@@ -225,7 +230,7 @@ export function ApplicationWizard({
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <YStack p="$4" items="center">
+        <YStack padding="$4" alignItems="center">
           {currentStep === 'screening' && (
             <ScreeningStep
               answers={screeningAnswers}
@@ -306,21 +311,21 @@ export function ApplicationWizard({
       {showCancelConfirm && (
         <YStack
           position="absolute"
-          t={0}
-          l={0}
-          r={0}
-          b={0}
-          bg="rgba(0,0,0,0.5)"
-          items="center"
-          justify="center"
-          p="$4"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          padding="$4"
         >
           <YStack
-            bg="$background"
-            rounded="$4"
-            p="$6"
+            backgroundColor="$background"
+            borderRadius="$4"
+            padding="$6"
             gap="$4"
-            maxW={400}
+            maxWidth={400}
             width="100%"
             borderWidth={1}
             borderColor="$borderColor"
@@ -335,7 +340,7 @@ export function ApplicationWizard({
               </Text>
             </YStack>
 
-            <XStack gap="$3" justify="flex-end">
+            <XStack gap="$3" justifyContent="flex-end">
               <Button size="$4" variant="outlined" onPress={() => setShowCancelConfirm(false)}>
                 Keep Editing
               </Button>

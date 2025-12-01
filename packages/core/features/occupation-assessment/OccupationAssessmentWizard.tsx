@@ -6,7 +6,7 @@ import { Plus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 
 /**
  * OccupationAssessmentWizard - Standalone wizard for Occupation Preferences
@@ -83,7 +83,7 @@ export function OccupationAssessmentWizard() {
       error={error ? new Error(error.message ?? 'Failed to load assessment status.') : null}
       showNext={false}
     >
-      <YStack gap="$4" width="100%" maxW={800} mx="auto">
+      <YStack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
         {/* Current Occupation */}
         <YStack gap="$3">
           <YStack gap="$1">
@@ -116,7 +116,7 @@ export function OccupationAssessmentWizard() {
             <XStack
               key={`target-occupation-${index}-${occupation || 'empty'}`}
               gap="$2"
-              items="center"
+              alignItems="center"
             >
               <YStack flex={1}>
                 <OccupationSearch

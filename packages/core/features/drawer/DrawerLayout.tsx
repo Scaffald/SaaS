@@ -7,7 +7,7 @@ import { Menu } from '@tamagui/lucide-icons'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Pressable } from 'react-native'
-import { useTheme, useWindowDimensions, XStack } from 'tamagui'
+import { useTheme, useWindowDimensions, XStack } from '@unicornlove/ui'
 import { DrawerContent } from './DrawerContent'
 import { ScaffaldLogo } from '@app/core/assets'
 
@@ -166,7 +166,7 @@ export function DrawerLayout({ protectionComponent, children }: DrawerLayoutProp
             ) : null
           },
           headerRight: () => (
-            <XStack gap="$3" items="center">
+            <XStack gap="$3" alignItems="center">
               <ScaffaldLogo height={22} width={22} showWordmark={false} />
             </XStack>
           ),

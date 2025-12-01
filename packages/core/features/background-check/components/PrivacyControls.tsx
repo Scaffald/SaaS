@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { Share2 } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
 import { Alert } from 'react-native'
-import { Button, Separator, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Switch, Text, XStack, YStack } from '@unicornlove/ui'
 
 import type { BackgroundCheckDetail } from './status.utils'
 
@@ -75,7 +75,9 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           setSharePublicly(previousShare)
           setOrganizationIds(previousOrganizations)
           const message =
-            error instanceof Error ? error.message : 'Could not update privacy settings. Please try again.'
+            error instanceof Error
+              ? error.message
+              : 'Could not update privacy settings. Please try again.'
           Alert.alert('Could not update privacy settings', message)
         },
       }
@@ -107,9 +109,16 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
         </Text>
       </YStack>
 
-      <YStack gap="$3" p="$3" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
-        <XStack justify="space-between" items="center">
-          <YStack flex={1} gap="$1" pr="$3">
+      <YStack
+        gap="$3"
+        padding="$3"
+        backgroundColor="$color2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
+        <XStack justifyContent="space-between" alignItems="center">
+          <YStack flex={1} gap="$1" paddingRight="$3">
             <Text fontSize="$3" fontWeight="500" color="$color12">
               Show verified badge
             </Text>
@@ -129,7 +138,7 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
       </YStack>
 
       <YStack gap="$3">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$3" fontWeight="500" color="$color12">
             Shared with organizations
           </Text>
@@ -153,9 +162,9 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           {organizationIds.length === 0 && (
             <YStack
               gap="$1"
-              p="$3"
-              bg="$color2"
-              rounded="$3"
+              padding="$3"
+              backgroundColor="$color2"
+              borderRadius="$3"
               borderWidth={1}
               borderColor="$borderColor"
             >
@@ -168,11 +177,11 @@ export function PrivacyControls({ checkId, metadata }: PrivacyControlsProps) {
           {organizationIds.map((organizationId) => (
             <XStack
               key={organizationId}
-              justify="space-between"
-              items="center"
-              p="$3"
-              bg="$color2"
-              rounded="$3"
+              justifyContent="space-between"
+              alignItems="center"
+              padding="$3"
+              backgroundColor="$color2"
+              borderRadius="$3"
               borderWidth={1}
               borderColor="$borderColor"
             >

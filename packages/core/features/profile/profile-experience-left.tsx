@@ -1,7 +1,7 @@
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import {
-  UIButton as Button,
+  Button,
   ConfirmationDialog,
   CustomCheckbox,
   DashboardWidget,
@@ -13,7 +13,7 @@ import { AlertTriangle, Check, CheckCircle, Plus, X } from '@tamagui/lucide-icon
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { H4, Input, Label, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { H4, Input, Label, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 import {
   CAREER_LEVEL_OPTIONS,
   createNewExperienceEntry,
@@ -321,7 +321,7 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading experience data...</Text>
         </YStack>
@@ -333,7 +333,7 @@ export function ProfileExperienceLeft() {
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load experience data</Text>
           <Button onPress={() => experienceQuery.refetch()}>Retry</Button>
         </YStack>
@@ -377,7 +377,7 @@ export function ProfileExperienceLeft() {
 
         {/* Experience Entries */}
         <YStack gap="$3">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Work History</Text>
             <Button size="$3" onPress={addExperienceEntry} icon={Plus}>
               Add Experience
@@ -388,12 +388,12 @@ export function ProfileExperienceLeft() {
             <YStack
               key={field.id}
               gap="$3"
-              p="$3"
+              padding="$3"
               borderWidth={1}
               borderColor="$borderColor"
-              rounded="$4"
+              borderRadius="$4"
             >
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <Text fontWeight="600">Position {index + 1}</Text>
                 <Button size="$2" variant="outlined" onPress={() => remove(index)} icon={X}>
                   Remove
@@ -508,7 +508,7 @@ export function ProfileExperienceLeft() {
                 render={({ field }) => {
                   const isRemote = Boolean(field.value)
                   return (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <CustomCheckbox
                         checked={isRemote}
                         onCheckedChange={field.onChange}
@@ -572,7 +572,7 @@ export function ProfileExperienceLeft() {
                 render={({ field }) => {
                   const isCurrent = Boolean(field.value)
                   return (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <CustomCheckbox
                         checked={isCurrent}
                         onCheckedChange={field.onChange}
@@ -598,7 +598,7 @@ export function ProfileExperienceLeft() {
                       placeholder="Describe your responsibilities and duties..."
                       value={field.value || ''}
                       onChangeText={field.onChange}
-                      minH={80}
+                      minHeight={80}
                     />
                   )}
                 />
@@ -607,7 +607,7 @@ export function ProfileExperienceLeft() {
           ))}
 
           {fields.length === 0 && (
-            <YStack p="$4" items="center" gap="$2">
+            <YStack padding="$4" alignItems="center" gap="$2">
               <Text color="$color11">No work experience added yet</Text>
             </YStack>
           )}
@@ -616,15 +616,15 @@ export function ProfileExperienceLeft() {
         {/* Save Feedback */}
         {saveBanner && (
           <YStack
-            mt="$4"
-            p="$3"
+            marginTop="$4"
+            padding="$3"
             gap="$2"
             borderWidth={1}
             borderColor={saveBanner.type === 'success' ? '$green7' : '$red7'}
-            bg={saveBanner.type === 'success' ? '$green3' : '$red3'}
-            rounded="$4"
+            backgroundColor={saveBanner.type === 'success' ? '$green3' : '$red3'}
+            borderRadius="$4"
           >
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               {saveBanner.type === 'success' ? (
                 <CheckCircle size={18} color="$green10" />
               ) : (
@@ -638,7 +638,7 @@ export function ProfileExperienceLeft() {
         )}
 
         {/* Action Buttons */}
-        <XStack justify="flex-end" gap="$3" pt="$4">
+        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
           {(editingEntryId || isDirty) && (
             <Button
               variant="outlined"
@@ -665,12 +665,12 @@ export function ProfileExperienceLeft() {
             opacity={!isDirty || saveState === 'saving' ? 0.5 : 1}
           >
             {saveState === 'success' ? (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Check size={18} color="$green10" />
                 <Text color="$green10">Saved!</Text>
               </XStack>
             ) : isSyncing && saveState === 'saving' ? (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Spinner size="small" color="$color12" />
                 <Text>Saving...</Text>
               </XStack>

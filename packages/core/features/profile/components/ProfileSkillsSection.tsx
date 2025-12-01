@@ -1,7 +1,7 @@
 import { SoftSkillsComparisonWidget } from '../widgets/SoftSkillsComparisonWidget'
 import { TechnicalSkillsWidget } from '../widgets/TechnicalSkillsWidget'
 import type { ProfileWidgetProps } from '../widgets/types'
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 
 /**
  * ProfileSkillsSection

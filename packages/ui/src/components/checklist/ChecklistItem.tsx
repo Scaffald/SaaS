@@ -1,4 +1,5 @@
-import { Button, Text, View, XStack, YStack } from 'tamagui'
+import { Text, View, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 import type { ChecklistItemProps } from './types'
 
 /**
@@ -12,37 +13,37 @@ export const ChecklistItem = ({ item, onPress }: ChecklistItemProps) => {
   return (
     <Button
       onPress={onPress}
-      bg="$color1"
+      backgroundColor="$color1"
       borderColor="$color6"
       borderWidth={1}
-      rounded="$4"
-      py="$4"
-      px="$3"
+      borderRadius="$4"
+      paddingVertical="$4"
+      paddingHorizontal="$3"
       height="auto"
       pressStyle={{
-        bg: '$color2',
+        backgroundColor: '$color2',
         borderColor: '$color7',
       }}
       hoverStyle={{
-        bg: '$color2',
+        backgroundColor: '$color2',
         borderColor: '$color7',
       }}
-      justify="flex-start"
-      items="flex-start"
+      justifyContent="flex-start"
+      alignItems="flex-start"
       disabled={!onPress}
     >
-      <XStack items="flex-start" gap="$3" flex={1}>
+      <XStack alignItems="flex-start" gap="$3" flex={1}>
         {/* Status Indicator */}
         <View
           width={24}
           height={24}
-          bg={item.complete ? '$green9' : '$color6'}
+          backgroundColor={item.complete ? '$green9' : '$color6'}
           borderColor={item.complete ? '$green9' : '$color6'}
           borderWidth={1}
-          rounded="$10"
-          items="center"
-          justify="center"
-          mt="$1"
+          borderRadius="$10"
+          alignItems="center"
+          justifyContent="center"
+          marginTop="$1"
         >
           {item.complete && (
             <Text fontSize="$1" color="white" fontWeight="bold">
@@ -57,11 +58,11 @@ export const ChecklistItem = ({ item, onPress }: ChecklistItemProps) => {
             fontSize="$4"
             fontWeight="500"
             color={item.complete ? '$color10' : '$color12'}
-            text="left"
+            textAlign="left"
           >
             {item.title}
           </Text>
-          <Text fontSize="$2" color="$color9" lineHeight="$1" text="left">
+          <Text fontSize="$2" color="$color9" lineHeight="$1" textAlign="left">
             {item.description}
           </Text>
         </YStack>

@@ -29,8 +29,8 @@ export const CardHeader = memo(
     const subtitleNumberOfLines = width <= 800 ? 2 : 1
 
     return (
-      <XStack justify="space-between" items="flex-start" gap="$2">
-        <XStack items="center" gap="$2" flex={1}>
+      <XStack justifyContent="space-between" alignItems="flex-start" gap="$2">
+        <XStack alignItems="center" gap="$2" flex={1}>
           {icon && <YStack>{icon}</YStack>}
           <YStack flex={1} gap="$1">
             <SizableText

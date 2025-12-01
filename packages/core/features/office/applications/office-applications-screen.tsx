@@ -169,9 +169,9 @@ export const OfficeApplicationsScreen = () => {
   // Loading state
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" bg="$background">
+      <YStack flex={1} alignItems="center" justifyContent="center" backgroundColor="$background">
         <Spinner size="large" />
-        <Text mt="$4" color="$color11">
+        <Text marginTop="$4" color="$color11">
           Loading applications...
         </Text>
       </YStack>
@@ -181,12 +181,12 @@ export const OfficeApplicationsScreen = () => {
   // Error state
   if (isError) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Text color="$red10" fontSize="$5" fontWeight="bold">
           Error Loading Applications
         </Text>
-        <YStack items="center">
-          <Text color="$color11" mt="$2">
+        <YStack alignItems="center">
+          <Text color="$color11" marginTop="$2">
             {error?.message || 'Failed to load applications. Please try again.'}
           </Text>
         </YStack>
@@ -195,9 +195,9 @@ export const OfficeApplicationsScreen = () => {
   }
 
   return (
-    <YStack flex={1} p="$4" bg="$background">
+    <YStack flex={1} padding="$4" backgroundColor="$background">
       {/* Header */}
-      <XStack justify="space-between" items="center" mb="$4">
+      <XStack justifyContent="space-between" alignItems="center" marginBottom="$4">
         <YStack>
           <H2>Applications</H2>
           <Text color="$color11" fontSize="$3">
@@ -230,7 +230,7 @@ export const OfficeApplicationsScreen = () => {
       {viewMode === 'kanban' ? (
         <ApplicationsKanbanBoard applications={filteredApplications} />
       ) : (
-        <YStack p="$4">
+        <YStack padding="$4">
           <Text>List view coming soon...</Text>
         </YStack>
       )}

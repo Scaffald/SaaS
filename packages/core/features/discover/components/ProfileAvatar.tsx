@@ -1,5 +1,5 @@
 import { Building } from '@tamagui/lucide-icons'
-import { type GetThemeValueForKey, Image, Text, XStack, YStack } from 'tamagui'
+import { type GetThemeValueForKey, Image, Text, XStack, YStack } from '@unicornlove/ui'
 import { getInitials } from '../utils/getInitials'
 
 type ProfileAvatarProps = {
@@ -51,7 +51,7 @@ export const ProfileAvatar = ({
       <XStack
         width={size}
         height={size}
-        rounded="$12"
+        borderRadius="$12"
         overflow="hidden"
         borderWidth={1}
         borderColor="$borderColor"
@@ -66,10 +66,10 @@ export const ProfileAvatar = ({
     <YStack
       width={size}
       height={size}
-      rounded="$12"
-      bg={bgColor}
-      items="center"
-      justify="center"
+      borderRadius="$12"
+      backgroundColor={bgColor}
+      alignItems="center"
+      justifyContent="center"
       borderWidth={1}
       borderColor="$borderColor"
     >

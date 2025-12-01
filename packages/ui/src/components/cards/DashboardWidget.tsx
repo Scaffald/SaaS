@@ -79,11 +79,11 @@ export const DashboardWidget = ({
   return (
     <Card
       boxShadow={shadow}
-      p="$6"
-      $md={{ p: '$2' }}
+      padding="$6"
+      $md={{ padding: '$2' }}
       gap={gap}
-      rounded={borderRadius['3xl']}
-      bg="$gray1"
+      borderRadius={borderRadius['3xl']}
+      backgroundColor="$gray1"
       borderWidth={0}
       borderColor="transparent"
       animation="quick"

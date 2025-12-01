@@ -15,7 +15,7 @@ import {
   TextArea,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import {
   useInviteOrganizationMember,
   useOrganizationInvites,
@@ -127,7 +127,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       </Card>
 
       <Card bordered padding="$4" gap="$3">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <H4>Members</H4>
           {membersLoading ? (
             <Spinner />
@@ -186,7 +186,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
       </Card>
 
       <Card bordered padding="$4" gap="$3">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <H4>Pending invitations</H4>
           {invitesLoading ? (
             <Spinner />
@@ -208,7 +208,7 @@ export function OrganizationMembersPanel({ organizationId }: OrganizationMembers
                 role_name?: string | null
                 status: string
               }) => (
-                <XStack key={invite.id} justify="space-between" items="center">
+                <XStack key={invite.id} justifyContent="space-between" alignItems="center">
                   <YStack>
                     <Text fontWeight="600">{invite.invitee_email}</Text>
                     <Paragraph color="$color10">{invite.role_name ?? 'member'}</Paragraph>

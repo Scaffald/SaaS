@@ -3,7 +3,7 @@ import { ResponsiveSelect } from '@unicornlove/ui'
 import { useDebounce } from '@app/core/utils/useDebounce'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Input, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Switch, Text, XStack, YStack } from '@unicornlove/ui'
 
 const WORKLOAD_STRATEGIES = [
   { value: 'manual', label: 'Manual assignment' },
@@ -248,7 +248,7 @@ export function TeamAutomationSettings({
         </YStack>
 
         {formState.workloadStrategy === 'load_balance' ? (
-          <YStack gap="$3" pl="$2" borderLeftWidth={2} borderColor="$borderColor">
+          <YStack gap="$3" paddingLeft="$2" borderLeftWidth={2} borderColor="$borderColor">
             <Text fontWeight="600">Load balance settings</Text>
             <YStack gap="$2">
               <Text fontSize="$3" color="$color11">
@@ -316,7 +316,7 @@ export function TeamAutomationSettings({
         </YStack>
       </YStack>
 
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$3" color="$color10">
           {statusLabel}
         </Text>
@@ -347,7 +347,7 @@ function SettingsToggle({
   disabled: boolean
 }) {
   return (
-    <XStack justify="space-between" gap="$3" items="center" flexWrap="wrap">
+    <XStack justifyContent="space-between" gap="$3" alignItems="center" flexWrap="wrap">
       <YStack gap="$1" flex={1} style={{ minWidth: 200 }}>
         <Text fontWeight="600">{label}</Text>
         <Text fontSize="$3" color="$color10">

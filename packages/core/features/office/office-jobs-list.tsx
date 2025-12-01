@@ -5,7 +5,7 @@ import { ResponsiveSelect } from '@unicornlove/ui'
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, H2, Switch, Text, XStack, YStack } from 'tamagui'
+import { Button, H2, Switch, Text, XStack, YStack } from '@unicornlove/ui'
 import { JobsKanbanBoard } from './components/JobsKanbanBoard'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
@@ -240,8 +240,8 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
   const getItemName = (job: Job) => job.title
 
   const filtersAccessory = (
-    <XStack gap="$3" items="center" flexWrap="wrap">
-      <XStack gap="$2" items="center">
+    <XStack gap="$3" alignItems="center" flexWrap="wrap">
+      <XStack gap="$2" alignItems="center">
         <Text fontSize="$2" color="$color11">
           Status
         </Text>
@@ -260,7 +260,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
         />
       </XStack>
       {organizationsData?.organizations && organizationsData.organizations.length > 0 && (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color11">
             Organization
           </Text>
@@ -281,7 +281,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           />
         </XStack>
       )}
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Text fontSize="$2" color="$color11">
           Team
         </Text>
@@ -300,7 +300,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           ]}
         />
       </XStack>
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Text fontSize="$2" color="$color11">
           My teams only
         </Text>
@@ -308,7 +308,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           <Switch.Thumb />
         </Switch>
       </XStack>
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Text fontSize="$2" color="$color11">
           Sort
         </Text>
@@ -336,10 +336,10 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <YStack flex={1} bg="$background">
+          <YStack flex={1} backgroundColor="$background">
             {showHeader && (
-              <YStack p="$4" pb="$3" gap="$3">
-                <XStack justify="space-between" items="center">
+              <YStack padding="$4" paddingBottom="$3" gap="$3">
+                <XStack justifyContent="space-between" alignItems="center">
                   <YStack>
                     <H2>Jobs</H2>
                     <Text color="$color11" fontSize="$3">
@@ -361,7 +361,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
                     </Button>
                   </XStack>
                 </XStack>
-                <XStack gap="$2" items="center" flexWrap="wrap">
+                <XStack gap="$2" alignItems="center" flexWrap="wrap">
                   {filtersAccessory}
                 </XStack>
               </YStack>
@@ -405,7 +405,7 @@ export function OfficeJobsList({ showHeader = true }: OfficeJobsListProps = {}) 
           onSearchChange: setSearch,
           searchPlaceholder: 'Search jobs...',
           rightAccessory: (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               {filtersAccessory}
               <Button size="$2" onPress={() => setViewMode('kanban')} variant="outlined">
                 Kanban

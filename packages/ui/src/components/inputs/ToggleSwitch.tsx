@@ -16,8 +16,8 @@ export interface ToggleSwitchProps {
 const CustomToggle = styled(View, {
   width: 44,
   height: 24,
-  rounded: 12,
-  bg: '$color5',
+  borderRadius: 12,
+  backgroundColor: '$color5',
   borderWidth: 1,
   borderColor: '$color6',
   position: 'relative',
@@ -26,11 +26,11 @@ const CustomToggle = styled(View, {
   variants: {
     checked: {
       true: {
-        bg: '$blue7',
+        backgroundColor: '$blue7',
         borderColor: '$blue7',
       },
       false: {
-        bg: '$color5',
+        backgroundColor: '$color5',
         borderColor: '$color6',
       },
     },
@@ -38,7 +38,7 @@ const CustomToggle = styled(View, {
       true: {
         opacity: 0.5,
         cursor: 'not-allowed',
-        bg: '$color4',
+        backgroundColor: '$color4',
         borderColor: '$color4',
       },
       false: {
@@ -50,17 +50,17 @@ const CustomToggle = styled(View, {
       small: {
         width: 32,
         height: 18,
-        rounded: 9,
+        borderRadius: 9,
       },
       medium: {
         width: 44,
         height: 24,
-        rounded: 12,
+        borderRadius: 12,
       },
       large: {
         width: 56,
         height: 30,
-        rounded: 15,
+        borderRadius: 15,
       },
     },
   } as const,
@@ -78,42 +78,42 @@ const CustomToggle = styled(View, {
 const ToggleThumb = styled(View, {
   width: 18,
   height: 18,
-  rounded: 9,
-  bg: 'white',
+  borderRadius: 9,
+  backgroundColor: 'white',
   position: 'absolute',
-  t: 2,
-  l: 2,
+  top: 2,
+  left: 2,
   animation: '200ms',
   variants: {
     checked: {
       true: {
-        l: 22,
+        left: 22,
       },
       false: {
-        l: 2,
+        left: 2,
       },
     },
     size: {
       small: {
         width: 12,
         height: 12,
-        rounded: 6,
-        t: 2,
-        l: 2,
+        borderRadius: 6,
+        top: 2,
+        left: 2,
       },
       medium: {
         width: 18,
         height: 18,
-        rounded: 9,
-        t: 2,
-        l: 2,
+        borderRadius: 9,
+        top: 2,
+        left: 2,
       },
       large: {
         width: 24,
         height: 24,
-        rounded: 12,
-        t: 2,
-        l: 2,
+        borderRadius: 12,
+        top: 2,
+        left: 2,
       },
     },
   } as const,

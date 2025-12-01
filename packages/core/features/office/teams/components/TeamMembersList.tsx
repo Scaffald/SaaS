@@ -7,7 +7,17 @@ import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { AlertDialog, Avatar, Button, Card, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  AlertDialog,
+  Avatar,
+  Button,
+  Card,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { type TeamRoleOption, useTeamFormOptions } from '../hooks/useTeamFormOptions'
 
 import { AddTeamMemberModal } from './AddTeamMemberModal'
@@ -156,15 +166,15 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
   const workloadErrorMessage = workloadQuery.error?.message ?? null
 
   return (
-    <YStack gap="$4" flex={1} px="$3" $md={{ px: undefined }}>
+    <YStack gap="$4" flex={1} paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
       <XStack
-        justify="space-between"
-        items="flex-start"
+        justifyContent="space-between"
+        alignItems="flex-start"
         gap="$3"
         flexDirection="column"
         width="100%"
         $md={{
-          items: 'center',
+          alignItems: 'center',
           flexDirection: 'row',
         }}
       >
@@ -174,7 +184,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
         <Button
           icon={Plus}
           onPress={() => setIsAddModalOpen(true)}
-          bg="$color9"
+          backgroundColor="$color9"
           color="$color1"
           size="$3"
           accessibilityLabel="Add a new team member"
@@ -186,7 +196,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
       </XStack>
 
       {isLoadingMembers ? (
-        <YStack items="center" justify="center" py="$8" gap="$2">
+        <YStack alignItems="center" justifyContent="center" paddingVertical="$8" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading team members…</Text>
         </YStack>
@@ -215,7 +225,7 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
             return (
               <Card
                 key={member.id}
-                p="$4"
+                padding="$4"
                 borderColor="$borderColor"
                 borderWidth={1}
                 gap="$3"
@@ -226,12 +236,12 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
               >
                 <XStack
                   gap="$3"
-                  items="flex-start"
-                  justify="space-between"
+                  alignItems="flex-start"
+                  justifyContent="space-between"
                   flexDirection="column"
                   width="100%"
                   $md={{
-                    items: 'center',
+                    alignItems: 'center',
                     flexDirection: 'row',
                   }}
                 >
@@ -239,10 +249,10 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     gap="$3"
                     width="100%"
                     flexDirection="column"
-                    items="flex-start"
+                    alignItems="flex-start"
                     $md={{
                       flexDirection: 'row',
-                      items: 'center',
+                      alignItems: 'center',
                     }}
                   >
                     <Avatar circular size="$4">
@@ -266,8 +276,8 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                     flexWrap="wrap"
                     width="100%"
                     flexDirection="column"
-                    justify="flex-start"
-                    items="stretch"
+                    justifyContent="flex-start"
+                    alignItems="stretch"
                     $md={{
                       flexDirection: 'row',
                       justify: 'flex-end',
@@ -360,9 +370,9 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
           gap="$2"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$4"
-          p="$4"
-          bg="$color2"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color2"
         >
           <Text fontWeight="600">No team members yet</Text>
           <Text color="$color11">
@@ -444,13 +454,13 @@ export function TeamMembersList({ teamId, organizationId }: TeamMembersListProps
                 accessibilityHint="Optional message sent to the team about your departure"
               />
             </YStack>
-            <XStack gap="$3" justify="flex-end">
+            <XStack gap="$3" justifyContent="flex-end">
               <AlertDialog.Cancel asChild>
                 <Button variant="outlined">Cancel</Button>
               </AlertDialog.Cancel>
               <AlertDialog.Action asChild>
                 <Button
-                  bg="$red9"
+                  backgroundColor="$red9"
                   color="$color1"
                   icon={LogOut}
                   onPress={() => void handleLeaveTeam()}

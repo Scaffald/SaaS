@@ -1,7 +1,7 @@
 import type { AttachmentMetadata, CustomQuestionAnswer, ScreeningAnswers } from '@app/schemas'
 import { Check, Edit3, FileText } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Checkbox, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Checkbox, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface ReviewStepProps {
   /**
@@ -62,7 +62,7 @@ export function ReviewStep({
   const [hasConsent, setHasConsent] = useState(false)
 
   return (
-    <YStack gap="$6" width="100%" maxW={800} p="$4">
+    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -76,9 +76,9 @@ export function ReviewStep({
       {/* Screening Information Section */}
       <YStack
         gap="$4"
-        bg="$background"
-        p="$6"
-        rounded="$4"
+        backgroundColor="$background"
+        padding="$6"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
         shadowColor="$gray4"
@@ -86,7 +86,7 @@ export function ReviewStep({
         shadowOpacity={0.1}
         shadowRadius={3}
       >
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Screening Questions
           </Text>
@@ -142,9 +142,9 @@ export function ReviewStep({
       {customQuestionAnswers.length > 0 && (
         <YStack
           gap="$4"
-          bg="$background"
-          p="$6"
-          rounded="$4"
+          backgroundColor="$background"
+          padding="$6"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$borderColor"
           shadowColor="$gray4"
@@ -152,7 +152,7 @@ export function ReviewStep({
           shadowOpacity={0.1}
           shadowRadius={3}
         >
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$6" fontWeight="bold" color="$color12">
               Additional Questions
             </Text>
@@ -187,9 +187,9 @@ export function ReviewStep({
       {/* Attachments Section */}
       <YStack
         gap="$4"
-        bg="$background"
-        p="$6"
-        rounded="$4"
+        backgroundColor="$background"
+        padding="$6"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
         shadowColor="$gray4"
@@ -197,7 +197,7 @@ export function ReviewStep({
         shadowOpacity={0.1}
         shadowRadius={3}
       >
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$6" fontWeight="bold" color="$color12">
             Documents
           </Text>
@@ -243,13 +243,13 @@ export function ReviewStep({
       {/* Submission Consent */}
       <YStack
         gap="$3"
-        p="$4"
-        bg="$background"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$background"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$3" items="flex-start">
+        <XStack gap="$3" alignItems="flex-start">
           <Checkbox
             checked={hasConsent}
             onCheckedChange={(value) => setHasConsent(value === true)}
@@ -327,10 +327,10 @@ function DocumentRow({
     : 'Recently uploaded'
 
   return (
-    <XStack gap="$3" items="center">
+    <XStack gap="$3" alignItems="center">
       <FileText size={20} color="$blue10" />
       <YStack gap="$1" flex={1}>
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$4" fontWeight="500" color="$color12">
             {type}
           </Text>
@@ -343,7 +343,7 @@ function DocumentRow({
         <Text fontSize="$3" color="$color11">
           {metadata.filename}
         </Text>
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$2" color="$color10">
             {formatFileSize(metadata.size)}
           </Text>

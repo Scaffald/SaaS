@@ -13,7 +13,17 @@ import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Input, Label, ScrollView, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Input,
+  Label,
+  ScrollView,
+  Spinner,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import type { z } from 'zod'
 
 import { useTeamFormOptions } from '../hooks/useTeamFormOptions'
@@ -243,7 +253,7 @@ export function TeamForm({
   }))
 
   const renderContent = () => (
-    <YStack gap="$4" width="100%" maxW={640} self="center">
+    <YStack gap="$4" width="100%" maxWidth={640} alignSelf="center">
       <Controller
         name="name"
         control={control}
@@ -422,7 +432,7 @@ export function TeamForm({
         )}
       />
 
-      <XStack gap="$2" justify="flex-end">
+      <XStack gap="$2" justifyContent="flex-end">
         <Button
           theme="gray"
           variant="outlined"
@@ -445,15 +455,20 @@ export function TeamForm({
 
   if (isOptionsLoading && roles.length === 0) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$6">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$6">
         <Spinner size="large" />
-        <Text mt="$4">Loading team options…</Text>
+        <Text marginTop="$4">Loading team options…</Text>
       </YStack>
     )
   }
 
   return (
-    <ScrollView flex={1} bg="$color2" p="$5" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      flex={1}
+      backgroundColor="$color2"
+      padding="$5"
+      showsVerticalScrollIndicator={false}
+    >
       {renderContent()}
     </ScrollView>
   )

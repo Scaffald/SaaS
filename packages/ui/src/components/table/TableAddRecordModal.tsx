@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
-import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
-import { ResponsiveModal } from '../ResponsiveModal'
+import { Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
+import { ResponsiveModal } from '../modal'
 
 export interface TableAddRecordModalProps {
   open: boolean
@@ -51,7 +52,7 @@ export function TableAddRecordModal({
           </YStack>
         )}
 
-        <XStack gap="$3" justify="flex-end">
+        <XStack gap="$3" justifyContent="flex-end">
           <Button
             variant="outlined"
             onPress={() => {

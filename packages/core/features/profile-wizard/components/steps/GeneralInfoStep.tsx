@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Input, Paragraph, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 import { z } from 'zod'
 import type { GeneralInfoStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -101,7 +101,7 @@ export function GeneralInfoStep({
       </YStack>
 
       <XStack gap="$3" flexWrap="wrap">
-        <YStack flex={1} minW={150} gap="$2">
+        <YStack flex={1} minWidth={150} gap="$2">
           <Text fontWeight="600">First Name *</Text>
           <Controller
             control={control}
@@ -123,7 +123,7 @@ export function GeneralInfoStep({
           )}
         </YStack>
 
-        <YStack flex={1} minW={150} gap="$2">
+        <YStack flex={1} minWidth={150} gap="$2">
           <Text fontWeight="600">Last Name *</Text>
           <Controller
             control={control}
@@ -178,7 +178,7 @@ export function GeneralInfoStep({
               value={field.value}
               placeholder="Share a quick summary of your experience, strengths, and goals."
               onChangeText={field.onChange}
-              minH={120}
+              minHeight={120}
               numberOfLines={5}
             />
           )}

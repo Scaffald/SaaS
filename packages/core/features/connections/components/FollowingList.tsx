@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useToastController } from '@tamagui/toast'
 import { UserMinus } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface FollowingData {
   user?: {
@@ -21,7 +21,9 @@ interface FollowingData {
 }
 
 type FollowingQueryResult = ReturnType<typeof api.follows.getFollowing.useQuery>
-type Following = NonNullable<FollowingQueryResult['data']> extends Array<infer T> ? T : FollowingData
+type Following = NonNullable<FollowingQueryResult['data']> extends Array<infer T>
+  ? T
+  : FollowingData
 
 export function FollowingList() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -76,12 +78,12 @@ export function FollowingList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
-                  <Avatar.Fallback bg="$purple4">
+                  <Avatar.Fallback backgroundColor="$purple4">
                     <Text fontSize="$3" fontWeight="600" color="$purple10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
@@ -139,7 +141,7 @@ export function FollowingList() {
 
   if (isLoading) {
     return (
-      <YStack items="center" justify="center" py="$6" gap="$2">
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading following…</Text>
       </YStack>
@@ -160,18 +162,18 @@ export function FollowingList() {
           gap="$3"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$4"
-          p="$4"
-          bg="$color2"
-          items="center"
-          justify="center"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color2"
+          alignItems="center"
+          justifyContent="center"
           style={{ minHeight: 300 }}
         >
           <Text fontWeight="600">Not following anyone yet</Text>
           <Text color="$color11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No users match your search.'
-              : 'You\'re not following anyone yet. Discover workers and start following them.'}
+              : "You're not following anyone yet. Discover workers and start following them."}
           </Text>
         </YStack>
       ) : (

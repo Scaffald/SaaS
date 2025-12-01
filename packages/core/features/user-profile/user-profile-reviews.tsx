@@ -3,7 +3,7 @@ import { useAuth } from '@app/core/provider/auth/useAuth'
 import { MessageSquarePlus, Shield, Star, ThumbsDown, ThumbsUp } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useRef } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface CategoryRating {
   category: string
@@ -77,7 +77,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   if (isLoading) {
     return (
       <Card elevate bordered>
-        <YStack gap="$4" p="$5" items="center" justify="center" minH={400}>
+        <YStack gap="$4" padding="$5" alignItems="center" justifyContent="center" minHeight={400}>
           <Spinner size="large" />
           <Text color="$color10">Loading reviews...</Text>
         </YStack>
@@ -88,9 +88,9 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
   if (!reviewsData || reviews.length === 0) {
     return (
       <Card elevate bordered>
-        <YStack gap="$4" p="$5">
-          <XStack justify="space-between" items="center">
-            <XStack gap="$2" items="center">
+        <YStack gap="$4" padding="$5">
+          <XStack justifyContent="space-between" alignItems="center">
+            <XStack gap="$2" alignItems="center">
               <Star size={24} color="$blue10" fill="$blue10" />
               <Text fontSize="$7" fontWeight="700" color="$color12">
                 Reviews & Ratings
@@ -102,11 +102,11 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
               </Button>
             )}
           </XStack>
-          <YStack items="center" justify="center" minH={200} gap="$3">
+          <YStack alignItems="center" justifyContent="center" minHeight={200} gap="$3">
             <Text fontSize="$6" color="$color10">
               No reviews yet
             </Text>
-            <YStack items="center">
+            <YStack alignItems="center">
               <Text fontSize="$4" color="$color9">
                 Be the first to leave a review for this user
               </Text>
@@ -144,10 +144,10 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" p="$5">
+      <YStack gap="$4" padding="$5">
         {/* Header with Leave Review Button */}
-        <XStack justify="space-between" items="center">
-          <XStack gap="$2" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
+          <XStack gap="$2" alignItems="center">
             <Star size={24} color="$blue10" fill="$blue10" />
             <Text fontSize="$7" fontWeight="700" color="$color12">
               Reviews & Ratings
@@ -161,10 +161,10 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
         </XStack>
 
         {/* Rating Summary */}
-        <Card bordered bg="$color2">
-          <YStack gap="$3" p="$4">
-            <XStack gap="$4" items="center">
-              <YStack items="center">
+        <Card bordered backgroundColor="$color2">
+          <YStack gap="$3" padding="$4">
+            <XStack gap="$4" alignItems="center">
+              <YStack alignItems="center">
                 <Text fontSize="$10" fontWeight="700" color="$color12">
                   {overallRating.toFixed(1)}
                 </Text>
@@ -186,12 +186,21 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
               {Object.keys(avgByCategory).length > 0 && (
                 <YStack flex={1} gap="$2">
                   {Object.entries(avgByCategory).map(([category, data]) => (
-                    <XStack key={category} gap="$2" items="center">
+                    <XStack key={category} gap="$2" alignItems="center">
                       <Text fontSize="$3" color="$color11" width={100} textTransform="capitalize">
                         {category}
                       </Text>
-                      <XStack flex={1} height={6} bg="$color3" rounded="$2" overflow="hidden">
-                        <XStack width={`${(data.sum / data.count / 5) * 100}%`} bg="$yellow10" />
+                      <XStack
+                        flex={1}
+                        height={6}
+                        backgroundColor="$color3"
+                        borderRadius="$2"
+                        overflow="hidden"
+                      >
+                        <XStack
+                          width={`${(data.sum / data.count / 5) * 100}%`}
+                          backgroundColor="$yellow10"
+                        />
                       </XStack>
                       <Text fontSize="$3" color="$color10" width={30}>
                         {(data.sum / data.count).toFixed(1)}
@@ -203,14 +212,28 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
             </XStack>
 
             {/* Recommend Stats */}
-            <XStack gap="$3" justify="center">
-              <XStack gap="$2" items="center" px="$3" py="$2" bg="$green3" rounded="$3">
+            <XStack gap="$3" justifyContent="center">
+              <XStack
+                gap="$2"
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                backgroundColor="$green3"
+                borderRadius="$3"
+              >
                 <ThumbsUp size={16} color="$green11" />
                 <Text fontSize="$4" fontWeight="600" color="$green11">
                   {recommendCount} Recommend
                 </Text>
               </XStack>
-              <XStack gap="$2" items="center" px="$3" py="$2" bg="$red3" rounded="$3">
+              <XStack
+                gap="$2"
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                backgroundColor="$red3"
+                borderRadius="$3"
+              >
                 <ThumbsDown size={16} color="$red11" />
                 <Text fontSize="$4" fontWeight="600" color="$red11">
                   {notRecommendCount} Don't Recommend
@@ -226,15 +249,22 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
             Reviews ({totalReviews})
           </Text>
           {reviews.map((review: Review) => (
-            <Card key={review.id} bordered bg="$color2">
-              <YStack gap="$3" p="$4">
-                <XStack justify="space-between" items="flex-start">
+            <Card key={review.id} bordered backgroundColor="$color2">
+              <YStack gap="$3" padding="$4">
+                <XStack justifyContent="space-between" alignItems="flex-start">
                   <YStack gap="$1">
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Text fontSize="$5" fontWeight="700" color="$color12">
                         Anonymous Reviewer
                       </Text>
-                      <XStack gap="$1" items="center" px="$2" py="$0.5" bg="$blue3" rounded="$2">
+                      <XStack
+                        gap="$1"
+                        alignItems="center"
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        backgroundColor="$blue3"
+                        borderRadius="$2"
+                      >
                         <Shield size={12} color="$blue11" />
                         <Text fontSize="$1" color="$blue11" fontWeight="600">
                           VERIFIED
@@ -277,7 +307,7 @@ export function UserProfileReviews({ userId, onLeaveReview }: UserProfileReviews
 
                 {/* Recommendation */}
                 {review.reaction !== null && (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     {review.reaction === 1 ? (
                       <>
                         <ThumbsUp size={16} color="$green11" />

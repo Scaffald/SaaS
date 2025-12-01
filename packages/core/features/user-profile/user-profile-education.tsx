@@ -1,5 +1,5 @@
 import { Calendar, GraduationCap } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from 'tamagui'
+import { Card, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface Education {
   id: string
@@ -26,8 +26,8 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" p="$5">
-        <XStack gap="$2" items="center">
+      <YStack gap="$4" padding="$5">
+        <XStack gap="$2" alignItems="center">
           <GraduationCap size={24} color="$blue10" />
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Education
@@ -36,8 +36,8 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
 
         <YStack gap="$3">
           {education.map((edu) => (
-            <Card key={edu.id} bordered bg="$color2">
-              <YStack gap="$2" p="$4">
+            <Card key={edu.id} bordered backgroundColor="$color2">
+              <YStack gap="$2" padding="$4">
                 <Text fontSize="$6" fontWeight="700" color="$color12">
                   {edu.degree_type}
                   {edu.field_of_study && ` in ${edu.field_of_study}`}
@@ -48,7 +48,7 @@ export function UserProfileEducation({ education }: UserProfileEducationProps) {
                   </Text>
                 )}
                 {(edu.start_date || edu.end_date) && (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Calendar size={16} color="$color10" />
                     <Text fontSize="$3" color="$color10">
                       {formatDate(edu.start_date)} -{' '}

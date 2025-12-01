@@ -1,7 +1,17 @@
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Input, Paragraph, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  Input,
+  Paragraph,
+  Spinner,
+  Switch,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 function formatDate(value?: string | null): string | null {
   if (!value) return null
@@ -108,7 +118,7 @@ export function StripeSettingsPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$3">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text>Loading Stripe settings…</Text>
       </YStack>
@@ -116,7 +126,7 @@ export function StripeSettingsPage() {
   }
 
   return (
-    <YStack flex={1} p="$4" gap="$4">
+    <YStack flex={1} padding="$4" gap="$4">
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="700">
           Stripe Payments
@@ -127,7 +137,7 @@ export function StripeSettingsPage() {
       </YStack>
 
       <YStack gap="$4" style={{ maxWidth: 720, width: '100%' }}>
-        <Card p="$4" gap="$4">
+        <Card padding="$4" gap="$4">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Publishable Key
@@ -143,9 +153,9 @@ export function StripeSettingsPage() {
               autoCorrect={false}
               placeholder="pk_live_..."
             />
-            <XStack gap="$2" justify="flex-end">
+            <XStack gap="$2" justifyContent="flex-end">
               <Button
-                bg="$blue9"
+                backgroundColor="$blue9"
                 color="$color1"
                 disabled={updatePublishableKey.isPending || publishableKey.length < 16}
                 onPress={() =>
@@ -160,7 +170,7 @@ export function StripeSettingsPage() {
           </YStack>
         </Card>
 
-        <Card p="$4" gap="$4">
+        <Card padding="$4" gap="$4">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Secret Keys
@@ -182,9 +192,9 @@ export function StripeSettingsPage() {
                 secureTextEntry
                 placeholder="sk_live_..."
               />
-              <XStack gap="$2" justify="flex-end">
+              <XStack gap="$2" justifyContent="flex-end">
                 <Button
-                  bg="$green9"
+                  backgroundColor="$green9"
                   color="$color1"
                   disabled={updateApiKey.isPending || apiSecret.length < 20}
                   onPress={() => {
@@ -216,9 +226,9 @@ export function StripeSettingsPage() {
                 secureTextEntry
                 placeholder="whsec_..."
               />
-              <XStack gap="$2" justify="flex-end">
+              <XStack gap="$2" justifyContent="flex-end">
                 <Button
-                  bg="$green9"
+                  backgroundColor="$green9"
                   color="$color1"
                   disabled={updateWebhookSecret.isPending || webhookSecret.length < 10}
                   onPress={() => {
@@ -242,7 +252,7 @@ export function StripeSettingsPage() {
           </YStack>
         </Card>
 
-        <Card p="$4" gap="$4">
+        <Card padding="$4" gap="$4">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Webhook Endpoint
@@ -259,7 +269,7 @@ export function StripeSettingsPage() {
           </YStack>
         </Card>
 
-        <Card p="$4" gap="$4">
+        <Card padding="$4" gap="$4">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Test Mode
@@ -268,7 +278,7 @@ export function StripeSettingsPage() {
               Toggle between live and test credentials without redeploying the backend.
             </Paragraph>
           </YStack>
-          <XStack gap="$3" items="center">
+          <XStack gap="$3" alignItems="center">
             <Switch
               id="stripe-test-mode"
               checked={data?.testMode ?? true}
@@ -285,7 +295,7 @@ export function StripeSettingsPage() {
           </XStack>
         </Card>
 
-        <Card p="$4" gap="$4">
+        <Card padding="$4" gap="$4">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="600">
               Connection Diagnostics
@@ -307,9 +317,9 @@ export function StripeSettingsPage() {
             ) : null}
           </YStack>
 
-          <XStack gap="$2" justify="flex-end">
+          <XStack gap="$2" justifyContent="flex-end">
             <Button
-              bg="$blue9"
+              backgroundColor="$blue9"
               color="$color1"
               disabled={testConnection.isPending || !data?.hasApiKey}
               onPress={() => testConnection.mutate()}

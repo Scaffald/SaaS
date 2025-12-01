@@ -4,7 +4,7 @@ import { getStorageUrl } from '@app/core/utils/supabase/storage'
 import { ExternalLink, MapPin, User, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type PreviewSkill = {
   csiSkillId?: string | null
@@ -81,17 +81,17 @@ export function UserProfilePanel({
       zIndex={1000}
       elevate
       bordered
-      p="$4"
+      padding="$4"
       gap="$3"
-      minW={280}
-      maxW={320}
-      bg="$background"
+      minWidth={280}
+      maxWidth={320}
+      backgroundColor="$background"
       animation="quick"
       enterStyle={{ opacity: 0, scale: 0.95, y: -10 }}
       exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
     >
       {/* Close button */}
-      <XStack justify="flex-end">
+      <XStack justifyContent="flex-end">
         <Button
           size="$2"
           circular
@@ -104,14 +104,14 @@ export function UserProfilePanel({
       </XStack>
 
       {isLoading ? (
-        <YStack py="$4" items="center" gap="$3">
+        <YStack paddingVertical="$4" alignItems="center" gap="$3">
           <Spinner size="small" color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Loading...
           </Text>
         </YStack>
       ) : !preview ? (
-        <YStack py="$4" items="center">
+        <YStack paddingVertical="$4" alignItems="center">
           <Text fontSize="$3" color="$red10">
             Profile not found
           </Text>
@@ -119,17 +119,17 @@ export function UserProfilePanel({
       ) : (
         <>
           {/* Profile Header */}
-          <XStack gap="$3" items="flex-start">
+          <XStack gap="$3" alignItems="flex-start">
             {/* Avatar */}
             {avatarUrl ? (
               <Avatar circular size="$4">
                 <Avatar.Image source={{ uri: avatarUrl }} />
-                <Avatar.Fallback bg="$color3">
+                <Avatar.Fallback backgroundColor="$color3">
                   <User size={24} color="$color10" />
                 </Avatar.Fallback>
               </Avatar>
             ) : (
-              <Avatar circular size="$4" bg="$color3">
+              <Avatar circular size="$4" backgroundColor="$color3">
                 <User size={24} color="$color10" />
               </Avatar>
             )}
@@ -145,7 +145,7 @@ export function UserProfilePanel({
                 </Text>
               )}
               {preview.location && (
-                <XStack gap="$1" items="center" mt="$1">
+                <XStack gap="$1" alignItems="center" marginTop="$1">
                   <MapPin size={14} color="$color10" />
                   <Text fontSize="$2" color="$color10" numberOfLines={1}>
                     {preview.location}
@@ -165,10 +165,10 @@ export function UserProfilePanel({
                 {topSkills.slice(0, 3).map((skill) => (
                   <YStack
                     key={skill.csiSkillId || skill.onetOccupationId || skill.taxonomy}
-                    bg="$color3"
-                    px="$2"
-                    py="$1"
-                    rounded="$3"
+                    backgroundColor="$color3"
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$3"
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
@@ -179,10 +179,10 @@ export function UserProfilePanel({
                 ))}
                 {topSkills.length > 3 && (
                   <YStack
-                    bg="$color3"
-                    px="$2"
-                    py="$1"
-                    rounded="$3"
+                    backgroundColor="$color3"
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$3"
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
@@ -196,7 +196,7 @@ export function UserProfilePanel({
           )}
 
           {/* Action Button */}
-          <XStack gap="$2" pt="$2">
+          <XStack gap="$2" paddingTop="$2">
             <Button flex={1} theme="info" onPress={handleViewProfile} icon={ExternalLink}>
               View Profile
             </Button>

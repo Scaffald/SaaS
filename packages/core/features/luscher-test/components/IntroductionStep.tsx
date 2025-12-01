@@ -1,4 +1,4 @@
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface IntroductionStepProps {
   onBegin: () => void
@@ -10,7 +10,7 @@ export interface IntroductionStepProps {
  */
 export function IntroductionStep({ onBegin }: IntroductionStepProps) {
   return (
-    <YStack gap="$6" maxW={800} width="100%" mx="auto" p="$4">
+    <YStack gap="$6" maxWidth={800} width="100%" marginHorizontal="auto" padding="$4">
       <YStack gap="$4">
         <YStack gap="$2">
           <Text fontSize="$4" color="$color11" lineHeight="$1">
@@ -19,12 +19,19 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
           </Text>
         </YStack>
 
-        <YStack gap="$3" bg="$color3" p="$4" rounded="$4" borderWidth={1} borderColor="$color7">
+        <YStack
+          gap="$3"
+          backgroundColor="$color3"
+          padding="$4"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$color7"
+        >
           <Text fontSize="$5" fontWeight="600" color="$color12">
             What to Expect
           </Text>
           <YStack gap="$2">
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Text fontSize="$3" color="$color11">
                 •
               </Text>
@@ -32,7 +39,7 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
                 Takes approximately 2–3 minutes to complete
               </Text>
             </XStack>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Text fontSize="$3" color="$color11">
                 •
               </Text>
@@ -40,7 +47,7 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
                 Two color selection rounds separated by a 60-second cooldown
               </Text>
             </XStack>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Text fontSize="$3" color="$color11">
                 •
               </Text>
@@ -48,7 +55,7 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
                 Produces quantitative state metrics for mood tracking
               </Text>
             </XStack>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Text fontSize="$3" color="$color11">
                 •
               </Text>
@@ -59,7 +66,14 @@ export function IntroductionStep({ onBegin }: IntroductionStepProps) {
           </YStack>
         </YStack>
 
-        <YStack gap="$3" p="$4" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
+        <YStack
+          gap="$3"
+          padding="$4"
+          backgroundColor="$blue2"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$blue7"
+        >
           <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             Pick the colors that feel most right to you right now.
           </Text>

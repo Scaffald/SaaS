@@ -21,7 +21,16 @@ import {
 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo } from 'react'
-import { Avatar, Button, Card, Image, Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import {
+  Avatar,
+  Button,
+  Card,
+  Image,
+  Text,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 interface UserProfileHeaderEnhancedProps {
   profile: {
@@ -270,9 +279,9 @@ export function UserProfileHeaderEnhanced({
       : null
 
   return (
-    <Card elevate bordered overflow="hidden" p={0}>
+    <Card elevate bordered overflow="hidden" padding={0}>
       {/* Banner Section */}
-      <YStack position="relative" height={bannerHeight} bg="$color4">
+      <YStack position="relative" height={bannerHeight} backgroundColor="$color4">
         {bannerUrl ? (
           <Image
             source={{ uri: bannerUrl }}
@@ -283,7 +292,7 @@ export function UserProfileHeaderEnhanced({
           />
         ) : (
           <YStack
-            bg="$blue5"
+            backgroundColor="$blue5"
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           />
         )}
@@ -301,7 +310,7 @@ export function UserProfileHeaderEnhanced({
             {avatarUrl ? (
               <Avatar.Image source={{ uri: avatarUrl }} />
             ) : (
-              <Avatar.Fallback bg="$blue4">
+              <Avatar.Fallback backgroundColor="$blue4">
                 <Text fontSize="$10" fontWeight="700" color="$blue10">
                   {profile.name?.charAt(0) || '?'}
                 </Text>
@@ -312,10 +321,10 @@ export function UserProfileHeaderEnhanced({
       </YStack>
 
       {/* Content Section */}
-      <YStack gap="$4" p="$5" pt={isMobile ? 80 : 96}>
+      <YStack gap="$4" padding="$5" paddingTop={isMobile ? 80 : 96}>
         {/* Header Row - Name, Headline, and Actions */}
-        <XStack gap="$4" items="flex-start" justify="space-between" flexWrap="wrap">
-          <YStack flex={1} gap="$2" minW={200}>
+        <XStack gap="$4" alignItems="flex-start" justifyContent="space-between" flexWrap="wrap">
+          <YStack flex={1} gap="$2" minWidth={200}>
             {/* Name */}
             <Text fontSize={isMobile ? '$8' : '$10'} fontWeight="700" color="$color12">
               {profile.name || 'User'}
@@ -329,9 +338,9 @@ export function UserProfileHeaderEnhanced({
             )}
 
             {/* Industry and Location */}
-            <XStack gap="$3" flexWrap="wrap" items="center">
+            <XStack gap="$3" flexWrap="wrap" alignItems="center">
               {profile.industry_name && (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Briefcase size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     {profile.industry_name}
@@ -339,7 +348,7 @@ export function UserProfileHeaderEnhanced({
                 </XStack>
               )}
               {profile.location && (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <MapPin size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     {profile.location}
@@ -350,7 +359,7 @@ export function UserProfileHeaderEnhanced({
           </YStack>
 
           {/* Action Buttons */}
-          <XStack gap="$2" flexWrap="wrap" items="center">
+          <XStack gap="$2" flexWrap="wrap" alignItems="center">
             {isOwnProfile && onEdit && (
               <Button size={isMobile ? '$3' : '$4'} theme="info" icon={Edit3} onPress={onEdit}>
                 Edit Profile
@@ -373,12 +382,7 @@ export function UserProfileHeaderEnhanced({
                 )}
 
                 {connectionButtonState.type === 'pending_sent' && (
-                  <Button
-                    size={isMobile ? '$3' : '$4'}
-                    variant="outlined"
-                    icon={Loader2}
-                    disabled
-                  >
+                  <Button size={isMobile ? '$3' : '$4'} variant="outlined" icon={Loader2} disabled>
                     Pending
                   </Button>
                 )}
@@ -465,16 +469,22 @@ export function UserProfileHeaderEnhanced({
         </XStack>
 
         {/* Stats Row */}
-        <XStack gap="$3" flexWrap="wrap" pt="$2" borderTopWidth={1} borderTopColor="$borderColor">
+        <XStack
+          gap="$3"
+          flexWrap="wrap"
+          paddingTop="$2"
+          borderTopWidth={1}
+          borderTopColor="$borderColor"
+        >
           {/* Scaffald Score */}
           {profile.gamified_score !== null && (
             <XStack
-              bg="$blue2"
-              px="$4"
-              py="$2"
-              rounded="$4"
+              backgroundColor="$blue2"
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              borderRadius="$4"
               gap="$2"
-              items="center"
+              alignItems="center"
               borderWidth={1}
               borderColor="$blue6"
             >
@@ -492,7 +502,14 @@ export function UserProfileHeaderEnhanced({
 
           {/* Years of Experience */}
           {formattedYears !== null && (
-            <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
+            <XStack
+              gap="$2"
+              alignItems="center"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$color2"
+              borderRadius="$3"
+            >
               <Award size={18} color="$color11" />
               <Text fontSize="$3" color="$color11" fontWeight="600">
                 {formattedYears} years experience
@@ -502,7 +519,14 @@ export function UserProfileHeaderEnhanced({
 
           {/* Hourly Rate */}
           {profile.hourly_rate_cents && (
-            <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
+            <XStack
+              gap="$2"
+              alignItems="center"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$color2"
+              borderRadius="$3"
+            >
               <DollarSign size={18} color="$color11" />
               <Text fontSize="$3" color="$color11" fontWeight="600">
                 {formatHourlyRate(profile.hourly_rate_cents)}
@@ -512,7 +536,14 @@ export function UserProfileHeaderEnhanced({
 
           {/* Open to Work Badge */}
           {profile.open_to_work && (
-            <XStack px="$3" py="$2" bg="$green3" rounded="$3" borderWidth={1} borderColor="$green7">
+            <XStack
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$green3"
+              borderRadius="$3"
+              borderWidth={1}
+              borderColor="$green7"
+            >
               <Text fontSize="$3" fontWeight="600" color="$green11">
                 ✓ Available for Work
               </Text>

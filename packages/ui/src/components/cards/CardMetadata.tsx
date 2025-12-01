@@ -10,7 +10,7 @@ import type { CardMetadataProps } from './types'
  * @example
  * ```tsx
  * <CardMetadata
- *   items={[
+ *   alignItems={[
  *     { key: 'loc', icon: <MapPin />, label: 'San Francisco' },
  *     { key: 'exp', icon: <Clock />, label: '5 years' }
  *   ]}
@@ -26,9 +26,9 @@ export const CardMetadata = memo(({ items, isSelected = false, maxItems }: CardM
   }
 
   return (
-    <XStack gap="$3" flexWrap="wrap" items="center">
+    <XStack gap="$3" flexWrap="wrap" alignItems="center">
       {displayItems.map((item) => (
-        <XStack key={item.key} items="center" gap="$1.5">
+        <XStack key={item.key} alignItems="center" gap="$1.5">
           {item.icon}
           <Text fontSize="$2" color={item.color ?? textColor}>
             {item.label}

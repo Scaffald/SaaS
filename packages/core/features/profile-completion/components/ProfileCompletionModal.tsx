@@ -1,7 +1,7 @@
 import { ResponsiveModal } from '@unicornlove/ui'
 import { PartyPopper, UploadCloud } from '@tamagui/lucide-icons'
 import { memo } from 'react'
-import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Button, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 
 type ModalMode = 'first-login' | 'progress-reminder'
 
@@ -37,7 +37,7 @@ export const ProfileCompletionModal = memo(function ProfileCompletionModal({
     >
       <YStack gap="$4">
         <YStack gap="$2">
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <PartyPopper size={24} color="$blue10" />
             <Text fontSize="$5" fontWeight="700">
               {isFirstTime ? 'Finish in 5 minutes' : `You’re ${completionPercentage}% complete`}

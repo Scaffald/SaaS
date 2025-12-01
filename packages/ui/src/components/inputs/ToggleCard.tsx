@@ -63,7 +63,7 @@ const AnimatedExpandedContent = styled(YStack, {
  *   checked={usResident}
  *   onCheckedChange={setUsResident}
  *   expandedContent={
- *     <YStack gap="$2" pt="$3">
+ *     <YStack gap="$2" paddingTop="$3">
  *       <Input placeholder="Social Security Number" />
  *     </YStack>
  *   }
@@ -102,15 +102,15 @@ export function ToggleCard({
         flexDirection="row"
         borderColor="$borderColor"
         borderWidth={1}
-        px="$4"
-        py="$3"
-        $sm={{ mx: '$0' }}
-        rounded="$3"
+        paddingHorizontal="$4"
+        paddingVertical="$3"
+        $sm={{ marginHorizontal: '$0' }}
+        borderRadius="$3"
         borderBottomLeftRadius={checked && expandedContent ? 0 : undefined}
         borderBottomRightRadius={checked && expandedContent ? 0 : undefined}
         flex={1}
         height="auto"
-        items="center"
+        alignItems="center"
         gap="$2.5"
         theme={theme}
         animation="medium"
@@ -121,14 +121,14 @@ export function ToggleCard({
         // Hover and press states
         hoverStyle={{
           borderColor: '$borderColorHover',
-          bg: '$backgroundHover',
+          backgroundColor: '$backgroundHover',
         }}
         pressStyle={{
-          bg: '$backgroundPress',
+          backgroundColor: '$backgroundPress',
         }}
       >
         {/* Icon */}
-        {icon && <View shrink={0}>{icon}</View>}
+        {icon && <View flexShrink={0}>{icon}</View>}
 
         {/* Title and Description */}
         <YStack flex={1} gap="$1">
@@ -143,7 +143,7 @@ export function ToggleCard({
         </YStack>
 
         {/* Custom Toggle */}
-        <View self="center">
+        <View alignSelf="center">
           <ToggleSwitch
             checked={checked}
             onCheckedChange={onCheckedChange}
@@ -168,16 +168,16 @@ export function ToggleCard({
               borderBottomRightRadius="$3"
               borderTopRightRadius={0}
               borderTopLeftRadius={0}
-              px="$4"
-              py="$3"
-              bg="$color1"
+              paddingHorizontal="$4"
+              paddingVertical="$3"
+              backgroundColor="$color1"
               enterStyle={{
                 opacity: 0,
-                maxH: 0,
+                maxHeight: 0,
               }}
               exitStyle={{
                 opacity: 0,
-                maxH: 0,
+                maxHeight: 0,
               }}
             >
               {expandedContent}

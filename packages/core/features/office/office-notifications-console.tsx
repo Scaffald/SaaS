@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { NotificationTag } from '@unicornlove/ui'
 import { AlertCircle, RefreshCw } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface NotificationDelivery {
   id: string
@@ -90,7 +90,7 @@ export function OfficeNotificationsConsole() {
       </YStack>
 
       <YStack gap="$3">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$7" fontWeight="600">
             Delivery Queue
           </Text>
@@ -127,18 +127,18 @@ export function OfficeNotificationsConsole() {
         </XStack>
 
         {deliveriesQuery.isLoading ? (
-          <YStack items="center" gap="$3" mt="$4">
+          <YStack alignItems="center" gap="$3" marginTop="$4">
             <Spinner size="large" color="$color10" />
             <Text color="$color10">Loading deliveries…</Text>
           </YStack>
         ) : deliveries.length === 0 ? (
-          <YStack gap="$3" items="center" mt="$4">
+          <YStack gap="$3" alignItems="center" marginTop="$4">
             <AlertCircle size={32} color="$color8" />
             <Text color="$color10">No deliveries match this filter.</Text>
           </YStack>
         ) : (
-          <YStack borderWidth={1} borderColor="$borderColor" rounded="$4" overflow="hidden">
-            <XStack bg="$color2" p="$3" gap="$3">
+          <YStack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
+            <XStack backgroundColor="$color2" padding="$3" gap="$3">
               <Text flex={2} fontWeight="600">
                 Notification
               </Text>
@@ -165,10 +165,14 @@ export function OfficeNotificationsConsole() {
               const tagTheme = severityThemeMap[severity]
 
               return (
-                <YStack key={delivery.id} bg={index % 2 === 0 ? '$color1' : '$color2'} p="$3">
-                  <XStack gap="$3" items="center">
+                <YStack
+                  key={delivery.id}
+                  backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
+                  padding="$3"
+                >
+                  <XStack gap="$3" alignItems="center">
                     <YStack flex={2} gap="$1">
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         <Text fontWeight="600" color="$color12" numberOfLines={1}>
                           {notification?.title ?? 'Untitled notification'}
                         </Text>
@@ -187,7 +191,7 @@ export function OfficeNotificationsConsole() {
                       size="md"
                       themeName={delivery.status === 'failed' ? 'error' : 'gray'}
                       flex={1}
-                      justify="center"
+                      justifyContent="center"
                       textColorToken="$color12"
                     >
                       {delivery.status}
@@ -209,10 +213,10 @@ export function OfficeNotificationsConsole() {
         )}
       </YStack>
 
-      <Separator bg="$color3" />
+      <Separator backgroundColor="$color3" />
 
       <YStack gap="$3">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$7" fontWeight="600">
             Digest Backlog
           </Text>
@@ -228,18 +232,18 @@ export function OfficeNotificationsConsole() {
         </XStack>
 
         {digestQuery.isLoading ? (
-          <YStack items="center" gap="$3" mt="$4">
+          <YStack alignItems="center" gap="$3" marginTop="$4">
             <Spinner size="large" color="$color10" />
             <Text color="$color10">Loading digest queue…</Text>
           </YStack>
         ) : digestItems.length === 0 ? (
-          <YStack gap="$3" items="center" mt="$4">
+          <YStack gap="$3" alignItems="center" marginTop="$4">
             <AlertCircle size={32} color="$color8" />
             <Text color="$color10">Digest queue is empty.</Text>
           </YStack>
         ) : (
-          <YStack borderWidth={1} borderColor="$borderColor" rounded="$4" overflow="hidden">
-            <XStack bg="$color2" p="$3" gap="$3">
+          <YStack borderWidth={1} borderColor="$borderColor" borderRadius="$4" overflow="hidden">
+            <XStack backgroundColor="$color2" padding="$3" gap="$3">
               <Text flex={1} fontWeight="600">
                 User ID
               </Text>
@@ -264,9 +268,9 @@ export function OfficeNotificationsConsole() {
               <XStack
                 key={item.id}
                 gap="$3"
-                p="$3"
-                bg={index % 2 === 0 ? '$color1' : '$color2'}
-                items="flex-start"
+                padding="$3"
+                backgroundColor={index % 2 === 0 ? '$color1' : '$color2'}
+                alignItems="flex-start"
               >
                 <Text flex={1} color="$color11" numberOfLines={1}>
                   {item.user_id}
@@ -299,7 +303,7 @@ export function OfficeNotificationsConsole() {
 
 export function OfficeNotificationsConsoleScrollWrapper() {
   return (
-    <ScrollView px="$6" py="$6">
+    <ScrollView paddingHorizontal="$6" paddingVertical="$6">
       <OfficeNotificationsConsole />
     </ScrollView>
   )

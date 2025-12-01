@@ -1,6 +1,6 @@
 import { Clock } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Progress, Text, TextArea, YStack } from 'tamagui'
+import { Progress, Text, TextArea, YStack } from '@unicornlove/ui'
 
 export interface CooldownStepProps {
   cooldownEndTime: string // ISO timestamp when cooldown ends
@@ -77,10 +77,17 @@ export function CooldownStep({
   )
 
   return (
-    <YStack gap="$6" width="100%" self="center" p="$4" style={{ maxWidth: 800 }}>
+    <YStack gap="$6" width="100%" alignSelf="center" padding="$4" style={{ maxWidth: 800 }}>
       {/* Cooldown Timer */}
-      <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
-        <YStack gap="$2" items="center">
+      <YStack
+        gap="$4"
+        padding="$6"
+        backgroundColor="$color3"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$color7"
+      >
+        <YStack gap="$2" alignItems="center">
           <Clock size={48} color="$blue10" />
           <Text fontSize="$6" fontWeight="600" color="$color12">
             Take a short pause
@@ -98,7 +105,7 @@ export function CooldownStep({
       </YStack>
 
       {/* Diary Prompt Section */}
-      <YStack gap="$4" p="$4" rounded="$4" borderWidth={1} borderColor="$borderColor">
+      <YStack gap="$4" padding="$4" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
         <YStack gap="$2">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             {selectedPrompt}

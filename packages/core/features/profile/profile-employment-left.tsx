@@ -13,7 +13,7 @@ import {
   profileEmploymentInputSchema,
 } from '@app/core/utils/api'
 import {
-  UIButton as Button,
+  Button,
   ConfirmationDialog,
   CustomCheckbox,
   DashboardWidget,
@@ -27,7 +27,7 @@ import { useToastController } from '@tamagui/toast'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { type Control, Controller, useController, useForm } from 'react-hook-form'
-import { AnimatePresence, Input, Label, Spinner, Text, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Input, Label, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { invalidateProfileQueries } from './utils/profile-sync'
 import {
   completeProfileSync,
@@ -114,12 +114,12 @@ function MultiSelectToggleField({
       onCheckedChange={(checked) => handleToggleChange(Boolean(checked))}
       testID={testID}
       expandedContent={
-        <YStack gap="$2" pt="$2">
+        <YStack gap="$2" paddingTop="$2">
           {options.map((option) => {
             const checkboxId = `${name}-${option.replace(/\s+/g, '-').toLowerCase()}`
             const isChecked = selectedValues.includes(option)
             return (
-              <XStack key={option} gap="$3" items="center">
+              <XStack key={option} gap="$3" alignItems="center">
                 <CustomCheckbox
                   aria-label={option}
                   checked={isChecked}
@@ -169,7 +169,7 @@ export function ProfileEmploymentLeft() {
           ({
             ...(current ?? profileEmploymentDefaults),
             ...input,
-          }) as EmploymentProfileFormData,
+          }) as EmploymentProfileFormData
       )
       return { previousEmployment }
     },
@@ -340,7 +340,7 @@ export function ProfileEmploymentLeft() {
 
   if (isLoadingEmployment) {
     return (
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <SkeletonForm fields={5} />
       </YStack>
     )
@@ -349,11 +349,17 @@ export function ProfileEmploymentLeft() {
   return (
     <YStack>
       <DashboardWidget>
-        <YStack gap="$4" p="$4" flex={1}>
+        <YStack gap="$4" padding="$4" flex={1}>
           {/* Debug: Show validation errors */}
           {Object.keys(errors).length > 0 && (
-            <YStack bg="$red2" p="$3" rounded="$4" borderWidth={1} borderColor="$red8">
-              <Text fontWeight="600" color="$red11" mb="$2">
+            <YStack
+              backgroundColor="$red2"
+              padding="$3"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$red8"
+            >
+              <Text fontWeight="600" color="$red11" marginBottom="$2">
                 Validation Errors:
               </Text>
               {Object.entries(errors).map(([key, error]) => (
@@ -372,7 +378,7 @@ export function ProfileEmploymentLeft() {
                 name="hourly_rate"
                 control={control}
                 render={({ field }) => (
-                  <XStack gap="$3" items="center">
+                  <XStack gap="$3" alignItems="center">
                     <Input
                       flex={1}
                       placeholder="Enter your hourly rate"
@@ -395,7 +401,7 @@ export function ProfileEmploymentLeft() {
             </YStack>
 
             {/* Preferred Work Locations */}
-            <YStack gap="$3" py="$3">
+            <YStack gap="$3" paddingVertical="$3">
               <Text fontWeight="600">Preferred Work Locations</Text>
               <Controller
                 name="preferred_work_locations"
@@ -520,7 +526,7 @@ export function ProfileEmploymentLeft() {
             </YStack>
 
             {/* Action Buttons */}
-            <XStack justify="flex-end" gap="$3" pt="$4">
+            <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
               <Button
                 variant="outlined"
                 disabled={!isDirty}

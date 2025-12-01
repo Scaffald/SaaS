@@ -5,7 +5,7 @@ import { api } from '@app/core/utils/api'
 import { DashboardWidget, ToggleSwitch } from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
-import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import type { WorkLogListItem } from '../schemas'
 import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 
@@ -50,7 +50,7 @@ export function WorkLogVisibilitySettingsCard() {
         </Paragraph>
 
         {listQuery.isLoading ? (
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <Spinner size="small" />
             <Text color="$color10">Loading work logs…</Text>
           </XStack>
@@ -68,13 +68,13 @@ export function WorkLogVisibilitySettingsCard() {
                   key={item.id}
                   borderWidth={1}
                   borderColor="$color6"
-                  rounded="$4"
-                  px="$3"
-                  py="$3"
+                  borderRadius="$4"
+                  paddingHorizontal="$3"
+                  paddingVertical="$3"
                   gap="$3"
-                  bg="$color2"
+                  backgroundColor="$color2"
                 >
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <YStack gap="$1" flex={1}>
                       <Text fontWeight="700">{item.project?.name ?? 'Work Log'}</Text>
                       <Text color="$color10">
@@ -86,7 +86,7 @@ export function WorkLogVisibilitySettingsCard() {
                     </Text>
                   </XStack>
 
-                  <XStack justify="space-between" items="center" gap="$4">
+                  <XStack justifyContent="space-between" alignItems="center" gap="$4">
                     <YStack gap="$1" flex={1}>
                       <Text fontWeight="600">Show on public profile</Text>
                       <Paragraph color="$color10">
@@ -114,7 +114,7 @@ export function WorkLogVisibilitySettingsCard() {
                     />
                   </XStack>
 
-                  <XStack justify="space-between" items="center" gap="$4">
+                  <XStack justifyContent="space-between" alignItems="center" gap="$4">
                     <YStack gap="$1" flex={1}>
                       <Text fontWeight="600">Show date on profile</Text>
                       <Paragraph color="$color10">
@@ -134,7 +134,7 @@ export function WorkLogVisibilitySettingsCard() {
                     />
                   </XStack>
 
-                  <XStack justify="flex-end">
+                  <XStack justifyContent="flex-end">
                     <Button
                       size="$3"
                       variant="outlined"

@@ -5,7 +5,17 @@ import { ResponsiveSelect } from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Card, Input, Spinner, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  Input,
+  Spinner,
+  Switch,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 type ProjectFormData = {
   name: string
@@ -131,12 +141,12 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
   const isLoading = createMutation.isPending || updateMutation.isPending
 
   return (
-    <YStack gap="$4" p="$4" style={{ maxWidth: 800 }} mx="auto">
+    <YStack gap="$4" padding="$4" style={{ maxWidth: 800 }} marginHorizontal="auto">
       <Text fontSize="$8" fontWeight="600">
         {mode === 'create' ? 'Create Project' : 'Edit Project'}
       </Text>
 
-      <Card p="$4" gap="$4">
+      <Card padding="$4" gap="$4">
         <YStack gap="$4">
           <YStack gap="$2">
             <Text fontWeight="600">Organization</Text>
@@ -218,11 +228,11 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             </YStack>
           </XStack>
 
-          <Card p="$4" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
+          <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
             <YStack gap="$4">
               <Text fontWeight="600">Location Visibility Settings</Text>
 
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Switch
                   checked={formData.location_visibility_override}
                   onCheckedChange={(checked) =>
@@ -233,7 +243,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
               </XStack>
 
               {formData.location_visibility_override && (
-                <YStack gap="$2" p="$2" bg="$yellow3" rounded="$2">
+                <YStack gap="$2" padding="$2" backgroundColor="$yellow3" borderRadius="$2">
                   <Text fontSize="$2" color="$yellow11">
                     ⚠️ This overrides your organization's global setting
                   </Text>
@@ -273,7 +283,7 @@ export function ProjectForm({ mode, projectId, initialData, onSuccess }: Project
             </YStack>
           </Card>
 
-          <XStack gap="$4" justify="flex-end">
+          <XStack gap="$4" justifyContent="flex-end">
             <Button variant="outlined" onPress={() => router.back()} disabled={isLoading}>
               Cancel
             </Button>

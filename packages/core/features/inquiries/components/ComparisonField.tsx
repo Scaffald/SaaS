@@ -9,8 +9,13 @@ interface ComparisonFieldProps {
 
 export function ComparisonField({ label, value, isDifferent, description }: ComparisonFieldProps) {
   return (
-    <YStack bg={isDifferent ? '$yellow2' : 'transparent'} p="$2" rounded="$2" gap="$1">
-      <XStack justify="space-between" items="center">
+    <YStack
+      backgroundColor={isDifferent ? '$yellow2' : 'transparent'}
+      padding="$2"
+      borderRadius="$2"
+      gap="$1"
+    >
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$3" color="$color11">
           {label}
         </Text>

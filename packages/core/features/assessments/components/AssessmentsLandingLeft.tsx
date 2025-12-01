@@ -1,6 +1,6 @@
 import type { RouteConfig } from '@app/core/constants/routes'
 import { ROUTES } from '@app/core/constants/routes'
-import { DashboardWidget, UIButton as StyledButton, spacing, Text, YStack } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing, Text, YStack } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 
 type AssessmentLandingCard = {
@@ -69,7 +69,7 @@ export const AssessmentsLandingLeft = () => {
                 </Text>
               </YStack>
 
-              <StyledButton
+              <Button
                 variant="primary"
                 size="$5"
                 onPress={() => {
@@ -77,8 +77,8 @@ export const AssessmentsLandingLeft = () => {
                 }}
                 accessibilityLabel={ctaLabel}
               >
-                <StyledButton.Text>{ctaLabel}</StyledButton.Text>
-              </StyledButton>
+                <Button.Text>{ctaLabel}</Button.Text>
+              </Button>
 
               {estimatedTime ? (
                 <Text fontSize="$2" color="$color11">

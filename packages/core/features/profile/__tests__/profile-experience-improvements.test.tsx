@@ -41,7 +41,7 @@ vi.mock('@unicornlove/ui', () => {
   return {
     MonthYearPicker,
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-    UIButton: ({
+    Button: ({
       children,
       onPress,
       disabled,

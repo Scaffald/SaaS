@@ -1323,7 +1323,7 @@ export const MapContainer = forwardRef<MapContainerRef, MapContainerProps>(
     }, [pins, isMapReady])
 
     return (
-      <View flex={1} position="relative" overflow="hidden" rounded="$5" style={style}>
+      <View flex={1} position="relative" overflow="hidden" borderRadius="$5" style={style}>
         <div
           ref={mapContainerRef}
           style={{

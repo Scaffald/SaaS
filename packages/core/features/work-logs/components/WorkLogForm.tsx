@@ -12,7 +12,7 @@ import {
   Text,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { type UseWorkLogFormOptions, useWorkLogForm } from '../hooks/useWorkLogForm'
 import { PhotoUpload } from './PhotoUpload'
 import { ProjectSelector } from './ProjectSelector'
@@ -124,7 +124,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
   return (
     <FormProvider {...form}>
       <ScrollView>
-        <YStack gap="$5" p="$4" pb="$8">
+        <YStack gap="$5" padding="$4" paddingBottom="$8">
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="700">
               Work Log Details
@@ -178,7 +178,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
           </YStack>
 
           <YStack gap="$3">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontWeight="600" fontSize="$4">
                 Time Entries
               </Text>
@@ -198,7 +198,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               ))}
             </YStack>
 
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Text fontWeight="600" fontSize="$3">
                 Total Hours: {totalHours.toFixed(2)}
               </Text>
@@ -238,7 +238,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             <Text fontWeight="600" fontSize="$4">
               Tasks Completed
             </Text>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Input
                 value={taskDraft}
                 onChangeText={setTaskDraft}
@@ -260,13 +260,13 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               {tasksWithKeys.map(({ task, key, index }) => (
                 <XStack
                   key={key}
-                  items="center"
-                  justify="space-between"
+                  alignItems="center"
+                  justifyContent="space-between"
                   borderWidth={1}
                   borderColor="$borderColor"
-                  rounded="$3"
-                  px="$3"
-                  py="$2"
+                  borderRadius="$3"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
                   gap="$3"
                 >
                   <Text flex={1} fontSize="$3">
@@ -287,7 +287,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               Skills Used
             </Text>
             {skillsQuery.isLoading && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Spinner size="small" />
                 <Text fontSize="$3">Loading your skills…</Text>
               </XStack>
@@ -307,7 +307,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
 
             <YStack gap="$2">
               {skillOptions.map((skill) => (
-                <XStack key={skill.id} gap="$2" items="center">
+                <XStack key={skill.id} gap="$2" alignItems="center">
                   <Checkbox
                     checked={selectedSkills.includes(skill.id)}
                     onCheckedChange={(next) => toggleSkill(skill.id, next === true)}
@@ -324,7 +324,7 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
             <Text fontWeight="600" fontSize="$4">
               Location Capture
             </Text>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Button
                 icon={MapPin}
                 onPress={captureLocation}
@@ -345,9 +345,9 @@ export function WorkLogForm({ submitLabel = 'Save Work Log', ...options }: WorkL
               <YStack
                 borderWidth={1}
                 borderColor="$borderColor"
-                rounded="$3"
-                px="$3"
-                py="$2"
+                borderRadius="$3"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
                 gap="$1"
               >
                 <Text fontSize="$3" fontWeight="600">

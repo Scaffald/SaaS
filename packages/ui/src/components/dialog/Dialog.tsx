@@ -32,9 +32,9 @@ const DialogContent = styled(TamaguiDialog.Content, {
   enterStyle: { x: 0, y: -20, opacity: 0, scale: 0.9 },
   exitStyle: { x: 0, y: 10, opacity: 0, scale: 0.95 },
   gap: '$4',
-  bg: '$background',
-  minW: 400,
-  maxW: '90vw',
+  backgroundColor: '$background',
+  minWidth: 400,
+  maxWidth: '90vw',
 })
 
 /**
@@ -76,6 +76,10 @@ type DialogComponent = ComponentType<DialogProps> & {
 export const Dialog = withStaticProperties(TamaguiDialog, {
   Overlay: DialogOverlay,
   Content: DialogContent,
+  Portal: TamaguiDialog.Portal,
+  Title: TamaguiDialog.Title,
+  Description: TamaguiDialog.Description,
+  Close: TamaguiDialog.Close,
 }) as unknown as DialogComponent
 
 export type { DialogProps }

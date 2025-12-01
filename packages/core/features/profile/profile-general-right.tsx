@@ -3,7 +3,7 @@ import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume
 import { DashboardWidget, spacing } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { H3, H4, Text, YStack } from 'tamagui'
+import { H3, H4, Text, YStack } from '@unicornlove/ui'
 import { VanityUrlSection } from './components/VanityUrlSection'
 
 /**

@@ -68,27 +68,27 @@ const RadioContainer = styled(View, {
 
 const RadioDot = styled(View, {
   position: 'absolute',
-  bg: '$blue7',
-  rounded: 50,
+  backgroundColor: '$blue7',
+  borderRadius: 50,
   variants: {
     size: {
       small: {
         width: 8,
         height: 8,
-        t: 2,
-        l: 2,
+        top: 2,
+        left: 2,
       },
       medium: {
         width: 10,
         height: 10,
-        t: 3,
-        l: 3,
+        top: 3,
+        left: 3,
       },
       large: {
         width: 12,
         height: 12,
-        t: 4,
-        l: 4,
+        top: 4,
+        left: 4,
       },
     },
     checked: {
@@ -143,8 +143,8 @@ export function Radio({
       onPress={handlePress}
       testID={testID}
       borderWidth={2}
-      rounded={50}
-      bg="transparent"
+      borderRadius={50}
+      backgroundColor="transparent"
     >
       <RadioDot checked={checked} size={size} />
     </RadioContainer>

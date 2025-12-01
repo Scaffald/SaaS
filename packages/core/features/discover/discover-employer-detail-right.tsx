@@ -10,7 +10,7 @@ import {
 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo } from 'react'
-import { Button, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 
 type OrganizationIdentifier = { organizationId: string }
 
@@ -329,7 +329,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
   return (
     <DashboardWidget gap="$4">
       <YStack gap="$2">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Network size={18} color="$blue10" />
           <Text fontSize="$5" fontWeight="700" color="$color12">
             Stay Connected
@@ -344,7 +344,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Separator />
 
       {isLoading ? (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Loader2 size={16} color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Loading organization context...
@@ -384,7 +384,7 @@ export function DiscoverEmployerDetailRight({ employerId }: DiscoverEmployerDeta
       <Separator />
 
       <YStack gap="$2">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <BellPlus size={16} color="$color10" />
           <Text fontSize="$3" fontWeight="600" color="$color10">
             What happens next?
@@ -415,7 +415,7 @@ function OrganizationSnapshot({
 }: OrganizationSnapshotProps) {
   return (
     <YStack gap="$2">
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <CheckCircle2 size={16} color="$green10" />
         <Text fontSize="$3" fontWeight="600" color="$green10">
           {name}

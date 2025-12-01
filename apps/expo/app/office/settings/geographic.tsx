@@ -1,7 +1,7 @@
 import { supabase } from '@app/core/utils/supabase/client'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Button, Card, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export default function GeographicSettingsPage() {
   const toast = useToastController()
@@ -74,7 +74,7 @@ export default function GeographicSettingsPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} p="$4" gap="$4" items="center" justify="center">
+      <YStack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
         <Text fontSize="$8" fontWeight="600">
           Geographic Settings
         </Text>
@@ -84,7 +84,7 @@ export default function GeographicSettingsPage() {
   }
 
   return (
-    <YStack flex={1} p="$4" gap="$4">
+    <YStack flex={1} padding="$4" gap="$4">
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="600">
           Geographic Settings
@@ -94,7 +94,7 @@ export default function GeographicSettingsPage() {
         </Text>
       </YStack>
       <YStack gap="$4" style={{ maxWidth: 600 }}>
-        <Card p="$4">
+        <Card padding="$4">
           <YStack gap="$4">
             <YStack gap="$2">
               <Text fontSize="$6" fontWeight="600">
@@ -109,7 +109,7 @@ export default function GeographicSettingsPage() {
 
             <YStack gap="$2">
               <Text fontWeight="600">Threshold Percentage</Text>
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Input
                   value={threshold}
                   onChangeText={setThreshold}
@@ -125,7 +125,7 @@ export default function GeographicSettingsPage() {
               </Text>
             </YStack>
 
-            <Card p="$3" bg="$blue2" borderColor="$blue8" borderWidth={1}>
+            <Card padding="$3" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
               <YStack gap="$2">
                 <Text fontWeight="600" fontSize="$3">
                   Current Setting
@@ -139,7 +139,7 @@ export default function GeographicSettingsPage() {
               </YStack>
             </Card>
 
-            <XStack justify="flex-end" gap="$2">
+            <XStack justifyContent="flex-end" gap="$2">
               <Button
                 variant="outlined"
                 onPress={() => {
@@ -165,7 +165,7 @@ export default function GeographicSettingsPage() {
           </YStack>
         </Card>
 
-        <Card p="$4" bg="$yellow2" borderColor="$yellow8" borderWidth={1}>
+        <Card padding="$4" backgroundColor="$yellow2" borderColor="$yellow8" borderWidth={1}>
           <YStack gap="$2">
             <Text fontWeight="600" fontSize="$3">
               About Site Overlaps

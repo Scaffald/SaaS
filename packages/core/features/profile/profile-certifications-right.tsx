@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
-import { UIButton as Button, DashboardWidget } from '@unicornlove/ui'
+import { Button, DashboardWidget } from '@unicornlove/ui'
 import {
   Award,
   ChevronDown,
@@ -10,7 +10,7 @@ import {
   Upload,
 } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, H4, Input, ScrollView, Text, XStack, YStack } from 'tamagui'
+import { Card, H4, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 import { useProfileCertificationsHighlight } from './profile-certifications-highlight-context'
 
 interface UserCertification {
@@ -163,9 +163,9 @@ export function ProfileCertificationsRight() {
   if (allCerts.length === 0) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" pt="$8">
+        <YStack gap="$4" alignItems="center" paddingTop="$8">
           <Award size={48} color="$color11" />
-          <YStack gap="$2" items="center">
+          <YStack gap="$2" alignItems="center">
             <H4>Your Certifications</H4>
             <Text color="$color11">Search and add certifications on the left</Text>
           </YStack>
@@ -192,10 +192,10 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      p="$3"
+                      padding="$3"
                       bordered
                       animation="quick"
-                      bg={
+                      backgroundColor={
                         changeStatus === 'added'
                           ? '$green2'
                           : changeStatus === 'removed'
@@ -210,17 +210,17 @@ export function ProfileCertificationsRight() {
                             : '$borderColor'
                       }
                     >
-                      <XStack justify="space-between" items="center">
+                      <XStack justifyContent="space-between" alignItems="center">
                         <YStack flex={1} gap="$1">
-                          <XStack gap="$2" items="center">
+                          <XStack gap="$2" alignItems="center">
                             <Text fontWeight="600">{cert.catalog.title}</Text>
                             <Text
                               fontSize="$1"
                               color="$blue9"
-                              bg="$blue2"
-                              px="$2"
-                              py="$0.5"
-                              rounded="$2"
+                              backgroundColor="$blue2"
+                              paddingHorizontal="$2"
+                              paddingVertical="$0.5"
+                              borderRadius="$2"
                             >
                               Top Level
                             </Text>
@@ -233,7 +233,7 @@ export function ProfileCertificationsRight() {
                         </YStack>
                       </XStack>
                       {changeStatus === 'added' && (
-                        <Text mt="$2" fontSize="$2" color="$green11">
+                        <Text marginTop="$2" fontSize="$2" color="$green11">
                           ✓ Added to profile
                         </Text>
                       )}
@@ -254,10 +254,10 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      p="$3"
+                      padding="$3"
                       bordered
                       animation="quick"
-                      bg={
+                      backgroundColor={
                         changeStatus === 'added'
                           ? '$green2'
                           : changeStatus === 'removed'
@@ -272,17 +272,17 @@ export function ProfileCertificationsRight() {
                             : '$borderColor'
                       }
                     >
-                      <XStack justify="space-between" items="center">
+                      <XStack justifyContent="space-between" alignItems="center">
                         <YStack flex={1} gap="$1">
-                          <XStack gap="$2" items="center">
+                          <XStack gap="$2" alignItems="center">
                             <Text fontWeight="600">{cert.catalog.title}</Text>
                             <Text
                               fontSize="$1"
                               color="$green9"
-                              bg="$green2"
-                              px="$2"
-                              py="$0.5"
-                              rounded="$2"
+                              backgroundColor="$green2"
+                              paddingHorizontal="$2"
+                              paddingVertical="$0.5"
+                              borderRadius="$2"
                             >
                               Category
                             </Text>
@@ -295,7 +295,7 @@ export function ProfileCertificationsRight() {
                         </YStack>
                       </XStack>
                       {changeStatus === 'added' && (
-                        <Text mt="$2" fontSize="$2" color="$green11">
+                        <Text marginTop="$2" fontSize="$2" color="$green11">
                           ✓ Added to profile
                         </Text>
                       )}
@@ -319,10 +319,10 @@ export function ProfileCertificationsRight() {
                   return (
                     <Card
                       key={cert.id}
-                      p="$0"
+                      padding="$0"
                       bordered
                       animation="quick"
-                      bg={
+                      backgroundColor={
                         changeStatus === 'added'
                           ? '$green2'
                           : changeStatus === 'removed'
@@ -339,10 +339,10 @@ export function ProfileCertificationsRight() {
                     >
                       {/* Header - Always Visible */}
                       <XStack
-                        p="$3"
+                        padding="$3"
                         gap="$3"
-                        items="center"
-                        pressStyle={{ bg: '$backgroundHover' }}
+                        alignItems="center"
+                        pressStyle={{ backgroundColor: '$backgroundHover' }}
                         cursor="pointer"
                         onPress={() => toggleExpand(cert.id)}
                       >
@@ -353,15 +353,15 @@ export function ProfileCertificationsRight() {
                         )}
 
                         <YStack flex={1} gap="$1">
-                          <XStack gap="$2" items="center" flexWrap="wrap">
+                          <XStack gap="$2" alignItems="center" flexWrap="wrap">
                             <Text fontWeight="600">{cert.catalog.title}</Text>
                             <Text
                               fontSize="$1"
                               color="$purple9"
-                              bg="$purple2"
-                              px="$2"
-                              py="$0.5"
-                              rounded="$2"
+                              backgroundColor="$purple2"
+                              paddingHorizontal="$2"
+                              paddingVertical="$0.5"
+                              borderRadius="$2"
                             >
                               Certification
                             </Text>
@@ -418,8 +418,8 @@ export function ProfileCertificationsRight() {
                       {/* Expanded Content - File Upload & URL */}
                       {isExpanded && (
                         <YStack
-                          p="$3"
-                          pt="$0"
+                          padding="$3"
+                          paddingTop="$0"
                           gap="$4"
                           borderTopWidth={1}
                           borderColor="$borderColor"
@@ -444,7 +444,7 @@ export function ProfileCertificationsRight() {
                                   }
                                   input.click()
                                 }}
-                                bg={selectedFiles[cert.id] ? '$blue9' : undefined}
+                                backgroundColor={selectedFiles[cert.id] ? '$blue9' : undefined}
                               >
                                 {selectedFiles[cert.id]
                                   ? selectedFiles[cert.id]?.name

@@ -4,7 +4,7 @@ import { OfficeLayout } from '@app/core/components/layouts'
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useState } from 'react'
-import { Button, H2, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, H2, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export function OfficeCMSList() {
   const [includeInactive, setIncludeInactive] = useState(false)
@@ -56,14 +56,14 @@ export function OfficeCMSList() {
       showBreadcrumb
       leftContent={
         <YStack flex={1} gap="$4">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <H2>Welcome Slides CMS</H2>
             <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
               <Button icon={Plus}>Create Slide</Button>
             </Link>
           </XStack>
 
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <Button
               size="$3"
               chromeless={!includeInactive}
@@ -74,7 +74,7 @@ export function OfficeCMSList() {
           </XStack>
 
           {isLoading ? (
-            <YStack items="center" justify="center" flex={1}>
+            <YStack alignItems="center" justifyContent="center" flex={1}>
               <Spinner size="large" />
             </YStack>
           ) : (
@@ -91,16 +91,16 @@ export function OfficeCMSList() {
                 }) => (
                   <XStack
                     key={slide.id}
-                    p="$4"
+                    padding="$4"
                     gap="$3"
-                    bg="$background"
-                    rounded="$4"
+                    backgroundColor="$background"
+                    borderRadius="$4"
                     borderWidth={1}
                     borderColor="$borderColor"
-                    items="center"
+                    alignItems="center"
                   >
                     <YStack flex={1} gap="$2">
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         <Text fontWeight="bold">{slide.title}</Text>
                         {!slide.is_active && (
                           <Text fontSize="$2" color="$red10">
@@ -145,7 +145,7 @@ export function OfficeCMSList() {
               )}
 
               {(!data?.slides || data.slides.length === 0) && (
-                <YStack items="center" justify="center" gap="$4" py="$8">
+                <YStack alignItems="center" justifyContent="center" gap="$4" paddingVertical="$8">
                   <Text opacity={0.5}>No slides found</Text>
                   <Link href={ROUTES.OFFICE.CMS.WELCOME.CREATE.path} asChild>
                     <Button icon={Plus}>Create First Slide</Button>

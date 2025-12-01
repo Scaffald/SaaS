@@ -1,4 +1,4 @@
-import { Card, Text, YStack } from 'tamagui'
+import { Card, Text, YStack } from '@unicornlove/ui'
 
 interface UserProfileAboutProps {
   bio: string
@@ -7,7 +7,7 @@ interface UserProfileAboutProps {
 export function UserProfileAbout({ bio }: UserProfileAboutProps) {
   return (
     <Card elevate bordered>
-      <YStack gap="$3" p="$5">
+      <YStack gap="$3" padding="$5">
         <Text fontSize="$7" fontWeight="700" color="$color12">
           About
         </Text>

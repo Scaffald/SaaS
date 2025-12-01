@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import {
-  UIButton as Button,
+  Button,
   ConfirmationDialog,
   CustomCheckbox,
   DashboardWidget,
@@ -25,7 +25,7 @@ import {
   TextArea,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import {
   createNewEducationEntry,
   DEGREE_TYPE_OPTIONS,
@@ -135,7 +135,7 @@ export function ProfileEducationLeft({
       // Form data is compatible but has slightly different optionality
       utils.profile.education.getEducation.setData(
         undefined,
-        (input.education_entries ?? []) as EducationApiResponse,
+        (input.education_entries ?? []) as EducationApiResponse
       )
       utils.profile.education.getEducationLevel.setData(undefined, {
         education_level: input.education_level ?? null,
@@ -457,7 +457,7 @@ export function ProfileEducationLeft({
   if (educationQuery.isLoading || educationLevelQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading education data...</Text>
         </YStack>
@@ -469,7 +469,7 @@ export function ProfileEducationLeft({
   if (educationQuery.isError || educationLevelQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load education data</Text>
           <Button onPress={() => educationQuery.refetch()}>Retry</Button>
         </YStack>
@@ -484,14 +484,14 @@ export function ProfileEducationLeft({
       {errorSummary.length > 0 && (
         <YStack
           role="alert"
-          mt="$2"
-          mb="$2"
-          p="$3"
+          marginTop="$2"
+          marginBottom="$2"
+          padding="$3"
           gap="$2"
           borderWidth={1}
           borderColor="$red7"
-          bg="$red3"
-          rounded="$4"
+          backgroundColor="$red3"
+          borderRadius="$4"
         >
           <Text fontWeight="600" color="$red11">
             Please resolve the following issues:
@@ -532,7 +532,7 @@ export function ProfileEducationLeft({
 
         {/* Education Entries */}
         <YStack gap="$3">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontWeight="600">Education History</Text>
             <Button size="$3" onPress={addEducationEntry} icon={Plus}>
               Add Education
@@ -569,13 +569,13 @@ export function ProfileEducationLeft({
                   }
                 }}
                 gap="$3"
-                p="$3"
+                padding="$3"
                 borderWidth={1}
                 borderColor={isEditing ? '$blue7' : hasEntryErrors ? '$red7' : '$borderColor'}
-                bg={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
-                rounded="$4"
+                backgroundColor={isEditing ? '$blue2' : hasEntryErrors ? '$red2' : '$background'}
+                borderRadius="$4"
               >
-                <XStack justify="space-between" items="center">
+                <XStack justifyContent="space-between" alignItems="center">
                   <Text fontWeight="600">
                     {entryData?.id ? 'Edit Education' : `Education ${index + 1}`}
                   </Text>
@@ -894,7 +894,7 @@ export function ProfileEducationLeft({
                       }
 
                       return (
-                        <XStack gap="$2" items="center">
+                        <XStack gap="$2" alignItems="center">
                           <CustomCheckbox
                             checked={isCurrent}
                             onCheckedChange={handleChange}
@@ -948,7 +948,7 @@ export function ProfileEducationLeft({
                           placeholder="Describe your education experience, achievements, relevant coursework..."
                           value={field.value || ''}
                           onChangeText={field.onChange}
-                          minH={80}
+                          minHeight={80}
                         />
                         <FieldError message={entryErrors?.description?.message} />
                       </>
@@ -960,14 +960,14 @@ export function ProfileEducationLeft({
           })}
 
           {fields.length === 0 && (
-            <YStack p="$4" items="center" gap="$2">
+            <YStack padding="$4" alignItems="center" gap="$2">
               <Text color="$color11">No education entries added yet</Text>
             </YStack>
           )}
         </YStack>
 
         {/* Action Buttons */}
-        <XStack justify="flex-end" gap="$3" pt="$4">
+        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
           <Button
             variant="outlined"
             disabled={!isDirty}
@@ -1107,7 +1107,7 @@ function SmartSelect({
           <Button
             ref={triggerRef}
             variant="outlined"
-            justify="space-between"
+            justifyContent="space-between"
             iconAfter={ChevronDown}
             disabled={disabled}
             borderColor={error ? '$red9' : '$borderColor'}
@@ -1125,8 +1125,8 @@ function SmartSelect({
           exitStyle={{ opacity: 0, scale: 0.96 }}
           borderWidth={1}
           borderColor="$borderColor"
-          bg="$color2"
-          p="$2"
+          backgroundColor="$color2"
+          padding="$2"
           style={{
             width: contentWidth,
             minWidth: contentWidth ?? 220,
@@ -1139,10 +1139,10 @@ function SmartSelect({
                 <Button
                   size="$2"
                   chromeless
-                  justify="flex-start"
+                  justifyContent="flex-start"
                   onPress={() => handleSelect(undefined)}
                   disabled={disabled}
-                  hoverStyle={{ bg: '$color3' }}
+                  hoverStyle={{ backgroundColor: '$color3' }}
                 >
                   Clear selection
                 </Button>
@@ -1155,12 +1155,12 @@ function SmartSelect({
                     key={option.value}
                     size="$3"
                     chromeless
-                    justify="flex-start"
+                    justifyContent="flex-start"
                     onPress={() => handleSelect(option.value)}
                     disabled={disabled}
-                    bg={isSelected ? '$blue3' : 'transparent'}
-                    hoverStyle={{ bg: '$blue4' }}
-                    rounded="$3"
+                    backgroundColor={isSelected ? '$blue3' : 'transparent'}
+                    hoverStyle={{ backgroundColor: '$blue4' }}
+                    borderRadius="$3"
                     color={isSelected ? '$blue12' : '$color12'}
                   >
                     {option.label}

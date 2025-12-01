@@ -1,4 +1,4 @@
-import { Card, Text, XStack, YStack } from 'tamagui'
+import { Card, Text, XStack, YStack } from '@unicornlove/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface CandidateProfileTabProps {
@@ -35,8 +35,8 @@ export const CandidateProfileTab = ({
   return (
     <YStack gap="$4">
       {/* Contact Info */}
-      <Card p="$4" bg="$color2">
-        <Text fontSize="$5" fontWeight="600" mb="$3">
+      <Card padding="$4" backgroundColor="$color2">
+        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Contact Information
         </Text>
         {isContactLocked ? (
@@ -48,15 +48,15 @@ export const CandidateProfileTab = ({
           </YStack>
         ) : (
           <YStack gap="$2">
-            <XStack justify="space-between">
+            <XStack justifyContent="space-between">
               <Text opacity={0.7}>Email</Text>
               <Text fontWeight="600">{resolvedEmail}</Text>
             </XStack>
-            <XStack justify="space-between">
+            <XStack justifyContent="space-between">
               <Text opacity={0.7}>Phone</Text>
               <Text fontWeight="600">{resolvedPhone}</Text>
             </XStack>
-            <XStack justify="space-between">
+            <XStack justifyContent="space-between">
               <Text opacity={0.7}>Location</Text>
               <Text fontWeight="600">{resolvedLocation}</Text>
             </XStack>
@@ -65,16 +65,20 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Skills */}
-      <Card p="$4" bg="$color2">
-        <Text fontSize="$5" fontWeight="600" mb="$3">
+      <Card padding="$4" backgroundColor="$color2">
+        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Skills
         </Text>
         <YStack gap="$3">
           {candidate.skills.map((skill, index) => (
-            <XStack key={`skill-${skill.name}-${index}`} justify="space-between" items="center">
+            <XStack
+              key={`skill-${skill.name}-${index}`}
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Text fontWeight="600">{skill.name}</Text>
               <YStack
-                bg={
+                backgroundColor={
                   skill.proficiency === 'expert'
                     ? '$green3'
                     : skill.proficiency === 'advanced'
@@ -83,9 +87,9 @@ export const CandidateProfileTab = ({
                         ? '$yellow3'
                         : '$color3'
                 }
-                px="$3"
-                py="$1"
-                rounded="$2"
+                paddingHorizontal="$3"
+                paddingVertical="$1"
+                borderRadius="$2"
               >
                 <Text
                   fontSize="$2"
@@ -110,8 +114,8 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Certifications */}
-      <Card p="$4" bg="$color2">
-        <Text fontSize="$5" fontWeight="600" mb="$3">
+      <Card padding="$4" backgroundColor="$color2">
+        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Certifications
         </Text>
         <YStack gap="$3">
@@ -136,8 +140,8 @@ export const CandidateProfileTab = ({
       </Card>
 
       {/* Experience */}
-      <Card p="$4" bg="$color2">
-        <Text fontSize="$5" fontWeight="600" mb="$3">
+      <Card padding="$4" backgroundColor="$color2">
+        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Work Experience
         </Text>
         <YStack gap="$4">
@@ -152,11 +156,11 @@ export const CandidateProfileTab = ({
               <Text fontSize="$2" opacity={0.6}>
                 {exp.duration}
               </Text>
-              <Text fontSize="$3" mt="$1">
+              <Text fontSize="$3" marginTop="$1">
                 {exp.description}
               </Text>
               {index < candidate.experience.length - 1 && (
-                <YStack height={1} bg="$color5" mt="$2" />
+                <YStack height={1} backgroundColor="$color5" marginTop="$2" />
               )}
             </YStack>
           ))}

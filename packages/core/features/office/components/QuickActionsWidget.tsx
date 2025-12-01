@@ -1,7 +1,7 @@
 import { DashboardWidget, Text } from '@unicornlove/ui'
 import { ArrowRightCircle, Eye, Pencil, RefreshCw, Save, Trash2, X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Button, YStack } from 'tamagui'
+import { Button, YStack } from '@unicornlove/ui'
 
 export interface QuickActionsWidgetProps {
   /** Context of the page (determines which actions to show) */

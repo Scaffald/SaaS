@@ -17,7 +17,7 @@ import {
   Text,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type VerificationListResponse = RouterOutputs['idVerification']['listVerifications']
@@ -30,12 +30,12 @@ const STATUS_META: Record<
   {
     label: string
     color: GetThemeValueForKey<'color'>
-    bg: GetThemeValueForKey<'backgroundColor'>
+    backgroundColor: GetThemeValueForKey<'backgroundColor'>
   }
 > = {
-  active: { label: 'Active', color: '$green11', bg: '$green4' },
-  expired: { label: 'Expired', color: '$orange11', bg: '$orange4' },
-  revoked: { label: 'Revoked', color: '$red11', bg: '$red4' },
+  active: { label: 'Active', color: '$green11', backgroundColor: '$green4' },
+  expired: { label: 'Expired', color: '$orange11', backgroundColor: '$orange4' },
+  revoked: { label: 'Revoked', color: '$red11', backgroundColor: '$red4' },
 }
 
 const SOURCE_META: Record<
@@ -43,12 +43,12 @@ const SOURCE_META: Record<
   {
     label: string
     color: GetThemeValueForKey<'color'>
-    bg: GetThemeValueForKey<'backgroundColor'>
+    backgroundColor: GetThemeValueForKey<'backgroundColor'>
   }
 > = {
-  worker: { label: 'Worker self-serve', color: '$color11', bg: '$color4' },
-  organization: { label: 'Organization', color: '$blue11', bg: '$blue4' },
-  platform: { label: 'Platform initiated', color: '$purple11', bg: '$purple4' },
+  worker: { label: 'Worker self-serve', color: '$color11', backgroundColor: '$color4' },
+  organization: { label: 'Organization', color: '$blue11', backgroundColor: '$blue4' },
+  platform: { label: 'Platform initiated', color: '$purple11', backgroundColor: '$purple4' },
 }
 
 interface IdVerificationAdminPageProps {
@@ -154,10 +154,10 @@ export function IdVerificationAdminPage({
               fontSize="$2"
               fontWeight="600"
               color={meta.color}
-              bg={meta.bg}
-              px="$2"
-              py="$1"
-              rounded="$3"
+              backgroundColor={meta.backgroundColor}
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              borderRadius="$3"
             >
               {meta.label}
             </Text>
@@ -199,10 +199,10 @@ export function IdVerificationAdminPage({
               fontSize="$2"
               fontWeight="600"
               color={meta.color}
-              bg={meta.bg}
-              px="$2"
-              py="$1"
-              rounded="$3"
+              backgroundColor={meta.backgroundColor}
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              borderRadius="$3"
             >
               {meta.label}
             </Text>
@@ -234,7 +234,7 @@ export function IdVerificationAdminPage({
 
   return (
     <YStack flex={1} gap="$4">
-      <YStack px="$4" gap="$3">
+      <YStack paddingHorizontal="$4" gap="$3">
         <XStack gap="$3" flexWrap="wrap">
           {[
             {
@@ -262,7 +262,7 @@ export function IdVerificationAdminPage({
               key={item.label}
               flex={1}
               minWidth={200}
-              p="$3"
+              padding="$3"
               borderColor="$borderColor"
               borderWidth={1}
             >
@@ -285,7 +285,7 @@ export function IdVerificationAdminPage({
             onValueChange={(value) => setStatusFilter(value as StatusFilter)}
           >
             <Tabs.List
-              bg="$color2"
+              backgroundColor="$color2"
               borderRadius="$4"
               borderWidth={1}
               borderColor="$borderColor"
@@ -325,7 +325,7 @@ export function IdVerificationAdminPage({
             ]}
           />
           {isLoadingOrganizations ? (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Spinner size="small" />
               <Text fontSize="$2" color="$color11">
                 Loading organizations…
@@ -334,7 +334,7 @@ export function IdVerificationAdminPage({
           ) : null}
         </YStack>
 
-        <XStack justify="flex-end">
+        <XStack justifyContent="flex-end">
           <Button
             size="$3"
             variant="outlined"

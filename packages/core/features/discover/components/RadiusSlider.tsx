@@ -1,4 +1,4 @@
-import { Slider, Text, XStack, YStack } from 'tamagui'
+import { Slider, Text, XStack, YStack } from '@unicornlove/ui'
 
 type RadiusSliderProps = {
   value: number
@@ -25,7 +25,7 @@ export const RadiusSlider = ({
 }: RadiusSliderProps) => {
   return (
     <YStack gap="$2" flex={1}>
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$3" fontWeight="600" color="$color11">
           Search Radius
         </Text>
@@ -45,25 +45,25 @@ export const RadiusSlider = ({
         step={step}
         flex={1}
         height={20}
-        bg="$color3"
-        rounded="$2"
+        backgroundColor="$color3"
+        borderRadius="$2"
       >
         <Slider.Track>
-          <Slider.TrackActive bg="$blue9" />
+          <Slider.TrackActive backgroundColor="$blue9" />
         </Slider.Track>
         <Slider.Thumb
           index={0}
-          bg="$blue10"
+          backgroundColor="$blue10"
           borderWidth={2}
           borderColor="$blue11"
-          rounded="$10"
+          borderRadius="$10"
           width={20}
           height={20}
           style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
         />
       </Slider>
 
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$2" color="$color10">
           {formatRadius(min)}
         </Text>

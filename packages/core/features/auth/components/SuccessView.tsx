@@ -1,5 +1,5 @@
 import { useTranslation } from '@app/core/utils/useTranslation'
-import { Paragraph, Spinner, Text, View, YStack } from 'tamagui'
+import { Paragraph, Spinner, Text, View, YStack } from '@unicornlove/ui'
 
 interface SuccessViewProps {
   isVisible: boolean
@@ -13,12 +13,12 @@ export function SuccessView({ isVisible }: SuccessViewProps) {
       position="absolute"
       enterStyle={{ opacity: 0, x: 350 }}
       exitStyle={{ opacity: 0, x: 0 }}
-      bg="$background"
-      items="center"
-      justify="center"
+      backgroundColor="$background"
+      alignItems="center"
+      justifyContent="center"
       width="100%"
       height="100%"
-      $md={{ width: '100%', p: '$5' }}
+      $md={{ width: '100%', padding: '$5' }}
       animation="200ms"
       opacity={!isVisible ? 0 : 1}
       style={{ pointerEvents: !isVisible ? 'none' : 'auto' }}
@@ -28,23 +28,23 @@ export function SuccessView({ isVisible }: SuccessViewProps) {
         <View
           flex={1}
           height="auto"
-          self="center"
-          justify="space-between"
-          items="center"
+          alignSelf="center"
+          justifyContent="space-between"
+          alignItems="center"
           gap="$4"
-          pt="$6"
+          paddingTop="$6"
         >
-          <YStack flex={1} justify="center" items="center" width="100%" gap="$2">
+          <YStack flex={1} justifyContent="center" alignItems="center" width="100%" gap="$2">
             <Text fontWeight="bold" fontSize="$6">
               {t('auth.success.title')}
             </Text>
 
-            <Paragraph color="$color10" text="center">
+            <Paragraph color="$color10" textAlign="center">
               {t('auth.success.description')}
             </Paragraph>
 
             {/* Insert loading spinner here */}
-            <Spinner size="large" pt="$6" />
+            <Spinner size="large" paddingTop="$6" />
           </YStack>
         </View>
       )}

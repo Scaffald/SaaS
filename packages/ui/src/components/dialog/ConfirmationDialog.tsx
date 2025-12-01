@@ -68,7 +68,7 @@ export function ConfirmationDialog({
         <Dialog.Content key="content" width={500}>
           <Dialog.Title>{title}</Dialog.Title>
           <Dialog.Description>{message}</Dialog.Description>
-          <XStack gap="$3" items="center" justify="flex-end">
+          <XStack gap="$3" alignItems="center" justifyContent="flex-end">
             <Dialog.Close asChild>
               <Button variant="outlined" disabled={isLoading}>
                 {cancelLabel}

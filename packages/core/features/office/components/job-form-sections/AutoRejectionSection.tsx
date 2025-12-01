@@ -1,7 +1,7 @@
 import { Text, ToggleSwitch, XStack, YStack } from '@unicornlove/ui'
 import { HelpCircle } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Label } from 'tamagui'
+import { Label } from '@unicornlove/ui'
 
 interface AutoRejectCriteria {
   score_minimum?: number
@@ -45,7 +45,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
   }
 
   return (
-    <YStack gap="$4" p="$4">
+    <YStack gap="$4" padding="$4">
       <YStack gap="$2">
         <Text fontSize="$6" fontWeight="600">
           Auto-Rejection
@@ -54,8 +54,8 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
       </YStack>
 
       {/* Enable Auto-Rejection */}
-      <XStack gap="$3" items="center" justify="space-between">
-        <XStack gap="$2" items="center" flex={1}>
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
+        <XStack gap="$2" alignItems="center" flex={1}>
           <Label fontWeight="600">Reject automatically</Label>
           <HelpCircle size={16} color="$color10" />
         </XStack>
@@ -71,7 +71,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
 
       {/* Criteria (only show when enabled) */}
       {localState.enabled && (
-        <YStack gap="$3" p="$3">
+        <YStack gap="$3" padding="$3">
           <Text fontSize="$3" fontWeight="600">
             Rejection Criteria
           </Text>
@@ -121,7 +121,7 @@ export function AutoRejectionSection({ enabled, criteria, onUpdate }: AutoReject
             />
           </XStack>
 
-          <YStack gap="$2" p="$3">
+          <YStack gap="$2" padding="$3">
             <Text fontSize="$2" fontWeight="600" color="$yellow11">
               ⚠️ Important
             </Text>

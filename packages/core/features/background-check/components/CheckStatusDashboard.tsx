@@ -4,7 +4,7 @@ import { RefreshCcw, ShieldCheck } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 import { CheckStatusCard } from './CheckStatusCard'
 import { DisputeBackgroundCheckDialog } from './DisputeBackgroundCheckDialog'
@@ -80,22 +80,24 @@ export function CheckStatusDashboard() {
       setDisputeCheck(check)
       return
     }
-    const disputePath = buildPath(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.DISPUTE, { checkId: check.id })
+    const disputePath = buildPath(ROUTES.DASHBOARD.PROFILE.BACKGROUND_CHECK.DISPUTE, {
+      checkId: check.id,
+    })
     router.push(disputePath)
   }
 
   return (
-    <YStack flex={1} bg="$background">
+    <YStack flex={1} backgroundColor="$background">
       <ScrollView flex={1}>
-        <YStack gap="$4" px="$4" pb="$6">
+        <YStack gap="$4" paddingHorizontal="$4" paddingBottom="$6">
           <YStack
             gap="$3"
-            p="$4"
-            bg="$background"
+            padding="$4"
+            backgroundColor="$background"
             borderBottomWidth={1}
             borderBottomColor="$borderColor"
           >
-            <XStack gap="$3" items="center">
+            <XStack gap="$3" alignItems="center">
               <ShieldCheck size={28} color="$blue10" />
               <YStack gap="$1">
                 <Text fontSize="$6" fontWeight="700" color="$color12">
@@ -129,7 +131,7 @@ export function CheckStatusDashboard() {
           </YStack>
 
           {checksQuery.isLoading && (
-            <YStack gap="$2" items="center" py="$6">
+            <YStack gap="$2" alignItems="center" paddingVertical="$6">
               <Spinner size="large" color="$color11" />
               <Text fontSize="$3" color="$color10">
                 Loading your background checks…
@@ -140,9 +142,9 @@ export function CheckStatusDashboard() {
           {checksQuery.isError && (
             <YStack
               gap="$3"
-              p="$4"
-              bg="$color2"
-              rounded="$4"
+              padding="$4"
+              backgroundColor="$color2"
+              borderRadius="$4"
               borderWidth={1}
               borderColor="$borderColor"
             >
@@ -163,9 +165,9 @@ export function CheckStatusDashboard() {
           {!checksQuery.isLoading && !checksQuery.isError && filteredChecks.length === 0 && (
             <YStack
               gap="$3"
-              p="$4"
-              bg="$color2"
-              rounded="$4"
+              padding="$4"
+              backgroundColor="$color2"
+              borderRadius="$4"
               borderWidth={1}
               borderColor="$borderColor"
             >
@@ -196,9 +198,9 @@ export function CheckStatusDashboard() {
 
           <YStack
             gap="$2"
-            p="$3"
-            bg="$color2"
-            rounded="$4"
+            padding="$3"
+            backgroundColor="$color2"
+            borderRadius="$4"
             borderWidth={1}
             borderColor="$borderColor"
           >

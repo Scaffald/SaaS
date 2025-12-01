@@ -1,6 +1,6 @@
 import { CheckCircle2, XCircle, AlertCircle } from '@tamagui/lucide-icons'
 import type { FC } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface SoftSkillsMatchIndicatorProps {
   skillName: string
@@ -22,7 +22,7 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
   meetsRequirement,
 }) => {
   return (
-    <XStack gap="$3" items="center" py="$2">
+    <XStack gap="$3" alignItems="center" paddingVertical="$2">
       {/* Indicator Icon */}
       {meetsRequirement ? (
         <CheckCircle2 size={18} color="$green10" />
@@ -37,7 +37,7 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
         <Text fontSize="$3" fontWeight="600" color="$color12">
           {skillName}
         </Text>
-        <XStack gap="$3" items="center">
+        <XStack gap="$3" alignItems="center">
           {userRating !== null && userRating > 0 ? (
             <Text fontSize="$2" color="$color11">
               Your rating: {userRating}/5
@@ -55,4 +55,3 @@ export const SoftSkillsMatchIndicator: FC<SoftSkillsMatchIndicatorProps> = ({
     </XStack>
   )
 }
-

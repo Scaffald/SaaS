@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Separator, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { Separator, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 import { FilterChip } from '../chips/FilterChip'
-import { FieldError } from '../FieldError'
+import { FieldError } from '../field-error/FieldError'
 import { Popover } from '../popovers/Popover'
 import { ResultsList } from './components/ResultsList'
 import { SearchInput } from './components/SearchInput'
@@ -101,7 +102,13 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
     Boolean(props.onSearch) && trimmedQuery.length > 0 && trimmedQuery.length < minSearchLength
 
   const listHeader = multiMode ? (
-    <XStack px="$3" py="$2" justify="space-between" gap="$3" bg="$color3">
+    <XStack
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      justifyContent="space-between"
+      gap="$3"
+      backgroundColor="$color3"
+    >
       {props.allowSelectAll !== false && (
         <Button size="$2" variant="outlined" onPress={handleSelectAll} disabled={!canSelectMore}>
           {strings.selectAll}
@@ -121,8 +128,8 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
   ) : undefined
 
   const emptyContent = requiresAdditionalCharacters ? (
-    <YStack p="$4" gap="$2" items="center">
-      <Separator bg="$borderColor" />
+    <YStack padding="$4" gap="$2" alignItems="center">
+      <Separator backgroundColor="$borderColor" />
       <Button variant="outlined" disabled>
         {strings.minCharacters(minSearchLength)}
       </Button>
@@ -172,8 +179,8 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
 
         {shouldRenderDropdown && (
           <Popover.Content
-            p={0}
-            mt="$2"
+            padding={0}
+            marginTop="$2"
             bordered
             elevate
             style={{

@@ -1,6 +1,6 @@
 import { Award, BadgeCheck, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Separator, Slider, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, ScrollView, Separator, Slider, Text, XStack, YStack } from '@unicornlove/ui'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
 interface DiscoverWorkersRightProps {
@@ -80,7 +80,7 @@ export function DiscoverWorkersRight({
   const activeFiltersContent = (
     <YStack gap="$2">
       {searchQuery && (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$3" color="$color11">
             Search:
           </Text>
@@ -90,7 +90,7 @@ export function DiscoverWorkersRight({
         </XStack>
       )}
       {minScore > 0 && (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$3" color="$color11">
             Min Score:
           </Text>
@@ -100,7 +100,7 @@ export function DiscoverWorkersRight({
         </XStack>
       )}
       {selectedSkills.length > 0 && (
-        <XStack gap="$2" items="center" flexWrap="wrap">
+        <XStack gap="$2" alignItems="center" flexWrap="wrap">
           <Text fontSize="$3" color="$color11">
             Skills:
           </Text>
@@ -110,7 +110,7 @@ export function DiscoverWorkersRight({
         </XStack>
       )}
       {selectedCertifications.length > 0 && (
-        <XStack gap="$2" items="center" flexWrap="wrap">
+        <XStack gap="$2" alignItems="center" flexWrap="wrap">
           <Text fontSize="$3" color="$color11">
             Certs:
           </Text>
@@ -124,14 +124,14 @@ export function DiscoverWorkersRight({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <SearchFilterWidget
           title="Search & Filter"
           subtitle="Find skilled workers for your projects"
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           searchLabel={
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Search size={16} />
               <Text>Search</Text>
             </XStack>
@@ -146,7 +146,7 @@ export function DiscoverWorkersRight({
 
           {/* Scaffald Score Filter */}
           <YStack gap="$3">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Scaffald Score
               </Text>
@@ -173,7 +173,7 @@ export function DiscoverWorkersRight({
 
           {/* Skills Filter */}
           <YStack gap="$3">
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Award size={16} color="$color12" />
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Skills
@@ -199,12 +199,12 @@ export function DiscoverWorkersRight({
                 {selectedSkills.map((skill) => (
                   <XStack
                     key={skill}
-                    bg="$blue3"
-                    px="$2"
-                    py="$1"
-                    rounded="$3"
+                    backgroundColor="$blue3"
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$3"
                     gap="$1"
-                    items="center"
+                    alignItems="center"
                   >
                     <Text fontSize="$2" color="$blue11">
                       {skill}
@@ -222,7 +222,7 @@ export function DiscoverWorkersRight({
 
           {/* Certifications Filter */}
           <YStack gap="$3">
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <BadgeCheck size={16} color="$color12" />
               <Text fontSize="$4" fontWeight="600" color="$color12">
                 Certifications
@@ -252,12 +252,12 @@ export function DiscoverWorkersRight({
                 {selectedCertifications.map((cert) => (
                   <XStack
                     key={cert}
-                    bg="$green3"
-                    px="$2"
-                    py="$1"
-                    rounded="$3"
+                    backgroundColor="$green3"
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$3"
                     gap="$1"
-                    items="center"
+                    alignItems="center"
                   >
                     <Text fontSize="$2" color="$green11">
                       {cert}

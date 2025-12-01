@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface StepNavigationProps {
   canGoBack: boolean
@@ -49,7 +49,7 @@ export function StepNavigation({
         </Button>
       </XStack>
 
-      <XStack justify="space-between" flexWrap="wrap" gap="$2">
+      <XStack justifyContent="space-between" flexWrap="wrap" gap="$2">
         {onSkip && (
           <Button size="$3" variant="outlined" chromeless onPress={onSkip} disabled={isSaving}>
             {skipLabel}

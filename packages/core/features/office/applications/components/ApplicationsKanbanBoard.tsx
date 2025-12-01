@@ -14,7 +14,7 @@ import {
   useWindowDimensions,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import type { ApplicationStatus, MockApplication } from '../../mock-data/ats-mock-data'
 import { useApplicationStatusChange } from '../hooks/useApplicationStatusChange'
 import { ApplicationStatusChangeModal } from './ApplicationStatusChangeModal'
@@ -215,14 +215,14 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
       {selectedApplicationIds.size > 0 && (
         <XStack
           gap="$3"
-          p="$3"
-          bg="$blue2"
-          items="center"
-          justify="space-between"
+          padding="$3"
+          backgroundColor="$blue2"
+          alignItems="center"
+          justifyContent="space-between"
           borderBottomWidth={1}
           borderBottomColor="$borderColor"
           flexWrap="wrap"
-          $sm={{ flexDirection: 'column', items: 'stretch' }}
+          $sm={{ flexDirection: 'column', alignItems: 'stretch' }}
         >
           <Text fontSize="$4" fontWeight="600">
             {selectedApplicationIds.size} candidate{selectedApplicationIds.size !== 1 ? 's' : ''}{' '}
@@ -284,7 +284,13 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
                   <Text fontSize="$3" fontWeight="600" numberOfLines={1}>
                     {STATUS_LABELS[status]}
                   </Text>
-                  <YStack bg="$color5" px="$2" py="$1" rounded="$2" mt="$1">
+                  <YStack
+                    backgroundColor="$color5"
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$2"
+                    marginTop="$1"
+                  >
                     <Text fontSize="$1" fontWeight="600" color="$color11">
                       {groupedApplications[status].length}
                     </Text>
@@ -294,7 +300,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
             </Tabs.List>
 
             {STATUSES.map((status) => (
-              <Tabs.Content key={status} value={status} p="$3">
+              <Tabs.Content key={status} value={status} padding="$3">
                 <StatusColumn
                   status={status}
                   label={STATUS_LABELS[status]}
@@ -310,7 +316,7 @@ export const ApplicationsKanbanBoard = ({ applications }: ApplicationsKanbanBoar
         ) : (
           // Desktop: Horizontal scrolling layout
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <XStack gap="$3" pb="$4">
+            <XStack gap="$3" paddingBottom="$4">
               {STATUSES.map((status) => (
                 <StatusColumn
                   key={status}
@@ -414,7 +420,7 @@ function InquiryComparisonModal({
 
   return (
     <YStack
-      bg="$background"
+      backgroundColor="$background"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000 }}
     >
       <InquiryComparisonView
@@ -448,7 +454,7 @@ const StatusColumn = ({
   return (
     <DroppableColumn
       id={status}
-      items={applications.map((app) => app.id)}
+      alignItems={applications.map((app) => app.id)}
       title={label}
       count={applications.length}
       color={color}

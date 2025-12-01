@@ -1,7 +1,7 @@
 import type { Boundary, Coordinate } from '@unicornlove/ui'
 import { Edit3, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { useEffect, useRef, useState } from 'react'
-import { Button, Card, Input, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Input, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface SiteBoundaryDrawerProps {
   boundary?: Boundary
@@ -88,9 +88,9 @@ export function SiteBoundaryDrawer({
 
   return (
     <YStack gap="$4">
-      <Card p="$4">
+      <Card padding="$4">
         <YStack gap="$4">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$6" fontWeight="600">
               Site Boundary
             </Text>
@@ -100,7 +100,7 @@ export function SiteBoundaryDrawer({
           </XStack>
 
           {/* Map Container - TODO: Integrate Mapbox GL Draw */}
-          <Card p="$4" bg="$gray2" minHeight={400} borderRadius="$4">
+          <Card padding="$4" backgroundColor="$gray2" minHeight={400} borderRadius="$4">
             <Text color="$gray10" style={{ textAlign: 'center' }}>
               Map display with interactive polygon drawing coming soon.
               {'\n'}
@@ -119,7 +119,7 @@ export function SiteBoundaryDrawer({
 
           {/* Area Display */}
           {areaSqft > 0 && (
-            <Card p="$3" bg="$blue2" borderColor="$blue8" borderWidth={1}>
+            <Card padding="$3" backgroundColor="$blue2" borderColor="$blue8" borderWidth={1}>
               <Text fontWeight="600" color="$blue11">
                 Calculated Area: {areaSqft.toLocaleString(undefined, { maximumFractionDigits: 2 })}{' '}
                 sq ft
@@ -135,8 +135,12 @@ export function SiteBoundaryDrawer({
             ) : (
               <YStack gap="$2">
                 {coordinates.map((coord, index) => (
-                  <Card key={`${coord[0]}-${coord[1]}-${index}`} p="$2" bg="$gray2">
-                    <XStack gap="$2" items="center" justify="space-between">
+                  <Card
+                    key={`${coord[0]}-${coord[1]}-${index}`}
+                    padding="$2"
+                    backgroundColor="$gray2"
+                  >
+                    <XStack gap="$2" alignItems="center" justifyContent="space-between">
                       <XStack gap="$2" flex={1}>
                         <Text fontSize="$2" color="$gray10">
                           Point {index + 1}:
@@ -198,7 +202,7 @@ export function SiteBoundaryDrawer({
 
           {coordinates.length > 0 && (
             <Button
-              bg="$red9"
+              backgroundColor="$red9"
               color="$red12"
               onPress={() => {
                 setCoordinates([])

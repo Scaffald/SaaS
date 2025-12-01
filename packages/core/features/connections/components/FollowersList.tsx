@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { DataTable } from '@app/core/components/ui'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Avatar, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface FollowerData {
   user?: {
@@ -49,12 +49,12 @@ export function FollowersList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
-                  <Avatar.Fallback bg="$green4">
+                  <Avatar.Fallback backgroundColor="$green4">
                     <Text fontSize="$3" fontWeight="600" color="$green10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
@@ -94,7 +94,7 @@ export function FollowersList() {
 
   if (isLoading) {
     return (
-      <YStack items="center" justify="center" py="$6" gap="$2">
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading followers…</Text>
       </YStack>
@@ -115,18 +115,18 @@ export function FollowersList() {
           gap="$3"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$4"
-          p="$4"
-          bg="$color2"
-          items="center"
-          justify="center"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color2"
+          alignItems="center"
+          justifyContent="center"
           style={{ minHeight: 300 }}
         >
           <Text fontWeight="600">No followers yet</Text>
           <Text color="$color11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No followers match your search.'
-              : 'You don\'t have any followers yet. Build your profile to attract followers.'}
+              : "You don't have any followers yet. Build your profile to attract followers."}
           </Text>
         </YStack>
       ) : (

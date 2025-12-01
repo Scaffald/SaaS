@@ -1,10 +1,10 @@
 import { api } from '@app/core/utils/api'
-import { DashboardWidget, UIButton as StyledButton, spacing } from '@unicornlove/ui'
+import { Button, DashboardWidget, spacing } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { OccupationSearch } from './components/OccupationSearch'
 import { RiasecQuickAssessment } from './components/RiasecQuickAssessment'
 import {
@@ -77,7 +77,7 @@ export function CareerAssessmentWidget() {
   if (isCheckingStatus) {
     return (
       <DashboardWidget>
-        <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+        <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
           <Spinner size="large" color="$blue7" />
           <Text color="$color11">Loading...</Text>
         </YStack>
@@ -147,23 +147,23 @@ export function CareerAssessmentWidget() {
         </YStack>
 
         {/* Submit Button */}
-        <StyledButton
+        <Button
           variant="primary"
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
           opacity={isSubmitting ? 0.5 : 1}
           size="$5"
-          mt={spacing.xs}
+          marginTop={spacing.xs}
         >
           {isSubmitting ? (
-            <XStack gap={spacing.xs} items="center">
+            <XStack gap={spacing.xs} alignItems="center">
               <Spinner size="small" color="white" />
-              <StyledButton.Text>Saving Assessment...</StyledButton.Text>
+              <Button.Text>Saving Assessment...</Button.Text>
             </XStack>
           ) : (
-            <StyledButton.Text>Complete Assessment</StyledButton.Text>
+            <Button.Text>Complete Assessment</Button.Text>
           )}
-        </StyledButton>
+        </Button>
 
         <Text fontSize="$2" color="$color11">
           This assessment takes about 2 minutes and helps us recommend careers that fit your

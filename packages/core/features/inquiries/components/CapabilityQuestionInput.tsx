@@ -25,7 +25,7 @@ export function CapabilityQuestionInput({
       <Text fontSize="$3" fontWeight="600">
         {question}
       </Text>
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Button
           flex={1}
           theme={localValue === true ? 'success' : undefined}
@@ -46,7 +46,7 @@ export function CapabilityQuestionInput({
         </Button>
       </XStack>
       {/* Alternative: Toggle Switch */}
-      <XStack justify="space-between" items="center" mt="$2">
+      <XStack justifyContent="space-between" alignItems="center" marginTop="$2">
         <Text fontSize="$3" color="$color11">
           Toggle answer
         </Text>

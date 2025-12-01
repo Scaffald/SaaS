@@ -1,5 +1,5 @@
 import { Check, Link } from '@tamagui/lucide-icons'
-import { Button, Checkbox, Text, XStack, YStack } from 'tamagui'
+import { Button, Checkbox, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface Certification {
   id: string

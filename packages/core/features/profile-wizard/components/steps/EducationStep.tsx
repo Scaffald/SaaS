@@ -2,7 +2,7 @@ import { MonthYearPicker, ToggleSwitch } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Input, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 import { z } from 'zod'
 import type { EducationStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -155,7 +155,7 @@ export function EducationStep({
         </YStack>
       </XStack>
 
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Controller
           control={control}
           name="isCurrent"

@@ -52,7 +52,7 @@ function ResultsListComponent<T>({
   if (loading) {
     return (
       <YStack gap="$3" aria-busy={true}>
-        <SizableText fontSize="$3" color="$color11" px="$3">
+        <SizableText fontSize="$3" color="$color11" paddingHorizontal="$3">
           {loadingLabel}
         </SizableText>
         <ResultsSkeletonLoader />

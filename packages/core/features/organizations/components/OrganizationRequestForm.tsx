@@ -6,7 +6,7 @@ import { CheckCircle2, Loader2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Card, Input, Label, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 interface OrganizationRequestSummary {
   id: string
@@ -202,7 +202,7 @@ export function OrganizationRequestForm({
 
       {submissionSucceeded ? (
         <Card bordered theme="success" padding="$4" gap="$3">
-          <XStack gap="$3" items="center">
+          <XStack gap="$3" alignItems="center">
             <CheckCircle2 size={20} color="$green10" />
             <Text fontSize="$4" fontWeight="700" color="$green10">
               Request submitted successfully

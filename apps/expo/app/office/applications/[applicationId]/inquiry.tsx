@@ -3,7 +3,7 @@ import { InquiryViewOrganization } from '@app/core/features/inquiries/components
 import { api } from '@app/core/utils/api'
 import { Text, YStack } from '@unicornlove/ui'
 import { useLocalSearchParams } from 'expo-router'
-import { ScrollView, Spinner } from 'tamagui'
+import { ScrollView, Spinner } from '@unicornlove/ui'
 
 export default function OfficeApplicationInquiryRoute() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>()
@@ -17,7 +17,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   if (!enabled) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Text color="$color11">Missing application ID</Text>
       </YStack>
     )
@@ -25,7 +25,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4" gap="$2">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Spinner size="large" />
         <Text>Loading inquiry...</Text>
       </YStack>
@@ -34,7 +34,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   if (error || !data || !data.inquiry) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4" gap="$2">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text color="$red10">Unable to load inquiry</Text>
       </YStack>
     )
@@ -45,7 +45,7 @@ export default function OfficeApplicationInquiryRoute() {
 
   return (
     <ScrollView>
-      <YStack gap="$4" p="$4" flex={1}>
+      <YStack gap="$4" padding="$4" flex={1}>
         <InquiryViewOrganization
           applicationId={applicationParam}
           inquiryId={data.inquiry.id}

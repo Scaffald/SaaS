@@ -5,7 +5,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js'
 import { useToastController } from '@tamagui/toast'
 import { useMemo, useState } from 'react'
-import { Card } from 'tamagui'
+import { Card } from '@unicornlove/ui'
 
 type SetupIntentFormProps = {
   organizationId: string
@@ -60,7 +60,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (config.isLoading || !stripePromise) {
     return (
-      <Card p="$3" bg="$color2" borderColor="$borderColor" borderWidth={1}>
+      <Card padding="$3" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
         <Text fontSize="$3" color="$color11">
           Preparing secure payment form…
         </Text>
@@ -70,7 +70,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
 
   if (!config.publishableKey) {
     return (
-      <Card p="$3" bg="$red2" borderColor="$red6" borderWidth={1}>
+      <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
         <Text color="$red11">
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
@@ -95,7 +95,7 @@ export function SetupIntentForm({ organizationId, onSuccess, onCancel }: SetupIn
         <XStack gap="$2">
           <Button size="$4" theme="blue" onPress={handleInitialize} disabled={isInitializing}>
             {isInitializing ? (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Spinner size="small" color="white" />
                 <Text>Initializing…</Text>
               </XStack>
@@ -177,7 +177,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
   }
 
   return (
-    <Card p="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
+    <Card padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
       <YStack gap="$1">
         <Text fontSize="$4" fontWeight="600">
           Add Payment Method
@@ -192,8 +192,8 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
       <PaymentElement />
 
       {errorMessage ? (
-        <Card p="$3" bg="$red2" borderColor="$red6" borderWidth={1}>
-          <XStack gap="$2" items="center">
+        <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+          <XStack gap="$2" alignItems="center">
             <Text color="$red11" fontSize="$3" flex={1}>
               {errorMessage}
             </Text>
@@ -210,7 +210,7 @@ function SetupIntentFormInner({ organizationId, onSuccess, onCancel, testMode }:
           flex={1}
         >
           {isSubmitting ? (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Spinner size="small" color="white" />
               <Text>Saving…</Text>
             </XStack>

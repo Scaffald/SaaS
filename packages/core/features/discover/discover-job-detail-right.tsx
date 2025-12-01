@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { SoftSkillsMatchIndicator } from '@app/core/features/profile/components/SoftSkillsMatchIndicator'
 import { ROUTES } from '@app/core/constants/routes'
-import { Chip, extractPlainText, UIButton } from '@unicornlove/ui'
+import { Button, Chip, extractPlainText } from '@unicornlove/ui'
 import {
   Award,
   Briefcase,
@@ -20,7 +20,7 @@ import {
 import { useRouter } from 'expo-router'
 import type { JSONContent } from '@tiptap/core'
 import { useMemo } from 'react'
-import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface DiscoverJobDetailRightProps {
   jobId: string
@@ -164,9 +164,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
-        <Text mt="$2" color="$color11">
+        <Text marginTop="$2" color="$color11">
           Loading job details...
         </Text>
       </YStack>
@@ -175,7 +175,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
   if (!job) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4" gap="$2">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           Job not found
         </Text>
@@ -198,11 +198,18 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
     return (
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack gap="$4" p="$4">
+        <YStack gap="$4" padding="$4">
           {/* Applied Status Banner */}
           {hasApplied && (
-            <YStack gap="$2" bg="$green2" p="$3" rounded="$4" borderWidth={1} borderColor="$green7">
-              <XStack gap="$2" items="center">
+            <YStack
+              gap="$2"
+              backgroundColor="$green2"
+              padding="$3"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$green7"
+            >
+              <XStack gap="$2" alignItems="center">
                 <Shield size={16} color="$green10" />
                 <Text fontSize="$4" fontWeight="600" color="$green11">
                   You've Applied
@@ -220,7 +227,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Company info */}
           {job.organization && (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Building2 size={20} color="$color11" />
               <Text fontSize="$5" color="$color11" fontWeight="600">
                 {job.organization.name}
@@ -231,7 +238,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {/* Job metadata */}
           <XStack gap="$3" flexWrap="wrap">
             {job.location && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <MapPin size={16} color="$color10" />
                 <Text fontSize="$3" color="$color10">
                   {job.location}
@@ -239,7 +246,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
               </XStack>
             )}
             {employmentType && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Briefcase size={16} color="$color10" />
                 <Text fontSize="$3" color="$color10">
                   {employmentType}
@@ -247,7 +254,13 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
               </XStack>
             )}
             {remoteOption && (
-              <Chip bg="$blue9" color="$blue1" fontSize="$2" px="$2" py="$1">
+              <Chip
+                backgroundColor="$blue9"
+                color="$blue1"
+                fontSize="$2"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 {remoteOption}
               </Chip>
             )}
@@ -255,7 +268,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Pay range */}
           {payRange && (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <DollarSign size={18} color="$green10" />
               <Text fontSize="$4" color="$green10" fontWeight="600">
                 {payRange}
@@ -265,8 +278,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Benefits Summary */}
           {job.benefits_summary && (
-            <YStack gap="$2" bg="$green2" p="$3" rounded="$4">
-              <XStack gap="$2" items="center">
+            <YStack gap="$2" backgroundColor="$green2" padding="$3" borderRadius="$4">
+              <XStack gap="$2" alignItems="center">
                 <Heart size={16} color="$green10" />
                 <Text fontSize="$4" fontWeight="600" color="$green11">
                   Benefits
@@ -310,7 +323,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                 </Text>
                 <YStack gap="$2">
                   {job.minimum_education_level && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Award size={16} color="$red10" />
                       <Text fontSize="$3" color="$color11">
                         {formatEducationLevel(job.minimum_education_level)}
@@ -318,7 +331,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.minimum_years_experience && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Clock size={16} color="$blue10" />
                       <Text fontSize="$3" color="$color11">
                         {job.minimum_years_experience}+ years of experience
@@ -326,7 +339,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.require_background_check && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Shield size={16} color="$blue10" />
                       <Text fontSize="$3" color="$color11">
                         Background check required
@@ -335,7 +348,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.require_drug_test && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Shield size={16} color="$blue10" />
                       <Text fontSize="$3" color="$color11">
                         Drug test required
@@ -343,7 +356,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.require_drivers_license && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Briefcase size={16} color="$blue10" />
                       <Text fontSize="$3" color="$color11">
                         Driver's license required
@@ -352,7 +365,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.security_clearance_required && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Shield size={16} color="$red10" />
                       <Text fontSize="$3" color="$color11">
                         Security clearance: {job.security_clearance_required}
@@ -360,7 +373,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.travel_percentage && job.travel_percentage > 0 && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Plane size={16} color="$blue10" />
                       <Text fontSize="$3" color="$color11">
                         Travel: {job.travel_percentage}%
@@ -382,7 +395,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                 </Text>
                 <YStack gap="$2">
                   {job.work_schedule_details && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Clock size={16} color="$blue10" />
                       <Text fontSize="$3" color="$color11">
                         {job.work_schedule_details}
@@ -390,7 +403,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.timezone && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <MapPin size={16} color="$blue10" />
                       <Text fontSize="$3" color="$color11">
                         Timezone: {job.timezone}
@@ -398,7 +411,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     </XStack>
                   )}
                   {job.relocation_assistance_offered && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Home size={16} color="$green10" />
                       <Text fontSize="$3" color="$color11">
                         Relocation assistance available
@@ -416,8 +429,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {job.application_deadline && (
             <>
               <Separator />
-              <YStack gap="$2" bg="$yellow2" p="$3" rounded="$4">
-                <XStack gap="$2" items="center">
+              <YStack gap="$2" backgroundColor="$yellow2" padding="$3" borderRadius="$4">
+                <XStack gap="$2" alignItems="center">
                   <Calendar size={16} color="$yellow10" />
                   <Text fontSize="$4" fontWeight="600" color="$yellow11">
                     Application Deadline
@@ -444,7 +457,14 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                 </Text>
                 <XStack gap="$2" flexWrap="wrap">
                   {job.certifications.map((cert: { id: string; name: string }) => (
-                    <Chip key={cert.id} bg="$red10" color="$color1" fontSize="$3" px="$3" py="$2">
+                    <Chip
+                      key={cert.id}
+                      backgroundColor="$red10"
+                      color="$color1"
+                      fontSize="$3"
+                      paddingHorizontal="$3"
+                      paddingVertical="$2"
+                    >
                       {cert.name}
                     </Chip>
                   ))}
@@ -472,11 +492,11 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     return (
                       <Chip
                         key={skill.id}
-                        bg="$blue10"
+                        backgroundColor="$blue10"
                         color="$color1"
                         fontSize="$3"
-                        px="$3"
-                        py="$2"
+                        paddingHorizontal="$3"
+                        paddingVertical="$2"
                       >
                         {label}
                       </Chip>
@@ -492,13 +512,13 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
             <>
               <Separator />
               <YStack gap="$3">
-                <XStack justify="space-between" items="center">
+                <XStack justifyContent="space-between" alignItems="center">
                   <Text fontSize="$5" fontWeight="600" color="$color12">
                     Your Soft Skills Match
                   </Text>
                   {matchData?.score !== null && matchData?.score !== undefined && (
                     <Chip
-                      bg={
+                      backgroundColor={
                         matchData.score >= 80
                           ? '$green9'
                           : matchData.score >= 60
@@ -507,8 +527,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                       }
                       color="$color1"
                       fontSize="$3"
-                      px="$3"
-                      py="$2"
+                      paddingHorizontal="$3"
+                      paddingVertical="$2"
                     >
                       {Math.round(matchData.score)}% Match
                     </Chip>
@@ -516,7 +536,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                 </XStack>
 
                 {isLoadingMatch ? (
-                  <YStack gap="$2" items="center" py="$4">
+                  <YStack gap="$2" alignItems="center" paddingVertical="$4">
                     <Spinner size="small" color="$blue10" />
                     <Text fontSize="$3" color="$color11">
                       Calculating match...
@@ -525,9 +545,9 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                 ) : matchData?.needsSelfAssessment ? (
                   <YStack
                     gap="$3"
-                    bg="$blue2"
-                    p="$4"
-                    rounded="$4"
+                    backgroundColor="$blue2"
+                    padding="$4"
+                    borderRadius="$4"
                     borderWidth={1}
                     borderColor="$blue7"
                   >
@@ -538,13 +558,13 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                       Complete your soft skills assessment to see how well you match this job's
                       requirements.
                     </Text>
-                    <UIButton
+                    <Button
                       variant="primary"
                       size="$3"
                       onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                     >
                       Start Assessment
-                    </UIButton>
+                    </Button>
                   </YStack>
                 ) : matchData?.details && matchData.details.length > 0 ? (
                   <YStack gap="$4">
@@ -575,13 +595,13 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                     ) && (
                       <YStack
                         gap="$2"
-                        bg="$yellow2"
-                        p="$4"
-                        rounded="$4"
+                        backgroundColor="$yellow2"
+                        padding="$4"
+                        borderRadius="$4"
                         borderWidth={1}
                         borderColor="$yellow7"
                       >
-                        <XStack gap="$2" items="center">
+                        <XStack gap="$2" alignItems="center">
                           <TrendingUp size={16} color="$yellow10" />
                           <Text fontSize="$4" fontWeight="600" color="$yellow11">
                             Skills to Develop
@@ -606,13 +626,13 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                               )
                             )}
                         </YStack>
-                        <UIButton
+                        <Button
                           variant="outlined"
                           size="$3"
                           onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                         >
                           Update Assessment
-                        </UIButton>
+                        </Button>
                       </YStack>
                     )}
                   </YStack>
@@ -629,10 +649,15 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
   if (isExternal && 'company_name' in job) {
     return (
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack gap="$4" p="$4">
+        <YStack gap="$4" padding="$4">
           <YStack gap="$2">
             <XStack>
-              <Chip bg="$red9" fontSize="$2" px="$2" py="$1">
+              <Chip
+                backgroundColor="$red9"
+                fontSize="$2"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 External Job
               </Chip>
             </XStack>
@@ -643,7 +668,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
 
           {/* Company info */}
           {job.company_name && (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Building2 size={20} color="$color11" />
               <Text fontSize="$5" color="$color11" fontWeight="600">
                 {job.company_name}
@@ -654,7 +679,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {/* Job metadata */}
           <XStack gap="$3" flexWrap="wrap">
             {job.location && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <MapPin size={16} color="$color10" />
                 <Text fontSize="$3" color="$color10">
                   {job.location}
@@ -662,7 +687,7 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
               </XStack>
             )}
             {job.job_type && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Briefcase size={16} color="$color10" />
                 <Text fontSize="$3" color="$color10">
                   {formatEmploymentType(job.job_type)}
@@ -674,7 +699,12 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           {/* Job Category */}
           {job.job_category && (
             <XStack>
-              <Chip bg="$blue9" fontSize="$2" px="$2" py="$1">
+              <Chip
+                backgroundColor="$blue9"
+                fontSize="$2"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 {job.job_category}
               </Chip>
             </XStack>
@@ -708,10 +738,10 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
                   {job.industries.map((industry: { industry_name: string }, idx: number) => (
                     <Chip
                       key={`${industry.industry_name}-${idx}`}
-                      bg="$blue9"
+                      backgroundColor="$blue9"
                       fontSize="$3"
-                      px="$3"
-                      py="$2"
+                      paddingHorizontal="$3"
+                      paddingVertical="$2"
                     >
                       {industry.industry_name}
                     </Chip>
@@ -722,8 +752,8 @@ export function DiscoverJobDetailRight({ jobId }: DiscoverJobDetailRightProps) {
           )}
 
           {/* External Link Notice */}
-          <YStack gap="$2" bg="$blue2" p="$3" rounded="$4">
-            <XStack gap="$2" items="center">
+          <YStack gap="$2" backgroundColor="$blue2" padding="$3" borderRadius="$4">
+            <XStack gap="$2" alignItems="center">
               <ExternalLink size={16} color="$blue10" />
               <Text fontSize="$4" fontWeight="600" color="$blue11">
                 External Application

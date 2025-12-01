@@ -7,7 +7,7 @@ import {
 } from '@unicornlove/ui'
 import { Check } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
-import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { InlineSkillSearch } from './components'
 import { SoftSkillsRatingForm } from './components/SoftSkillsRatingForm'
 import { useSaveStatus } from './hooks/useSaveStatus'
@@ -62,12 +62,12 @@ export function ProfileSkillsLeft() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <YStack gap="$4">
           <DashboardWidget>
-            <YStack gap="$4" p="$4">
+            <YStack gap="$4" padding="$4">
               <SkeletonForm fields={4} />
             </YStack>
           </DashboardWidget>
           <DashboardWidget>
-            <YStack gap="$4" p="$4">
+            <YStack gap="$4" padding="$4">
               <SkeletonForm fields={6} />
             </YStack>
           </DashboardWidget>
@@ -82,7 +82,7 @@ export function ProfileSkillsLeft() {
         <DashboardWidget>
           <YStack gap="$4">
             {/* Header with Save Status Indicator */}
-            <XStack justify="space-between" items="center" mb="$2">
+            <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
               <YStack flex={1} />
               <SaveStatusIndicator
                 status={saveStatus}
@@ -112,8 +112,14 @@ export function ProfileSkillsLeft() {
 
             {/* Inline Skill Search */}
             {!selectedIndustryId ? (
-              <YStack p="$4" items="center" gap="$2" bg="$color3" rounded="$4">
-                <Text fontSize="$3" color="$color11" text="center">
+              <YStack
+                padding="$4"
+                alignItems="center"
+                gap="$2"
+                backgroundColor="$color3"
+                borderRadius="$4"
+              >
+                <Text fontSize="$3" color="$color11" textAlign="center">
                   Please select an industry above to search for skills
                 </Text>
               </YStack>
@@ -133,7 +139,7 @@ export function ProfileSkillsLeft() {
             <Separator />
 
             {/* Save Button */}
-            <XStack justify="flex-end" pt="$2">
+            <XStack justifyContent="flex-end" paddingTop="$2">
               <Button
                 size="$4"
                 themeInverse
@@ -142,7 +148,7 @@ export function ProfileSkillsLeft() {
                 icon={saveButtonState === 'saved' ? Check : undefined}
               >
                 {saveButtonState === 'saving' ? (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Spinner size="small" />
                     <Text>Saving...</Text>
                   </XStack>

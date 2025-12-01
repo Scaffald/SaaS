@@ -1,5 +1,5 @@
 import { Sparkles } from '@tamagui/lucide-icons'
-import { Progress, Text, XStack, YStack } from 'tamagui'
+import { Progress, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface SkillCompletionProgressProps {
   /** Current skill count */
@@ -20,8 +20,15 @@ export function SkillCompletionProgress({
   completionPercent,
 }: SkillCompletionProgressProps) {
   return (
-    <YStack p="$4" gap="$3" bg="$blue2" borderWidth={1} borderColor="$blue5" rounded="$4">
-      <XStack gap="$3" items="center">
+    <YStack
+      padding="$4"
+      gap="$3"
+      backgroundColor="$blue2"
+      borderWidth={1}
+      borderColor="$blue5"
+      borderRadius="$4"
+    >
+      <XStack gap="$3" alignItems="center">
         <Sparkles size={20} color="$blue10" />
         <YStack gap="$1" flex={1}>
           <Text fontWeight="600" color="$blue11">
@@ -36,7 +43,7 @@ export function SkillCompletionProgress({
       </XStack>
 
       <YStack gap="$2">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$2" color="$blue11">
             Skill section completeness
           </Text>
@@ -44,11 +51,10 @@ export function SkillCompletionProgress({
             {completionPercent}%
           </Text>
         </XStack>
-        <Progress value={completionPercent} max={100} bg="$blue3" size="$2">
-          <Progress.Indicator bg={completionPercent >= 100 ? '$green10' : '$blue9'} />
+        <Progress value={completionPercent} max={100} backgroundColor="$blue3" size="$2">
+          <Progress.Indicator backgroundColor={completionPercent >= 100 ? '$green10' : '$blue9'} />
         </Progress>
       </YStack>
     </YStack>
   )
 }
-

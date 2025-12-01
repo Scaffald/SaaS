@@ -1,6 +1,6 @@
 import type { ApplicationStepType } from '@app/schemas'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface ProgressIndicatorProps {
   /**
@@ -47,9 +47,9 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
   return (
     <XStack
       gap="$2"
-      items="center"
+      alignItems="center"
       flexWrap="wrap"
-      p="$4"
+      padding="$4"
       role="progressbar"
       aria-label="Application progress"
       aria-valuenow={steps.findIndex((s) => s.id === currentStep) + 1}
@@ -72,17 +72,17 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
           })
 
         return (
-          <XStack key={step.id} gap="$2" items="center" flex={1} minW={0}>
+          <XStack key={step.id} gap="$2" alignItems="center" flex={1} minWidth={0}>
             {/* Step Circle */}
-            <YStack gap="$2" items="center" shrink={0}>
+            <YStack gap="$2" alignItems="center" flexShrink={0}>
               {status === 'completed' ? (
                 <YStack
                   width={32}
                   height={32}
-                  rounded="$10"
-                  bg="$blue9"
-                  items="center"
-                  justify="center"
+                  borderRadius="$10"
+                  backgroundColor="$blue9"
+                  alignItems="center"
+                  justifyContent="center"
                   borderWidth={2}
                   borderColor="$blue10"
                   shadowColor="$blue9"
@@ -96,10 +96,10 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 <YStack
                   width={32}
                   height={32}
-                  rounded="$10"
-                  bg={status === 'current' ? '$blue9' : '$gray4'}
-                  items="center"
-                  justify="center"
+                  borderRadius="$10"
+                  backgroundColor={status === 'current' ? '$blue9' : '$gray4'}
+                  alignItems="center"
+                  justifyContent="center"
                   borderWidth={status === 'current' ? 2 : 1}
                   borderColor={status === 'current' ? '$blue10' : '$gray7'}
                   shadowColor={status === 'current' ? '$blue9' : undefined}
@@ -124,8 +124,8 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
                 color={
                   status === 'current' ? '$blue10' : status === 'completed' ? '$gray11' : '$gray10'
                 }
-                text="center"
-                maxW={100}
+                textAlign="center"
+                maxWidth={100}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -138,9 +138,9 @@ export function ProgressIndicator({ currentStep, completedSteps, steps }: Progre
               <YStack
                 flex={1}
                 height={2}
-                bg={isLineCompleted ? '$blue9' : '$gray4'}
-                mx="$2"
-                minW={20}
+                backgroundColor={isLineCompleted ? '$blue9' : '$gray4'}
+                marginHorizontal="$2"
+                minWidth={20}
               />
             )}
           </XStack>

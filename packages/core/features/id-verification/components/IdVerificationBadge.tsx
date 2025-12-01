@@ -1,5 +1,5 @@
 import { ShieldAlert, ShieldCheck, ShieldQuestion, ShieldX } from '@tamagui/lucide-icons'
-import { type GetThemeValueForKey, Text, XStack } from 'tamagui'
+import { type GetThemeValueForKey, Text, XStack } from '@unicornlove/ui'
 
 type BadgeStatus = 'active' | 'expired' | 'revoked' | null | undefined
 
@@ -77,12 +77,12 @@ export function IdVerificationBadge({
 
   return (
     <XStack
-      items="center"
+      alignItems="center"
       gap="$1.5"
-      px={size === 'sm' ? '$2' : '$3'}
-      py={size === 'sm' ? '$1' : '$2'}
-      rounded="$10"
-      bg={muted ? mutedBackground : copy.background}
+      paddingHorizontal={size === 'sm' ? '$2' : '$3'}
+      paddingVertical={size === 'sm' ? '$1' : '$2'}
+      borderRadius="$10"
+      backgroundColor={muted ? mutedBackground : copy.background}
       borderWidth={1}
       borderColor={muted ? mutedBorder : copy.border}
     >

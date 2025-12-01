@@ -1,6 +1,6 @@
 import { DashboardWidget } from '@unicornlove/ui'
 import type { ComponentType, ReactNode } from 'react'
-import { ScrollView, Spinner, Text, YStack, type YStackProps } from 'tamagui'
+import { ScrollView, Spinner, Text, YStack, type YStackProps } from '@unicornlove/ui'
 
 interface ProfileResultsPanelProps extends YStackProps {
   /** Child content for results */
@@ -57,14 +57,14 @@ export function ProfileResultsPanel({
           )}
 
           {isLoading ? (
-            <YStack items="center" justify="center" p="$8" gap="$3">
+            <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
               <Spinner size="large" />
               <Text color="$color11">Loading...</Text>
             </YStack>
           ) : isEmpty ? (
-            <YStack items="center" justify="center" p="$8" gap="$3">
+            <YStack alignItems="center" justifyContent="center" padding="$8" gap="$3">
               {EmptyIcon && <EmptyIcon size={48} color="$color11" />}
-              <Text color="$color11" text="center">
+              <Text color="$color11" textAlign="center">
                 {emptyMessage || 'No items added yet'}
               </Text>
             </YStack>

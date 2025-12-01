@@ -7,7 +7,7 @@ import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Input, Label, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Text, XStack, YStack } from '@unicornlove/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type OrganizationOption = RouterOutputs['office']['getOrganizations']['organizations'][number]
@@ -164,7 +164,7 @@ export function IdVerificationRequestPanel({
   const workerPlaceholder = workersQuery.isLoading ? 'Loading workers…' : 'Select worker'
 
   return (
-    <YStack gap="$4" p="$4" borderWidth={1} borderColor="$borderColor" rounded="$4">
+    <YStack gap="$4" padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
       <YStack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Trigger Verification
@@ -290,8 +290,8 @@ export function IdVerificationRequestPanel({
         </Button>
       ) : null}
 
-      <YStack gap="$2" bg="$color2" p="$3" rounded="$4">
-        <XStack gap="$2" items="center">
+      <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
+        <XStack gap="$2" alignItems="center">
           <ShieldCheck size={16} color="$color11" />
           <Text fontWeight="600" color="$color12">
             What happens next?

@@ -3,7 +3,7 @@ import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate } from '@app/schemas'
 import { OfficeLayout } from '@app/core/components/layouts'
 import { useRouter } from 'expo-router'
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSCreate() {

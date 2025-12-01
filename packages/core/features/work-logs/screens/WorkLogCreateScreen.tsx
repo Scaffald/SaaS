@@ -2,7 +2,7 @@ import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { ScrollView } from 'react-native'
-import { Button, Separator, Text, YStack } from 'tamagui'
+import { Button, Separator, Text, YStack } from '@unicornlove/ui'
 
 import { WorkLogForm } from '../components/WorkLogForm'
 
@@ -12,7 +12,7 @@ export function WorkLogCreateScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack p="$4" gap="$4">
+      <YStack padding="$4" gap="$4">
         <YStack gap="$1">
           <Text fontSize="$7" fontWeight="700">
             Record work log

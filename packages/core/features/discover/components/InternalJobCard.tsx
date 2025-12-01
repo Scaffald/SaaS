@@ -5,7 +5,7 @@ import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide
 import type { JSONContent } from '@tiptap/core'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 /**
  * Internal job type definition with all enhanced fields
@@ -228,17 +228,17 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
   }
 
   return (
-    <DiscoverCard onPress={handleCardPress} p="$4">
+    <DiscoverCard onPress={handleCardPress} padding="$4">
       <YStack gap="$3">
         {/* Header */}
         <YStack gap="$2">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <YStack flex={1} gap="$1">
               <Text fontSize="$6" fontWeight="700" color="$color12">
                 {job.title}
               </Text>
               {job.organization && (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Building2 size={16} color="$color11" />
                   <Text fontSize="$3" color="$color11" fontWeight="600">
                     {job.organization.name}
@@ -246,15 +246,15 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                 </XStack>
               )}
             </YStack>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               {hasApplied && (
-                <Chip bg="$green9" color="$green1">
+                <Chip backgroundColor="$green9" color="$green1">
                   Applied
                 </Chip>
               )}
               {matchData?.score !== null && matchData?.score !== undefined && (
                 <Chip
-                  bg={
+                  backgroundColor={
                     matchData.score >= 80 ? '$green9' : matchData.score >= 60 ? '$yellow9' : '$red9'
                   }
                   color="$color1"
@@ -268,7 +268,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           {/* Job metadata */}
           <XStack gap="$3" flexWrap="wrap">
             {job.location && (
-              <XStack gap="$1.5" items="center">
+              <XStack gap="$1.5" alignItems="center">
                 <MapPin size={14} color="$color10" />
                 <Text fontSize="$2" color="$color10">
                   {job.location}
@@ -276,7 +276,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               </XStack>
             )}
             {employmentType && (
-              <XStack gap="$1.5" items="center">
+              <XStack gap="$1.5" alignItems="center">
                 <Briefcase size={14} color="$color10" />
                 <Text fontSize="$2" color="$color10">
                   {employmentType}
@@ -284,7 +284,13 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
               </XStack>
             )}
             {remoteOption && (
-              <Chip bg="$blue9" color="$blue1" fontSize="$2" px="$2" py="$1">
+              <Chip
+                backgroundColor="$blue9"
+                color="$blue1"
+                fontSize="$2"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 {remoteOption}
               </Chip>
             )}
@@ -299,10 +305,10 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         )}
 
         {/* Pay range and certifications */}
-        <XStack justify="space-between" items="center" flexWrap="wrap" gap="$2">
-          <XStack gap="$3" items="center">
+        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
+          <XStack gap="$3" alignItems="center">
             {payRange && (
-              <XStack gap="$1.5" items="center">
+              <XStack gap="$1.5" alignItems="center">
                 <DollarSign size={16} color="$green10" />
                 <Text fontSize="$3" color="$green10" fontWeight="600">
                   {payRange}
@@ -312,7 +318,7 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
           </XStack>
 
           {postedTime && (
-            <XStack gap="$1.5" items="center">
+            <XStack gap="$1.5" alignItems="center">
               <Clock size={14} color="$color9" />
               <Text fontSize="$2" color="$color9">
                 {postedTime}
@@ -326,12 +332,25 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
         (job.skills && job.skills.length > 0) ? (
           <XStack gap="$2" flexWrap="wrap">
             {job.certifications?.slice(0, 3).map((cert) => (
-              <Chip key={cert.id} bg="$red10" color="$color1" fontSize="$2" px="$2" py="$1">
+              <Chip
+                key={cert.id}
+                backgroundColor="$red10"
+                color="$color1"
+                fontSize="$2"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 {cert.name}
               </Chip>
             ))}
             {job.certifications && job.certifications.length > 3 && (
-              <Chip bg="$color3" color="$color11" fontSize="$2" px="$2" py="$1">
+              <Chip
+                backgroundColor="$color3"
+                color="$color11"
+                fontSize="$2"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 +{job.certifications.length - 3} more
               </Chip>
             )}
@@ -343,13 +362,26 @@ export function InternalJobCard({ job, hasApplied, applicationId }: InternalJobC
                 return null
               }
               return (
-                <Chip key={skill.id} bg="$blue10" color="$color1" fontSize="$2" px="$2" py="$1">
+                <Chip
+                  key={skill.id}
+                  backgroundColor="$blue10"
+                  color="$color1"
+                  fontSize="$2"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                >
                   {label}
                 </Chip>
               )
             })}
             {job.skills && job.skills.length > 2 && (
-              <Chip bg="$color3" color="$color11" fontSize="$2" px="$2" py="$1">
+              <Chip
+                backgroundColor="$color3"
+                color="$color11"
+                fontSize="$2"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 +{job.skills.length - 2} more
               </Chip>
             )}

@@ -112,20 +112,20 @@ export function RangeSliderCard({
     <YStack
       {...(typeof width === 'number' ? { width } : { flex: 1, minWidth: 0 })}
       testID={testID}
-      bg="$background"
+      backgroundColor="$background"
       borderWidth={1}
       borderColor="$borderColor"
-      rounded="$3"
-      px="$4"
-      py="$3"
+      borderRadius="$3"
+      paddingHorizontal="$4"
+      paddingVertical="$3"
       gap="$2.5"
       theme={theme}
       opacity={disabled ? 0.5 : 1}
     >
       {/* Header: Icon, Title, Description */}
-      <XStack gap="$2.5" items="flex-start">
+      <XStack gap="$2.5" alignItems="flex-start">
         {icon && (
-          <View shrink={0} pt="$0.5">
+          <View flexShrink={0} paddingTop="$0.5">
             {icon}
           </View>
         )}
@@ -142,7 +142,7 @@ export function RangeSliderCard({
       </XStack>
 
       {/* Slider */}
-      <YStack gap="$5" pt="$4" pb="$4">
+      <YStack gap="$5" paddingTop="$4" paddingBottom="$4">
         <Slider
           value={[clampedValue]}
           onValueChange={(values) => {
@@ -157,13 +157,13 @@ export function RangeSliderCard({
           height={16}
           testID={testID ? `${testID}-slider` : undefined}
         >
-          <Slider.Track bg="$color4" rounded="$1" height={track}>
-            <Slider.TrackActive bg="$blue9" rounded="$1" />
+          <Slider.Track backgroundColor="$color4" borderRadius="$1" height={track}>
+            <Slider.TrackActive backgroundColor="$blue9" borderRadius="$1" />
           </Slider.Track>
           <Slider.Thumb
             index={0}
             circular
-            bg="white"
+            backgroundColor="white"
             borderWidth={2}
             borderColor="$blue9"
             width={thumb}
@@ -183,7 +183,7 @@ export function RangeSliderCard({
 
         {/* Value Labels */}
         {showLabels && (
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$2" color="$color9">
               {formatMinFn(min)}
             </Text>

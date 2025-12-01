@@ -27,7 +27,7 @@ export function InquiryOverviewWidget() {
   const entries = data.slice(0, 3)
 
   return (
-    <YStack p="$4" bg="$color2" rounded="$4" gap="$3">
+    <YStack padding="$4" backgroundColor="$color2" borderRadius="$4" gap="$3">
       <Text fontWeight="600" fontSize="$5">
         Negotiations
       </Text>
@@ -39,10 +39,10 @@ export function InquiryOverviewWidget() {
       {entries.map((application: ApplicationRecord) => (
         <YStack
           key={application.id}
-          p="$3"
+          padding="$3"
           gap="$2"
-          bg="$background"
-          rounded="$3"
+          backgroundColor="$background"
+          borderRadius="$3"
           borderWidth={1}
           borderColor="$borderColor"
         >

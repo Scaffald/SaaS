@@ -4,7 +4,7 @@ import {
 } from '@app/core/features/profile/components/InlineSkillSearch'
 import { api } from '@app/core/utils/api'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
-import { Button, Card, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 import type { SkillEntry, SkillsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
@@ -62,7 +62,6 @@ export function SkillsStep({
       isDirty,
     })
   }, [skills, hasMinimumSkills, isDirty, onStepStateChange])
-
 
   const handleSearchSkills = useCallback(
     async (query: string, _taxonomies: string[]) => {
@@ -191,7 +190,7 @@ export function SkillsStep({
           Selected Skills ({skills.length}/{MAX_SKILLS})
         </Text>
         {skills.length === 0 ? (
-          <Card bordered bg="$color2">
+          <Card bordered backgroundColor="$color2">
             <Card.Header>
               <Paragraph color="$color11">
                 Start by selecting your signature skills. We recommend adding at least three.
@@ -201,9 +200,9 @@ export function SkillsStep({
         ) : (
           <YStack gap="$2">
             {skills.map((skill) => (
-              <Card key={skill.id} bordered bg="$color2">
+              <Card key={skill.id} bordered backgroundColor="$color2">
                 <Card.Header gap="$2">
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <YStack gap="$1">
                       <Text fontWeight="600">{skill.name}</Text>
                       <Text fontSize="$2" color="$color11">

@@ -4,7 +4,7 @@ import { HelpCircle, Info } from '@tamagui/lucide-icons'
 export function InquiryHelpSidebar() {
   return (
     <YStack gap="$4">
-      <XStack items="center" gap="$2">
+      <XStack alignItems="center" gap="$2">
         <HelpCircle size={20} color="$color11" />
         <Text fontSize="$5" fontWeight="700">
           Help & Tips
@@ -57,8 +57,8 @@ export function InquiryHelpSidebar() {
         </YStack>
 
         {/* Negotiation Help */}
-        <YStack gap="$2" p="$3" bg="$blue2" rounded="$3">
-          <XStack items="center" gap="$2">
+        <YStack gap="$2" padding="$3" backgroundColor="$blue2" borderRadius="$3">
+          <XStack alignItems="center" gap="$2">
             <Info size={16} color="$blue10" />
             <Text fontSize="$4" fontWeight="600" color="$blue11">
               About Negotiation

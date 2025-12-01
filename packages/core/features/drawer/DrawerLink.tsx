@@ -2,7 +2,7 @@ import { useTranslation } from '@app/core/utils/useTranslation'
 import { Check, ChevronRight, Clock } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useCallback, useMemo } from 'react'
-import { Paragraph, XStack, YStack } from 'tamagui'
+import { Paragraph, XStack, YStack } from '@unicornlove/ui'
 import type { DrawerLinkProps } from './types'
 import { isActivePath } from './utils'
 
@@ -43,12 +43,12 @@ export const DrawerLink = ({
   const renderContent = useCallback(() => {
     const iconWrapper = (
       <XStack
-        items="center"
-        justify="center"
+        alignItems="center"
+        justifyContent="center"
         width={collapsed ? 48 : 32}
         height={collapsed ? 48 : 32}
-        rounded="$8"
-        bg={collapsed ? (active ? '$blue9' : '$color5') : 'transparent'}
+        borderRadius="$8"
+        backgroundColor={collapsed ? (active ? '$blue9' : '$color5') : 'transparent'}
       >
         {renderIcon()}
       </XStack>
@@ -59,7 +59,7 @@ export const DrawerLink = ({
     }
 
     return (
-      <XStack items="center" gap="$3">
+      <XStack alignItems="center" gap="$3">
         {iconWrapper}
         <Paragraph size="$4" fontWeight="600" color={active ? '$color1' : '$color12'}>
           {title}
@@ -74,9 +74,16 @@ export const DrawerLink = ({
     }
 
     return (
-      <XStack items="center" gap="$2">
+      <XStack alignItems="center" gap="$2">
         {item.badge && (
-          <XStack px="$2" py="$1" rounded="$10" bg="$red9" minW={20} items="center">
+          <XStack
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$10"
+            backgroundColor="$red9"
+            minWidth={20}
+            alignItems="center"
+          >
             <Paragraph size="$1" color={active ? '$color1' : '$color12'} fontWeight="600">
               {item.badge}
             </Paragraph>
@@ -95,13 +102,13 @@ export const DrawerLink = ({
     if (collapsed) {
       return (
         <XStack
-          items="center"
-          justify="center"
+          alignItems="center"
+          justifyContent="center"
           width={56}
           height={56}
-          rounded="$8"
+          borderRadius="$8"
           opacity={0.4}
-          bg="$color4"
+          backgroundColor="$color4"
           cursor="not-allowed"
         >
           {renderIcon()}
@@ -110,7 +117,15 @@ export const DrawerLink = ({
     }
 
     return (
-      <XStack items="center" gap="$3" px="$3" py="$2" opacity={0.5} cursor="not-allowed" flex={1}>
+      <XStack
+        alignItems="center"
+        gap="$3"
+        paddingHorizontal="$3"
+        paddingVertical="$2"
+        opacity={0.5}
+        cursor="not-allowed"
+        flex={1}
+      >
         {Icon && <Icon size={18} color="$color12" />}
         <Paragraph size="$3" fontWeight="500" color="$color12">
           {title}
@@ -125,12 +140,12 @@ export const DrawerLink = ({
         <XStack
           width={56}
           height={56}
-          rounded="$8"
-          items="center"
-          justify="center"
-          bg={active ? '$blue9' : 'transparent'}
-          hoverStyle={{ bg: active ? '$blue9' : '$blue4' }}
-          pressStyle={{ bg: active ? '$blue9' : '$blue4' }}
+          borderRadius="$8"
+          alignItems="center"
+          justifyContent="center"
+          backgroundColor={active ? '$blue9' : 'transparent'}
+          hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
+          pressStyle={{ backgroundColor: active ? '$blue9' : '$blue4' }}
           cursor="pointer"
         >
           {renderIcon()}
@@ -143,14 +158,14 @@ export const DrawerLink = ({
     return (
       <Link href={item.href} asChild>
         <XStack
-          items="center"
-          rounded="$4"
+          alignItems="center"
+          borderRadius="$4"
           gap="$3"
-          px="$3"
-          py="$2"
-          pl="$9"
-          pressStyle={{ bg: '$color1' }}
-          hoverStyle={{ bg: '$blue4' }}
+          paddingHorizontal="$3"
+          paddingVertical="$2"
+          paddingLeft="$9"
+          pressStyle={{ backgroundColor: '$color1' }}
+          hoverStyle={{ backgroundColor: '$blue4' }}
           cursor="pointer"
           flex={1}
         >
@@ -172,15 +187,15 @@ export const DrawerLink = ({
       <YStack flex={1}>
         <Link href={item.href} asChild>
           <XStack
-            items="center"
-            justify="space-between"
-            px="$3"
-            py="$2"
-            rounded="$4"
-            my="$1"
-            bg={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
-            pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
+            alignItems="center"
+            justifyContent="space-between"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
+            borderRadius="$4"
+            marginVertical="$1"
+            backgroundColor={active ? '$blue9' : 'transparent'}
+            hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
+            pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
             cursor="pointer"
           >
             {renderContent()}
@@ -188,7 +203,7 @@ export const DrawerLink = ({
           </XStack>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <YStack rounded="$4" my="$2" gap="$2" flex={1}>
+          <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -212,15 +227,15 @@ export const DrawerLink = ({
       <YStack flex={1}>
         <Link href={item.href} asChild>
           <XStack
-            items="center"
-            justify="space-between"
-            px="$3"
-            py="$2"
-            rounded="$4"
-            my="$1"
-            bg={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
-            pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
+            alignItems="center"
+            justifyContent="space-between"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
+            borderRadius="$4"
+            marginVertical="$1"
+            backgroundColor={active ? '$blue9' : 'transparent'}
+            hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
+            pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
             cursor="pointer"
           >
             {renderContent()}
@@ -228,7 +243,7 @@ export const DrawerLink = ({
           </XStack>
         </Link>
         {shouldShowSubItems && item.subItems && (
-          <YStack rounded="$4" my="$2" gap="$2" flex={1}>
+          <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
             {item.subItems.map((subItem) => (
               <DrawerLink
                 key={subItem.key}
@@ -252,22 +267,22 @@ export const DrawerLink = ({
       <YStack flex={1}>
         <Link href={item.href} asChild>
           <XStack
-            items="center"
-            justify="space-between"
-            px="$3"
-            py="$2"
-            rounded="$4"
-            my="$1"
-            bg={active ? '$blue9' : 'transparent'}
-            hoverStyle={{ bg: active ? '$blue9' : '$color3' }}
-            pressStyle={{ bg: active ? '$blue9' : '$color3' }}
+            alignItems="center"
+            justifyContent="space-between"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
+            borderRadius="$4"
+            marginVertical="$1"
+            backgroundColor={active ? '$blue9' : 'transparent'}
+            hoverStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
+            pressStyle={{ backgroundColor: active ? '$blue9' : '$color3' }}
             cursor="pointer"
           >
             {renderContent()}
             {renderRightSide()}
           </XStack>
         </Link>
-        <YStack rounded="$4" my="$2" gap="$2" flex={1}>
+        <YStack borderRadius="$4" marginVertical="$2" gap="$2" flex={1}>
           {item.subItems.map((subItem) => (
             <DrawerLink
               key={subItem.key}
@@ -288,15 +303,15 @@ export const DrawerLink = ({
   return (
     <Link href={item.href} asChild>
       <XStack
-        items="center"
-        justify="space-between"
-        px="$3"
-        py="$3"
-        rounded="$2"
-        my="$1"
-        bg={active ? '$blue9' : 'transparent'}
-        hoverStyle={{ bg: active ? '$blue9' : '$blue3' }}
-        pressStyle={{ bg: active ? '$blue9' : '$blue3' }}
+        alignItems="center"
+        justifyContent="space-between"
+        paddingHorizontal="$3"
+        paddingVertical="$3"
+        borderRadius="$2"
+        marginVertical="$1"
+        backgroundColor={active ? '$blue9' : 'transparent'}
+        hoverStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
+        pressStyle={{ backgroundColor: active ? '$blue9' : '$blue3' }}
         cursor="pointer"
       >
         {renderContent()}

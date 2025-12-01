@@ -13,7 +13,7 @@ import {
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Input, Label, Separator, Stack, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Separator, Stack, Text, XStack, YStack } from '@unicornlove/ui'
 import { normalizeOrganizationSlug } from '../utils/normalizeOrganizationSlug'
 
 const MIN_QUERY_LENGTH = 2
@@ -106,7 +106,7 @@ export function AddOrganizationWidget() {
   return (
     <DashboardWidget gap="$4">
       <YStack gap="$2">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Building2 size={20} color="$blue10" />
           <Text fontSize="$5" fontWeight="700" color="$color12">
             Add an Organization
@@ -147,7 +147,7 @@ export function AddOrganizationWidget() {
           }
         />
       ) : isFetching || isLoading ? (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Loader2 size={16} color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Checking for existing organizations...
@@ -170,7 +170,7 @@ export function AddOrganizationWidget() {
         onPress={handleCreatePress}
       >
         {isSubmitting ? (
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <Loader2 size={16} color="$color1" />
             <Text fontSize="$4" fontWeight="600" color="$color1">
               Submitting...
@@ -210,7 +210,7 @@ function StatusSummary({
   if (hasDuplicate) {
     return (
       <YStack gap="$3">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <AlertTriangle size={16} color="$yellow10" />
           <Text fontSize="$3" fontWeight="600" color="$yellow10">
             We found existing organizations that match your search.
@@ -230,7 +230,7 @@ function StatusSummary({
 
   return (
     <YStack gap="$2">
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <CheckCircle2 size={16} color="$green10" />
         <Text fontSize="$3" fontWeight="600" color="$green10">
           This name looks available.
@@ -258,7 +258,7 @@ function DuplicateLink({ id, name }: DuplicateLinkProps) {
       size="$3"
       onPress={() => router.push(buildPath(ROUTES.DASHBOARD.DISCOVER.EMPLOYERS.DETAIL, { id }))}
       iconAfter={ArrowRight}
-      justify="space-between"
+      justifyContent="space-between"
     >
       <Stack flex={1}>
         <Text fontSize="$3" color="$color12" numberOfLines={1}>
@@ -282,7 +282,7 @@ type SubmissionSummaryProps = {
 function SubmissionSummary({ request, onAddDetails }: SubmissionSummaryProps) {
   return (
     <YStack gap="$2">
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <CheckCircle2 size={16} color="$green10" />
         <Text fontSize="$3" fontWeight="600" color="$green10">
           Request submitted for {request.name}

@@ -5,7 +5,7 @@ import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
 import { MessageSquare, Send } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo, useState } from 'react'
-import { Avatar } from 'tamagui'
+import { Avatar } from '@unicornlove/ui'
 
 interface InquiryCommentThreadProps {
   inquiryId: string
@@ -114,21 +114,21 @@ export function InquiryCommentThread({
               <XStack
                 key={comment.id}
                 gap="$3"
-                p="$3"
-                bg={isUnread ? '$blue2' : '$color2'}
-                rounded="$3"
+                padding="$3"
+                backgroundColor={isUnread ? '$blue2' : '$color2'}
+                borderRadius="$3"
                 borderWidth={1}
                 borderColor={isUnread ? '$blue9' : '$borderColor'}
               >
                 <Avatar circular size="$3">
-                  <Avatar.Fallback bg="$blue9">
+                  <Avatar.Fallback backgroundColor="$blue9">
                     <Text color="white" fontSize="$2">
                       {comment.sender_id.charAt(0).toUpperCase()}
                     </Text>
                   </Avatar.Fallback>
                 </Avatar>
                 <YStack flex={1} gap="$1">
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <Text fontSize="$2" fontWeight="600" color="$color11">
                       {isFromCurrentUser ? 'You' : 'Organization'}
                     </Text>
@@ -144,7 +144,7 @@ export function InquiryCommentThread({
                       size="$2"
                       variant="outlined"
                       onPress={() => handleMarkRead(comment.id)}
-                      mt="$1"
+                      marginTop="$1"
                     >
                       Mark as read
                     </Button>
@@ -158,7 +158,13 @@ export function InquiryCommentThread({
 
       {/* Unread Indicator */}
       {unreadComments.length > 0 && (
-        <XStack items="center" gap="$2" p="$2" bg="$blue2" rounded="$3">
+        <XStack
+          alignItems="center"
+          gap="$2"
+          padding="$2"
+          backgroundColor="$blue2"
+          borderRadius="$3"
+        >
           <MessageSquare size={16} color="$blue10" />
           <Text fontSize="$2" color="$blue11" fontWeight="600">
             {unreadComments.length} new comment{unreadComments.length > 1 ? 's' : ''}
@@ -168,7 +174,7 @@ export function InquiryCommentThread({
 
       {/* Add Comment Input */}
       <YStack gap="$2">
-        <XStack gap="$2" items="flex-end">
+        <XStack gap="$2" alignItems="flex-end">
           <Input
             flex={1}
             placeholder="Add a comment..."

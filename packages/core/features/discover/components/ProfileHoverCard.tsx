@@ -2,7 +2,7 @@ import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { getStorageUrl } from '@app/core/utils/supabase/storage'
 import { Briefcase, Building2, ExternalLink, MapPin, User } from '@tamagui/lucide-icons'
-import { Button, Spinner, Text, View, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, View, XStack, YStack } from '@unicornlove/ui'
 
 interface ProfileHoverCardProps {
   /** Pin ID (user ID or organization ID) */
@@ -91,13 +91,13 @@ export function ProfileHoverCard({
   return (
     <View
       position="absolute"
-      bg="$background"
+      backgroundColor="$background"
       borderColor="$color6"
       borderWidth={1}
-      rounded="$4"
-      p="$3"
-      minW={240}
-      maxW={300}
+      borderRadius="$4"
+      padding="$3"
+      minWidth={240}
+      maxWidth={300}
       style={{
         zIndex: 1000,
         transform: 'translate(-50%, calc(-100% - 4px))',
@@ -110,7 +110,7 @@ export function ProfileHoverCard({
       onMouseLeave={onHoverCardLeave}
     >
       {isLoading ? (
-        <YStack items="center" py="$4" gap="$2">
+        <YStack alignItems="center" paddingVertical="$4" gap="$2">
           <Spinner size="small" color="$blue10" />
           <Text fontSize="$3" color="$color11">
             Loading...
@@ -119,9 +119,15 @@ export function ProfileHoverCard({
       ) : pinType === 'worker' && workerPreview ? (
         <YStack gap="$2">
           {/* Header with avatar and name */}
-          <XStack gap="$3" items="center">
+          <XStack gap="$3" alignItems="center">
             {avatarUrl ? (
-              <View width={48} height={48} rounded="$10" overflow="hidden" bg="$color3">
+              <View
+                width={48}
+                height={48}
+                borderRadius="$10"
+                overflow="hidden"
+                backgroundColor="$color3"
+              >
                 <img
                   src={avatarUrl}
                   alt={workerPreview.displayName || 'Worker'}
@@ -132,10 +138,10 @@ export function ProfileHoverCard({
               <View
                 width={48}
                 height={48}
-                rounded="$10"
-                bg="$blue4"
-                items="center"
-                justify="center"
+                borderRadius="$10"
+                backgroundColor="$blue4"
+                alignItems="center"
+                justifyContent="center"
               >
                 <User size={24} color="$blue10" />
               </View>
@@ -164,7 +170,7 @@ export function ProfileHoverCard({
 
           {/* Location */}
           {workerPreview.location && (
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <MapPin size={14} color="$color10" />
               <Text fontSize="$3" color="$color11" numberOfLines={1}>
                 {workerPreview.location}
@@ -184,7 +190,13 @@ export function ProfileHoverCard({
                     skill.taxonomy ||
                     `skill-${Math.random()}`
                   return (
-                    <View key={skillKey} bg="$blue4" px="$2" py="$1" rounded="$2">
+                    <View
+                      key={skillKey}
+                      backgroundColor="$blue4"
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$2"
+                    >
                       <Text fontSize="$1" color="$blue11">
                         {skill.taxonomy || 'Skill'}
                       </Text>
@@ -202,8 +214,15 @@ export function ProfileHoverCard({
       ) : pinType === 'organization' && organization ? (
         <YStack gap="$2">
           {/* Header with icon and name */}
-          <XStack gap="$3" items="center">
-            <View width={48} height={48} rounded="$6" bg="$blue4" items="center" justify="center">
+          <XStack gap="$3" alignItems="center">
+            <View
+              width={48}
+              height={48}
+              borderRadius="$6"
+              backgroundColor="$blue4"
+              alignItems="center"
+              justifyContent="center"
+            >
               <Building2 size={24} color="$blue10" />
             </View>
             <YStack flex={1} gap="$1">
@@ -232,7 +251,7 @@ export function ProfileHoverCard({
           {organization.address &&
             typeof organization.address === 'object' &&
             'city' in organization.address && (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <MapPin size={14} color="$color10" />
                 <Text fontSize="$3" color="$color11" numberOfLines={1}>
                   {[
@@ -248,7 +267,7 @@ export function ProfileHoverCard({
           {/* Key Metrics */}
           <XStack gap="$3" flexWrap="wrap">
             {jobsCount > 0 && (
-              <XStack gap="$1" items="center">
+              <XStack gap="$1" alignItems="center">
                 <Briefcase size={14} color="$green10" />
                 <Text fontSize="$2" color="$color11">
                   {jobsCount} {jobsCount === 1 ? 'job' : 'jobs'}
@@ -256,7 +275,7 @@ export function ProfileHoverCard({
               </XStack>
             )}
             {organization.employee_count_range && (
-              <XStack gap="$1" items="center">
+              <XStack gap="$1" alignItems="center">
                 <Text fontSize="$2" color="$color11">
                   {organization.employee_count_range}
                 </Text>

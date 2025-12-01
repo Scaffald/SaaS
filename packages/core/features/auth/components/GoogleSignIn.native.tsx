@@ -3,7 +3,7 @@ import { captureEvent } from '@app/core/utils/analytics/client'
 import { supabase } from '@app/core/utils/supabase/client'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { useRouter } from 'expo-router'
-import { Button } from 'tamagui'
+import { Button } from '@unicornlove/ui'
 
 import { IconGoogle } from './IconGoogle'
 
@@ -71,9 +71,9 @@ export function GoogleSignIn() {
       icon={IconGoogle}
       // styles to make it look like the native Apple button on AppleSignIn.native.tsx
       scaleIcon={1}
-      bg="white"
+      backgroundColor="white"
       fontSize="$5"
-      pressStyle={{ bg: 'transparent', opacity: 0.6, borderWidth: '$0' }}
+      pressStyle={{ backgroundColor: 'transparent', opacity: 0.6, borderWidth: '$0' }}
       animation="200ms"
       chromeless
       fontWeight="500"

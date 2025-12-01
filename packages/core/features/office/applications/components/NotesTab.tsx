@@ -1,5 +1,5 @@
 import { TeamCommentThread } from '@app/core/features/office/teams'
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 
 interface NotesTabProps {
   applicationId: string

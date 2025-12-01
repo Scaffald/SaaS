@@ -16,7 +16,17 @@ import { useToastController } from '@tamagui/toast'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { Alert, Linking, ScrollView } from 'react-native'
-import { Button, Card, Input, Paragraph, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  Input,
+  Paragraph,
+  Separator,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 import { PhotoGallery } from '../components/PhotoGallery'
 import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
@@ -239,7 +249,7 @@ export function WorkLogDetailScreen() {
 
   if (workLogQuery.isLoading) {
     return (
-      <YStack flex={1} justifyContent="center" items="center" gap="$3">
+      <YStack flex={1} justifyContent="center" alignItems="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color10">Loading work log…</Text>
       </YStack>
@@ -248,7 +258,7 @@ export function WorkLogDetailScreen() {
 
   if (!workLog) {
     return (
-      <YStack flex={1} justifyContent="center" items="center" gap="$3" p="$4">
+      <YStack flex={1} justifyContent="center" alignItems="center" gap="$3" padding="$4">
         <Text fontSize="$6" fontWeight="700">
           Work log not found
         </Text>
@@ -357,9 +367,9 @@ export function WorkLogDetailScreen() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <YStack p="$4" gap="$4">
+      <YStack padding="$4" gap="$4">
         <YStack gap="$2">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <YStack gap="$1" flex={1}>
               <Text fontSize="$7" fontWeight="700">
                 {project?.name ?? 'Work Log'}
@@ -378,7 +388,7 @@ export function WorkLogDetailScreen() {
         </YStack>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" p="$3">
+          <YStack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Summary
             </Text>
@@ -410,7 +420,7 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" p="$3">
+          <YStack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Profile visibility
             </Text>
@@ -423,7 +433,7 @@ export function WorkLogDetailScreen() {
               </Paragraph>
             )}
             <YStack gap="$4">
-              <XStack justify="space-between" items="center" gap="$4">
+              <XStack justifyContent="space-between" alignItems="center" gap="$4">
                 <YStack gap="$1" flex={1}>
                   <Text fontWeight="600">Show on public profile</Text>
                   <Paragraph color="$color10">
@@ -438,7 +448,7 @@ export function WorkLogDetailScreen() {
                 />
               </XStack>
 
-              <XStack justify="space-between" items="center" gap="$4">
+              <XStack justifyContent="space-between" alignItems="center" gap="$4">
                 <YStack gap="$1" flex={1}>
                   <Text fontWeight="600">Show date on profile</Text>
                   <Paragraph color="$color10">
@@ -453,7 +463,7 @@ export function WorkLogDetailScreen() {
                 />
               </XStack>
 
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <YStack gap="$1">
                   <Text fontWeight="600">Verification status</Text>
                   <Paragraph color="$color10">
@@ -463,18 +473,18 @@ export function WorkLogDetailScreen() {
                   </Paragraph>
                 </YStack>
                 <Text
-                  bg={isVerified ? '$green4' : '$yellow4'}
+                  backgroundColor={isVerified ? '$green4' : '$yellow4'}
                   color={isVerified ? '$green11' : '$yellow11'}
-                  px="$3"
-                  py="$1"
-                  rounded="$4"
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderRadius="$4"
                   fontWeight="600"
                 >
                   {isVerified ? 'Verified' : 'Pending'}
                 </Text>
               </XStack>
 
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <YStack gap="$1">
                   <Text fontWeight="600">Current visibility</Text>
                   <Paragraph color="$color10">
@@ -489,7 +499,7 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" p="$3">
+          <YStack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Time entries
             </Text>
@@ -500,11 +510,11 @@ export function WorkLogDetailScreen() {
                 timeEntryItems.map((entry) => (
                   <XStack
                     key={entry.key}
-                    justify="space-between"
-                    bg="$color3"
-                    px="$3"
-                    py="$2"
-                    rounded="$4"
+                    justifyContent="space-between"
+                    backgroundColor="$color3"
+                    paddingHorizontal="$3"
+                    paddingVertical="$2"
+                    borderRadius="$4"
                   >
                     <Text fontWeight="600">
                       {entry.start}–{entry.end}
@@ -518,7 +528,7 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" p="$3">
+          <YStack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Tasks completed
             </Text>
@@ -527,7 +537,13 @@ export function WorkLogDetailScreen() {
             ) : (
               <YStack gap="$2">
                 {taskItems.map((task) => (
-                  <XStack key={task.key} bg="$color3" px="$3" py="$2" rounded="$4">
+                  <XStack
+                    key={task.key}
+                    backgroundColor="$color3"
+                    paddingHorizontal="$3"
+                    paddingVertical="$2"
+                    borderRadius="$4"
+                  >
                     <Text>{task.task}</Text>
                   </XStack>
                 ))}
@@ -542,7 +558,13 @@ export function WorkLogDetailScreen() {
             ) : (
               <XStack gap="$2" flexWrap="wrap">
                 {skillNames.map((skill) => (
-                  <Text key={skill} bg="$color3" px="$3" py="$1" rounded="$4">
+                  <Text
+                    key={skill}
+                    backgroundColor="$color3"
+                    paddingHorizontal="$3"
+                    paddingVertical="$1"
+                    borderRadius="$4"
+                  >
                     {skill}
                   </Text>
                 ))}
@@ -553,7 +575,7 @@ export function WorkLogDetailScreen() {
 
         {photos.length > 0 && (
           <Card borderColor="$color6" borderWidth={1}>
-            <YStack gap="$3" p="$3">
+            <YStack gap="$3" padding="$3">
               <Text fontSize="$6" fontWeight="700">
                 Photos
               </Text>
@@ -584,8 +606,8 @@ export function WorkLogDetailScreen() {
         )}
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" p="$3">
-            <XStack justify="space-between" items="center">
+          <YStack gap="$3" padding="$3">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="700">
                 Collaborators
               </Text>
@@ -657,8 +679,8 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" p="$3">
-            <XStack justify="space-between" items="center">
+          <YStack gap="$3" padding="$3">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="700">
                 Conversation
               </Text>
@@ -705,7 +727,7 @@ export function WorkLogDetailScreen() {
         </Card>
 
         <Card borderColor="$color6" borderWidth={1}>
-          <YStack gap="$3" p="$3">
+          <YStack gap="$3" padding="$3">
             <Text fontSize="$6" fontWeight="700">
               Exports
             </Text>
@@ -757,7 +779,14 @@ interface SummaryMetricProps {
 
 function SummaryMetric({ icon: IconComponent, label, value }: SummaryMetricProps) {
   return (
-    <XStack bg="$color3" px="$3" py="$2" rounded="$4" gap="$2" items="center">
+    <XStack
+      backgroundColor="$color3"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      borderRadius="$4"
+      gap="$2"
+      alignItems="center"
+    >
       <IconComponent size={16} color="currentColor" />
       <YStack gap="$1">
         <Text fontWeight="600">{value}</Text>
@@ -791,7 +820,7 @@ function CollaboratorRow({
 
   return (
     <Card borderWidth={1} borderColor="$color6">
-      <YStack gap="$2" p="$3">
+      <YStack gap="$2" padding="$3">
         <Text fontWeight="600">{displayName}</Text>
         <Text color="$color10">Permission: {permission === 'edit' ? 'Can edit' : 'View only'}</Text>
         <XStack gap="$2">
@@ -826,13 +855,13 @@ function ConversationEntry({ entry, currentUserId }: ConversationEntryProps) {
 
   return (
     <YStack
-      bg={isSystemMessage ? '$color4' : isOwner ? '$color3' : '$color2'}
-      px="$3"
-      py="$2"
-      rounded="$4"
+      backgroundColor={isSystemMessage ? '$color4' : isOwner ? '$color3' : '$color2'}
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      borderRadius="$4"
       gap="$1"
     >
-      <XStack justify="space-between">
+      <XStack justifyContent="space-between">
         <Text fontWeight="600">{authorName}</Text>
         <Text color="$color10">{entry.created_at ? formatDate(entry.created_at) : ''}</Text>
       </XStack>

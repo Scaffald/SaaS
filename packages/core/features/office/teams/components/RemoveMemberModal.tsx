@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { ResponsiveModal } from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Button, Text, TextArea, YStack } from 'tamagui'
+import { Button, Text, TextArea, YStack } from '@unicornlove/ui'
 
 interface RemoveMemberModalProps {
   open: boolean
@@ -72,13 +72,13 @@ export function RemoveMemberModal({
             rows={4}
             borderWidth={1}
             borderColor="$borderColor"
-            px="$3"
-            py="$2"
+            paddingHorizontal="$3"
+            paddingVertical="$2"
             disabled={removeMemberMutation.isPending}
           />
         </YStack>
 
-        <YStack gap="$2" bg="$color2" p="$3" rounded="$4">
+        <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$4">
           <Text fontWeight="600">What happens next?</Text>
           <Text color="$color11" fontSize="$3">
             • The member loses access to the team immediately.
@@ -93,7 +93,7 @@ export function RemoveMemberModal({
 
         <YStack gap="$3">
           <Button
-            bg="$red9"
+            backgroundColor="$red9"
             color="$color1"
             onPress={handleRemove}
             disabled={removeMemberMutation.isPending}

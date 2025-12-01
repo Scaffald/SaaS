@@ -6,7 +6,7 @@ import { RefreshCw } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type InvitationRespondOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['respond']
 
@@ -41,7 +41,7 @@ export default function DashboardTeamInvitationsScreen() {
   }
 
   const content = (
-    <YStack flex={1} p="$4" gap="$5">
+    <YStack flex={1} padding="$4" gap="$5">
       <YStack gap="$2">
         <Text fontSize="$7" fontWeight="700">
           Team invitations
@@ -52,7 +52,7 @@ export default function DashboardTeamInvitationsScreen() {
         </Text>
       </YStack>
 
-      <XStack gap="$2" justify="flex-end">
+      <XStack gap="$2" justifyContent="flex-end">
         <Button
           variant="outlined"
           size="$2"
@@ -65,7 +65,7 @@ export default function DashboardTeamInvitationsScreen() {
       </XStack>
 
       {invitationsQuery.isLoading ? (
-        <YStack items="center" justify="center" gap="$2" py="$10">
+        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$10">
           <Spinner size="large" />
           <Text color="$color11">Loading invitations…</Text>
         </YStack>

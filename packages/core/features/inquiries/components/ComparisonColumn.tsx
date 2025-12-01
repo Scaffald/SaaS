@@ -4,7 +4,7 @@ import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 import { Check, MessageSquare } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
-import { Avatar, Card, type GetThemeValueForKey, Separator } from 'tamagui'
+import { Avatar, Card, type GetThemeValueForKey, Separator } from '@unicornlove/ui'
 import { ComparisonField } from './ComparisonField'
 import { InquiryHistoryTimeline } from './InquiryHistoryTimeline'
 
@@ -127,19 +127,19 @@ export function ComparisonColumn({
     <YStack
       width={width}
       gap="$3"
-      bg="$background"
-      p="$4"
-      rounded="$4"
+      backgroundColor="$background"
+      padding="$4"
+      borderRadius="$4"
       borderWidth={1}
       borderColor="$borderColor"
       $sm={{ width: '100%' }}
     >
       {/* Candidate Header */}
       <YStack gap="$2">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Avatar circular size="$4">
             <Avatar.Image src={candidateAvatar || undefined} />
-            <Avatar.Fallback bg="$blue9">
+            <Avatar.Fallback backgroundColor="$blue9">
               <Text color="white" fontWeight="600">
                 {candidateName.charAt(0).toUpperCase()}
               </Text>
@@ -181,11 +181,11 @@ export function ComparisonColumn({
             return (
               <XStack
                 key={sectionName}
-                bg={status.accepted ? '$green3' : '$gray3'}
-                px="$2"
-                py="$1"
-                rounded="$2"
-                items="center"
+                backgroundColor={status.accepted ? '$green3' : '$gray3'}
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                borderRadius="$2"
+                alignItems="center"
                 gap="$1"
               >
                 {status.accepted ? (
@@ -203,7 +203,7 @@ export function ComparisonColumn({
                   {sectionName}
                 </Text>
                 {commentCount > 0 && (
-                  <XStack items="center" gap="$1">
+                  <XStack alignItems="center" gap="$1">
                     <MessageSquare size={10} color="$blue11" />
                     <Text fontSize="$1" color="$blue11">
                       {commentCount}
@@ -219,7 +219,7 @@ export function ComparisonColumn({
       <Separator />
 
       {/* Employment Section */}
-      <Card p="$3" gap="$2">
+      <Card padding="$3" gap="$2">
         <Text fontSize="$4" fontWeight="600">
           Employment
         </Text>
@@ -271,7 +271,7 @@ export function ComparisonColumn({
           isDifferent={highlightDifferences.has('employmentDatesNegotiable')}
         />
         {getSectionStatus('employment').accepted && (
-          <XStack items="center" gap="$1" mt="$1">
+          <XStack alignItems="center" gap="$1" marginTop="$1">
             <Check size={14} color="$green11" />
             <Text fontSize="$2" color="$green11" fontWeight="600">
               Accepted
@@ -279,7 +279,7 @@ export function ComparisonColumn({
           </XStack>
         )}
         {getCommentCount('employment') > 0 && (
-          <XStack items="center" gap="$1" mt="$1">
+          <XStack alignItems="center" gap="$1" marginTop="$1">
             <MessageSquare size={14} color="$blue11" />
             <Text fontSize="$2" color="$blue11">
               {getCommentCount('employment')} comment
@@ -290,7 +290,7 @@ export function ComparisonColumn({
       </Card>
 
       {/* Compensation Section */}
-      <Card p="$3" gap="$2">
+      <Card padding="$3" gap="$2">
         <Text fontSize="$4" fontWeight="600">
           Compensation
         </Text>
@@ -305,7 +305,7 @@ export function ComparisonColumn({
           isDifferent={highlightDifferences.has('rateNegotiable')}
         />
         {getSectionStatus('compensation').accepted && (
-          <XStack items="center" gap="$1" mt="$1">
+          <XStack alignItems="center" gap="$1" marginTop="$1">
             <Check size={14} color="$green11" />
             <Text fontSize="$2" color="$green11" fontWeight="600">
               Accepted
@@ -313,7 +313,7 @@ export function ComparisonColumn({
           </XStack>
         )}
         {getCommentCount('compensation') > 0 && (
-          <XStack items="center" gap="$1" mt="$1">
+          <XStack alignItems="center" gap="$1" marginTop="$1">
             <MessageSquare size={14} color="$blue11" />
             <Text fontSize="$2" color="$blue11">
               {getCommentCount('compensation')} comment
@@ -325,7 +325,7 @@ export function ComparisonColumn({
 
       {/* Capabilities Section */}
       {capabilityResponses.length > 0 && (
-        <Card p="$3" gap="$2">
+        <Card padding="$3" gap="$2">
           <Text fontSize="$4" fontWeight="600">
             Capabilities
           </Text>
@@ -342,7 +342,7 @@ export function ComparisonColumn({
             />
           ))}
           {getSectionStatus('capabilities').accepted && (
-            <XStack items="center" gap="$1" mt="$1">
+            <XStack alignItems="center" gap="$1" marginTop="$1">
               <Check size={14} color="$green11" />
               <Text fontSize="$2" color="$green11" fontWeight="600">
                 Accepted
@@ -350,7 +350,7 @@ export function ComparisonColumn({
             </XStack>
           )}
           {getCommentCount('capabilities') > 0 && (
-            <XStack items="center" gap="$1" mt="$1">
+            <XStack alignItems="center" gap="$1" marginTop="$1">
               <MessageSquare size={14} color="$blue11" />
               <Text fontSize="$2" color="$blue11">
                 {getCommentCount('capabilities')} comment
@@ -361,7 +361,7 @@ export function ComparisonColumn({
         </Card>
       )}
 
-      <Card p="$3" gap="$2">
+      <Card padding="$3" gap="$2">
         <Text fontSize="$4" fontWeight="600">
           Other Terms
         </Text>
@@ -437,7 +437,14 @@ const statusColors: Record<string, GetThemeValueForKey<'color'>> = {
 
 function StatusBadge({ label }: { label: string }) {
   return (
-    <XStack px="$2" py="$1" bg="$color3" rounded="$3" items="center" gap="$1">
+    <XStack
+      paddingHorizontal="$2"
+      paddingVertical="$1"
+      backgroundColor="$color3"
+      borderRadius="$3"
+      alignItems="center"
+      gap="$1"
+    >
       <Text fontSize="$2" color={statusColors[label] ?? '$color11'} fontWeight="600">
         {label.replace(/_/g, ' ')}
       </Text>
@@ -447,7 +454,7 @@ function StatusBadge({ label }: { label: string }) {
 
 function SubtleBadge({ label }: { label: string }) {
   return (
-    <XStack px="$2" py="$1" bg="$color2" rounded="$3">
+    <XStack paddingHorizontal="$2" paddingVertical="$1" backgroundColor="$color2" borderRadius="$3">
       <Text fontSize="$2" color="$color10">
         {label}
       </Text>

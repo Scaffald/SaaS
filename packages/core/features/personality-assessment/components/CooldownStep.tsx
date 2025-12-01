@@ -1,11 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Button, Progress, Text, YStack } from 'tamagui'
-import {
-  getChoices,
-  getQuestions,
-  type IPIPAnswer,
-  type IPIPChoice,
-} from '../lib/ipip'
+import { Button, Progress, Text, YStack } from '@unicornlove/ui'
+import { getChoices, getQuestions, type IPIPAnswer, type IPIPChoice } from '../lib/ipip'
 
 export interface CooldownStepProps {
   cooldownEndTime: string // ISO timestamp when cooldown ends
@@ -106,8 +101,15 @@ export function CooldownStep({
   return (
     <YStack gap="$6" width="100%" style={{ maxWidth: 800, alignSelf: 'center' }}>
       {/* Cooldown Timer */}
-      <YStack gap="$4" p="$6" bg="$color3" rounded="$4" borderWidth={1} borderColor="$color7">
-        <YStack gap="$2" items="center">
+      <YStack
+        gap="$4"
+        padding="$6"
+        backgroundColor="$color3"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$color7"
+      >
+        <YStack gap="$2" alignItems="center">
           <Text fontSize="$6" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             Cooldown Period
           </Text>
@@ -125,7 +127,7 @@ export function CooldownStep({
 
       {/* IPIP Questions Section */}
       <YStack gap="$4">
-        <YStack gap="$2" items="center">
+        <YStack gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12" style={{ textAlign: 'center' }}>
             While you wait, answer some personality questions
           </Text>
@@ -135,7 +137,13 @@ export function CooldownStep({
         </YStack>
 
         {currentQuestion && (
-          <YStack gap="$4" p="$4" rounded="$4" borderWidth={1} borderColor="$borderColor">
+          <YStack
+            gap="$4"
+            padding="$4"
+            borderRadius="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+          >
             <Text fontSize="$5" fontWeight="500" color="$color12">
               {currentQuestion.text}
             </Text>
@@ -158,7 +166,7 @@ export function CooldownStep({
         )}
 
         {!currentQuestion && !isCooldownActive && (
-          <YStack gap="$2" items="center" p="$4">
+          <YStack gap="$2" alignItems="center" padding="$4">
             <Text fontSize="$4" color="$green10" fontWeight="600" style={{ textAlign: 'center' }}>
               All questions answered! You can continue to the next step.
             </Text>

@@ -3,7 +3,7 @@ import { api } from '@app/core/utils/api'
 import type { WelcomeSlideCreate, WelcomeSlideUpdate } from '@app/schemas'
 import { OfficeLayout } from '@app/core/components/layouts'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 import { CMSSlideForm } from './cms-slide-form'
 
 export function OfficeCMSEdit() {
@@ -24,7 +24,7 @@ export function OfficeCMSEdit() {
       <OfficeLayout
         showBreadcrumb
         leftContent={
-          <YStack items="center" justify="center" flex={1}>
+          <YStack alignItems="center" justifyContent="center" flex={1}>
             <Spinner size="large" />
           </YStack>
         }

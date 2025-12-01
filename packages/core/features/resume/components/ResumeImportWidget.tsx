@@ -4,7 +4,7 @@ import { DashboardWidget, spacing } from '@unicornlove/ui'
 import { FileText, ShieldCheck } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { ResumeUploadButton } from './ResumeUploadButton'
 import { ResumeUploadModal } from './ResumeUploadModal'
 
@@ -35,8 +35,15 @@ export function ResumeImportWidget() {
     <>
       <DashboardWidget>
         <YStack gap={spacing.md}>
-          <XStack gap={spacing.md} items="center">
-            <YStack width={48} height={48} items="center" justify="center" bg="$blue3" rounded="$4">
+          <XStack gap={spacing.md} alignItems="center">
+            <YStack
+              width={48}
+              height={48}
+              alignItems="center"
+              justifyContent="center"
+              backgroundColor="$blue3"
+              borderRadius="$4"
+            >
               <FileText color="$blue10" size={26} />
             </YStack>
             <YStack gap="$1">
@@ -50,7 +57,7 @@ export function ResumeImportWidget() {
           </XStack>
 
           <YStack gap="$2">
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <ShieldCheck size={18} color="$green10" />
               <Text fontSize="$2" color="$green11">
                 Files stay private — only you can access your resume.

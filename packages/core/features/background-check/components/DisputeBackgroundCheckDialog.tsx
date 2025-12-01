@@ -3,7 +3,7 @@ import type { AppRouter } from '@app/supabase/client-types'
 import { AlertTriangle } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useEffect, useMemo } from 'react'
-import { Button, Dialog, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Dialog, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { useDispute } from '../hooks/useDispute'
 import { DisputeForm } from './DisputeForm'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -88,7 +88,7 @@ export function DisputeBackgroundCheckDialog({
           style={{ width: '90%', maxWidth: 520 }}
         >
           <YStack gap="$4">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Dialog.Title fontSize="$6" fontWeight="700">
                 Dispute background check
               </Dialog.Title>
@@ -100,8 +100,8 @@ export function DisputeBackgroundCheckDialog({
             </XStack>
 
             {check ? (
-              <YStack gap="$2" bg="$color3" p="$3" rounded="$4">
-                <XStack gap="$2" items="center">
+              <YStack gap="$2" backgroundColor="$color3" padding="$3" borderRadius="$4">
+                <XStack gap="$2" alignItems="center">
                   <AlertTriangle size={18} color="$yellow10" />
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     {statusMeta?.label ?? 'Background check'}
@@ -151,7 +151,7 @@ export function DisputeBackgroundCheckDialog({
                 />
               </>
             ) : (
-              <YStack gap="$3" items="center" py="$6">
+              <YStack gap="$3" alignItems="center" paddingVertical="$6">
                 <Text fontSize="$3" color="$color10">
                   Select a background check to review dispute information.
                 </Text>

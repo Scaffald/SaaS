@@ -6,7 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type ViolationReportsOutput =
   inferRouterOutputs<AppRouter>['legalAgreements']['listViolationReports']
@@ -129,8 +129,8 @@ export function OfficeViolationReports() {
   }, [updateMutation])
 
   return (
-    <YStack flex={1} p="$4" gap="$4">
-      <XStack justify="space-between" items="center">
+    <YStack flex={1} padding="$4" gap="$4">
+      <XStack justifyContent="space-between" alignItems="center">
         <YStack>
           <Text fontSize="$7" fontWeight="700">
             Anti-Circumvention Violation Reports
@@ -151,12 +151,12 @@ export function OfficeViolationReports() {
       </XStack>
 
       {reportsQuery.isLoading ? (
-        <YStack flex={1} items="center" justify="center" gap="$3">
+        <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
           <Spinner size="large" />
           <Text color="$color10">Loading violation reports…</Text>
         </YStack>
       ) : (
-        <Card borderWidth={1} borderColor="$color6" bg="$color2" padding="$4">
+        <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
           <DataTable
             columns={reportsColumns}
             data={reportsQuery.data?.items ?? []}
@@ -165,7 +165,7 @@ export function OfficeViolationReports() {
             emptyMessage="No violation reports found."
           />
           {reportsQuery.data && reportsQuery.data.totalCount > 0 && (
-            <Text fontSize="$2" color="$color10" mt="$3">
+            <Text fontSize="$2" color="$color10" marginTop="$3">
               Showing {reportsQuery.data.items.length} of {reportsQuery.data.totalCount} reports
             </Text>
           )}

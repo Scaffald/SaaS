@@ -4,7 +4,7 @@ import { AddressAutocomplete } from '@unicornlove/ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { randomUUID } from 'expo-crypto'
 import { useCallback, useEffect, useRef } from 'react'
-import { Button, Input, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface OrganizationLocationsInputProps {
   value: OrganizationLocation[]
@@ -145,8 +145,8 @@ export function OrganizationLocationsInput({
             <YStack
               key={locationIds[index]}
               gap="$2"
-              p="$3"
-              bg="$background"
+              padding="$3"
+              backgroundColor="$background"
               borderWidth={1}
               borderColor="$borderColor"
             >
@@ -183,13 +183,13 @@ export function OrganizationLocationsInput({
               </YStack>
 
               {/* Remove Button */}
-              <XStack justify="flex-end">
+              <XStack justifyContent="flex-end">
                 <Button
                   variant="outlined"
                   size="$3"
                   onPress={() => handleRemoveLocation(index)}
                   disabled={disabled || value.length === 1}
-                  bg="transparent"
+                  backgroundColor="transparent"
                   borderColor="$color8"
                 >
                   <Button.Icon>
@@ -202,14 +202,14 @@ export function OrganizationLocationsInput({
           ))
         ) : (
           /* Empty state - show Add Location button */
-          <YStack p="$4" borderWidth={1} borderColor="$borderColor" gap="$2">
+          <YStack padding="$4" borderWidth={1} borderColor="$borderColor" gap="$2">
             <Text color="$color11">No locations added yet</Text>
             <Button
               variant="outlined"
               size="$3"
               onPress={handleAddLocation}
               disabled={disabled}
-              bg="transparent"
+              backgroundColor="transparent"
               borderColor="$color8"
             >
               <Button.Icon>
@@ -228,8 +228,8 @@ export function OrganizationLocationsInput({
           size="$3"
           onPress={handleAddLocation}
           disabled={disabled}
-          self="flex-start"
-          bg="transparent"
+          alignSelf="flex-start"
+          backgroundColor="transparent"
           borderColor="$color8"
         >
           <Button.Icon>

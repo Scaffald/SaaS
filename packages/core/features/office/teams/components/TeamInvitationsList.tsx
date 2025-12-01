@@ -7,7 +7,15 @@ import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Card, type GetThemeValueForKey, Spinner, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  type GetThemeValueForKey,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 type InvitationsListOutput = inferRouterOutputs<AppRouter>['teams']['invitations']['list']
 type InvitationRecord = NonNullable<InvitationsListOutput['invitations']>[number]
@@ -101,16 +109,16 @@ export function TeamInvitationsList({
   }
 
   return (
-    <YStack gap="$4" px="$3" $md={{ px: undefined }}>
+    <YStack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
       <XStack
-        justify="space-between"
-        items="flex-start"
+        justifyContent="space-between"
+        alignItems="flex-start"
         flexWrap="wrap"
         gap="$3"
         flexDirection="column"
         width="100%"
         $md={{
-          items: 'center',
+          alignItems: 'center',
           flexDirection: 'row',
         }}
       >
@@ -119,11 +127,11 @@ export function TeamInvitationsList({
         </Text>
         <XStack
           gap="$2"
-          items="flex-start"
+          alignItems="flex-start"
           flexDirection="column"
           width="100%"
           $md={{
-            items: 'center',
+            alignItems: 'center',
             flexDirection: 'row',
             width: undefined,
           }}
@@ -156,7 +164,7 @@ export function TeamInvitationsList({
       </XStack>
 
       {invitationsQuery.isLoading ? (
-        <YStack items="center" justify="center" gap="$2" py="$6">
+        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
           <Spinner size="large" />
           <Text color="$color11">Loading invitations…</Text>
         </YStack>
@@ -165,9 +173,9 @@ export function TeamInvitationsList({
           gap="$2"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$4"
-          p="$4"
-          bg="$color2"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color2"
         >
           <Text fontWeight="600">No invitations yet</Text>
           <Text color="$color11">
@@ -214,16 +222,16 @@ export function TeamInvitationsList({
             return (
               <Card
                 key={invitation.id}
-                p="$4"
+                padding="$4"
                 borderWidth={1}
                 borderColor="$borderColor"
                 gap="$3"
-                bg="$color1"
+                backgroundColor="$color1"
                 accessible
                 accessibilityRole="summary"
                 accessibilityLabel={`Invitation for ${invitation.email ?? invitation.invitedUserId ?? 'team member'} · Status ${statusLabel}${invitation.role?.name ? ` · Role ${invitation.role.name}` : ''}`}
               >
-                <XStack justify="space-between" items="center">
+                <XStack justifyContent="space-between" alignItems="center">
                   <YStack gap="$1">
                     <Text fontWeight="600">
                       {invitation.email
@@ -232,7 +240,7 @@ export function TeamInvitationsList({
                           ? `Existing member (${invitation.invitedUserId})`
                           : 'Invitation'}
                     </Text>
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Clock size={16} color="$color11" />
                       <Text fontSize="$3" color="$color11">
                         Sent {sentAt ?? 'recently'}
@@ -248,10 +256,10 @@ export function TeamInvitationsList({
                 <XStack
                   gap="$2"
                   flexDirection="column"
-                  items="stretch"
+                  alignItems="stretch"
                   $md={{
                     flexDirection: 'row',
-                    items: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   <Text fontSize="$3" color="$color11">
@@ -287,10 +295,10 @@ export function TeamInvitationsList({
                 <XStack
                   gap="$2"
                   flexDirection="column"
-                  items="stretch"
+                  alignItems="stretch"
                   $md={{
                     flexDirection: 'row',
-                    items: 'center',
+                    alignItems: 'center',
                   }}
                 >
                   <Text fontSize="$3" color="$color11">
@@ -303,10 +311,10 @@ export function TeamInvitationsList({
 
                 <XStack
                   gap="$2"
-                  justify="flex-start"
+                  justifyContent="flex-start"
                   flexWrap="wrap"
                   flexDirection="column"
-                  items="stretch"
+                  alignItems="stretch"
                   $md={{
                     justify: 'flex-end',
                     flexDirection: 'row',

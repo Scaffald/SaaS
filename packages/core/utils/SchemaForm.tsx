@@ -4,7 +4,7 @@ import { FieldError, FormWrapper } from '@unicornlove/ui'
 import { createTsForm, createUniqueFieldSchema } from '@ts-react/form'
 import type { ComponentProps, ReactNode } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { Form, type FormProps, Input, Theme } from 'tamagui'
+import { Form, type FormProps, Input, Theme } from '@unicornlove/ui'
 import { z } from 'zod'
 
 // Create a basic TextField component
@@ -22,7 +22,9 @@ const TextField = ({ value, onChangeText, placeholder, ...props }: TextFieldProp
 // Create unique field schemas that match what's used in the login screen
 // Use type assertions to work around @ts-react/form type compatibility
 const EmailFieldSchema = createUniqueFieldSchema(
-  z.string().email('Please enter a valid email address') as unknown as Parameters<typeof createUniqueFieldSchema>[0],
+  z.string().email('Please enter a valid email address') as unknown as Parameters<
+    typeof createUniqueFieldSchema
+  >[0],
   'email'
 )
 const TextFieldSchema = createUniqueFieldSchema(
@@ -50,7 +52,7 @@ const mapping = [
 
 const FormComponent = (props: FormProps) => {
   return (
-    <Form asChild {...props} minW="100%">
+    <Form asChild {...props} minWidth="100%">
       <FormWrapper tag="form">{props.children}</FormWrapper>
     </Form>
   )
@@ -77,7 +79,7 @@ export const SchemaForm: typeof _SchemaForm = ({ ...props }) => {
         const childRenderer = props.children as SchemaFormChildRenderer | undefined
 
         return (
-          <FormWrapper.Body minW="100%" $platform-native={{ minW: '100%' }}>
+          <FormWrapper.Body minWidth="100%" $platform-native={{ minWidth: '100%' }}>
             {childRenderer
               ? typeof childRenderer === 'function'
                 ? childRenderer(fields)

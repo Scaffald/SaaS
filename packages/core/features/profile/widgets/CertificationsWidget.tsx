@@ -1,17 +1,17 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import {
+  Button,
   DashboardWidget,
   EmptyState,
   Heading,
   LoadingState,
   spacing,
-  UIButton,
 } from '@unicornlove/ui'
 import { Award, CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Linking } from 'react-native'
-import { Separator, Text, XStack, YStack } from 'tamagui'
+import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { formatDate } from '../utils/date-formatting'
 import type { ProfileWidgetProps } from './types'
 
@@ -59,12 +59,12 @@ export function CertificationsWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load certifications</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <UIButton
+          <Button
             variant="primary"
             size="$2"
             onPress={() => {
@@ -73,7 +73,7 @@ export function CertificationsWidget({
             disabled={isFetching}
           >
             Retry
-          </UIButton>
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -97,16 +97,16 @@ export function CertificationsWidget({
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Certifications</Heading>
           {showEdit && (
-            <UIButton
+            <Button
               variant="outlined"
               size="$2"
               onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
             >
               Edit
-            </UIButton>
+            </Button>
           )}
         </XStack>
 
@@ -117,12 +117,12 @@ export function CertificationsWidget({
             description="Add your professional certifications and licenses"
             action={
               showEdit ? (
-                <UIButton
+                <Button
                   variant="primary"
                   onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.CERTIFICATIONS.path)}
                 >
                   Add Certification
-                </UIButton>
+                </Button>
               ) : undefined
             }
           />
@@ -137,20 +137,20 @@ export function CertificationsWidget({
                     <YStack key={cert.id} gap="$2">
                       {/* Certification Name & Organization */}
                       <YStack gap="$1">
-                        <XStack gap="$2" items="center">
+                        <XStack gap="$2" alignItems="center">
                           <Text fontSize="$4" fontWeight="600">
                             {cert.name}
                           </Text>
                           <XStack
-                            bg="$blue2"
-                            px="$2"
-                            py="$0.5"
-                            rounded="$2"
+                            backgroundColor="$blue2"
+                            paddingHorizontal="$2"
+                            paddingVertical="$0.5"
+                            borderRadius="$2"
                             borderWidth={1}
                             borderColor="$blue7"
                           >
                             <CheckCircle size={12} color="$blue11" />
-                            <Text color="$blue11" fontSize="$1" fontWeight="600" ml="$1">
+                            <Text color="$blue11" fontSize="$1" fontWeight="600" marginLeft="$1">
                               Active
                             </Text>
                           </XStack>
@@ -222,7 +222,7 @@ export function CertificationsWidget({
                       )}
 
                       {/* Separator */}
-                      {index < activeCerts.length - 1 && <Separator my="$2" />}
+                      {index < activeCerts.length - 1 && <Separator marginVertical="$2" />}
                     </YStack>
                   ))}
               </YStack>
@@ -236,15 +236,15 @@ export function CertificationsWidget({
                 </Text>
                 {expiredCerts.slice(0, 2).map((cert: UserCertification) => (
                   <YStack key={cert.id} gap="$1" opacity={0.6}>
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Text fontSize="$3" fontWeight="600">
                         {cert.name}
                       </Text>
                       <XStack
-                        bg="$color3"
-                        px="$2"
-                        py="$0.5"
-                        rounded="$2"
+                        backgroundColor="$color3"
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        borderRadius="$2"
                         borderWidth={1}
                         borderColor="$color6"
                       >

@@ -3,7 +3,7 @@ import { api } from '@app/core/utils/api'
 import { AlertTriangle, X as CloseIcon, DownloadCloud } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Alert } from 'react-native'
-import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { useDispute } from '../hooks/useDispute'
 import { CheckProgressTracker } from './CheckProgressTracker'
 import { DisputeStatusTracker } from './DisputeStatusTracker'
@@ -50,13 +50,13 @@ export const ResultsViewer = memo(function ResultsViewer({
     return (
       <YStack
         gap="$3"
-        p="$4"
-        bg="$background"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$background"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Spinner size="small" color="$color11" />
           <Text fontSize="$3" color="$color11">
             Loading background check details…
@@ -70,13 +70,13 @@ export const ResultsViewer = memo(function ResultsViewer({
     return (
       <YStack
         gap="$3"
-        p="$4"
-        bg="$background"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$background"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
       >
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <AlertTriangle size={18} color="$red10" />
           <Text fontSize="$3" color="$red11">
             We couldn’t load your background check details. Try again.
@@ -112,25 +112,25 @@ export const ResultsViewer = memo(function ResultsViewer({
   return (
     <YStack
       gap="$4"
-      p="$4"
-      bg="$background"
-      rounded="$4"
+      padding="$4"
+      backgroundColor="$background"
+      borderRadius="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <YStack gap="$1">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             {summary?.package?.display_name ?? 'Background check results'}
           </Text>
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <YStack
-              px="$3"
-              py="$1"
-              bg={statusColors.background}
+              paddingHorizontal="$3"
+              paddingVertical="$1"
+              backgroundColor={statusColors.background}
               borderWidth={1}
               borderColor={statusColors.border}
-              rounded="$3"
+              borderRadius="$3"
             >
               <Text fontSize="$2" fontWeight="600" color={statusColors.text}>
                 {statusMeta.label}
@@ -165,9 +165,9 @@ export const ResultsViewer = memo(function ResultsViewer({
       {onRequestDispute && summary?.status && (
         <YStack
           gap="$2"
-          p="$3"
-          bg="$color2"
-          rounded="$4"
+          padding="$3"
+          backgroundColor="$color2"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$borderColor"
         >
@@ -215,7 +215,7 @@ export const ResultsViewer = memo(function ResultsViewer({
       )}
 
       <YStack gap="$3">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$3" fontWeight="600" color="$color12">
             Documents
           </Text>
@@ -243,11 +243,11 @@ export const ResultsViewer = memo(function ResultsViewer({
             {documents.map((document: BackgroundCheckDocument) => (
               <XStack
                 key={document.id}
-                justify="space-between"
-                items="center"
-                p="$3"
-                bg="$color2"
-                rounded="$3"
+                justifyContent="space-between"
+                alignItems="center"
+                padding="$3"
+                backgroundColor="$color2"
+                borderRadius="$3"
                 borderWidth={1}
                 borderColor="$borderColor"
               >

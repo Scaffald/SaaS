@@ -8,7 +8,7 @@ import {
 import { api } from '@app/core/utils/api'
 import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 function ResumeImportContent() {
   const router = useRouter()
@@ -30,7 +30,7 @@ function ResumeImportContent() {
   const hasUploaded = data?.hasUploaded ?? false
 
   return (
-    <YStack gap="$6" p="$4">
+    <YStack gap="$6" padding="$4">
       <ResumeUploadModal
         open={modalOpen}
         onOpenChange={setModalOpen}
@@ -49,12 +49,12 @@ function ResumeImportContent() {
       </YStack>
 
       {isLoading ? (
-        <YStack gap="$2" items="center" py="$6">
+        <YStack gap="$2" alignItems="center" paddingVertical="$6">
           <Spinner size="large" />
           <Text color="$color11">Checking for existing uploads...</Text>
         </YStack>
       ) : hasUploaded ? (
-        <YStack gap="$3" bg="$green3" p="$4" rounded="$4">
+        <YStack gap="$3" backgroundColor="$green3" padding="$4" borderRadius="$4">
           <Text fontWeight="700" color="$green11">
             You’ve already uploaded a resume.
           </Text>

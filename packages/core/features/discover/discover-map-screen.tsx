@@ -27,7 +27,7 @@ import {
   XStack,
   YStack,
   type TamaguiElement,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { JobPreviewModal } from './components/JobPreviewModal'
 import { MapFilterBar } from './components/MapFilterBar'
 import { OrganizationPreviewModal } from './components/OrganizationPreviewModal'
@@ -613,7 +613,12 @@ export const DiscoverMapScreen = () => {
       <XStack flex={1} overflow="hidden" position="relative">
         {isSmallScreen ? (
           mobileListActive ? (
-            <YStack flex={1} bg="$background" px="$3" py="$3">
+            <YStack
+              flex={1}
+              backgroundColor="$background"
+              paddingHorizontal="$3"
+              paddingVertical="$3"
+            >
               <ResultList
                 ref={resultListRef}
                 profiles={visibleProfiles}
@@ -784,13 +789,13 @@ const MobileSearchHeader = ({
   return (
     <XStack
       width="100%"
-      px="$4"
-      py="$3"
+      paddingHorizontal="$4"
+      paddingVertical="$3"
       gap="$3"
-      bg="$background"
+      backgroundColor="$background"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
-      items="center"
+      alignItems="center"
     >
       {tokenValidation.valid ? (
         <AddressAutocomplete
@@ -810,8 +815,8 @@ const MobileSearchHeader = ({
           containerProps={{
             flex: 1,
             w: '100%',
-            bg: '$background',
-            rounded: '$5',
+            backgroundColor: '$background',
+            borderRadius: '$5',
             height: 25,
             justifyContent: 'center',
             style: { flexShrink: 1 },
@@ -820,9 +825,9 @@ const MobileSearchHeader = ({
       ) : (
         <YStack
           flex={1}
-          bg="$background"
-          p="$3"
-          rounded="$4"
+          backgroundColor="$background"
+          padding="$3"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$red8"
           gap="$2"
@@ -859,12 +864,12 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
   return (
     <XStack
       position="absolute"
-      b="$3"
-      l="$3"
-      r="$3"
-      bg="$color2"
-      rounded="$6"
-      p="$1"
+      bottom="$3"
+      left="$3"
+      right="$3"
+      backgroundColor="$color2"
+      borderRadius="$6"
+      padding="$1"
       shadowColor="$shadowColor"
       shadowOffset={{ width: 0, height: -2 }}
       shadowOpacity={0.15}
@@ -872,16 +877,16 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
       style={{ zIndex: 60 }}
     >
       <Tabs value={activeView} onValueChange={onViewChange} activationMode="manual" flex={1}>
-        <Tabs.List flex={1} gap="$2" bg="transparent">
+        <Tabs.List flex={1} gap="$2" backgroundColor="transparent">
           <Tabs.Tab
             value="map"
             flex={1}
-            bg={activeView === 'map' ? '$background' : 'transparent'}
-            rounded="$5"
-            px="$4"
-            py="$3"
+            backgroundColor={activeView === 'map' ? '$background' : 'transparent'}
+            borderRadius="$5"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
           >
-            <XStack items="center" justify="center" gap="$2">
+            <XStack alignItems="center" justifyContent="center" gap="$2">
               <MapIcon size={16} />
               <Text fontSize="$4" fontWeight="600">
                 Map
@@ -891,12 +896,12 @@ const MobileViewToggleBar = ({ activeView, onViewChange }: MobileViewToggleBarPr
           <Tabs.Tab
             value="list"
             flex={1}
-            bg={activeView === 'list' ? '$background' : 'transparent'}
-            rounded="$5"
-            px="$4"
-            py="$3"
+            backgroundColor={activeView === 'list' ? '$background' : 'transparent'}
+            borderRadius="$5"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
           >
-            <XStack items="center" justify="center" gap="$2">
+            <XStack alignItems="center" justifyContent="center" gap="$2">
               <ListIcon size={16} />
               <Text fontSize="$4" fontWeight="600">
                 List
@@ -931,8 +936,8 @@ const MobileFiltersContent = ({
   onReset,
 }: MobileFiltersContentProps) => {
   return (
-    <YStack flex={1} p="$4" gap="$4">
-      <XStack justify="space-between" items="center">
+    <YStack flex={1} padding="$4" gap="$4">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$6" fontWeight="700">
           Filters
         </Text>
@@ -947,7 +952,7 @@ const MobileFiltersContent = ({
       </XStack>
 
       <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-        <YStack gap="$4" pb="$6">
+        <YStack gap="$4" paddingBottom="$6">
           <FilterToggle
             label="Workers"
             description="Show worker profiles on the map"
@@ -991,8 +996,15 @@ type FilterToggleProps = {
 }
 
 const FilterToggle = ({ label, description, value, onValueChange }: FilterToggleProps) => (
-  <YStack gap="$2" bg="$color2" p="$3" rounded="$4" borderWidth={1} borderColor="$borderColor">
-    <XStack justify="space-between" items="center" gap="$2">
+  <YStack
+    gap="$2"
+    backgroundColor="$color2"
+    padding="$3"
+    borderRadius="$4"
+    borderWidth={1}
+    borderColor="$borderColor"
+  >
+    <XStack justifyContent="space-between" alignItems="center" gap="$2">
       <Text fontSize="$4" fontWeight="600">
         {label}
       </Text>

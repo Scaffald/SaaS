@@ -7,7 +7,7 @@ import { usePathname } from '@app/core/utils/usePathname'
 import { useRouter } from 'expo-router'
 import { Drawer } from 'expo-router/drawer'
 import { useEffect } from 'react'
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 
 export default function Layout() {
   const { isLoading, user } = useProtectedRoute()
@@ -38,9 +38,9 @@ export default function Layout() {
   // Show loading state BEFORE rendering the drawer
   if (isLoading || isCheckingPrereqs) {
     return (
-      <YStack flex={1} justify="center" items="center">
+      <YStack flex={1} justifyContent="center" alignItems="center">
         <Spinner size="large" />
-        <Text mt="$4">Loading...</Text>
+        <Text marginTop="$4">Loading...</Text>
       </YStack>
     )
   }

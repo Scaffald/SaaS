@@ -1,7 +1,8 @@
 import { ChevronDown, ChevronRight } from '@tamagui/lucide-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Input, Text, XStack, YStack } from 'tamagui'
-import { FieldError } from '../FieldError'
+import { Input, Text, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
+import { FieldError } from '../field-error/FieldError'
 import { AddressAutocomplete } from './AddressAutocomplete'
 import type { AddressFormProps, AddressResult } from './types'
 
@@ -265,7 +266,7 @@ export function AddressForm({
 
     case 'full':
       return (
-        <YStack gap="$3" position="relative" z={999}>
+        <YStack gap="$3" position="relative" zIndex={999}>
           <Text fontWeight="600">Address</Text>
           <YStack gap="$2">
             {/* Street Address */}
@@ -320,7 +321,7 @@ export function AddressForm({
 
     default:
       return (
-        <YStack gap="$3" position="relative" z={999}>
+        <YStack gap="$3" position="relative" zIndex={999}>
           {/* Autocomplete Search */}
           <AddressAutocomplete
             value={value || currentAddress.formattedAddress}
@@ -344,13 +345,13 @@ export function AddressForm({
             size="$3"
             onPress={() => setIsExpanded(!isExpanded)}
             disabled={disabled}
-            self="flex-start"
-            bg="transparent"
+            alignSelf="flex-start"
+            backgroundColor="transparent"
             borderWidth={0}
-            px="$2"
-            py="$1"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
           >
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               {isExpanded ? (
                 <ChevronDown size={16} color="$color11" />
               ) : (
@@ -377,7 +378,7 @@ export function AddressForm({
                 onChangeText={(text) => handleFieldChange('streetAddress', text)}
                 disabled={disabled}
                 borderColor={currentAddress.streetAddress ? '$borderColor' : '$color6'}
-                bg={currentAddress.streetAddress ? '$background' : '$color2'}
+                backgroundColor={currentAddress.streetAddress ? '$background' : '$color2'}
               />
 
               {/* City and State */}
@@ -389,7 +390,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={1}
                   borderColor={currentAddress.locality ? '$borderColor' : '$color6'}
-                  bg={currentAddress.locality ? '$background' : '$color2'}
+                  backgroundColor={currentAddress.locality ? '$background' : '$color2'}
                 />
                 <Input
                   placeholder="State"
@@ -406,7 +407,7 @@ export function AddressForm({
                       ? '$borderColor'
                       : '$color6'
                   }
-                  bg={
+                  backgroundColor={
                     currentAddress.stateAbbreviation || currentAddress.administrativeAreaLevel1
                       ? '$background'
                       : '$color2'
@@ -423,7 +424,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={1}
                   borderColor={currentAddress.postalCode ? '$borderColor' : '$color6'}
-                  bg={currentAddress.postalCode ? '$background' : '$color2'}
+                  backgroundColor={currentAddress.postalCode ? '$background' : '$color2'}
                 />
                 <Input
                   placeholder="Country"
@@ -432,7 +433,7 @@ export function AddressForm({
                   disabled={disabled}
                   flex={2}
                   borderColor={currentAddress.country ? '$borderColor' : '$color6'}
-                  bg={currentAddress.country ? '$background' : '$color2'}
+                  backgroundColor={currentAddress.country ? '$background' : '$color2'}
                 />
               </XStack>
 
@@ -443,7 +444,7 @@ export function AddressForm({
                 <Button
                   variant="outlined"
                   size="$3"
-                  self="flex-start"
+                  alignSelf="flex-start"
                   onPress={() => {
                     const emptyAddress = {
                       streetNumber: '',

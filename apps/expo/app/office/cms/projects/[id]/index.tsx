@@ -2,7 +2,7 @@ import { RouteBuilder } from '@app/core/constants/routes'
 import { api } from '@app/core/utils/api'
 import { CheckCircle, Clock, Eye, EyeOff, Plus, XCircle } from '@tamagui/lucide-icons'
 import { useLocalSearchParams } from 'expo-router'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export default function ProjectDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -11,7 +11,7 @@ export default function ProjectDetailPage() {
 
   if (!id) {
     return (
-      <YStack flex={1} p="$4" gap="$4">
+      <YStack flex={1} padding="$4" gap="$4">
         <Text fontSize="$8" fontWeight="600">
           Project Not Found
         </Text>
@@ -22,7 +22,7 @@ export default function ProjectDetailPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} p="$4" gap="$4" items="center" justify="center">
+      <YStack flex={1} padding="$4" gap="$4" alignItems="center" justifyContent="center">
         <Text fontSize="$8" fontWeight="600">
           Loading Project...
         </Text>
@@ -33,7 +33,7 @@ export default function ProjectDetailPage() {
 
   if (!data?.project) {
     return (
-      <YStack flex={1} p="$4" gap="$4">
+      <YStack flex={1} padding="$4" gap="$4">
         <Text fontSize="$8" fontWeight="600">
           Project Not Found
         </Text>
@@ -99,7 +99,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <YStack flex={1} p="$4" gap="$4">
+    <YStack flex={1} padding="$4" gap="$4">
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="600">
           {project.name}
@@ -112,9 +112,9 @@ export default function ProjectDetailPage() {
       </YStack>
       <YStack gap="$4">
         {/* Project Info */}
-        <Card p="$4">
+        <Card padding="$4">
           <YStack gap="$4">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$8" fontWeight="600">
                 {project.name}
               </Text>
@@ -162,7 +162,7 @@ export default function ProjectDetailPage() {
                 <Text fontSize="$2" color="$gray10">
                   Location Visibility
                 </Text>
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                   <Text fontWeight="600">{getVisibilityLabel(project.location_visibility)}</Text>
                   {project.location_visibility_override && (
@@ -177,9 +177,9 @@ export default function ProjectDetailPage() {
         </Card>
 
         {/* Location Section */}
-        <Card p="$4">
+        <Card padding="$4">
           <YStack gap="$4">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="600">
                 Location
               </Text>
@@ -196,7 +196,7 @@ export default function ProjectDetailPage() {
                   <YStack gap="$2">
                     <Text fontWeight="600">Site Boundaries</Text>
                     {sites.map((ps: (typeof sites)[0]) => (
-                      <Card key={ps.id} p="$2" bg="$gray2">
+                      <Card key={ps.id} padding="$2" backgroundColor="$gray2">
                         <Text>
                           {ps.site?.site_identifier || `Site ${ps.site?.id?.slice(0, 8)}`}
                         </Text>
@@ -214,7 +214,7 @@ export default function ProjectDetailPage() {
                   <YStack gap="$2">
                     <Text fontWeight="600">Property Addresses</Text>
                     {addresses.map((pa: (typeof addresses)[0]) => (
-                      <Card key={pa.id} p="$2" bg="$gray2">
+                      <Card key={pa.id} padding="$2" backgroundColor="$gray2">
                         <Text>
                           {pa.address?.address?.street || ''}
                           {pa.address?.address?.city && `, ${pa.address.address.city}`}
@@ -241,9 +241,9 @@ export default function ProjectDetailPage() {
         </Card>
 
         {/* Workers Section */}
-        <Card p="$4">
+        <Card padding="$4">
           <YStack gap="$4">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Text fontSize="$6" fontWeight="600">
                 Workers
               </Text>
@@ -261,10 +261,10 @@ export default function ProjectDetailPage() {
                   const statusColor = getWorkerStatusColor(worker.status)
 
                   return (
-                    <Card key={worker.id} p="$3" bg="$gray2">
-                      <XStack justify="space-between" items="center">
+                    <Card key={worker.id} padding="$3" backgroundColor="$gray2">
+                      <XStack justifyContent="space-between" alignItems="center">
                         <YStack gap="$1" flex={1}>
-                          <XStack gap="$2" items="center">
+                          <XStack gap="$2" alignItems="center">
                             <StatusIcon size={16} color={statusColor} />
                             <Text fontWeight="600">Worker {worker.user_id?.slice(0, 8)}</Text>
                           </XStack>
@@ -293,7 +293,7 @@ export default function ProjectDetailPage() {
                           <XStack gap="$2">
                             <Button
                               size="$2"
-                              bg="$green9"
+                              backgroundColor="$green9"
                               color="$green12"
                               onPress={async () => {
                                 // TODO: Implement approve
@@ -304,7 +304,7 @@ export default function ProjectDetailPage() {
                             </Button>
                             <Button
                               size="$2"
-                              bg="$red9"
+                              backgroundColor="$red9"
                               color="$red12"
                               onPress={async () => {
                                 // TODO: Implement reject

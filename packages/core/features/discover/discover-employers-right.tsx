@@ -1,4 +1,4 @@
-import { ScrollView, YStack } from 'tamagui'
+import { ScrollView, YStack } from '@unicornlove/ui'
 import { AddOrganizationWidget } from './components/AddOrganizationWidget'
 import { SearchFilterWidget } from './components/SearchFilterWidget'
 
@@ -26,7 +26,7 @@ export function DiscoverEmployersRight({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <SearchFilterWidget
           title="Search & Filter"
           searchQuery={searchQuery}

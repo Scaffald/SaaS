@@ -1,11 +1,11 @@
 import { api } from '@app/core/utils/api'
 import { copyToClipboard } from '@app/core/utils/clipboard'
 import { isReservedSlug, isSlugValid } from '@app/core/utils/slugify'
-import { UIButton as Button, DashboardWidget } from '@unicornlove/ui'
+import { Button, DashboardWidget } from '@unicornlove/ui'
 import { AlertCircle, Check, Clock, Copy } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { H4, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { H4, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type UpdateSlugResult = {
   success: boolean
@@ -200,7 +200,7 @@ export function VanityUrlSection() {
   if (isLoadingProfile) {
     return (
       <DashboardWidget>
-        <YStack items="center" p="$4">
+        <YStack alignItems="center" padding="$4">
           <Spinner size="small" />
         </YStack>
       </DashboardWidget>
@@ -225,10 +225,10 @@ export function VanityUrlSection() {
             </Text>
             <XStack
               gap="$2"
-              items="center"
-              p="$3"
-              bg="$color3"
-              rounded="$4"
+              alignItems="center"
+              padding="$3"
+              backgroundColor="$color3"
+              borderRadius="$4"
               borderWidth={1}
               borderColor="$color6"
             >
@@ -252,7 +252,7 @@ export function VanityUrlSection() {
 
         {/* Vanity URL Input */}
         <YStack gap="$2">
-          <XStack items="center" justify="space-between">
+          <XStack alignItems="center" justifyContent="space-between">
             <Text fontWeight="600" fontSize="$3">
               Profile Vanity URL
             </Text>
@@ -269,7 +269,7 @@ export function VanityUrlSection() {
 
           {isEditing ? (
             <YStack gap="$2">
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Text fontSize="$2" color="$color10">
                   /u/
                 </Text>
@@ -299,7 +299,7 @@ export function VanityUrlSection() {
                       Checking availability...
                     </Text>
                   ) : availabilityStatus.available === true ? (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Check size={16} color="$green10" />
                       <Text fontSize="$2" color="$green10">
                         Available
@@ -307,7 +307,7 @@ export function VanityUrlSection() {
                     </XStack>
                   ) : availabilityStatus.available === false ? (
                     <YStack gap="$1">
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         <AlertCircle size={16} color="$red10" />
                         <Text fontSize="$2" color="$red10">
                           Not available
@@ -315,7 +315,7 @@ export function VanityUrlSection() {
                       </XStack>
                       {availabilityStatus.suggestions &&
                         availabilityStatus.suggestions.length > 0 && (
-                          <YStack gap="$1" ml="$4">
+                          <YStack gap="$1" marginLeft="$4">
                             <Text fontSize="$2" color="$color10">
                               Suggestions:
                             </Text>
@@ -347,7 +347,7 @@ export function VanityUrlSection() {
               )}
 
               {/* Action Buttons */}
-              <XStack gap="$2" justify="flex-end">
+              <XStack gap="$2" justifyContent="flex-end">
                 <Button size="$3" variant="outlined" onPress={handleCancel} disabled={isUpdating}>
                   Cancel
                 </Button>
@@ -369,10 +369,10 @@ export function VanityUrlSection() {
           ) : (
             <XStack
               gap="$2"
-              items="center"
-              p="$3"
-              bg="$color3"
-              rounded="$4"
+              alignItems="center"
+              padding="$3"
+              backgroundColor="$color3"
+              borderRadius="$4"
               borderWidth={1}
               borderColor="$color6"
             >
@@ -387,10 +387,10 @@ export function VanityUrlSection() {
         {daysRemaining && daysRemaining > 0 && nextChangeAllowed && (
           <XStack
             gap="$2"
-            items="center"
-            p="$3"
-            bg="$yellow3"
-            rounded="$4"
+            alignItems="center"
+            padding="$3"
+            backgroundColor="$yellow3"
+            borderRadius="$4"
             borderWidth={1}
             borderColor="$yellow7"
           >
@@ -427,9 +427,9 @@ export function VanityUrlSection() {
                   <XStack
                     key={`${entry.changed_at}-${entry.new_slug}`}
                     gap="$2"
-                    p="$2"
-                    bg="$color3"
-                    rounded="$2"
+                    padding="$2"
+                    backgroundColor="$color3"
+                    borderRadius="$2"
                   >
                     <Text fontSize="$2" color="$color10" flex={1}>
                       {entry.old_slug || '(initial)'} → {entry.new_slug}

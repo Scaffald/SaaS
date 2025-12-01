@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Input, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Input, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 import { toConfidenceLevel } from '../utils/importConfidence'
 import { ConfidenceBadge } from './ConfidenceBadge'
 
@@ -31,7 +31,7 @@ export const EditableField = memo(function EditableField({
 
   return (
     <YStack gap="$2">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontWeight="600">
           {label}
           {required ? ' *' : ''}

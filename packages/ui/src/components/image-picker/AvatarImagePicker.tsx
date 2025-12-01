@@ -1,7 +1,8 @@
 import { Camera, Delete, Edit3, User } from '@tamagui/lucide-icons'
 import { useEffect, useId, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Circle, Image, Label, Spinner, Text, View, XStack, YStack } from 'tamagui'
+import { Circle, Image, Label, Spinner, Text, View, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 import type { UploadSelection } from '../upload/UploadSurface'
 import { UploadSurface } from '../upload/UploadSurface'
 import { AvatarCropModal } from './AvatarCropModal'
@@ -105,7 +106,7 @@ export function AvatarImagePicker({
         const isBusy = isLoading || isProcessing
 
         return (
-          <YStack items="center" gap="$3">
+          <YStack alignItems="center" gap="$3">
             <View
               {...(getRootProps({
                 style: { position: 'relative' },
@@ -124,7 +125,7 @@ export function AvatarImagePicker({
 
               <Circle
                 size={size}
-                bg={isDragActive ? '$blue3' : '$color3'}
+                backgroundColor={isDragActive ? '$blue3' : '$color3'}
                 borderColor={isDragActive ? '$blue8' : '$color6'}
                 borderWidth={2}
                 borderStyle={isDragActive ? 'solid' : 'dashed'}
@@ -136,7 +137,7 @@ export function AvatarImagePicker({
                 }}
                 hoverStyle={{
                   borderColor: disabled ? '$color6' : '$blue8',
-                  bg: disabled ? '$color3' : '$blue2',
+                  backgroundColor: disabled ? '$color3' : '$blue2',
                 }}
                 aria-role="image"
                 aria-label={previewUri || value ? 'Current avatar preview' : 'Avatar placeholder'}
@@ -146,15 +147,15 @@ export function AvatarImagePicker({
                     source={{ uri: previewUri }}
                     width={size}
                     height={size}
-                    rounded={size / 2}
+                    borderRadius={size / 2}
                   />
                 ) : (
-                  <YStack items="center" justify="center" flex={1} gap="$2">
+                  <YStack alignItems="center" justifyContent="center" flex={1} gap="$2">
                     <User size={size * 0.3} color="$color9" />
                     <Text
                       fontSize="$2"
                       color="$color9"
-                      text="center"
+                      textAlign="center"
                       display={size < 80 ? 'none' : 'flex'}
                     >
                       {isDragActive ? 'Drop here' : placeholder}
@@ -165,13 +166,13 @@ export function AvatarImagePicker({
                 {isBusy && !previewUri && (
                   <YStack
                     position="absolute"
-                    t={0}
-                    l={0}
-                    r={0}
-                    b={0}
-                    items="center"
-                    justify="center"
-                    bg="rgba(0,0,0,0.35)"
+                    top={0}
+                    left={0}
+                    right={0}
+                    bottom={0}
+                    alignItems="center"
+                    justifyContent="center"
+                    backgroundColor="rgba(0,0,0,0.35)"
                   >
                     <Spinner color="white" size="large" />
                   </YStack>
@@ -179,14 +180,14 @@ export function AvatarImagePicker({
 
                 <View
                   position="absolute"
-                  t={0}
-                  l={0}
-                  r={0}
-                  b={0}
-                  bg="$color9"
-                  rounded={size / 2}
-                  items="center"
-                  justify="center"
+                  top={0}
+                  left={0}
+                  right={0}
+                  bottom={0}
+                  backgroundColor="$color9"
+                  borderRadius={size / 2}
+                  alignItems="center"
+                  justifyContent="center"
                   opacity={0}
                   hoverStyle={{ opacity: disabled ? 0 : 1 }}
                   style={{ pointerEvents: 'none' }}
@@ -196,7 +197,7 @@ export function AvatarImagePicker({
               </Circle>
             </View>
 
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               <Button
                 size="$3"
                 variant="outlined"

@@ -7,19 +7,19 @@ import {
 } from '../components/SoftSkillsCategoryTabs'
 import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
 import {
+  Button,
   DashboardWidget,
   EmptyState,
   Heading,
   LoadingState,
   ResponsiveModal,
   spacing,
-  UIButton,
 } from '@unicornlove/ui'
 import { Download } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useMemo, useState, type FC } from 'react'
-import { Separator, Text, XStack, YStack } from 'tamagui'
+import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -84,7 +84,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load soft skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -112,11 +112,11 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Soft Skills</Heading>
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             {!showCompact && (
-              <UIButton
+              <Button
                 variant="outlined"
                 size="$2"
                 icon={Download}
@@ -124,10 +124,10 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
                 testID="soft-skills-export-button"
               >
                 Export
-              </UIButton>
+              </Button>
             )}
             {showEdit && (
-              <UIButton
+              <Button
                 variant="outlined"
                 size="$2"
                 onPress={() => {
@@ -135,7 +135,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
                 }}
               >
                 Edit
-              </UIButton>
+              </Button>
             )}
           </XStack>
         </XStack>
@@ -164,7 +164,7 @@ export const SoftSkillsRadarWidget: FC<ProfileWidgetProps> = ({
           size="large"
           showCloseButton={true}
         >
-          <YStack gap="$4" p="$4">
+          <YStack gap="$4" padding="$4">
             {/* Category Tabs */}
             <SoftSkillsCategoryTabs
               activeCategory={selectedCategory}

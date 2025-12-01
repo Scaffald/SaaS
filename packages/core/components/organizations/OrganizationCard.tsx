@@ -1,7 +1,7 @@
 import { Building, MapPin, Users } from '@tamagui/lucide-icons'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Text, XStack } from 'tamagui'
+import type { TamaguiElement } from '@unicornlove/ui'
+import { Text, XStack } from '@unicornlove/ui'
 import {
   CardActions,
   CardHeader,
@@ -102,14 +102,14 @@ export const OrganizationCard = memo(
 
           {/* Industry badge */}
           {industry && (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <XStack
-                items="center"
+                alignItems="center"
                 gap="$1"
-                bg={isSelected ? '$blue3' : '$blue3'}
-                rounded="$4"
-                px="$2"
-                py="$1"
+                backgroundColor={isSelected ? '$blue3' : '$blue3'}
+                borderRadius="$4"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
               >
                 <Text color={isSelected ? '$color1' : '$blue11'} fontWeight="600" fontSize="$2">
                   {industry}
@@ -120,7 +120,7 @@ export const OrganizationCard = memo(
 
           {/* Metadata */}
           {metadataItems.length > 0 && (
-            <CardMetadata items={metadataItems} isSelected={isSelected} />
+            <CardMetadata alignItems={metadataItems} isSelected={isSelected} />
           )}
 
           {/* Actions */}

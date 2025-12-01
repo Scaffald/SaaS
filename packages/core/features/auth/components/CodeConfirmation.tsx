@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import type { SizeTokens } from 'tamagui'
-import { Form, View } from 'tamagui'
+import type { SizeTokens } from '@unicornlove/ui'
+import { Form, View } from '@unicornlove/ui'
 
 import { CodeConfirmationInput, type FormFields } from './CodeConfirmationInput'
 
@@ -71,18 +71,18 @@ export function CodeConfirmation({ size, codeSize, secureText, onEnter }: CodeCo
   }, [isValid])
 
   return (
-    <View pt="$3" pb="$6" flex={1} items="center" justify="center">
+    <View paddingTop="$3" paddingBottom="$6" flex={1} alignItems="center" justifyContent="center">
       <Form
         gap="$2"
-        items="center"
-        justify="center"
+        alignItems="center"
+        justifyContent="center"
         x={translateX}
         animation="bouncy"
-        mt="$2"
+        marginTop="$2"
         flexDirection="row"
         onSubmit={onSubmit}
-        mb="$0"
-        pb="$0"
+        marginBottom="$0"
+        paddingBottom="$0"
       >
         {Array(codeSize)
           .fill(null)

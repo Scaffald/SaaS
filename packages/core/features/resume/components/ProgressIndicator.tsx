@@ -1,4 +1,4 @@
-import { Button, Circle, Text, XStack, YStack } from 'tamagui'
+import { Button, Circle, Text, XStack, YStack } from '@unicornlove/ui'
 
 import type { ResumeWizardStep } from '../hooks/useResumeWizard'
 
@@ -30,8 +30,11 @@ export function ProgressIndicator({
             onPress={() => onStepChange?.(index)}
             aria-pressed={isActive}
           >
-            <XStack gap="$2" items="center">
-              <Circle size={18} bg={isCompleted ? '$green4' : isActive ? '$blue4' : '$color4'}>
+            <XStack gap="$2" alignItems="center">
+              <Circle
+                size={18}
+                backgroundColor={isCompleted ? '$green4' : isActive ? '$blue4' : '$color4'}
+              >
                 <Text color="$color12" fontSize="$1" fontWeight="700">
                   {index + 1}
                 </Text>

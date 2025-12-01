@@ -11,7 +11,7 @@ import {
 } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
-import { type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
+import { type GetThemeValueForKey, Text, XStack, YStack } from '@unicornlove/ui'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type Job = JobListOutput['jobs'][number]
@@ -23,12 +23,12 @@ export interface JobCardProps {
   isSelected?: boolean
 }
 
-const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  draft: { bg: '$gray3', text: '$gray11', border: '$gray6' },
-  open: { bg: '$green3', text: '$green11', border: '$green6' },
-  paused: { bg: '$yellow3', text: '$yellow11', border: '$yellow6' },
-  closed: { bg: '$red3', text: '$red11', border: '$red6' },
-  reviewing: { bg: '$blue3', text: '$blue11', border: '$blue6' },
+const STATUS_COLORS: Record<string, { backgroundColor: string; text: string; border: string }> = {
+  draft: { backgroundColor: '$gray3', text: '$gray11', border: '$gray6' },
+  open: { backgroundColor: '$green3', text: '$green11', border: '$green6' },
+  paused: { backgroundColor: '$yellow3', text: '$yellow11', border: '$yellow6' },
+  closed: { backgroundColor: '$red3', text: '$red11', border: '$red6' },
+  reviewing: { backgroundColor: '$blue3', text: '$blue11', border: '$blue6' },
 }
 
 const formatPayRange = (job: Job) => {
@@ -64,11 +64,11 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
   const teamName = primaryTeam?.name || job.team?.name || null
 
   return (
-    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} p="$4" gap="$3">
+    <DiscoverCard variant="warning" isSelected={isSelected} onPress={onPress} padding="$4" gap="$3">
       {/* Header: Title and Status */}
-      <XStack justify="space-between" items="flex-start" gap="$3">
+      <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
         <YStack gap="$2" flex={1}>
-          <XStack items="center" gap="$2" flexWrap="wrap">
+          <XStack alignItems="center" gap="$2" flexWrap="wrap">
             <Briefcase size={18} color={isSelected ? '$yellow10' : '$color10'} />
             <Text
               fontSize="$5"
@@ -81,7 +81,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
             </Text>
           </XStack>
           {job.organization && (
-            <XStack items="center" gap="$1.5" ml="$7">
+            <XStack alignItems="center" gap="$1.5" marginLeft="$7">
               <Building2 size={14} color="$color10" />
               <Text fontSize="$3" color="$color11" numberOfLines={1}>
                 {job.organization.name}
@@ -90,10 +90,10 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           )}
         </YStack>
         <XStack
-          px="$2"
-          py="$1"
-          rounded="$3"
-          bg={statusColors.bg as GetThemeValueForKey<'backgroundColor'>}
+          paddingHorizontal="$2"
+          paddingVertical="$1"
+          borderRadius="$3"
+          backgroundColor={statusColors.backgroundColor as GetThemeValueForKey<'backgroundColor'>}
           borderWidth={1}
           borderColor={statusColors.border as GetThemeValueForKey<'borderColor'>}
         >
@@ -132,7 +132,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
       {/* Details Row */}
       <XStack gap="$3" flexWrap="wrap">
         {job.location && (
-          <XStack items="center" gap="$1.5">
+          <XStack alignItems="center" gap="$1.5">
             <MapPin size={14} color="$color10" />
             <Text fontSize="$3" color="$color11" numberOfLines={1}>
               {job.location}
@@ -140,12 +140,26 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
           </XStack>
         )}
         {job.remote_option && (
-          <Text fontSize="$2" color="$color10" bg="$color3" px="$2" py="$1" rounded="$2">
+          <Text
+            fontSize="$2"
+            color="$color10"
+            backgroundColor="$color3"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+          >
             {job.remote_option.replace('_', ' ').toUpperCase()}
           </Text>
         )}
         {job.employment_type && (
-          <Text fontSize="$2" color="$color10" bg="$color3" px="$2" py="$1" rounded="$2">
+          <Text
+            fontSize="$2"
+            color="$color10"
+            backgroundColor="$color3"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+          >
             {job.employment_type.replace('_', ' ').toUpperCase()}
           </Text>
         )}
@@ -153,7 +167,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
 
       {/* Pay Range */}
       {payRange && (
-        <XStack items="center" gap="$1.5">
+        <XStack alignItems="center" gap="$1.5">
           <DollarSign size={14} color="$green10" />
           <Text fontSize="$3" fontWeight="600" color="$green10">
             {payRange}
@@ -163,7 +177,7 @@ export function JobCard({ job, applicationCount, onPress, isSelected = false }: 
 
       {/* Footer: Created date if not posted */}
       {!postedDate && createdDate && (
-        <XStack items="center" gap="$1.5">
+        <XStack alignItems="center" gap="$1.5">
           <Calendar size={12} color="$color9" />
           <Text fontSize="$2" color="$color10">
             Created {createdDate}
@@ -178,13 +192,13 @@ function MetricItem({ icon, label, value }: { icon: ReactNode; label: string; va
   return (
     <XStack
       gap="$2"
-      items="center"
+      alignItems="center"
       borderWidth={1}
       borderColor="$borderColor"
-      rounded="$3"
-      px="$2"
-      py="$1"
-      bg="$color3"
+      borderRadius="$3"
+      paddingHorizontal="$2"
+      paddingVertical="$1"
+      backgroundColor="$color3"
     >
       {icon}
       <YStack gap={0}>

@@ -1,5 +1,5 @@
 import { Check } from '@tamagui/lucide-icons'
-import { Circle, Text, XStack, YStack } from 'tamagui'
+import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface AssessmentStep {
   id: string
@@ -37,8 +37,19 @@ export function AssessmentProgress({
               Progress
             </Text>
             <YStack gap="$1">
-              <XStack height={8} bg="$color5" rounded="$10" overflow="hidden" width="100%">
-                <XStack height="100%" bg="$blue9" width={`${completionScore}%`} animation="quick" />
+              <XStack
+                height={8}
+                backgroundColor="$color5"
+                borderRadius="$10"
+                overflow="hidden"
+                width="100%"
+              >
+                <XStack
+                  height="100%"
+                  backgroundColor="$blue9"
+                  width={`${completionScore}%`}
+                  animation="quick"
+                />
               </XStack>
               <Text fontSize="$2" fontWeight="600" color="$blue10" style={{ textAlign: 'right' }}>
                 {completionScore}%
@@ -67,15 +78,15 @@ export function AssessmentProgress({
                 : '$color10'
 
             return (
-              <XStack key={step.id} gap="$3" items="flex-start">
-                <YStack items="center" gap="$1" style={{ minWidth: 32 }}>
+              <XStack key={step.id} gap="$3" alignItems="flex-start">
+                <YStack alignItems="center" gap="$1" style={{ minWidth: 32 }}>
                   <Circle
                     size={32}
-                    bg={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
+                    backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
                     borderWidth={2}
                     borderColor={isCurrent ? '$blue11' : 'transparent'}
-                    items="center"
-                    justify="center"
+                    alignItems="center"
+                    justifyContent="center"
                   >
                     {isCompleted ? (
                       <Check size={18} color="white" />
@@ -87,7 +98,7 @@ export function AssessmentProgress({
                   </Circle>
                   {!isLast && (
                     <YStack
-                      bg={isCompleted || isPast ? '$blue8' : '$color6'}
+                      backgroundColor={isCompleted || isPast ? '$blue8' : '$color6'}
                       opacity={isCompleted || isPast ? 0.85 : 0.4}
                       style={{ width: 2, flexGrow: 1, minHeight: 24 }}
                     />
@@ -119,7 +130,7 @@ export function AssessmentProgress({
       {/* Progress Bar */}
       {completionScore !== undefined && (
         <YStack gap="$2">
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Text fontSize="$3" color="$color11">
               Progress
             </Text>
@@ -127,14 +138,25 @@ export function AssessmentProgress({
               {completionScore}%
             </Text>
           </XStack>
-          <XStack height={8} bg="$color5" rounded="$10" overflow="hidden" width="100%">
-            <XStack height="100%" bg="$blue9" width={`${completionScore}%`} animation="quick" />
+          <XStack
+            height={8}
+            backgroundColor="$color5"
+            borderRadius="$10"
+            overflow="hidden"
+            width="100%"
+          >
+            <XStack
+              height="100%"
+              backgroundColor="$blue9"
+              width={`${completionScore}%`}
+              animation="quick"
+            />
           </XStack>
         </YStack>
       )}
 
       {/* Step Indicators */}
-      <XStack gap="$2" flexWrap="wrap" justify="center" $md={{ gap: '$6' }}>
+      <XStack gap="$2" flexWrap="wrap" justifyContent="center" $md={{ gap: '$6' }}>
         {sortedSteps.map((step, index) => {
           const isCompleted = completedSteps.has(step.id)
           const isCurrent = step.id === currentStep
@@ -144,17 +166,17 @@ export function AssessmentProgress({
           return (
             <XStack
               key={step.id}
-              items="center"
+              alignItems="center"
               gap="$2"
               opacity={isPast || isCurrent || isCompleted ? 1 : 0.5}
             >
               <Circle
                 size={32}
-                bg={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
+                backgroundColor={isCompleted ? '$green9' : isCurrent ? '$blue9' : '$color6'}
                 borderWidth={2}
                 borderColor={isCurrent ? '$blue11' : 'transparent'}
-                items="center"
-                justify="center"
+                alignItems="center"
+                justifyContent="center"
               >
                 {isCompleted ? (
                   <Check size={16} color="white" />

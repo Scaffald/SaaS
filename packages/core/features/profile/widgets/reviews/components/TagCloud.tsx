@@ -1,4 +1,4 @@
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import type { TagData } from '../types'
 
 interface TagCloudProps {
@@ -42,7 +42,13 @@ export function TagCloud({ title, tags, variant, maxTags = 20 }: TagCloudProps) 
           const fontSize = relativeSize <= 1.5 ? '$2' : relativeSize <= 2.5 ? '$3' : '$4'
 
           return (
-            <XStack key={tag.name} bg={bgColor} px="$3" py="$1.5" rounded="$3">
+            <XStack
+              key={tag.name}
+              backgroundColor={bgColor}
+              paddingHorizontal="$3"
+              paddingVertical="$1.5"
+              borderRadius="$3"
+            >
               <Text fontSize={fontSize} fontWeight="600" color={textColor}>
                 {tag.name} ({tag.count})
               </Text>

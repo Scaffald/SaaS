@@ -40,7 +40,7 @@ export const DroppableColumn = ({
   })
 
   const columnContent = (
-    <SortableContext id={id.toString()} items={items} strategy={verticalListSortingStrategy}>
+    <SortableContext id={id.toString()} alignItems={items} strategy={verticalListSortingStrategy}>
       <div
         ref={setNodeRef}
         style={{
@@ -60,9 +60,9 @@ export const DroppableColumn = ({
       <YStack
         data-testid={`kanban-column-${id}`}
         width={320}
-        bg="$gray2"
-        rounded="$4"
-        p="$4"
+        backgroundColor="$gray2"
+        borderRadius="$4"
+        padding="$4"
         gap="$3"
         style={{ minHeight: 200 }}
       >
@@ -78,8 +78,8 @@ export const DroppableColumn = ({
 
         <YStack gap="$3" flex={1}>
           {items.length === 0 ? (
-            <Card p="$4" bg="$color3" rounded="$2">
-              <Text fontSize="$2" text="center" color="$color10">
+            <Card padding="$4" backgroundColor="$color3" borderRadius="$2">
+              <Text fontSize="$2" textAlign="center" color="$color10">
                 {emptyMessage}
               </Text>
             </Card>

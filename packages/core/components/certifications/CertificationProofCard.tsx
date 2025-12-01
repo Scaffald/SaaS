@@ -1,6 +1,6 @@
 import { ExternalLink, Link as LinkIcon, Upload, X } from '@tamagui/lucide-icons'
 import { type ChangeEvent, useState } from 'react'
-import { Button, Card, Input, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Input, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface CertificationProofCardProps {
   certificationTitle: string
@@ -59,7 +59,7 @@ export function CertificationProofCard({
   }
 
   return (
-    <Card p="$4" bordered>
+    <Card padding="$4" bordered>
       <YStack gap="$4">
         <XStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <Text fontWeight="600" fontSize="$5">
@@ -129,7 +129,7 @@ export function CertificationProofCard({
         )}
 
         {proofValue && (
-          <YStack gap="$2" pt="$3" borderTopWidth={1} borderColor="$borderColor">
+          <YStack gap="$2" paddingTop="$3" borderTopWidth={1} borderColor="$borderColor">
             <Text fontSize="$3" fontWeight="600">
               Current Proof
             </Text>

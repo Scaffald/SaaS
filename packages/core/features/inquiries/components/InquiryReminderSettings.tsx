@@ -1,7 +1,18 @@
 import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
-import { Button, Card, H4, Input, Separator, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  H4,
+  Input,
+  Separator,
+  Spinner,
+  Switch,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 type InquiryReminderSettingsProps = {
   organizationId: string
@@ -55,7 +66,7 @@ export function InquiryReminderSettings({ organizationId }: InquiryReminderSetti
         <Spinner />
       ) : (
         <YStack gap="$4">
-          <XStack items="center" justify="space-between" gap="$3">
+          <XStack alignItems="center" justifyContent="space-between" gap="$3">
             <YStack flex={1} gap="$1">
               <Text fontSize="$4" fontWeight="600">
                 Send automatic reminders

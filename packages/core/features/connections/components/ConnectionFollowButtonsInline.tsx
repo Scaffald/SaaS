@@ -1,17 +1,10 @@
 import { useConnectionStatus } from '@app/core/features/user-profile/hooks/useConnectionStatus'
 import { useFollowStatus } from '@app/core/features/user-profile/hooks/useFollowStatus'
 import { api } from '@app/core/utils/api'
-import {
-  CheckCircle2,
-  Loader2,
-  UserCheck,
-  UserMinus,
-  UserPlus,
-  X,
-} from '@tamagui/lucide-icons'
+import { CheckCircle2, Loader2, UserCheck, UserMinus, UserPlus, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useMemo } from 'react'
-import { Button, Text, XStack } from 'tamagui'
+import { Button, Text, XStack } from '@unicornlove/ui'
 
 interface ConnectionFollowButtonsInlineProps {
   targetUserId: string
@@ -218,7 +211,7 @@ export function ConnectionFollowButtonsInline({
 
   if (isLoading) {
     return (
-      <XStack gap="$2" items="center">
+      <XStack gap="$2" alignItems="center">
         <Loader2 size={16} color="$color10" />
         <Text fontSize="$2" color="$color10">
           Loading...
@@ -255,12 +248,7 @@ export function ConnectionFollowButtonsInline({
       )}
 
       {connectionButtonState.type === 'pending_sent' && (
-        <Button
-          size={size}
-          icon={Loader2}
-          variant="outlined"
-          disabled={isConnectionMutating}
-        >
+        <Button size={size} icon={Loader2} variant="outlined" disabled={isConnectionMutating}>
           <Text>Pending</Text>
         </Button>
       )}
@@ -325,4 +313,3 @@ export function ConnectionFollowButtonsInline({
     </XStack>
   )
 }
-

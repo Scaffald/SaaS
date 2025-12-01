@@ -1,7 +1,8 @@
 import { ChevronDown } from '@tamagui/lucide-icons'
 import { Link } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
-import { Accordion, Button, Paragraph, XStack, YStack } from 'tamagui'
+import { Accordion, Paragraph, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 
 type AccordionItemLink = {
   key: string
@@ -63,9 +64,14 @@ export const OfficeAccordion = ({
           borderBottomWidth={1}
           borderColor="$borderColor"
         >
-          <Accordion.Trigger px="$4" py="$3" bg="$color2" pressStyle={{ bg: '$color3' }}>
+          <Accordion.Trigger
+            paddingHorizontal="$4"
+            paddingVertical="$3"
+            backgroundColor="$color2"
+            pressStyle={{ backgroundColor: '$color3' }}
+          >
             {({ open }: { open: boolean }) => (
-              <XStack items="center" justify="space-between" gap="$2">
+              <XStack alignItems="center" justifyContent="space-between" gap="$2">
                 <YStack gap="$1">
                   <Paragraph fontWeight="700">{section.title}</Paragraph>
                   {section.description ? (
@@ -78,7 +84,7 @@ export const OfficeAccordion = ({
               </XStack>
             )}
           </Accordion.Trigger>
-          <Accordion.Content px="$4" py="$3" bg="$color1">
+          <Accordion.Content paddingHorizontal="$4" paddingVertical="$3" backgroundColor="$color1">
             <YStack gap="$2">
               {section.links.map((link) => {
                 const active = isPathActive(currentPath, link.href)
@@ -89,16 +95,16 @@ export const OfficeAccordion = ({
                       size="$3"
                       aria-selected={active}
                       borderColor={active ? '$color9' : '$borderColor'}
-                      bg={active ? '$color9' : 'transparent'}
+                      backgroundColor={active ? '$color9' : 'transparent'}
                       hoverStyle={{
-                        bg: active ? '$color9' : '$color3',
+                        backgroundColor: active ? '$color9' : '$color3',
                       }}
                       pressStyle={{
-                        bg: active ? '$color9' : '$color4',
+                        backgroundColor: active ? '$color9' : '$color4',
                       }}
                     >
-                      <XStack items="center" justify="space-between" flex={1}>
-                        <YStack gap="$1" items="flex-start" flex={1}>
+                      <XStack alignItems="center" justifyContent="space-between" flex={1}>
+                        <YStack gap="$1" alignItems="flex-start" flex={1}>
                           <Paragraph fontWeight="600" color={active ? '$color1' : '$color11'}>
                             {link.label}
                           </Paragraph>

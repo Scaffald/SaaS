@@ -1,7 +1,7 @@
 import { Popover, ToggleSwitch } from '@unicornlove/ui'
 import { ChevronDown, SlidersHorizontal } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
-import { Button, Label, Text, XStack, YStack } from 'tamagui'
+import { Button, Label, Text, XStack, YStack } from '@unicornlove/ui'
 
 type FilterDropdownProps = {
   showWorkers?: boolean
@@ -55,10 +55,10 @@ export const FilterDropdown = ({
         <Button
           size="$4"
           variant="outlined"
-          bg={activeFilterCount < 3 ? '$blue9' : '$background'}
+          backgroundColor={activeFilterCount < 3 ? '$blue9' : '$background'}
           color={activeFilterCount < 3 ? 'white' : '$color'}
-          hoverStyle={{ bg: activeFilterCount < 3 ? '$blue10' : '$backgroundHover' }}
-          pressStyle={{ bg: activeFilterCount < 3 ? '$blue11' : '$backgroundPress' }}
+          hoverStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue10' : '$backgroundHover' }}
+          pressStyle={{ backgroundColor: activeFilterCount < 3 ? '$blue11' : '$backgroundPress' }}
           icon={SlidersHorizontal}
           iconAfter={ChevronDown}
           scaleIcon={1.2}
@@ -68,11 +68,11 @@ export const FilterDropdown = ({
       </Popover.Trigger>
 
       <Popover.Content
-        rounded="$4"
-        p="$3"
+        borderRadius="$4"
+        padding="$3"
         borderWidth={1}
         borderColor="$borderColor"
-        bg="$background"
+        backgroundColor="$background"
         shadowColor="$shadowColor"
         shadowOffset={{ width: 0, height: 4 }}
         shadowOpacity={0.15}
@@ -83,13 +83,13 @@ export const FilterDropdown = ({
         exitStyle={{ opacity: 0, scale: 0.95, y: -10 }}
       >
         <YStack gap="$3">
-          <Text fontSize="$5" fontWeight="700" mb="$1">
+          <Text fontSize="$5" fontWeight="700" marginBottom="$1">
             Display on Map
           </Text>
 
           {/* Workers Toggle */}
           <YStack gap="$1">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Label fontSize="$4" onPress={() => onShowWorkersChange?.(!showWorkers)}>
                 Workers
               </Label>
@@ -99,14 +99,14 @@ export const FilterDropdown = ({
                 aria-label={showWorkers ? 'Showing workers on map' : 'Hiding workers on map'}
               />
             </XStack>
-            <Text fontSize="$2" color="$color10" pl="$1">
+            <Text fontSize="$2" color="$color10" paddingLeft="$1">
               Show worker profiles on the map
             </Text>
           </YStack>
 
           {/* Employers Toggle */}
           <YStack gap="$1">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Label fontSize="$4" onPress={() => onShowOrganizationsChange?.(!showOrganizations)}>
                 Employers
               </Label>
@@ -118,14 +118,14 @@ export const FilterDropdown = ({
                 }
               />
             </XStack>
-            <Text fontSize="$2" color="$color10" pl="$1">
+            <Text fontSize="$2" color="$color10" paddingLeft="$1">
               Show employer organizations on the map
             </Text>
           </YStack>
 
           {/* Jobs Toggle */}
           <YStack gap="$1">
-            <XStack justify="space-between" items="center">
+            <XStack justifyContent="space-between" alignItems="center">
               <Label fontSize="$4" onPress={() => onShowJobsChange?.(!showJobs)}>
                 Jobs
               </Label>
@@ -135,7 +135,7 @@ export const FilterDropdown = ({
                 aria-label={showJobs ? 'Showing jobs on map' : 'Hiding jobs on map'}
               />
             </XStack>
-            <Text fontSize="$2" color="$color10" pl="$1">
+            <Text fontSize="$2" color="$color10" paddingLeft="$1">
               Show job openings on the map
             </Text>
           </YStack>

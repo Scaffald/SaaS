@@ -93,7 +93,7 @@ export function InquiryComparisonView({
 
   if (isLoading) {
     return (
-      <YStack p="$4" items="center" gap="$4">
+      <YStack padding="$4" alignItems="center" gap="$4">
         <Text>Loading inquiries for comparison...</Text>
       </YStack>
     )
@@ -101,7 +101,7 @@ export function InquiryComparisonView({
 
   if (error || !inquiries || inquiries.length === 0) {
     return (
-      <YStack p="$4" items="center" gap="$4">
+      <YStack padding="$4" alignItems="center" gap="$4">
         <Text color="$red10">Failed to load inquiries for comparison</Text>
         {onClose && (
           <Button variant="outlined" onPress={onClose}>
@@ -113,9 +113,9 @@ export function InquiryComparisonView({
   }
 
   return (
-    <YStack gap="$4" p="$4" flex={1}>
+    <YStack gap="$4" padding="$4" flex={1}>
       {/* Header */}
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <YStack gap="$1">
           <Text fontSize="$8" fontWeight="600">
             Compare Inquiries
@@ -138,7 +138,7 @@ export function InquiryComparisonView({
 
       {/* Comparison Grid */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$4" pb="$4" style={{ minWidth: '100%' }}>
+        <XStack gap="$4" paddingBottom="$4" style={{ minWidth: '100%' }}>
           {inquiries.map((inquiryData) => (
             <ComparisonColumn
               key={inquiryData.inquiry.id}

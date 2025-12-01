@@ -7,7 +7,7 @@ import { Eye, EyeOff, Pencil } from '@tamagui/lucide-icons'
 import { createColumnHelper } from '@tanstack/react-table'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, H2, Text, XStack, YStack } from 'tamagui'
+import { Button, H2, Text, XStack, YStack } from '@unicornlove/ui'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 
 type ProjectStatus = 'planning' | 'active' | 'completed' | 'on_hold'
@@ -85,7 +85,7 @@ const createColumns = (_router: ReturnType<typeof useRouter>) => [
       const hasOverride = info.row.original.location_visibility_override
 
       return (
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Icon size={16} />
           <Text>{label}</Text>
           {hasOverride && (
@@ -127,7 +127,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
     <OfficeLayout
       showBreadcrumb
       leftContent={
-        <YStack flex={1} p="$4" gap="$4">
+        <YStack flex={1} padding="$4" gap="$4">
           {showHeader && (
             <YStack gap="$2">
               <H2>Projects</H2>
@@ -137,8 +137,8 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
             </YStack>
           )}
           <YStack gap="$4">
-            <XStack gap="$4" items="center" justify="space-between" flexWrap="wrap">
-              <XStack gap="$4" items="center" flexWrap="wrap">
+            <XStack gap="$4" alignItems="center" justifyContent="space-between" flexWrap="wrap">
+              <XStack gap="$4" alignItems="center" flexWrap="wrap">
                 {organizationsData && (
                   <XStack width={200}>
                     <ResponsiveSelect
@@ -178,7 +178,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
 
               <Button
                 onPress={() => router.push(ROUTES.OFFICE.CMS.PROJECTS.CREATE.path)}
-                bg="$blue9"
+                backgroundColor="$blue9"
                 color="$blue12"
               >
                 Create Project
@@ -194,11 +194,11 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                 {projects.map((project: (typeof projects)[0]) => (
                   <XStack
                     key={project.id}
-                    p="$4"
-                    bg="$background"
-                    rounded="$4"
-                    justify="space-between"
-                    items="center"
+                    padding="$4"
+                    backgroundColor="$background"
+                    borderRadius="$4"
+                    justifyContent="space-between"
+                    alignItems="center"
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
@@ -208,7 +208,7 @@ export function OfficeProjectsList({ showHeader = true }: { showHeader?: boolean
                         {project.organization?.name || 'No organization'} • {project.status}
                       </Text>
                     </YStack>
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       {getVisibilityIcon(project.location_visibility)({ size: 16 })}
                       <Button
                         size="$2"

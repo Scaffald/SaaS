@@ -4,7 +4,7 @@ import { api } from '@app/core/utils/api'
 import { Sheet } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Text, YStack } from 'tamagui'
+import { Button, Text, YStack } from '@unicornlove/ui'
 import type { PersonalizedBenefit } from '../hooks/useCompletionNudges'
 import { useCompletionNudges } from '../hooks/useCompletionNudges'
 import type { CompletionStatus } from '../hooks/useCompletionStatus'
@@ -261,9 +261,9 @@ const ProfileCompletionWizardSheet = memo(function ProfileCompletionWizardSheet(
   return (
     <Sheet open={open} onOpenChange={onOpenChange} snapPoints={[90]} modal dismissOnSnapToBottom>
       <Sheet.Overlay />
-      <Sheet.Frame bg="$background" aria-label="Profile completion wizard">
+      <Sheet.Frame backgroundColor="$background" aria-label="Profile completion wizard">
         <Sheet.Handle />
-        <YStack p="$4" gap="$4" flex={1}>
+        <YStack padding="$4" gap="$4" flex={1}>
           <YStack gap="$2">
             <Text fontSize="$6" fontWeight="700">
               Complete Your Profile

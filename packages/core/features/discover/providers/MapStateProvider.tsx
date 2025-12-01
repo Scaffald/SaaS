@@ -1,7 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { Platform } from 'react-native'
-import { useIsomorphicLayoutEffect } from 'tamagui'
+import { useIsomorphicLayoutEffect } from '@unicornlove/ui'
 
 /**
  * Map state interface for persisting search location, filters, and UI preferences
@@ -184,12 +192,9 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
   }, [state, isReady])
 
   // Update state with type safety
-  const setState = useCallback(
-    (newState: MapState | ((prev: MapState) => MapState)) => {
-      setStateInternal(newState)
-    },
-    []
-  )
+  const setState = useCallback((newState: MapState | ((prev: MapState) => MapState)) => {
+    setStateInternal(newState)
+  }, [])
 
   // Convenience methods for updating specific parts of state
   const updateSearchLocation = useCallback((location: MapState['lastSearchLocation']) => {
@@ -247,7 +252,15 @@ export const MapStateProvider = ({ children }: { children: ReactNode }) => {
       updateViewport,
       clearState,
     }),
-    [state, setState, updateSearchLocation, updateFilters, updateResultsRailVisible, updateViewport, clearState]
+    [
+      state,
+      setState,
+      updateSearchLocation,
+      updateFilters,
+      updateResultsRailVisible,
+      updateViewport,
+      clearState,
+    ]
   )
 
   // Don't render children until state is loaded

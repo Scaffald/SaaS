@@ -3,7 +3,7 @@ import { api } from '@app/core/utils/api'
 import { AlertCircle, RefreshCcw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Tabs, Text, XStack, YStack } from 'tamagui'
+import { Button, Tabs, Text, XStack, YStack } from '@unicornlove/ui'
 import { useIPIPResults } from '../hooks/useIPIPResults'
 import { ChartView } from './ChartView'
 import { NarrativeView } from './NarrativeView'
@@ -37,7 +37,7 @@ export function IPIPResultsPage() {
 
   if (results.isLoading) {
     return (
-      <YStack gap="$4" p="$8" items="center" aria-live="polite">
+      <YStack gap="$4" padding="$8" alignItems="center" aria-live="polite">
         <Text fontSize="$5" color="$color11">
           Loading your results...
         </Text>
@@ -53,12 +53,12 @@ export function IPIPResultsPage() {
   // Handle critical errors (network, API failures)
   if (results.error && !results.hasPartialResults) {
     return (
-      <YStack gap="$4" p="$8" items="center" aria-live="assertive">
+      <YStack gap="$4" padding="$8" alignItems="center" aria-live="assertive">
         <AlertCircle size="$3" color="$red10" />
         <Text fontSize="$5" color="$red10" fontWeight="600">
           Error Loading Results
         </Text>
-        <Text fontSize="$4" color="$color11" text="center">
+        <Text fontSize="$4" color="$color11" textAlign="center">
           {results.error.message || 'Unable to load your assessment results. Please try again.'}
         </Text>
         <XStack gap="$3">
@@ -76,11 +76,11 @@ export function IPIPResultsPage() {
   // Handle case where no assessment has been started
   if (!results.scores && results.completedDomains === 0 && !results.isLoading) {
     return (
-      <YStack gap="$4" p="$8" items="center">
+      <YStack gap="$4" padding="$8" alignItems="center">
         <Text fontSize="$5" color="$color11" fontWeight="600">
           No Results Yet
         </Text>
-        <Text fontSize="$4" color="$color10" text="center">
+        <Text fontSize="$4" color="$color10" textAlign="center">
           Complete the IPIP assessment to see your personality results.
         </Text>
         <Button onPress={() => router.push(ROUTES.DASHBOARD.ASSESSMENTS.IPIP.path)}>
@@ -94,7 +94,7 @@ export function IPIPResultsPage() {
   const hasDataErrors = results.scoringError || results.normalizationError || results.narrativeError
 
   return (
-    <YStack gap="$6" width="100%" p="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
+    <YStack gap="$6" width="100%" padding="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -131,8 +131,8 @@ export function IPIPResultsPage() {
 
         <Tabs.Content
           value="narrative"
-          p="$4"
-          bg="$color1"
+          padding="$4"
+          backgroundColor="$color1"
           borderBottomLeftRadius="$4"
           borderBottomRightRadius="$4"
           borderWidth={1}
@@ -149,8 +149,8 @@ export function IPIPResultsPage() {
 
         <Tabs.Content
           value="chart"
-          p="$4"
-          bg="$color1"
+          padding="$4"
+          backgroundColor="$color1"
           borderBottomLeftRadius="$4"
           borderBottomRightRadius="$4"
           borderWidth={1}
@@ -176,8 +176,15 @@ export function IPIPResultsPage() {
 
       {/* Data Quality Warnings */}
       {hasDataErrors && (
-        <YStack gap="$2" p="$4" bg="$yellow2" rounded="$4" borderWidth={1} borderColor="$yellow7">
-          <XStack items="center" gap="$2">
+        <YStack
+          gap="$2"
+          padding="$4"
+          backgroundColor="$yellow2"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$yellow7"
+        >
+          <XStack alignItems="center" gap="$2">
             <AlertCircle size="$1" color="$yellow11" />
             <Text fontSize="$4" fontWeight="600" color="$yellow11">
               Partial Data Available
@@ -189,7 +196,13 @@ export function IPIPResultsPage() {
             {results.narrativeError && 'Narrative content unavailable. '}
             You can still view available results below.
           </Text>
-          <Button size="$3" variant="outlined" icon={RefreshCcw} onPress={handleRetry} mt="$2">
+          <Button
+            size="$3"
+            variant="outlined"
+            icon={RefreshCcw}
+            onPress={handleRetry}
+            marginTop="$2"
+          >
             Refresh Data
           </Button>
         </YStack>

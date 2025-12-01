@@ -1,5 +1,5 @@
 import { Check } from '@tamagui/lucide-icons'
-import { Circle, Text, XStack, YStack } from 'tamagui'
+import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface ReviewProgressProps {
   currentStep: number
@@ -10,26 +10,26 @@ export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps)
   return (
     <YStack gap="$3">
       {/* Step Counter */}
-      <XStack justify="center">
+      <XStack justifyContent="center">
         <Text fontSize="$5" fontWeight="600" color="$color11">
           Step {currentStep} of {totalSteps}
         </Text>
       </XStack>
 
       {/* Progress Dots */}
-      <XStack gap="$2" justify="center" items="center">
+      <XStack gap="$2" justifyContent="center" alignItems="center">
         {Array.from({ length: totalSteps }).map((_, index) => {
           const stepNumber = index + 1
           const isCompleted = stepNumber < currentStep
           const isCurrent = stepNumber === currentStep
 
           return (
-            <XStack key={stepNumber} items="center" gap="$2">
+            <XStack key={stepNumber} alignItems="center" gap="$2">
               <Circle
                 size={32}
-                bg={isCompleted ? '$green10' : isCurrent ? '$blue10' : '$color5'}
-                items="center"
-                justify="center"
+                backgroundColor={isCompleted ? '$green10' : isCurrent ? '$blue10' : '$color5'}
+                alignItems="center"
+                justifyContent="center"
               >
                 {isCompleted ? (
                   <Check size={16} color="white" />
@@ -40,7 +40,11 @@ export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps)
                 )}
               </Circle>
               {index < totalSteps - 1 && (
-                <XStack width={24} height={2} bg={isCompleted ? '$green10' : '$color5'} />
+                <XStack
+                  width={24}
+                  height={2}
+                  backgroundColor={isCompleted ? '$green10' : '$color5'}
+                />
               )}
             </XStack>
           )
@@ -48,8 +52,12 @@ export function ReviewProgress({ currentStep, totalSteps }: ReviewProgressProps)
       </XStack>
 
       {/* Progress Bar */}
-      <YStack width="100%" height={6} bg="$color3" rounded="$2" overflow="hidden">
-        <XStack width={`${(currentStep / totalSteps) * 100}%`} height="100%" bg="$blue10" />
+      <YStack width="100%" height={6} backgroundColor="$color3" borderRadius="$2" overflow="hidden">
+        <XStack
+          width={`${(currentStep / totalSteps) * 100}%`}
+          height="100%"
+          backgroundColor="$blue10"
+        />
       </YStack>
     </YStack>
   )

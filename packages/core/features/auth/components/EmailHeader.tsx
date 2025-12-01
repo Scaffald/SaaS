@@ -1,6 +1,6 @@
 import { useTranslation } from '@app/core/utils/useTranslation'
 import { Mail } from '@tamagui/lucide-icons'
-import { H1, Paragraph, View } from 'tamagui'
+import { H1, Paragraph, View } from '@unicornlove/ui'
 
 interface EmailHeaderProps {
   email: string
@@ -10,12 +10,12 @@ export function EmailHeader({ email }: EmailHeaderProps) {
   const { t } = useTranslation()
 
   return (
-    <View items="center" gap="$3" width="100%">
+    <View alignItems="center" gap="$3" width="100%">
       <H1 fontWeight="700" fontSize="$7" color="$color12">
         {t('auth.verify.title')}
       </H1>
 
-      <View flexDirection="row" items="center" justify="center" gap="$2">
+      <View flexDirection="row" alignItems="center" justifyContent="center" gap="$2">
         <Mail size="$1" color="$color12" />
         <Paragraph
           size="$3"
@@ -29,7 +29,7 @@ export function EmailHeader({ email }: EmailHeaderProps) {
         </Paragraph>
       </View>
 
-      <Paragraph text="center" size="$2" $md={{ size: '$3' }}>
+      <Paragraph textAlign="center" size="$2" $md={{ size: '$3' }}>
         {t('auth.verify.instructions')}
       </Paragraph>
     </View>

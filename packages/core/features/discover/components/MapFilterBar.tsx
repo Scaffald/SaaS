@@ -2,7 +2,7 @@ import type { AddressResult } from '@unicornlove/ui'
 import { AddressAutocomplete } from '@unicornlove/ui'
 import { List, RotateCcw } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 import { FilterDropdown } from './FilterDropdown'
 
 type MapFilterBarProps = {
@@ -88,17 +88,17 @@ export const MapFilterBar = ({
   return (
     <XStack
       width="100%"
-      px="$4"
-      py="$3"
+      paddingHorizontal="$4"
+      paddingVertical="$3"
       gap="$3"
-      items="center"
-      bg="$background"
+      alignItems="center"
+      backgroundColor="$background"
       borderBottomWidth={1}
       borderBottomColor="$borderColor"
     >
       {/* Search Input */}
       {tokenValidation.valid ? (
-        <YStack flex={1} minW={200}>
+        <YStack flex={1} minWidth={200}>
           <AddressAutocomplete
             value={searchQuery}
             onChange={setSearchQuery}
@@ -115,23 +115,23 @@ export const MapFilterBar = ({
             debounceMs={300}
             containerProps={{
               w: '100%',
-              bg: 'white',
-              rounded: '$4',
+              backgroundColor: 'white',
+              borderRadius: '$4',
             }}
           />
         </YStack>
       ) : (
         <YStack
           flex={1}
-          minW={200}
-          bg="$background"
-          p="$3"
-          rounded="$4"
+          minWidth={200}
+          backgroundColor="$background"
+          padding="$3"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$red8"
           gap="$2"
         >
-          <XStack items="center" gap="$2">
+          <XStack alignItems="center" gap="$2">
             <Text fontSize="$3" color="$red10" fontWeight="600">
               Map Search Unavailable
             </Text>
@@ -157,9 +157,9 @@ export const MapFilterBar = ({
         size="$4"
         variant="outlined"
         onPress={onResultsPress}
-        bg="$background"
-        hoverStyle={{ bg: '$backgroundHover' }}
-        pressStyle={{ bg: '$backgroundPress' }}
+        backgroundColor="$background"
+        hoverStyle={{ backgroundColor: '$backgroundHover' }}
+        pressStyle={{ backgroundColor: '$backgroundPress' }}
         icon={resultsCount > 0 ? undefined : List}
       >
         {resultsCount > 0 ? (
@@ -178,9 +178,9 @@ export const MapFilterBar = ({
         icon={RotateCcw}
         scaleIcon={1.2}
         onPress={onReset}
-        bg="$background"
-        hoverStyle={{ bg: '$backgroundHover' }}
-        pressStyle={{ bg: '$backgroundPress' }}
+        backgroundColor="$background"
+        hoverStyle={{ backgroundColor: '$backgroundHover' }}
+        pressStyle={{ backgroundColor: '$backgroundPress' }}
         aria-label="Reset filters and search"
       />
     </XStack>

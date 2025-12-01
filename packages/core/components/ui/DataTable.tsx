@@ -17,7 +17,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useRef, useState } from 'react'
-import { Button, Input, isWeb, ScrollView, Text, View, XGroup } from 'tamagui'
+import { Button, Input, isWeb, ScrollView, Text, View, XGroup } from '@unicornlove/ui'
 import { Table } from '@unicornlove/ui'
 
 const HEADER_ROW_HEIGHT = 48
@@ -180,7 +180,7 @@ export function DataTable<TData>({
 
   if (isLoading) {
     return (
-      <View flex={1} items="center" justify="center">
+      <View flex={1} alignItems="center" justifyContent="center">
         <Text>Loading...</Text>
       </View>
     )
@@ -188,7 +188,7 @@ export function DataTable<TData>({
 
   if (tableRows.length === 0) {
     return (
-      <View flex={1} items="center" justify="center">
+      <View flex={1} alignItems="center" justifyContent="center">
         <Text>{emptyMessage}</Text>
       </View>
     )
@@ -213,18 +213,18 @@ export function DataTable<TData>({
                 borderBottomRightRadius="$2"
               >
                 {/* Header */}
-                <Table.Head position="absolute" t={0} z={5} bg="$background">
+                <Table.Head position="absolute" top={0} zIndex={5} backgroundColor="$background">
                   {headerGroups.map((headerGroup, groupIndex) => (
                     <Table.Row
                       key={headerGroup.id}
                       backgrounded
-                      bg="$color2"
+                      backgroundColor="$color2"
                       rowLocation="first"
                       borderTopRightRadius="$4"
                       borderTopLeftRadius="$4"
                       position="absolute"
-                      t={groupIndex * HEADER_ROW_HEIGHT}
-                      z={5 + groupIndex}
+                      top={groupIndex * HEADER_ROW_HEIGHT}
+                      zIndex={5 + groupIndex}
                     >
                       {headerGroup.headers.map((header, idx) => {
                         const cellLocation =
@@ -238,7 +238,7 @@ export function DataTable<TData>({
                           return (
                             <Table.HeaderCell
                               key={header.id}
-                              pl="$3"
+                              paddingLeft="$3"
                               cellWidth={cellWidth as never}
                               cellLocation={cellLocation}
                             />
@@ -253,7 +253,7 @@ export function DataTable<TData>({
                         return (
                           <Table.HeaderCell
                             key={header.id}
-                            pl="$3"
+                            paddingLeft="$3"
                             cellWidth={columnWidth as never}
                             cellLocation={cellLocation}
                           >
@@ -266,7 +266,7 @@ export function DataTable<TData>({
                                   : undefined
                               }
                               gap="$2"
-                              items="center"
+                              alignItems="center"
                             >
                               <Text fontSize="$4" selectable={false}>
                                 {flexRender(header.column.columnDef.header, header.getContext())}
@@ -292,7 +292,7 @@ export function DataTable<TData>({
                   {tableRows.map((row, rowIdx) => (
                     <Table.Row
                       key={row.id}
-                      hoverStyle={{ bg: '$color2' }}
+                      hoverStyle={{ backgroundColor: '$color2' }}
                       pressStyle={{ opacity: 0.8 }}
                       cursor={useOverlay ? 'pointer' : 'default'}
                       onPress={(event) => {
@@ -320,7 +320,7 @@ export function DataTable<TData>({
                         return (
                           <Table.Cell
                             key={cell.id}
-                            pl="$3"
+                            paddingLeft="$3"
                             cellWidth={columnWidth as never}
                             cellLocation={
                               cellIdx === 0
@@ -379,10 +379,10 @@ export function DataTable<TData>({
       {!hidePagination && (
         <View
           flexDirection="row"
-          items="center"
-          justify="space-between"
-          px="$4"
-          py="$3"
+          alignItems="center"
+          justifyContent="space-between"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
           borderTopWidth={1}
           borderColor="$borderColor"
           gap="$4"
@@ -438,7 +438,7 @@ export function DataTable<TData>({
           </Text>
 
           {isWeb && (
-            <View flexDirection="row" gap="$2" items="center">
+            <View flexDirection="row" gap="$2" alignItems="center">
               <Text fontSize="$3">Go to:</Text>
               <Input
                 size="$3"

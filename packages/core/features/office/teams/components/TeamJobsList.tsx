@@ -4,7 +4,7 @@ import { AlertTriangle, ArrowRight, RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type OfficeJobsOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
 type TeamJobRecord = NonNullable<OfficeJobsOutput['jobs']>[number]
@@ -33,15 +33,15 @@ export function TeamJobsList({
   const hasJobs = derivedJobs.length > 0
 
   return (
-    <YStack gap="$3" px="$3" $md={{ px: undefined }}>
+    <YStack gap="$3" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
       <XStack
-        justify="space-between"
-        items="flex-start"
+        justifyContent="space-between"
+        alignItems="flex-start"
         flexWrap="wrap"
         gap="$3"
         flexDirection="column"
         $md={{
-          items: 'center',
+          alignItems: 'center',
           flexDirection: 'row',
         }}
       >
@@ -50,11 +50,11 @@ export function TeamJobsList({
         </Text>
         <XStack
           gap="$2"
-          items="flex-start"
+          alignItems="flex-start"
           flexDirection="column"
           width="100%"
           $md={{
-            items: 'center',
+            alignItems: 'center',
             flexDirection: 'row',
             width: undefined,
           }}
@@ -94,13 +94,19 @@ export function TeamJobsList({
       </XStack>
 
       {isLoading ? (
-        <YStack items="center" justify="center" py="$6" gap="$2">
+        <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading assigned jobs…</Text>
         </YStack>
       ) : error ? (
-        <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$3">
-          <XStack gap="$2" items="center">
+        <Card
+          borderWidth={1}
+          borderColor="$borderColor"
+          backgroundColor="$color2"
+          padding="$4"
+          gap="$3"
+        >
+          <XStack gap="$2" alignItems="center">
             <AlertTriangle size={18} color="$yellow10" />
             <Text fontSize="$5" fontWeight="700">
               Unable to load jobs
@@ -118,10 +124,10 @@ export function TeamJobsList({
           {derivedJobs.map((job) => (
             <Card
               key={job.id}
-              p="$4"
+              padding="$4"
               borderWidth={1}
               borderColor="$borderColor"
-              bg="$color2"
+              backgroundColor="$color2"
               gap="$3"
               accessible
               accessibilityRole="summary"
@@ -129,8 +135,8 @@ export function TeamJobsList({
               width="100%"
             >
               <XStack
-                justify="space-between"
-                items="flex-start"
+                justifyContent="space-between"
+                alignItems="flex-start"
                 gap="$3"
                 flexWrap="wrap"
                 flexDirection="column"
@@ -158,10 +164,10 @@ export function TeamJobsList({
               <XStack
                 gap="$2"
                 flexDirection="column"
-                items="stretch"
+                alignItems="stretch"
                 $md={{
                   flexDirection: 'row',
-                  items: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <Text fontSize="$3" color="$color10">
@@ -173,7 +179,9 @@ export function TeamJobsList({
                 <Button
                   size="$3"
                   variant="outlined"
-                  onPress={() => router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))}
+                  onPress={() =>
+                    router.push(buildPath(ROUTES.OFFICE.CMS.JOBS.EDIT, { id: job.id }))
+                  }
                   accessibilityLabel={`View job ${job.title}`}
                   width="100%"
                   $md={{ width: undefined }}
@@ -185,14 +193,21 @@ export function TeamJobsList({
           ))}
         </YStack>
       ) : (
-        <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$2" width="100%">
+        <Card
+          borderWidth={1}
+          borderColor="$borderColor"
+          backgroundColor="$color2"
+          padding="$4"
+          gap="$2"
+          width="100%"
+        >
           <Text fontWeight="600">No jobs assigned yet</Text>
           <Text color="$color11">
             Assign this team to a job to keep the hiring workflow organized. Jobs assigned to this
             team will appear here.
           </Text>
           <Button
-            mt="$2"
+            marginTop="$2"
             size="$3"
             onPress={() => {
               if (onCreateJob) {
@@ -224,12 +239,12 @@ function StatusChip({ status }: { status: string }) {
 
   return (
     <XStack
-      px="$2"
-      py="$1"
+      paddingHorizontal="$2"
+      paddingVertical="$1"
       borderWidth={1}
       borderColor={border}
-      bg={background}
-      rounded="$4"
+      backgroundColor={background}
+      borderRadius="$4"
       accessible
       accessibilityRole="text"
       accessibilityLabel={`Job status ${normalized}`}
@@ -248,12 +263,12 @@ function TeamBadge({ name, isPrimary }: { name: string; isPrimary: boolean }) {
 
   return (
     <XStack
-      px="$2"
-      py="$1"
+      paddingHorizontal="$2"
+      paddingVertical="$1"
       borderWidth={1}
       borderColor={border}
-      bg={background}
-      rounded="$4"
+      backgroundColor={background}
+      borderRadius="$4"
       accessible
       accessibilityRole="text"
       accessibilityLabel={`${name}${isPrimary ? ' primary team' : ''}`}

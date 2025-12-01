@@ -1,7 +1,7 @@
 import { Copy } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { Dialog } from '@unicornlove/ui'
 
 interface DuplicateButtonProps {
@@ -102,7 +102,7 @@ export function DuplicateButton({
               </Text>
             </YStack>
 
-            <XStack gap="$3" items="center" justify="flex-end">
+            <XStack gap="$3" alignItems="center" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button variant="outlined" disabled={isDuplicating}>
                   Cancel

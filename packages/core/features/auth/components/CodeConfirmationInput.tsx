@@ -1,7 +1,7 @@
 import type { Control, UseFormRegister, UseFormSetValue } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-import type { SizeTokens } from 'tamagui'
-import { Input } from 'tamagui'
+import type { SizeTokens } from '@unicornlove/ui'
+import { Input } from '@unicornlove/ui'
 
 interface FormFields {
   [key: string]: string
@@ -87,15 +87,15 @@ export function CodeConfirmationInput({
           textContentType="oneTimeCode"
           autoComplete="one-time-code"
           secureTextEntry={secureTextEntry}
-          text="center"
+          textAlign="center"
           fontSize="$8"
-          rounded="$5"
+          borderRadius="$5"
           width={50}
           aspectRatio={1}
-          bg={invalid ? '$red7' : value ? '$color1' : '$color5'}
+          backgroundColor={invalid ? '$red7' : value ? '$color1' : '$color5'}
           hoverStyle={{ outlineWidth: 0 }}
           focusStyle={{
-            bg: invalid ? '$red8' : '$color1',
+            backgroundColor: invalid ? '$red8' : '$color1',
             outlineWidth: 0,
           }}
         />

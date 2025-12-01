@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import {
-  UIButton as Button,
+  Button,
   ConfirmationDialog,
   CustomCheckbox,
   FieldError,
@@ -13,7 +13,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Input, Label, Spinner, Text, TextArea, useWindowDimensions, XStack, YStack } from 'tamagui'
+import {
+  Input,
+  Label,
+  Spinner,
+  Text,
+  TextArea,
+  useWindowDimensions,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { DEGREE_TYPE_OPTIONS, singleEducationEntrySchema } from '../config'
 import type { EducationEntry, EducationEntryFormValues } from '../types/education'
 import { normalizeEducationEntry } from '../utils/education-entry'
@@ -161,7 +170,7 @@ export function EducationEntryEditModal({
         title="Edit Education Entry"
         size="large"
       >
-        <YStack gap="$4" p="$4">
+        <YStack gap="$4" padding="$4">
           {/* Institution */}
           <YStack gap="$2">
             <Text>Institution *</Text>
@@ -439,7 +448,7 @@ export function EducationEntryEditModal({
                 }
 
                 return (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <CustomCheckbox
                       checked={isCurrent}
                       onCheckedChange={handleChange}
@@ -484,7 +493,7 @@ export function EducationEntryEditModal({
                     placeholder="Describe your education experience, achievements, relevant coursework..."
                     value={field.value || ''}
                     onChangeText={field.onChange}
-                    minH={80}
+                    minHeight={80}
                   />
                   <FieldError message={errors.description?.message} />
                 </>
@@ -494,9 +503,9 @@ export function EducationEntryEditModal({
 
           {/* Action Buttons */}
           <XStack
-            justify="flex-end"
+            justifyContent="flex-end"
             gap="$3"
-            pt="$4"
+            paddingTop="$4"
             $sm={{ flexDirection: 'column' }}
             $md={{ flexDirection: 'row' }}
           >
@@ -519,7 +528,7 @@ export function EducationEntryEditModal({
               $md={{ height: undefined, width: undefined }}
             >
               {isLoading ? (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Spinner size="small" />
                   <Text>Saving...</Text>
                 </XStack>

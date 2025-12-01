@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { Tab, TabGroup } from '@unicornlove/ui'
 import { useMemo, useState } from 'react'
-import { Tabs, Text, YStack } from 'tamagui'
+import { Tabs, Text, YStack } from '@unicornlove/ui'
 import { ConnectionsList } from './components/ConnectionsList'
 import { FollowersList } from './components/FollowersList'
 import { FollowingList } from './components/FollowingList'
@@ -44,22 +44,22 @@ export function ConnectionsManagementPage() {
         />
 
         <Tabs.Content value="connections">
-          <YStack pt="$4">
+          <YStack paddingTop="$4">
             <ConnectionsList />
           </YStack>
         </Tabs.Content>
         <Tabs.Content value="followers">
-          <YStack pt="$4">
+          <YStack paddingTop="$4">
             <FollowersList />
           </YStack>
         </Tabs.Content>
         <Tabs.Content value="following">
-          <YStack pt="$4">
+          <YStack paddingTop="$4">
             <FollowingList />
           </YStack>
         </Tabs.Content>
         <Tabs.Content value="pending">
-          <YStack pt="$4">
+          <YStack paddingTop="$4">
             <PendingRequestsList />
           </YStack>
         </Tabs.Content>

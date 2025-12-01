@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import type { AttachmentMetadata } from '@app/schemas'
 import { ArrowLeft, CheckCircle2, Upload, X } from '@tamagui/lucide-icons'
 import { type DragEvent, useCallback, useRef, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from 'tamagui'
+import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
 
 type AttachmentType = 'resume' | 'cover_letter' | 'portfolio'
 
@@ -296,7 +296,7 @@ export function AttachmentsStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxW={800} p="$4">
+    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -309,7 +309,7 @@ export function AttachmentsStep({
 
       {/* Resume Upload */}
       <YStack gap="$3">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Resume
           </Text>
@@ -322,16 +322,16 @@ export function AttachmentsStep({
 
         {getAttachment('resume') ? (
           <XStack
-            p="$4"
-            rounded="$4"
+            padding="$4"
+            borderRadius="$4"
             borderWidth={2}
             borderColor="$green9"
-            bg="$green2"
-            justify="space-between"
-            items="center"
+            backgroundColor="$green2"
+            justifyContent="space-between"
+            alignItems="center"
             gap="$3"
           >
-            <XStack gap="$3" items="center" flex={1}>
+            <XStack gap="$3" alignItems="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
@@ -354,23 +354,23 @@ export function AttachmentsStep({
         ) : uploading.resume ? (
           <YStack gap="$2">
             <YStack
-              p="$6"
-              rounded="$4"
+              padding="$6"
+              borderRadius="$4"
               borderWidth={2}
               borderColor="$blue9"
-              bg="$blue2"
-              items="center"
+              backgroundColor="$blue2"
+              alignItems="center"
               gap="$3"
             >
               <Upload size={32} color="$blue10" />
               <YStack gap="$2" width="100%">
-                <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
+                <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
                   Uploading...
                 </Text>
-                <Progress value={uploadProgress.resume || 0} max={100} bg="$blue4">
-                  <Progress.Indicator animation="bouncy" bg="$blue9" />
+                <Progress value={uploadProgress.resume || 0} max={100} backgroundColor="$blue4">
+                  <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
                 </Progress>
-                <Text fontSize="$2" color="$color11" text="center">
+                <Text fontSize="$2" color="$color11" textAlign="center">
                   {uploadProgress.resume || 0}%
                 </Text>
               </YStack>
@@ -381,18 +381,18 @@ export function AttachmentsStep({
             <label htmlFor="resume-upload">
               <YStack
                 asChild
-                p="$6"
-                rounded="$4"
+                padding="$6"
+                borderRadius="$4"
                 borderWidth={2}
                 borderColor={
                   errors.resume ? '$red9' : dragOverRefs.current.resume ? '$blue9' : '$borderColor'
                 }
                 borderStyle="dashed"
-                bg={dragOverRefs.current.resume ? '$blue2' : '$background'}
-                items="center"
+                backgroundColor={dragOverRefs.current.resume ? '$blue2' : '$background'}
+                alignItems="center"
                 gap="$3"
                 cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
+                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
               >
                 <section
                   aria-label="Resume upload drop zone"
@@ -402,11 +402,11 @@ export function AttachmentsStep({
                   style={{ width: '100%' }}
                 >
                   <Upload size={32} color={errors.resume ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" items="center">
+                  <YStack gap="$1" alignItems="center">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Choose a file or drag it here
                     </Text>
-                    <Text fontSize="$3" color="$color11" text="center">
+                    <Text fontSize="$3" color="$color11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
@@ -438,7 +438,7 @@ export function AttachmentsStep({
 
       {/* Cover Letter Upload (Optional) */}
       <YStack gap="$3">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Cover Letter
           </Text>
@@ -449,16 +449,16 @@ export function AttachmentsStep({
 
         {getAttachment('cover_letter') ? (
           <XStack
-            p="$4"
-            rounded="$4"
+            padding="$4"
+            borderRadius="$4"
             borderWidth={2}
             borderColor="$green9"
-            bg="$green2"
-            justify="space-between"
-            items="center"
+            backgroundColor="$green2"
+            justifyContent="space-between"
+            alignItems="center"
             gap="$3"
           >
-            <XStack gap="$3" items="center" flex={1}>
+            <XStack gap="$3" alignItems="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
@@ -481,23 +481,27 @@ export function AttachmentsStep({
         ) : uploading.cover_letter ? (
           <YStack gap="$2">
             <YStack
-              p="$6"
-              rounded="$4"
+              padding="$6"
+              borderRadius="$4"
               borderWidth={2}
               borderColor="$blue9"
-              bg="$blue2"
-              items="center"
+              backgroundColor="$blue2"
+              alignItems="center"
               gap="$3"
             >
               <Upload size={32} color="$blue10" />
               <YStack gap="$2" width="100%">
-                <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
+                <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
                   Uploading...
                 </Text>
-                <Progress value={uploadProgress.cover_letter || 0} max={100} bg="$blue4">
-                  <Progress.Indicator animation="bouncy" bg="$blue9" />
+                <Progress
+                  value={uploadProgress.cover_letter || 0}
+                  max={100}
+                  backgroundColor="$blue4"
+                >
+                  <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
                 </Progress>
-                <Text fontSize="$2" color="$color11" text="center">
+                <Text fontSize="$2" color="$color11" textAlign="center">
                   {uploadProgress.cover_letter || 0}%
                 </Text>
               </YStack>
@@ -508,8 +512,8 @@ export function AttachmentsStep({
             <label htmlFor="cover-letter-upload">
               <YStack
                 asChild
-                p="$6"
-                rounded="$4"
+                padding="$6"
+                borderRadius="$4"
                 borderWidth={2}
                 borderColor={
                   errors.cover_letter
@@ -519,11 +523,11 @@ export function AttachmentsStep({
                       : '$borderColor'
                 }
                 borderStyle="dashed"
-                bg={dragOverRefs.current.cover_letter ? '$blue2' : '$background'}
-                items="center"
+                backgroundColor={dragOverRefs.current.cover_letter ? '$blue2' : '$background'}
+                alignItems="center"
                 gap="$3"
                 cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
+                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
               >
                 <section
                   aria-label="Cover letter upload drop zone"
@@ -533,11 +537,11 @@ export function AttachmentsStep({
                   style={{ width: '100%' }}
                 >
                   <Upload size={32} color={errors.cover_letter ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" items="center">
+                  <YStack gap="$1" alignItems="center">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Choose a file or drag it here
                     </Text>
-                    <Text fontSize="$3" color="$color11" text="center">
+                    <Text fontSize="$3" color="$color11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
@@ -569,7 +573,7 @@ export function AttachmentsStep({
 
       {/* Portfolio Upload (Optional) */}
       <YStack gap="$3">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Portfolio / Work Samples
           </Text>
@@ -580,16 +584,16 @@ export function AttachmentsStep({
 
         {getAttachment('portfolio') ? (
           <XStack
-            p="$4"
-            rounded="$4"
+            padding="$4"
+            borderRadius="$4"
             borderWidth={2}
             borderColor="$green9"
-            bg="$green2"
-            justify="space-between"
-            items="center"
+            backgroundColor="$green2"
+            justifyContent="space-between"
+            alignItems="center"
             gap="$3"
           >
-            <XStack gap="$3" items="center" flex={1}>
+            <XStack gap="$3" alignItems="center" flex={1}>
               <CheckCircle2 size={24} color="$green10" />
               <YStack flex={1}>
                 <Text fontSize="$4" fontWeight="600" color="$color12">
@@ -612,23 +616,23 @@ export function AttachmentsStep({
         ) : uploading.portfolio ? (
           <YStack gap="$2">
             <YStack
-              p="$6"
-              rounded="$4"
+              padding="$6"
+              borderRadius="$4"
               borderWidth={2}
               borderColor="$blue9"
-              bg="$blue2"
-              items="center"
+              backgroundColor="$blue2"
+              alignItems="center"
               gap="$3"
             >
               <Upload size={32} color="$blue10" />
               <YStack gap="$2" width="100%">
-                <Text fontSize="$4" fontWeight="600" color="$color12" text="center">
+                <Text fontSize="$4" fontWeight="600" color="$color12" textAlign="center">
                   Uploading...
                 </Text>
-                <Progress value={uploadProgress.portfolio || 0} max={100} bg="$blue4">
-                  <Progress.Indicator animation="bouncy" bg="$blue9" />
+                <Progress value={uploadProgress.portfolio || 0} max={100} backgroundColor="$blue4">
+                  <Progress.Indicator animation="bouncy" backgroundColor="$blue9" />
                 </Progress>
-                <Text fontSize="$2" color="$color11" text="center">
+                <Text fontSize="$2" color="$color11" textAlign="center">
                   {uploadProgress.portfolio || 0}%
                 </Text>
               </YStack>
@@ -639,8 +643,8 @@ export function AttachmentsStep({
             <label htmlFor="portfolio-upload">
               <YStack
                 asChild
-                p="$6"
-                rounded="$4"
+                padding="$6"
+                borderRadius="$4"
                 borderWidth={2}
                 borderColor={
                   errors.portfolio
@@ -650,11 +654,11 @@ export function AttachmentsStep({
                       : '$borderColor'
                 }
                 borderStyle="dashed"
-                bg={dragOverRefs.current.portfolio ? '$blue2' : '$background'}
-                items="center"
+                backgroundColor={dragOverRefs.current.portfolio ? '$blue2' : '$background'}
+                alignItems="center"
                 gap="$3"
                 cursor="pointer"
-                hoverStyle={{ borderColor: '$blue9', bg: '$blue2' }}
+                hoverStyle={{ borderColor: '$blue9', backgroundColor: '$blue2' }}
               >
                 <section
                   aria-label="Portfolio upload drop zone"
@@ -664,11 +668,11 @@ export function AttachmentsStep({
                   style={{ width: '100%' }}
                 >
                   <Upload size={32} color={errors.portfolio ? '$red9' : '$blue9'} />
-                  <YStack gap="$1" items="center">
+                  <YStack gap="$1" alignItems="center">
                     <Text fontSize="$4" fontWeight="600" color="$color12">
                       Choose a file or drag it here
                     </Text>
-                    <Text fontSize="$3" color="$color11" text="center">
+                    <Text fontSize="$3" color="$color11" textAlign="center">
                       PDF, DOC, or DOCX • Max 5MB
                     </Text>
                   </YStack>
@@ -699,7 +703,13 @@ export function AttachmentsStep({
       </YStack>
 
       {/* Info Box */}
-      <YStack p="$4" rounded="$4" bg="$blue2" borderWidth={1} borderColor="$blue7">
+      <YStack
+        padding="$4"
+        borderRadius="$4"
+        backgroundColor="$blue2"
+        borderWidth={1}
+        borderColor="$blue7"
+      >
         <Text fontSize="$3" color="$blue11">
           💡 Tip: Make sure your documents are up-to-date and clearly showcase your relevant
           experience and skills for this position.
@@ -707,7 +717,7 @@ export function AttachmentsStep({
       </YStack>
 
       {/* Navigation Buttons */}
-      <XStack gap="$3" justify="space-between" mt="$4">
+      <XStack gap="$3" justifyContent="space-between" marginTop="$4">
         <Button
           size="$4"
           variant="outlined"

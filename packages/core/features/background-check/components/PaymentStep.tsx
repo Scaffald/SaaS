@@ -1,6 +1,6 @@
 import { PaymentIntentForm } from '@app/core/features/payments/components/PaymentIntentForm'
 import { memo, useEffect } from 'react'
-import { Button, Text, YStack } from 'tamagui'
+import { Button, Text, YStack } from '@unicornlove/ui'
 
 import type { PaymentDetails } from '../hooks/useBackgroundCheckForm'
 
@@ -62,7 +62,7 @@ export const PaymentStep = memo(function PaymentStep({
         </Text>
       </YStack>
 
-      <YStack gap="$2" bg="$color2" p="$4" rounded="$4">
+      <YStack gap="$2" backgroundColor="$color2" padding="$4" borderRadius="$4">
         <Text fontSize="$2" color="$color11">
           Total Due
         </Text>
@@ -75,7 +75,7 @@ export const PaymentStep = memo(function PaymentStep({
       </YStack>
 
       {submitError && (
-        <YStack bg="$red3" p="$3" rounded="$3">
+        <YStack backgroundColor="$red3" padding="$3" borderRadius="$3">
           <Text color="$red11">{submitError.message}</Text>
         </YStack>
       )}

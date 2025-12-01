@@ -4,7 +4,7 @@ import { normalizeOrganizationSlug } from '@app/core/features/discover/utils/nor
 import { OrganizationRequestForm } from '@app/core/features/organizations/components/OrganizationRequestForm'
 import { Building2, Info } from '@tamagui/lucide-icons'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, Separator, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 
 export default function DashboardOrganizationCreatePage() {
   const router = useRouter()
@@ -21,7 +21,7 @@ export default function DashboardOrganizationCreatePage() {
   const sidebar = (
     <YStack gap="$4">
       <YStack gap="$2">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Building2 size={20} color="$blue10" />
           <Text fontSize="$5" fontWeight="700" color="$color12">
             What happens next
@@ -36,7 +36,7 @@ export default function DashboardOrganizationCreatePage() {
       <Separator />
 
       <YStack gap="$3">
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Info size={18} color="$color10" />
           <Text fontSize="$4" fontWeight="600" color="$color10">
             Tips for faster approval

@@ -3,7 +3,7 @@ import { getStorageUrl } from '@app/core/utils/supabase/storage'
 import { DashboardWidget, ResponsiveModal } from '@unicornlove/ui'
 import { Eye } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, H4, Image, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Card, H4, Image, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ProfileWidgetProps } from './types'
 
 interface PortfolioItem {
@@ -43,7 +43,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
   if (isLoading) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Spinner size="large" />
           <Text color="$color11">Loading portfolio...</Text>
         </YStack>
@@ -87,7 +87,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                         borderRadius="$3"
                       />
                     )}
-                    <YStack gap="$2" p="$3">
+                    <YStack gap="$2" padding="$3">
                       <Text fontSize="$4" fontWeight="600" numberOfLines={2}>
                         {item.title}
                       </Text>
@@ -100,7 +100,7 @@ export function PortfolioGallery({ userId, variant = 'full' }: ProfileWidgetProp
                         </Text>
                       )}
                       {imageUrl && (
-                        <XStack gap="$2" items="center" mt="$2">
+                        <XStack gap="$2" alignItems="center" marginTop="$2">
                           <Eye size={14} color="$color10" />
                           <Text fontSize="$2" color="$color10">
                             Click to view

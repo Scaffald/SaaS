@@ -3,7 +3,7 @@ import { ResponsiveSelect } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { Input, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Input, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 import { z } from 'zod'
 import type { EmploymentPreferencesStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
@@ -174,7 +174,7 @@ export function EmploymentPrefsStep({
       </YStack>
 
       <XStack gap="$3" flexWrap="wrap">
-        <YStack flex={1} gap="$2" minW={160}>
+        <YStack flex={1} gap="$2" minWidth={160}>
           <Text fontWeight="600">Availability</Text>
           <Controller
             control={control}
@@ -193,7 +193,7 @@ export function EmploymentPrefsStep({
           />
         </YStack>
 
-        <YStack flex={1} gap="$2" minW={160}>
+        <YStack flex={1} gap="$2" minWidth={160}>
           <Text fontWeight="600">Preferred hourly rate</Text>
           <Controller
             control={control}

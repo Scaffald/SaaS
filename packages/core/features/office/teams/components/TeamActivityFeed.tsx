@@ -6,7 +6,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Separator, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Separator, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 type MentionOption = {
   id: string
@@ -275,19 +275,19 @@ export function TeamActivityFeed({
   const disableSubmit = isPosting || commentBody.trim().length === 0
 
   return (
-    <YStack gap="$4" px="$3" $md={{ px: undefined }}>
+    <YStack gap="$4" paddingHorizontal="$3" $md={{ paddingHorizontal: undefined }}>
       <XStack
         gap="$2"
-        items="flex-start"
-        justify="space-between"
+        alignItems="flex-start"
+        justifyContent="space-between"
         flexWrap="wrap"
         flexDirection="column"
         $md={{
-          items: 'center',
+          alignItems: 'center',
           flexDirection: 'row',
         }}
       >
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <MessageCircle size={20} accessibilityLabel="Team activity icon" />
           <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
             Team activity
@@ -331,10 +331,10 @@ export function TeamActivityFeed({
               gap="$2"
               flexWrap="wrap"
               flexDirection="column"
-              items="stretch"
+              alignItems="stretch"
               $md={{
                 flexDirection: 'row',
-                items: 'center',
+                alignItems: 'center',
               }}
             >
               {mentions.map((mention) => (
@@ -369,10 +369,10 @@ export function TeamActivityFeed({
           </YStack>
         ) : null}
 
-        <XStack justify="flex-end">
+        <XStack justifyContent="flex-end">
           <Button
             size="$3"
-            bg="$color9"
+            backgroundColor="$color9"
             color="$color1"
             icon={Send}
             onPress={() => void handleSubmitComment()}
@@ -390,7 +390,7 @@ export function TeamActivityFeed({
       <Separator />
 
       {activityQuery.isLoading ? (
-        <YStack items="center" justify="center" gap="$2" py="$6">
+        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$6">
           <Spinner size="large" />
           <Text color="$color11">Loading team activity…</Text>
         </YStack>
@@ -409,7 +409,7 @@ export function TeamActivityFeed({
               <YStack
                 key={event.id}
                 gap="$2"
-                pb="$3"
+                paddingBottom="$3"
                 borderBottomWidth={index === events.length - 1 ? 0 : 1}
                 borderColor="$borderColor"
                 accessible
@@ -422,7 +422,7 @@ export function TeamActivityFeed({
           })}
 
           {activityQuery.hasNextPage ? (
-            <XStack justify="center">
+            <XStack justifyContent="center">
               <Button
                 size="$3"
                 variant="outlined"

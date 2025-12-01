@@ -2,7 +2,7 @@ import { useThemeSetting } from '@app/core/provider/theme/UniversalThemeProvider
 import { supabase } from '@app/core/utils/supabase/client'
 import { LogOut, Moon, Sun } from '@tamagui/lucide-icons'
 import type { GestureResponderEvent } from 'react-native'
-import { Button, XStack } from 'tamagui'
+import { Button, XStack } from '@unicornlove/ui'
 
 /**
  * DrawerFooter component renders fixed action buttons at the bottom of the drawer
@@ -30,26 +30,26 @@ export const DrawerFooter = () => {
 
   return (
     <XStack
-      px="$4"
-      py="$3"
+      paddingHorizontal="$4"
+      paddingVertical="$3"
       borderTopWidth={1}
       borderTopColor="$color4"
-      justify="space-between"
-      items="center"
+      justifyContent="space-between"
+      alignItems="center"
     >
       {/* Theme Toggle Button */}
       <Button
         size="$3"
         circular
-        bg="$color3"
+        backgroundColor="$color3"
         borderColor="$color4"
         borderWidth={1}
         hoverStyle={{
-          bg: '$color4',
+          backgroundColor: '$color4',
           borderColor: '$color5',
         }}
         pressStyle={{
-          bg: '$color5',
+          backgroundColor: '$color5',
           borderColor: '$color6',
         }}
         onPress={handleThemeToggle}
@@ -62,15 +62,15 @@ export const DrawerFooter = () => {
       <Button
         size="$3"
         circular
-        bg="$color3"
+        backgroundColor="$color3"
         borderColor="$color4"
         borderWidth={1}
         hoverStyle={{
-          bg: '$color4',
+          backgroundColor: '$color4',
           borderColor: '$color5',
         }}
         pressStyle={{
-          bg: '$color5',
+          backgroundColor: '$color5',
           borderColor: '$color6',
         }}
         onPress={handleLogout}

@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { useDebounce } from '@app/core/utils/useDebounce'
 import { useEffect, useState } from 'react'
-import { Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface UserSearchProps {
   value?: string // user ID
@@ -144,13 +144,13 @@ export function UserSearch({
     <YStack gap="$2" position="relative" width="100%">
       <XStack
         gap="$2"
-        items="center"
+        alignItems="center"
         borderWidth={1}
         borderColor={error ? '$red8' : '$borderColor'}
-        rounded="$4"
-        bg="$background"
-        px="$3"
-        py="$2"
+        borderRadius="$4"
+        backgroundColor="$background"
+        paddingHorizontal="$3"
+        paddingVertical="$2"
         focusStyle={{
           borderColor: error ? '$red8' : '$color8',
         }}
@@ -164,12 +164,18 @@ export function UserSearch({
           onBlur={handleInputBlur}
           disabled={disabled}
           borderWidth={0}
-          bg="transparent"
+          backgroundColor="transparent"
           fontSize="$4"
         />
         {isLoading && <Spinner size="small" />}
         {searchTerm && !isLoading && (
-          <Text fontSize="$3" color="$color10" cursor="pointer" onPress={handleClear} px="$2">
+          <Text
+            fontSize="$3"
+            color="$color10"
+            cursor="pointer"
+            onPress={handleClear}
+            paddingHorizontal="$2"
+          >
             ✕
           </Text>
         )}
@@ -178,17 +184,17 @@ export function UserSearch({
       {showDropdown && (
         <YStack
           position="absolute"
-          t="100%"
-          l={0}
-          r={0}
-          mt="$1"
+          top="100%"
+          left={0}
+          right={0}
+          marginTop="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$3"
-          bg="$background"
-          maxH={300}
+          borderRadius="$3"
+          backgroundColor="$background"
+          maxHeight={300}
           overflow="scroll"
-          z={1000}
+          zIndex={1000}
           shadowColor="$shadowColor"
           shadowOffset={{ width: 0, height: 2 }}
           shadowOpacity={0.1}
@@ -199,13 +205,13 @@ export function UserSearch({
               return (
                 <XStack
                   key={user.id}
-                  p="$3"
+                  padding="$3"
                   gap="$2"
                   hoverStyle={{
-                    bg: '$backgroundHover',
+                    backgroundColor: '$backgroundHover',
                   }}
                   pressStyle={{
-                    bg: '$backgroundPress',
+                    backgroundColor: '$backgroundPress',
                   }}
                   cursor="pointer"
                   onPress={() => handleSelect(user)}
@@ -224,7 +230,7 @@ export function UserSearch({
               )
             })
           ) : isLoading ? (
-            <YStack p="$4" items="center">
+            <YStack padding="$4" alignItems="center">
               <Text color="$color11">Searching...</Text>
             </YStack>
           ) : null}
@@ -234,16 +240,16 @@ export function UserSearch({
       {debouncedSearch.length >= 2 && !isLoading && filteredUsers.length === 0 && showResults && (
         <YStack
           position="absolute"
-          t="100%"
-          l={0}
-          r={0}
-          mt="$1"
+          top="100%"
+          left={0}
+          right={0}
+          marginTop="$1"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$3"
-          bg="$background"
-          p="$3"
-          z={1000}
+          borderRadius="$3"
+          backgroundColor="$background"
+          padding="$3"
+          zIndex={1000}
         >
           <Text fontSize="$3" color="$color11">
             No users found for "{debouncedSearch}"

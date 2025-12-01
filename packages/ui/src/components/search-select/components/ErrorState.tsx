@@ -1,6 +1,7 @@
 import { AlertTriangle } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Button, SizableText, YStack } from 'tamagui'
+import { SizableText, YStack } from 'tamagui'
+import { Button } from '../../buttons/Button'
 
 interface ErrorStateProps {
   message?: string
@@ -18,7 +19,14 @@ export const ErrorState = ({
   icon,
 }: ErrorStateProps) => {
   return (
-    <YStack p="$4" gap="$3" items="center" bg="$red3" rounded="$4" aria-live="assertive">
+    <YStack
+      padding="$4"
+      gap="$3"
+      alignItems="center"
+      backgroundColor="$red3"
+      borderRadius="$4"
+      aria-live="assertive"
+    >
       {icon ?? <AlertTriangle size={28} color="$red10" aria-hidden={true} />}
       <SizableText fontSize="$4" fontWeight="700" color="$red11" style={{ textAlign: 'center' }}>
         {message}

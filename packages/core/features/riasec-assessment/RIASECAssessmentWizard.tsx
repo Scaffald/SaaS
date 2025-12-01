@@ -9,7 +9,7 @@ import { api } from '@app/core/utils/api'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, YStack } from 'tamagui'
+import { Button, YStack } from '@unicornlove/ui'
 
 /**
  * RIASECAssessmentWizard - Standalone wizard for RIASEC Career Interests
@@ -70,7 +70,7 @@ export function RIASECAssessmentWizard() {
       error={queryError}
       showNext={false}
     >
-      <YStack gap="$4" width="100%" maxW={800} mx="auto">
+      <YStack gap="$4" width="100%" maxWidth={800} marginHorizontal="auto">
         <RiasecQuickAssessment
           value={scores}
           onChange={setScores}

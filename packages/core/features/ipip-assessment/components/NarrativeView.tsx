@@ -1,8 +1,5 @@
-import type {
-  IPIPResults,
-  IPIPScores,
-} from '@app/core/features/personality-assessment/lib/ipip'
-import { Text, YStack } from 'tamagui'
+import type { IPIPResults, IPIPScores } from '@app/core/features/personality-assessment/lib/ipip'
+import { Text, YStack } from '@unicornlove/ui'
 import { DOMAIN_ORDER } from '../utils/domainGrouping'
 import { generateOverallSummary } from '../utils/narrativeGenerator'
 import type { NormalizedScores } from '../utils/scoreNormalizer'
@@ -29,7 +26,7 @@ export function NarrativeView({
   // Handle missing data gracefully - show partial results if available
   if (!scores && completedDomains === 0) {
     return (
-      <YStack gap="$4" p="$4" items="center" aria-live="polite">
+      <YStack gap="$4" padding="$4" alignItems="center" aria-live="polite">
         <Text fontSize="$4" color="$color11">
           No results available yet. Complete at least one domain to see results.
         </Text>
@@ -44,7 +41,14 @@ export function NarrativeView({
     <YStack gap="$6" width="100%">
       {/* Overall Summary - only show if we have scores and narratives */}
       {overallSummary && (
-        <YStack gap="$3" p="$5" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
+        <YStack
+          gap="$3"
+          padding="$5"
+          backgroundColor="$blue2"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$blue7"
+        >
           <Text fontSize="$6" fontWeight="bold" color="$blue11">
             Your Personality Profile
           </Text>
@@ -58,9 +62,9 @@ export function NarrativeView({
       {!overallSummary && completedDomains > 0 && (
         <YStack
           gap="$2"
-          p="$4"
-          bg="$blue2"
-          rounded="$4"
+          padding="$4"
+          backgroundColor="$blue2"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$blue7"
           aria-live="polite"
@@ -98,7 +102,14 @@ export function NarrativeView({
 
       {/* Partial Results Message */}
       {!isComplete && completedDomains > 0 && (
-        <YStack gap="$2" p="$4" bg="$yellow2" rounded="$4" borderWidth={1} borderColor="$yellow7">
+        <YStack
+          gap="$2"
+          padding="$4"
+          backgroundColor="$yellow2"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$yellow7"
+        >
           <Text fontSize="$4" fontWeight="600" color="$yellow11">
             Complete Your Assessment
           </Text>

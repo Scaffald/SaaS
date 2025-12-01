@@ -2,7 +2,8 @@ import { X } from '@tamagui/lucide-icons'
 import type { ComponentProps } from 'react'
 import { forwardRef } from 'react'
 import type { TextInput } from 'react-native'
-import { Button, Input, Spinner, XStack } from 'tamagui'
+import { Input, Spinner, XStack } from 'tamagui'
+import { Button } from '../../buttons/Button'
 
 interface SearchInputProps
   extends Omit<ComponentProps<typeof Input>, 'value' | 'defaultValue' | 'onChangeText'> {
@@ -40,10 +41,10 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           width="100%"
           borderWidth={1}
           borderColor={isInvalid ? '$red8' : '$borderColor'}
-          rounded="$4"
-          bg="$background"
-          px="$4"
-          py="$3"
+          borderRadius="$4"
+          backgroundColor="$background"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
           placeholder={placeholder}
           value={value}
           onChangeText={onChangeText}
@@ -56,12 +57,12 @@ export const SearchInput = forwardRef<TextInput, SearchInputProps>(
           autoCapitalize="none"
           focusStyle={{ borderColor: '$color8' }}
           opacity={disabled ? 0.75 : 1}
-          pr={shouldShowClear || loading ? '$10' : '$4'}
+          paddingRight={shouldShowClear || loading ? '$10' : '$4'}
           {...inputProps}
         />
 
         {(loading || shouldShowClear) && (
-          <XStack position="absolute" r="$3" t={0} b={0} items="center" gap="$2">
+          <XStack position="absolute" right="$3" top={0} bottom={0} alignItems="center" gap="$2">
             {loading ? (
               <Spinner size="small" color="$color9" />
             ) : shouldShowClear ? (

@@ -1,6 +1,7 @@
 import { Clock, Eye, MessageSquare, MoreVertical, Paperclip } from '@tamagui/lucide-icons'
 import { memo, useState } from 'react'
-import { Avatar, Button, Card, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Card, Text, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 import { Chip } from '../chips/Chip'
 import { ProgressBar } from './ProgressBar'
 
@@ -101,16 +102,16 @@ export const KanbanCard = memo(
     return (
       <Card
         data-testid={`kanban-card-${id}`}
-        p="$4"
-        bg={isSelected ? '$blue3' : '$background'}
+        padding="$4"
+        backgroundColor={isSelected ? '$blue3' : '$background'}
         borderWidth={isSelected ? 2 : 0}
         borderColor="$blue9"
-        rounded="$4"
+        borderRadius="$4"
         gap="$3"
         opacity={isDragging ? 0.5 : 1}
         elevate={isDragging}
         hoverStyle={{
-          bg: isSelected ? '$blue4' : '$gray2',
+          backgroundColor: isSelected ? '$blue4' : '$gray2',
           elevate: true,
         }}
         pressStyle={{ scale: 0.98 }}
@@ -120,7 +121,7 @@ export const KanbanCard = memo(
         cursor="pointer"
       >
         {/* Header: Selection checkbox and quick actions */}
-        <XStack justify="space-between" items="flex-start">
+        <XStack justifyContent="space-between" alignItems="flex-start">
           {onToggleSelection && (
             <Button
               size="$2"
@@ -130,9 +131,9 @@ export const KanbanCard = memo(
                 e.stopPropagation()
                 onToggleSelection()
               }}
-              bg={isSelected ? '$blue9' : '$color5'}
-              items="center"
-              justify="center"
+              backgroundColor={isSelected ? '$blue9' : '$color5'}
+              alignItems="center"
+              justifyContent="center"
               width={24}
               height={24}
             >
@@ -154,12 +155,12 @@ export const KanbanCard = memo(
                     e.stopPropagation()
                     onView()
                   }}
-                  bg="$color5"
-                  items="center"
-                  justify="center"
+                  backgroundColor="$color5"
+                  alignItems="center"
+                  justifyContent="center"
                   width={24}
                   height={24}
-                  hoverStyle={{ bg: '$color6' }}
+                  hoverStyle={{ backgroundColor: '$color6' }}
                 >
                   <Eye size={14} color="$color11" />
                 </Button>
@@ -173,12 +174,12 @@ export const KanbanCard = memo(
                     e.stopPropagation()
                     onEdit()
                   }}
-                  bg="$color5"
-                  items="center"
-                  justify="center"
+                  backgroundColor="$color5"
+                  alignItems="center"
+                  justifyContent="center"
                   width={24}
                   height={24}
-                  hoverStyle={{ bg: '$color6' }}
+                  hoverStyle={{ backgroundColor: '$color6' }}
                 >
                   <MoreVertical size={14} color="$color11" />
                 </Button>
@@ -188,10 +189,10 @@ export const KanbanCard = memo(
         </XStack>
 
         {/* Applicant Info */}
-        <XStack gap="$3" items="flex-start">
+        <XStack gap="$3" alignItems="flex-start">
           <Avatar circular size="$4">
             {applicantAvatar ? <Avatar.Image src={applicantAvatar} /> : null}
-            <Avatar.Fallback bg="$blue9">
+            <Avatar.Fallback backgroundColor="$blue9">
               <Text color="white" fontWeight="600" fontSize="$3">
                 {applicantName.charAt(0).toUpperCase()}
               </Text>
@@ -210,8 +211,13 @@ export const KanbanCard = memo(
 
         {/* Score Badge and Progress */}
         <YStack gap="$2">
-          <XStack justify="space-between" items="center">
-            <Chip priority={scorePriority} fontSize="$2" px="$2" py="$1">
+          <XStack justifyContent="space-between" alignItems="center">
+            <Chip
+              priority={scorePriority}
+              fontSize="$2"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+            >
               Score: {score}
             </Chip>
             <Text fontSize="$1" color="$color10">
@@ -225,7 +231,13 @@ export const KanbanCard = memo(
         {tags.length > 0 && (
           <XStack gap="$2" flexWrap="wrap">
             {tags.slice(0, 3).map((tag) => (
-              <Chip key={tag} variant="default" fontSize="$1" px="$2" py="$1">
+              <Chip
+                key={tag}
+                variant="default"
+                fontSize="$1"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+              >
                 {tag}
               </Chip>
             ))}
@@ -238,9 +250,9 @@ export const KanbanCard = memo(
         )}
 
         {/* Metadata Footer */}
-        <XStack gap="$3" items="center" mt="$1">
+        <XStack gap="$3" alignItems="center" marginTop="$1">
           {attachmentCount > 0 && (
-            <XStack gap="$1" items="center">
+            <XStack gap="$1" alignItems="center">
               <Paperclip size={12} color="$color10" />
               <Text fontSize="$1" color="$color10">
                 {attachmentCount}
@@ -248,7 +260,7 @@ export const KanbanCard = memo(
             </XStack>
           )}
           {commentCount > 0 && (
-            <XStack gap="$1" items="center">
+            <XStack gap="$1" alignItems="center">
               <MessageSquare size={12} color="$color10" />
               <Text fontSize="$1" color="$color10">
                 {commentCount}
@@ -256,7 +268,7 @@ export const KanbanCard = memo(
             </XStack>
           )}
           {durationText && (
-            <XStack gap="$1" items="center">
+            <XStack gap="$1" alignItems="center">
               <Clock size={12} color="$color10" />
               <Text fontSize="$1" color="$color10">
                 {durationText}

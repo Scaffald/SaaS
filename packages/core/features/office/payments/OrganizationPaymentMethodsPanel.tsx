@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { CreditCard, Plus, Trash2 } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
-import { Button, Card, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { SetupIntentForm } from './SetupIntentForm'
 
 type OrganizationPaymentMethodsPanelProps = {
@@ -75,7 +75,7 @@ export function OrganizationPaymentMethodsPanel({
   if (paymentMethodQuery.isLoading) {
     return (
       <Card bordered padding="$4">
-        <YStack gap="$3" items="center" py="$4">
+        <YStack gap="$3" alignItems="center" paddingVertical="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading payment method…</Text>
         </YStack>
@@ -85,7 +85,7 @@ export function OrganizationPaymentMethodsPanel({
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$5" fontWeight="600">
           Payment Method
         </Text>
@@ -108,16 +108,16 @@ export function OrganizationPaymentMethodsPanel({
         <YStack gap="$3">
           <XStack
             gap="$3"
-            items="center"
-            p="$3"
-            bg="$color2"
-            rounded="$4"
+            alignItems="center"
+            padding="$3"
+            backgroundColor="$color2"
+            borderRadius="$4"
             borderWidth={1}
             borderColor="$borderColor"
           >
             <CreditCard size={24} color="$color11" />
             <YStack flex={1} gap="$1">
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Text fontWeight="600" fontSize="$4">
                   {formatCardBrand(paymentMethod.brand)} •••• {paymentMethod.last4}
                 </Text>
@@ -149,7 +149,7 @@ export function OrganizationPaymentMethodsPanel({
           </Button>
         </YStack>
       ) : (
-        <YStack gap="$2" p="$3" bg="$color2" rounded="$4">
+        <YStack gap="$2" padding="$3" backgroundColor="$color2" borderRadius="$4">
           <Text color="$color11" fontSize="$3">
             No payment method on file
           </Text>

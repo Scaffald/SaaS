@@ -1,6 +1,6 @@
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
 import { memo, useMemo } from 'react'
-import { Progress, Separator, Text, XStack, YStack } from 'tamagui'
+import { Progress, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 
 import {
   type BackgroundCheckDetail,
@@ -103,7 +103,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
   return (
     <YStack gap="$4">
       <YStack gap="$2">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Overall progress
           </Text>
@@ -111,8 +111,8 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
             {progress}%
           </Text>
         </XStack>
-        <Progress value={progress} max={100} bg="$color3" size="$2">
-          <Progress.Indicator animation="bouncy" bg={statusColors.border} />
+        <Progress value={progress} max={100} backgroundColor="$color3" size="$2">
+          <Progress.Indicator animation="bouncy" backgroundColor={statusColors.border} />
         </Progress>
         <Text fontSize="$2" color="$color10">
           {statusMeta.description}
@@ -136,11 +136,11 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
               return (
                 <XStack
                   key={component.id}
-                  justify="space-between"
-                  items="center"
-                  p="$3"
-                  bg="$color2"
-                  rounded="$3"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  padding="$3"
+                  backgroundColor="$color2"
+                  borderRadius="$3"
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
@@ -156,12 +156,12 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                   </YStack>
                   {componentStatusMeta && (
                     <XStack
-                      px="$2"
-                      py="$1"
-                      bg={componentColors.background}
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      backgroundColor={componentColors.background}
                       borderWidth={1}
                       borderColor={componentColors.border}
-                      rounded="$3"
+                      borderRadius="$3"
                     >
                       <Text fontSize="$2" fontWeight="500" color={componentColors.text}>
                         {componentStatusMeta.label}
@@ -185,20 +185,20 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
               const historyMeta = getStatusMetadata(entry.status as BackgroundCheckStatus)
               const colors = getStatusToneColors(historyMeta.tone)
               return (
-                <XStack key={`${entry.status}-${index}`} gap="$3" items="center">
-                  <YStack width={10} items="center">
+                <XStack key={`${entry.status}-${index}`} gap="$3" alignItems="center">
+                  <YStack width={10} alignItems="center">
                     <YStack
                       width={2}
                       flex={1}
-                      bg="$color5"
+                      backgroundColor="$color5"
                       opacity={index === normalizedHistory.length - 1 ? 0 : 1}
                     />
                   </YStack>
                   <YStack
                     flex={1}
-                    p="$3"
-                    bg="$color2"
-                    rounded="$3"
+                    padding="$3"
+                    backgroundColor="$color2"
+                    borderRadius="$3"
                     borderWidth={1}
                     borderColor="$borderColor"
                     gap="$1"
@@ -206,7 +206,7 @@ export const CheckProgressTracker = memo(function CheckProgressTracker({
                     <Text fontSize="$3" fontWeight="500" color={colors.text}>
                       {historyMeta.label}
                     </Text>
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       {entry.occurredAt && (
                         <Text fontSize="$2" color="$color10">
                           {formatDate(entry.occurredAt)}

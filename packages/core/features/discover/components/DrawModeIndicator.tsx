@@ -1,4 +1,4 @@
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 
 interface DrawModeIndicatorProps {
   isActive: boolean
@@ -10,14 +10,14 @@ export function DrawModeIndicator({ isActive }: DrawModeIndicatorProps) {
   return (
     <YStack
       position="absolute"
-      t="$4"
-      l="$4"
-      r="$4"
-      z={100}
-      bg="$blue9"
-      p="$3"
-      rounded="$4"
-      items="center"
+      top="$4"
+      left="$4"
+      right="$4"
+      zIndex={100}
+      backgroundColor="$blue9"
+      padding="$3"
+      borderRadius="$4"
+      alignItems="center"
     >
       <Text color="white" fontSize="$4" fontWeight="600">
         🖊️ Draw Mode Active - Draw on the map to select an area

@@ -1,4 +1,4 @@
-import { Circle, Text, XStack, YStack } from 'tamagui'
+import { Circle, Text, XStack, YStack } from '@unicornlove/ui'
 import type { AssessmentStep } from '../utils/assessment-steps'
 import { STEP_INFO } from '../utils/assessment-steps'
 
@@ -33,7 +33,7 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
     <YStack gap="$3" width="100%">
       {/* Completion Percentage */}
       <YStack gap="$1">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Progress
           </Text>
@@ -41,10 +41,10 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
             {completionScore}%
           </Text>
         </XStack>
-        <YStack height={8} bg="$color5" rounded="$10" overflow="hidden">
+        <YStack height={8} backgroundColor="$color5" borderRadius="$10" overflow="hidden">
           <YStack
             height="100%"
-            bg="$blue9"
+            backgroundColor="$blue9"
             width={`${completionScore}%`}
             transition="width 0.3s ease"
           />
@@ -52,19 +52,19 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
       </YStack>
 
       {/* Step Indicators */}
-      <XStack gap="$2" items="center" flexWrap="wrap">
+      <XStack gap="$2" alignItems="center" flexWrap="wrap">
         {steps.map((step, index) => {
           const status = getStepStatus(step)
           const isLast = index === steps.length - 1
           const stepInfo = STEP_INFO[step]
 
           return (
-            <XStack key={step} gap="$2" items="center">
+            <XStack key={step} gap="$2" alignItems="center">
               {/* Step Circle */}
-              <YStack gap="$1" items="center">
+              <YStack gap="$1" alignItems="center">
                 <Circle
                   size={40}
-                  bg={
+                  backgroundColor={
                     status === 'completed' ? '$green9' : status === 'current' ? '$blue9' : '$color5'
                   }
                   borderWidth={2}
@@ -75,8 +75,8 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                         ? '$blue10'
                         : '$color7'
                   }
-                  justify="center"
-                  items="center"
+                  justifyContent="center"
+                  alignItems="center"
                 >
                   {status === 'completed' ? (
                     <Text fontSize="$6" fontWeight="bold" color="$color12">
@@ -98,8 +98,8 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                   fontSize="$2"
                   fontWeight={status === 'current' ? 'bold' : 'normal'}
                   color={status === 'completed' || status === 'current' ? '$color12' : '$color10'}
-                  text="center"
-                  maxW={80}
+                  textAlign="center"
+                  maxWidth={80}
                 >
                   {stepInfo.label}
                 </Text>
@@ -110,8 +110,8 @@ export function ProgressIndicator({ currentStep, completionScore }: ProgressIndi
                 <YStack
                   width={40}
                   height={2}
-                  bg={status === 'completed' ? '$green9' : '$color5'}
-                  mb={24}
+                  backgroundColor={status === 'completed' ? '$green9' : '$color5'}
+                  marginBottom={24}
                 />
               )}
             </XStack>

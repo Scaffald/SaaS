@@ -1,7 +1,8 @@
 import { MoreVertical, Plus } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import type { GetThemeValueForKey } from 'tamagui'
-import { Button, Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 
 export interface KanbanColumnHeaderProps {
   /** Column title */
@@ -36,10 +37,10 @@ export interface KanbanColumnHeaderProps {
 export const KanbanColumnHeader = memo(
   ({ title, count, color, onAdd, onMenuClick }: KanbanColumnHeaderProps) => {
     return (
-      <XStack justify="space-between" items="center" mb="$3">
-        <XStack gap="$2" items="center" flex={1}>
+      <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
+        <XStack gap="$2" alignItems="center" flex={1}>
           {/* Status color indicator */}
-          <YStack width={8} height={8} rounded="$10" bg={color} />
+          <YStack width={8} height={8} borderRadius="$10" backgroundColor={color} />
 
           {/* Title */}
           <Text fontWeight="600" fontSize="$4" flex={1}>
@@ -47,7 +48,12 @@ export const KanbanColumnHeader = memo(
           </Text>
 
           {/* Count badge */}
-          <YStack bg="$color5" px="$2" py="$1" rounded="$2">
+          <YStack
+            backgroundColor="$color5"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+          >
             <Text fontSize="$2" fontWeight="600" color="$color11">
               {count}
             </Text>
@@ -55,19 +61,19 @@ export const KanbanColumnHeader = memo(
         </XStack>
 
         {/* Action buttons */}
-        <XStack gap="$1" items="center">
+        <XStack gap="$1" alignItems="center">
           {onAdd && (
             <Button
               size="$2"
               circular
               unstyled
               onPress={onAdd}
-              bg="$color5"
-              items="center"
-              justify="center"
+              backgroundColor="$color5"
+              alignItems="center"
+              justifyContent="center"
               width={24}
               height={24}
-              hoverStyle={{ bg: '$color6' }}
+              hoverStyle={{ backgroundColor: '$color6' }}
             >
               <Plus size={14} color="$color11" />
             </Button>
@@ -78,12 +84,12 @@ export const KanbanColumnHeader = memo(
               circular
               unstyled
               onPress={onMenuClick}
-              bg="$color5"
-              items="center"
-              justify="center"
+              backgroundColor="$color5"
+              alignItems="center"
+              justifyContent="center"
               width={24}
               height={24}
-              hoverStyle={{ bg: '$color6' }}
+              hoverStyle={{ backgroundColor: '$color6' }}
             >
               <MoreVertical size={14} color="$color11" />
             </Button>

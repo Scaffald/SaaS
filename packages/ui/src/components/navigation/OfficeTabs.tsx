@@ -77,27 +77,27 @@ export const OfficeTabs = ({
         variant={active ? undefined : 'outlined'}
         size="$3"
         borderColor={active ? '$color9' : '$borderColor'}
-        bg={active ? '$color9' : 'transparent'}
+        backgroundColor={active ? '$color9' : 'transparent'}
         hoverStyle={{
-          bg: active ? '$color9' : '$color3',
+          backgroundColor: active ? '$color9' : '$color3',
         }}
         pressStyle={{
-          bg: active ? '$color9' : '$color4',
+          backgroundColor: active ? '$color9' : '$color4',
         }}
         {...buttonProps}
       >
-        <XStack gap="$2" items="center">
+        <XStack gap="$2" alignItems="center">
           <Paragraph fontWeight="600" color={active ? '$color1' : '$color11'}>
             {label}
           </Paragraph>
           {badge ? (
             <YStack
-              px="$2"
-              py="$1"
-              bg={active ? '$color2' : '$color4'}
-              rounded="$10"
-              items="center"
-              justify="center"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              backgroundColor={active ? '$color2' : '$color4'}
+              borderRadius="$10"
+              alignItems="center"
+              justifyContent="center"
             >
               <Paragraph size="$1" color={active ? '$color10' : '$color11'}>
                 {badge}
@@ -118,7 +118,13 @@ export const OfficeTabs = ({
   if (isSmallScreen) {
     return (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack px="$4" py="$2" gap="$2" role="tablist" aria-label={ariaLabel}>
+        <XStack
+          paddingHorizontal="$4"
+          paddingVertical="$2"
+          gap="$2"
+          role="tablist"
+          aria-label={ariaLabel}
+        >
           {normalizedItems.map(renderTabButton)}
         </XStack>
       </ScrollView>
@@ -126,7 +132,7 @@ export const OfficeTabs = ({
   }
 
   return (
-    <YStack px="$4">
+    <YStack paddingHorizontal="$4">
       <XStack gap="$2" role="tablist" aria-label={ariaLabel} flexWrap="wrap">
         {normalizedItems.map(renderTabButton)}
       </XStack>

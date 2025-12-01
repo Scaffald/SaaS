@@ -6,7 +6,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useMemo } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type BackgroundCheckSummary = RouterOutputs['backgroundChecks']['listChecks'][number]
@@ -45,9 +45,9 @@ export default function BackgroundCheckDisputeScreen() {
       />
       <SafeAreaView style={{ flex: 1, paddingTop: insets.top }}>
         <ScrollView flex={1}>
-          <YStack flex={1} gap="$4" p="$4">
+          <YStack flex={1} gap="$4" padding="$4">
             {checksQuery.isLoading && (
-              <YStack gap="$3" items="center" py="$6">
+              <YStack gap="$3" alignItems="center" paddingVertical="$6">
                 <Spinner size="large" color="$color11" />
                 <Text fontSize="$3" color="$color11">
                   Loading background checks…
@@ -58,9 +58,9 @@ export default function BackgroundCheckDisputeScreen() {
             {checksQuery.isError && (
               <YStack
                 gap="$3"
-                p="$4"
-                bg="$color2"
-                rounded="$4"
+                padding="$4"
+                backgroundColor="$color2"
+                borderRadius="$4"
                 borderWidth={1}
                 borderColor="$borderColor"
               >
@@ -68,7 +68,7 @@ export default function BackgroundCheckDisputeScreen() {
                   We couldn’t load your background checks. Please try again.
                 </Text>
                 <Button size="$3" variant="outlined" onPress={() => checksQuery.refetch()}>
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <RefreshCcw size={16} />
                     <Text fontSize="$2">Retry</Text>
                   </XStack>
@@ -79,9 +79,9 @@ export default function BackgroundCheckDisputeScreen() {
             {!checksQuery.isLoading && !checksQuery.isError && !selectedCheck && (
               <YStack
                 gap="$3"
-                p="$4"
-                bg="$color2"
-                rounded="$4"
+                padding="$4"
+                backgroundColor="$color2"
+                borderRadius="$4"
                 borderWidth={1}
                 borderColor="$borderColor"
               >
@@ -93,7 +93,7 @@ export default function BackgroundCheckDisputeScreen() {
                     Go back
                   </Button>
                   <Button size="$3" variant="outlined" onPress={() => checksQuery.refetch()}>
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <RefreshCcw size={16} />
                       <Text fontSize="$2">Refresh</Text>
                     </XStack>

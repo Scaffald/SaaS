@@ -4,10 +4,10 @@ import { ReviewWizard } from '@app/core/features/reviews/components/ReviewWizard
 import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import { getAvatarUrl } from '@app/core/utils/supabase/storage'
-import { DashboardWidget, LoadingState, ResponsiveModal, spacing, UIButton } from '@unicornlove/ui'
+import { DashboardWidget, LoadingState, ResponsiveModal, spacing } from '@unicornlove/ui'
 import { MessageSquarePlus } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Avatar, Button, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ProfileWidgetProps } from './types'
 
 interface GeneralInfoWidgetProps extends ProfileWidgetProps {
@@ -54,12 +54,12 @@ export function GeneralInfoWidget({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load profile information</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <UIButton
+          <Button
             variant="primary"
             size="$2"
             onPress={() => {
@@ -68,7 +68,7 @@ export function GeneralInfoWidget({
             disabled={isFetching}
           >
             Retry
-          </UIButton>
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -77,7 +77,7 @@ export function GeneralInfoWidget({
   if (!data) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$color11">No profile data available</Text>
         </YStack>
       </DashboardWidget>
@@ -120,8 +120,8 @@ export function GeneralInfoWidget({
         <YStack gap={spacing.md}>
           {/* Header with Action Buttons */}
           {showButtons && (
-            <XStack justify="flex-end" items="center" mb="$2">
-              <XStack gap="$2" flexWrap="wrap" justify="flex-end">
+            <XStack justifyContent="flex-end" alignItems="center" marginBottom="$2">
+              <XStack gap="$2" flexWrap="wrap" justifyContent="flex-end">
                 <ConnectionFollowButtonsInline
                   targetUserId={userId || ''}
                   isOwnProfile={isOwnProfile}
@@ -142,20 +142,20 @@ export function GeneralInfoWidget({
           )}
 
           {/* Avatar & Name Section */}
-          <YStack gap="$3" items="center">
+          <YStack gap="$3" alignItems="center">
             <Avatar circular size="$10">
               <Avatar.Image
                 source={{ uri: getAvatarUrl(data.avatar_path) || data.avatar_url || '' }}
               />
-              <Avatar.Fallback bg="$color6" />
+              <Avatar.Fallback backgroundColor="$color6" />
             </Avatar>
 
-            <YStack gap="$1" items="center">
+            <YStack gap="$1" alignItems="center">
               <Text fontSize="$6" fontWeight="600">
                 {displayName}
               </Text>
               {data.headline && (
-                <YStack items="center" maxW="100%">
+                <YStack alignItems="center" maxWidth="100%">
                   <Text color="$color11" fontSize="$3">
                     {data.headline}
                   </Text>
@@ -179,10 +179,10 @@ export function GeneralInfoWidget({
             {/* Status Badges */}
             {data.open_to_work && (
               <XStack
-                bg="$blue2"
-                px="$3"
-                py="$1.5"
-                rounded="$10"
+                backgroundColor="$blue2"
+                paddingHorizontal="$3"
+                paddingVertical="$1.5"
+                borderRadius="$10"
                 borderWidth={1}
                 borderColor="$blue7"
               >
@@ -262,7 +262,7 @@ export function GeneralInfoWidget({
                       : null
                   if (formattedYears === null) return null
                   return (
-                    <YStack gap="$1" flex={1} minW={120}>
+                    <YStack gap="$1" flex={1} minWidth={120}>
                       <Text fontSize="$2" color="$color10">
                         Experience
                       </Text>
@@ -274,7 +274,7 @@ export function GeneralInfoWidget({
                 })()}
 
                 {data.industries && (
-                  <YStack gap="$1" flex={1} minW={120}>
+                  <YStack gap="$1" flex={1} minWidth={120}>
                     <Text fontSize="$2" color="$color10">
                       Industry
                     </Text>

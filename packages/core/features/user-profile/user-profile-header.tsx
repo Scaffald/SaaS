@@ -1,5 +1,5 @@
 import { Award, Briefcase, DollarSign, MapPin, MessageSquare, Star } from '@tamagui/lucide-icons'
-import { Button, Card, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface UserProfileHeaderProps {
   profile: {
@@ -47,13 +47,19 @@ export function UserProfileHeader({
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" p="$5">
+      <YStack gap="$4" padding="$5">
         {/* Header Row */}
-        <XStack gap="$4" items="center" flexWrap="wrap" justify="space-between">
-          <XStack gap="$4" items="center" flexWrap="wrap" flex={1}>
+        <XStack gap="$4" alignItems="center" flexWrap="wrap" justifyContent="space-between">
+          <XStack gap="$4" alignItems="center" flexWrap="wrap" flex={1}>
             {/* Avatar */}
             {profile.avatar_url ? (
-              <YStack width={120} height={120} rounded="$10" overflow="hidden" bg="$color3">
+              <YStack
+                width={120}
+                height={120}
+                borderRadius="$10"
+                overflow="hidden"
+                backgroundColor="$color3"
+              >
                 <img
                   src={profile.avatar_url}
                   alt={profile.name || 'User'}
@@ -64,10 +70,10 @@ export function UserProfileHeader({
               <YStack
                 width={120}
                 height={120}
-                rounded="$10"
-                bg="$blue4"
-                items="center"
-                justify="center"
+                borderRadius="$10"
+                backgroundColor="$blue4"
+                alignItems="center"
+                justifyContent="center"
               >
                 <Text fontSize="$10" fontWeight="700" color="$blue10">
                   {profile.name?.charAt(0) || '?'}
@@ -76,7 +82,7 @@ export function UserProfileHeader({
             )}
 
             {/* Name and Headline */}
-            <YStack flex={1} gap="$2" minW={200}>
+            <YStack flex={1} gap="$2" minWidth={200}>
               <Text fontSize="$10" fontWeight="700" color="$color12">
                 {profile.name}
               </Text>
@@ -86,7 +92,7 @@ export function UserProfileHeader({
                 </Text>
               )}
               {profile.industry_name && (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Briefcase size={18} color="$color10" />
                   <Text fontSize="$4" color="$color10">
                     {profile.industry_name}
@@ -98,12 +104,12 @@ export function UserProfileHeader({
             {/* Scaffald Score */}
             {profile.gamified_score !== null && (
               <XStack
-                bg="$blue2"
-                px="$5"
-                py="$3"
-                rounded="$4"
+                backgroundColor="$blue2"
+                paddingHorizontal="$5"
+                paddingVertical="$3"
+                borderRadius="$4"
                 gap="$2"
-                items="center"
+                alignItems="center"
                 borderWidth={2}
                 borderColor="$blue6"
               >
@@ -131,7 +137,14 @@ export function UserProfileHeader({
         {/* Stats Row */}
         <XStack gap="$4" flexWrap="wrap">
           {profile.location && (
-            <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
+            <XStack
+              gap="$2"
+              alignItems="center"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$color2"
+              borderRadius="$3"
+            >
               <MapPin size={18} color="$color11" />
               <Text fontSize="$4" color="$color11" fontWeight="600">
                 {profile.location}
@@ -140,7 +153,14 @@ export function UserProfileHeader({
           )}
 
           {formattedYears !== null && (
-            <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
+            <XStack
+              gap="$2"
+              alignItems="center"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$color2"
+              borderRadius="$3"
+            >
               <Award size={18} color="$color11" />
               <Text fontSize="$4" color="$color11" fontWeight="600">
                 {formattedYears} years experience
@@ -149,7 +169,14 @@ export function UserProfileHeader({
           )}
 
           {profile.hourly_rate_cents && (
-            <XStack gap="$2" items="center" px="$3" py="$2" bg="$color2" rounded="$3">
+            <XStack
+              gap="$2"
+              alignItems="center"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$color2"
+              borderRadius="$3"
+            >
               <DollarSign size={18} color="$color11" />
               <Text fontSize="$4" color="$color11" fontWeight="600">
                 {formatHourlyRate(profile.hourly_rate_cents)}
@@ -158,7 +185,12 @@ export function UserProfileHeader({
           )}
 
           {profile.open_to_work && (
-            <XStack px="$3" py="$2" bg="$green3" rounded="$3">
+            <XStack
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              backgroundColor="$green3"
+              borderRadius="$3"
+            >
               <Text fontSize="$4" fontWeight="600" color="$green11">
                 ✓ Available for Work
               </Text>

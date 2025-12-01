@@ -5,7 +5,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
 import { ScrollView, useWindowDimensions } from 'react-native'
-import { Card, Spinner, Text, YStack } from 'tamagui'
+import { Card, Spinner, Text, YStack } from '@unicornlove/ui'
 
 type OverviewOutput = inferRouterOutputs<AppRouter>['teams']['analytics']['overview']
 type MetricRecord = NonNullable<OverviewOutput['metrics']>[number]
@@ -146,7 +146,7 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
 
   if (isLoading && metrics.length === 0) {
     return (
-      <YStack gap="$3" items="center" justify="center" py="$4">
+      <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$4">
         <Spinner size="large" />
         <Text color="$color11">Loading analytics data…</Text>
       </YStack>
@@ -155,7 +155,13 @@ export function TeamAnalyticsCharts({ teamId, rangeDays = 30 }: TeamAnalyticsCha
 
   if (metrics.length === 0) {
     return (
-      <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$2">
+      <Card
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color2"
+        padding="$4"
+        gap="$2"
+      >
         <Text fontSize="$6" fontWeight="700">
           Insights unavailable
         </Text>
@@ -288,7 +294,13 @@ function AnalyticsCard({
   summary?: string
 }) {
   return (
-    <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$3">
+    <Card
+      borderWidth={1}
+      borderColor="$borderColor"
+      backgroundColor="$color2"
+      padding="$4"
+      gap="$3"
+    >
       <YStack gap="$1">
         <Text fontSize="$6" fontWeight="700" accessibilityRole="header">
           {title}

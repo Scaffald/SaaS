@@ -1,6 +1,6 @@
 import { Award, Search } from '@tamagui/lucide-icons'
 import { useEffect, useMemo, useState } from 'react'
-import { Card, Input, ScrollView, Text, XStack, YStack } from 'tamagui'
+import { Card, Input, ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface Certification {
   id: string
@@ -114,7 +114,14 @@ export function CertificationSearch({
     ]
     const bgColor = (colors[depth] || '$gray9') as '$blue9' | '$green9' | '$purple9' | '$gray9'
     return (
-      <XStack bg={bgColor} px="$2" py="$0.5" rounded="$2" borderWidth={1} borderColor={bgColor}>
+      <XStack
+        backgroundColor={bgColor}
+        paddingHorizontal="$2"
+        paddingVertical="$0.5"
+        borderRadius="$2"
+        borderWidth={1}
+        borderColor={bgColor}
+      >
         <Text color="$background" fontSize="$1" fontWeight="600">
           {labels[depth] || `Depth ${depth}`}
         </Text>
@@ -157,11 +164,11 @@ export function CertificationSearch({
         >
           <ScrollView height={400}>
             {isLoading ? (
-              <YStack p="$4" items="center" gap="$2">
+              <YStack padding="$4" alignItems="center" gap="$2">
                 <Text color="$color11">Searching...</Text>
               </YStack>
             ) : filteredResults.length === 0 ? (
-              <YStack p="$4" items="center" gap="$2">
+              <YStack padding="$4" alignItems="center" gap="$2">
                 {searchQuery.length > 0 ? (
                   <>
                     <Search size={32} color="$color11" />
@@ -186,11 +193,11 @@ export function CertificationSearch({
                 {groupedResults.depth0.length > 0 && (
                   <YStack>
                     <XStack
-                      p="$3"
-                      bg="$color3"
+                      padding="$3"
+                      backgroundColor="$color3"
                       borderBottomWidth={1}
                       borderColor="$borderColor"
-                      items="center"
+                      alignItems="center"
                       gap="$2"
                       testID="cert-search-section-depth0"
                     >
@@ -202,18 +209,18 @@ export function CertificationSearch({
                     {groupedResults.depth0.map((cert) => (
                       <Card
                         key={cert.id}
-                        p="$3"
+                        padding="$3"
                         borderRadius={0}
                         borderWidth={0}
                         borderBottomWidth={1}
                         borderColor="$borderColor"
-                        pressStyle={{ bg: '$backgroundHover' }}
+                        pressStyle={{ backgroundColor: '$backgroundHover' }}
                         cursor="pointer"
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-0"
                       >
                         <YStack gap="$2">
-                          <XStack gap="$2" items="center" flexWrap="wrap">
+                          <XStack gap="$2" alignItems="center" flexWrap="wrap">
                             <Text fontWeight="600" flex={1}>
                               {cert.title}
                             </Text>
@@ -234,11 +241,11 @@ export function CertificationSearch({
                 {Object.entries(groupedResults.depth1ByParent).map(([parentId, certs]) => (
                   <YStack key={parentId}>
                     <XStack
-                      p="$3"
-                      bg="$color3"
+                      padding="$3"
+                      backgroundColor="$color3"
                       borderBottomWidth={1}
                       borderColor="$borderColor"
-                      items="center"
+                      alignItems="center"
                       gap="$2"
                       testID="cert-search-section-depth1"
                     >
@@ -252,18 +259,18 @@ export function CertificationSearch({
                     {certs.map((cert) => (
                       <Card
                         key={cert.id}
-                        p="$3"
+                        padding="$3"
                         borderRadius={0}
                         borderWidth={0}
                         borderBottomWidth={1}
                         borderColor="$borderColor"
-                        pressStyle={{ bg: '$backgroundHover' }}
+                        pressStyle={{ backgroundColor: '$backgroundHover' }}
                         cursor="pointer"
                         onPress={() => handleSelect(cert)}
                         testID="cert-search-card-1"
                       >
                         <YStack gap="$2">
-                          <XStack gap="$2" items="center" flexWrap="wrap">
+                          <XStack gap="$2" alignItems="center" flexWrap="wrap">
                             <Text fontWeight="600" flex={1}>
                               {cert.title}
                             </Text>
@@ -284,11 +291,11 @@ export function CertificationSearch({
                 {Object.entries(groupedResults.depth2ByParent).map(([parentId, certs]) => (
                   <YStack key={parentId}>
                     <XStack
-                      p="$3"
-                      bg="$color3"
+                      padding="$3"
+                      backgroundColor="$color3"
                       borderBottomWidth={1}
                       borderColor="$borderColor"
-                      items="center"
+                      alignItems="center"
                       gap="$2"
                       testID="cert-search-section-depth2"
                     >
@@ -308,18 +315,18 @@ export function CertificationSearch({
                       return (
                         <Card
                           key={cert.id}
-                          p="$3"
+                          padding="$3"
                           borderRadius={0}
                           borderWidth={0}
                           borderBottomWidth={1}
                           borderColor="$borderColor"
-                          pressStyle={{ bg: '$backgroundHover' }}
+                          pressStyle={{ backgroundColor: '$backgroundHover' }}
                           cursor="pointer"
                           onPress={() => handleSelect(cert)}
                           testID="cert-search-card-2"
                         >
                           <YStack gap="$2">
-                            <XStack gap="$2" items="center" flexWrap="wrap">
+                            <XStack gap="$2" alignItems="center" flexWrap="wrap">
                               <YStack flex={1} gap="$1">
                                 <Text fontWeight="600">{cert.title}</Text>
                                 {cert.parent_title && (

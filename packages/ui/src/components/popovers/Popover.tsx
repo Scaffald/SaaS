@@ -7,7 +7,7 @@ import type { PopoverProps } from 'tamagui'
  * This ensures all popovers have a consistent background globally
  */
 const PopoverContent = styled(TamaguiPopover.Content, {
-  bg: '$gray1',
+  backgroundColor: '$gray1',
   borderWidth: 0,
   borderColor: 'transparent',
   boxShadow: '$shadowColor',
@@ -21,7 +21,7 @@ const PopoverContent = styled(TamaguiPopover.Content, {
  * all Popover.Content instances have a consistent background color by default.
  *
  * Usage: Import Popover from '@unicornlove/ui' and use it like Tamagui's Popover.
- * All Popover.Content components will automatically have bg="$color1" applied.
+ * All Popover.Content components will automatically have backgroundColor="$color1" applied.
  */
 // Type definition for Popover with static properties
 type PopoverComponent = ComponentType<PopoverProps> & {
@@ -29,12 +29,29 @@ type PopoverComponent = ComponentType<PopoverProps> & {
   // Include other Popover static properties from Tamagui
   Anchor: typeof TamaguiPopover.Anchor
   Trigger: typeof TamaguiPopover.Trigger
+  Portal: typeof TamaguiPopover.Portal
+  Overlay: typeof TamaguiPopover.Overlay
+  Title: typeof TamaguiPopover.Title
+  Description: typeof TamaguiPopover.Description
   Close: typeof TamaguiPopover.Close
+  Sheet: typeof TamaguiPopover.Sheet
+  FocusScope: typeof TamaguiPopover.FocusScope
+  Adapt: typeof TamaguiPopover.Adapt
 }
 
 // Use double assertion to bypass type inference for declaration generation
 export const Popover = withStaticProperties(TamaguiPopover, {
   Content: PopoverContent,
+  Anchor: TamaguiPopover.Anchor,
+  Trigger: TamaguiPopover.Trigger,
+  Portal: TamaguiPopover.Portal,
+  Overlay: TamaguiPopover.Overlay,
+  Title: TamaguiPopover.Title,
+  Description: TamaguiPopover.Description,
+  Close: TamaguiPopover.Close,
+  Sheet: TamaguiPopover.Sheet,
+  FocusScope: TamaguiPopover.FocusScope,
+  Adapt: TamaguiPopover.Adapt,
 }) as unknown as PopoverComponent
 
 export type { PopoverProps }

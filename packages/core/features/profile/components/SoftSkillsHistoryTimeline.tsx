@@ -1,9 +1,9 @@
 import { api } from '@app/core/utils/api'
 import { SkillsChart } from '@unicornlove/ui'
 import { Calendar, TrendingUp } from '@tamagui/lucide-icons'
-import { Button } from 'tamagui'
+import { Button } from '@unicornlove/ui'
 import { useMemo, useState, type FC } from 'react'
-import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsHistoryTimelineProps {
@@ -121,7 +121,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (isLoading) {
     return (
-      <YStack gap="$4" items="center" justify="center" p="$4">
+      <YStack gap="$4" alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
         <Text color="$color11">Loading version history...</Text>
       </YStack>
@@ -130,7 +130,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (error) {
     return (
-      <YStack gap="$2" p="$4">
+      <YStack gap="$2" padding="$4">
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading history
         </Text>
@@ -143,7 +143,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (versions.length === 0) {
     return (
-      <YStack gap="$2" p="$4" items="center">
+      <YStack gap="$2" padding="$4" alignItems="center">
         <Text fontSize="$5" fontWeight="600" color="$color12">
           No History Yet
         </Text>
@@ -156,15 +156,22 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   if (versions.length === 1) {
     return (
-      <YStack gap="$3" p="$4">
+      <YStack gap="$3" padding="$4">
         <Text fontSize="$5" fontWeight="600" color="$color12">
           Assessment History
         </Text>
         <Text fontSize="$3" color="$color11">
           This is your first assessment. Complete another assessment to see progression tracking.
         </Text>
-        <YStack gap="$2" p="$3" bg="$blue2" rounded="$3" borderWidth={1} borderColor="$blue7">
-          <XStack gap="$2" items="center">
+        <YStack
+          gap="$2"
+          padding="$3"
+          backgroundColor="$blue2"
+          borderRadius="$3"
+          borderWidth={1}
+          borderColor="$blue7"
+        >
+          <XStack gap="$2" alignItems="center">
             <Calendar size={16} color="$blue10" />
             <Text fontSize="$4" fontWeight="600" color="$blue11">
               Version {versions[0].version}
@@ -205,7 +212,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           Assessment History
         </Text>
@@ -230,39 +237,44 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                 >
                   <YStack
                     gap="$3"
-                    p="$4"
-                    bg={isSelected ? '$blue2' : isCurrent ? '$green2' : '$color2'}
-                    rounded="$4"
+                    padding="$4"
+                    backgroundColor={isSelected ? '$blue2' : isCurrent ? '$green2' : '$color2'}
+                    borderRadius="$4"
                     borderWidth={2}
                     borderColor={isSelected ? '$blue9' : isCurrent ? '$green9' : '$borderColor'}
                   >
-                    <XStack items="center" justify="space-between" flexWrap="wrap" gap="$2">
-                      <XStack gap="$3" items="center">
+                    <XStack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      flexWrap="wrap"
+                      gap="$2"
+                    >
+                      <XStack gap="$3" alignItems="center">
                         <YStack
                           width={40}
                           height={40}
-                          rounded="$12"
-                          bg={isCurrent ? '$green9' : '$blue9'}
-                          items="center"
-                          justify="center"
+                          borderRadius="$12"
+                          backgroundColor={isCurrent ? '$green9' : '$blue9'}
+                          alignItems="center"
+                          justifyContent="center"
                         >
                           <Text fontSize="$4" fontWeight="700" color="$color1">
                             V{version.version}
                           </Text>
                         </YStack>
                         <YStack gap="$1">
-                          <XStack gap="$2" items="center">
+                          <XStack gap="$2" alignItems="center">
                             <Text fontSize="$4" fontWeight="600" color="$color12">
                               Version {version.version}
                               {isCurrent && (
-                                <Text fontSize="$3" color="$green11" ml="$2">
+                                <Text fontSize="$3" color="$green11" marginLeft="$2">
                                   (Current)
                                 </Text>
                               )}
                             </Text>
                           </XStack>
                           {version.selfAssessedAt && (
-                            <XStack gap="$2" items="center">
+                            <XStack gap="$2" alignItems="center">
                               <Calendar size={14} color="$color10" />
                               <Text fontSize="$2" color="$color10">
                                 {formatDate(version.selfAssessedAt)}
@@ -293,7 +305,7 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     {isSelected && selectedVersionData && !(!isCurrent && currentVersionData) && (
                       <>
                         <Separator />
-                        <YStack gap="$2" items="center">
+                        <YStack gap="$2" alignItems="center">
                           <Text fontSize="$4" fontWeight="600" color="$blue11">
                             Version {version.version} Radar Chart
                           </Text>
@@ -326,13 +338,13 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                     {isSelected && !isCurrent && currentVersionData && selectedVersionData && (
                       <>
                         <Separator />
-                        <YStack gap="$3" items="center">
+                        <YStack gap="$3" alignItems="center">
                           <Text fontSize="$4" fontWeight="600" color="$color12">
                             Comparison: Version {version.version} vs Current (Version{' '}
                             {currentVersion})
                           </Text>
 
-                          <XStack gap="$4" flexWrap="wrap" justify="center">
+                          <XStack gap="$4" flexWrap="wrap" justifyContent="center">
                             <YStack flex={1} style={{ minWidth: 250 }}>
                               <SkillsChart
                                 datasets={[
@@ -363,15 +375,20 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
                           </XStack>
 
                           {/* Legend */}
-                          <XStack gap="$4" items="center" justify="center" py="$2">
-                            <XStack gap="$2" items="center">
-                              <YStack width={20} height={3} bg="$blue9" />
+                          <XStack
+                            gap="$4"
+                            alignItems="center"
+                            justifyContent="center"
+                            paddingVertical="$2"
+                          >
+                            <XStack gap="$2" alignItems="center">
+                              <YStack width={20} height={3} backgroundColor="$blue9" />
                               <Text fontSize="$2" color="$color11">
                                 Version {version.version}
                               </Text>
                             </XStack>
-                            <XStack gap="$2" items="center">
-                              <YStack width={20} height={3} bg="$green9" />
+                            <XStack gap="$2" alignItems="center">
+                              <YStack width={20} height={3} backgroundColor="$green9" />
                               <Text fontSize="$2" color="$color11">
                                 Current
                               </Text>
@@ -385,8 +402,8 @@ export const SoftSkillsHistoryTimeline: FC<SoftSkillsHistoryTimelineProps> = ({ 
 
                 {/* Timeline Connector */}
                 {index < versions.length - 1 && (
-                  <YStack items="center" py="$2">
-                    <YStack width={2} height={20} bg="$borderColor" />
+                  <YStack alignItems="center" paddingVertical="$2">
+                    <YStack width={2} height={20} backgroundColor="$borderColor" />
                   </YStack>
                 )}
               </YStack>

@@ -1,6 +1,6 @@
 import { List, RotateCcw, Search, SlidersHorizontal } from '@tamagui/lucide-icons'
 import type { CSSProperties } from 'react'
-import { Button, XStack } from 'tamagui'
+import { Button, XStack } from '@unicornlove/ui'
 
 type FilterBarProps = {
   onSearchPress?: () => void
@@ -30,24 +30,24 @@ export const FilterBar = ({
   return (
     <XStack
       position="absolute"
-      b="$4"
-      l={0}
+      bottom="$4"
+      left={0}
       $sm={{ r: 0 }}
       $md={{ r: railVisible ? 440 : 0 }}
-      z={50}
-      items="center"
-      justify="center"
+      zIndex={50}
+      alignItems="center"
+      justifyContent="center"
       animation="quick"
     >
       <XStack
-        bg="$background"
+        backgroundColor="$background"
         opacity={0.95}
-        px="$3"
-        py="$2"
-        rounded="$12"
+        paddingHorizontal="$3"
+        paddingVertical="$2"
+        borderRadius="$12"
         gap="$2"
-        items="center"
-        justify="center"
+        alignItems="center"
+        justifyContent="center"
         borderWidth={2}
         borderColor="$borderColor"
         shadowColor="$shadowColor"
@@ -66,9 +66,9 @@ export const FilterBar = ({
           circular
           onPress={onResultsPress}
           variant="outlined"
-          bg="$background"
-          hoverStyle={{ bg: '$backgroundHover' }}
-          pressStyle={{ bg: '$backgroundPress' }}
+          backgroundColor="$background"
+          hoverStyle={{ backgroundColor: '$backgroundHover' }}
+          pressStyle={{ backgroundColor: '$backgroundPress' }}
         >
           {resultsCount > 0 ? resultsCount : <List size={22} />}
         </Button>
@@ -79,10 +79,10 @@ export const FilterBar = ({
           scaleIcon={1.4}
           onPress={onSearchPress}
           variant="outlined"
-          bg={searchActive ? '$blue9' : '$background'}
+          backgroundColor={searchActive ? '$blue9' : '$background'}
           color={searchActive ? 'white' : '$color'}
-          hoverStyle={{ bg: searchActive ? '$blue10' : '$backgroundHover' }}
-          pressStyle={{ bg: searchActive ? '$blue11' : '$backgroundPress' }}
+          hoverStyle={{ backgroundColor: searchActive ? '$blue10' : '$backgroundHover' }}
+          pressStyle={{ backgroundColor: searchActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
           size="$4"
@@ -91,10 +91,10 @@ export const FilterBar = ({
           scaleIcon={1.4}
           onPress={onFilterPress}
           variant="outlined"
-          bg={filterActive ? '$blue9' : '$background'}
+          backgroundColor={filterActive ? '$blue9' : '$background'}
           color={filterActive ? 'white' : '$color'}
-          hoverStyle={{ bg: filterActive ? '$blue10' : '$backgroundHover' }}
-          pressStyle={{ bg: filterActive ? '$blue11' : '$backgroundPress' }}
+          hoverStyle={{ backgroundColor: filterActive ? '$blue10' : '$backgroundHover' }}
+          pressStyle={{ backgroundColor: filterActive ? '$blue11' : '$backgroundPress' }}
         />
         <Button
           size="$4"
@@ -103,9 +103,9 @@ export const FilterBar = ({
           scaleIcon={1.4}
           onPress={onResetPress}
           variant="outlined"
-          bg="$background"
-          hoverStyle={{ bg: '$backgroundHover' }}
-          pressStyle={{ bg: '$backgroundPress' }}
+          backgroundColor="$background"
+          hoverStyle={{ backgroundColor: '$backgroundHover' }}
+          pressStyle={{ backgroundColor: '$backgroundPress' }}
         />
       </XStack>
     </XStack>

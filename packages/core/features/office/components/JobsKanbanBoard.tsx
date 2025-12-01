@@ -8,7 +8,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { type GetThemeValueForKey, Text, XStack, YStack } from 'tamagui'
+import { type GetThemeValueForKey, Text, XStack, YStack } from '@unicornlove/ui'
 import { JobCard } from './JobCard'
 
 type JobListOutput = inferRouterOutputs<AppRouter>['office']['listJobs']
@@ -118,7 +118,7 @@ export function JobsKanbanBoard({ jobs, onJobUpdate }: JobsKanbanBoardProps) {
       onDragCancel={handleDragCancel}
     >
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <XStack gap="$3" pb="$4" px="$4">
+        <XStack gap="$3" paddingBottom="$4" paddingHorizontal="$4">
           {STATUSES.map((status) => (
             <StatusColumn
               key={status}
@@ -155,25 +155,30 @@ interface StatusColumnProps {
 
 function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: StatusColumnProps) {
   return (
-    <DroppableColumn id={status} items={jobs.map((job) => job.id)}>
+    <DroppableColumn id={status} alignItems={jobs.map((job) => job.id)}>
       <YStack
         data-testid={`kanban-column-${status}`}
         width={320}
-        bg="$color2"
-        rounded="$4"
-        p="$3"
+        backgroundColor="$color2"
+        borderRadius="$4"
+        padding="$3"
         borderWidth={1}
         borderColor="$borderColor"
       >
         {/* Column Header */}
-        <XStack justify="space-between" items="center" mb="$3">
-          <XStack gap="$2" items="center">
-            <YStack width={8} height={8} rounded="$10" bg={color} />
+        <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
+          <XStack gap="$2" alignItems="center">
+            <YStack width={8} height={8} borderRadius="$10" backgroundColor={color} />
             <Text fontWeight="600" fontSize="$4">
               {label}
             </Text>
           </XStack>
-          <YStack bg="$color5" px="$2" py="$1" rounded="$2">
+          <YStack
+            backgroundColor="$color5"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+          >
             <Text fontSize="$2" fontWeight="600">
               {jobs.length}
             </Text>
@@ -184,11 +189,11 @@ function StatusColumn({ status, label, color, jobs, onJobPress, isUpdating }: St
         <YStack gap="$3" flex={1}>
           {jobs.length === 0 ? (
             <YStack
-              p="$4"
-              bg="$color3"
-              rounded="$3"
-              items="center"
-              justify="center"
+              padding="$4"
+              backgroundColor="$color3"
+              borderRadius="$3"
+              alignItems="center"
+              justifyContent="center"
               style={{ minHeight: 100 }}
             >
               <Text fontSize="$2" color="$color10" style={{ textAlign: 'center' }}>

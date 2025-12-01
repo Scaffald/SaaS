@@ -1,7 +1,18 @@
 import { type OrganizationSettingsInput, organizationSettingsSchema } from '@app/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, H4, Input, Separator, Spinner, Switch, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  H4,
+  Input,
+  Separator,
+  Spinner,
+  Switch,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import {
   useOrganizationSettings,
   useOrganizationStorageUsage,
@@ -47,7 +58,7 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <H4>Organization Settings</H4>
         {usage.data ? (
           <Text color="$color10">
@@ -95,7 +106,7 @@ export function OrganizationSettingsPanel({ organizationId }: OrganizationSettin
             control={form.control}
             name="enforceMfa"
             render={({ field }) => (
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <Text fontWeight="600">Require MFA for members</Text>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
               </XStack>

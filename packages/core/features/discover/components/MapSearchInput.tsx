@@ -2,7 +2,7 @@ import type { AddressResult } from '@unicornlove/ui'
 import { AddressAutocomplete } from '@unicornlove/ui'
 import { AlertCircle } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { AnimatePresence, Text, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Text, XStack, YStack } from '@unicornlove/ui'
 
 type MapSearchInputProps = {
   isVisible: boolean
@@ -74,19 +74,19 @@ export const MapSearchInput = ({
       {isVisible && (
         <XStack
           position="absolute"
-          t={100}
-          l={0}
+          top={100}
+          left={0}
           $sm={{ r: 0 }}
           $md={{ r: railVisible ? 440 : 0 }}
-          z={60}
+          zIndex={60}
           animation="quick"
           enterStyle={{ opacity: 0, y: 20 }}
           exitStyle={{ opacity: 0, y: 20 }}
           opacity={1}
           y={0}
-          justify="flex-start"
-          items="center"
-          px="$4"
+          justifyContent="flex-start"
+          alignItems="center"
+          paddingHorizontal="$4"
         >
           {tokenValidation.valid ? (
             <AddressAutocomplete
@@ -105,7 +105,7 @@ export const MapSearchInput = ({
               debounceMs={300}
               containerProps={{
                 style: { minWidth: 250, width: '100%' },
-                rounded: '$8',
+                borderRadius: '$8',
                 shadowColor: '$shadowColor',
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.15,
@@ -115,9 +115,9 @@ export const MapSearchInput = ({
           ) : (
             <YStack
               style={{ minWidth: 250, width: '100%' }}
-              bg="$background"
-              p="$4"
-              rounded="$8"
+              backgroundColor="$background"
+              padding="$4"
+              borderRadius="$8"
               borderWidth={1}
               borderColor="$red8"
               shadowColor="$shadowColor"
@@ -126,7 +126,7 @@ export const MapSearchInput = ({
               shadowRadius={12}
               gap="$2"
             >
-              <XStack items="center" gap="$2">
+              <XStack alignItems="center" gap="$2">
                 <AlertCircle size={18} color="$red10" />
                 <Text fontSize="$3" color="$red10" fontWeight="600">
                   Map Search Unavailable

@@ -3,7 +3,7 @@ import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unico
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { TextArea } from 'tamagui'
+import { TextArea } from '@unicornlove/ui'
 
 type JobFormData = {
   title: string
@@ -77,7 +77,9 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
       createJob.mutate(submitData as unknown as Parameters<typeof createJob.mutate>[0])
     } else if (jobId) {
       // Form data is compatible with mutation input but has slightly different structure
-      updateJob.mutate({ id: jobId, ...submitData } as unknown as Parameters<typeof updateJob.mutate>[0])
+      updateJob.mutate({ id: jobId, ...submitData } as unknown as Parameters<
+        typeof updateJob.mutate
+      >[0])
     }
   }
 
@@ -85,7 +87,7 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
 
   return (
     <ScrollView>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         {/* Title */}
         <YStack gap="$2">
           <Text fontWeight="600">Job Title *</Text>
@@ -204,7 +206,7 @@ export function JobFormSimple({ mode, jobId, initialData, onSuccess }: JobFormPr
         </YStack>
 
         {/* Actions */}
-        <XStack gap="$3" pt="$4">
+        <XStack gap="$3" paddingTop="$4">
           <Button flex={1} variant="outlined" onPress={() => router.back()} disabled={isLoading}>
             Cancel
           </Button>

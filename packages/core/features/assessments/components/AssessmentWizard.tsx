@@ -1,6 +1,6 @@
 import { AlertCircle, ChevronLeft, ChevronRight } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
-import { Button, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { AssessmentProgress, type AssessmentStep } from './AssessmentProgress'
 
 export interface AssessmentWizardProps {
@@ -125,7 +125,7 @@ export function AssessmentWizard({
   // Loading state
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$4" p="$8">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <Spinner size="large" />
         <Text color="$color11">Loading assessment...</Text>
       </YStack>
@@ -135,12 +135,12 @@ export function AssessmentWizard({
   // Error state
   if (error) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$4" p="$8">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$4" padding="$8">
         <AlertCircle size={48} color="$red10" />
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading assessment
         </Text>
-        <YStack items="center">
+        <YStack alignItems="center">
           <Text fontSize="$3" color="$color11">
             {error.message || 'An unexpected error occurred'}
           </Text>
@@ -153,7 +153,7 @@ export function AssessmentWizard({
     <YStack flex={1}>
       {/* Header */}
       {shouldRenderHeader && (
-        <YStack p="$4" gap="$3">
+        <YStack padding="$4" gap="$3">
           {(title || description) && (
             <YStack gap="$1">
               {title && (
@@ -162,7 +162,7 @@ export function AssessmentWizard({
                 </Text>
               )}
               {description && (
-                <YStack items="center">
+                <YStack alignItems="center">
                   <Text fontSize="$3" color="$color11">
                     {description}
                   </Text>
@@ -186,15 +186,15 @@ export function AssessmentWizard({
 
       {/* Main Content */}
       <ScrollView flex={1}>
-        <YStack p="$4" gap="$4">
+        <YStack padding="$4" gap="$4">
           {children}
         </YStack>
       </ScrollView>
 
       {/* Navigation Footer */}
       {(showPrevious || showNext) && (
-        <YStack p="$4" borderTopWidth={1} borderTopColor="$borderColor">
-          <XStack gap="$3" justify="space-between">
+        <YStack padding="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <XStack gap="$3" justifyContent="space-between">
             {showPrevious && (
               <Button size="$4" variant="outlined" icon={ChevronLeft} onPress={onPrevious}>
                 Previous

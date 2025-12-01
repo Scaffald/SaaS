@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { useToast } from '@unicornlove/ui'
 import { AlertTriangle, Trash2 } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { AlertDialog, Button, Card, Input, Text, TextArea, XStack, YStack } from 'tamagui'
+import { AlertDialog, Button, Card, Input, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 export function AccountDeletionPanel() {
   const [isOpen, setIsOpen] = useState(false)
@@ -45,9 +45,9 @@ export function AccountDeletionPanel() {
   }
 
   return (
-    <Card borderWidth={1} borderColor="$red6" bg="$red2" p="$4">
+    <Card borderWidth={1} borderColor="$red6" backgroundColor="$red2" padding="$4">
       <YStack gap="$3">
-        <XStack items="center" gap="$2">
+        <XStack alignItems="center" gap="$2">
           <AlertTriangle color="$red11" size={20} />
           <Text fontSize="$6" fontWeight="700" color="$red11">
             Delete Account
@@ -77,7 +77,7 @@ export function AccountDeletionPanel() {
           <AlertDialog.Portal>
             <AlertDialog.Overlay />
             <AlertDialog.Content style={{ maxWidth: 500 }}>
-              <YStack gap="$4" p="$4">
+              <YStack gap="$4" padding="$4">
                 <YStack gap="$2">
                   <Text fontSize="$7" fontWeight="700" color="$red11">
                     Delete Your Account?
@@ -112,7 +112,7 @@ export function AccountDeletionPanel() {
                   />
                 </YStack>
 
-                <XStack gap="$3" justify="flex-end">
+                <XStack gap="$3" justifyContent="flex-end">
                   <Button
                     variant="outlined"
                     onPress={() => {
@@ -125,7 +125,7 @@ export function AccountDeletionPanel() {
                     Cancel
                   </Button>
                   <Button
-                    bg="$red9"
+                    backgroundColor="$red9"
                     color="white"
                     icon={Trash2}
                     onPress={handleDelete}

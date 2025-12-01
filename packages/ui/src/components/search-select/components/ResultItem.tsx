@@ -1,7 +1,8 @@
 import { Check } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import { memo, useMemo } from 'react'
-import { Button, SizableText, XStack, YStack } from 'tamagui'
+import { SizableText, XStack, YStack } from 'tamagui'
+import { Button } from '../../buttons/Button'
 import type { SearchSelectHighlightRange, SearchSelectOption } from '../types'
 
 export interface ResultItemProps<T> {
@@ -71,8 +72,8 @@ function ResultItemComponent<T>({
     }
 
     return (
-      <YStack gap="$1" flex={1} items="flex-start">
-        <XStack gap="$2" items="center">
+      <YStack gap="$1" flex={1} alignItems="flex-start">
+        <XStack gap="$2" alignItems="center">
           <SizableText fontSize="$4" fontWeight="600">
             {highlightText(option.label, option.meta?.highlightRanges)}
           </SizableText>
@@ -90,13 +91,13 @@ function ResultItemComponent<T>({
     <Button
       unstyled
       id={itemId}
-      px="$3"
-      py="$2"
-      items="flex-start"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      alignItems="flex-start"
       width="100%"
-      bg={isActive ? '$color4' : 'transparent'}
-      hoverStyle={{ bg: '$color4' }}
-      pressStyle={{ bg: '$color5' }}
+      backgroundColor={isActive ? '$color4' : 'transparent'}
+      hoverStyle={{ backgroundColor: '$color4' }}
+      pressStyle={{ backgroundColor: '$color5' }}
       borderWidth={0}
       borderBottomWidth={isLast ? 0 : 1}
       borderBottomColor={isLast ? 'transparent' : '$borderColor'}
@@ -106,7 +107,7 @@ function ResultItemComponent<T>({
       aria-selected={isSelected}
       aria-posinset={index + 1}
     >
-      <XStack flex={1} items="flex-start" justify="space-between" width="100%">
+      <XStack flex={1} alignItems="flex-start" justifyContent="space-between" width="100%">
         {content}
         {showSelectionIcon ? (
           <Check

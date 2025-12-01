@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToastController } from '@tamagui/toast'
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { Progress, TextArea } from 'tamagui'
+import { Progress, TextArea } from '@unicornlove/ui'
 import { InquiryHelpSidebar } from './InquiryHelpSidebar'
 
 interface BulkInquiryModalProps {
@@ -159,20 +159,20 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
       <Sheet modal open={open} onOpenChange={handleClose}>
         <Sheet.Frame>
           <ScrollView>
-            <YStack gap="$4" p="$4">
+            <YStack gap="$4" padding="$4">
               <Text fontSize="$7" fontWeight="600">
                 Bulk Inquiry Results
               </Text>
 
               {/* Summary */}
-              <YStack gap="$3" p="$4" bg="$color2" rounded="$4">
-                <XStack gap="$2" items="center">
+              <YStack gap="$3" padding="$4" backgroundColor="$color2" borderRadius="$4">
+                <XStack gap="$2" alignItems="center">
                   <Text fontSize="$5" fontWeight="600" color="$green10">
                     ✓ {bulkResults.successful} Successful
                   </Text>
                 </XStack>
                 {bulkResults.failed > 0 && (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Text fontSize="$5" fontWeight="600" color="$red10">
                       ✗ {bulkResults.failed} Failed
                     </Text>
@@ -192,7 +192,13 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                   {bulkResults.results
                     .filter((r) => !r.success)
                     .map((result) => (
-                      <YStack key={result.applicationId} p="$3" bg="$red2" rounded="$3" gap="$1">
+                      <YStack
+                        key={result.applicationId}
+                        padding="$3"
+                        backgroundColor="$red2"
+                        borderRadius="$3"
+                        gap="$1"
+                      >
                         <Text fontSize="$3" fontWeight="600">
                           Application: {result.applicationId}
                         </Text>
@@ -205,7 +211,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
               )}
 
               {/* Actions */}
-              <XStack gap="$3" justify="flex-end" pt="$2">
+              <XStack gap="$3" justifyContent="flex-end" paddingTop="$2">
                 <Button variant="outlined" onPress={handleClose}>
                   Close
                 </Button>
@@ -221,12 +227,12 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
     <Sheet modal open={open} onOpenChange={handleClose}>
       <Sheet.Frame>
         <FormProvider {...form}>
-          <YStack p="$4" flex={1}>
+          <YStack padding="$4" flex={1}>
             <XStack gap="$4" flex={1} $sm={{ flexDirection: 'column' }}>
               {/* Main Form */}
               <YStack flex={1} gap="$4">
                 <ScrollView>
-                  <YStack gap="$6" p="$4" $sm={{ gap: '$8', p: '$3' }}>
+                  <YStack gap="$6" padding="$4" $sm={{ gap: '$8', padding: '$3' }}>
                     {/* Header */}
                     <YStack gap="$2">
                       <Text fontSize="$8" fontWeight="700">
@@ -239,7 +245,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
                     {/* Progress indicator */}
                     {isSubmitting && (
-                      <YStack gap="$2" p="$4" bg="$blue2" rounded="$4">
+                      <YStack gap="$2" padding="$4" backgroundColor="$blue2" borderRadius="$4">
                         <Text fontSize="$4" fontWeight="600">
                           Sending inquiries...
                         </Text>
@@ -252,7 +258,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
 
                     {/* Employment Section */}
                     <YStack gap="$4">
-                      <XStack items="center" gap="$2">
+                      <XStack alignItems="center" gap="$2">
                         <Text fontSize="$6" fontWeight="700">
                           Employment
                         </Text>
@@ -287,7 +293,7 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                             </XStack>
                           )}
                         />
-                        <XStack items="center" gap="$2">
+                        <XStack alignItems="center" gap="$2">
                           <Controller
                             control={control}
                             name="employmentTypeNegotiable"
@@ -454,11 +460,11 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
                     {/* Form Actions */}
                     <XStack
                       gap="$3"
-                      p="$4"
-                      bg="$background"
+                      padding="$4"
+                      backgroundColor="$background"
                       borderTopWidth={1}
                       borderTopColor="$borderColor"
-                      justify="flex-end"
+                      justifyContent="flex-end"
                       $sm={{ flexDirection: 'column-reverse' }}
                     >
                       <Button
@@ -487,8 +493,8 @@ export function BulkInquiryModal({ open, onClose, applicationIds }: BulkInquiryM
               {/* Help Sidebar */}
               <YStack
                 width={300}
-                p="$4"
-                bg="$color2"
+                padding="$4"
+                backgroundColor="$color2"
                 borderLeftWidth={1}
                 borderLeftColor="$borderColor"
                 $sm={{ display: 'none' }}

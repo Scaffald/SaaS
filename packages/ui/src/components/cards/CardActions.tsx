@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { Button, XStack } from 'tamagui'
+import { XStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 import type { CardActionsProps } from './types'
 
 /**
@@ -23,7 +24,7 @@ export const CardActions = memo(({ actions }: CardActionsProps) => {
   }
 
   return (
-    <XStack gap="$2" pt="$2">
+    <XStack gap="$2" paddingTop="$2">
       {actions.map((action, index) => (
         <Button
           key={`${action.label}-${index}`}
@@ -31,7 +32,7 @@ export const CardActions = memo(({ actions }: CardActionsProps) => {
           size="$3"
           disabled={action.disabled}
           onPress={action.onPress}
-          bg={
+          backgroundColor={
             action.variant === 'outline'
               ? 'transparent'
               : action.variant === 'secondary'

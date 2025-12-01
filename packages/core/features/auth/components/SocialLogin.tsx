@@ -1,5 +1,5 @@
 import { useTranslation } from '@app/core/utils/useTranslation'
-import { isWeb, Separator, SizableText, XStack, YStack } from 'tamagui'
+import { isWeb, Separator, SizableText, XStack, YStack } from '@unicornlove/ui'
 
 import { AppleSignIn } from './AppleSignIn'
 import { GoogleSignIn } from './GoogleSignIn'
@@ -22,12 +22,12 @@ export function SocialLogin() {
 function OrSeparator({ label }: { label: string }) {
   return (
     <YStack>
-      <YStack position="absolute" fullscreen items="center" justify="center">
+      <YStack position="absolute" fullscreen alignItems="center" justifyContent="center">
         <Separator flex={1} />
       </YStack>
-      <YStack items="center" justify="center">
-        <YStack borderColor={isWeb ? '$color1' : 'transparent'} px="$3">
-          <SizableText size="$2" textTransform="uppercase" text="center">
+      <YStack alignItems="center" justifyContent="center">
+        <YStack borderColor={isWeb ? '$color1' : 'transparent'} paddingHorizontal="$3">
+          <SizableText size="$2" textTransform="uppercase" textAlign="center">
             {label}
           </SizableText>
         </YStack>

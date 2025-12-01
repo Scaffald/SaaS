@@ -56,7 +56,7 @@ export const WelcomeScreen = ({ onOnboarded }: WelcomeScreenProps = {}) => {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
       </YStack>
     )

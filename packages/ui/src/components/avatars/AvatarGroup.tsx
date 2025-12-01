@@ -46,7 +46,7 @@ export const AvatarGroup = memo(({ avatars, maxVisible = 5, size = '$4' }: Avata
   const overflowCount = avatars.length - maxVisible
 
   return (
-    <XStack items="center" gap="$1">
+    <XStack alignItems="center" gap="$1">
       {displayAvatars.map((avatar, index) => (
         <Avatar
           key={`${avatar.name}-${index}`}
@@ -60,7 +60,7 @@ export const AvatarGroup = memo(({ avatars, maxVisible = 5, size = '$4' }: Avata
           }}
         >
           {avatar.src ? <Avatar.Image src={avatar.src} /> : null}
-          <Avatar.Fallback bg="$blue9">
+          <Avatar.Fallback backgroundColor="$blue9">
             <Text color="white" fontWeight="600" fontSize="$2">
               {avatar.name.charAt(0).toUpperCase()}
             </Text>
@@ -71,7 +71,7 @@ export const AvatarGroup = memo(({ avatars, maxVisible = 5, size = '$4' }: Avata
         <Avatar
           circular
           size={size}
-          bg="$color5"
+          backgroundColor="$color5"
           style={{
             marginLeft: -8,
             borderWidth: 2,

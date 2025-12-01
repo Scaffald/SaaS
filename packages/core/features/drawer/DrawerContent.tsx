@@ -21,7 +21,7 @@ import { useRouter } from 'expo-router'
 import { useCallback, type ReactNode } from 'react'
 import { Pressable, type PressableStateCallbackType } from 'react-native'
 import type { GestureResponderEvent } from 'react-native'
-import { Text, useWindowDimensions, XStack, YStack } from 'tamagui'
+import { Text, useWindowDimensions, XStack, YStack } from '@unicornlove/ui'
 import { DrawerLink } from './DrawerLink'
 import { getDrawerItems } from './config'
 import type { DrawerItemConfig } from './types'
@@ -156,14 +156,14 @@ export const DrawerContent = ({
   return (
     <YStack
       flex={1}
-      bg="$color3"
-      px={isCollapsed ? '$2' : '$6'}
-      py="$5"
-      items={isCollapsed ? 'center' : 'stretch'}
+      backgroundColor="$color3"
+      paddingHorizontal={isCollapsed ? '$2' : '$6'}
+      paddingVertical="$5"
+      alignItems={isCollapsed ? 'center' : 'stretch'}
     >
-      <YStack flex={1} justify="space-between" gap="$5" width="100%">
+      <YStack flex={1} justifyContent="space-between" gap="$5" width="100%">
         {!isSmall ? (
-          <XStack justify="center" items="center" gap="$3" pt="$2" width="100%">
+          <XStack justifyContent="center" alignItems="center" gap="$3" paddingTop="$2" width="100%">
             <ScaffaldLogo
               height={isCollapsed ? 30 : 40}
               width={isCollapsed ? 30 : 120}
@@ -182,7 +182,13 @@ export const DrawerContent = ({
           />
         ) : null}
 
-        <YStack gap="$2" flex={1} mt="$2" width="100%" items={isCollapsed ? 'center' : 'stretch'}>
+        <YStack
+          gap="$2"
+          flex={1}
+          marginTop="$2"
+          width="100%"
+          alignItems={isCollapsed ? 'center' : 'stretch'}
+        >
           {hasOfficeRole ? (
             <DrawerLink
               item={OFFICE_DRAWER_ITEM}
@@ -203,14 +209,14 @@ export const DrawerContent = ({
         </YStack>
 
         <YStack
-          pt="$4"
+          paddingTop="$4"
           borderTopWidth={1}
           borderColor="$color5"
           width="100%"
-          items={isCollapsed ? 'center' : 'stretch'}
+          alignItems={isCollapsed ? 'center' : 'stretch'}
         >
           {isCollapsed ? (
-            <YStack gap="$3" items="center">
+            <YStack gap="$3" alignItems="center">
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
                 <SettingsIcon size={footerIconSize} color="$color11" />
               </FooterActionButton>
@@ -231,7 +237,13 @@ export const DrawerContent = ({
               ) : null}
             </YStack>
           ) : (
-            <XStack width="100%" justify="space-between" items="center" gap="$3" px="$3">
+            <XStack
+              width="100%"
+              justifyContent="space-between"
+              alignItems="center"
+              gap="$3"
+              paddingHorizontal="$3"
+            >
               <FooterActionButton label="Settings" onPress={handleSettingsPress}>
                 <SettingsIcon size={footerIconSize} color="$color11" />
               </FooterActionButton>
@@ -280,10 +292,10 @@ const DrawerProfileCard = ({
       width="100%"
       borderWidth={1}
       borderColor="$color4"
-      p="$3"
+      padding="$3"
       gap="$3"
-      items="center"
-      rounded="$4"
+      alignItems="center"
+      borderRadius="$4"
     >
       {avatarUri ? (
         <YStack
@@ -292,9 +304,9 @@ const DrawerProfileCard = ({
           overflow="hidden"
           borderWidth={1}
           borderColor="$borderColor"
-          bg="$color2"
-          items="center"
-          justify="center"
+          backgroundColor="$color2"
+          alignItems="center"
+          justifyContent="center"
           style={{ borderRadius: avatarSize / 2 }}
         >
           <Image
@@ -307,9 +319,9 @@ const DrawerProfileCard = ({
         <YStack
           width={avatarSize}
           height={avatarSize}
-          bg="$blue10"
-          items="center"
-          justify="center"
+          backgroundColor="$blue10"
+          alignItems="center"
+          justifyContent="center"
           borderWidth={1}
           borderColor="$borderColor"
           style={{ borderRadius: avatarSize / 2 }}

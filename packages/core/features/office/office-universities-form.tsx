@@ -5,7 +5,7 @@ import { Plus, Save, X } from '@tamagui/lucide-icons'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, H4, Input, Spinner, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, H4, Input, Spinner, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 import { z } from 'zod'
 
 const universitySchema = z.object({
@@ -172,8 +172,8 @@ export function OfficeUniversitiesForm({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4" p="$4">
-        <XStack justify="space-between" items="center">
+      <YStack gap="$4" padding="$4">
+        <XStack justifyContent="space-between" alignItems="center">
           <H4>{isEditing ? 'Edit University' : 'New University'}</H4>
           {isEditing && (
             <Button
@@ -331,7 +331,7 @@ export function OfficeUniversitiesForm({
                   placeholder="e.g. harvard.edu, hbs.edu"
                   value={field.value}
                   onChangeText={field.onChange}
-                  minH={60}
+                  minHeight={60}
                 />
               )}
             />
@@ -352,7 +352,7 @@ export function OfficeUniversitiesForm({
                   placeholder="e.g. https://www.harvard.edu, https://www.hbs.edu"
                   value={field.value}
                   onChangeText={field.onChange}
-                  minH={60}
+                  minHeight={60}
                 />
               )}
             />
@@ -360,8 +360,8 @@ export function OfficeUniversitiesForm({
 
           {/* Submit Button */}
           <XStack
-            justify="flex-end"
-            pt="$4"
+            justifyContent="flex-end"
+            paddingTop="$4"
             gap="$2"
             $sm={{ flexDirection: 'column' }}
             $md={{ flexDirection: 'row' }}

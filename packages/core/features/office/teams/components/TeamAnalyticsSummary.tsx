@@ -4,7 +4,7 @@ import { RefreshCw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { type ReactNode, useMemo, useState } from 'react'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface TeamAnalyticsSummaryProps {
   teamId: string
@@ -110,11 +110,11 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
 
   return (
     <YStack gap="$3">
-      <XStack gap="$2" items="center" justify="space-between" flexWrap="wrap">
+      <XStack gap="$2" alignItems="center" justifyContent="space-between" flexWrap="wrap">
         <Text fontSize="$6" fontWeight="700">
           Analytics summary
         </Text>
-        <XStack gap="$2" items="center" flexWrap="wrap">
+        <XStack gap="$2" alignItems="center" flexWrap="wrap">
           <ResponsiveSelect
             value={String(range)}
             onValueChange={(value) => setRange(Number(value))}
@@ -138,7 +138,7 @@ export function TeamAnalyticsSummary({ teamId }: TeamAnalyticsSummaryProps) {
       </XStack>
 
       {analyticsQuery.isLoading ? (
-        <YStack items="center" justify="center" py="$4" gap="$2">
+        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading analytics…</Text>
         </YStack>
@@ -186,10 +186,10 @@ function StatTile({ label, children }: { label: string; children: ReactNode }) {
       gap="$1"
       borderWidth={1}
       borderColor="$borderColor"
-      rounded="$4"
-      px="$3"
-      py="$2"
-      bg="$color2"
+      borderRadius="$4"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
+      backgroundColor="$color2"
       style={{ minWidth: 140 }}
     >
       <Text fontSize="$2" color="$color10" textTransform="uppercase">

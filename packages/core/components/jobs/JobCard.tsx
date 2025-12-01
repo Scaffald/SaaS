@@ -1,7 +1,7 @@
 import { Briefcase, Building2, Clock, DollarSign, MapPin } from '@tamagui/lucide-icons'
 import { forwardRef, memo } from 'react'
-import type { TamaguiElement } from 'tamagui'
-import { Paragraph, Text, XStack } from 'tamagui'
+import type { TamaguiElement } from '@unicornlove/ui'
+import { Paragraph, Text, XStack } from '@unicornlove/ui'
 import {
   CardActions,
   CardBadges,
@@ -185,13 +185,13 @@ export const JobCard = memo(
         ...certifications.slice(0, 3).map((cert) => ({
           key: cert.id,
           label: cert.name,
-          bg: '$red10',
+          backgroundColor: '$red10',
           color: '$color1',
         })),
         ...skills.slice(0, 2).map((skill) => ({
           key: skill.id,
           label: skill.name,
-          bg: '$blue8',
+          backgroundColor: '$blue8',
           color: '$color1',
         })),
       ]
@@ -214,12 +214,12 @@ export const JobCard = memo(
           }
         >
           {/* Header */}
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <CardHeader
               title={title}
               subtitle={
                 organization ? (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Building2 size={16} color={isSelected ? '$color1' : '$color11'} />
                     <Text
                       fontSize="$3"
@@ -234,7 +234,12 @@ export const JobCard = memo(
               isSelected={isSelected}
               badge={
                 hasApplied ? (
-                  <XStack bg="$green9" px="$2" py="$1" rounded="$2">
+                  <XStack
+                    backgroundColor="$green9"
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$2"
+                  >
                     <Text color="$green1" fontSize="$2" fontWeight="600">
                       Applied
                     </Text>
@@ -247,7 +252,12 @@ export const JobCard = memo(
           {/* Remote option chip */}
           {remoteOption && (
             <XStack gap="$2">
-              <XStack bg="$blue8" px="$2" py="$1" rounded="$2">
+              <XStack
+                backgroundColor="$blue8"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                borderRadius="$2"
+              >
                 <Text color="white" fontSize="$2" fontWeight="600">
                   {remoteOption === 'on_site'
                     ? 'On-site'
@@ -268,12 +278,12 @@ export const JobCard = memo(
 
           {/* Metadata */}
           {metadataItems.length > 0 && (
-            <CardMetadata items={metadataItems} isSelected={isSelected} />
+            <CardMetadata alignItems={metadataItems} isSelected={isSelected} />
           )}
 
           {/* Pay range */}
           {payRange && (
-            <XStack gap="$1.5" items="center">
+            <XStack gap="$1.5" alignItems="center">
               <DollarSign size={16} color="$green10" />
               <Text fontSize="$3" color="$green10" fontWeight="600">
                 {payRange}

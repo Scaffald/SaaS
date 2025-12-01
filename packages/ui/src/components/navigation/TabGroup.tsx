@@ -79,21 +79,21 @@ export const TabGroup = ({
  */
 const TabList = styled(Tabs.List, {
   name: 'TabList',
-  rounded: '$4',
+  borderRadius: '$4',
   flexWrap: 'wrap',
 
   variants: {
     variant: {
       default: {
-        bg: '$color2',
+        backgroundColor: '$color2',
         gap: '$1',
       },
       underlined: {
-        rounded: 0,
+        borderRadius: 0,
         borderWidth: 0,
-        bg: 'transparent',
+        backgroundColor: 'transparent',
         gap: '$3',
-        px: 0,
+        paddingHorizontal: 0,
       },
     },
     bordered: {
@@ -104,7 +104,7 @@ const TabList = styled(Tabs.List, {
       false: {
         borderWidth: 0,
         borderColor: 'transparent',
-        bg: 'transparent',
+        backgroundColor: 'transparent',
       },
     },
     scrollable: {

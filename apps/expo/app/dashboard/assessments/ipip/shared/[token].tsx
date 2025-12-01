@@ -7,7 +7,7 @@ import { getResults, getScore } from '@app/core/features/personality-assessment/
 import { api } from '@app/core/utils/api'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Button, Tabs, Text, YStack } from 'tamagui'
+import { Button, Tabs, Text, YStack } from '@unicornlove/ui'
 
 /**
  * Shared IPIP Results Page Route
@@ -54,7 +54,7 @@ export default function SharedIPIPResultsRoute() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4" p="$8" items="center">
+      <YStack gap="$4" padding="$8" alignItems="center">
         <Text fontSize="$5" color="$color11">
           Loading shared results...
         </Text>
@@ -64,7 +64,7 @@ export default function SharedIPIPResultsRoute() {
 
   if (error || !sharedResults) {
     return (
-      <YStack gap="$4" p="$8" items="center">
+      <YStack gap="$4" padding="$8" alignItems="center">
         <Text fontSize="$5" color="$red10" fontWeight="600">
           {error?.message || 'Results Not Found'}
         </Text>
@@ -77,7 +77,7 @@ export default function SharedIPIPResultsRoute() {
   }
 
   return (
-    <YStack gap="$6" width="100%" p="$4" style={{ alignSelf: 'center', maxWidth: 1000 }}>
+    <YStack gap="$6" width="100%" padding="$4" style={{ alignSelf: 'center', maxWidth: 1000 }}>
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -112,8 +112,14 @@ export default function SharedIPIPResultsRoute() {
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Content value="narrative" p="$4">
-          <YStack bg="$color1" rounded="$4" borderWidth={1} borderColor="$borderColor" p="$4">
+        <Tabs.Content value="narrative" padding="$4">
+          <YStack
+            backgroundColor="$color1"
+            borderRadius="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+            padding="$4"
+          >
             {processedResults ? (
               <NarrativeView
                 scores={processedResults.scores}
@@ -123,7 +129,7 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <YStack items="center" p="$4">
+              <YStack alignItems="center" padding="$4">
                 <Text fontSize="$4" color="$color11">
                   Processing results...
                 </Text>
@@ -132,8 +138,14 @@ export default function SharedIPIPResultsRoute() {
           </YStack>
         </Tabs.Content>
 
-        <Tabs.Content value="chart" p="$4">
-          <YStack bg="$color1" rounded="$4" borderWidth={1} borderColor="$borderColor" p="$4">
+        <Tabs.Content value="chart" padding="$4">
+          <YStack
+            backgroundColor="$color1"
+            borderRadius="$4"
+            borderWidth={1}
+            borderColor="$borderColor"
+            padding="$4"
+          >
             {processedResults ? (
               <ChartView
                 scores={processedResults.scores}
@@ -151,7 +163,7 @@ export default function SharedIPIPResultsRoute() {
                 completedDomains={5}
               />
             ) : (
-              <YStack items="center" p="$4">
+              <YStack alignItems="center" padding="$4">
                 <Text fontSize="$4" color="$color11">
                   Processing results...
                 </Text>

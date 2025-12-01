@@ -14,14 +14,14 @@ export function SkeletonCard({ variant: _variant = 'job' }: SkeletonCardProps) {
   return (
     <YStack
       gap={spacing.md}
-      p={spacing.lg}
-      bg="$background"
+      padding={spacing.lg}
+      backgroundColor="$background"
       borderWidth={1}
       borderColor="$borderColor"
-      rounded={borderRadius['3xl']}
+      borderRadius={borderRadius['3xl']}
     >
       {/* Header with avatar and title */}
-      <XStack gap={spacing.md} items="center">
+      <XStack gap={spacing.md} alignItems="center">
         <SkeletonAvatar size="medium" />
         <YStack flex={1} gap={spacing.sm}>
           <SkeletonText width="70%" />

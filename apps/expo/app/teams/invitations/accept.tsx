@@ -6,7 +6,7 @@ import { AlertTriangle, CheckCircle, LogIn, XCircle } from '@tamagui/lucide-icon
 import type { inferRouterOutputs } from '@trpc/server'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Spinner, Text, YStack } from 'tamagui'
+import { Button, Card, Spinner, Text, YStack } from '@unicornlove/ui'
 
 type InvitationAction = 'accept' | 'decline'
 type RespondInvitationOutput = inferRouterOutputs<AppRouter>['teams']['respondToInvitation']
@@ -89,7 +89,7 @@ export default function AcceptTeamInvitationScreen() {
 
     if (authLoading) {
       return (
-        <YStack gap="$3" items="center" py="$6">
+        <YStack gap="$3" alignItems="center" paddingVertical="$6">
           <Spinner size="large" />
           <Text color="$color11">Preparing secure invitation…</Text>
         </YStack>
@@ -119,9 +119,9 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'success') {
       return (
-        <YStack gap="$4" items="center" py="$4">
+        <YStack gap="$4" alignItems="center" paddingVertical="$4">
           <CheckCircle size={48} color="$green9" />
-          <YStack gap="$2" items="center">
+          <YStack gap="$2" alignItems="center">
             <Text fontSize="$7" fontWeight="700">
               You&apos;re in!
             </Text>
@@ -138,9 +138,9 @@ export default function AcceptTeamInvitationScreen() {
 
     if (status === 'declined') {
       return (
-        <YStack gap="$4" items="center" py="$4">
+        <YStack gap="$4" alignItems="center" paddingVertical="$4">
           <XCircle size={48} color="$red9" />
-          <YStack gap="$2" items="center">
+          <YStack gap="$2" alignItems="center">
             <Text fontSize="$7" fontWeight="700">
               Invitation declined
             </Text>
@@ -190,7 +190,7 @@ export default function AcceptTeamInvitationScreen() {
           </Button>
         </YStack>
         {isProcessing ? (
-          <YStack gap="$2" items="center">
+          <YStack gap="$2" alignItems="center">
             <Spinner size="large" />
             <Text color="$color11">Processing your response…</Text>
           </YStack>
@@ -200,8 +200,21 @@ export default function AcceptTeamInvitationScreen() {
   }
 
   return (
-    <YStack flex={1} p="$4" bg="$color2" justify="center" items="center">
-      <Card width="100%" maxWidth={480} p="$5" gap="$5" borderWidth={1} borderColor="$borderColor">
+    <YStack
+      flex={1}
+      padding="$4"
+      backgroundColor="$color2"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Card
+        width="100%"
+        maxWidth={480}
+        padding="$5"
+        gap="$5"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
         {renderContent()}
       </Card>
     </YStack>
@@ -210,9 +223,9 @@ export default function AcceptTeamInvitationScreen() {
 
 function ErrorState({ title, message }: { title: string; message: string }) {
   return (
-    <YStack gap="$3" items="center" py="$4">
+    <YStack gap="$3" alignItems="center" paddingVertical="$4">
       <AlertTriangle size={48} color="$yellow9" />
-      <YStack gap="$2" items="center">
+      <YStack gap="$2" alignItems="center">
         <Text fontSize="$7" fontWeight="700">
           {title}
         </Text>

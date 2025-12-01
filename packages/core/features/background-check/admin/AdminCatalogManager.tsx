@@ -15,7 +15,7 @@ import { Check, Edit3, PackagePlus, Plus, RefreshCcw, Shield } from '@tamagui/lu
 import { useToastController } from '@tamagui/toast'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useMemo, useState } from 'react'
-import { Card, Checkbox, TextArea } from 'tamagui'
+import { Card, Checkbox, TextArea } from '@unicornlove/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type AdminPackageRecord = RouterOutputs['backgroundChecks']['adminListPackages'][number]
@@ -446,10 +446,17 @@ export function AdminCatalogManager() {
   return (
     <>
       <YStack gap="$4">
-        <Card p="$4" gap="$4" bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$5">
-          <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
+        <Card
+          padding="$4"
+          gap="$4"
+          backgroundColor="$color2"
+          borderColor="$borderColor"
+          borderWidth={1}
+          borderRadius="$5"
+        >
+          <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
             <YStack gap="$1">
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <PackagePlus size={18} color="$color10" />
                 <Text fontSize="$4" fontWeight="700" color="$color12">
                   Packages
@@ -484,14 +491,14 @@ export function AdminCatalogManager() {
           </XStack>
 
           {packagesQuery.isLoading ? (
-            <YStack gap="$2" items="center" py="$4">
+            <YStack gap="$2" alignItems="center" paddingVertical="$4">
               <Spinner size="large" />
               <Text fontSize="$3" color="$color10">
                 Loading packages…
               </Text>
             </YStack>
           ) : packages.length === 0 ? (
-            <YStack gap="$2" py="$4" items="center">
+            <YStack gap="$2" paddingVertical="$4" alignItems="center">
               <Text fontSize="$3" color="$color10">
                 {hasCatalogData ? 'No packages match the filters.' : 'No packages configured yet.'}
               </Text>
@@ -504,14 +511,14 @@ export function AdminCatalogManager() {
               {packages.map((pkg: AdminPackageRecord) => (
                 <Card
                   key={pkg.id}
-                  p="$4"
+                  padding="$4"
                   gap="$3"
-                  bg="$color1"
+                  backgroundColor="$color1"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  rounded="$4"
+                  borderRadius="$4"
                 >
-                  <XStack justify="space-between" items="flex-start" gap="$3">
+                  <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
                     <YStack gap="$1" flex={1}>
                       <Text fontSize="$5" fontWeight="700" color="$color12">
                         {pkg.display_name}
@@ -574,14 +581,14 @@ export function AdminCatalogManager() {
                       pkg.components.map((component: AdminPackageRecord['components'][number]) => (
                         <XStack
                           key={component.id}
-                          justify="space-between"
-                          items="center"
+                          justifyContent="space-between"
+                          alignItems="center"
                           borderColor="$borderColor"
                           borderWidth={1}
-                          rounded="$3"
-                          px="$3"
-                          py="$2"
-                          bg="$background"
+                          borderRadius="$3"
+                          paddingHorizontal="$3"
+                          paddingVertical="$2"
+                          backgroundColor="$background"
                         >
                           <YStack gap="$1" flex={1}>
                             <Text fontSize="$3" fontWeight="600" color="$color12">
@@ -609,10 +616,17 @@ export function AdminCatalogManager() {
           )}
         </Card>
 
-        <Card p="$4" gap="$4" bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$5">
-          <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
+        <Card
+          padding="$4"
+          gap="$4"
+          backgroundColor="$color2"
+          borderColor="$borderColor"
+          borderWidth={1}
+          borderRadius="$5"
+        >
+          <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
             <YStack gap="$1">
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Shield size={18} color="$color10" />
                 <Text fontSize="$4" fontWeight="700" color="$color12">
                   Check types
@@ -630,14 +644,14 @@ export function AdminCatalogManager() {
           </XStack>
 
           {checkTypesQuery.isLoading ? (
-            <YStack gap="$2" items="center" py="$4">
+            <YStack gap="$2" alignItems="center" paddingVertical="$4">
               <Spinner size="large" />
               <Text fontSize="$3" color="$color10">
                 Loading check types…
               </Text>
             </YStack>
           ) : checkTypes.length === 0 ? (
-            <YStack gap="$2" py="$4" items="center">
+            <YStack gap="$2" paddingVertical="$4" alignItems="center">
               <Text fontSize="$3" color="$color10">
                 No check types configured yet.
               </Text>
@@ -650,14 +664,14 @@ export function AdminCatalogManager() {
               {checkTypes.map((type: AdminCheckTypeRecord) => (
                 <Card
                   key={type.id}
-                  p="$4"
+                  padding="$4"
                   gap="$3"
-                  bg="$color1"
+                  backgroundColor="$color1"
                   borderColor="$borderColor"
                   borderWidth={1}
-                  rounded="$4"
+                  borderRadius="$4"
                 >
-                  <XStack justify="space-between" items="flex-start" gap="$3">
+                  <XStack justifyContent="space-between" alignItems="flex-start" gap="$3">
                     <YStack gap="$1" flex={1}>
                       <Text fontSize="$5" fontWeight="700" color="$color12">
                         {type.display_name}
@@ -737,7 +751,7 @@ export function AdminCatalogManager() {
       >
         <Dialog.Portal>
           <Dialog.Overlay />
-          <Dialog.Content bg="$color2" borderColor="$borderColor" borderWidth={1}>
+          <Dialog.Content backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
             <Dialog.Title>
               {packageDialog?.mode === 'edit'
                 ? 'Edit background check package'
@@ -748,7 +762,7 @@ export function AdminCatalogManager() {
             </Dialog.Description>
 
             <ScrollView showsVerticalScrollIndicator>
-              <YStack gap="$3" mt="$3" pb="$4">
+              <YStack gap="$3" marginTop="$3" paddingBottom="$4">
                 <Input
                   placeholder="Slug"
                   value={packageForm.slug}
@@ -769,7 +783,7 @@ export function AdminCatalogManager() {
 
                 <XStack gap="$3" flexWrap="wrap">
                   <YStack flex={1}>
-                    <Text fontSize="$2" color="$color10" mb="$1">
+                    <Text fontSize="$2" color="$color10" marginBottom="$1">
                       Platform cost (USD cents)
                     </Text>
                     <Input
@@ -779,7 +793,7 @@ export function AdminCatalogManager() {
                     />
                   </YStack>
                   <YStack flex={1}>
-                    <Text fontSize="$2" color="$color10" mb="$1">
+                    <Text fontSize="$2" color="$color10" marginBottom="$1">
                       Retail price (USD cents)
                     </Text>
                     <Input
@@ -789,7 +803,7 @@ export function AdminCatalogManager() {
                     />
                   </YStack>
                   <YStack flex={1}>
-                    <Text fontSize="$2" color="$color10" mb="$1">
+                    <Text fontSize="$2" color="$color10" marginBottom="$1">
                       Estimated completion (days)
                     </Text>
                     <Input
@@ -815,7 +829,7 @@ export function AdminCatalogManager() {
                   </Text>
                   <YStack gap="$2">
                     {checkTypesQuery.isLoading ? (
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         <Spinner size="small" />
                         <Text fontSize="$2" color="$color10">
                           Loading check types…
@@ -832,13 +846,13 @@ export function AdminCatalogManager() {
                           <XStack
                             key={type.id}
                             gap="$2"
-                            items="center"
+                            alignItems="center"
                             borderColor="$borderColor"
                             borderWidth={1}
-                            rounded="$3"
-                            px="$3"
-                            py="$2"
-                            bg={selected ? '$blue3' : '$background'}
+                            borderRadius="$3"
+                            paddingHorizontal="$3"
+                            paddingVertical="$2"
+                            backgroundColor={selected ? '$blue3' : '$background'}
                           >
                             <Checkbox
                               size="$3"
@@ -867,7 +881,7 @@ export function AdminCatalogManager() {
                   </YStack>
                 </YStack>
 
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Checkbox
                     checked={packageForm.isActive}
                     onCheckedChange={(value) =>
@@ -902,7 +916,7 @@ export function AdminCatalogManager() {
                   </Text>
                 ) : null}
 
-                <XStack gap="$2" justify="flex-end">
+                <XStack gap="$2" justifyContent="flex-end">
                   <Dialog.Close asChild>
                     <Button variant="outlined" size="$3">
                       Cancel
@@ -935,7 +949,7 @@ export function AdminCatalogManager() {
       >
         <Dialog.Portal>
           <Dialog.Overlay />
-          <Dialog.Content bg="$color2" borderColor="$borderColor" borderWidth={1}>
+          <Dialog.Content backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
             <Dialog.Title>
               {checkTypeDialog?.mode === 'edit'
                 ? 'Edit background check type'
@@ -946,7 +960,7 @@ export function AdminCatalogManager() {
             </Dialog.Description>
 
             <ScrollView showsVerticalScrollIndicator>
-              <YStack gap="$3" mt="$3" pb="$4">
+              <YStack gap="$3" marginTop="$3" paddingBottom="$4">
                 <Input
                   placeholder="Slug"
                   value={checkTypeForm.slug}
@@ -978,7 +992,7 @@ export function AdminCatalogManager() {
 
                 <XStack gap="$3" flexWrap="wrap">
                   <YStack flex={1}>
-                    <Text fontSize="$2" color="$color10" mb="$1">
+                    <Text fontSize="$2" color="$color10" marginBottom="$1">
                       Platform cost (USD cents)
                     </Text>
                     <Input
@@ -988,7 +1002,7 @@ export function AdminCatalogManager() {
                     />
                   </YStack>
                   <YStack flex={1}>
-                    <Text fontSize="$2" color="$color10" mb="$1">
+                    <Text fontSize="$2" color="$color10" marginBottom="$1">
                       Retail price (USD cents, optional)
                     </Text>
                     <Input
@@ -998,7 +1012,7 @@ export function AdminCatalogManager() {
                     />
                   </YStack>
                   <YStack flex={1}>
-                    <Text fontSize="$2" color="$color10" mb="$1">
+                    <Text fontSize="$2" color="$color10" marginBottom="$1">
                       Validity period (days, optional)
                     </Text>
                     <Input
@@ -1008,7 +1022,7 @@ export function AdminCatalogManager() {
                     />
                   </YStack>
                   <YStack flex={1}>
-                    <Text fontSize="$2" color="$color10" mb="$1">
+                    <Text fontSize="$2" color="$color10" marginBottom="$1">
                       Estimated completion (days)
                     </Text>
                     <Input
@@ -1028,7 +1042,7 @@ export function AdminCatalogManager() {
                   rows={2}
                 />
 
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Checkbox
                     checked={checkTypeForm.isActive}
                     onCheckedChange={(value) =>
@@ -1066,7 +1080,7 @@ export function AdminCatalogManager() {
                   </Text>
                 ) : null}
 
-                <XStack gap="$2" justify="flex-end">
+                <XStack gap="$2" justifyContent="flex-end">
                   <Dialog.Close asChild>
                     <Button variant="outlined" size="$3">
                       Cancel
@@ -1099,12 +1113,12 @@ interface InfoChipProps {
 function InfoChip({ label, value }: InfoChipProps) {
   return (
     <YStack
-      px="$3"
-      py="$2"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
       borderColor="$borderColor"
       borderWidth={1}
-      rounded="$3"
-      bg="$background"
+      borderRadius="$3"
+      backgroundColor="$background"
       gap="$1"
     >
       <Text fontSize="$2" color="$color10">
@@ -1124,7 +1138,7 @@ interface InfoTextProps {
 
 function InfoText({ label, value }: InfoTextProps) {
   return (
-    <XStack gap="$1" items="center">
+    <XStack gap="$1" alignItems="center">
       <Text fontSize="$2" color="$color10">
         {label}:
       </Text>

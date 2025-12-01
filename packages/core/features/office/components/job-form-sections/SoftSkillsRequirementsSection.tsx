@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { Button, Text, XStack, YStack } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Label, Spinner } from 'tamagui'
+import { Label, Spinner } from '@unicornlove/ui'
 
 interface SoftSkillsRequirementsSectionProps {
   requiredSoftSkills?: Array<{ skill_id: string; importance: number }> | null
@@ -80,18 +80,18 @@ export function SoftSkillsRequirementsSection({
     return (
       <YStack
         gap="$4"
-        p="$4"
-        bg="$background"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$background"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
       >
         <Text fontSize="$6" fontWeight="600">
           Soft Skills Requirements
         </Text>
-        <YStack items="center" p="$4">
+        <YStack alignItems="center" padding="$4">
           <Spinner size="large" color="$blue10" />
-          <Text mt="$2" color="$color11">
+          <Text marginTop="$2" color="$color11">
             Loading soft skills catalog...
           </Text>
         </YStack>
@@ -103,9 +103,9 @@ export function SoftSkillsRequirementsSection({
     return (
       <YStack
         gap="$4"
-        p="$4"
-        bg="$background"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$background"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
       >
@@ -124,9 +124,9 @@ export function SoftSkillsRequirementsSection({
   return (
     <YStack
       gap="$4"
-      p="$4"
-      bg="$background"
-      rounded="$4"
+      padding="$4"
+      backgroundColor="$background"
+      borderRadius="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
@@ -200,7 +200,14 @@ export function SoftSkillsRequirementsSection({
 
       {/* Preview Section */}
       {selectedCount > 0 && (
-        <YStack gap="$2" p="$3" bg="$blue2" rounded="$3" borderWidth={1} borderColor="$blue7">
+        <YStack
+          gap="$2"
+          padding="$3"
+          backgroundColor="$blue2"
+          borderRadius="$3"
+          borderWidth={1}
+          borderColor="$blue7"
+        >
           <Text fontSize="$4" fontWeight="600" color="$blue11">
             Preview: How candidates will see this
           </Text>

@@ -3,7 +3,7 @@ import { getAvatarUrl } from '@app/core/utils/supabase/storage'
 import { useUser } from '@app/core/utils/useUser'
 import { DashboardWidget, ResponsiveModal } from '@unicornlove/ui'
 import { useState } from 'react'
-import { Avatar, H4, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, H4, Progress, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { CertificationsWidget } from '../profile/widgets/CertificationsWidget'
 import { ExperienceWidget } from '../profile/widgets/ExperienceWidget'
 import { SkillsWidget } from '../profile/widgets/SkillsWidget'
@@ -114,7 +114,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
         {/* Profile Snapshot Widget */}
         <DashboardWidget>
           {loadingGeneral ? (
-            <YStack gap="$4" items="center" py="$8">
+            <YStack gap="$4" alignItems="center" paddingVertical="$8">
               <Spinner size="large" />
               <Text color="$color11">Loading profile...</Text>
             </YStack>
@@ -124,22 +124,22 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
               <H4>Profile Overview</H4>
 
               {/* Avatar & Name Section */}
-              <YStack gap="$3" items="center">
+              <YStack gap="$3" alignItems="center">
                 <Avatar circular size="$8">
                   <Avatar.Image
                     source={{
                       uri: getAvatarUrl(generalInfo.avatar_path) || generalInfo.avatar_url || '',
                     }}
                   />
-                  <Avatar.Fallback bg="$color6" />
+                  <Avatar.Fallback backgroundColor="$color6" />
                 </Avatar>
 
-                <YStack gap="$1" items="center">
+                <YStack gap="$1" alignItems="center">
                   <Text fontSize="$5" fontWeight="600">
                     {displayName}
                   </Text>
                   {generalInfo.headline && (
-                    <YStack items="center">
+                    <YStack alignItems="center">
                       <Text color="$color11" fontSize="$2">
                         {generalInfo.headline}
                       </Text>
@@ -150,10 +150,10 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                 {/* Open to Work Badge */}
                 {generalInfo.open_to_work && (
                   <XStack
-                    bg="$green3"
-                    px="$3"
-                    py="$1.5"
-                    rounded="$10"
+                    backgroundColor="$green3"
+                    paddingHorizontal="$3"
+                    paddingVertical="$1.5"
+                    borderRadius="$10"
                     borderWidth={1}
                     borderColor="$green7"
                   >
@@ -166,7 +166,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
 
               {/* Current Role */}
               {currentRole && (
-                <YStack gap="$1" bg="$color2" p="$3" rounded="$3">
+                <YStack gap="$1" backgroundColor="$color2" padding="$3" borderRadius="$3">
                   <Text fontSize="$2" color="$color10">
                     Current Role
                   </Text>
@@ -187,7 +187,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
 
                 {/* Completion Bar */}
                 <YStack gap="$2">
-                  <XStack justify="space-between">
+                  <XStack justifyContent="space-between">
                     <Text fontSize="$2" color="$color11">
                       Completion
                     </Text>
@@ -196,7 +196,7 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                     </Text>
                   </XStack>
                   <Progress value={completion} max={100}>
-                    <Progress.Indicator animation="bouncy" bg="$green9" />
+                    <Progress.Indicator animation="bouncy" backgroundColor="$green9" />
                   </Progress>
                 </YStack>
 
@@ -205,11 +205,11 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                   <YStack
                     gap="$1"
                     flex={1}
-                    minW={80}
-                    bg="$color2"
-                    p="$3"
-                    rounded="$3"
-                    items="center"
+                    minWidth={80}
+                    backgroundColor="$color2"
+                    padding="$3"
+                    borderRadius="$3"
+                    alignItems="center"
                   >
                     <Text fontSize="$6" fontWeight="700" color="$blue10">
                       {skills?.length || 0}
@@ -222,11 +222,11 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                   <YStack
                     gap="$1"
                     flex={1}
-                    minW={80}
-                    bg="$color2"
-                    p="$3"
-                    rounded="$3"
-                    items="center"
+                    minWidth={80}
+                    backgroundColor="$color2"
+                    padding="$3"
+                    borderRadius="$3"
+                    alignItems="center"
                   >
                     <Text fontSize="$6" fontWeight="700" color="$green10">
                       {certifications?.length || 0}
@@ -239,11 +239,11 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                   <YStack
                     gap="$1"
                     flex={1}
-                    minW={80}
-                    bg="$color2"
-                    p="$3"
-                    rounded="$3"
-                    items="center"
+                    minWidth={80}
+                    backgroundColor="$color2"
+                    padding="$3"
+                    borderRadius="$3"
+                    alignItems="center"
                   >
                     <Text fontSize="$6" fontWeight="700" color="$color10">
                       {formattedYearsOfExperience}
@@ -276,15 +276,15 @@ export function UserProfileRight({ userId }: UserProfileRightProps) {
                       return (
                         <XStack
                           key={skill.id as string}
-                          bg="$color3"
-                          px="$2.5"
-                          py="$1.5"
-                          rounded="$2"
+                          backgroundColor="$color3"
+                          paddingHorizontal="$2.5"
+                          paddingVertical="$1.5"
+                          borderRadius="$2"
                           borderWidth={1}
                           borderColor={skill.verified ? '$green7' : '$color6'}
                         >
                           {skill.verified && (
-                            <Text color="$green10" fontSize="$1" mr="$1">
+                            <Text color="$green10" fontSize="$1" marginRight="$1">
                               ✓
                             </Text>
                           )}

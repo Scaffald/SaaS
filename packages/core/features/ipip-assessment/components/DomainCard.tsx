@@ -5,7 +5,7 @@ import type {
 } from '@app/core/features/personality-assessment/lib/ipip'
 import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { memo, useState } from 'react'
-import { Button, Progress, Text, XStack, YStack } from 'tamagui'
+import { Button, Progress, Text, XStack, YStack } from '@unicornlove/ui'
 import { DOMAIN_NAMES } from '../utils/domainGrouping'
 import { FacetList } from './FacetList'
 
@@ -37,14 +37,14 @@ export const DomainCard = memo(function DomainCard({
     return (
       <YStack
         gap="$3"
-        p="$4"
-        bg="$color2"
-        rounded="$4"
+        padding="$4"
+        backgroundColor="$color2"
+        borderRadius="$4"
         borderWidth={1}
         borderColor="$borderColor"
         opacity={0.6}
       >
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$5" fontWeight="bold" color="$color11">
             {domainName}
           </Text>
@@ -62,9 +62,16 @@ export const DomainCard = memo(function DomainCard({
   const domainResult = narrative?.results?.[classification as 'low' | 'neutral' | 'high']
 
   return (
-    <YStack gap="$3" p="$4" bg="$color2" rounded="$4" borderWidth={1} borderColor="$borderColor">
+    <YStack
+      gap="$3"
+      padding="$4"
+      backgroundColor="$color2"
+      borderRadius="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
       {/* Domain Header */}
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <YStack gap="$1" flex={1}>
           <Text fontSize="$5" fontWeight="bold" color="$color12">
             {domainName}
@@ -73,7 +80,7 @@ export const DomainCard = memo(function DomainCard({
             {narrative?.summary || ''}
           </Text>
         </YStack>
-        <YStack items="flex-end" gap="$1">
+        <YStack alignItems="flex-end" gap="$1">
           <Text
             fontSize="$4"
             fontWeight="bold"

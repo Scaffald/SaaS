@@ -7,7 +7,17 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Linking } from 'react-native'
 import { ResponsiveSelect } from '@unicornlove/ui'
-import { Input, Label, Separator, Spinner, Switch, Text, TextArea, XStack, YStack } from 'tamagui'
+import {
+  Input,
+  Label,
+  Separator,
+  Spinner,
+  Switch,
+  Text,
+  TextArea,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { CheckProgressTracker } from '../components/CheckProgressTracker'
 import {
   BACKGROUND_CHECK_STATUSES,
@@ -329,7 +339,7 @@ export function AdminCheckReviewDialog({
           style={{ width: '96%', maxWidth: 780, maxHeight: '85%' }}
         >
           <YStack gap="$4">
-            <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
+            <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
               <Dialog.Title fontSize="$6" fontWeight="700">
                 Review background check
               </Dialog.Title>
@@ -341,13 +351,13 @@ export function AdminCheckReviewDialog({
             </XStack>
 
             {!checkId ? (
-              <YStack gap="$3" items="center" justify="center" py="$6">
+              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Text fontSize="$3" color="$color10">
                   Select a background check to review the full details.
                 </Text>
               </YStack>
             ) : detailQuery.isLoading || detailQuery.isFetching ? (
-              <YStack gap="$3" items="center" justify="center" py="$6">
+              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Spinner size="large" />
                 <Text fontSize="$3" color="$color10">
                   Loading background check…
@@ -356,9 +366,9 @@ export function AdminCheckReviewDialog({
             ) : detailQuery.isError ? (
               <YStack
                 gap="$3"
-                p="$4"
-                bg="$color2"
-                rounded="$4"
+                padding="$4"
+                backgroundColor="$color2"
+                borderRadius="$4"
                 borderWidth={1}
                 borderColor="$borderColor"
               >
@@ -366,14 +376,14 @@ export function AdminCheckReviewDialog({
                   We couldn't load this background check. Please try again.
                 </Text>
                 <Button size="$3" variant="outlined" onPress={() => detailQuery.refetch()}>
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <RefreshCcw size={16} />
                     <Text fontSize="$2">Retry</Text>
                   </XStack>
                 </Button>
               </YStack>
             ) : !detailedCheck ? (
-              <YStack gap="$3" items="center" justify="center" py="$6">
+              <YStack gap="$3" alignItems="center" justifyContent="center" paddingVertical="$6">
                 <Spinner size="large" />
                 <Text fontSize="$3" color="$color10">
                   Preparing detailed background check information…
@@ -383,9 +393,9 @@ export function AdminCheckReviewDialog({
               <YStack gap="$4">
                 <YStack
                   gap="$3"
-                  p="$3"
-                  bg="$color2"
-                  rounded="$4"
+                  padding="$3"
+                  backgroundColor="$color2"
+                  borderRadius="$4"
                   borderWidth={1}
                   borderColor="$borderColor"
                 >
@@ -434,13 +444,13 @@ export function AdminCheckReviewDialog({
                   </XStack>
                   {statusMeta && statusColors ? (
                     <XStack
-                      px="$3"
-                      py="$1"
-                      bg={statusColors.background}
+                      paddingHorizontal="$3"
+                      paddingVertical="$1"
+                      backgroundColor={statusColors.background}
                       borderWidth={1}
                       borderColor={statusColors.border}
-                      rounded="$3"
-                      items="center"
+                      borderRadius="$3"
+                      alignItems="center"
                       gap="$2"
                       style={{ alignSelf: 'flex-start' }}
                     >
@@ -531,7 +541,7 @@ export function AdminCheckReviewDialog({
                     rows={6}
                     value={safeJson(detailedCheck.summary)}
                     editable={false}
-                    bg="$color2"
+                    backgroundColor="$color2"
                   />
                   <Text fontSize="$3" fontWeight="600" color="$color12">
                     Provider findings
@@ -540,14 +550,14 @@ export function AdminCheckReviewDialog({
                     rows={6}
                     value={safeJson(detailedCheck.findings)}
                     editable={false}
-                    bg="$color2"
+                    backgroundColor="$color2"
                   />
                 </YStack>
 
                 <Separator />
 
                 <YStack gap="$3">
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <Text fontSize="$3" fontWeight="600" color="$color12">
                       Supporting documents
                     </Text>
@@ -568,11 +578,11 @@ export function AdminCheckReviewDialog({
                         return (
                           <XStack
                             key={document.id}
-                            justify="space-between"
-                            items="center"
-                            p="$3"
-                            bg="$color2"
-                            rounded="$3"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            padding="$3"
+                            backgroundColor="$color2"
+                            borderRadius="$3"
                             borderWidth={1}
                             borderColor="$borderColor"
                             gap="$3"
@@ -591,7 +601,7 @@ export function AdminCheckReviewDialog({
                               disabled={isDocumentLoading}
                               onPress={() => handleDownloadDocument(document.id)}
                             >
-                              <XStack gap="$2" items="center">
+                              <XStack gap="$2" alignItems="center">
                                 {isDocumentLoading ? (
                                   <Spinner size="small" />
                                 ) : (
@@ -618,14 +628,14 @@ export function AdminCheckReviewDialog({
 
                   <YStack
                     gap="$3"
-                    p="$3"
-                    bg="$color2"
-                    rounded="$4"
+                    padding="$3"
+                    backgroundColor="$color2"
+                    borderRadius="$4"
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <XStack justify="space-between" items="center">
-                      <YStack gap="$1" flex={1} pr="$3">
+                    <XStack justifyContent="space-between" alignItems="center">
+                      <YStack gap="$1" flex={1} paddingRight="$3">
                         <Text fontSize="$3" fontWeight="500" color="$color12">
                           Show verified badge
                         </Text>
@@ -652,9 +662,9 @@ export function AdminCheckReviewDialog({
                     </Text>
                     {sharedOrganizations.length === 0 ? (
                       <YStack
-                        p="$3"
-                        bg="$color2"
-                        rounded="$3"
+                        padding="$3"
+                        backgroundColor="$color2"
+                        borderRadius="$3"
                         borderWidth={1}
                         borderColor="$borderColor"
                       >
@@ -667,11 +677,11 @@ export function AdminCheckReviewDialog({
                         {sharedOrganizations.map((organizationId) => (
                           <XStack
                             key={organizationId}
-                            justify="space-between"
-                            items="center"
-                            p="$3"
-                            bg="$color2"
-                            rounded="$3"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            padding="$3"
+                            backgroundColor="$color2"
+                            borderRadius="$3"
                             borderWidth={1}
                             borderColor="$borderColor"
                           >
@@ -710,9 +720,9 @@ export function AdminCheckReviewDialog({
                           <YStack
                             key={dispute.id}
                             gap="$1"
-                            p="$3"
-                            bg="$color2"
-                            rounded="$3"
+                            padding="$3"
+                            backgroundColor="$color2"
+                            borderRadius="$3"
                             borderWidth={1}
                             borderColor="$borderColor"
                           >
@@ -764,10 +774,10 @@ export function AdminCheckReviewDialog({
                                 key={`${entry?.occurred_at ?? index}`}
                                 borderWidth={1}
                                 borderColor="$borderColor"
-                                rounded="$4"
-                                p="$3"
+                                borderRadius="$4"
+                                padding="$3"
                                 gap="$1"
-                                bg="$color2"
+                                backgroundColor="$color2"
                               >
                                 <Text fontSize="$2" fontWeight="600" color="$color12">
                                   {meta?.label ?? entry?.status ?? 'Status update'}
@@ -794,7 +804,7 @@ export function AdminCheckReviewDialog({
 
             <Separator />
 
-            <XStack gap="$2" justify="flex-end">
+            <XStack gap="$2" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button size="$3" variant="outlined" disabled={isSubmitting}>
                   Cancel
@@ -802,7 +812,7 @@ export function AdminCheckReviewDialog({
               </Dialog.Close>
               <Button size="$3" onPress={handleSubmit} disabled={!detailedCheck || isSubmitting}>
                 {isSubmitting ? (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Spinner size="small" color="$color1" />
                     <Text color="$color1">Saving…</Text>
                   </XStack>

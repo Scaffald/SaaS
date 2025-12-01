@@ -4,7 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useToastController } from '@tamagui/toast'
 import { Download, Trash2 } from '@tamagui/lucide-icons'
 import { useCallback, useMemo, useState } from 'react'
-import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, Input, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type ConnectionsData = NonNullable<
   ReturnType<typeof api.connections.getConnections.useQuery>['data']
@@ -103,8 +103,10 @@ export function ConnectionsList() {
       return [name, email, industry, date]
     })
 
-    const csvContent = [headers, ...rows].map((row: string[]) => row.map((cell: string) => `"${cell}"`).join(',')).join('\n')
-    
+    const csvContent = [headers, ...rows]
+      .map((row: string[]) => row.map((cell: string) => `"${cell}"`).join(','))
+      .join('\n')
+
     // Web-only CSV export
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const blob = new Blob([csvContent], { type: 'text/csv' })
@@ -136,12 +138,12 @@ export function ConnectionsList() {
           const avatar = user?.avatar_url
 
           return (
-            <XStack items="center" gap="$2">
+            <XStack alignItems="center" gap="$2">
               <Avatar circular size={32}>
                 {avatar ? (
                   <Avatar.Image source={{ uri: avatar }} />
                 ) : (
-                  <Avatar.Fallback bg="$blue4">
+                  <Avatar.Fallback backgroundColor="$blue4">
                     <Text fontSize="$3" fontWeight="600" color="$blue10">
                       {name.charAt(0).toUpperCase()}
                     </Text>
@@ -200,7 +202,7 @@ export function ConnectionsList() {
 
   if (isLoading) {
     return (
-      <YStack items="center" justify="center" py="$6" gap="$2">
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$6" gap="$2">
         <Spinner size="large" />
         <Text color="$color11">Loading connections…</Text>
       </YStack>
@@ -209,7 +211,7 @@ export function ConnectionsList() {
 
   return (
     <YStack gap="$4">
-      <XStack justify="space-between" items="center" gap="$2">
+      <XStack justifyContent="space-between" alignItems="center" gap="$2">
         <Input
           flex={1}
           placeholder="Search connections..."
@@ -229,18 +231,18 @@ export function ConnectionsList() {
           gap="$3"
           borderWidth={1}
           borderColor="$borderColor"
-          rounded="$4"
-          p="$4"
-          bg="$color2"
-          items="center"
-          justify="center"
+          borderRadius="$4"
+          padding="$4"
+          backgroundColor="$color2"
+          alignItems="center"
+          justifyContent="center"
           style={{ minHeight: 300 }}
         >
           <Text fontWeight="600">No connections yet</Text>
           <Text color="$color11" style={{ textAlign: 'center' }}>
             {searchTerm
               ? 'No connections match your search.'
-              : 'You haven\'t connected with anyone yet. Send connection requests to build your network.'}
+              : "You haven't connected with anyone yet. Send connection requests to build your network."}
           </Text>
         </YStack>
       ) : (

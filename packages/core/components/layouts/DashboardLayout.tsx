@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { ScrollView, XStack, YStack } from 'tamagui'
+import { ScrollView, XStack, YStack } from '@unicornlove/ui'
 import { Breadcrumb, type BreadcrumbItem } from '@unicornlove/ui'
 import { useBreadcrumbs } from '../../hooks/useBreadcrumbs'
 
@@ -33,12 +33,12 @@ export const DashboardLayout = ({
   const hasBothColumns = Boolean(leftContent) && Boolean(rightContent)
 
   return (
-    <ScrollView flex={1} bg="$color3" showsVerticalScrollIndicator={false}>
-      <YStack gap="$3" pt="$3" pb="$5">
+    <ScrollView flex={1} backgroundColor="$color3" showsVerticalScrollIndicator={false}>
+      <YStack gap="$3" paddingTop="$3" paddingBottom="$5">
         {/* Breadcrumb - positioned at top */}
         {showBreadcrumb && displayBreadcrumbs.length > 0 && (
-          <XStack px="$2" pt="$3" $md={{ px: '$7' }}>
-            <Breadcrumb items={displayBreadcrumbs} />
+          <XStack paddingHorizontal="$2" paddingTop="$3" $md={{ paddingHorizontal: '$7' }}>
+            <Breadcrumb alignItems={displayBreadcrumbs} />
           </XStack>
         )}
 
@@ -48,7 +48,7 @@ export const DashboardLayout = ({
           flexDirection="column"
           $md={{
             gap: '$8',
-            p: '$7',
+            padding: '$7',
             flexDirection: 'row',
           }}
         >
@@ -58,7 +58,7 @@ export const DashboardLayout = ({
               $md={{
                 width: hasBothColumns ? undefined : '100%',
                 flex: hasBothColumns ? 3 : undefined,
-                minW: hasBothColumns ? 300 : undefined,
+                minWidth: hasBothColumns ? 300 : undefined,
               }}
             >
               {leftContent}
@@ -70,7 +70,7 @@ export const DashboardLayout = ({
               $md={{
                 width: hasBothColumns ? undefined : '100%',
                 flex: hasBothColumns ? 2 : undefined,
-                minW: hasBothColumns ? 300 : undefined,
+                minWidth: hasBothColumns ? 300 : undefined,
               }}
             >
               {rightContent}

@@ -1,6 +1,6 @@
 import { Table } from '@unicornlove/ui'
 import { useMemo } from 'react'
-import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack } from 'tamagui'
+import { Button, Card, H4, Paragraph, Separator, Spinner, Text, XStack } from '@unicornlove/ui'
 import {
   useDocumentDownloadUrl,
   useDocumentUploadSession,
@@ -34,7 +34,7 @@ export function OrganizationDocumentsPanel({ organizationId }: OrganizationDocum
 
   return (
     <Card bordered padding="$4" gap="$3">
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <H4>Documents</H4>
         <Button
           size="$3"

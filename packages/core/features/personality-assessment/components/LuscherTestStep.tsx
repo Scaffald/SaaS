@@ -1,7 +1,7 @@
-import { UIButton as Button } from '@unicornlove/ui'
+import { Button } from '@unicornlove/ui'
 import type { MainColor } from 'luscher-test'
 import { useEffect, useState } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 import { type Color, shuffleColors } from '../lib/luscher/utils'
 
 export interface LuscherTestStepProps {
@@ -73,15 +73,15 @@ export function LuscherTestStep({
   const remaining = 8 - selectedOrder.length
 
   return (
-    <YStack gap="$6" maxW={800} width="100%" mx="auto">
-      <YStack gap="$2" items="center">
-        <Text fontSize="$6" fontWeight="600" color="$color12" text="center">
+    <YStack gap="$6" maxWidth={800} width="100%" marginHorizontal="auto">
+      <YStack gap="$2" alignItems="center">
+        <Text fontSize="$6" fontWeight="600" color="$color12" textAlign="center">
           {step === 'luscher1' ? 'First Color Test' : 'Second Color Test'}
         </Text>
-        <Text fontSize="$4" color="$color11" text="center">
+        <Text fontSize="$4" color="$color11" textAlign="center">
           Click the colors in order based on what makes you feel the best.
         </Text>
-        <Text fontSize="$3" color="$color10" text="center">
+        <Text fontSize="$3" color="$color10" textAlign="center">
           {isComplete
             ? 'All 8 colors selected!'
             : `Select ${remaining} more color${remaining > 1 ? 's' : ''}`}
@@ -91,7 +91,13 @@ export function LuscherTestStep({
       {/* Color Grid: 2x4 on mobile, 4x2 on desktop */}
       <YStack gap="$3" width="100%">
         {/* Mobile: 2 columns, 4 rows */}
-        <XStack gap="$3" flexWrap="wrap" justify="center" display="flex" $md={{ display: 'none' }}>
+        <XStack
+          gap="$3"
+          flexWrap="wrap"
+          justifyContent="center"
+          display="flex"
+          $md={{ display: 'none' }}
+        >
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 
@@ -99,7 +105,7 @@ export function LuscherTestStep({
               <YStack
                 key={String(color.key)}
                 gap="$2"
-                items="center"
+                alignItems="center"
                 cursor={isSelected ? 'default' : 'pointer'}
                 opacity={isSelected ? 0 : 1}
                 animation="quick"
@@ -107,19 +113,19 @@ export function LuscherTestStep({
                 onPress={() => !isSelected && handleColorPress(color.value)}
                 disabled={isSelected || isLoading}
                 flexBasis="48%"
-                maxW={200}
-                minW={120}
+                maxWidth={200}
+                minWidth={120}
                 pointerEvents={isSelected ? 'none' : 'auto'}
               >
                 <YStack
                   width="100%"
                   aspectRatio={1}
-                  maxW={200}
-                  maxH={200}
+                  maxWidth={200}
+                  maxHeight={200}
                   style={{ backgroundColor: color.hex }}
-                  rounded="$4"
-                  justify="center"
-                  items="center"
+                  borderRadius="$4"
+                  justifyContent="center"
+                  alignItems="center"
                   shadowColor="$shadowColor"
                   shadowOffset={{ width: 0, height: 2 }}
                   shadowOpacity={0.1}
@@ -131,7 +137,13 @@ export function LuscherTestStep({
         </XStack>
 
         {/* Desktop: 4 columns, 2 rows */}
-        <XStack gap="$3" flexWrap="wrap" justify="center" display="none" $md={{ display: 'flex' }}>
+        <XStack
+          gap="$3"
+          flexWrap="wrap"
+          justifyContent="center"
+          display="none"
+          $md={{ display: 'flex' }}
+        >
           {colors.map((color) => {
             const isSelected = selectedOrder.includes(color.value)
 
@@ -139,7 +151,7 @@ export function LuscherTestStep({
               <YStack
                 key={String(color.key)}
                 gap="$2"
-                items="center"
+                alignItems="center"
                 cursor={isSelected ? 'default' : 'pointer'}
                 opacity={isSelected ? 0 : 1}
                 animation="quick"
@@ -147,19 +159,19 @@ export function LuscherTestStep({
                 onPress={() => !isSelected && handleColorPress(color.value)}
                 disabled={isSelected || isLoading}
                 flexBasis="23%"
-                maxW={250}
-                minW={150}
+                maxWidth={250}
+                minWidth={150}
                 pointerEvents={isSelected ? 'none' : 'auto'}
               >
                 <YStack
                   width="100%"
                   aspectRatio={1}
-                  maxW={250}
-                  maxH={250}
+                  maxWidth={250}
+                  maxHeight={250}
                   style={{ backgroundColor: color.hex }}
-                  rounded="$4"
-                  justify="center"
-                  items="center"
+                  borderRadius="$4"
+                  justifyContent="center"
+                  alignItems="center"
                   shadowColor="$shadowColor"
                   shadowOffset={{ width: 0, height: 2 }}
                   shadowOpacity={0.1}
@@ -173,7 +185,7 @@ export function LuscherTestStep({
 
       {/* Manual Save Button (if not auto-saved) */}
       {isComplete && !isLoading && (
-        <XStack justify="center">
+        <XStack justifyContent="center">
           <Button variant="primary" size="$4" onPress={() => onSave(selectedOrder)}>
             Continue
           </Button>

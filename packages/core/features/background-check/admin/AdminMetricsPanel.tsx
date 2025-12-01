@@ -1,7 +1,7 @@
 import type { AppRouter } from '@app/supabase/client-types'
 import { RefreshCcw } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
-import { Button, Card, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
 type MetricsSummary = RouterOutputs['backgroundChecks']['adminGetMetrics']
@@ -15,7 +15,7 @@ interface AdminMetricsPanelProps {
 export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetricsPanelProps) {
   if (isLoading) {
     return (
-      <YStack gap="$3" items="center" py="$6">
+      <YStack gap="$3" alignItems="center" paddingVertical="$6">
         <Spinner size="large" />
         <Text fontSize="$3" color="$color10">
           Loading metrics…
@@ -26,7 +26,14 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
 
   if (!metrics) {
     return (
-      <Card p="$4" gap="$3" bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$4">
+      <Card
+        padding="$4"
+        gap="$3"
+        backgroundColor="$color2"
+        borderColor="$borderColor"
+        borderWidth={1}
+        borderRadius="$4"
+      >
         <Text fontSize="$4" fontWeight="600" color="$color12">
           Metrics unavailable
         </Text>
@@ -71,12 +78,12 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         <Card
           flexBasis={260}
           flexGrow={1}
-          p="$4"
+          padding="$4"
           gap="$3"
-          bg="$color2"
+          backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          rounded="$4"
+          borderRadius="$4"
         >
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Dispute status
@@ -92,12 +99,12 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         <Card
           flexBasis={260}
           flexGrow={1}
-          p="$4"
+          padding="$4"
           gap="$3"
-          bg="$color2"
+          backgroundColor="$color2"
           borderColor="$borderColor"
           borderWidth={1}
-          rounded="$4"
+          borderRadius="$4"
         >
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Average completion time
@@ -111,8 +118,15 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
         </Card>
       </XStack>
 
-      <Card p="$4" gap="$3" bg="$color2" borderColor="$borderColor" borderWidth={1} rounded="$4">
-        <XStack justify="space-between" items="center" flexWrap="wrap" gap="$2">
+      <Card
+        padding="$4"
+        gap="$3"
+        backgroundColor="$color2"
+        borderColor="$borderColor"
+        borderWidth={1}
+        borderRadius="$4"
+      >
+        <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$2">
           <Text fontSize="$4" fontWeight="600" color="$color12">
             Package distribution
           </Text>
@@ -129,14 +143,14 @@ export function AdminMetricsPanel({ metrics, isLoading, onRefresh }: AdminMetric
             metrics.packageDistribution.map((item: { label: string; count: number }) => (
               <XStack
                 key={item.label}
-                justify="space-between"
-                items="center"
-                px="$3"
-                py="$2"
-                bg="$color1"
+                justifyContent="space-between"
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                backgroundColor="$color1"
                 borderColor="$borderColor"
                 borderWidth={1}
-                rounded="$3"
+                borderRadius="$3"
               >
                 <Text fontSize="$3" color="$color12">
                   {item.label}
@@ -164,12 +178,12 @@ function MetricCard({ title, value, description }: MetricCardProps) {
     <Card
       flexBasis={200}
       flexGrow={1}
-      p="$4"
+      padding="$4"
       gap="$2"
-      bg="$color2"
+      backgroundColor="$color2"
       borderColor="$borderColor"
       borderWidth={1}
-      rounded="$4"
+      borderRadius="$4"
     >
       <Text fontSize="$2" color="$color10">
         {title}
@@ -199,7 +213,7 @@ function DisputeMetric({ label, value, tone }: DisputeMetricProps) {
   } as const
 
   return (
-    <XStack justify="space-between" items="center">
+    <XStack justifyContent="space-between" alignItems="center">
       <Text fontSize="$2" color="$color10">
         {label}
       </Text>

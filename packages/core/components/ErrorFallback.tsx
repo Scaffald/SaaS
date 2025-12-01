@@ -1,7 +1,7 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { Home, RefreshCcw } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Button, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Button, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface ErrorFallbackProps {
   error: Error | null
@@ -17,8 +17,15 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
   }
 
   return (
-    <YStack flex={1} justify="center" items="center" gap="$5" px="$4" py="$6">
-      <YStack gap="$3" items="center" style={{ maxWidth: 480 }} width="100%">
+    <YStack
+      flex={1}
+      justifyContent="center"
+      alignItems="center"
+      gap="$5"
+      paddingHorizontal="$4"
+      paddingVertical="$6"
+    >
+      <YStack gap="$3" alignItems="center" style={{ maxWidth: 480 }} width="100%">
         <Text fontSize="$9" fontWeight="700" style={{ textAlign: 'center' }}>
           Something went wrong
         </Text>
@@ -31,11 +38,11 @@ export function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
       {__DEV__ && error ? (
         <YStack
           width="100%"
-          bg="$red2"
+          backgroundColor="$red2"
           borderColor="$red6"
           borderWidth={1}
-          px="$4"
-          py="$3"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
           gap="$2"
           style={{ borderRadius: 12 }}
         >

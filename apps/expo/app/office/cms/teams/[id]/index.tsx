@@ -21,7 +21,7 @@ import type { inferRouterOutputs } from '@trpc/server'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
 import { useMemo, useState } from 'react'
-import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 type TeamDetailOutput = inferRouterOutputs<AppRouter>['teams']['byId']
 type TeamRecord = TeamDetailOutput['team']
@@ -113,7 +113,7 @@ export default function OfficeTeamDetailPage() {
 
   if ((isTeamLoading || isTeamFetching) && !team) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$3">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
         <Spinner size="large" />
         <Text color="$color11">Loading team details…</Text>
       </YStack>
@@ -196,7 +196,7 @@ export default function OfficeTeamDetailPage() {
   return (
     <>
       <ScrollView>
-        <YStack flex={1} gap="$6" p="$4">
+        <YStack flex={1} gap="$6" padding="$4">
           <XStack>
             <Button
               size="$2"
@@ -212,7 +212,7 @@ export default function OfficeTeamDetailPage() {
             team={team}
             actions={
               quickActions ? (
-                <XStack gap="$2" flexWrap="wrap" justify="flex-end">
+                <XStack gap="$2" flexWrap="wrap" justifyContent="flex-end">
                   {quickActions}
                 </XStack>
               ) : undefined
@@ -281,7 +281,13 @@ export default function OfficeTeamDetailPage() {
           )}
 
           {isInvitationsLoading && (
-            <YStack gap="$2" borderWidth={1} borderColor="$borderColor" rounded="$4" p="$3">
+            <YStack
+              gap="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              padding="$3"
+            >
               <Spinner size="small" />
               <Text color="$color11">Updating invitation statistics…</Text>
             </YStack>
@@ -317,8 +323,14 @@ function CenteredMessageCard({
   onAction: () => void
 }) {
   return (
-    <YStack flex={1} items="center" justify="center" gap="$3" px="$4">
-      <Card p="$4" borderWidth={1} borderColor="$borderColor" bg="$color2" gap="$3">
+    <YStack flex={1} alignItems="center" justifyContent="center" gap="$3" paddingHorizontal="$4">
+      <Card
+        padding="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        backgroundColor="$color2"
+        gap="$3"
+      >
         <Text fontSize="$6" fontWeight="700">
           {title}
         </Text>
@@ -341,8 +353,14 @@ function InfoBanner({
   onAction: () => void
 }) {
   return (
-    <Card borderWidth={1} borderColor="$borderColor" bg="$color2" p="$4" gap="$3">
-      <XStack gap="$2" items="center">
+    <Card
+      borderWidth={1}
+      borderColor="$borderColor"
+      backgroundColor="$color2"
+      padding="$4"
+      gap="$3"
+    >
+      <XStack gap="$2" alignItems="center">
         <Icon size={18} />
         <Text fontSize="$5" fontWeight="700">
           {title}

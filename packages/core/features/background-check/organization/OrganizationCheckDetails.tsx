@@ -3,7 +3,7 @@ import type { AppRouter } from '@app/supabase/client-types'
 import { RefreshCcw, X } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo } from 'react'
-import { Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { getStatusMetadata } from '../components/status.utils'
 
 type RouterOutputs = inferRouterOutputs<AppRouter>
@@ -46,8 +46,15 @@ export function OrganizationCheckDetails({
   }, [detail])
 
   return (
-    <YStack borderWidth={1} borderColor="$borderColor" rounded="$6" p="$4" gap="$3" bg="$color2">
-      <XStack justify="space-between" items="center">
+    <YStack
+      borderWidth={1}
+      borderColor="$borderColor"
+      borderRadius="$6"
+      padding="$4"
+      gap="$3"
+      backgroundColor="$color2"
+    >
+      <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Background Check Details
         </Text>
@@ -68,7 +75,7 @@ export function OrganizationCheckDetails({
       </XStack>
 
       {checkQuery.isLoading ? (
-        <YStack gap="$2" items="center" py="$4">
+        <YStack gap="$2" alignItems="center" paddingVertical="$4">
           <Spinner size="large" />
           <Text fontSize="$3" color="$color11">
             Loading background check details…
@@ -77,7 +84,7 @@ export function OrganizationCheckDetails({
       ) : null}
 
       {checkQuery.isError ? (
-        <YStack gap="$2" p="$3" bg="$color3" rounded="$4">
+        <YStack gap="$2" padding="$3" backgroundColor="$color3" borderRadius="$4">
           <Text fontSize="$3" color="$color11">
             We couldn’t load the background check details. Please try again.
           </Text>
@@ -174,9 +181,9 @@ export function OrganizationCheckDetails({
                 {componentStatuses.map((component, index) => (
                   <YStack
                     key={`${component.check_type_id ?? index}`}
-                    p="$3"
-                    bg="$color3"
-                    rounded="$4"
+                    padding="$3"
+                    backgroundColor="$color3"
+                    borderRadius="$4"
                   >
                     <Text fontSize="$3" fontWeight="600" color="$color12">
                       {(component.check_type_id as string | undefined)?.slice(0, 8) ??
@@ -233,7 +240,7 @@ interface InfoRowProps {
 
 function InfoRow({ label, value }: InfoRowProps) {
   return (
-    <XStack gap="$2" justify="space-between" flexWrap="wrap">
+    <XStack gap="$2" justifyContent="space-between" flexWrap="wrap">
       <Text fontSize="$3" color="$color10">
         {label}
       </Text>

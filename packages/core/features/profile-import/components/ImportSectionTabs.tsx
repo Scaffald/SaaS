@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Tabs, XStack } from 'tamagui'
+import { Tabs, XStack } from '@unicornlove/ui'
 
 export interface ImportSectionTab {
   id: string
@@ -24,18 +24,18 @@ export const ImportSectionTabs = memo(function ImportSectionTabs({
         orientation="horizontal"
         borderBottomWidth={1}
         borderBottomColor="$borderColor"
-        bg="$background"
+        backgroundColor="$background"
         scrollable
       >
-        <XStack gap="$3" px="$2">
+        <XStack gap="$3" paddingHorizontal="$2">
           {sections.map((section) => (
             <Tabs.Tab
               key={section.id}
               value={section.id}
               borderBottomWidth={activeSection === section.id ? 2 : 0}
               borderBottomColor="$blue10"
-              px="$3"
-              py="$2"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
             >
               {section.label} ({section.count})
             </Tabs.Tab>

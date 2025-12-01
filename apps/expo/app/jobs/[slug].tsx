@@ -4,7 +4,7 @@ import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-jo
 import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@unicornlove/ui'
 import { useLocalSearchParams } from 'expo-router'
-import { Spinner, Text, YStack } from 'tamagui'
+import { Spinner, Text, YStack } from '@unicornlove/ui'
 
 /**
  * Public Job Detail Route (Vanity URL)
@@ -44,9 +44,9 @@ export default function PublicJobDetailPage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack items="center" justify="center" style={{ minHeight: 400 }}>
+          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }}>
             <Spinner size="large" />
-            <Text mt="$4" color="$color10">
+            <Text marginTop="$4" color="$color10">
               Loading job...
             </Text>
           </YStack>
@@ -62,7 +62,7 @@ export default function PublicJobDetailPage() {
       <DashboardLayout
         breadcrumbItems={breadcrumbItems}
         leftContent={
-          <YStack items="center" justify="center" style={{ minHeight: 400 }} gap="$4">
+          <YStack alignItems="center" justifyContent="center" style={{ minHeight: 400 }} gap="$4">
             <Text fontSize="$6" fontWeight="bold" color="$color11">
               Job Not Found
             </Text>

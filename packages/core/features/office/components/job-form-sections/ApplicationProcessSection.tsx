@@ -10,7 +10,7 @@ import {
 } from '@unicornlove/ui'
 import { Plus, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Card, Label, Switch } from 'tamagui'
+import { Card, Label, Switch } from '@unicornlove/ui'
 
 interface CapabilityQuestion {
   name: string
@@ -119,9 +119,9 @@ export function ApplicationProcessSection({
   return (
     <YStack
       gap="$4"
-      p="$4"
-      bg="$background"
-      rounded="$4"
+      padding="$4"
+      backgroundColor="$background"
+      borderRadius="$4"
       borderWidth={1}
       borderColor="$borderColor"
     >
@@ -133,7 +133,7 @@ export function ApplicationProcessSection({
       </Text>
 
       {/* Requires Assessment */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Requires assessment</Label>
           <Text fontSize="$2" color="$color10">
@@ -159,7 +159,7 @@ export function ApplicationProcessSection({
       )}
 
       {/* Requires Video Interview */}
-      <XStack gap="$3" items="center" justify="space-between">
+      <XStack gap="$3" alignItems="center" justifyContent="space-between">
         <YStack gap="$1" flex={1}>
           <Label>Requires video interview</Label>
           <Text fontSize="$2" color="$color10">
@@ -208,7 +208,13 @@ export function ApplicationProcessSection({
       </YStack>
 
       {/* Inquiry Capability Questions */}
-      <YStack gap="$3" mt="$4" pt="$4" borderTopWidth={1} borderTopColor="$borderColor">
+      <YStack
+        gap="$3"
+        marginTop="$4"
+        paddingTop="$4"
+        borderTopWidth={1}
+        borderTopColor="$borderColor"
+      >
         <YStack gap="$1">
           <Text fontSize="$5" fontWeight="600">
             Inquiry Capability Questions
@@ -223,8 +229,8 @@ export function ApplicationProcessSection({
           localState.inquiry_capability_questions.length > 0 && (
             <YStack gap="$2">
               {localState.inquiry_capability_questions.map((question, index) => (
-                <Card key={question.name} p="$3" gap="$2" bg="$color2">
-                  <XStack justify="space-between" items="center">
+                <Card key={question.name} padding="$3" gap="$2" backgroundColor="$color2">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <YStack flex={1} gap="$1">
                       <Text fontSize="$4" fontWeight="500">
                         {question.label}
@@ -274,7 +280,7 @@ export function ApplicationProcessSection({
             }
           }}
         >
-          <Sheet.Frame p="$4" gap="$4">
+          <Sheet.Frame padding="$4" gap="$4">
             <YStack gap="$3">
               <Text fontSize="$6" fontWeight="600">
                 Add Capability Question
@@ -332,7 +338,7 @@ export function ApplicationProcessSection({
               )}
 
               {/* Required */}
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <Switch
                   checked={newQuestion.required || false}
                   onCheckedChange={(checked) =>
@@ -343,7 +349,7 @@ export function ApplicationProcessSection({
               </XStack>
 
               {/* Actions */}
-              <XStack gap="$3" justify="flex-end" mt="$2">
+              <XStack gap="$3" justifyContent="flex-end" marginTop="$2">
                 <Button
                   variant="outlined"
                   onPress={() => {

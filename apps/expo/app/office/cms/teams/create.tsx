@@ -5,7 +5,7 @@ import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, Label, Select, Spinner, Text, YStack } from 'tamagui'
+import { Button, Label, Select, Spinner, Text, YStack } from '@unicornlove/ui'
 
 type OfficeOrganizationsOutput = inferRouterOutputs<AppRouter>['office']['getOrganizations']
 type OrganizationOption = OfficeOrganizationsOutput['organizations'][number]
@@ -27,7 +27,7 @@ export default function CreateTeamPage() {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center">
+      <YStack flex={1} alignItems="center" justifyContent="center">
         <Spinner size="large" />
       </YStack>
     )
@@ -35,7 +35,7 @@ export default function CreateTeamPage() {
 
   if (!organizations.length) {
     return (
-      <YStack flex={1} items="center" justify="center" gap="$2">
+      <YStack flex={1} alignItems="center" justifyContent="center" gap="$2">
         <Text fontSize="$5" fontWeight="600">
           No organizations available
         </Text>
@@ -48,7 +48,7 @@ export default function CreateTeamPage() {
   }
 
   return (
-    <YStack flex={1} p="$4" gap="$4">
+    <YStack flex={1} padding="$4" gap="$4">
       <YStack gap="$2" style={{ maxWidth: 520 }}>
         <Label htmlFor="team-create-organization">Select organization</Label>
         <Select
@@ -96,7 +96,13 @@ export default function CreateTeamPage() {
           onCancel={() => router.back()}
         />
       ) : (
-        <YStack p="$6" bg="$color3" rounded="$6" items="center" gap="$2">
+        <YStack
+          padding="$6"
+          backgroundColor="$color3"
+          borderRadius="$6"
+          alignItems="center"
+          gap="$2"
+        >
           <Text fontSize="$6" fontWeight="700">
             Choose an organization to continue
           </Text>

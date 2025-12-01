@@ -6,7 +6,17 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { createColumnHelper } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useMemo, useState } from 'react'
-import { Button, Card, Input, Paragraph, Progress, Spinner, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  Input,
+  Paragraph,
+  Progress,
+  Spinner,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 
 type StorageAnalytics = inferRouterOutputs<AppRouter>['office']['storage']['analytics']
 
@@ -147,8 +157,11 @@ export function OfficeStorageDashboard() {
 
           return (
             <YStack gap="$1">
-              <Progress value={clamped} max={100} bg="$color3" size="$1">
-                <Progress.Indicator animation="bouncy" bg={percent > 100 ? '$red10' : '$green10'} />
+              <Progress value={clamped} max={100} backgroundColor="$color3" size="$1">
+                <Progress.Indicator
+                  animation="bouncy"
+                  backgroundColor={percent > 100 ? '$red10' : '$green10'}
+                />
               </Progress>
               <Text fontSize="$2" color="$color10">
                 {formatPercent(percent)} of {formatBytes(row.storageLimitBytes)}
@@ -216,8 +229,8 @@ export function OfficeStorageDashboard() {
   const isLoading = analyticsQuery.isLoading
 
   return (
-    <YStack flex={1} p="$4" gap="$4">
-      <XStack justify="space-between" items="center">
+    <YStack flex={1} padding="$4" gap="$4">
+      <XStack justifyContent="space-between" alignItems="center">
         <YStack>
           <Text fontSize="$7" fontWeight="700">
             Storage Analytics
@@ -238,7 +251,7 @@ export function OfficeStorageDashboard() {
       </XStack>
 
       {isLoading ? (
-        <YStack flex={1} items="center" justify="center" gap="$3">
+        <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
           <Spinner size="large" />
           <Text color="$color10">Loading storage metrics…</Text>
         </YStack>
@@ -250,7 +263,7 @@ export function OfficeStorageDashboard() {
                 key={card.label}
                 borderWidth={1}
                 borderColor="$color6"
-                bg="$color2"
+                backgroundColor="$color2"
                 padding="$4"
                 width="100%"
                 maxWidth={320}
@@ -272,7 +285,7 @@ export function OfficeStorageDashboard() {
             ))}
           </XStack>
 
-          <Card borderWidth={1} borderColor="$color6" bg="$color2" padding="$4">
+          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
             <YStack gap="$3">
               <Text fontWeight="600" fontSize="$4">
                 Usage breakdown
@@ -280,14 +293,14 @@ export function OfficeStorageDashboard() {
               <YStack gap="$3">
                 {breakdown.map((entry: StorageAnalytics['breakdown'][number]) => (
                   <YStack key={entry.label} gap="$1">
-                    <XStack justify="space-between" items="center">
+                    <XStack justifyContent="space-between" alignItems="center">
                       <Text fontWeight="600">{entry.label}</Text>
                       <Text color="$color10" fontSize="$2">
                         {formatBytes(entry.bytes)} · {formatPercent(entry.percent)}
                       </Text>
                     </XStack>
-                    <Progress value={entry.percent} max={100} bg="$color3" size="$1">
-                      <Progress.Indicator animation="bouncy" bg="$blue10" />
+                    <Progress value={entry.percent} max={100} backgroundColor="$color3" size="$1">
+                      <Progress.Indicator animation="bouncy" backgroundColor="$blue10" />
                     </Progress>
                   </YStack>
                 ))}
@@ -295,9 +308,9 @@ export function OfficeStorageDashboard() {
             </YStack>
           </Card>
 
-          <Card borderWidth={1} borderColor="$color6" bg="$color2" padding="$4">
+          <Card borderWidth={1} borderColor="$color6" backgroundColor="$color2" padding="$4">
             <YStack gap="$3">
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <Text fontWeight="600" fontSize="$4">
                   Top users by storage consumption
                 </Text>

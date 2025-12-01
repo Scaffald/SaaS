@@ -12,7 +12,7 @@ import {
   X,
 } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
-import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Avatar, Button, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 /**
  * Profile Activity Widget
@@ -80,7 +80,7 @@ export function ProfileActivityWidget() {
         Profile Activity
       </Text>
       {isLoading ? (
-        <YStack items="center" justify="center" py="$4" gap="$2">
+        <YStack alignItems="center" justifyContent="center" paddingVertical="$4" gap="$2">
           <Spinner size="large" />
           <Text color="$color11">Loading activity...</Text>
         </YStack>
@@ -88,19 +88,26 @@ export function ProfileActivityWidget() {
         <YStack gap="$4">
           {/* 30-Day View Trend */}
           {viewAnalytics && (
-            <YStack gap="$2" bg="$blue2" p="$3" rounded="$4" borderWidth={1} borderColor="$blue6">
-              <XStack items="center" gap="$2">
+            <YStack
+              gap="$2"
+              backgroundColor="$blue2"
+              padding="$3"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$blue6"
+            >
+              <XStack alignItems="center" gap="$2">
                 <Eye size={18} color="$blue10" />
                 <Text fontSize="$4" fontWeight="600" color="$blue11">
                   Profile Views (30 days)
                 </Text>
               </XStack>
-              <XStack items="baseline" gap="$2">
+              <XStack alignItems="baseline" gap="$2">
                 <Text fontSize="$7" fontWeight="700" color="$blue11">
                   {viewAnalytics.views30d}
                 </Text>
                 {viewAnalytics.trend !== 0 && (
-                  <XStack items="center" gap="$1">
+                  <XStack alignItems="center" gap="$1">
                     {viewAnalytics.trend > 0 ? (
                       <ArrowUp size={16} color="$green10" />
                     ) : (
@@ -126,8 +133,8 @@ export function ProfileActivityWidget() {
 
           {/* Recent Profile Views */}
           <YStack gap="$2">
-            <XStack justify="space-between" items="center">
-              <XStack items="center" gap="$2">
+            <XStack justifyContent="space-between" alignItems="center">
+              <XStack alignItems="center" gap="$2">
                 <Eye size={18} color="$color12" />
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   Recent Views
@@ -156,12 +163,12 @@ export function ProfileActivityWidget() {
                     } | null
                     viewed_at?: string
                   }) => (
-                    <XStack key={view.id} items="center" gap="$2">
+                    <XStack key={view.id} alignItems="center" gap="$2">
                       <Avatar circular size={32}>
                         {view.viewer?.avatar_url ? (
                           <Avatar.Image source={{ uri: view.viewer.avatar_url }} />
                         ) : (
-                          <Avatar.Fallback bg="$blue4">
+                          <Avatar.Fallback backgroundColor="$blue4">
                             <Text fontSize="$3" fontWeight="600" color="$blue10">
                               {view.viewer?.display_name?.charAt(0) ||
                                 view.viewer?.username?.charAt(0) ||
@@ -194,8 +201,8 @@ export function ProfileActivityWidget() {
 
           {/* New Followers */}
           <YStack gap="$2">
-            <XStack justify="space-between" items="center">
-              <XStack items="center" gap="$2">
+            <XStack justifyContent="space-between" alignItems="center">
+              <XStack alignItems="center" gap="$2">
                 <UserPlus size={18} color="$color12" />
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   New Followers
@@ -219,12 +226,12 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <XStack key={follow.id} items="center" gap="$2">
+                    <XStack key={follow.id} alignItems="center" gap="$2">
                       <Avatar circular size={32}>
                         {follow.user?.avatar_url ? (
                           <Avatar.Image source={{ uri: follow.user.avatar_url }} />
                         ) : (
-                          <Avatar.Fallback bg="$green4">
+                          <Avatar.Fallback backgroundColor="$green4">
                             <Text fontSize="$3" fontWeight="600" color="$green10">
                               {follow.user?.display_name?.charAt(0) ||
                                 follow.user?.username?.charAt(0) ||
@@ -257,20 +264,20 @@ export function ProfileActivityWidget() {
 
           {/* Pending Connection Requests */}
           <YStack gap="$2">
-            <XStack justify="space-between" items="center">
-              <XStack items="center" gap="$2">
+            <XStack justifyContent="space-between" alignItems="center">
+              <XStack alignItems="center" gap="$2">
                 <Users size={18} color="$color12" />
                 <Text fontSize="$5" fontWeight="600" color="$color12">
                   Pending Requests
                 </Text>
                 {pendingRequests && pendingRequests.received.length > 0 && (
                   <XStack
-                    bg="$orange3"
-                    px="$2"
-                    py="$0.5"
-                    rounded="$10"
-                    items="center"
-                    justify="center"
+                    backgroundColor="$orange3"
+                    paddingHorizontal="$2"
+                    paddingVertical="$0.5"
+                    borderRadius="$10"
+                    alignItems="center"
+                    justifyContent="center"
                   >
                     <Text fontSize="$2" fontWeight="700" color="$orange11">
                       {pendingRequests.received.length}
@@ -299,13 +306,18 @@ export function ProfileActivityWidget() {
                     } | null
                     created_at?: string
                   }) => (
-                    <XStack key={request.id} items="center" gap="$2" justify="space-between">
-                      <XStack items="center" gap="$2" flex={1}>
+                    <XStack
+                      key={request.id}
+                      alignItems="center"
+                      gap="$2"
+                      justifyContent="space-between"
+                    >
+                      <XStack alignItems="center" gap="$2" flex={1}>
                         <Avatar circular size={32}>
                           {request.user?.avatar_url ? (
                             <Avatar.Image source={{ uri: request.user.avatar_url }} />
                           ) : (
-                            <Avatar.Fallback bg="$purple4">
+                            <Avatar.Fallback backgroundColor="$purple4">
                               <Text fontSize="$3" fontWeight="600" color="$purple10">
                                 {request.user?.display_name?.charAt(0) ||
                                   request.user?.username?.charAt(0) ||

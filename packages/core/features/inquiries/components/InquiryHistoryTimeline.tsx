@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { Text, XStack, YStack } from '@unicornlove/ui'
 import { AlertCircle, Check, Edit3, FileText, MessageSquare, Send } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'
-import { Avatar, type GetThemeValueForKey } from 'tamagui'
+import { Avatar, type GetThemeValueForKey } from '@unicornlove/ui'
 
 interface InquiryHistoryTimelineProps {
   inquiryId: string
@@ -145,7 +145,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (isLoading) {
     return (
-      <YStack p="$4" items="center" gap="$4">
+      <YStack padding="$4" alignItems="center" gap="$4">
         <Text>Loading history...</Text>
       </YStack>
     )
@@ -153,7 +153,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (error) {
     return (
-      <YStack p="$4" items="center" gap="$4">
+      <YStack padding="$4" alignItems="center" gap="$4">
         <Text color="$red10">Failed to load history</Text>
       </YStack>
     )
@@ -161,7 +161,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
   if (!sortedHistory || sortedHistory.length === 0) {
     return (
-      <YStack p="$4" items="center" gap="$4">
+      <YStack padding="$4" alignItems="center" gap="$4">
         <Text color="$color11">No history available</Text>
       </YStack>
     )
@@ -173,7 +173,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
   }
 
   return (
-    <YStack gap="$3" p="$4">
+    <YStack gap="$3" padding="$4">
       <Text fontSize="$6" fontWeight="600">
         History
       </Text>
@@ -185,28 +185,28 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
           const isLast = index === sortedHistory.length - 1
 
           return (
-            <XStack key={event.id} gap="$3" items="flex-start">
+            <XStack key={event.id} gap="$3" alignItems="flex-start">
               {/* Timeline dot and line */}
-              <YStack items="center" width={24}>
+              <YStack alignItems="center" width={24}>
                 <YStack
                   width={12}
                   height={12}
-                  rounded="$10"
-                  bg={eventColor as GetThemeValueForKey<'backgroundColor'>}
-                  items="center"
-                  justify="center"
+                  borderRadius="$10"
+                  backgroundColor={eventColor as GetThemeValueForKey<'backgroundColor'>}
+                  alignItems="center"
+                  justifyContent="center"
                 >
                   <EventIcon size={8} color="white" />
                 </YStack>
-                {!isLast && <YStack flex={1} width={2} bg="$gray5" height={40} />}
+                {!isLast && <YStack flex={1} width={2} backgroundColor="$gray5" height={40} />}
               </YStack>
 
               {/* Event details */}
               <YStack flex={1} gap="$1">
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Avatar size="$2" circular>
                     <Avatar.Image src={event.actor?.avatar_path || undefined} />
-                    <Avatar.Fallback bg="$blue9">
+                    <Avatar.Fallback backgroundColor="$blue9">
                       <Text color="white" fontWeight="600" fontSize="$1">
                         {actorDisplayName(event.actor).charAt(0).toUpperCase()}
                       </Text>
@@ -226,7 +226,7 @@ export function InquiryHistoryTimeline({ inquiryId }: InquiryHistoryTimelineProp
 
                 {/* Event-specific details */}
                 {event.event_data && (
-                  <Text fontSize="$3" color="$color11" mt="$1">
+                  <Text fontSize="$3" color="$color11" marginTop="$1">
                     {formatEventData(event.event_type as EventType, event.event_data)}
                   </Text>
                 )}

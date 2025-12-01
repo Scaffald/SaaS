@@ -1,7 +1,2 @@
-import type { config } from "@unicornlove/ui";
-
-export type Conf = typeof config;
-
-declare module "@unicornlove/ui" {
-  interface TamaguiCustomConfig extends Conf {}
-}
+// Tamagui configuration is provided by @unicornlove/ui package
+// Do not re-declare here to avoid circular dependencies

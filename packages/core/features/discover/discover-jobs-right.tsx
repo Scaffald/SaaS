@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { DashboardWidget, RangeSliderCard, ResponsiveSelect } from '@unicornlove/ui'
 import { ChevronsUpDown, Filter, Search, X } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, ScrollView, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface DiscoverJobsRightProps {
   onSearchChange: (search: string) => void
@@ -89,9 +89,9 @@ export function DiscoverJobsRight({
 
   if (filtersLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
-        <Text mt="$2" color="$color11">
+        <Text marginTop="$2" color="$color11">
           Loading filters...
         </Text>
       </YStack>
@@ -100,11 +100,11 @@ export function DiscoverJobsRight({
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         {/* Search */}
         <DashboardWidget>
           <YStack gap="$3">
-            <XStack items="center" justify="space-between">
+            <XStack alignItems="center" justifyContent="space-between">
               <Text fontSize="$5" fontWeight="600" color="$color12">
                 Search Jobs
               </Text>
@@ -122,8 +122,8 @@ export function DiscoverJobsRight({
 
         {/* Filters Header */}
         <DashboardWidget>
-          <XStack items="center" justify="space-between">
-            <XStack items="center" gap="$2">
+          <XStack alignItems="center" justifyContent="space-between">
+            <XStack alignItems="center" gap="$2">
               <Filter size={20} color="$color10" />
               <Text fontSize="$5" fontWeight="600" color="$color12">
                 Filters
@@ -234,7 +234,7 @@ export function DiscoverJobsRight({
         {hasSoftSkillsAssessment && jobSource !== 'external' && (
           <DashboardWidget>
             <YStack gap="$3">
-              <XStack items="center" justify="space-between">
+              <XStack alignItems="center" justifyContent="space-between">
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   Soft Skills Match
                 </Text>
@@ -272,7 +272,7 @@ export function DiscoverJobsRight({
         {jobSource !== 'external' && (
           <DashboardWidget>
             <YStack gap="$3">
-              <XStack items="center" gap="$2">
+              <XStack alignItems="center" gap="$2">
                 <ChevronsUpDown size={18} color="$color10" />
                 <Text fontSize="$4" fontWeight="600" color="$color12">
                   Sort By
@@ -308,7 +308,7 @@ export function DiscoverJobsRight({
               </Text>
 
               {searchQuery && (
-                <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Search:
                   </Text>
@@ -319,7 +319,7 @@ export function DiscoverJobsRight({
               )}
 
               {selectedIndustries.length > 0 && (
-                <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Industries:
                   </Text>
@@ -330,7 +330,7 @@ export function DiscoverJobsRight({
               )}
 
               {selectedJobTypes.length > 0 && (
-                <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Job Types:
                   </Text>
@@ -341,7 +341,7 @@ export function DiscoverJobsRight({
               )}
 
               {minSoftSkillsMatch !== null && (
-                <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Min Match:
                   </Text>
@@ -352,7 +352,7 @@ export function DiscoverJobsRight({
               )}
 
               {sortBy !== 'relevance' && (
-                <XStack items="center" gap="$2">
+                <XStack alignItems="center" gap="$2">
                   <Text fontSize="$3" color="$color11">
                     Sort:
                   </Text>

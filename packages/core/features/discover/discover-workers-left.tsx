@@ -1,6 +1,6 @@
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { type RefObject, useMemo } from 'react'
-import { YStack } from 'tamagui'
+import { YStack } from '@unicornlove/ui'
 import type { ResultListRef } from './components/ResultList'
 import { ResultList } from './components/ResultList'
 import { useTalentProfiles } from './hooks/useTalentProfiles'

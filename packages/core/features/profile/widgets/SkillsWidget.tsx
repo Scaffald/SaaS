@@ -9,6 +9,7 @@ import { SoftSkillsHistoryTimeline } from '../components/SoftSkillsHistoryTimeli
 import { SoftSkillsProgressionChart } from '../components/SoftSkillsProgressionChart'
 import { SoftSkillsRadarGrid } from '@app/core/components/ui'
 import {
+  Button,
   DashboardWidget,
   EmptyState,
   Heading,
@@ -18,13 +19,12 @@ import {
   spacing,
   Tab,
   TabGroup,
-  UIButton,
   type SkillsChartDataset,
 } from '@unicornlove/ui'
 import { CheckCircle } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Separator, Text, XStack, YStack } from 'tamagui'
+import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { getProficiencyLabel } from '../constants/proficiency-levels'
 import type { ProfileWidgetProps } from './types'
 
@@ -138,12 +138,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
           </Text>
-          <UIButton
+          <Button
             variant="primary"
             size="$2"
             onPress={() => {
@@ -152,7 +152,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
             disabled={isFetching}
           >
             Retry
-          </UIButton>
+          </Button>
         </YStack>
       </DashboardWidget>
     )
@@ -190,10 +190,10 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Skills</Heading>
           {showEdit && (
-            <UIButton
+            <Button
               variant="outlined"
               size="$2"
               onPress={() => {
@@ -201,7 +201,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               }}
             >
               Edit
-            </UIButton>
+            </Button>
           )}
         </XStack>
 
@@ -221,12 +221,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           (isLoadingSkills ? (
             <LoadingState message="Loading skills..." />
           ) : error ? (
-            <YStack gap="$4" items="center" py="$8">
+            <YStack gap="$4" alignItems="center" paddingVertical="$8">
               <Text color="$red10">Failed to load skills</Text>
               <Text color="$color11" fontSize="$2">
                 {(error as unknown as Record<string, unknown>).message}
               </Text>
-              <UIButton
+              <Button
                 variant="primary"
                 size="$2"
                 onPress={() => {
@@ -235,7 +235,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                 disabled={isFetching}
               >
                 Retry
-              </UIButton>
+              </Button>
             </YStack>
           ) : skills.length === 0 ? (
             <EmptyState
@@ -243,12 +243,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               description="Add your skills to showcase your expertise"
               action={
                 showEdit ? (
-                  <UIButton
+                  <Button
                     variant="primary"
                     onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                   >
                     Add Skills
-                  </UIButton>
+                  </Button>
                 ) : undefined
               }
             />
@@ -268,14 +268,14 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                       .map((skill: EnrichedUserSkill) => (
                         <XStack
                           key={skill.id}
-                          bg="$blue2"
-                          px="$3"
-                          py="$2"
-                          rounded="$3"
+                          backgroundColor="$blue2"
+                          paddingHorizontal="$3"
+                          paddingVertical="$2"
+                          borderRadius="$3"
                           borderWidth={1}
                           borderColor={skill.verified ? '$blue7' : '$blue5'}
                           gap="$2"
-                          items="center"
+                          alignItems="center"
                         >
                           {skill.verified && <CheckCircle size={14} color="$blue11" />}
                           <YStack gap="$0.5">
@@ -325,12 +325,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
           (isLoadingSoftSkills ? (
             <LoadingState message="Loading soft skills..." />
           ) : softSkillsError ? (
-            <YStack gap="$4" items="center" py="$8">
+            <YStack gap="$4" alignItems="center" paddingVertical="$8">
               <Text color="$red10">Failed to load soft skills</Text>
               <Text color="$color11" fontSize="$2">
                 {softSkillsError.message}
               </Text>
-              <UIButton
+              <Button
                 variant="primary"
                 size="$2"
                 onPress={() => {
@@ -338,7 +338,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
                 }}
               >
                 Complete Assessment
-              </UIButton>
+              </Button>
             </YStack>
           ) : softSkills.length === 0 ? (
             <EmptyState
@@ -346,12 +346,12 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
               description="Complete your soft skills assessment to see your profile"
               action={
                 showEdit ? (
-                  <UIButton
+                  <Button
                     variant="primary"
                     onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                   >
                     Start Assessment
-                  </UIButton>
+                  </Button>
                 ) : undefined
               }
             />
@@ -367,7 +367,7 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
               {/* Skills Chart for Active Category */}
               {categoryChartData && categoryChartData.length > 0 && (
-                <YStack gap="$2" items="center">
+                <YStack gap="$2" alignItems="center">
                   <Text fontSize="$4" fontWeight="600" color="$color12">
                     {categoryLabels[activeCategory]} Skills
                   </Text>
@@ -395,17 +395,17 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
 
               {/* Action Buttons */}
               {showEdit && (
-                <XStack justify="flex-end" gap="$2" pt="$2" flexWrap="wrap">
-                  <UIButton variant="outlined" size="$3" onPress={() => setShowHistoryModal(true)}>
+                <XStack justifyContent="flex-end" gap="$2" paddingTop="$2" flexWrap="wrap">
+                  <Button variant="outlined" size="$3" onPress={() => setShowHistoryModal(true)}>
                     View History
-                  </UIButton>
-                  <UIButton
+                  </Button>
+                  <Button
                     variant="primary"
                     size="$3"
                     onPress={() => router.push(ROUTES.DASHBOARD.PROFILE.SKILLS.path)}
                   >
                     Update Assessment
-                  </UIButton>
+                  </Button>
                 </XStack>
               )}
             </YStack>
@@ -420,23 +420,23 @@ export function SkillsWidget({ userId, showEdit = false, variant = 'full' }: Pro
         size="large"
         showCloseButton={true}
       >
-        <YStack gap="$4" p="$4">
+        <YStack gap="$4" padding="$4">
           {/* View Toggle */}
-          <XStack gap="$2" justify="center">
-            <UIButton
+          <XStack gap="$2" justifyContent="center">
+            <Button
               variant={historyView === 'timeline' ? 'primary' : 'outlined'}
               size="$3"
               onPress={() => setHistoryView('timeline')}
             >
               Timeline
-            </UIButton>
-            <UIButton
+            </Button>
+            <Button
               variant={historyView === 'progression' ? 'primary' : 'outlined'}
               size="$3"
               onPress={() => setHistoryView('progression')}
             >
               Progression
-            </UIButton>
+            </Button>
           </XStack>
 
           {/* History Content */}

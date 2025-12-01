@@ -9,7 +9,17 @@ import {
   RotateCcw,
 } from '@tamagui/lucide-icons'
 import { useMemo, useState } from 'react'
-import { Button, Card, H5, Paragraph, ScrollView, Separator, Text, XStack, YStack } from 'tamagui'
+import {
+  Button,
+  Card,
+  H5,
+  Paragraph,
+  ScrollView,
+  Separator,
+  Text,
+  XStack,
+  YStack,
+} from '@unicornlove/ui'
 import { useImportData } from '../hooks/useImportData'
 import { toConfidenceLevel } from '../utils/importConfidence'
 import { ConfidenceBadge } from './ConfidenceBadge'
@@ -100,7 +110,7 @@ export function ImportReviewScreen() {
 
   if (isLoading) {
     return (
-      <YStack gap="$4" p="$4" items="center">
+      <YStack gap="$4" padding="$4" alignItems="center">
         <Loader2 size={32} color="$color10" />
         <Text color="$color11">Retrieving imported data...</Text>
       </YStack>
@@ -109,7 +119,7 @@ export function ImportReviewScreen() {
 
   if (isError || !importData) {
     return (
-      <YStack gap="$3" p="$4" items="center">
+      <YStack gap="$3" padding="$4" alignItems="center">
         <FileWarning size={32} color="$red10" />
         <Text color="$red11" fontWeight="600">
           We couldn’t load your import data
@@ -248,7 +258,9 @@ export function ImportReviewScreen() {
       await saveImportMutation.mutateAsync({
         source: metadata?.source ?? 'resume',
         // Payload is compatible with mutation input but transformed from UI format
-        payload: payload as unknown as Parameters<typeof saveImportMutation.mutateAsync>[0]['payload'],
+        payload: payload as unknown as Parameters<
+          typeof saveImportMutation.mutateAsync
+        >[0]['payload'],
       })
       await utils.profile.import.getImportData.invalidate()
       setSelectedItems({})
@@ -278,13 +290,13 @@ export function ImportReviewScreen() {
   }
 
   return (
-    <YStack gap="$4" p="$4">
-      <Card bordered bg="$color2">
+    <YStack gap="$4" padding="$4">
+      <Card bordered backgroundColor="$color2">
         <Card.Header padded gap="$3">
-          <XStack gap="$3" items="flex-start" flexWrap="wrap">
+          <XStack gap="$3" alignItems="flex-start" flexWrap="wrap">
             <Info size={20} color="$blue10" />
             <YStack flex={1} gap="$2">
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <H5>Imported data overview</H5>
               </XStack>
               <Paragraph color="$color11">
@@ -292,7 +304,7 @@ export function ImportReviewScreen() {
                 subset, or clear the import and start again.
               </Paragraph>
               <XStack gap="$3" flexWrap="wrap">
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Clock
                     size={16}
                     color={expiresInLabel?.status === 'expired' ? '$red10' : '$blue10'}
@@ -341,9 +353,9 @@ export function ImportReviewScreen() {
       <Separator />
 
       <ScrollView flex={1}>
-        <YStack gap="$3" mt="$3">
+        <YStack gap="$3" marginTop="$3">
           {currentSection?.items.length === 0 && (
-            <Card bordered p="$4" bg="$color2">
+            <Card bordered padding="$4" backgroundColor="$color2">
               <Card.Header>
                 <Text color="$color11">No items were detected for this section.</Text>
               </Card.Header>
@@ -356,9 +368,9 @@ export function ImportReviewScreen() {
               (item as { confidenceScore?: number }).confidenceScore
             )
             return (
-              <Card bordered key={item.id} bg={isSelected ? '$color3' : '$background'}>
+              <Card bordered key={item.id} backgroundColor={isSelected ? '$color3' : '$background'}>
                 <Card.Header gap="$3">
-                  <XStack justify="space-between" items="center">
+                  <XStack justifyContent="space-between" alignItems="center">
                     <ConfidenceBadge level={confidenceLevel} />
                     <Button
                       size="$2"
@@ -428,7 +440,7 @@ export function ImportReviewScreen() {
 
       <Separator />
 
-      <XStack justify="space-between" items="center" flexWrap="wrap" gap="$3">
+      <XStack justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$3">
         <XStack gap="$2" flexWrap="wrap">
           <Button
             size="$3"
@@ -448,7 +460,7 @@ export function ImportReviewScreen() {
             Select all
           </Button>
         </XStack>
-        <XStack gap="$3" items="center" flexWrap="wrap">
+        <XStack gap="$3" alignItems="center" flexWrap="wrap">
           <Text color="$color10" aria-live="polite">
             Selected {selectedCount} of {totalItems}
           </Text>

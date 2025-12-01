@@ -6,18 +6,18 @@ import {
 } from '../components/SoftSkillsCategoryTabs'
 import type { SoftSkill } from '../components/SoftSkillsCategoryTabs'
 import {
+  Button,
   DashboardWidget,
   EmptyState,
   Heading,
   LoadingState,
   SkillsChart,
   spacing,
-  UIButton,
   type SkillsChartDataset,
 } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import { useMemo, useState, type FC } from 'react'
-import { Separator, Text, XStack, YStack } from 'tamagui'
+import { Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import type { ProfileWidgetProps } from './types'
 
 /**
@@ -162,7 +162,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
   if (error) {
     return (
       <DashboardWidget>
-        <YStack gap="$4" items="center" py="$8">
+        <YStack gap="$4" alignItems="center" paddingVertical="$8">
           <Text color="$red10">Failed to load soft skills</Text>
           <Text color="$color11" fontSize="$2">
             {error.message}
@@ -177,7 +177,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <YStack gap={spacing.md}>
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Heading variant="h4">Soft Skills Analysis</Heading>
           </XStack>
           <EmptyState
@@ -186,9 +186,9 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             icon={undefined}
           />
           {showCTA && (
-            <UIButton variant="primary" onPress={handleNavigateToAssessment}>
+            <Button variant="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
-            </UIButton>
+            </Button>
           )}
         </YStack>
       </DashboardWidget>
@@ -200,7 +200,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     return (
       <DashboardWidget>
         <YStack gap={spacing.md}>
-          <XStack justify="space-between" items="center">
+          <XStack justifyContent="space-between" alignItems="center">
             <Heading variant="h4">Soft Skills Analysis</Heading>
           </XStack>
           <YStack gap="$4">
@@ -213,9 +213,9 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
                 {completionCount} of 25 skills rated
               </Text>
             </YStack>
-            <UIButton variant="primary" onPress={handleNavigateToAssessment}>
+            <Button variant="primary" onPress={handleNavigateToAssessment}>
               Complete Soft Skills Assessment
-            </UIButton>
+            </Button>
           </YStack>
         </YStack>
       </DashboardWidget>
@@ -230,10 +230,10 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
     <DashboardWidget>
       <YStack gap={spacing.md}>
         {/* Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Heading variant="h4">Soft Skills Analysis</Heading>
           {showEdit && (
-            <UIButton
+            <Button
               variant="outlined"
               size="$2"
               onPress={() => {
@@ -241,7 +241,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
               }}
             >
               Edit
-            </UIButton>
+            </Button>
           )}
         </XStack>
 
@@ -264,7 +264,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
             </Text>
 
             {/* Main Skills Chart */}
-            <YStack items="center" py="$4">
+            <YStack alignItems="center" paddingVertical="$4">
               <SkillsChart
                 datasets={categoryChartData}
                 height={chartHeight}
@@ -274,7 +274,7 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
                 showSets={categoryChartData.length > 1 ? [0, 1] : [0]}
                 showDots={true}
                 dotSize={5}
-                bg="$color2"
+                backgroundColor="$color2"
                 gridColor="$color5"
                 labelColor="$color11"
               />
@@ -282,15 +282,15 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
             {/* Legend */}
             {categoryChartData.length > 1 && (
-              <XStack gap="$4" items="center" justify="center" py="$2">
-                <XStack gap="$2" items="center">
-                  <YStack width={20} height={3} bg="$blue9" />
+              <XStack gap="$4" alignItems="center" justifyContent="center" paddingVertical="$2">
+                <XStack gap="$2" alignItems="center">
+                  <YStack width={20} height={3} backgroundColor="$blue9" />
                   <Text fontSize="$2" color="$color11">
                     Self Assessment
                   </Text>
                 </XStack>
-                <XStack gap="$2" items="center">
-                  <YStack width={20} height={3} bg="$green9" />
+                <XStack gap="$2" alignItems="center">
+                  <YStack width={20} height={3} backgroundColor="$green9" />
                   <Text fontSize="$2" color="$color11">
                     Peer Average
                   </Text>
@@ -306,9 +306,9 @@ export const SoftSkillsComparisonWidget: FC<ProfileWidgetProps> = ({
 
         {/* CTA button for completed assessments when showCTA is true */}
         {isCompleted && showCTA && (
-          <UIButton variant="outlined" onPress={handleNavigateToAssessment}>
+          <Button variant="outlined" onPress={handleNavigateToAssessment}>
             Update Assessment
-          </UIButton>
+          </Button>
         )}
       </YStack>
     </DashboardWidget>

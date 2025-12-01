@@ -4,7 +4,7 @@ import { AlertCircle, CheckCircle2, Loader2, UploadCloud } from '@tamagui/lucide
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { Button, Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 const ACCEPTED_MIME_TYPES = [
   'application/pdf',
@@ -369,7 +369,7 @@ export function ResumeUploadModal({
               <Text color="$color11">Supported formats: PDF, DOC, DOCX. Maximum size: 1MB.</Text>
             )}
             {status === 'error' && errorMessage ? (
-              <XStack gap="$2" items="center">
+              <XStack gap="$2" alignItems="center">
                 <AlertCircle color="$red10" size={18} />
                 <Text color="$red10">{errorMessage}</Text>
               </XStack>
@@ -378,15 +378,15 @@ export function ResumeUploadModal({
         )}
 
         {shouldShowProgressIndicators && progressValue > 0 && (
-          <YStack gap="$2" bg="$color2" p="$3" rounded="$3">
-            <YStack height={8} bg="$color4" rounded="$4" overflow="hidden">
+          <YStack gap="$2" backgroundColor="$color2" padding="$3" borderRadius="$3">
+            <YStack height={8} backgroundColor="$color4" borderRadius="$4" overflow="hidden">
               <YStack
                 height="100%"
                 width={`${Math.round(progressValue * 100)}%`}
-                bg={progressColor}
+                backgroundColor={progressColor}
               />
             </YStack>
-            <XStack gap="$2" items="center">
+            <XStack gap="$2" alignItems="center">
               {status === 'success' ? (
                 <CheckCircle2 color="$green10" size={18} />
               ) : status === 'error' ? (
@@ -402,7 +402,13 @@ export function ResumeUploadModal({
         )}
 
         {status === 'success' && (
-          <XStack gap="$3" items="center" bg="$green3" p="$3" rounded="$3">
+          <XStack
+            gap="$3"
+            alignItems="center"
+            backgroundColor="$green3"
+            padding="$3"
+            borderRadius="$3"
+          >
             <CheckCircle2 color="$green10" size={20} />
             <Text color="$green11" fontWeight="600">
               Resume uploaded successfully. Redirecting...
@@ -411,7 +417,13 @@ export function ResumeUploadModal({
         )}
 
         {status === 'error' && errorMessage && (
-          <XStack gap="$3" items="center" bg="$red3" p="$3" rounded="$3">
+          <XStack
+            gap="$3"
+            alignItems="center"
+            backgroundColor="$red3"
+            padding="$3"
+            borderRadius="$3"
+          >
             <AlertCircle color="$red10" size={20} />
             <Text color="$red11" fontWeight="600">
               {errorMessage}
@@ -419,7 +431,7 @@ export function ResumeUploadModal({
           </XStack>
         )}
 
-        <XStack gap="$2" justify="flex-end">
+        <XStack gap="$2" justifyContent="flex-end">
           <Button
             size="$3"
             variant="outlined"
@@ -432,7 +444,7 @@ export function ResumeUploadModal({
             size="$3"
             disabled
             icon={showProgress ? Loader2 : undefined}
-            bg={status === 'error' ? '$red4' : '$blue4'}
+            backgroundColor={status === 'error' ? '$red4' : '$blue4'}
             color={status === 'error' ? '$red11' : '$blue11'}
             borderColor={status === 'error' ? '$red7' : '$blue7'}
             borderWidth={1}

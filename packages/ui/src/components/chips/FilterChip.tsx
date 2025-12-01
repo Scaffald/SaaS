@@ -1,7 +1,8 @@
 import { X } from '@tamagui/lucide-icons'
 import type { ReactNode } from 'react'
 import type { GetThemeValueForKey, SizeTokens, ThemeName } from 'tamagui'
-import { Button, Text, XStack } from 'tamagui'
+import { Text, XStack } from 'tamagui'
+import { Button } from '../buttons/Button'
 
 type FilterChipProps = {
   label: string
@@ -22,13 +23,13 @@ export function FilterChip({
 }: FilterChipProps) {
   return (
     <XStack
-      items="center"
-      bg="$background"
+      alignItems="center"
+      backgroundColor="$background"
       borderColor="$borderColor"
       borderWidth={1}
-      rounded="$4"
-      px="$3"
-      py="$2"
+      borderRadius="$4"
+      paddingHorizontal="$3"
+      paddingVertical="$2"
       gap="$2"
       theme={color as ThemeName}
     >
@@ -37,7 +38,7 @@ export function FilterChip({
         {label}
       </Text>
       {removable && onRemove && (
-        <Button size="$2" circular bg="transparent" onPress={onRemove} p="$1">
+        <Button size="$2" circular backgroundColor="transparent" onPress={onRemove} padding="$1">
           <X size={12} color="$color" />
         </Button>
       )}

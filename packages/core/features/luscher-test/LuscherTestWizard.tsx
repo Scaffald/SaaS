@@ -4,7 +4,7 @@ import { api } from '@app/core/utils/api'
 import { DashboardLayout } from '@app/core/components/layouts'
 import { useToastController } from '@tamagui/toast'
 import { useEffect, useState } from 'react'
-import { Text, YStack } from 'tamagui'
+import { Text, YStack } from '@unicornlove/ui'
 import { CooldownStep, IntroductionStep, ResultsSidebar, ResultsStep } from './components'
 
 type TestStep = 'intro' | 'luscher1' | 'cooldown' | 'luscher2' | 'results'
@@ -194,7 +194,7 @@ export function LuscherTestWizard() {
   const showResultsSidebar = effectiveCurrentStep === 'results'
 
   const railContent = (
-    <YStack gap="$5" p="$2" $md={{ p: '$1' }}>
+    <YStack gap="$5" padding="$2" $md={{ padding: '$1' }}>
       <YStack gap="$1">
         <Text fontSize="$5" fontWeight="700" color="$color12">
           Weekly Pulse

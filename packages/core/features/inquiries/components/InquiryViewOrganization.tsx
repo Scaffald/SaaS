@@ -4,7 +4,7 @@ import type { InquirySectionName } from '@app/schemas'
 import { ScrollView, Separator, Text, XStack, YStack } from '@unicornlove/ui'
 import { Check } from '@tamagui/lucide-icons'
 import { type ReactNode, useMemo } from 'react'
-import { Card } from 'tamagui'
+import { Card } from '@unicornlove/ui'
 import { InquiryCommentThread } from './InquiryCommentThread'
 
 interface InquiryViewOrganizationProps {
@@ -32,7 +32,14 @@ function AcceptanceBadge({ acceptedBy, acceptedAt }: AcceptanceBadgeProps) {
   }
 
   return (
-    <XStack bg="$green9" px="$3" py="$1.5" rounded="$6" items="center" gap="$2">
+    <XStack
+      backgroundColor="$green9"
+      paddingHorizontal="$3"
+      paddingVertical="$1.5"
+      borderRadius="$6"
+      alignItems="center"
+      gap="$2"
+    >
       <Check size={14} color="white" />
       <Text fontSize="$3" color="white" fontWeight="500">
         Accepted on {formatDate(acceptedAt)}
@@ -56,7 +63,7 @@ export function InquiryViewOrganization({
 
   if (isLoading) {
     return (
-      <YStack p="$4" items="center" gap="$4">
+      <YStack padding="$4" alignItems="center" gap="$4">
         <Text>Loading inquiry...</Text>
       </YStack>
     )
@@ -64,7 +71,7 @@ export function InquiryViewOrganization({
 
   if (error || !data || !data.inquiry) {
     return (
-      <YStack p="$4" items="center" gap="$4">
+      <YStack padding="$4" alignItems="center" gap="$4">
         <Text color="$red10">Failed to load inquiry</Text>
       </YStack>
     )
@@ -122,7 +129,7 @@ export function InquiryViewOrganization({
   const jobTitle = providedJobTitle || 'Job'
 
   const NonNegotiableBadge = () => (
-    <XStack bg="$gray3" px="$2" py="$1" rounded="$2">
+    <XStack backgroundColor="$gray3" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
       <Text fontSize="$1" color="$gray11" fontWeight="600">
         Non-negotiable
       </Text>
@@ -138,11 +145,11 @@ export function InquiryViewOrganization({
     value: string | null | undefined
     negotiable: boolean
   }) => (
-    <XStack justify="space-between" items="center">
+    <XStack justifyContent="space-between" alignItems="center">
       <Text fontSize="$3" color="$color11">
         {label}
       </Text>
-      <XStack items="center" gap="$2">
+      <XStack alignItems="center" gap="$2">
         <Text fontSize="$3">{value || 'Not specified'}</Text>
         {!negotiable && <NonNegotiableBadge />}
       </XStack>
@@ -166,7 +173,7 @@ export function InquiryViewOrganization({
     return (
       <Card padding="$4" gap="$3">
         {/* Section Header */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$6" fontWeight="600">
             {title}
           </Text>
@@ -193,9 +200,9 @@ export function InquiryViewOrganization({
 
   return (
     <ScrollView>
-      <YStack gap="$4" p="$4" $sm={{ gap: '$6', p: '$3' }}>
+      <YStack gap="$4" padding="$4" $sm={{ gap: '$6', padding: '$3' }}>
         {/* Header with Edit button */}
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$8" fontWeight="600">
             Inquiry
           </Text>

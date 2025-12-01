@@ -168,7 +168,8 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   const resolvedLabelColor = resolveColor(labelColor)
 
   // Validate datasets and calculate axes
-  const axes = datasets && datasets.length > 0 && datasets[0]?.data?.length ? datasets[0].data.length : 0
+  const axes =
+    datasets && datasets.length > 0 && datasets[0]?.data?.length ? datasets[0].data.length : 0
 
   const calculated = useMemo(
     () => ({
@@ -184,7 +185,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   // Return empty state if no data
   if (!datasets || datasets.length === 0 || !datasets[0]?.data?.length) {
     return (
-      <View items="center" justify="center" minH={chartHeight} width={chartWidth}>
+      <View alignItems="center" justifyContent="center" minHeight={chartHeight} width={chartWidth}>
         <Text color="$red10">No data available</Text>
       </View>
     )
@@ -317,11 +318,11 @@ export const SkillsChart: FC<SkillsChartProps> = ({
 
   return (
     <View
-      items="center"
-      justify="center"
-      minH={height || 300}
+      alignItems="center"
+      justifyContent="center"
+      minHeight={height || 300}
       width={width || '100%'}
-      bg={bg}
+      backgroundColor={bg}
       overflow="hidden"
       onLayout={(event) => {
         const { width: layoutWidth, height: layoutHeight } = event.nativeEvent.layout

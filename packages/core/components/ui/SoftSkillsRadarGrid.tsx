@@ -4,7 +4,7 @@ import type {
   SoftSkill,
   SoftSkillCategory,
 } from '@app/core/features/profile/components/SoftSkillsCategoryTabs'
-import { Text, View, XStack, YStack } from 'tamagui'
+import { Text, View, XStack, YStack } from '@unicornlove/ui'
 
 export interface SoftSkillsRadarGridProps {
   skills: SoftSkill[]
@@ -55,7 +55,7 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   // Loading state
   if (isLoading) {
     return (
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <XStack flexWrap="wrap" gap="$3" $md={{ gap: '$4' }}>
           {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((key) => (
             <View
@@ -64,8 +64,8 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
               $md={{ width: '48%' }}
               $lg={{ width: '31%' }}
               height={200}
-              bg="$color3"
-              rounded="$4"
+              backgroundColor="$color3"
+              borderRadius="$4"
               borderWidth={1}
               borderColor="$color5"
             >
@@ -80,7 +80,7 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   // Empty state
   if (filteredSkills.length === 0) {
     return (
-      <YStack gap="$4" p="$4" items="center" justify="center" minH={300}>
+      <YStack gap="$4" padding="$4" alignItems="center" justifyContent="center" minHeight={300}>
         <Text fontSize="$5" fontWeight="600" color="$color11">
           No skills in this category
         </Text>
@@ -92,7 +92,7 @@ export const SoftSkillsRadarGrid: FC<SoftSkillsRadarGridProps> = ({
   }
 
   return (
-    <YStack gap="$4" p="$4">
+    <YStack gap="$4" padding="$4">
       <XStack
         flexWrap="wrap"
         gap="$3"

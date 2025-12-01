@@ -103,7 +103,7 @@ vi.mock('@unicornlove/ui', () => {
     ) : null
 
   return {
-    UIButton: Button,
+    Button: Button,
     DashboardWidget: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     ConfirmationDialog,
   }

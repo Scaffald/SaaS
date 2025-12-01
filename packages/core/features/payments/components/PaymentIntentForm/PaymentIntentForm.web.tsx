@@ -3,7 +3,7 @@ import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-
 import type { PaymentIntent, StripeElementsOptions } from '@stripe/stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { useMemo, useState } from 'react'
-import { Card } from 'tamagui'
+import { Card } from '@unicornlove/ui'
 
 import { useStripeConfig } from '../../hooks/useStripeConfig'
 
@@ -43,7 +43,7 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (config.isLoading || !options || !stripePromise) {
     return (
-      <Card p="$3" bg="$color2" borderColor="$borderColor" borderWidth={1}>
+      <Card padding="$3" backgroundColor="$color2" borderColor="$borderColor" borderWidth={1}>
         <Text fontSize="$3" color="$color11">
           Preparing secure payment form…
         </Text>
@@ -53,7 +53,7 @@ export function PaymentIntentForm(props: PaymentIntentFormProps) {
 
   if (!config.publishableKey) {
     return (
-      <Card p="$3" bg="$red2" borderColor="$red6" borderWidth={1}>
+      <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
         <Text color="$red11">
           Stripe publishable key is missing. Contact support to configure payments.
         </Text>
@@ -125,9 +125,9 @@ function PaymentIntentFormInner({
   const amountLabel = currencyFormatter.format(amountCents / 100)
 
   return (
-    <Card p="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
+    <Card padding="$4" borderColor="$borderColor" borderWidth={1} gap="$3">
       <YStack gap="$1">
-        <XStack justify="space-between" items="center">
+        <XStack justifyContent="space-between" alignItems="center">
           <Text fontSize="$4" fontWeight="600">
             Charge amount
           </Text>
@@ -150,8 +150,8 @@ function PaymentIntentFormInner({
       <PaymentElement />
 
       {errorMessage ? (
-        <Card p="$3" bg="$red2" borderColor="$red6" borderWidth={1}>
-          <XStack gap="$2" items="center">
+        <Card padding="$3" backgroundColor="$red2" borderColor="$red6" borderWidth={1}>
+          <XStack gap="$2" alignItems="center">
             <Text color="$red11" fontSize="$3" flex={1}>
               {errorMessage}
             </Text>
@@ -166,7 +166,7 @@ function PaymentIntentFormInner({
         onPress={handleSubmit}
       >
         {isSubmitting ? (
-          <XStack gap="$2" items="center">
+          <XStack gap="$2" alignItems="center">
             <Spinner size="small" color="white" />
             <Text>Processing…</Text>
           </XStack>

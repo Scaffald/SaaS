@@ -16,7 +16,7 @@ import {
   TextArea,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { OfficePageLayout } from './components/OfficePageLayout'
 import { QuickActionsWidget } from './components/QuickActionsWidget'
 
@@ -300,7 +300,7 @@ export function OfficeOrganizationsList() {
                 </Text>
               ) : null}
             </YStack>
-            <XStack gap="$3" justify="flex-end">
+            <XStack gap="$3" justifyContent="flex-end">
               <Dialog.Close asChild>
                 <Button variant="outlined" disabled={reviewMutation.isPending}>
                   Cancel
@@ -341,7 +341,7 @@ export function OfficeOrganizationsList() {
         rightContent={
           <YStack gap="$4">
             <DashboardWidget gap="$4">
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <Text fontSize="$5" fontWeight="700">
                   Moderation Summary
                 </Text>
@@ -388,7 +388,7 @@ export function OfficeOrganizationsList() {
                 Pending Approvals
               </Text>
               {isRequestsLoading ? (
-                <XStack justify="center" py="$4">
+                <XStack justifyContent="center" paddingVertical="$4">
                   <Spinner size="large" />
                 </XStack>
               ) : pendingRequests.length === 0 ? (

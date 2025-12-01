@@ -1,6 +1,6 @@
 import { Send } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Card, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Card, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 import type { MockApplication } from '../../mock-data/ats-mock-data'
 
 interface MessagesTabProps {
@@ -22,8 +22,8 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
       {/* Message Thread */}
       <YStack gap="$3">
         {messages.length === 0 ? (
-          <Card p="$4" bg="$color2">
-            <Text fontSize="$3" opacity={0.7} text="center">
+          <Card padding="$4" backgroundColor="$color2">
+            <Text fontSize="$3" opacity={0.7} textAlign="center">
               No messages yet. Start the conversation below!
             </Text>
           </Card>
@@ -31,12 +31,12 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
           messages.map((message) => (
             <Card
               key={message.id}
-              p="$4"
-              bg={message.sender === 'recruiter' ? '$blue3' : '$color2'}
-              self={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
+              padding="$4"
+              backgroundColor={message.sender === 'recruiter' ? '$blue3' : '$color2'}
+              alignSelf={message.sender === 'recruiter' ? 'flex-end' : 'flex-start'}
               maxWidth="80%"
             >
-              <XStack justify="space-between" items="center" mb="$2" gap="$3">
+              <XStack justifyContent="space-between" alignItems="center" marginBottom="$2" gap="$3">
                 <Text fontWeight="600" fontSize="$3">
                   {message.senderName}
                 </Text>
@@ -53,7 +53,7 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
               <Text fontSize="$3">{message.content}</Text>
 
               {!message.isRead && message.sender === 'candidate' && (
-                <YStack mt="$2">
+                <YStack marginTop="$2">
                   <Text fontSize="$2" color="$red10" fontWeight="600">
                     Unread
                   </Text>
@@ -65,8 +65,8 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
       </YStack>
 
       {/* Send Message */}
-      <Card p="$4" bg="$color2">
-        <Text fontSize="$5" fontWeight="600" mb="$3">
+      <Card padding="$4" backgroundColor="$color2">
+        <Text fontSize="$5" fontWeight="600" marginBottom="$3">
           Send Message
         </Text>
 
@@ -75,7 +75,7 @@ export const MessagesTab = ({ messages, applicationId }: MessagesTabProps) => {
           value={newMessage}
           onChangeText={setNewMessage}
           numberOfLines={4}
-          mb="$3"
+          marginBottom="$3"
         />
 
         <Button onPress={handleSend} disabled={!newMessage.trim()} theme="info" icon={Send}>

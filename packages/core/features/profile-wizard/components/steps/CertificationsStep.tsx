@@ -1,7 +1,7 @@
 import { MonthYearPicker } from '@unicornlove/ui'
 import { randomUUID } from 'expo-crypto'
 import { useEffect, useId, useMemo, useState } from 'react'
-import { Button, Card, Input, Label, Paragraph, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Input, Label, Paragraph, Text, XStack, YStack } from '@unicornlove/ui'
 import type { CertificationEntry, CertificationsStepData } from '../../hooks/useProfileWizard'
 import { StepNavigation } from '../StepNavigation'
 import type { WizardStepComponentProps } from './types'
@@ -107,9 +107,9 @@ export function CertificationsStep({
 
       <YStack gap="$3">
         {certifications.map((cert) => (
-          <Card key={cert.id ?? cert.name} bordered bg="$color2">
+          <Card key={cert.id ?? cert.name} bordered backgroundColor="$color2">
             <Card.Header padded gap="$2">
-              <XStack justify="space-between" items="center">
+              <XStack justifyContent="space-between" alignItems="center">
                 <YStack gap="$1">
                   <Text fontWeight="600">{cert.name}</Text>
                   {cert.issuer && (

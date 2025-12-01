@@ -7,7 +7,7 @@ import type { CellContext, ColumnDef } from '@tanstack/react-table'
 import type { inferRouterOutputs } from '@trpc/server'
 import { useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { Spinner, Text, XStack, YStack } from 'tamagui'
+import { Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { OfficePageLayout } from '../components/OfficePageLayout'
 import { QuickActionsWidget } from '../components/QuickActionsWidget'
 
@@ -166,15 +166,15 @@ export function OfficeTeamsList() {
       afterContent={
         archiveMutation.isPending ? (
           <YStack
-            bg="$color2"
-            p="$3"
-            rounded="$4"
+            backgroundColor="$color2"
+            padding="$3"
+            borderRadius="$4"
             shadowColor="$color10"
-            mr="$4"
-            mb="$4"
+            marginRight="$4"
+            marginBottom="$4"
             style={{ alignSelf: 'flex-end' }}
           >
-            <XStack gap="$3" items="center">
+            <XStack gap="$3" alignItems="center">
               <Spinner size="small" />
               <Text>Archiving team...</Text>
             </XStack>

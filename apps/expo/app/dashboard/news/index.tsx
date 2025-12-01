@@ -4,12 +4,12 @@ import { useAggregatedNews } from '@app/core/features/news/hooks/useNewsFeed'
 import { redirect } from '@app/core/utils/redirect'
 import { supabase } from '@app/core/utils/supabase/client'
 import { AlertCircle, ExternalLink, RefreshCw } from '@tamagui/lucide-icons'
-import { NewsCard, UIButton as StyledButton, spacing } from '@unicornlove/ui'
+import { Button, NewsCard, spacing } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
-import { Paragraph, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 const FULL_PAGE_ITEM_COUNT = 40
 const DEFAULT_INDUSTRY = 'construction'
@@ -78,7 +78,7 @@ export default function NewsPage() {
   }
 
   const content = (
-    <YStack gap="$4" px={spacing.lg} py={spacing.lg}>
+    <YStack gap="$4" paddingHorizontal={spacing.lg} paddingVertical={spacing.lg}>
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="700" color="$color12">
           Industry News
@@ -89,7 +89,7 @@ export default function NewsPage() {
       </YStack>
 
       <XStack gap="$2">
-        <StyledButton
+        <Button
           size="$3"
           variant="outlined"
           icon={<RefreshCw size={16} />}
@@ -99,14 +99,14 @@ export default function NewsPage() {
           disabled={isLoading}
         >
           Refresh
-        </StyledButton>
-        <StyledButton size="$3" variant="outlined" onPress={() => router.back()}>
+        </Button>
+        <Button size="$3" variant="outlined" onPress={() => router.back()}>
           Back
-        </StyledButton>
+        </Button>
       </XStack>
 
       {isLoading && newsItems.length === 0 ? (
-        <YStack items="center" gap="$3" py="$8">
+        <YStack alignItems="center" gap="$3" paddingVertical="$8">
           <Spinner size="large" color="$blue7" />
           <Text color="$color11" fontSize="$5">
             Loading latest news…
@@ -115,7 +115,7 @@ export default function NewsPage() {
       ) : null}
 
       {isError ? (
-        <YStack items="center" gap="$3" py="$8">
+        <YStack alignItems="center" gap="$3" paddingVertical="$8">
           <AlertCircle size={32} color="$red10" />
           <Text color="$red11" fontSize="$5" style={{ textAlign: 'center' }}>
             Unable to load news at the moment.
@@ -123,7 +123,7 @@ export default function NewsPage() {
           <Text color="$color11" fontSize="$4" style={{ textAlign: 'center' }}>
             {error?.message || 'Please check your connection and try again.'}
           </Text>
-          <StyledButton
+          <Button
             variant="primary"
             size="$3"
             onPress={() => {
@@ -131,12 +131,12 @@ export default function NewsPage() {
             }}
           >
             Retry
-          </StyledButton>
+          </Button>
         </YStack>
       ) : null}
 
       {!isLoading && !isError && newsItems.length === 0 ? (
-        <YStack items="center" gap="$3" py="$8">
+        <YStack alignItems="center" gap="$3" paddingVertical="$8">
           <Text color="$color11" fontSize="$5" fontWeight="600">
             No articles found
           </Text>
@@ -155,9 +155,9 @@ export default function NewsPage() {
             image={item.image}
             onPress={() => handleOpenArticle(item)}
             fullCardClickable
-            minH={220}
+            minHeight={220}
             footer={
-              <XStack gap="$3" items="center">
+              <XStack gap="$3" alignItems="center">
                 <Text fontSize="$2" color="$color11">
                   {formatTimeAgo(item.pubDate)}
                 </Text>

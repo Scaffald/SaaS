@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { SizableText, YStack } from 'tamagui'
+import { SizableText, YStack } from '@unicornlove/ui'
 import { SearchSelect, type SearchSelectOption } from '@unicornlove/ui'
 
 export interface University {
@@ -98,7 +98,7 @@ export function UniversityAutocomplete({
   // Custom render function for university results
   const renderOption = useCallback(
     (option: SearchSelectOption<University>) => (
-      <YStack gap="$1" flex={1} items="flex-start">
+      <YStack gap="$1" flex={1} alignItems="flex-start">
         <SizableText fontSize="$4" color="$color12" numberOfLines={1} fontWeight="600">
           {option.raw.name}
         </SizableText>

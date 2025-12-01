@@ -2,7 +2,7 @@ import { MinusCircle } from '@tamagui/lucide-icons'
 import { memo } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { Platform } from 'react-native'
-import { Button, Input, Text, XStack, YStack } from 'tamagui'
+import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
 
 import type { CreateWorkLogInput } from '../schemas'
 
@@ -42,12 +42,12 @@ export const TimeEntryInput = memo(function TimeEntryInput({
     <YStack
       borderWidth={1}
       borderColor="$borderColor"
-      rounded="$4"
-      p="$3"
+      borderRadius="$4"
+      padding="$3"
       gap="$2"
-      bg="$background"
+      backgroundColor="$background"
     >
-      <XStack gap="$3" items="center">
+      <XStack gap="$3" alignItems="center">
         <YStack flex={1} gap="$1">
           <Text fontWeight="600" fontSize="$3">
             Start Time

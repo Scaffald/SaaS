@@ -1,4 +1,4 @@
-import { ScrollView, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Text, XStack, YStack } from '@unicornlove/ui'
 
 import type { ResolvedWorkLogPhoto, WorkLogPhotoType } from '../types/photos'
 import { PhotoCard } from './PhotoCard'
@@ -25,10 +25,10 @@ export function PhotoGallery({
       <YStack
         borderWidth={1}
         borderColor="$borderColor"
-        rounded="$4"
-        px="$4"
-        py="$5"
-        bg="$color2"
+        borderRadius="$4"
+        paddingHorizontal="$4"
+        paddingVertical="$5"
+        backgroundColor="$color2"
         gap="$2"
       >
         <Text fontWeight="600" fontSize="$4">

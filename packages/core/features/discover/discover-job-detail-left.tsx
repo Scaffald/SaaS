@@ -6,7 +6,7 @@ import { api } from '@app/core/utils/api'
 import { ExternalLink } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Button, Spinner, Text, YStack } from 'tamagui'
+import { Button, Spinner, Text, YStack } from '@unicornlove/ui'
 
 interface DiscoverJobDetailLeftProps {
   jobId: string
@@ -123,9 +123,9 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (isLoading) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
-        <Text mt="$2" color="$color11">
+        <Text marginTop="$2" color="$color11">
           Loading...
         </Text>
       </YStack>
@@ -134,7 +134,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
 
   if (!job) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4" gap="$2">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$2">
         <Text fontSize="$6" fontWeight="600" color="$color12">
           Job not found
         </Text>
@@ -147,7 +147,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
     // Quick apply flow
     if (flowType === 'quick') {
       return (
-        <YStack flex={1} p="$4" gap="$4">
+        <YStack flex={1} padding="$4" gap="$4">
           <YStack gap="$3">
             <Text fontSize="$6" fontWeight="700" color="$color12">
               Apply to {job.title}
@@ -271,7 +271,7 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job - show external link button
   if (isExternal && 'company_name' in job && job.url) {
     return (
-      <YStack flex={1} p="$4" gap="$4">
+      <YStack flex={1} padding="$4" gap="$4">
         <YStack gap="$3">
           <Text fontSize="$6" fontWeight="700" color="$color12">
             Apply to this Position
@@ -318,8 +318,8 @@ export function DiscoverJobDetailLeft({ jobId }: DiscoverJobDetailLeftProps) {
   // External job without URL
   if (isExternal) {
     return (
-      <YStack flex={1} items="center" justify="center" p="$4" gap="$3">
-        <Text fontSize="$5" fontWeight="600" color="$color11" text="center">
+      <YStack flex={1} alignItems="center" justifyContent="center" padding="$4" gap="$3">
+        <Text fontSize="$5" fontWeight="600" color="$color11" textAlign="center">
           Application link not available
         </Text>
         <Button

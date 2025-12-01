@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { DashboardWidget } from '@unicornlove/ui'
 import { Briefcase, Calendar, MapPin, Pencil } from '@tamagui/lucide-icons'
-import { Button, H4, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, H4, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { ProfileEmptyState } from './components'
 import { useExperienceEdit } from './contexts/experience-edit-context'
 import { formatDateRange } from './utils/date-formatting'
@@ -86,7 +86,7 @@ export function ProfileExperienceRight() {
   if (experienceQuery.isLoading || experienceSummaryQuery.isLoading) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Spinner size="large" />
           <Text color="$color11">Loading experience data...</Text>
         </YStack>
@@ -98,7 +98,7 @@ export function ProfileExperienceRight() {
   if (experienceQuery.isError || experienceSummaryQuery.isError) {
     return (
       <DashboardWidget>
-        <YStack items="center" justify="center" p="$8" gap="$4">
+        <YStack alignItems="center" justifyContent="center" padding="$8" gap="$4">
           <Text color="$red10">Failed to load experience data</Text>
         </YStack>
       </DashboardWidget>
@@ -109,19 +109,19 @@ export function ProfileExperienceRight() {
     <DashboardWidget>
       <H4>Saved Work Experience</H4>
 
-      <Text color="$color11" fontSize="$3" mb="$4">
+      <Text color="$color11" fontSize="$3" marginBottom="$4">
         Your work experience history is displayed here. Edit entries in the left panel.
       </Text>
 
       {/* Experience Summary Section */}
       <YStack
         gap="$3"
-        mb="$4"
-        p="$3"
-        bg="$background"
+        marginBottom="$4"
+        padding="$3"
+        backgroundColor="$background"
         borderWidth={1}
         borderColor="$borderColor"
-        rounded="$4"
+        borderRadius="$4"
       >
         <H4 fontSize="$5">Experience Summary</H4>
         {experienceSummaryQuery.data?.career_level ? (
@@ -148,15 +148,15 @@ export function ProfileExperienceRight() {
             return (
               <YStack
                 key={exp.id}
-                p="$4"
+                padding="$4"
                 gap="$3"
-                bg="$background"
+                backgroundColor="$background"
                 borderWidth={1}
                 borderColor="$borderColor"
-                rounded="$4"
+                borderRadius="$4"
                 hoverStyle={{
                   borderColor: '$borderColorHover',
-                  bg: '$backgroundHover',
+                  backgroundColor: '$backgroundHover',
                 }}
               >
                 {/* Job Title */}
@@ -166,7 +166,7 @@ export function ProfileExperienceRight() {
                   </Text>
 
                   {/* Company Name */}
-                  <XStack gap="$2" items="center" flexWrap="wrap">
+                  <XStack gap="$2" alignItems="center" flexWrap="wrap">
                     <Text fontSize="$4" fontWeight="600" color="$color11">
                       {exp.company_name}
                     </Text>
@@ -184,7 +184,7 @@ export function ProfileExperienceRight() {
 
                   {/* Current Position Badge */}
                   {exp.is_current && (
-                    <XStack gap="$1" items="center">
+                    <XStack gap="$1" alignItems="center">
                       <Text fontSize="$2" fontWeight="600" color="$blue10">
                         Current Position
                       </Text>
@@ -196,7 +196,7 @@ export function ProfileExperienceRight() {
                 <YStack gap="$2">
                   {/* Date Range */}
                   {(exp.start_date || exp.end_date || exp.is_current) && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Calendar size={16} color="$color11" />
                       <Text fontSize="$2" color="$color11">
                         {formatDateRange(exp.start_date, exp.end_date, exp.is_current)}
@@ -206,7 +206,7 @@ export function ProfileExperienceRight() {
 
                   {/* Location */}
                   {locationDisplay && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <MapPin size={16} color="$color11" />
                       <Text fontSize="$2" color="$color11">
                         {locationDisplay}
@@ -230,7 +230,7 @@ export function ProfileExperienceRight() {
                 </YStack>
 
                 {/* Edit Button */}
-                <XStack justify="flex-end" mt="$2">
+                <XStack justifyContent="flex-end" marginTop="$2">
                   <Button
                     size="$2"
                     variant="outlined"

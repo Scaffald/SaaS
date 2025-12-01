@@ -10,7 +10,7 @@ import {
   MapPin,
   Users,
 } from '@tamagui/lucide-icons'
-import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface JobData {
   id?: string
@@ -106,40 +106,40 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
   return (
     <ResponsiveModal open={open} onOpenChange={onOpenChange} title="Job Preview" size="large">
       {isLoading ? (
-        <YStack py="$8" items="center" justify="center">
+        <YStack paddingVertical="$8" alignItems="center" justifyContent="center">
           <Spinner size="large" color="$blue10" />
-          <Text mt="$4" color="$color11">
+          <Text marginTop="$4" color="$color11">
             Loading job details...
           </Text>
         </YStack>
       ) : !job ? (
-        <YStack py="$8" items="center">
+        <YStack paddingVertical="$8" alignItems="center">
           <Text color="$red10" fontSize="$5" fontWeight="600">
             Job not found
           </Text>
         </YStack>
       ) : (
         <ScrollView style={{ maxHeight: 600 }}>
-          <YStack gap="$4" p="$4">
+          <YStack gap="$4" padding="$4">
             {/* Job Header */}
-            <YStack gap="$3" items="center">
+            <YStack gap="$3" alignItems="center">
               <YStack
                 width={80}
                 height={80}
-                rounded="$6"
-                bg="$blue4"
-                items="center"
-                justify="center"
+                borderRadius="$6"
+                backgroundColor="$blue4"
+                alignItems="center"
+                justifyContent="center"
               >
                 <Briefcase size={40} color="$blue10" />
               </YStack>
 
-              <YStack gap="$2" items="center">
+              <YStack gap="$2" alignItems="center">
                 <Text fontSize="$8" fontWeight="700" color="$color12">
                   {job.title}
                 </Text>
                 {job.organization && (
-                  <XStack gap="$2" items="center">
+                  <XStack gap="$2" alignItems="center">
                     <Building2 size={16} color="$color10" />
                     <Text fontSize="$5" color="$color11">
                       {job.organization.name}
@@ -149,9 +149,16 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               </YStack>
 
               {/* Job Type Badge */}
-              <XStack gap="$2" flexWrap="wrap" justify="center">
+              <XStack gap="$2" flexWrap="wrap" justifyContent="center">
                 {formatEmploymentType(job.employment_type ?? null) && (
-                  <XStack bg="$blue3" px="$3" py="$1" rounded="$3" gap="$2" items="center">
+                  <XStack
+                    backgroundColor="$blue3"
+                    paddingHorizontal="$3"
+                    paddingVertical="$1"
+                    borderRadius="$3"
+                    gap="$2"
+                    alignItems="center"
+                  >
                     <Briefcase size={14} color="$blue10" />
                     <Text fontSize="$2" color="$blue11" fontWeight="600">
                       {formatEmploymentType(job.employment_type ?? null)}
@@ -159,7 +166,14 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                   </XStack>
                 )}
                 {formatRemoteOption(job.remote_option ?? null) && (
-                  <XStack bg="$green3" px="$3" py="$1" rounded="$3" gap="$2" items="center">
+                  <XStack
+                    backgroundColor="$green3"
+                    paddingHorizontal="$3"
+                    paddingVertical="$1"
+                    borderRadius="$3"
+                    gap="$2"
+                    alignItems="center"
+                  >
                     <MapPin size={14} color="$green10" />
                     <Text fontSize="$2" color="$green11" fontWeight="600">
                       {formatRemoteOption(job.remote_option ?? null)}
@@ -174,7 +188,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {/* Job Metadata */}
             <YStack gap="$3">
               {job.location && (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <MapPin size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     {job.location}
@@ -187,7 +201,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                 job.pay_range_max_cents ?? null,
                 job.pay_range_type ?? null
               ) && (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <DollarSign size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     {formatPayRange(
@@ -200,7 +214,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
               )}
 
               {job.posted_at && (
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Calendar size={16} color="$color10" />
                   <Text fontSize="$3" color="$color11">
                     Posted{' '}
@@ -229,7 +243,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {/* Skills */}
             {job.job_skills && job.job_skills.length > 0 && (
               <YStack gap="$2">
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Users size={16} color="$color10" />
                   <Text fontSize="$5" fontWeight="600" color="$color12">
                     Required Skills
@@ -246,7 +260,13 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                       jobSkill?.onet_occupation?.code?.toString() ||
                       `skill-${idx}-${skillName}`
                     return (
-                      <XStack key={skillKey} bg="$blue3" px="$2" py="$1" rounded="$3">
+                      <XStack
+                        key={skillKey}
+                        backgroundColor="$blue3"
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$3"
+                      >
                         <Text fontSize="$2" color="$blue11">
                           {skillName}
                         </Text>
@@ -260,7 +280,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             {/* Certifications */}
             {job.job_certifications && job.job_certifications.length > 0 && (
               <YStack gap="$2">
-                <XStack gap="$2" items="center">
+                <XStack gap="$2" alignItems="center">
                   <Award size={16} color="$color10" />
                   <Text fontSize="$5" fontWeight="600" color="$color12">
                     Required Certifications
@@ -274,7 +294,7 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                         jobCert.id?.toString() ||
                         `cert-${idx}-${jobCert.certification?.name || 'unknown'}`
                       return (
-                        <XStack key={certKey} gap="$2" items="center">
+                        <XStack key={certKey} gap="$2" alignItems="center">
                           <Text fontSize="$3" color="$color11">
                             {jobCert.certification?.name || 'Unknown Certification'}
                           </Text>
@@ -292,9 +312,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
             )}
 
             {/* Status Badge */}
-            <XStack justify="center">
+            <XStack justifyContent="center">
               <XStack
-                bg={
+                backgroundColor={
                   job.status === 'open'
                     ? '$green3'
                     : job.status === 'draft'
@@ -303,9 +323,9 @@ export function JobPreviewModal({ jobId, open, onOpenChange }: JobPreviewModalPr
                         ? '$yellow3'
                         : '$red3'
                 }
-                px="$3"
-                py="$1"
-                rounded="$3"
+                paddingHorizontal="$3"
+                paddingVertical="$1"
+                borderRadius="$3"
               >
                 <Text
                   fontSize="$2"

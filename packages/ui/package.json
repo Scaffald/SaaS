@@ -25,6 +25,7 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
@@ -41,15 +42,17 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
+    "src",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "tsup",
     "build-storybook": "storybook build",
-    "build:with-types": "tsup",
+    "build:esbuild": "node scripts/build.mjs",
     "check": "tamagui check",
     "check:type": "tsc --noEmit",
     "format": "biome format ./src",
@@ -97,8 +100,8 @@
     "@testing-library/jest-dom": "^6.4.2",
     "@types/node": "~20.0.0",
     "@types/react": "~19.1.0",
-    "tsup": "^8.0.0",
-    "typescript": "~5.9.2",
+    "tsup": "^8.5.1",
+    "typescript": "catalog:",
     "vitest": "^4.0.10"
   },
   "peerDependencies": {

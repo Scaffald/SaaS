@@ -1,6 +1,6 @@
 import { Award, Clock } from '@tamagui/lucide-icons'
 import { useEffect, useState } from 'react'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 export interface ResultsSidebarProps {
   xpAwarded?: number
@@ -84,8 +84,15 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
   return (
     <YStack gap="$5">
       {xpAwarded > 0 && (
-        <YStack gap="$3" p="$4" bg="$green2" rounded="$4" borderWidth={1} borderColor="$green7">
-          <XStack gap="$3" items="center">
+        <YStack
+          gap="$3"
+          padding="$4"
+          backgroundColor="$green2"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$green7"
+        >
+          <XStack gap="$3" alignItems="center">
             <Award size={24} color="$green10" />
             <Text fontSize="$5" fontWeight="600" color="$green11">
               +{xpAwarded} Frequency XP
@@ -97,8 +104,15 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
         </YStack>
       )}
 
-      <YStack gap="$4" p="$6" bg="$blue2" rounded="$4" borderWidth={1} borderColor="$blue7">
-        <XStack gap="$3" items="center">
+      <YStack
+        gap="$4"
+        padding="$6"
+        backgroundColor="$blue2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$blue7"
+      >
+        <XStack gap="$3" alignItems="center">
           <Clock size={24} color="$blue10" />
           <Text fontSize="$5" fontWeight="600" color="$color12">
             Test Availability
@@ -110,18 +124,18 @@ export const ResultsSidebar = ({ xpAwarded = 5, nextAvailableAt }: ResultsSideba
           </Text>
           {nextAvailableAt && !timeUntilAvailable.isAvailable ? (
             <>
-              <Text fontSize="$4" color="$color11" mt="$2">
+              <Text fontSize="$4" color="$color11" marginTop="$2">
                 You can take the test again on:
               </Text>
               <Text fontSize="$4" fontWeight="600" color="$blue11">
                 {formatDate(nextAvailableAt)}
               </Text>
-              <Text fontSize="$3" color="$blue10" mt="$2">
+              <Text fontSize="$3" color="$blue10" marginTop="$2">
                 Available in {formatCountdown(timeUntilAvailable)}
               </Text>
             </>
           ) : (
-            <Text fontSize="$4" fontWeight="600" color="$green11" mt="$2">
+            <Text fontSize="$4" fontWeight="600" color="$green11" marginTop="$2">
               The test is available now.
             </Text>
           )}

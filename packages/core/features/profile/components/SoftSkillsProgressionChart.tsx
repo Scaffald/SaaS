@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import { ArrowDown, ArrowRight, ArrowUp } from '@tamagui/lucide-icons'
 import { useMemo, type FC } from 'react'
-import { ScrollView, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { ScrollView, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import type { SoftSkillCategory } from './SoftSkillsCategoryTabs'
 
 interface SoftSkillsProgressionChartProps {
@@ -26,13 +26,14 @@ interface SkillProgression {
  */
 export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = ({ userId }) => {
   // Fetch version history
-  const { data: historyData, isLoading, error } = api.profile.skills.getSoftSkillsHistory.useQuery(
-    undefined,
-    {
-      enabled: true,
-      staleTime: 5 * 60 * 1000,
-    },
-  )
+  const {
+    data: historyData,
+    isLoading,
+    error,
+  } = api.profile.skills.getSoftSkillsHistory.useQuery(undefined, {
+    enabled: true,
+    staleTime: 5 * 60 * 1000,
+  })
 
   // Fetch current version for comparison
   const { data: currentData } = api.profile.skills.getSoftSkills.useQuery(
@@ -40,7 +41,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
     {
       enabled: !!userId || !userId,
       staleTime: 5 * 60 * 1000,
-    },
+    }
   )
 
   const versions = historyData?.versions || []
@@ -58,13 +59,15 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
     // Fetch previous version skills
     const previousSkills = currentSkills.map((skill) => {
-        // For simplicity, we'll calculate based on category averages
-        // In a real implementation, we'd need to fetch individual skill ratings for each version
-        const previousCategoryAvg = previousVersion.categoryAverages[skill.category as SoftSkillCategory] ?? 0
+      // For simplicity, we'll calculate based on category averages
+      // In a real implementation, we'd need to fetch individual skill ratings for each version
+      const previousCategoryAvg =
+        previousVersion.categoryAverages[skill.category as SoftSkillCategory] ?? 0
 
-        // Estimate skill rating from category average (simplified)
+      // Estimate skill rating from category average (simplified)
       const currentRating = skill.rating
-      const estimatedPreviousRating = currentRating && previousCategoryAvg ? previousCategoryAvg : null
+      const estimatedPreviousRating =
+        currentRating && previousCategoryAvg ? previousCategoryAvg : null
 
       let trend: SkillProgression['trend'] = 'stable'
       let change: number | null = null
@@ -109,7 +112,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   if (isLoading) {
     return (
-      <YStack gap="$4" items="center" justify="center" p="$4">
+      <YStack gap="$4" alignItems="center" justifyContent="center" padding="$4">
         <Spinner size="large" color="$blue10" />
         <Text color="$color11">Loading progression data...</Text>
       </YStack>
@@ -118,7 +121,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   if (error) {
     return (
-      <YStack gap="$2" p="$4">
+      <YStack gap="$2" padding="$4">
         <Text fontSize="$5" fontWeight="600" color="$red11">
           Error loading progression
         </Text>
@@ -131,7 +134,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   if (versions.length < 2) {
     return (
-      <YStack gap="$2" p="$4" items="center">
+      <YStack gap="$2" padding="$4" alignItems="center">
         <Text fontSize="$5" fontWeight="600" color="$color12">
           Progression Tracking
         </Text>
@@ -190,7 +193,7 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
   return (
     <ScrollView flex={1} showsVerticalScrollIndicator={false}>
-      <YStack gap="$4" p="$4">
+      <YStack gap="$4" padding="$4">
         <YStack gap="$2">
           <Text fontSize="$6" fontWeight="600" color="$color12">
             Skill Progression
@@ -202,7 +205,15 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
 
         {/* Summary Stats */}
         <XStack gap="$3" flexWrap="wrap">
-          <YStack gap="$1" p="$3" bg="$green2" rounded="$3" borderWidth={1} borderColor="$green7" style={{ flex: 1, minWidth: 100 }}>
+          <YStack
+            gap="$1"
+            padding="$3"
+            backgroundColor="$green2"
+            borderRadius="$3"
+            borderWidth={1}
+            borderColor="$green7"
+            style={{ flex: 1, minWidth: 100 }}
+          >
             <Text fontSize="$2" color="$green10" fontWeight="600">
               Improved
             </Text>
@@ -210,7 +221,15 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
               {improvedSkills}
             </Text>
           </YStack>
-          <YStack gap="$1" p="$3" bg="$red2" rounded="$3" borderWidth={1} borderColor="$red7" style={{ flex: 1, minWidth: 100 }}>
+          <YStack
+            gap="$1"
+            padding="$3"
+            backgroundColor="$red2"
+            borderRadius="$3"
+            borderWidth={1}
+            borderColor="$red7"
+            style={{ flex: 1, minWidth: 100 }}
+          >
             <Text fontSize="$2" color="$red10" fontWeight="600">
               Declined
             </Text>
@@ -218,7 +237,15 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
               {declinedSkills}
             </Text>
           </YStack>
-          <YStack gap="$1" p="$3" bg="$color2" rounded="$3" borderWidth={1} borderColor="$borderColor" style={{ flex: 1, minWidth: 100 }}>
+          <YStack
+            gap="$1"
+            padding="$3"
+            backgroundColor="$color2"
+            borderRadius="$3"
+            borderWidth={1}
+            borderColor="$borderColor"
+            style={{ flex: 1, minWidth: 100 }}
+          >
             <Text fontSize="$2" color="$color10" fontWeight="600">
               Stable
             </Text>
@@ -242,18 +269,23 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
                   <YStack
                     key={skill.skillId}
                     gap="$2"
-                    p="$3"
-                    bg="$color2"
-                    rounded="$3"
+                    padding="$3"
+                    backgroundColor="$color2"
+                    borderRadius="$3"
                     borderWidth={1}
                     borderColor="$borderColor"
                   >
-                    <XStack items="center" justify="space-between" flexWrap="wrap" gap="$2">
+                    <XStack
+                      alignItems="center"
+                      justifyContent="space-between"
+                      flexWrap="wrap"
+                      gap="$2"
+                    >
                       <YStack gap="$1" flex={1}>
                         <Text fontSize="$4" fontWeight="600" color="$color12">
                           {skill.skillName}
                         </Text>
-                        <XStack gap="$3" items="center">
+                        <XStack gap="$3" alignItems="center">
                           {skill.previousRating !== null && (
                             <Text fontSize="$2" color="$color10">
                               Previous: {skill.previousRating.toFixed(1)}/5
@@ -266,14 +298,10 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
                           )}
                         </XStack>
                       </YStack>
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         {getTrendIcon(skill.trend)}
                         {skill.change !== null && (
-                          <Text
-                            fontSize="$3"
-                            fontWeight="600"
-                            color={getTrendColor(skill.trend)}
-                          >
+                          <Text fontSize="$3" fontWeight="600" color={getTrendColor(skill.trend)}>
                             {skill.change > 0 ? '+' : ''}
                             {skill.change.toFixed(1)}
                           </Text>
@@ -291,4 +319,3 @@ export const SoftSkillsProgressionChart: FC<SoftSkillsProgressionChartProps> = (
     </ScrollView>
   )
 }
-

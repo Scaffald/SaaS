@@ -14,7 +14,7 @@ import { LinearGradient } from '@tamagui/linear-gradient'
 import type { ReactNode } from 'react'
 import { useEffect, useRef } from 'react'
 import { Animated, Easing } from 'react-native'
-import { Text, XStack, YStack } from 'tamagui'
+import { Text, XStack, YStack } from '@unicornlove/ui'
 
 const SHIMMER_WIDTH = 220
 
@@ -65,7 +65,7 @@ function SkeletonBlock({
     <YStack
       position="relative"
       overflow="hidden"
-      bg="$color4"
+      backgroundColor="$color4"
       height={height}
       width={typeof width === 'number' ? width : undefined}
       style={{
@@ -104,11 +104,11 @@ function WorkerColumnSkeleton({ variant }: { variant: 'left' | 'right' }) {
     return (
       <YStack gap="$4">
         {wrapWidget(
-          <YStack gap="$3" items="center">
+          <YStack gap="$3" alignItems="center">
             <SkeletonBlock height={96} width={96} radius={48} />
             <SkeletonBlock height={24} width="60%" />
             <SkeletonBlock height={18} width="40%" />
-            <XStack gap="$2" flexWrap="wrap" justify="center">
+            <XStack gap="$2" flexWrap="wrap" justifyContent="center">
               {headlineWidths.map((width) => (
                 <SkeletonBlock key={`headline-${width}`} height={16} width={width} radius={8} />
               ))}
@@ -217,7 +217,7 @@ export function DiscoverWorkerProfileScreen({
   if (!safeUserId) {
     const errorWidget = (
       <DashboardWidget>
-        <YStack items="center" justify="center" gap="$2" py="$8">
+        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
           <Text fontSize="$6" fontWeight="700" color="$red10">
             Worker not found
           </Text>
@@ -242,7 +242,7 @@ export function DiscoverWorkerProfileScreen({
   if (!generalInfo) {
     const unavailableWidget = (
       <DashboardWidget>
-        <YStack items="center" justify="center" gap="$2" py="$8">
+        <YStack alignItems="center" justifyContent="center" gap="$2" paddingVertical="$8">
           <Text fontSize="$6" fontWeight="700" color="$red10">
             Profile unavailable
           </Text>

@@ -3,7 +3,7 @@ import { ProfilePage } from '@app/core/features/profile/ProfilePage'
 import { ResumeStepsSidebar, ResumeWizard, ResumeWizardProvider } from '@app/core/features/resume'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo } from 'react'
-import { Button, Text, YStack } from 'tamagui'
+import { Button, Text, YStack } from '@unicornlove/ui'
 
 function useResumeIdFromParams() {
   const params = useLocalSearchParams<{ resumeId?: string }>()
@@ -26,7 +26,7 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
 
   if (!resumeId) {
     return (
-      <YStack gap="$3" p="$4">
+      <YStack gap="$3" padding="$4">
         <Text fontSize="$7" fontWeight="700">
           Resume not found
         </Text>
@@ -41,7 +41,7 @@ function ResumeReviewContent({ resumeId }: ResumeReviewContentProps) {
   }
 
   return (
-    <YStack p="$4" flex={1}>
+    <YStack padding="$4" flex={1}>
       <ResumeWizard resumeId={resumeId} />
     </YStack>
   )

@@ -8,7 +8,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsup",
+        "command": "pnpm exec tsup",
         "cwd": "packages/ui"
       },
       "outputs": ["{projectRoot}/dist"]
@@ -45,7 +45,7 @@
     "watch": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsup --watch",
+        "command": "pnpm exec tsup --watch",
         "cwd": "packages/ui"
       }
     }

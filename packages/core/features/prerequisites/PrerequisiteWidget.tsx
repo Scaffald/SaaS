@@ -3,10 +3,10 @@ import { ResumeUploadButton, ResumeUploadModal } from '@app/core/features/resume
 import { ControlledAddressForm } from '@app/core/forms'
 import { api } from '@app/core/utils/api'
 import {
+  Button,
   CustomCheckbox,
   DashboardWidget,
   ResponsiveSelect,
-  UIButton as StyledButton,
   spacing,
 } from '@unicornlove/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,7 +15,7 @@ import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Pressable } from 'react-native'
-import { Input, Separator, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Input, Separator, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import {
   type PrerequisitesFormData,
   prerequisitesDefaults,
@@ -162,7 +162,7 @@ export function PrerequisiteWidget() {
         </YStack>
 
         {isCheckingStatus ? (
-          <YStack gap={spacing.sm} items="center" py={spacing['2xl']}>
+          <YStack gap={spacing.sm} alignItems="center" paddingVertical={spacing['2xl']}>
             <Spinner size="large" color="$blue7" />
             <Text color="$color11">Loading...</Text>
           </YStack>
@@ -235,7 +235,7 @@ export function PrerequisiteWidget() {
             {/* 2. Address */}
             <YStack gap="$3">
               <Text fontWeight="600">Address *</Text>
-              <Text fontSize="$2" color="$color11" mb="$2">
+              <Text fontSize="$2" color="$color11" marginBottom="$2">
                 Search and select your home address
               </Text>
               <ControlledAddressForm
@@ -267,7 +267,7 @@ export function PrerequisiteWidget() {
                 render={({ field }) => (
                   <YStack gap="$2">
                     {USER_TYPE_OPTIONS.map((option) => (
-                      <XStack key={option.value} gap="$3" items="center">
+                      <XStack key={option.value} gap="$3" alignItems="center">
                         <CustomCheckbox
                           checked={field.value?.includes(option.value as UserType)}
                           onCheckedChange={(checked: boolean) => {
@@ -326,7 +326,7 @@ export function PrerequisiteWidget() {
                 render={({ field }) => (
                   <YStack gap="$2">
                     {isLoadingIndustries ? (
-                      <XStack gap="$2" items="center">
+                      <XStack gap="$2" alignItems="center">
                         <Spinner size="small" />
                         <Text color="$color11">Loading industries...</Text>
                       </XStack>
@@ -367,7 +367,7 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center">
+                    <XStack gap="$3" alignItems="center">
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -415,7 +415,7 @@ export function PrerequisiteWidget() {
                 control={control}
                 render={({ field }) => (
                   <YStack gap="$2">
-                    <XStack gap="$3" items="center">
+                    <XStack gap="$3" alignItems="center">
                       <CustomCheckbox
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -459,23 +459,23 @@ export function PrerequisiteWidget() {
             </YStack>
 
             {/* Submit Button */}
-            <StyledButton
+            <Button
               variant="primary"
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting}
               opacity={isSubmitting ? 0.5 : 1}
               size="$5"
-              mt={spacing.xs}
+              marginTop={spacing.xs}
             >
               {isSubmitting ? (
-                <XStack gap={spacing.xs} items="center">
+                <XStack gap={spacing.xs} alignItems="center">
                   <Spinner size="small" color="white" />
-                  <StyledButton.Text>Completing...</StyledButton.Text>
+                  <Button.Text>Completing...</Button.Text>
                 </XStack>
               ) : (
-                <StyledButton.Text>Complete Profile</StyledButton.Text>
+                <Button.Text>Complete Profile</Button.Text>
               )}
-            </StyledButton>
+            </Button>
           </>
         )}
       </YStack>

@@ -1,4 +1,4 @@
-import { Text, TextArea, YStack } from 'tamagui'
+import { Text, TextArea, YStack } from '@unicornlove/ui'
 
 interface ReviewStep7SummaryProps {
   comment: string
@@ -22,9 +22,9 @@ export function ReviewStep7Summary({ comment, onChange }: ReviewStep7SummaryProp
         placeholder="Share your experience working with this person..."
         value={comment}
         onChangeText={onChange}
-        minH={200}
+        minHeight={200}
         fontSize="$4"
-        p="$4"
+        padding="$4"
         borderWidth={2}
         borderColor="$color5"
         focusStyle={{ borderColor: '$blue8' }}

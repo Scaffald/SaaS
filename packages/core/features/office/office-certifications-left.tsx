@@ -16,7 +16,7 @@ import {
   useWindowDimensions,
   XStack,
   YStack,
-} from 'tamagui'
+} from '@unicornlove/ui'
 import { z } from 'zod'
 
 const certificationSchema = z.object({
@@ -176,8 +176,8 @@ export function OfficeCertificationsLeft({
 
   return (
     <DashboardWidget>
-      <YStack gap="$4" p="$4">
-        <XStack justify="space-between" items="center">
+      <YStack gap="$4" padding="$4">
+        <XStack justifyContent="space-between" alignItems="center">
           <H4>{isEditing ? 'Edit Certification' : 'New Certification'}</H4>
           {isEditing && (
             <Button size="$2" variant="outlined" onPress={onCancel} icon={X}>
@@ -287,7 +287,7 @@ export function OfficeCertificationsLeft({
                   placeholder="Brief description of what this certification covers..."
                   value={field.value}
                   onChangeText={field.onChange}
-                  minH={80}
+                  minHeight={80}
                 />
               )}
             />
@@ -323,7 +323,7 @@ export function OfficeCertificationsLeft({
               render={({ field }) => {
                 const isChecked = Boolean(field.value)
                 return (
-                  <XStack gap="$3" items="center">
+                  <XStack gap="$3" alignItems="center">
                     <CustomCheckbox
                       checked={isChecked}
                       onCheckedChange={field.onChange}
@@ -364,7 +364,7 @@ export function OfficeCertificationsLeft({
           )}
 
           {/* Submit Button */}
-          <XStack justify="flex-end" pt="$4" gap="$2">
+          <XStack justifyContent="flex-end" paddingTop="$4" gap="$2">
             {isEditing && (
               <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
                 Cancel

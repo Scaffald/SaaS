@@ -2,7 +2,7 @@ import type { CustomQuestionAnswer } from '@app/schemas'
 import { ToggleSwitch } from '@unicornlove/ui'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import { useState } from 'react'
-import { Button, Input, Label, Text, TextArea, XStack, YStack } from 'tamagui'
+import { Button, Input, Label, Text, TextArea, XStack, YStack } from '@unicornlove/ui'
 
 export interface CustomQuestion {
   id: string
@@ -219,7 +219,7 @@ export function CustomQuestionsStep({
   }
 
   return (
-    <YStack gap="$6" width="100%" maxW={800} p="$4">
+    <YStack gap="$6" width="100%" maxWidth={800} padding="$4">
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -232,7 +232,14 @@ export function CustomQuestionsStep({
 
       {/* Validation Summary */}
       {Object.entries(errors).some(([, error]) => error !== undefined) && (
-        <YStack p="$4" rounded="$4" bg="$red2" borderWidth={1} borderColor="$red7" gap="$2">
+        <YStack
+          padding="$4"
+          borderRadius="$4"
+          backgroundColor="$red2"
+          borderWidth={1}
+          borderColor="$red7"
+          gap="$2"
+        >
           <Text fontSize="$4" fontWeight="600" color="$red11">
             Please complete the following:
           </Text>
@@ -258,7 +265,7 @@ export function CustomQuestionsStep({
             <Label fontSize="$4" fontWeight="600">
               {index + 1}. {question.question}
               {question.required && (
-                <Text color="$red10" ml="$1">
+                <Text color="$red10" marginLeft="$1">
                   *
                 </Text>
               )}
@@ -283,7 +290,7 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <XStack justify="flex-end">
+                <XStack justifyContent="flex-end">
                   <Text
                     fontSize="$2"
                     color={
@@ -316,7 +323,7 @@ export function CustomQuestionsStep({
                   disabled={isSubmitting}
                   maxLength={getMaxLength(question)}
                 />
-                <XStack justify="flex-end">
+                <XStack justifyContent="flex-end">
                   <Text
                     fontSize="$2"
                     color={
@@ -336,9 +343,9 @@ export function CustomQuestionsStep({
                   <XStack
                     key={option}
                     gap="$3"
-                    items="center"
-                    p="$3"
-                    rounded="$4"
+                    alignItems="center"
+                    padding="$3"
+                    borderRadius="$4"
                     borderWidth={1}
                     borderColor={
                       getAnswer(question.id) === option
@@ -347,7 +354,7 @@ export function CustomQuestionsStep({
                           ? '$red9'
                           : '$borderColor'
                     }
-                    bg={getAnswer(question.id) === option ? '$blue2' : '$background'}
+                    backgroundColor={getAnswer(question.id) === option ? '$blue2' : '$background'}
                     pressStyle={{ scale: 0.98 }}
                     onPress={() =>
                       updateAnswer(question.id, question.question, 'single_choice', option)
@@ -358,15 +365,20 @@ export function CustomQuestionsStep({
                     <YStack
                       width={20}
                       height={20}
-                      rounded="$12"
+                      borderRadius="$12"
                       borderWidth={2}
                       borderColor={getAnswer(question.id) === option ? '$blue9' : '$borderColor'}
-                      justify="center"
-                      items="center"
-                      bg="$background"
+                      justifyContent="center"
+                      alignItems="center"
+                      backgroundColor="$background"
                     >
                       {getAnswer(question.id) === option && (
-                        <YStack width={12} height={12} rounded="$12" bg="$blue9" />
+                        <YStack
+                          width={12}
+                          height={12}
+                          borderRadius="$12"
+                          backgroundColor="$blue9"
+                        />
                       )}
                     </YStack>
                     <Text fontSize="$3" color="$color12" flex={1}>
@@ -388,14 +400,14 @@ export function CustomQuestionsStep({
                     <XStack
                       key={option}
                       gap="$3"
-                      items="center"
-                      p="$3"
-                      rounded="$4"
+                      alignItems="center"
+                      padding="$3"
+                      borderRadius="$4"
                       borderWidth={1}
                       borderColor={
                         isSelected ? '$blue9' : errors[question.id] ? '$red9' : '$borderColor'
                       }
-                      bg={isSelected ? '$blue2' : '$background'}
+                      backgroundColor={isSelected ? '$blue2' : '$background'}
                       pressStyle={{ scale: 0.98 }}
                       onPress={() => {
                         const newAnswers = isSelected
@@ -409,12 +421,12 @@ export function CustomQuestionsStep({
                       <YStack
                         width={20}
                         height={20}
-                        rounded="$2"
+                        borderRadius="$2"
                         borderWidth={2}
                         borderColor={isSelected ? '$blue9' : '$borderColor'}
-                        justify="center"
-                        items="center"
-                        bg={isSelected ? '$blue9' : '$background'}
+                        justifyContent="center"
+                        alignItems="center"
+                        backgroundColor={isSelected ? '$blue9' : '$background'}
                       >
                         {isSelected && (
                           <Text fontSize="$3" fontWeight="bold" color="white">
@@ -433,7 +445,7 @@ export function CustomQuestionsStep({
 
             {/* Yes/No Toggle */}
             {question.type === 'yes_no' && (
-              <XStack gap="$4" items="center">
+              <XStack gap="$4" alignItems="center">
                 <ToggleSwitch
                   checked={(getAnswer(question.id) as boolean) || false}
                   onCheckedChange={(checked) =>
@@ -461,25 +473,25 @@ export function CustomQuestionsStep({
       {/* No Questions Message */}
       {questions.length === 0 && (
         <YStack
-          p="$6"
-          items="center"
+          padding="$6"
+          alignItems="center"
           gap="$2"
-          bg="$background"
-          rounded="$4"
+          backgroundColor="$background"
+          borderRadius="$4"
           borderWidth={1}
           borderColor="$borderColor"
         >
-          <Text fontSize="$4" color="$color11" text="center">
+          <Text fontSize="$4" color="$color11" textAlign="center">
             This position has no additional questions.
           </Text>
-          <Text fontSize="$3" color="$color10" text="center">
+          <Text fontSize="$3" color="$color10" textAlign="center">
             You can proceed to the next step.
           </Text>
         </YStack>
       )}
 
       {/* Navigation Buttons */}
-      <XStack gap="$3" justify="space-between" mt="$4">
+      <XStack gap="$3" justifyContent="space-between" marginTop="$4">
         <Button
           size="$4"
           variant="outlined"

@@ -101,10 +101,10 @@ export const NewsCard = ({
     <Card
       boxShadow={isDark ? cardShadows.dark : cardShadows.elevated}
       size="$4"
-      p="$0"
-      rounded={borderRadius['3xl']}
-      bg="$color1"
-      minH={minHeight}
+      padding="$0"
+      borderRadius={borderRadius['3xl']}
+      backgroundColor="$color1"
+      minHeight={minHeight}
       overflow="hidden"
       position="relative"
       cursor={fullCardClickable && isInteractive ? 'pointer' : 'default'}
@@ -132,24 +132,24 @@ export const NewsCard = ({
       <Image
         source={{ uri: imageSource }}
         position="absolute"
-        t={0}
-        l={0}
-        r={0}
-        b={0}
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
         objectFit="cover"
         onError={() => setImageError(true)}
       />
 
       {/* Overlay with theme-aware gradient */}
       <View
-        bg="$color1"
+        backgroundColor="$color1"
         opacity={0.8}
         position="absolute"
-        t={0}
-        l={0}
-        r={0}
-        b={0}
-        // bg="$backgroundTransparent"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        // backgroundColor="$backgroundTransparent"
         style={{
           backdropFilter: 'blur(2px)',
           WebkitBackdropFilter: 'blur(2px)',
@@ -157,16 +157,23 @@ export const NewsCard = ({
       />
 
       {/* Content Overlay */}
-      <YStack flex={1} height="100%" justify="space-between" p="$5" position="relative" z={1}>
+      <YStack
+        flex={1}
+        height="100%"
+        justifyContent="space-between"
+        padding="$5"
+        position="relative"
+        zIndex={1}
+      >
         {/* Header Section */}
         {header && (
-          <XStack justify="flex-start" items="flex-start">
+          <XStack justifyContent="flex-start" alignItems="flex-start">
             {header}
           </XStack>
         )}
 
         {/* Bottom Content Section */}
-        <YStack gap="$3" justify="flex-end">
+        <YStack gap="$3" justifyContent="flex-end">
           {/* Title */}
           <Text
             fontSize="$6"
@@ -191,10 +198,10 @@ export const NewsCard = ({
           )}
 
           {/* Footer Section */}
-          <XStack justify="space-between" items="center" gap="$3" flexWrap="wrap">
+          <XStack justifyContent="space-between" alignItems="center" gap="$3" flexWrap="wrap">
             {/* Custom Footer Content */}
             {footer && (
-              <XStack flex={1} items="center" gap="$2">
+              <XStack flex={1} alignItems="center" gap="$2">
                 {footer}
               </XStack>
             )}
@@ -213,7 +220,7 @@ export const NewsCard = ({
                   animation="quick"
                   pressStyle={{ scale: 0.95 }}
                   hoverStyle={{
-                    bg: '$blue2',
+                    backgroundColor: '$blue2',
                     borderColor: '$blue8',
                   }}
                 >

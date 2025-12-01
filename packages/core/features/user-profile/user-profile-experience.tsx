@@ -1,5 +1,5 @@
 import { Briefcase, Calendar, MapPin } from '@tamagui/lucide-icons'
-import { Card, Text, XStack, YStack } from 'tamagui'
+import { Card, Text, XStack, YStack } from '@unicornlove/ui'
 
 interface Experience {
   id: string
@@ -27,8 +27,8 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
 
   return (
     <Card elevate bordered>
-      <YStack gap="$4" p="$5">
-        <XStack gap="$2" items="center">
+      <YStack gap="$4" padding="$5">
+        <XStack gap="$2" alignItems="center">
           <Briefcase size={24} color="$blue10" />
           <Text fontSize="$7" fontWeight="700" color="$color12">
             Work Experience
@@ -37,8 +37,8 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
 
         <YStack gap="$3">
           {experience.map((exp) => (
-            <Card key={exp.id} bordered bg="$color2">
-              <YStack gap="$3" p="$4">
+            <Card key={exp.id} bordered backgroundColor="$color2">
+              <YStack gap="$3" padding="$4">
                 <YStack gap="$1">
                   <Text fontSize="$6" fontWeight="700" color="$color12">
                     {exp.job_title}
@@ -52,7 +52,7 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
 
                 <XStack gap="$3" flexWrap="wrap">
                   {(exp.start_date || exp.end_date) && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <Calendar size={16} color="$color10" />
                       <Text fontSize="$3" color="$color10">
                         {formatDate(exp.start_date)} -{' '}
@@ -61,7 +61,7 @@ export function UserProfileExperience({ experience }: UserProfileExperienceProps
                     </XStack>
                   )}
                   {exp.location && (
-                    <XStack gap="$2" items="center">
+                    <XStack gap="$2" alignItems="center">
                       <MapPin size={16} color="$color10" />
                       <Text fontSize="$3" color="$color10">
                         {exp.location}

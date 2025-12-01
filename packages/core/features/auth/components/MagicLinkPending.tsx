@@ -8,7 +8,7 @@ import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { TRPCClientError } from '@trpc/client'
 import { router } from 'expo-router'
 import { useCallback, useState } from 'react'
-import { AnimatePresence, Paragraph, Spinner, View, YStack } from 'tamagui'
+import { AnimatePresence, Paragraph, Spinner, View, YStack } from '@unicornlove/ui'
 
 import { CodeConfirmation } from './CodeConfirmation'
 import { EmailHeader } from './EmailHeader'
@@ -104,21 +104,21 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
   const displayEmail = email ?? t('auth.verify.fallbackEmail')
 
   return (
-    <View flex={1} items="center" justify="center" p="$4" width="100%">
+    <View flex={1} alignItems="center" justifyContent="center" padding="$4" width="100%">
       <View
         borderWidth="$1"
         borderColor="$borderColor"
-        items="center"
-        justify="center"
-        rounded="$8"
+        alignItems="center"
+        justifyContent="center"
+        borderRadius="$8"
         overflow="hidden"
-        p="$4"
-        px="$3"
-        $md={{ p: '$5', minW: 300 }}
+        padding="$4"
+        paddingHorizontal="$3"
+        $md={{ padding: '$5', minWidth: 300 }}
         width="100%"
-        maxW={450}
+        maxWidth={450}
       >
-        <View r="$4">
+        <View right="$4">
           {codeEntered ? (
             <View animation="bouncy" key="success" flexDirection="row" gap="$2">
               <AnimatePresence>
@@ -152,7 +152,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             key="code"
             animation="200ms"
             exitStyle={{ opacity: 0 }}
-            justify="space-between"
+            justifyContent="space-between"
             gap="$4"
             opacity={code ? 0 : 1}
           >
@@ -165,7 +165,7 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
             </View>
 
             {error && (
-              <Paragraph color="$red10" text="center" fontSize="$2">
+              <Paragraph color="$red10" textAlign="center" fontSize="$2">
                 {error}
               </Paragraph>
             )}
@@ -176,9 +176,9 @@ export const MagicLinkPending = ({ email }: MagicLinkPendingProps) => {
               position="absolute"
               width="100%"
               height="100%"
-              items="center"
-              justify="center"
-              bg="$background"
+              alignItems="center"
+              justifyContent="center"
+              backgroundColor="$background"
             >
               <Spinner color="$color10" />
             </View>

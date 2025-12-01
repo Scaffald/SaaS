@@ -5,7 +5,6 @@ import {
   LoadingState,
   ResponsiveModal,
   SaveStatusIndicator,
-  UIButton,
 } from '@unicornlove/ui'
 import { CheckCircle2 } from '@tamagui/lucide-icons'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,7 +12,7 @@ import { useRouter } from 'expo-router'
 import { useToastController } from '@tamagui/toast'
 import { useCallback, useEffect, useMemo, useRef, useState, type FC } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Separator, Slider, Spinner, Text, XStack, YStack } from 'tamagui'
+import { Button, Card, Separator, Slider, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
 import { softSkillsUpdateSchema } from '@app/schemas/profile/soft-skills.schema'
 import { SoftSkillsCategoryTabs, type SoftSkillCategory } from './SoftSkillsCategoryTabs'
 import type { SoftSkillsUpdateInput } from '@app/schemas/profile/soft-skills.schema'
@@ -216,21 +215,21 @@ export const SoftSkillsRatingForm: FC = () => {
 
   if (error) {
     return (
-      <YStack gap="$4" items="center" py="$8">
+      <YStack gap="$4" alignItems="center" paddingVertical="$8">
         <Text color="$red10">Failed to load assessment</Text>
         <Text color="$color11" fontSize="$2">
           {error.message}
         </Text>
-        <UIButton variant="primary" size="$2" onPress={() => void refetch()}>
+        <Button variant="primary" size="$2" onPress={() => void refetch()}>
           Retry
-        </UIButton>
+        </Button>
       </YStack>
     )
   }
 
   if (formSkills.length === 0) {
     return (
-      <YStack gap="$4" items="center" py="$8">
+      <YStack gap="$4" alignItems="center" paddingVertical="$8">
         <Text color="$color11">No soft skills available</Text>
         <Text color="$color10" fontSize="$2">
           Please contact support if this issue persists.
@@ -242,7 +241,7 @@ export const SoftSkillsRatingForm: FC = () => {
   return (
     <YStack gap="$4">
       {/* Header */}
-      <XStack justify="space-between" items="center">
+      <XStack justifyContent="space-between" alignItems="center">
         <Heading variant="h3">Rate Your Soft Skills</Heading>
         <SaveStatusIndicator
           status={autoSaveStatus}
@@ -269,7 +268,7 @@ export const SoftSkillsRatingForm: FC = () => {
       {/* Skills List for Active Category */}
       <YStack gap="$4">
         {categorySkills.length === 0 ? (
-          <YStack gap="$2" items="center" py="$8">
+          <YStack gap="$2" alignItems="center" paddingVertical="$8">
             <Text color="$color11">No skills in this category</Text>
           </YStack>
         ) : (
@@ -283,7 +282,7 @@ export const SoftSkillsRatingForm: FC = () => {
             }
 
             return (
-              <Card key={skill.id} bordered p="$4" bg="$background">
+              <Card key={skill.id} bordered padding="$4" backgroundColor="$background">
                 <YStack gap="$3">
                   <YStack gap="$1">
                     <Text fontSize="$5" fontWeight="600" color="$color12">
@@ -316,23 +315,23 @@ export const SoftSkillsRatingForm: FC = () => {
                             max={5}
                             step={1}
                             size="$3"
-                            mt="$4"
-                            mb="$2"
+                            marginTop="$4"
+                            marginBottom="$2"
                           >
-                            <Slider.Track bg="$color4" height={6} borderRadius={10}>
-                              <Slider.TrackActive bg="$blue9" borderRadius={10} />
+                            <Slider.Track backgroundColor="$color4" height={6} borderRadius={10}>
+                              <Slider.TrackActive backgroundColor="$blue9" borderRadius={10} />
                             </Slider.Track>
                             <Slider.Thumb
                               index={0}
                               circular
                               size="$1"
-                              bg="$blue9"
+                              backgroundColor="$blue9"
                               borderWidth={2}
                               borderColor="$blue11"
                             />
                           </Slider>
 
-                          <XStack justify="space-between" gap="$2" flexWrap="wrap">
+                          <XStack justifyContent="space-between" gap="$2" flexWrap="wrap">
                             {SOFT_SKILL_LEVELS.map((level) => (
                               <YStack
                                 key={level.value}
@@ -368,8 +367,8 @@ export const SoftSkillsRatingForm: FC = () => {
       <Separator />
 
       {/* Submit Button */}
-      <XStack justify="flex-end" pt="$2">
-        <UIButton
+      <XStack justifyContent="flex-end" paddingTop="$2">
+        <Button
           variant="primary"
           size="$4"
           onPress={handleSubmit(onSubmit)}
@@ -378,7 +377,7 @@ export const SoftSkillsRatingForm: FC = () => {
           iconAfter={updateMutation.isPending ? <Spinner size="small" /> : undefined}
         >
           {updateMutation.isPending ? 'Saving...' : 'Save Assessment'}
-        </UIButton>
+        </Button>
       </XStack>
 
       {/* Success Modal */}
@@ -389,21 +388,21 @@ export const SoftSkillsRatingForm: FC = () => {
         size="medium"
         showCloseButton={true}
       >
-        <YStack gap="$4" p="$4" items="center">
+        <YStack gap="$4" padding="$4" alignItems="center">
           <YStack
             width={80}
             height={80}
-            rounded="$12"
-            bg="$green2"
+            borderRadius="$12"
+            backgroundColor="$green2"
             borderWidth={2}
             borderColor="$green9"
-            items="center"
-            justify="center"
+            alignItems="center"
+            justifyContent="center"
           >
             <CheckCircle2 size={48} color="$green10" />
           </YStack>
 
-          <YStack gap="$2" items="center">
+          <YStack gap="$2" alignItems="center">
             <Text fontSize="$6" fontWeight="700" color="$color12" style={{ textAlign: 'center' }}>
               Soft Skills Assessment Complete!
             </Text>
@@ -413,11 +412,11 @@ export const SoftSkillsRatingForm: FC = () => {
             </Text>
           </YStack>
 
-          <XStack gap="$3" pt="$2">
+          <XStack gap="$3" paddingTop="$2">
             <Button variant="outlined" onPress={handleSuccessModalClose}>
               View Profile
             </Button>
-            <UIButton
+            <Button
               variant="primary"
               onPress={() => {
                 setShowSuccessModal(false)
@@ -425,7 +424,7 @@ export const SoftSkillsRatingForm: FC = () => {
               }}
             >
               Find Matching Jobs
-            </UIButton>
+            </Button>
           </XStack>
         </YStack>
       </ResponsiveModal>

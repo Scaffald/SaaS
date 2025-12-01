@@ -35,7 +35,7 @@ import type { SelectableCardProps } from './types'
  *   selection={{ enabled: true }}
  * >
  *   <CardHeader title="Example" />
- *   <CardMetadata items={[...]} />
+ *   <CardMetadata alignItems={[...]} />
  * </SelectableCard>
  *
  * // With custom padding and gap
@@ -100,9 +100,9 @@ export const SelectableCard = memo(
           }}
           borderWidth={isSelected ? 2 : 1}
           borderColor={borderColor}
-          rounded={borderRadius.md}
-          p={padding}
-          bg={bgColor}
+          borderRadius={borderRadius.md}
+          padding={padding}
+          backgroundColor={bgColor}
           gap={gap}
           opacity={disabled ? 0.5 : 1}
           cursor={disabled ? 'not-allowed' : 'pointer'}
@@ -120,7 +120,7 @@ export const SelectableCard = memo(
           hoverStyle={
             !disabled
               ? {
-                  bg: isSelected ? '$blue3' : '$backgroundHover',
+                  backgroundColor: isSelected ? '$blue3' : '$backgroundHover',
                   borderColor: isSelected ? '$blue8' : '$borderColorHover',
                   boxShadow: isDark ? cardShadows.darkHover : cardShadows.lightHover,
                 }
