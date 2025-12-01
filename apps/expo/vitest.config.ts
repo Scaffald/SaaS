@@ -6,11 +6,6 @@ import baseConfig from '../../vitest.config'
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 
 const expoConfig = {
-  root: workspaceRoot,
-  test: {
-    include: ['apps/expo/**/*.{test,spec}.{ts,tsx}'],
-    watchExclude: ['**/dist/**', '**/.turbo/**', 'apps/expo/.expo/**'],
-  },
   resolve: {
     alias: [
       { find: 'react-native', replacement: 'react-native-web' },
@@ -26,6 +21,11 @@ const expoConfig = {
         replacement: resolve(workspaceRoot, 'tests/infrastructure/vitest/mocks/expo-constants.ts'),
       },
     ],
+  },
+  root: workspaceRoot,
+  test: {
+    include: ['apps/expo/**/*.{test,spec}.{ts,tsx}'],
+    watchExclude: ['**/dist/**', '**/.turbo/**', 'apps/expo/.expo/**'],
   },
 }
 
