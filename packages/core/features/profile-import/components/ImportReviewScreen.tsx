@@ -247,8 +247,8 @@ export function ImportReviewScreen() {
     try {
       await saveImportMutation.mutateAsync({
         source: metadata?.source ?? 'resume',
-        // biome-ignore lint/suspicious/noExplicitAny: Import data transformation type alignment
-        payload: payload as any,
+        // Payload is compatible with mutation input but transformed from UI format
+        payload: payload as unknown as Parameters<typeof saveImportMutation.mutateAsync>[0]['payload'],
       })
       await utils.profile.import.getImportData.invalidate()
       setSelectedItems({})

@@ -303,10 +303,9 @@ export function ProfileEducationLeft({
         education_level: educationLevelQuery.data.education_level || undefined,
         education_entries: entries,
       }
-      // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-      reset(formData as any)
-      // biome-ignore lint/suspicious/noExplicitAny: Form schema is subset of API schema
-      originalDataRef.current = formData as any
+      // Form data from API is compatible with form schema
+      reset(formData as EducationProfileFormData)
+      originalDataRef.current = formData
 
       // Clear hidden entries - we'll set them after fields update
       setHiddenEntryIds(new Set())

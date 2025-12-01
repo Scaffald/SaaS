@@ -146,8 +146,16 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
           return
         }
 
-        // biome-ignore lint/suspicious/noExplicitAny: Slug validation response structure
-        const reason = (result as any).reason ?? 'taken'
+        // Slug validation response type from tRPC router
+        type SlugValidationResult = {
+          available: boolean
+          reason?: 'format' | 'reserved' | 'taken'
+          message?: string
+          suggestions?: string[]
+          slug?: string
+        }
+        const validationResult = result as SlugValidationResult
+        const reason = validationResult.reason ?? 'taken'
         const fallbackMessage =
           reason === 'reserved'
             ? 'This vanity URL is reserved for internal routes.'
@@ -157,10 +165,8 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
 
         setSlugStatus({
           state: reason === 'taken' ? 'taken' : 'invalid',
-          // biome-ignore lint/suspicious/noExplicitAny: Slug validation response structure
-          message: (result as any).message ?? fallbackMessage,
-          // biome-ignore lint/suspicious/noExplicitAny: Slug validation response structure
-          suggestions: (result as any).suggestions ?? [],
+          message: validationResult.message ?? fallbackMessage,
+          suggestions: validationResult.suggestions ?? [],
         })
       } catch (error) {
         if (isCancelled) return
@@ -202,14 +208,14 @@ export function OrganizationForm({ mode, organizationId, initialData }: Organiza
     setIsLoading(true)
     try {
       if (mode === 'create') {
-        // biome-ignore lint/suspicious/noExplicitAny: Form data has extra fields not in mutation type
-        await createMutation.mutateAsync(data as any)
+        // Form data is compatible with mutation input but has extra fields
+        await createMutation.mutateAsync(data as unknown as Parameters<typeof createMutation.mutateAsync>[0])
       } else {
         if (!organizationId) {
           throw new Error('Organization ID is required for update')
         }
-        // biome-ignore lint/suspicious/noExplicitAny: Form data has extra fields not in mutation type
-        await updateMutation.mutateAsync({ id: organizationId, ...data } as any)
+        // Form data is compatible with mutation input but has extra fields
+        await updateMutation.mutateAsync({ id: organizationId, ...data } as unknown as Parameters<typeof updateMutation.mutateAsync>[0])
       }
     } finally {
       setIsLoading(false)

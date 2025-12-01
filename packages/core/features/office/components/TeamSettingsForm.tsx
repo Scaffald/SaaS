@@ -151,8 +151,8 @@ export function TeamSettingsForm({
     pendingMetadataRef.current = nextMetadata
     updateMutation.mutate({
       teamId,
-      // biome-ignore lint/suspicious/noExplicitAny: Metadata structure stored as JSON
-      metadata: nextMetadata as any,
+      // Metadata structure stored as JSON - compatible with mutation input
+      metadata: nextMetadata as unknown as Parameters<typeof updateMutation.mutate>[0]['metadata'],
     })
   }, [canEdit, debouncedValues, isDirty, metadataState, teamId, updateMutation])
 
