@@ -1,6 +1,6 @@
 {
   "name": "expo-app",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
     "adb:reverse": "adb reverse tcp:8081 tcp:8081",
