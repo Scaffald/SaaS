@@ -47,14 +47,27 @@ cd "${TARGET_DIR}"
 # Step 3: Copy files
 echo ""
 echo "📋 Step 3: Copying files from monorepo..."
-cp -r "${SOURCE_DIR}"/* .
-cp -r "${SOURCE_DIR}"/.storybook . 2>/dev/null || true
-cp -r "${SOURCE_DIR}"/.github . 2>/dev/null || true
-cp "${SOURCE_DIR}"/.releaserc.json . 2>/dev/null || true
-cp "${SOURCE_DIR}"/.gitignore . 2>/dev/null || true
 
-# Remove monorepo-specific files
-rm -rf dist node_modules .turbo
+# Copy files excluding node_modules, dist, and .turbo
+rsync -av --exclude='node_modules' --exclude='dist' --exclude='.turbo' --exclude='.git' \
+  "${SOURCE_DIR}"/ .
+
+# Ensure hidden files are copied
+if [ -d "${SOURCE_DIR}/.storybook" ]; then
+  cp -r "${SOURCE_DIR}"/.storybook .
+fi
+if [ -d "${SOURCE_DIR}/.github" ]; then
+  cp -r "${SOURCE_DIR}"/.github .
+fi
+if [ -f "${SOURCE_DIR}/.releaserc.json" ]; then
+  cp "${SOURCE_DIR}"/.releaserc.json .
+fi
+if [ -f "${SOURCE_DIR}/.gitignore" ]; then
+  cp "${SOURCE_DIR}"/.gitignore .
+fi
+
+# Remove any accidentally copied monorepo-specific files
+rm -rf dist node_modules .turbo 2>/dev/null || true
 
 # Step 4: Initial commit
 echo ""
