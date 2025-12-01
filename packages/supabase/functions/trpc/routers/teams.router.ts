@@ -3376,7 +3376,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           for (const record of data ?? []) {
             teamsMap.set(
               record.id as string,
-              transformTeam(record as Record<string, any>),
+              transformTeam(record as Record<string, unknown>),
             );
           }
         };
@@ -3407,7 +3407,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           for (const record of data ?? []) {
             teamsMap.set(
               record.id as string,
-              transformTeam(record as Record<string, any>),
+              transformTeam(record as Record<string, unknown>),
             );
           }
         };
@@ -3447,7 +3447,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           for (const record of data ?? []) {
             teamsMap.set(
               record.id as string,
-              transformTeam(record as Record<string, any>),
+              transformTeam(record as Record<string, unknown>),
             );
           }
         } else {
@@ -3510,7 +3510,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { team: transformTeam(data as Record<string, any>) };
+        return { team: transformTeam(data as Record<string, unknown>) };
       },
     ),
 
@@ -3589,7 +3589,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { team: transformTeam(data as Record<string, any>) };
+        return { team: transformTeam(data as Record<string, unknown>) };
       },
     ),
 
@@ -3708,7 +3708,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { team: transformTeam(data as Record<string, any>) };
+        return { team: transformTeam(data as Record<string, unknown>) };
       },
     ),
 
@@ -3786,7 +3786,7 @@ function buildTeamsRouter(procedure: AuthenticatedProcedure) {
           });
         }
 
-        return { team: transformTeam(data as Record<string, any>) };
+        return { team: transformTeam(data as Record<string, unknown>) };
       },
     ),
 
