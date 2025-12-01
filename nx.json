@@ -41,8 +41,7 @@
       "cache": true
     },
     "typecheck": {
-      "dependsOn": ["^build"],
-      "inputs": ["default", "^production", "{workspaceRoot}/tsconfig.base.json"],
+      "inputs": ["default", "{workspaceRoot}/tsconfig.base.json"],
       "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"],
       "cache": true
     },

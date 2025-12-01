@@ -22,11 +22,27 @@ alwaysApply: true
 
 ## Code Quality Commands
 ### Primary Workflow
-- `pnpm check` - Format, lint, and type check (same as CI)
-- `pnpm build` - Build all packages
-- `pnpm format:fix` - Fix formatting with Biome
-- `pnpm lint:fix` - Fix linting issues
-- `pnpm typecheck` - TypeScript type checking
+- `pnpm check` - Lint and type check all packages (Nx run-many)
+- `pnpm build` - Build all packages (Nx run-many)
+- `pnpm format:fix` - Fix formatting with Biome (Nx format:write)
+- `pnpm lint:fix` - Fix linting issues (Nx run-many)
+- `pnpm typecheck` - TypeScript type checking (Nx run-many)
+
+### Nx-Specific Commands
+- `pnpm graph` - Visualize project dependency graph
+- `pnpm nx:reset` - Clear Nx cache
+- `pnpm affected:build` - Build only affected projects
+- `pnpm affected:test` - Test only affected projects
+- `pnpm affected:lint` - Lint only affected projects
+- `pnpm affected:typecheck` - Typecheck only affected projects
+
+### Nx Direct Commands
+- `nx run core:test` - Run tests for specific project
+- `nx run-many -t build` - Run build for all projects
+- `nx affected -t test` - Run tests for affected projects
+- `nx graph` - Open interactive project graph
+- `nx show projects` - List all projects
+- `nx show project core` - Show project configuration
 
 ### Comprehensive Testing
 - `pnpm test:all` - Full test suite (integration + build)
@@ -70,8 +86,8 @@ alwaysApply: true
 
 ## Build & Deployment
 ### Build Commands
-- `pnpm build` - Build all packages
-- `pnpm watch` - Watch mode for development
+- `pnpm build` - Build all packages (via Nx)
+- `pnpm watch` - Watch mode for development (via Nx)
 - `pnpm deploy` - Deploy application
 
 ### EAS Build Commands (Expo)
@@ -101,31 +117,32 @@ alwaysApply: true
 ## Monorepo Management
 ### Dependency Management
 - `pnpm check-deps` - Check dependency version consistency
-- `pnpm check-circular-deps` - Check for circular dependencies
+- `pnpm check-circular-deps` - Generate project graph (via Nx)
 
 ### Code Generation
-- `pnpm generate` - Generate code using Turbo generators
+- `pnpm generate` - Generate code using Nx generators
 
 ### Validation
 - `pnpm validate:migration` - Validate migration changes
 
-## Package-Specific Commands
+## Package-Specific Commands (via Nx)
 ### Core Package (`@app/core`)
-- `pnpm --filter @app/core build` - Build core package
-- `pnpm --filter @app/core watch` - Watch core package
-- `pnpm --filter @app/core check:type` - Type check core package
+- `nx run core:build` - Build core package
+- `nx run core:test` - Test core package
+- `nx run core:lint` - Lint core package
+- `nx run core:typecheck` - Type check core package
 
 ### UI Package (`@unicornlove/ui`)
-- `pnpm --filter @unicornlove/ui build` - Build UI package
-- `pnpm --filter @unicornlove/ui watch` - Watch UI package
-- `pnpm --filter @unicornlove/ui check` - Check UI package
-- `pnpm --filter @unicornlove/ui format:fix` - Format UI package
+- `nx run ui:build` - Build UI package
+- `nx run ui:test` - Test UI package
+- `nx run ui:lint` - Lint UI package
+- `nx run ui:watch` - Watch UI package
 
 ### Expo App (`expo-app`)
-- `pnpm --filter expo-app start` - Start Expo app
-- `pnpm --filter expo-app web` - Start web version
-- `pnpm --filter expo-app ios` - Run iOS version
-- `pnpm --filter expo-app android` - Run Android version
+- `nx run expo-app:start` - Start Expo app
+- `nx run expo-app:web` - Start web version
+- `nx run expo-app:ios` - Run iOS version
+- `nx run expo-app:android` - Run Android version
 
 ## Server Ports
 - **Expo Dev Server**: http://localhost:8081
@@ -140,4 +157,5 @@ alwaysApply: true
 3. **Use `pnpm test:all`** for comprehensive validation
 4. **Check server status** before suggesting operations
 5. **Use platform-specific commands** for targeted development
-6. **Leverage EAS commands** for production builds and deployments
+6. **Leverage affected commands** (`pnpm affected:*`) for faster CI/CD
+7. **Use `pnpm graph`** to visualize project dependencies

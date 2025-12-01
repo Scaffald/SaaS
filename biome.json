@@ -12,6 +12,8 @@
       "**",
       "!!**/node_modules",
       "!!**/build",
+      "!!**/dist",
+      "!!**/artifacts",
       "!!**/.vscode",
       "!!**/.tamagui",
       "!!**/ios",
@@ -21,7 +23,8 @@
       "!!**/*.css",
       "!!**/packages/fonts/types/index.d.ts",
       "!!**/coverage",
-      "!!**/.turbo"
+      "!!**/.turbo",
+      "!!**/.nx"
     ]
   },
   "formatter": {

@@ -1,95 +1,34 @@
 {
   "$schema": "https://json.schemastore.org/eas.json",
-  "cli": {
-    "version": ">= 10.2.3"
-  },
   "build": {
-    "production": {
-      "releaseChannel": "production",
-      "distribution": "store",
-      "env": {
-        "APP_ENV": "production",
-        "NODE_ENV": "production",
-        "EXPO_PUBLIC_URL": "TODO",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
-        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_PROD}"
-      },
-      "ios": {
-        "buildConfiguration": "Release",
-        "cache": {
-          "disabled": false,
-          "key": "production-ios",
-          "customPaths": ["node_modules"]
-        }
-      },
-      "android": {
-        "buildType": "apk",
-        "gradleCommand": ":app:bundleRelease",
-        "cache": {
-          "disabled": false,
-          "key": "production-android",
-          "customPaths": ["node_modules"]
-        }
-      }
-    },
-    "staging": {
-      "releaseChannel": "staging",
-      "distribution": "internal",
-      "env": {
-        "APP_ENV": "staging",
-        "NODE_ENV": "staging",
-        "EXPO_PUBLIC_URL": "TODO",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
-        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_STAGING}"
-      },
-      "ios": {
-        "buildConfiguration": "Release",
-        "simulator": false,
-        "cache": {
-          "disabled": false,
-          "key": "staging-ios"
-        }
-      },
-      "android": {
-        "buildType": "apk",
-        "cache": {
-          "disabled": false,
-          "key": "staging-android"
-        }
-      }
-    },
     "development": {
-      "releaseChannel": "development",
-      "distribution": "internal",
-      "developmentClient": true,
-      "env": {
-        "APP_ENV": "development",
-        "NODE_ENV": "development",
-        "EXPO_PUBLIC_URL": "TODO",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
-        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_DEV}"
-      },
-      "ios": {
-        "buildConfiguration": "Debug",
-        "simulator": true,
-        "cache": {
-          "disabled": false,
-          "key": "development-ios"
-        }
-      },
       "android": {
         "buildType": "apk",
         "cache": {
           "disabled": false,
           "key": "development-android"
         }
-      }
+      },
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_DEV}",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
+        "EXPO_PUBLIC_URL": "TODO",
+        "NODE_ENV": "development"
+      },
+      "ios": {
+        "buildConfiguration": "Debug",
+        "cache": {
+          "disabled": false,
+          "key": "development-ios"
+        },
+        "simulator": true
+      },
+      "releaseChannel": "development"
     },
     "development:device": {
       "extends": "development",
@@ -103,62 +42,123 @@
         "simulator": true
       }
     },
-    "production-web": {
-      "platform": "web",
-      "output": "static",
-      "env": {
-        "APP_ENV": "production",
-        "NODE_ENV": "production",
-        "EXPO_PUBLIC_URL": "TODO",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
-        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_PROD}"
-      },
-      "cache": {
-        "disabled": false,
-        "key": "production-web"
-      }
-    },
     "preview": {
-      "platform": "web",
-      "output": "static",
-      "env": {
-        "APP_ENV": "staging",
-        "NODE_ENV": "staging",
-        "EXPO_PUBLIC_URL": "TODO",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
-        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
-        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_STAGING}"
-      },
       "cache": {
         "disabled": false,
         "key": "preview-web"
-      }
+      },
+      "env": {
+        "APP_ENV": "staging",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_STAGING}",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
+        "EXPO_PUBLIC_URL": "TODO",
+        "NODE_ENV": "staging"
+      },
+      "output": "static",
+      "platform": "web"
+    },
+    "production": {
+      "android": {
+        "buildType": "apk",
+        "cache": {
+          "customPaths": ["node_modules"],
+          "disabled": false,
+          "key": "production-android"
+        },
+        "gradleCommand": ":app:bundleRelease"
+      },
+      "distribution": "store",
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_PROD}",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
+        "EXPO_PUBLIC_URL": "TODO",
+        "NODE_ENV": "production"
+      },
+      "ios": {
+        "buildConfiguration": "Release",
+        "cache": {
+          "customPaths": ["node_modules"],
+          "disabled": false,
+          "key": "production-ios"
+        }
+      },
+      "releaseChannel": "production"
+    },
+    "production-web": {
+      "cache": {
+        "disabled": false,
+        "key": "production-web"
+      },
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_PROD}",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
+        "EXPO_PUBLIC_URL": "TODO",
+        "NODE_ENV": "production"
+      },
+      "output": "static",
+      "platform": "web"
+    },
+    "staging": {
+      "android": {
+        "buildType": "apk",
+        "cache": {
+          "disabled": false,
+          "key": "staging-android"
+        }
+      },
+      "distribution": "internal",
+      "env": {
+        "APP_ENV": "staging",
+        "EXPO_PUBLIC_POSTHOG_API_KEY": "${POSTHOG_KEY_STAGING}",
+        "EXPO_PUBLIC_POSTHOG_HOST": "https://app.posthog.com",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwY3dnY2FqZmhsY3Fldmd2ZHZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY1ODE1OTAsImV4cCI6MjAzMjE1NzU5MH0.NDvbXoWOe4E8HFit2nDyh-TnIoqBhnGq1kc-L41VNGY",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ypcwgcajfhlcqevgvdvt.supabase.co",
+        "EXPO_PUBLIC_URL": "TODO",
+        "NODE_ENV": "staging"
+      },
+      "ios": {
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": false,
+          "key": "staging-ios"
+        },
+        "simulator": false
+      },
+      "releaseChannel": "staging"
     }
+  },
+  "cli": {
+    "version": ">= 10.2.3"
   },
   "submit": {
     "production": {
-      "ios": {
-        "appleId": "your-apple-id@example.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "ABCD123456"
-      },
       "android": {
         "serviceAccountKeyPath": "../path/to/service-account-key.json",
         "track": "production"
+      },
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "appleTeamId": "ABCD123456",
+        "ascAppId": "1234567890"
       }
     },
     "staging": {
-      "ios": {
-        "appleId": "your-apple-id@example.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "ABCD123456"
-      },
       "android": {
         "serviceAccountKeyPath": "../path/to/service-account-key.json",
         "track": "beta"
+      },
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "appleTeamId": "ABCD123456",
+        "ascAppId": "1234567890"
       }
     }
   }

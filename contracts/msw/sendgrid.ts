@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw'
+import { HttpResponse, http } from 'msw'
 
 import type { ContractInteractionRecorder } from './types'
 
@@ -10,20 +10,20 @@ export const createSendgridHandler = (record: ContractInteractionRecorder) =>
     expect(request.headers.get('authorization')).toBeTruthy()
 
     record({
-      provider: 'sendgrid',
       name: 'SendGrid email dispatch',
+      provider: 'sendgrid',
       request: {
-        method: request.method,
-        url: request.url,
+        body,
         headers: {
           authorization: request.headers.get('authorization'),
           'content-type': request.headers.get('content-type'),
         },
-        body,
+        method: request.method,
+        url: request.url,
       },
       response: {
-        status: 202,
         body: null,
+        status: 202,
       },
     })
 

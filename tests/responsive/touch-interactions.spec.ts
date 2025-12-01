@@ -16,15 +16,15 @@ import { expect, test } from '@playwright/test'
  * Mobile viewports for touch testing
  */
 const MOBILE_VIEWPORTS = [
-  { name: 'iPhone SE', width: 375, height: 667 },
-  { name: 'iPhone 12', width: 390, height: 844 },
-  { name: 'iPhone Pro Max', width: 428, height: 926 },
+  { height: 667, name: 'iPhone SE', width: 375 },
+  { height: 844, name: 'iPhone 12', width: 390 },
+  { height: 926, name: 'iPhone Pro Max', width: 428 },
 ]
 
 test.describe('Touch Interaction and Gesture Testing', () => {
   for (const viewport of MOBILE_VIEWPORTS) {
     test.describe(`${viewport.name}`, () => {
-      test.use({ viewport: { width: viewport.width, height: viewport.height } })
+      test.use({ viewport: { height: viewport.height, width: viewport.width } })
       test.use({ hasTouch: true }) // Enable touch simulation
 
       test('touch feedback appears quickly', async ({ page }) => {
