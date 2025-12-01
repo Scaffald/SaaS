@@ -3,9 +3,9 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "../_shared/database.types.ts";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Origin": "*",
 };
 
 interface JobData {
@@ -132,6 +132,7 @@ serve(async (req) => {
 
     // Get active feeds
     const { data: feeds, error: feedsError } = await supabase
+      .schema("core")
       .from("external_job_feeds")
       .select("*")
       .eq("is_active", true);
@@ -177,6 +178,7 @@ serve(async (req) => {
             let industryId: string | null = null;
             if (industry) {
               const { data: industryData } = await supabase
+                .schema("core")
                 .from("industries")
                 .select("id")
                 .eq("name", industry)
@@ -187,6 +189,7 @@ serve(async (req) => {
 
             // Insert job
             const { data: insertedJob, error: insertError } = await supabase
+              .schema("core")
               .from("external_jobs")
               .upsert(
                 {
@@ -223,18 +226,19 @@ serve(async (req) => {
 
               // Map to industry if found
               if (industryId && insertedJob) {
-                await supabase.from("external_job_industries").upsert(
-                  {
-                    external_job_id: insertedJob.id,
-                    industry_id: industryId,
-                    confidence_score: 0.8,
-                    mapped_by: "rule",
-                  },
-                  {
-                    onConflict: "external_job_id,industry_id",
-                    ignoreDuplicates: true,
-                  },
-                );
+                await supabase.schema("core").from("external_job_industries")
+                  .upsert(
+                    {
+                      external_job_id: insertedJob.id,
+                      industry_id: industryId,
+                      confidence_score: 0.8,
+                      mapped_by: "rule",
+                    },
+                    {
+                      onConflict: "external_job_id,industry_id",
+                      ignoreDuplicates: true,
+                    },
+                  );
               }
             }
           } catch (jobError) {
@@ -245,6 +249,7 @@ serve(async (req) => {
 
         // Update feed last_fetched_at
         await supabase
+          .schema("core")
           .from("external_job_feeds")
           .update({ last_fetched_at: new Date().toISOString() })
           .eq("id", feed.id);
