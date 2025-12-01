@@ -16,9 +16,7 @@ export function useGeocodingProvider(config: ProviderConfig): UseGeocodingProvid
       console.error('Failed to create geocoding provider:', error)
       return null
     }
-    // Use JSON.stringify for deep comparison of config object
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(config)])
+  }, [config])
 
   return {
     provider: provider || null,

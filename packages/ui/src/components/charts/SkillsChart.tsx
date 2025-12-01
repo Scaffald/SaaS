@@ -1,5 +1,4 @@
 import { type FC, useEffect, useMemo, useState } from 'react'
-import { useWindowDimensions } from 'react-native'
 import Animated, { useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated'
 import {
   Circle,
@@ -113,7 +112,7 @@ const RadarPolygon: FC<RadarPolygonProps> = ({
 
   useEffect(() => {
     animatedValue.value = withSpring(1, { damping: 12, stiffness: 90 })
-  }, [])
+  }, [animatedValue])
 
   return (
     <AnimatedPolygon
@@ -146,7 +145,6 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   showDots = true,
   dotSize = 4,
 }) => {
-  const { width: screenWidth } = useWindowDimensions()
   const theme = useTheme()
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
@@ -158,7 +156,7 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   const effectiveRadius = radius || Math.min(chartWidth, chartHeight) / 2 - 40
 
   // Helper to safely resolve colors
-  const resolveColor = (color: string | any): string => {
+  const resolveColor = (color: string | unknown): string => {
     if (typeof color === 'string' && color.startsWith('$')) {
       return (theme[color]?.get() as string) || color
     }
@@ -169,7 +167,21 @@ export const SkillsChart: FC<SkillsChartProps> = ({
   const itemsColor = resolveColor(gridColor)
   const resolvedLabelColor = resolveColor(labelColor)
 
-  // Validate datasets
+  // Validate datasets and calculate axes
+  const axes = datasets && datasets.length > 0 && datasets[0]?.data?.length ? datasets[0].data.length : 0
+
+  const calculated = useMemo(
+    () => ({
+      centerX: chartWidth / 2,
+      centerY: chartHeight / 2,
+      angle: axes > 0 ? (2 * Math.PI) / axes : 0,
+      max: maxValue,
+      radius: effectiveRadius,
+    }),
+    [chartWidth, chartHeight, axes, maxValue, effectiveRadius]
+  )
+
+  // Return empty state if no data
   if (!datasets || datasets.length === 0 || !datasets[0]?.data?.length) {
     return (
       <View items="center" justify="center" minH={chartHeight} width={chartWidth}>
@@ -177,18 +189,6 @@ export const SkillsChart: FC<SkillsChartProps> = ({
       </View>
     )
   }
-
-  const axes = datasets[0].data.length
-  const calculated = useMemo(
-    () => ({
-      centerX: chartWidth / 2,
-      centerY: chartHeight / 2,
-      angle: (2 * Math.PI) / axes,
-      max: maxValue,
-      radius: effectiveRadius,
-    }),
-    [chartWidth, chartHeight, axes, maxValue, effectiveRadius]
-  )
 
   // Render the spider web grid
   const renderGrid = () => {

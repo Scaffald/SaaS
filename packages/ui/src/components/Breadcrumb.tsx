@@ -156,7 +156,7 @@ export const Breadcrumb = memo(function Breadcrumb({
   const handleHiddenItemPress = useCallback(
     (item: BreadcrumbItem, index: number) => {
       if (item.href && !onItemPress) {
-        router.push(item.href as any)
+        router.push(item.href)
       } else if (onItemPress) {
         onItemPress(item, index)
       }

@@ -10,12 +10,18 @@ import {
   type YStackProps,
 } from 'tamagui'
 
+let _headerHeightError: boolean
+
 const useHeaderHeight = () => {
+  let headerHeight: number
   try {
-    return useHeaderHeightOG()
+    headerHeight = useHeaderHeightOG()
+    _headerHeightError = false
   } catch (_error) {
-    return 0
+    _headerHeightError = true
+    headerHeight = 0
   }
+  return headerHeight
 }
 
 const FormWrapperContext = createContext<{ height: number } | null>(null)

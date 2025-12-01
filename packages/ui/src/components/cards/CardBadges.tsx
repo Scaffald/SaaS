@@ -34,8 +34,8 @@ export const CardBadges = memo(
         {displayBadges.map((badge) => (
           <Chip
             key={badge.key}
-            bg={(badge.bg ?? '$blue10') as any}
-            color={(badge.color ?? '$color1') as any}
+            bg={badge.bg ?? '$blue10'}
+            color={badge.color ?? '$color1'}
             fontSize="$2"
             px="$2"
             py="$1"

@@ -111,6 +111,11 @@ vi.mock('@unicornlove/ui', () => ({
     files: [],
     isOpen: false,
   })),
+  MediaTypeOptions: {
+    Images: 'images',
+    Videos: 'videos',
+    All: 'all',
+  },
 }))
 
 const { CMSSlideForm } = await import('../cms-slide-form')

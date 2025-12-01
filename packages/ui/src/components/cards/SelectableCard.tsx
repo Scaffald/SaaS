@@ -66,7 +66,6 @@ export const SelectableCard = memo(
       forwardedRef
     ) => {
       const theme = useTheme()
-      const isSelectionEnabled = selection?.enabled ?? false
 
       // Determine if we're in dark mode
       const isDark = theme.background.val.includes('8%')

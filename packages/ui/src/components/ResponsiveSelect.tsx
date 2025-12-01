@@ -94,13 +94,13 @@ export function ResponsiveSelect({
 }: ResponsiveSelectProps) {
   const { width } = useWindowDimensions()
   const isMobile = width <= 800
+  const [isOpen, setIsOpen] = useState(false)
 
   const selectedOption = options.find((opt) => opt.value === value)
   const displayValue = selectedOption?.label ?? placeholder
 
   // Mobile: Render as Sheet with action buttons
   if (isMobile) {
-    const [isOpen, setIsOpen] = useState(false)
 
     return (
       <YStack gap="$2">

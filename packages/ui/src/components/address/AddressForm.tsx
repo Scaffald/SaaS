@@ -185,7 +185,7 @@ export function AddressForm({
         }
       }
     },
-    [onAddressChange, onAddressSelect, formMethods, fieldMapping, internalAddress]
+    [onAddressChange, onAddressSelect, formMethods, fieldMapping]
   )
 
   // Handle individual field changes

@@ -123,7 +123,7 @@ export function SkillSearchModal({
   const [selectedChild, setSelectedChild] = useState<SkillChild | null>(null)
   const [proficiency, setProficiency] = useState(3)
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingChildren, setIsLoadingChildren] = useState(false)
+  const [isLoadingChildren, _setIsLoadingChildren] = useState(false)
 
   // Search parent skills
   const handleSearchParents = useCallback(

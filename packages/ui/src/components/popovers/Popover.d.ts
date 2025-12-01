@@ -1,11 +1,11 @@
-import type { ComponentType } from 'react'
-import type { PopoverProps } from 'tamagui'
+import type { ComponentType, ReactNode } from 'react'
+import type { PopoverProps, ViewProps } from 'tamagui'
 
-declare const PopoverContent: ComponentType<any>
+declare const PopoverContent: ComponentType<ViewProps>
 declare const TamaguiPopover: ComponentType<PopoverProps> & {
-  Anchor: ComponentType<any>
-  Trigger: ComponentType<any>
-  Close: ComponentType<any>
+  Anchor: ComponentType<{ children?: ReactNode }>
+  Trigger: ComponentType<ViewProps>
+  Close: ComponentType<ViewProps>
 }
 
 export type PopoverComponent = ComponentType<PopoverProps> & {

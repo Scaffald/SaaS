@@ -4,13 +4,11 @@ import { animations } from '../config/animations'
 import {
   blueDark,
   blueLight,
-  darkPalette,
   darkTransparent,
   grayDark,
   grayLight,
   greenDark,
   greenLight,
-  lightPalette,
   lightTransparent,
   orangeDark,
   orangeLight,

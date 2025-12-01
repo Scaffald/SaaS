@@ -34,7 +34,7 @@ export const SkeletonBox = ({
         ...(typeof width === 'string' ? { width } : {}),
         ...(typeof height === 'string' ? { height } : {}),
       }}
-      rounded={borderRadius as any}
+      rounded={borderRadius}
       opacity={animated ? 0.6 : 0.5}
       aria-busy={true}
       aria-label="Loading content"

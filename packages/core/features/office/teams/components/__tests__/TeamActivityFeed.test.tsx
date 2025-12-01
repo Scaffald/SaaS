@@ -69,6 +69,8 @@ vi.mock('tamagui', () => {
     ScrollDownButton: SelectScrollDownButton,
   })
 
+  const styled = vi.fn(() => ({ attrs: vi.fn(() => vi.fn(() => null)) }))
+
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     YStack: Stack,
@@ -79,6 +81,7 @@ vi.mock('tamagui', () => {
     Separator,
     Select,
     Spinner,
+    styled,
     useMedia: () => ({ sm: false }),
   }
 })

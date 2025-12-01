@@ -9,18 +9,22 @@ const basicDiv = ({ testID, children, ...rest }: { testID?: string; children?: R
   </div>
 )
 
-const Image = (props: any) => <img {...props} alt="" />
+interface ImageProps extends Record<string, unknown> {
+  alt?: string
+}
+
+const Image = (props: ImageProps) => <img {...props} alt={props.alt ?? ''} />
 
 const View = basicDiv
 
-export const styled = (Component: React.ComponentType) => {
-  return (props: any) => {
+export const styled = (Component: React.ComponentType<Record<string, unknown>>) => {
+  return (props: Record<string, unknown>) => {
     return <Component {...props} />
   }
 }
 
 export const createStyledContext = () => ({})
-export const withStaticProperties = (Component: React.ComponentType, _: any) => Component
+export const withStaticProperties = (Component: React.ComponentType<Record<string, unknown>>, _config: Record<string, unknown>) => Component
 
 export const useWindowDimensions = () => ({ width: 1024, height: 768 })
 export const useMedia = () => ({ sm: false })

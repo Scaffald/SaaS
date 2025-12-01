@@ -38,7 +38,7 @@ export interface AvatarCropModalProps {
 
 const OUTPUT_TARGET_SIZE = 512
 const MAX_FILE_BYTES = 500 * 1024
-const PREVIEW_SIZE = 120
+const _PREVIEW_SIZE = 120
 const MIN_ZOOM = 1
 const MAX_ZOOM = 3
 const ZOOM_MULTIPLIER = 1.1
@@ -233,14 +233,6 @@ export function AvatarCropModal({
     return actualCropSize / zoom
   }, [actualCropSize, zoom])
 
-  const previewScaleFactor = cropDisplaySize > 0 ? PREVIEW_SIZE / cropDisplaySize : 1
-
-  const previewImageWidth = scaledImageWidth * previewScaleFactor
-  const previewImageHeight = scaledImageHeight * previewScaleFactor
-
-  const previewLeft = -(cropPosition.x * scale - cropAreaTopLeft.x) * previewScaleFactor
-  const previewTop = -(cropPosition.y * scale - cropAreaTopLeft.y) * previewScaleFactor
-
   const getMaxCropPosition = useCallback(() => {
     if (imageDimensions.width === 0 || imageDimensions.height === 0) {
       return { maxX: 0, maxY: 0 }
@@ -283,22 +275,6 @@ export function AvatarCropModal({
       return next
     })
   }, [constrainCropPosition])
-
-  const handleZoomReset = useCallback(() => {
-    const newBaseScale =
-      imageDimensions.width > 0 && imageDimensions.height > 0
-        ? displaySize / Math.max(imageDimensions.width, imageDimensions.height)
-        : 1
-    const initialZoom = Math.max(1, newBaseScale * 1.2)
-    setZoom(initialZoom)
-    if (imageDimensions.width > 0 && imageDimensions.height > 0) {
-      const initialCropSize = Math.min(imageDimensions.width, imageDimensions.height, cropSize)
-      setCropPosition({
-        x: Math.max(0, (imageDimensions.width - initialCropSize) / 2),
-        y: Math.max(0, (imageDimensions.height - initialCropSize) / 2),
-      })
-    }
-  }, [imageDimensions, displaySize, cropSize])
 
   const handleWheel = useCallback(
     (event: WheelEvent) => {
@@ -416,7 +392,7 @@ export function AvatarCropModal({
       .onEnd(() => {
         setCropPosition((pos) => constrainCropPosition(pos.x, pos.y))
       })
-  }, [constrainCropPosition, imageLoaded, zoom])
+  }, [constrainCropPosition, imageLoaded])
 
   const panGesture = useMemo(() => {
     if (Platform.OS === 'web' || !imageLoaded) return null
@@ -444,11 +420,11 @@ export function AvatarCropModal({
     return Gesture.Simultaneous(pinchGesture, panGesture)
   }, [imageLoaded, panGesture, pinchGesture])
 
-  const toggleFlipHorizontal = useCallback(() => {
+  const _toggleFlipHorizontal = useCallback(() => {
     setFlipHorizontal((prev) => !prev)
   }, [])
 
-  const toggleFlipVertical = useCallback(() => {
+  const _toggleFlipVertical = useCallback(() => {
     setFlipVertical((prev) => !prev)
   }, [])
 

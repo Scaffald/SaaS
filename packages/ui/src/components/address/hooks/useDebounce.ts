@@ -58,7 +58,7 @@ export function useAddressDebouncedCallback<T extends (...args: unknown[]) => un
   // Update deps ref when deps change
   useEffect(() => {
     depsRef.current = deps
-  }, deps)
+  }, [deps])
 
   const debouncedCallback = useRef(((...args: Parameters<T>) => {
     // Clear existing timeout

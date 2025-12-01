@@ -29,7 +29,6 @@ export function SearchSelectWeb<T>(props: SearchSelectProps<T>) {
     canSelectMore,
     clearResults,
     refreshResults,
-    setSelection,
   } = useSearchSelect<T>(props)
 
   const strings = useMemo(() => ({ ...DEFAULT_STRINGS, ...(props.strings ?? {}) }), [props.strings])

@@ -62,6 +62,8 @@ vi.mock('tamagui', () => {
   const styled = vi.fn((component: unknown) => component)
 
   const View = ({ children }: { children?: ReactNode }) => <div>{children}</div>
+  const Sheet = ({ children, open }: { children?: ReactNode; open?: boolean }) =>
+    open ? <div>{children}</div> : null
 
   return {
     Theme: ({ children }: { children: ReactNode }) => <div>{children}</div>,
@@ -72,6 +74,7 @@ vi.mock('tamagui', () => {
     Button,
     Select,
     Spinner,
+    Sheet,
     styled,
   }
 })

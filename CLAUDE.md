@@ -1,4 +1,6 @@
-# SCF-Scaffald (Scaffald) - Claude Code Context
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Application Overview
 
@@ -68,54 +70,287 @@ SCF-Scaffald/
 
 ## Development Commands
 
-### Primary Workflow
+### Core Development (Primary Workflow)
 ```bash
-# Development servers
+# Start development environment
 pnpm dev              # Start Expo dev server (port 8081)
-pnpm web              # Start web dev server (port 3000)
-pnpm ios              # Run iOS app
-pnpm android          # Run Android app
+pnpm web              # Start Expo Web dev server (port 8081)
+pnpm ios              # Build and run iOS app
+pnpm android          # Build and run Android app
 
 # Code quality (ALWAYS run before committing)
-pnpm check            # Format, lint, type check (matches CI)
-pnpm build            # Build verification (matches CI)
+pnpm check            # Lint and type check all packages (matches CI)
+pnpm build            # Build all packages (matches CI)
+pnpm format:fix       # Fix formatting issues with Biome
+pnpm lint:fix         # Fix linting issues
 
-# Supabase operations
-pnpm supa start       # Start local Supabase (port 54321)
-pnpm supa stop        # Stop Supabase
-pnpm supa:studio      # Open Supabase Studio (port 54323)
-pnpm supa:mailpit     # Open Mailpit for emails (port 54324)
-pnpm supa db reset    # Reset database with all migrations
-pnpm supa:seed        # Seed test data (users, industries, etc.)
-pnpm supa:generate    # Generate TypeScript types from local DB
-
-# Testing
-pnpm exec playwright test    # Run Playwright E2E tests
-pnpm test:all               # Full test suite (integration + build)
+# Pre-commit validation (REQUIRED workflow)
+pnpm check && pnpm build && pnpm check-deps
 ```
 
-### Important Notes
-- **ALWAYS use `pnpm`** - Never use `npm` or `yarn`
-- **ALWAYS run `pnpm check && pnpm build`** before committing
-- **Servers assumed running** - Don't start dev servers unless explicitly requested
-- **Use workspace commands** - `pnpm --filter <package> <command>`
+### Supabase Operations
+```bash
+# Local development
+pnpm supa start       # Start local Supabase (port 54321)
+pnpm supa stop        # Stop Supabase
+pnpm supa status      # Check Supabase status
+
+# Database management
+pnpm supa db reset    # Reset database with all migrations
+pnpm supa migration:new <name>  # Create new migration
+pnpm supa migration:up          # Apply pending migrations
+
+# Type generation & tools
+pnpm supa:generate    # Generate TypeScript types from local DB
+pnpm supa:generate:remote  # Generate types from remote DB
+pnpm supa:studio      # Open Supabase Studio (http://127.0.0.1:54323)
+pnpm supa:mailpit     # Open Mailpit for emails (http://127.0.0.1:54324)
+
+# Seeding & data
+pnpm supa:seed        # Seed test data (users, industries, organizations)
+pnpm supa:seed:onet   # Import O*NET database (1,016+ occupations)
+
+# Deployment (environment-specific)
+pnpm supa:db:push:preview   # Push migrations to preview environment
+pnpm supa:db:push:prod      # Push migrations to production
+pnpm supa:config:push       # Push configuration to environments
+```
+
+### Testing Commands
+```bash
+# Unit & API tests
+pnpm test             # Run unit tests and API endpoint tests
+pnpm test:unit        # Run Vitest unit tests
+pnpm test:api         # Run tRPC endpoint tests
+pnpm test:core        # Test @app/core package specifically
+pnpm test:schemas     # Test Zod schema definitions
+
+# Integration & validation
+pnpm test:all         # Full test suite (integration + build)
+pnpm test:build       # Verify all packages build
+pnpm test:lint        # Lint, type check, and dependency checks
+pnpm test:integration # Integration tests (lint + typecheck + tamagui)
+pnpm test:tamagui     # Tamagui-specific checks
+pnpm test:deps        # Dependency consistency and circular dependency checks
+
+# Development & debugging
+pnpm test:watch       # Watch mode for unit tests
+pnpm test:vitest:ui   # Vitest UI dashboard
+pnpm test:playwright  # Run Playwright E2E tests
+pnpm test:deno:types  # Type check Deno Edge Functions
+
+# Code quality in tests
+pnpm test:orchestrated  # Orchestrated test runner
+pnpm test:health:full   # Health analysis with unit tests
+```
+
+### Monorepo Commands (Nx)
+```bash
+# Affected projects (faster CI - only build changed packages)
+pnpm affected:build    # Build only affected packages
+pnpm affected:test     # Test only affected packages
+pnpm affected:lint     # Lint only affected packages
+pnpm affected:typecheck  # Type check only affected packages
+
+# Project exploration
+pnpm graph            # Visualize dependency graph (interactive)
+pnpm nx:reset         # Clear Nx cache
+pnpm check-circular-deps  # Check for circular dependencies
+
+# Package-specific commands (via Nx)
+nx run core:test      # Run tests for @app/core
+nx run ui:build       # Build @unicornlove/ui package
+nx run ui:watch       # Watch UI package for changes
+nx run expo-app:start # Start Expo app specifically
+```
+
+### Localization & Data
+```bash
+pnpm locales:validate     # Validate all translations
+pnpm locales:coverage     # Check translation coverage across locales
+pnpm supa:news:import     # Import external job feeds
+pnpm supa:news:feeds      # Seed news feed data
+```
+
+### UI & Build Tools
+```bash
+# Tamagui (UI framework)
+pnpm tamagui:check        # Check Tamagui configuration
+pnpm tamagui:upgrade      # Upgrade Tamagui to latest
+pnpm tamagui:upgrade:canary  # Upgrade to canary versions
+
+# UI package
+pnpm ui:check             # Check UI package compilation
+pnpm ui:optimize          # Optimize UI components
+pnpm --filter @unicornlove/ui watch  # Watch UI package changes
+```
+
+### Important Conventions
+- **ALWAYS use `pnpm`** - Never use `npm` or `yarn` (monorepo requirement)
+- **ALWAYS use workspace commands** - `pnpm supa`, `pnpm --filter <package>`, not global CLI tools
+- **ALWAYS run `pnpm check && pnpm build` before committing**
+- **Servers assumed running** - Development servers (Expo, Supabase) are assumed already running unless you're explicitly asked to start them
+- **Check dependency versions** - Run `pnpm check-deps` to ensure consistency across monorepo
+
+## Monorepo Packages & Organization
+
+### Core Packages
+- **`@app/core`** (`packages/core/`): Business logic, features, and application code
+  - `features/`: Route-based feature modules (`<feature>/<feature>-<child>-{left|right|screen}.tsx`)
+  - `locales/`: Translation files and localization helpers
+- **`@unicornlove/ui`** (`packages/ui/`): Cross-platform UI components (Tamagui + Bento)
+  - Published to npm and consumed via package (see UI Package Hybrid Maintenance below)
+  - Shared across web and mobile platforms
+- **`@app/schemas`** (`packages/schemas/`): Zod validation schemas for API/database
+- **`@app/supabase`** (`packages/supabase/`): Database, migrations, and Edge Functions
+  - `migrations/`: Numbered migrations (001-007+ pattern)
+  - `functions/`: Deno Edge Functions and tRPC routers
+- **`@app/trpc`** (`packages/trpc/`): tRPC client setup and type exports
+- **`expo-app`** (`apps/expo/`): Primary Expo app (iOS, Android, Web)
+
+### Package Installation Patterns
+```bash
+# Install in specific package
+cd packages/core && pnpm add package-name
+
+# Install in Expo app (native dependencies)
+cd apps/expo && pnpm add react-native-reanimated
+
+# Use workspace filter for commands
+pnpm --filter @app/core test
+pnpm --filter @unicornlove/ui watch
+```
 
 ## Code Quality Standards
 
-### Pre-Commit Workflow
-**IMPORTANT**: Always run `pnpm check && pnpm build` before committing. This matches CI exactly.
+### Pre-Commit Workflow (MANDATORY)
+**REQUIRED**: Always run these checks before committing:
+```bash
+pnpm check              # Format, lint, type check (matches CI)
+pnpm build              # Build verification (matches CI)
+pnpm check-deps         # Dependency consistency
+```
+
+### Post-Implementation Quality Check (MANDATORY)
+
+After any code changes, **ALWAYS** run:
+```bash
+pnpm lint:fix           # Auto-fix linting issues
+pnpm lint              # Verify no remaining errors
+# Review any remaining warnings/errors and fix manually
+```
+
+**Critical Rules:**
+- **NEVER use ignore comments** - `@ts-ignore`, `@ts-expect-error`, `// biome-ignore` are prohibited
+  - These mask problems, not solve them
+  - Always fix the root cause instead
+- **All errors must be resolved** before work is considered complete
+- **All warnings should be reviewed** - some indicate real problems
+- **Hook rules are non-negotiable**:
+  - Hooks MUST be called unconditionally at component top level
+  - Never call hooks inside conditionals, loops, or try-catch
+  - Always maintain same hook call order across renders
+
+### Linting Status by Package
+
+| Package | Status | Details |
+|---------|--------|---------|
+| **@app/core** | ✅ 100% CLEAN | All business logic fully linted and passing |
+| **@unicornlove/ui** | ✅ 99% CLEAN | 4 non-critical warnings in complex gesture code |
+| **@app/schemas** | ✅ CLEAN | All Zod definitions validated |
+| **@app/supabase** | ⚠️ 174 errors | Third-party types (Stripe) and generated code - acceptable |
+
+### Linting Best Practices
+
+**Before Committing:**
+1. Run `pnpm lint:fix` to auto-fix formatting and common issues
+2. Review remaining errors - there should be none in business logic
+3. Fix any `any` types by providing proper TypeScript types
+4. Remove unused variables (don't prefix with underscore unless intentional)
+5. Verify hook calls are at top level (unconditional)
+6. Check dependency arrays are complete
+
+**Type Safety Standards:**
+- ❌ Never write: `variable as any`
+- ✅ Always write: `variable as ProperType` or better, type it properly from the start
+- ❌ Never write: `function param: any`
+- ✅ Always write: `function param: unknown` or specific type
+- **Exception**: Third-party library integrations where you can't change types
+
+**Hook Patterns (React):**
+```typescript
+// ✅ CORRECT - hooks at top level
+export function MyComponent() {
+  const [state, setState] = useState(0)
+  const value = useMemo(() => expensiveComputation(), [])
+
+  useEffect(() => {
+    // do something
+  }, [state])
+
+  return <div>{state}</div>
+}
+
+// ❌ WRONG - conditional hook
+export function BadComponent({ condition }: { condition: boolean }) {
+  if (condition) {
+    const [state, setState] = useState(0)  // WRONG!
+  }
+  return <div>...</div>
+}
+
+// ❌ WRONG - hook after early return
+export function BadComponent2({ data }: { data?: any[] }) {
+  if (!data || data.length === 0) {
+    return null  // ERROR: useMemo below is after return!
+  }
+
+  const computed = useMemo(() => data.map(x => x.id), [data])
+  return <div>{computed}</div>
+}
+```
+
+**Linting Commands:**
+```bash
+# Check and fix formatting/linting automatically
+pnpm lint:fix
+
+# Check linting status (read-only)
+pnpm lint
+
+# Check hardcoded routes (custom rule)
+pnpm lint:routes
+
+# Sort package.json keys
+pnpm lint:sort-package-json
+
+# Run full pre-commit validation
+pnpm check && pnpm build && pnpm check-deps
+```
 
 ### TypeScript Standards
 - **NEVER use `any` type** - Use `unknown` or proper typing
 - **Always define explicit types** for functions and components
 - **Use proper interfaces** for complex objects
 - **Validate external data** with type guards and Zod schemas
+- **Import React functions directly** - Never use global React imports:
+  ```typescript
+  // ✅ GOOD
+  import { useState, Fragment } from 'react';
+  import type { FC, ReactNode } from 'react';
+
+  // ❌ BAD
+  import React from 'react';
+  const Component = () => <React.Fragment>...</React.Fragment>;
+  ```
 
 ### Code Organization
 - **Feature-based**: Routes organized in `packages/core/features/<feature>/`
 - **Route naming**: `<parent>-<child>-{left|right|screen}.tsx` pattern
+  - Use `pnpm gen route` to auto-generate properly structured route files
 - **No barrel files**: Direct imports to optimize build performance
 - **Cross-platform**: UI components in `packages/ui/` work on web and mobile
+- **Avoid circular dependencies**: Run `pnpm check-circular-deps` to verify
 
 ## BrainGrid Integration (CRITICAL)
 
@@ -179,22 +414,50 @@ mcp__braingrid__create_project_requirement({
 
 **REMEMBER**: Task status updates are of paramount importance. Update BrainGrid BEFORE committing code or marking work complete.
 
-## Cursor Rules Reference
+## Cursor Rules Integration
 
-This project uses comprehensive Cursor rules located in `.cursor/rules/`. Key rules:
+This project uses comprehensive Cursor rules located in `.cursor/rules/`. These rules are auto-applied based on file type and should be your primary reference during development.
 
-### Always Applied
-- **`code-quality.mdc`**: CI/CD aligned quality standards, pre-commit workflow
-- **`project-guardrails.mdc`**: Package manager, server management, git context
+### Always-Applied Rules
+- **`project-guardrails.mdc`** - Package manager (`pnpm`), server management, git workflow
+  - Assume servers are running; don't start unless asked
+  - NEVER use global `supabase` CLI; use `pnpm supa` instead
+  - Check git history when debugging issues
+  - Post-implementation linting is MANDATORY
+- **`workspace-commands.mdc`** - Complete command reference for all operations
+- **`testing-logging.mdc`** - Test reporter behavior and debugging hanging tests
+  - Use `TEST_LOG_VERBOSE=1` to see detailed logs when debugging
+  - Use `// @testlog verbose` pragma for per-file verbose logging
+- **`react-imports-code-quality.mdc`** - React import patterns and ignore comment prohibition
+  - Never use `import React` or `@ts-ignore` comments
+  - Always prefer named imports; fix the root cause of errors
 
-### Auto-Applied by File Type
-- **`supabase.mdc`**: Supabase development commands and patterns
-- **`react-native.mdc`**: React Native/Expo development guidelines
-- **`ui-development.mdc`**: Tamagui component standards, cross-platform patterns
-- **`typescript-typing.mdc`**: TypeScript typing standards, no `any` types
-- **`trpc-supabase-patterns.mdc`**: tRPC endpoints, RLS policies, security
-- **`route-naming-convention.mdc`**: Dashboard route structure patterns
-- **`avoid-barrel-files.mdc`**: Build performance optimization
+### File-Type Specific Rules
+- **`supabase.mdc`** (SQL files, supabase/): Database schema, migrations, policies
+  - NEVER reset database - use migrations only
+  - Schema organization: `core` for app, `data`/`cms`/`onet` for reference
+  - Migration structure and patterns (001-007 core, 008+ new features)
+- **`react-native.mdc`** (expo/, React Native files): Expo/React Native development
+- **`ui-development.mdc`** (packages/ui/): Tamagui components, cross-platform patterns
+- **`ui-package-hybrid.mdc`** (packages/ui/): CRITICAL - hybrid npm/workspace maintenance
+  - UI package is published to npm but developed locally
+  - Sync changes via `./packages/ui/scripts/sync-to-standalone.sh`
+  - See detailed docs in this rule
+- **`route-naming-convention.mdc`** (packages/core/features/): Dashboard route structure
+  - Pattern: `<parent>-<child>-{left|right|screen}.tsx`
+  - Use `pnpm gen route` to auto-generate
+- **`avoid-barrel-files.mdc`**: Performance optimization via direct imports
+- **`trpc-supabase-patterns.mdc`**: tRPC endpoints, RLS policies, security patterns
+
+### Git & Development Workflow Rules
+- **`git-safety.mdc`** - Prevents accidental destructive operations
+  - No force pushes to main
+  - No git checkout/revert without safety checks
+- **`browser-server-management.mdc`** - Browser/server testing protocol
+  - Always ask before starting web servers
+  - Offer manual vs. agent testing options
+- **`no-long-running-watchers.mdc`** - Prevents resource-heavy background processes
+- **`no-git-checkout-revert.mdc`** - Prevents destructive git operations
 
 ### Memory Bank (`.cursor/rules/memory/`)
 - **`project-overview.md`**: Complete project structure and tech stack
@@ -203,14 +466,19 @@ This project uses comprehensive Cursor rules located in `.cursor/rules/`. Key ru
 - **`troubleshooting-guide.md`**: Common issues and solutions
 - **`development-workflows.md`**: Team workflows and processes
 
-**Reference these rules** when working on related code. They contain detailed guidelines for:
-- API development with tRPC and Supabase RLS
-- UI component creation with Tamagui
-- Route structure and naming conventions
-- TypeScript typing best practices
-- Supabase migration patterns
+### Key Rule Takeaways for Daily Development
+1. **Code Quality**: Run `pnpm lint:fix` after ALL code changes; fix errors, don't suppress
+2. **Supabase**: Use migrations (never reset); respect schema organization (core/data/cms/onet)
+3. **tRPC**: Always validate with Zod; implement proper RLS checks
+4. **React**: Named imports only; no React.Fragment, no `any` types
+5. **UI Components**: Use Tamagui primitives; make cross-platform; document with JSDoc
+6. **Routes**: Use naming convention; use generator; keep files under 300 lines
+7. **Monorepo**: Use workspace commands; avoid circular dependencies; use `affected:*` for CI
+8. **Testing**: Watch for hanging tests; use verbose flag when debugging
+9. **Git**: Always check history before modifying; use feature branches; conventional commits
+10. **Servers**: Assume running; don't start unless asked; use `pnpm` commands, not direct CLIs
 
-## Database Overview
+## Database & Supabase Development
 
 ### Key Data
 - **O*NET 30.0**: 1,016+ occupations with skills, abilities, knowledge
@@ -218,14 +486,49 @@ This project uses comprehensive Cursor rules located in `.cursor/rules/`. Key ru
 - **Universities**: 10,191 universities from 202 countries
 - **Industries**: Construction, Manufacturing, Transportation, Energy
 
+### Schema Organization (CRITICAL)
+- **`core.*`**: Application tables (ONLY application data goes here)
+  - User profiles, jobs, organizations, applications, etc.
+  - Private/PII data: `core.profile`, `core.preferences`, `core.applications`
+  - NO `private_` prefix - RLS handles privacy
+- **`data.*`**: Reference data (universities, MasterFormat, certifications) - READ-ONLY
+- **`cms.*`**: CMS content (welcome_slides, etc.) - READ-ONLY
+- **`onet.*`**: O*NET occupational reference data - READ-ONLY
+
 ### Schema Highlights
-- **User profiles**: Comprehensive worker profiles with private/public schema separation
+- **User profiles**: Comprehensive worker profiles with private/public separation
 - **Jobs**: Job postings with skills, location (PostGIS), compensation
 - **Applications**: ATS pipeline with status tracking
 - **Organizations**: Multi-tenant organization management with RLS
 - **Skills**: Multi-taxonomy skills system (O*NET, CSI MasterFormat)
 
-### Development Database
+### Rich Text Handling
+- **Column naming**: Use `description` or `about` (NOT `*_rich` suffix)
+- **NO plain text fallbacks**: Don't add `*_plain` columns
+- **For search**: Use function-based extraction: `extract_tiptap_plain_text()` function
+- Example search query:
+  ```sql
+  SELECT * FROM core.jobs
+  WHERE to_tsvector('english', core.extract_tiptap_plain_text(description)) @@ plainto_tsquery('engineer');
+  ```
+
+### Migration Best Practices
+**Migrations NEVER reset the database** - all changes must follow migration pattern:
+```bash
+pnpm supa migration:new feature_name   # Create numbered migration (008_feature_name.sql)
+pnpm supa migration:up                 # Apply migrations
+```
+
+**Migration structure** (001-007 are core, new migrations start at 008):
+1. **001_schema.sql**: Pure schema (tables, types, enums) - NO foreign keys, policies, or indexes
+2. **002_data.sql**: Reference data schemas (universities, masterformat, etc.)
+3. **003_relations.sql**: Foreign key relationships
+4. **004_functions.sql**: Functions and triggers
+5. **005_policies.sql**: RLS policies
+6. **006_storage.sql**: Storage buckets and policies
+7. **007_indexes.sql**: Performance indexes
+
+### Development Database Setup
 ```bash
 # Complete reset (migrations + seeds)
 pnpm supa db reset && pnpm supa:seed
@@ -235,6 +538,28 @@ pnpm supa db reset && pnpm supa:seed
 # - Test users, industries, organizations
 # - CSI MasterFormat skills
 # - University catalog
+```
+
+### Supabase Type Generation
+```bash
+# After schema changes, regenerate types
+pnpm supa:generate    # From local database
+
+# Commit the updated types file
+# packages/supabase/types.ts
+```
+
+### tRPC Router Integration
+When creating tRPC endpoints, use correct schemas:
+```typescript
+// Use .schema("core") for application tables
+await db.schema("core").from("jobs").select("*");
+
+// Use .schema("data") for reference data (read-only)
+const universities = await db.schema("data").from("universities").select("*");
+
+// Use .schema("cms") for CMS tables
+const slides = await db.schema("cms").from("welcome_slides").select("*");
 ```
 
 ## Testing
@@ -261,32 +586,83 @@ pnpm exec playwright test --ui
 - **Admin**: `ewongagent@gmail.com`
 - **Super Admin**: `zach@unicorn.love`
 
-## Common Patterns
+## UI Package Hybrid Maintenance (CRITICAL)
+
+**The `@unicornlove/ui` package uses a special hybrid maintenance approach:**
+
+### How It Works
+- **`packages/ui/`** in the monorepo: Primary development location (source of truth)
+- **Consumption**: Monorepo consumes `@unicornlove/ui@^1.0.1` from npm
+- **Workflow**: Edit locally → Sync to standalone → Publish → Consume via npm
+- **Modes**: Can run as npm package (default), linked workspace, or local dev
+
+### Development Workflow
+1. **Make changes** to `packages/ui/` in monorepo
+2. **Sync to standalone** (separate repo):
+   ```bash
+   ./packages/ui/scripts/sync-to-standalone.sh
+   ```
+3. **Publish** to npm from standalone repo
+4. **Update version** in monorepo's root package.json
+
+### Important Guidelines
+- **NEVER suggest deleting `packages/ui/`** - it's essential for development
+- **Reference**: `.cursor/rules/ui-package-hybrid.mdc` for complete details
+- **Components**: Use Tamagui vanilla primitives and Bento for complex patterns
+- **Cross-platform**: Ensure all components work on web, iOS, and Android
+
+## Common Development Patterns
 
 ### Creating New Dashboard Route
 ```bash
-# Use the generator (creates all necessary files)
+# Use the built-in generator (creates all necessary files)
 pnpm gen route
 
-# Follows pattern:
+# Generates files following naming convention:
 # packages/core/features/<parent>/<parent>-<child>-left.tsx
 # packages/core/features/<parent>/<parent>-<child>-right.tsx
 # packages/core/features/<parent>/<parent>-<child>-screen.tsx
 ```
 
 ### Adding tRPC Endpoint
-1. Create router in `packages/supabase/functions/trpc/routers/`
-2. Add to main router in `packages/supabase/functions/trpc/root.ts`
-3. Use `protectedProcedure` or `publicProcedure`
-4. Implement proper RLS checks in database policies
-5. Add Zod validation schemas
+1. **Create router** in `packages/supabase/functions/trpc/routers/<feature>.ts`
+2. **Add to main router** in `packages/supabase/functions/trpc/root.ts`
+3. **Use procedures**:
+   ```typescript
+   export const featureRouter = createTRPCRouter({
+     listItems: protectedProcedure
+       .input(z.object({ organizationId: z.string() }))
+       .query(async ({ input, ctx }) => {
+         // Check RLS: user must belong to organization
+         return await db
+           .schema("core")
+           .from("items")
+           .select("*")
+           .eq("organization_id", input.organizationId);
+       }),
+   });
+   ```
+4. **Implement RLS checks** in database policies
+5. **Add Zod validation** schemas for inputs
 
 ### Creating UI Component
-1. Use Tamagui primitives (`Button`, `Text`, `View`, `Stack`)
-2. Create in `packages/ui/src/components/`
-3. Make it cross-platform (web, iOS, Android)
-4. Export from appropriate index file
-5. Document with JSDoc comments
+1. **Location**: `packages/ui/src/components/`
+2. **Framework**: Use Tamagui primitives (`Button`, `Text`, `View`, `Stack`)
+3. **Complex patterns**: Use Bento components for complex UI patterns
+4. **Cross-platform**: Test on web, iOS, and Android
+5. **Export**: Add to appropriate index file (`index.ts`, `index.web.ts`, etc.)
+6. **Document**: Add JSDoc comments with prop descriptions
+   ```typescript
+   /**
+    * Button component - cross-platform compatible
+    * @param props - Standard button props
+    * @example
+    * <Button onPress={() => alert('Pressed!')}>Click me</Button>
+    */
+   export function Button({ children, ...props }: ButtonProps) {
+     return <Tamagui.Button {...props}>{children}</Tamagui.Button>;
+   }
+   ```
 
 ## Environment Setup
 
@@ -331,23 +707,79 @@ pnpm check-deps         # Dependency version consistency
 
 ## Troubleshooting
 
-### Common Issues
-- **Port conflicts**: Check `~/projects/ports.json` for port management
-- **Docker not running**: Supabase requires Docker Desktop
-- **Type errors**: Run `pnpm supa:generate` after schema changes
-- **Build failures**: Run `pnpm reset` to clear caches
+### Common Issues & Solutions
+| Issue | Solution |
+|-------|----------|
+| Port conflicts | Check `~/projects/ports.json` for port management |
+| Docker not running | Supabase requires Docker Desktop running |
+| Type errors after schema change | Run `pnpm supa:generate` to update types |
+| Build failures | Run `pnpm reset` to clear all caches and reinstall |
+| Xcode can't find Node | Check `.xcode.env` NODE_BINARY path (use `which node`) |
+| iOS simulator fails to connect | Use `pnpm web -H $(pnpm get-local-ip-mac \| head -n 1)` for local IP |
+| Test hangs indefinitely | Check `.cursor/rules/testing-logging.mdc`; use `TEST_LOG_VERBOSE=1` |
+| Circular dependency warnings | Run `pnpm check-circular-deps` to visualize and fix |
+| Linting/type errors after changes | Always run `pnpm lint:fix` immediately after coding |
+| Supabase migrations fail | Ensure migrations are idempotent (use `IF NOT EXISTS`, transactions) |
 
 ### Getting Help
-- Check `.cursor/rules/memory/troubleshooting-guide.md`
-- Review recent git history: `git log --oneline -10`
-- Check Supabase logs: `pnpm supa logs`
-- Review CI/CD logs in GitHub Actions
+- **Check first**: `.cursor/rules/memory/troubleshooting-guide.md` for detailed solutions
+- **Review history**: `git log --oneline -20` to understand recent changes
+- **Check logs**: `pnpm supa logs` for Supabase issues
+- **Test isolation**: Run failing test directly: `pnpm vitest run path/to/test.ts`
+- **CI/CD**: Review GitHub Actions logs for environment-specific issues
 
-## References
+## Quick Reference: Essential Pre-Commit Checklist
 
-- **Cursor Rules**: `.cursor/rules/` directory
-- **Memory Bank**: `.cursor/rules/memory/` for project knowledge
+```bash
+# 1. Run quality checks (REQUIRED)
+pnpm lint:fix              # Fix auto-fixable linting issues
+pnpm check                 # Lint, type check, format check
+pnpm build                 # Verify all packages build
+pnpm check-deps            # Ensure dependency consistency
+
+# 2. Run targeted tests
+pnpm test:unit             # Run unit tests
+pnpm test:api              # Run API endpoint tests
+pnpm test:build            # Verify full build
+
+# 3. Verify database changes (if applicable)
+pnpm supa:generate         # Update types after schema changes
+pnpm supa migration:up     # Apply pending migrations
+
+# 4. Commit with conventional message
+git add .
+git commit -m "feat(scope): description"
+git push
+```
+
+## References & Documentation
+
+- **Cursor Rules**: `.cursor/rules/` directory (auto-applied based on file type)
+- **Memory Bank**: `.cursor/rules/memory/` for architecture and workflows
 - **Anthropic Best Practices**: https://www.anthropic.com/engineering/claude-code-best-practices
-- **Project Docs**: `docs/` directory
-- **Supabase Docs**: See `packages/supabase/README.md`
+- **Project Documentation**: `docs/` directory
+- **Supabase Guide**: `packages/supabase/README.md`
+- **Playwright Tests**: `tests/README.md`
+- **README**: Full setup and deployment documentation
+
+## Key Workspace Packages Quick Reference
+
+```
+packages/
+├── core/              @app/core - Features, business logic, routes
+├── ui/                @unicornlove/ui - Tamagui components (hybrid npm/workspace)
+├── schemas/           @app/schemas - Zod validation schemas
+├── supabase/          @app/supabase - Database, migrations, tRPC functions
+├── trpc/              @app/trpc - tRPC client and exports
+└── fonts/             Font and icon management
+
+apps/
+└── expo/              expo-app - Expo app (iOS, Android, Web)
+
+Development Commands by Package:
+- pnpm --filter @app/core test
+- pnpm --filter @unicornlove/ui watch
+- pnpm --filter @app/supabase test:endpoints
+- pnpm --filter expo-app ios
+```
 

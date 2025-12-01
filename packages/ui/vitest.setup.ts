@@ -1,11 +1,19 @@
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 
+interface PlatformSelect {
+  web?: unknown
+  ios?: unknown
+  android?: unknown
+  native?: unknown
+  default?: unknown
+}
+
 // Mock react-native (must be hoisted)
 vi.mock('react-native', () => ({
   Platform: {
     OS: 'web',
-    select: (obj: any) => obj.web || obj.default,
+    select: (obj: PlatformSelect) => obj.web ?? obj.default,
   },
 }))
 
