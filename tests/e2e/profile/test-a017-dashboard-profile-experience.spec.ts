@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { expect, type Page, test } from '@playwright/test'
 import { signInAsAdmin } from '../../infrastructure/playwright/playwright-helpers/playwright-helpers/auth'
 
