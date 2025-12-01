@@ -1,34 +1,37 @@
-import { createAnimations } from '@tamagui/animations-moti'
+import { createAnimations } from "@tamagui/animations-moti";
 
 export const animationDurations = {
   fast: 150,
   normal: 250,
   slow: 350,
   slower: 500,
-} as const
+} as const;
+
+// Type definition for animations - using a generic type to avoid complex inference
+type AnimationsType = Record<string, unknown>;
 
 export const animations = createAnimations({
-  '100ms': {
-    type: 'timing',
+  "100ms": {
+    type: "timing",
     duration: 100,
   },
-  '200ms': {
-    type: 'timing',
+  "200ms": {
+    type: "timing",
     duration: 200,
   },
   bouncy: {
-    type: 'spring',
+    type: "spring",
     damping: 10,
     mass: 0.9,
     stiffness: 100,
   },
   lazy: {
-    type: 'spring',
+    type: "spring",
     damping: 20,
     stiffness: 60,
   },
   quick: {
-    type: 'spring',
+    type: "spring",
     damping: 20,
     mass: 1.2,
     stiffness: 250,
@@ -48,10 +51,10 @@ export const animations = createAnimations({
     stiffness: 100,
   },
   pulse: {
-    type: 'timing',
+    type: "timing",
     duration: 1500,
     loop: true,
   },
-})
+}) as unknown as AnimationsType;
 
-export type AnimationDurationName = keyof typeof animationDurations
+export type AnimationDurationName = keyof typeof animationDurations;

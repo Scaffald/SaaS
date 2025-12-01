@@ -7,8 +7,7 @@ set -e
 REPO_NAME="unicornlove-ui"
 ORG="Unicorn"
 SOURCE_DIR="/Users/clay/Development/SCF-Scaffald/packages/ui"
-WORKSPACE_DIR="/Users/clay/Development"
-TARGET_DIR="${WORKSPACE_DIR}/${REPO_NAME}"
+TARGET_DIR="/Users/clay/Development/_packages/${REPO_NAME}"
 
 # Colors for output
 GREEN='\033[0;32m'

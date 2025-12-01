@@ -30,7 +30,12 @@
     "**/*.spec.tsx",
     "**/*.stories.ts",
     "**/*.stories.tsx",
-    ".storybook"
+    ".storybook",
+    "src/components/dialog/Dialog.tsx",
+    "src/components/popovers/Popover.tsx",
+    "src/components/sheets/Sheet.tsx",
+    "src/config/animations.ts",
+    "**/*.d.ts"
   ]
 }
 

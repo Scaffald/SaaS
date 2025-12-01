@@ -27,7 +27,8 @@ import type {
 } from './types'
 import { extractViewportBounds, validateGeoJSONFeatureCollection } from './utils'
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+// CSS import handled at runtime - not bundled
+// import 'mapbox-gl/dist/mapbox-gl.css'
 
 // Import mapboxgl with proper typing
 import mapboxgl from 'mapbox-gl'

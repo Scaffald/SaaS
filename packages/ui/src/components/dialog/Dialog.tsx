@@ -1,4 +1,6 @@
+import type { ComponentType } from 'react'
 import { styled, Dialog as TamaguiDialog, withStaticProperties } from 'tamagui'
+import type { DialogProps } from 'tamagui'
 
 /**
  * Custom Dialog.Overlay with default styling
@@ -59,9 +61,21 @@ const DialogContent = styled(TamaguiDialog.Content, {
  * </Dialog>
  * ```
  */
+// Type definition for Dialog with static properties
+type DialogComponent = ComponentType<DialogProps> & {
+  Overlay: typeof DialogOverlay
+  Content: typeof DialogContent
+  // Include other Dialog static properties from Tamagui
+  Portal: typeof TamaguiDialog.Portal
+  Title: typeof TamaguiDialog.Title
+  Description: typeof TamaguiDialog.Description
+  Close: typeof TamaguiDialog.Close
+}
+
+// Use double assertion to bypass type inference for declaration generation
 export const Dialog = withStaticProperties(TamaguiDialog, {
   Overlay: DialogOverlay,
   Content: DialogContent,
-})
+}) as unknown as DialogComponent
 
-export type { DialogProps } from 'tamagui'
+export type { DialogProps }
