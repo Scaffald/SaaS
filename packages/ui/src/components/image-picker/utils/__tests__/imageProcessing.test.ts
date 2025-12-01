@@ -70,8 +70,8 @@ describe('processCroppedImage (web)', () => {
       }
     }
 
-    // @ts-expect-error - we are stubbing the global for testing
-    globalThis.Image = MockImage
+    // Stub the global Image constructor for testing
+    ;(globalThis as { Image: typeof Image }).Image = MockImage as typeof Image
   })
 
   afterEach(() => {
@@ -79,10 +79,10 @@ describe('processCroppedImage (web)', () => {
     vi.clearAllMocks()
 
     if (OriginalImage) {
-      globalThis.Image = OriginalImage
+      ;(globalThis as { Image: typeof Image }).Image = OriginalImage
     } else {
-      // @ts-expect-error - cleanup stubbed global
-      delete globalThis.Image
+      // Cleanup stubbed global
+      delete (globalThis as { Image?: typeof Image }).Image
     }
   })
 
@@ -462,8 +462,8 @@ describe('processCroppedImage (web)', () => {
         }
       }
 
-      // @ts-expect-error - stubbing global
-      globalThis.Image = FailingImage
+      // Stub the global Image constructor for testing
+      ;(globalThis as { Image: typeof Image }).Image = FailingImage as typeof Image
 
       await expect(
         processCroppedImage({

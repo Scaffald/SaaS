@@ -77,7 +77,6 @@ test('debug localStorage format', async ({ page }) => {
 
   // Check if Supabase has a session
   const hasSession = await page.evaluate(() => {
-    // @ts-expect-error
     return !!window.location.pathname
   })
 

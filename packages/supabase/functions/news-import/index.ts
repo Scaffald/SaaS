@@ -1,4 +1,3 @@
-// @ts-expect-error - Deno imports are not recognized by TypeScript in non-Deno environments
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "@supabase/supabase-js";
 import { corsHeaders } from "../_shared/cors.ts";

@@ -48,7 +48,19 @@ declare module 'posthog-node' {
 }
 
 declare module 'unpdf' {
-  export * from 'unpdf'
+  interface ExtractTextOptions {
+    mergePages?: boolean
+  }
+
+  interface ExtractTextResult {
+    text: string[]
+    totalPages: number
+  }
+
+  export function extractText(
+    fileBytes: Uint8Array,
+    options?: ExtractTextOptions
+  ): Promise<ExtractTextResult>
 }
 
 declare module 'mammoth' {

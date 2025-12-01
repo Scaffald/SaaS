@@ -9,8 +9,7 @@ test('check if window.supabase is available', async ({ page }) => {
   await page.waitForTimeout(2000)
 
   const hasSupabase = await page.evaluate(() => {
-    // @ts-expect-error
-    return typeof window.supabase !== 'undefined'
+    return typeof (window as { supabase?: unknown }).supabase !== 'undefined'
   })
 
   console.log('window.supabase available:', hasSupabase)

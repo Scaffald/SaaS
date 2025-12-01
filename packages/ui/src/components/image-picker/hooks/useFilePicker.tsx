@@ -3,6 +3,7 @@ import type * as ImagePicker from 'expo-image-picker/src/ImagePicker'
 import { useEvent } from 'tamagui'
 
 import type { MediaTypeOptionsString, UseFilePickerControl, UseFilePickerProps } from '../types'
+import { MediaTypeOptions } from '../types'
 import { useDropZone } from './useDropZone'
 
 type _NativeFiles<MT extends MediaTypeOptionsString[]> = MT[number] extends 'Images'
@@ -32,8 +33,7 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
       onDrop: _onDrop,
       // this is native only
       onOpen,
-      // @ts-expect-error
-      mediaTypes,
+      mediaTypes: mediaTypes as MediaTypeOptions[] | undefined,
       noClick: true,
       ...rest,
     })

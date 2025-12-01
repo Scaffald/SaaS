@@ -1,4 +1,3 @@
-// @ts-expect-error - Deno-specific imports are not recognized by TypeScript in non-Deno environments
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { z } from 'zod'
 

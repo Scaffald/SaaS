@@ -1,17 +1,12 @@
 import { randomUUID } from 'node:crypto'
-
-// Type definitions for Supabase client
-// @ts-expect-error - SupabaseClient is exported but TypeScript namespace import doesn't see it
-type SupabaseClient = import('@supabase/supabase-js').SupabaseClient
-// @ts-expect-error - SupabaseClientOptions is exported but TypeScript namespace import doesn't see it  
-type SupabaseClientOptions = import('@supabase/supabase-js').SupabaseClientOptions<'public'>
+import type { SupabaseClient, SupabaseClientOptions } from '@supabase/supabase-js'
 
 export interface SupabaseTestClientOptions {
   readonly supabaseUrl?: string
   readonly anonKey?: string
   readonly serviceRoleKey?: string
   readonly schema?: 'public'
-  readonly clientOptions?: SupabaseClientOptions
+  readonly clientOptions?: SupabaseClientOptions<'public'>
 }
 
 export interface DatabaseLifecycleOptions extends SupabaseTestClientOptions {
@@ -90,7 +85,6 @@ async function createClient(
   serviceRole: boolean
 ): Promise<SupabaseClient> {
   const supabaseModule = await importSupabase()
-  // @ts-expect-error - createClient exists but TypeScript namespace import doesn't see it
   const { createClient: createSupabaseClient } = supabaseModule
   const supabaseUrl = resolveUrl(options.supabaseUrl)
   const supabaseKey = serviceRole

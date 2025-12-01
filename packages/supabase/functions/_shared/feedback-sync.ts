@@ -1,5 +1,4 @@
 // @ts-nocheck
-// @ts-expect-error Supabase Edge Functions run in Deno with URL-based imports
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
 
 export interface FeedbackRow {
