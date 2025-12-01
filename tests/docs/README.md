@@ -54,6 +54,12 @@ This runs:
 - Vitest unit tests (`pnpm test:vitest`)
 - API tests (`pnpm test:api`)
 
+### Deno Edge Functions Type Check
+```bash
+pnpm test:deno:types
+```
+See `packages/supabase/functions/DENO_TYPE_CHECKING.md` for setup and current status.
+
 ### Unit Tests Only
 ```bash
 pnpm test:vitest

@@ -231,6 +231,29 @@ vi.mock('tamagui', () => {
   }
 })
 
+vi.mock('@unicornlove/ui', () => ({
+  ResponsiveSelect: ({
+    value,
+    onValueChange,
+    options,
+    placeholder,
+  }: {
+    value?: string | null
+    onValueChange: (value: string) => void
+    options: Array<{ value: string; label: string }>
+    placeholder?: string
+  }) => (
+    <select value={value ?? ''} onChange={(event) => onValueChange(event.target.value)}>
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  ),
+}))
+
 // Use dynamic import to avoid parsing issues with z.infer<typeof>
 const { EmploymentPrefsStep } = await import('../EmploymentPrefsStep')
 
