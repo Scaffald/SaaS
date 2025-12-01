@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.223.0/http/server.ts'
 import { ZodError } from 'zod'
 
 import { corsHeaders, createCorsResponse } from '../_shared/cors.ts'
-import { NotificationChannel, notificationEventSchema } from '../_shared/notifications/types.ts'
+import { NotificationChannel, NotificationEventPayload, notificationEventSchema } from '../_shared/notifications/types.ts'
 import {
   createServiceSupabaseClient,
   enqueueDelivery,
@@ -56,7 +56,7 @@ serve(async (req) => {
     return jsonResponse({ error: 'Invalid JSON payload', details: `${error}` }, 400)
   }
 
-  let event
+  let event: NotificationEventPayload
 
   try {
     event = notificationEventSchema.parse(payload)

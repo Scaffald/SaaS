@@ -297,7 +297,7 @@ const NEGATIVE_STATUSES = new Set<BackgroundCheckStatus>([
   'refunded',
 ])
 
-const IN_APP_ONLY = ['in_app'] as const
+const _IN_APP_ONLY = ['in_app'] as const
 
 const SUMMARY_OF_RIGHTS_URL =
   'https://files.consumerfinance.gov/f/201504_cfpb_summary_your-rights-under-fcra.pdf'
@@ -659,7 +659,7 @@ const statusTemplates: Partial<Record<BackgroundCheckStatus, StatusTemplate>> = 
 }
 
 function buildStatusMessage(
-  audience: 'worker' | 'requester',
+  _audience: 'worker' | 'requester',
   ctx: StatusTemplateContext
 ): StatusTemplate | null {
   const template = statusTemplates[ctx.status]

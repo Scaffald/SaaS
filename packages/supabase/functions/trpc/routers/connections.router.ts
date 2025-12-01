@@ -190,7 +190,7 @@ export const connectionsRouter = t.router({
         message: `${requesterName} wants to connect with you`,
         preview: `Connection request from ${requesterName}`,
         cta_label: 'View Request',
-        cta_url: `/connections`,
+        cta_url: '/connections',
         metadata: {
           connection_id: connection.id,
           requester_user_id: requesterId,
@@ -299,7 +299,7 @@ export const connectionsRouter = t.router({
         message: `${addresseeName} accepted your connection request`,
         preview: `Connection accepted by ${addresseeName}`,
         cta_label: 'View Connection',
-        cta_url: `/connections`,
+        cta_url: '/connections',
         metadata: {
           connection_id: updated.id,
           addressee_user_id: ctx.user.id,

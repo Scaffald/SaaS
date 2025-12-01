@@ -43,7 +43,7 @@ serve(async (req) => {
   const { data, error } = await supabase
     .schema('core')
     .from('notification_deliveries')
-    .select(`*, notification:notifications(*)`)
+    .select('*, notification:notifications(*)')
     .in('status', ['queued', 'sending'])
     .or(`next_attempt_at.is.null,next_attempt_at.lte.${nowIso}`)
     .order('created_at', { ascending: true })

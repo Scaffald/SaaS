@@ -99,7 +99,7 @@ async function seedNewsFeeds() {
     }
   }
 
-  console.log(`\n=== Seeding Summary ===`)
+  console.log('\n=== Seeding Summary ===')
   console.log(`Inserted: ${inserted}`)
   console.log(`Updated: ${updated}`)
   console.log(`Errors: ${errors}`)

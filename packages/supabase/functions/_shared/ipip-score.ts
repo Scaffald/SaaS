@@ -1,6 +1,5 @@
 import type {
   IPIPAnswer,
-  IPIPDomain,
   IPIPFacet,
   IPIPScoreOptions,
   IPIPScores,

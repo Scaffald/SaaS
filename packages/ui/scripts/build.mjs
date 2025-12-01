@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { build } from 'esbuild'
 import { readFileSync } from 'fs'
-import { resolve } from 'path'
 
 const pkg = JSON.parse(readFileSync('package.json', 'utf-8'))
 

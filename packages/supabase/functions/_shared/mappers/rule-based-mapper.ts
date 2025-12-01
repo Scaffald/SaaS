@@ -4,7 +4,6 @@ import {
   containsKeyword,
   INDUSTRY_KEYWORDS,
   type IndustryKeywordConfig,
-  normalizeText,
 } from "./industry-keywords.ts";
 
 interface IndustryMatch {

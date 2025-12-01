@@ -7,7 +7,6 @@ import {
   NOTIFICATION_DELIVERY_STATUSES,
   NOTIFICATION_EVENT_KINDS,
   NOTIFICATION_FREQUENCIES,
-  NOTIFICATION_SEVERITIES,
   NotificationChannel,
   NotificationDeliveryRow,
   NotificationDeliveryStatus,
@@ -171,8 +170,8 @@ function parseTypeOverrides(raw: unknown): Record<string, TypeOverride> {
     if ('channels' in value && isRecord(value.channels)) {
       const overrideChannels: Partial<ChannelEnabledMap> = {}
       for (const channel of NOTIFICATION_CHANNELS) {
-        if (channel in value.channels!) {
-          overrideChannels[channel] = toBoolean(value.channels![channel], DEFAULT_CHANNELS[channel])
+        if (value.channels && channel in value.channels) {
+          overrideChannels[channel] = toBoolean(value.channels[channel], DEFAULT_CHANNELS[channel])
         }
       }
       entry.channels = overrideChannels

@@ -345,9 +345,8 @@ export async function getLatestEmail(
       }
       // For other errors, log and continue if we have time
       if (Date.now() - startTime + pollInterval < timeoutMs) {
-        console.error(`Error fetching email:`, error)
+        console.error('Error fetching email:', error)
         await new Promise((resolve) => setTimeout(resolve, pollInterval))
-        continue
       }
     }
   }
@@ -365,7 +364,7 @@ export function extractMagicLinkFromEmail(emailHtml: string): string | null {
     /href="([^"]*(?:\/auth\/v1\/(?:verify|confirm)|token_hash)[^"]*)"/i
   )
 
-  if (linkMatch && linkMatch[1]) {
+  if (linkMatch?.[1]) {
     // Decode HTML entities (&amp; -> &)
     const decodedLink = linkMatch[1]
       .replace(/&amp;/g, '&')

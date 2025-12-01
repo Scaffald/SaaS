@@ -1553,7 +1553,7 @@ export const paymentsRouter = t.router({
             p_amount_cents: input.amountCents,
             p_transaction_type: 'deposit',
             p_direction: 'credit',
-            p_description: `Credit deposit via Stripe`,
+            p_description: 'Credit deposit via Stripe',
             p_payment_transaction_id: transaction.id,
             p_created_by: ctx.user?.id ?? null,
           })

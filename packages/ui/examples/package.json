@@ -1,4 +1,14 @@
 {
+  "name": "ui-example",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "start": "expo start",
+    "web": "expo start --web"
+  },
   "dependencies": {
     "@tamagui/core": "^1.138.0",
     "@unicornlove/ui": "^1.0.0",
@@ -13,15 +23,5 @@
     "@babel/core": "^7.26.0",
     "@types/react": "~19.1.0",
     "typescript": "catalog:"
-  },
-  "main": "node_modules/expo/AppEntry.js",
-  "name": "ui-example",
-  "private": true,
-  "scripts": {
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "start": "expo start",
-    "web": "expo start --web"
-  },
-  "version": "1.0.0"
+  }
 }

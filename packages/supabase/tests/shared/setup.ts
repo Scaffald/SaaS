@@ -307,9 +307,8 @@ export async function getLatestEmail(
       }
       // For other errors, log and continue if we have time
       if (Date.now() - startTime + pollInterval < timeoutMs) {
-        console.error(`Error fetching email:`, error)
+        console.error('Error fetching email:', error)
         await delay(pollInterval)
-        continue
       }
     }
   }

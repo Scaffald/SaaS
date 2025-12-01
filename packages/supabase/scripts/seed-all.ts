@@ -561,15 +561,15 @@ async function main() {
     )
   }
 
-  console.log(`\n✅ Seeding complete!`)
-  console.log(`   - CSI codes seeded ✓`)
-  console.log(`   - Universities seeded ✓`)
-  console.log(`   - Certifications seeded ✓`)
-  console.log(`   - External jobs seeded ✓`)
-  console.log(`   - O*NET database seeded ✓`)
-  console.log(`   - News feeds seeded ✓`)
+  console.log('\n✅ Seeding complete!')
+  console.log('   - CSI codes seeded ✓')
+  console.log('   - Universities seeded ✓')
+  console.log('   - Certifications seeded ✓')
+  console.log('   - External jobs seeded ✓')
+  console.log('   - O*NET database seeded ✓')
+  console.log('   - News feeds seeded ✓')
   if (newsImported) {
-    console.log(`   - News articles imported ✓`)
+    console.log('   - News articles imported ✓')
   }
 
   // Display stats
