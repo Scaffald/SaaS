@@ -1,3 +1,5 @@
+import { DashboardLayout } from '@app/core/components/layouts'
+import { buildPath, ROUTES } from '@app/core/constants/routes'
 import {
   CertificationsWidget,
   EducationWidget,
@@ -7,11 +9,9 @@ import {
   SkillsWidget,
   WorkLogPortfolioWidget,
 } from '@app/core/features/profile/widgets'
-import { ROUTES, buildPath } from '@app/core/constants/routes'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@unicornlove/ui'
-import { DashboardLayout } from '@app/core/components/layouts'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect } from 'react'
 import { Spinner, Text, YStack } from 'tamagui'
@@ -36,8 +36,8 @@ export default function PublicUserProfilePage() {
     { slug: slug || '' },
     {
       enabled: !!slug,
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
       retry: false, // Don't retry on 404
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
   )
 
@@ -87,10 +87,10 @@ export default function PublicUserProfilePage() {
 
   // Build breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
-    { label: 'Home', href: ROUTES.HOME.path },
+    { href: ROUTES.HOME.path, label: 'Home' },
     {
-      label: displayName || 'Loading...',
       isActive: true,
+      label: displayName || 'Loading...',
     },
   ]
 
@@ -134,12 +134,12 @@ export default function PublicUserProfilePage() {
 
   // Get visibility settings
   const visibility = profileData.visibility || {
-    work_experience: true,
-    education: true,
-    skills: true,
     certifications: true,
-    reviews: true,
     contact_info: false,
+    education: true,
+    reviews: true,
+    skills: true,
+    work_experience: true,
   }
 
   // Render profile widgets based on visibility settings

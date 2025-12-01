@@ -1,0 +1,5 @@
+
+> expo-app@1.0.4 lint:fix /Users/clay/Development/SCF-Scaffald/apps/expo
+> biome lint --write ./app
+
+Checked 93 files in 59ms. No fixes applied.

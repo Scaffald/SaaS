@@ -1,0 +1,5 @@
+
+> @app/schemas@0.0.1 format:fix /Users/clay/Development/SCF-Scaffald/packages/schemas
+> biome format --write .
+
+Formatted 35 files in 15ms. No fixes applied.

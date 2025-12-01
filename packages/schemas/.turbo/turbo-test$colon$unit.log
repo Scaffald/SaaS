@@ -1,0 +1,8 @@
+
+> @app/schemas@0.0.1 test:unit /Users/clay/Development/SCF-Scaffald/packages/schemas
+> vitest run
+
+
+🧪 Running tests...
+
+ ELIFECYCLE  Command failed.

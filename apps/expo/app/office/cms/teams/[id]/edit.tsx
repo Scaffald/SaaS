@@ -108,13 +108,6 @@ export default function EditTeamPage() {
         teamId={team.id}
         onCancel={() => router.back()}
         initialData={{
-          id: team.id,
-          name: team.name ?? '',
-          slug: team.slug ?? undefined,
-          purpose: team.purpose ?? undefined,
-          visibility,
-          invitationPolicy,
-          description: team.description ?? undefined,
           defaultRole: team.defaultRole
             ? {
                 id: team.defaultRole.id,
@@ -123,6 +116,13 @@ export default function EditTeamPage() {
             : null,
           defaultRoleId: team.defaultRole?.id ?? team.defaultRoleId ?? null,
           defaultRoleKey: parsedDefaultRoleKey ?? undefined,
+          description: team.description ?? undefined,
+          id: team.id,
+          invitationPolicy,
+          name: team.name ?? '',
+          purpose: team.purpose ?? undefined,
+          slug: team.slug ?? undefined,
+          visibility,
         }}
       />
 

@@ -26,10 +26,10 @@ export default function SharedIPIPResultsRoute() {
     { token: token || '' },
     {
       enabled: !!token,
-      retry: false,
-      staleTime: 1000 * 60 * 5,
       gcTime: 1000 * 60 * 30,
       refetchOnWindowFocus: false,
+      retry: false,
+      staleTime: 1000 * 60 * 5,
     }
   )
 
@@ -45,10 +45,10 @@ export default function SharedIPIPResultsRoute() {
     const narratives = getResults()
 
     return {
-      scores,
-      normalizedScores,
-      narratives,
       archetype: sharedResults.archetype,
+      narratives,
+      normalizedScores,
+      scores,
     }
   }, [sharedResults])
 
@@ -77,7 +77,7 @@ export default function SharedIPIPResultsRoute() {
   }
 
   return (
-    <YStack gap="$6" width="100%" p="$4" style={{ maxWidth: 1000, alignSelf: 'center' }}>
+    <YStack gap="$6" width="100%" p="$4" style={{ alignSelf: 'center', maxWidth: 1000 }}>
       {/* Header */}
       <YStack gap="$2">
         <Text fontSize="$8" fontWeight="bold" color="$color12">
@@ -142,8 +142,8 @@ export default function SharedIPIPResultsRoute() {
                   processedResults.archetype
                     ? {
                         archetype: processedResults.archetype.name || '',
-                        name: processedResults.archetype.name || '',
                         confidence: processedResults.archetype.confidence || 0,
+                        name: processedResults.archetype.name || '',
                       }
                     : null
                 }

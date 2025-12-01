@@ -39,19 +39,19 @@ export default function EditJobPage() {
       mode="edit"
       jobId={id}
       initialData={{
-        title: (job.title as string) || '',
-        description: (job.description as string) || '',
-        organization_id: job.organization_id as string,
         assigned_team_id: (job.assigned_team_id as string | null) || null,
-        primary_team_id: (job.primary_team_id as string | null) || null,
-        team_ids: (job.team_ids as string[]) || [],
+        description: (job.description as string) || '',
         employment_type: (job.employment_type as string) || undefined,
-        remote_option: (job.remote_option as string) || undefined,
         location: (job.location as string) || undefined,
-        pay_range_min_cents: (job.pay_range_min_cents as number) || undefined,
+        organization_id: job.organization_id as string,
         pay_range_max_cents: (job.pay_range_max_cents as number) || undefined,
+        pay_range_min_cents: (job.pay_range_min_cents as number) || undefined,
         pay_range_type: (job.pay_range_type as string) || undefined,
         position_level: (job.position_level as string) || undefined,
+        primary_team_id: (job.primary_team_id as string | null) || null,
+        remote_option: (job.remote_option as string) || undefined,
+        team_ids: (job.team_ids as string[]) || [],
+        title: (job.title as string) || '',
       }}
     />
   )

@@ -1,4 +1,4 @@
-import { ROUTES, buildPath } from '@app/core/constants/routes'
+import { buildPath, ROUTES } from '@app/core/constants/routes'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
@@ -23,14 +23,6 @@ export default function AcceptTeamInvitationScreen() {
   const [resultTeamId, setResultTeamId] = useState<string | null>(null)
 
   const respondMutation = api.teams.respondToInvitation.useMutation({
-    onSuccess: (result: RespondInvitationOutput) => {
-      if (result.status === 'accepted') {
-        setResultTeamId(result.teamId)
-        setStatus('success')
-      } else {
-        setStatus('declined')
-      }
-    },
     onError: (error: unknown) => {
       console.error('[teams] Invitation response failed', error)
       const message =
@@ -39,6 +31,14 @@ export default function AcceptTeamInvitationScreen() {
           : 'Unable to process invitation. Please try again later.'
       setErrorMessage(message)
       setStatus('error')
+    },
+    onSuccess: (result: RespondInvitationOutput) => {
+      if (result.status === 'accepted') {
+        setResultTeamId(result.teamId)
+        setStatus('success')
+      } else {
+        setStatus('declined')
+      }
     },
   })
 
@@ -63,9 +63,9 @@ export default function AcceptTeamInvitationScreen() {
     setErrorMessage(null)
 
     await respondMutation.mutateAsync({
-      token,
       action,
       responderId: session.user.id,
+      token,
     })
   }
 

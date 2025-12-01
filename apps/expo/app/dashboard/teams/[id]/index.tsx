@@ -55,7 +55,7 @@ export default function DashboardTeamDetailPage() {
     error: analyticsError,
     refetch: refetchAnalytics,
   } = api.teams.analytics.overview.useQuery(
-    { teamId, limit: 30 },
+    { limit: 30, teamId },
     { enabled: Boolean(teamId), retry: false }
   )
 
@@ -98,8 +98,8 @@ export default function DashboardTeamDetailPage() {
 
   const overviewStats = useMemo(
     () => ({
-      memberCount: latestMetrics?.members?.active ?? (memberCount > 0 ? memberCount : undefined),
       jobCount: latestMetrics?.jobs?.active ?? undefined,
+      memberCount: latestMetrics?.members?.active ?? (memberCount > 0 ? memberCount : undefined),
       pendingInvitations: latestMetrics?.invitations?.pending ?? undefined,
     }),
     [latestMetrics, memberCount]
@@ -107,9 +107,9 @@ export default function DashboardTeamDetailPage() {
 
   const breadcrumbItems = useMemo(
     () => [
-      { label: 'Dashboard', href: ROUTES.DASHBOARD.path },
-      { label: 'Teams', href: RouteBuilder.dashboardTeams() },
-      { label: team?.name ?? 'Team', isActive: true },
+      { href: ROUTES.DASHBOARD.path, label: 'Dashboard' },
+      { href: RouteBuilder.dashboardTeams(), label: 'Teams' },
+      { isActive: true, label: team?.name ?? 'Team' },
     ],
     [team?.name]
   )

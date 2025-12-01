@@ -19,7 +19,7 @@ export default function EmployerDetailPage() {
   const breadcrumbs = useMemo<DashboardBreadcrumbSegment[]>(
     () => [
       { route: ROUTES.DASHBOARD.DISCOVER.EMPLOYERS },
-      { label: employer?.name || 'Employer Profile', isActive: true },
+      { isActive: true, label: employer?.name || 'Employer Profile' },
     ],
     [employer?.name]
   )

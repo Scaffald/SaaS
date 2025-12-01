@@ -1,0 +1,4 @@
+
+> @app/trpc@0.0.1 typecheck /Users/clay/Development/SCF-Scaffald/packages/trpc
+> tsc --noEmit
+

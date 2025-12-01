@@ -1,5 +1,5 @@
-import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { TeamInvitationList } from '@app/core/features/dashboard/components'
+import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
 import { api } from '@app/core/utils/api'
 import type { AppRouter } from '@app/supabase/client-types'
 import { RefreshCw } from '@tamagui/lucide-icons'
@@ -16,6 +16,10 @@ export default function DashboardTeamInvitationsScreen() {
   const invitationsQuery = api.teams.invitations.mine.useQuery({ status: 'pending' })
 
   const respondMutation = api.teams.invitations.respond.useMutation({
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
+      toast.show('Unable to respond', { message })
+    },
     onSuccess: (result: InvitationRespondOutput) => {
       toast.show(result.status === 'accepted' ? 'Invitation accepted' : 'Invitation declined', {
         message:
@@ -25,10 +29,6 @@ export default function DashboardTeamInvitationsScreen() {
       })
       void invitationsQuery.refetch()
     },
-    onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : 'Unable to respond to invitation'
-      toast.show('Unable to respond', { message })
-    },
   })
 
   const invitations = useMemo(
@@ -37,7 +37,7 @@ export default function DashboardTeamInvitationsScreen() {
   )
 
   const handleRespond = async (invitationId: string, action: 'accept' | 'decline') => {
-    await respondMutation.mutateAsync({ invitationId, action })
+    await respondMutation.mutateAsync({ action, invitationId })
   }
 
   const content = (

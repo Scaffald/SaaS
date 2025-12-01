@@ -1,0 +1,4 @@
+
+> @app/schemas@0.0.1 typecheck /Users/clay/Development/SCF-Scaffald/packages/schemas
+> tsc --noEmit
+

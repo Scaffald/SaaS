@@ -3,8 +3,8 @@ import type { NewsItem } from '@app/core/features/news'
 import { useAggregatedNews } from '@app/core/features/news/hooks/useNewsFeed'
 import { redirect } from '@app/core/utils/redirect'
 import { supabase } from '@app/core/utils/supabase/client'
-import { NewsCard, UIButton as StyledButton, spacing } from '@unicornlove/ui'
 import { AlertCircle, ExternalLink, RefreshCw } from '@tamagui/lucide-icons'
+import { NewsCard, UIButton as StyledButton, spacing } from '@unicornlove/ui'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { useEffect, useState } from 'react'
@@ -65,10 +65,10 @@ export default function NewsPage() {
         window.open(article.link, '_blank', 'noopener,noreferrer')
       } else {
         await WebBrowser.openBrowserAsync(article.link, {
-          enableBarCollapsing: true,
-          dismissButtonStyle: 'close',
-          toolbarColor: '#0f172a',
           controlsColor: '#2563eb',
+          dismissButtonStyle: 'close',
+          enableBarCollapsing: true,
+          toolbarColor: '#0f172a',
         })
       }
     } catch (browserError) {

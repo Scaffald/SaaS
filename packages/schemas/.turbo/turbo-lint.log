@@ -1,0 +1,6 @@
+
+
+> @app/schemas@0.0.1 lint /Users/clay/Development/SCF-Scaffald/packages/schemas
+> biome lint .
+
+[0m[34mChecked [0m[0m[34m35[0m[0m[34m [0m[0m[34mfiles[0m[0m[34m in [0m[0m[34m73[0m[0m[2m[34mms[0m[0m[34m.[0m[0m[34m No fixes applied.[0m

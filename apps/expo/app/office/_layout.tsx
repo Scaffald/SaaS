@@ -34,8 +34,8 @@ export default function OfficeLayout() {
   return (
     <ErrorBoundary
       context={{
-        section: 'office',
         requiredRoles: ['office'],
+        section: 'office',
       }}
     >
       <DrawerLayout protectionComponent={null}>

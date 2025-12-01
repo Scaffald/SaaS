@@ -14,7 +14,7 @@ import { expect, test } from '@playwright/test'
 
 test.describe('Mobile App Security Testing', () => {
   // Test mobile viewport as proxy for mobile app
-  test.use({ viewport: { width: 390, height: 844 } }) // iPhone 12
+  test.use({ viewport: { height: 844, width: 390 } }) // iPhone 12
 
   test('API keys are not exposed in bundle', async ({ page }) => {
     // Navigate to page

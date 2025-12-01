@@ -1,0 +1,8 @@
+
+> @app/core@0.0.0 test:unit /Users/clay/Development/SCF-Scaffald/packages/core
+> vitest run
+
+
+🧪 Running tests...
+
+ ELIFECYCLE  Command failed with exit code 1.

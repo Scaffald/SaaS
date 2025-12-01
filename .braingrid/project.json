@@ -1,15 +1,14 @@
 {
+  "created_at": "2025-11-30T23:18:39.416Z",
   "organization_id": "default",
-  "project_id": "1483a280-b064-40c9-a872-39a627e9997f",
-  "project_short_id": "PROJ-13",
-  "project_name": "SCF-Scaffald",
   "project_description": null,
+  "project_id": "1483a280-b064-40c9-a872-39a627e9997f",
+  "project_name": "SCF-Scaffald",
+  "project_short_id": "PROJ-13",
   "repository": {
+    "full_name": "Unicorn/SCF-Scaffald",
     "id": "9b193a4e-a4eb-4c36-8d1c-2ef1c8717f97",
-    "owner": "Unicorn",
     "name": "SCF-Scaffald",
-    "full_name": "Unicorn/SCF-Scaffald"
-  },
-  "created_at": "2025-11-30T23:18:39.416Z"
+    "owner": "Unicorn"
+  }
 }
-

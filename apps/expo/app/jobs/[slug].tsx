@@ -1,8 +1,8 @@
+import { DashboardLayout } from '@app/core/components/layouts'
 import { ROUTES } from '@app/core/constants/routes'
 import { DiscoverJobDetailScreen } from '@app/core/features/discover/discover-job-detail-screen'
 import { api } from '@app/core/utils/api'
 import type { BreadcrumbItem } from '@unicornlove/ui'
-import { DashboardLayout } from '@app/core/components/layouts'
 import { useLocalSearchParams } from 'expo-router'
 import { Spinner, Text, YStack } from 'tamagui'
 
@@ -23,18 +23,18 @@ export default function PublicJobDetailPage() {
     { slug: slug || '' },
     {
       enabled: !!slug,
-      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
       retry: false, // Don't retry on 404
+      staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     }
   )
 
   // Build breadcrumb items
   const breadcrumbItems: BreadcrumbItem[] = [
-    { label: 'Home', href: '/' },
-    { label: 'Jobs', href: ROUTES.DASHBOARD.DISCOVER.JOBS.path },
+    { href: '/', label: 'Home' },
+    { href: ROUTES.DASHBOARD.DISCOVER.JOBS.path, label: 'Jobs' },
     {
-      label: jobData?.title || 'Loading...',
       isActive: true,
+      label: jobData?.title || 'Loading...',
     },
   ]
 

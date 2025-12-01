@@ -1,6 +1,5 @@
 import { ROUTES } from '@app/core/constants/routes'
 import { DashboardPage } from '@app/core/features/dashboard/DashboardPage'
-import type { DashboardBreadcrumbSegment } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
 import {
   CertificationsWidget,
   EducationWidget,
@@ -11,6 +10,7 @@ import {
 } from '@app/core/features/profile/widgets'
 import { useAuth } from '@app/core/provider/auth/useAuth'
 import { api } from '@app/core/utils/api'
+import type { DashboardBreadcrumbSegment } from '@app/core/utils/navigation/buildDashboardBreadcrumbs'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useMemo } from 'react'
 import { YStack } from 'tamagui'
@@ -76,8 +76,8 @@ export default function UserProfilePage() {
     () => [
       { route: ROUTES.DASHBOARD.DISCOVER.WORKERS },
       {
-        label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
         isActive: true,
+        label: isOwnProfile ? 'My Profile' : displayName || 'Loading...',
       },
     ],
     [isOwnProfile, displayName]

@@ -1,0 +1,139 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": ["core", "ui"],
+  "name": "expo-app",
+  "projectType": "application",
+  "sourceRoot": "apps/expo",
+  "tags": ["scope:app", "type:expo"],
+  "targets": {
+    "android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo run:android",
+        "cwd": "apps/expo"
+      }
+    },
+    "eas:build:dev:android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development --platform android",
+        "cwd": "apps/expo"
+      }
+    },
+    "eas:build:dev:ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development --platform ios",
+        "cwd": "apps/expo"
+      }
+    },
+    "eas:build:dev:simulator:android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:simulator --platform android",
+        "cwd": "apps/expo"
+      }
+    },
+    "eas:build:dev:simulator:ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env NODE_ENV=development APP_ENV=development eas build --profile development:simulator --platform ios",
+        "cwd": "apps/expo"
+      }
+    },
+    "eas:build:staging:android": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env NODE_ENV=staging APP_ENV=staging eas build --profile staging --platform android",
+        "cwd": "apps/expo"
+      }
+    },
+    "eas:build:staging:ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env NODE_ENV=staging APP_ENV=staging eas build --profile staging --platform ios",
+        "cwd": "apps/expo"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome format ./app",
+        "cwd": "apps/expo"
+      }
+    },
+    "format:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome format --write ./app",
+        "cwd": "apps/expo"
+      }
+    },
+    "ios": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo run:ios",
+        "cwd": "apps/expo"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint ./app",
+        "cwd": "apps/expo"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint --write ./app",
+        "cwd": "apps/expo"
+      }
+    },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo prebuild --skip-dependency-update react-native,react",
+        "cwd": "apps/expo"
+      },
+      "outputs": ["{projectRoot}/ios", "{projectRoot}/android"]
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo start -c",
+        "cwd": "apps/expo"
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "options": {
+        "config": "apps/expo/vitest.config.ts",
+        "passWithNoTests": true
+      },
+      "outputs": ["{workspaceRoot}/coverage/expo-app"]
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "apps/expo"
+      }
+    },
+    "web": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo start --web",
+        "cwd": "apps/expo"
+      }
+    },
+    "web:build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "expo export --platform web",
+        "cwd": "apps/expo"
+      },
+      "outputs": ["{projectRoot}/dist"]
+    }
+  }
+}

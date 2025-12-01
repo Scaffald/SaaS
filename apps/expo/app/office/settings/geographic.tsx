@@ -54,9 +54,9 @@ export default function GeographicSettingsPage() {
     setIsSaving(true)
     try {
       const { error } = await supabase.schema('core').from('system_config').upsert({
+        description: 'Percentage threshold for site overlap notifications',
         key: 'site_overlap_threshold_percent',
         value: numValue.toString(),
-        description: 'Percentage threshold for site overlap notifications',
       })
 
       if (error) throw error

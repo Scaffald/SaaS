@@ -1,8 +1,8 @@
-import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { SiteOverlapNotification } from '@app/core/features/notifications/components/SiteOverlapNotification'
+import { AccountDeletionPanel } from '@app/core/features/profile/components/AccountDeletionPanel'
 import { api } from '@app/core/utils/api'
-import { UIButton as Button, NotificationTag, ToggleSwitch } from '@unicornlove/ui'
 import { AlertCircle, ExternalLink, Info, ShieldAlert } from '@tamagui/lucide-icons'
+import { UIButton as Button, NotificationTag, ToggleSwitch } from '@unicornlove/ui'
 import type { Href } from 'expo-router'
 import { useRouter } from 'expo-router'
 import type { ComponentType } from 'react'
@@ -129,19 +129,19 @@ function formatDate(value: string | null | undefined) {
 
 function mapNotification(apiNotification: ApiNotification): NotificationItem {
   return {
+    channels: Array.isArray(apiNotification.routed_channels) ? apiNotification.routed_channels : [],
+    createdAt: apiNotification.created_at,
+    ctaLabel: apiNotification.cta_label ?? undefined,
+    ctaUrl: apiNotification.cta_url ?? undefined,
     id: apiNotification.id,
-    type: apiNotification.type,
-    severity: apiNotification.severity ?? 'info',
-    title: apiNotification.title,
     preview:
       typeof apiNotification.body?.preview === 'string'
         ? apiNotification.body.preview
         : (apiNotification.preview ?? apiNotification.message ?? ''),
-    createdAt: apiNotification.created_at,
     read: apiNotification.read ?? false,
-    ctaUrl: apiNotification.cta_url ?? undefined,
-    ctaLabel: apiNotification.cta_label ?? undefined,
-    channels: Array.isArray(apiNotification.routed_channels) ? apiNotification.routed_channels : [],
+    severity: apiNotification.severity ?? 'info',
+    title: apiNotification.title,
+    type: apiNotification.type,
   }
 }
 
@@ -157,7 +157,7 @@ export default function NotificationsCenterScreen() {
   })
 
   const notificationsQuery = api.notifications.list.useInfiniteQuery(
-    { status: filter, limit: 25 },
+    { limit: 25, status: filter },
     {
       getNextPageParam: (lastPage: { nextCursor?: string | null }) =>
         lastPage?.nextCursor ?? undefined,
@@ -219,23 +219,23 @@ export default function NotificationsCenterScreen() {
   const isEmpty = notifications.length === 0 && !notificationsQuery.isLoading
 
   const [preferences, setPreferences] = useState({
-    globalEnabled: true,
-    channelEnabled: { in_app: true, email: true, push: true, sms: false },
+    channelEnabled: { email: true, in_app: true, push: true, sms: false },
     digestFrequency: 'immediate' as 'immediate' | 'digest_daily' | 'digest_weekly' | 'mute',
+    globalEnabled: true,
     quietHours: null as { start: string; end: string } | null,
   })
 
   useEffect(() => {
     if (preferencesQuery.data) {
       setPreferences({
-        globalEnabled: preferencesQuery.data.globalEnabled,
         channelEnabled: {
-          in_app: preferencesQuery.data.channelEnabled.in_app,
           email: preferencesQuery.data.channelEnabled.email,
+          in_app: preferencesQuery.data.channelEnabled.in_app,
           push: preferencesQuery.data.channelEnabled.push,
           sms: preferencesQuery.data.channelEnabled.sms,
         },
         digestFrequency: preferencesQuery.data.digestFrequency,
+        globalEnabled: preferencesQuery.data.globalEnabled,
         quietHours: preferencesQuery.data.quietHours ?? null,
       })
     }
@@ -243,10 +243,10 @@ export default function NotificationsCenterScreen() {
 
   const handleSavePreferences = () => {
     savePreferencesMutation.mutate({
-      globalEnabled: preferences.globalEnabled,
       channelEnabled: preferences.channelEnabled,
-      quietHours: preferences.quietHours ?? undefined,
       digestFrequency: preferences.digestFrequency,
+      globalEnabled: preferences.globalEnabled,
+      quietHours: preferences.quietHours ?? undefined,
     })
   }
 
@@ -374,7 +374,7 @@ export default function NotificationsCenterScreen() {
                   onChangeText={(text) =>
                     setPreferences((prev) => ({
                       ...prev,
-                      quietHours: { start: text, end: prev.quietHours?.end ?? '' },
+                      quietHours: { end: prev.quietHours?.end ?? '', start: text },
                     }))
                   }
                   width={100}
@@ -386,7 +386,7 @@ export default function NotificationsCenterScreen() {
                   onChangeText={(text) =>
                     setPreferences((prev) => ({
                       ...prev,
-                      quietHours: { start: prev.quietHours?.start ?? '', end: text },
+                      quietHours: { end: text, start: prev.quietHours?.start ?? '' },
                     }))
                   }
                   width={100}

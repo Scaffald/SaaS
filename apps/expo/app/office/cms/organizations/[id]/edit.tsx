@@ -37,13 +37,13 @@ export default function EditOrganizationPage() {
       mode="edit"
       organizationId={id}
       initialData={{
+        address: data.organization.address || undefined,
+        industry_id: data.organization.industry_id || undefined,
+        locations: data.organization.locations || [],
+        logo_url: data.organization.logo_url || undefined,
         name: data.organization.name,
         slug: data.organization.slug,
-        industry_id: data.organization.industry_id || undefined,
-        logo_url: data.organization.logo_url || undefined,
         visibility: data.organization.visibility || 'public',
-        address: data.organization.address || undefined,
-        locations: data.organization.locations || [],
       }}
     />
   )

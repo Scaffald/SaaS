@@ -1,41 +1,41 @@
 {
-  "project": "SCF-Scaffald",
   "description": "SCF-Scaffald monorepo (Expo app + local Supabase)",
   "ports": {
     "expo-dev-server": {
-      "port": 8081,
       "description": "Expo development server",
       "environment": "development",
+      "port": 8081,
       "protocol": "http",
       "required": true
     },
-    "web-dev": {
-      "port": 3000,
-      "description": "Web development server (when using pnpm web)",
+    "mailpit": {
+      "description": "Mailpit (local email)",
       "environment": "development",
+      "port": 54324,
       "protocol": "http",
       "required": false
     },
     "supabase": {
-      "port": 54321,
       "description": "Supabase local stack",
       "environment": "development",
+      "port": 54321,
       "protocol": "http",
       "required": true
     },
     "supabase-studio": {
-      "port": 54323,
       "description": "Supabase Studio",
       "environment": "development",
+      "port": 54323,
       "protocol": "http",
       "required": false
     },
-    "mailpit": {
-      "port": 54324,
-      "description": "Mailpit (local email)",
+    "web-dev": {
+      "description": "Web development server (when using pnpm web)",
       "environment": "development",
+      "port": 3000,
       "protocol": "http",
       "required": false
     }
-  }
+  },
+  "project": "SCF-Scaffald"
 }

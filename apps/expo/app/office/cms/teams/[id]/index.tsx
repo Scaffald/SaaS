@@ -71,8 +71,8 @@ export default function OfficeTeamDetailPage() {
     refetch: refetchPendingInvitations,
   } = api.teams.invitations.list.useQuery(
     {
-      teamId,
       status: 'pending',
+      teamId,
     },
     {
       enabled: Boolean(teamId),
@@ -87,9 +87,9 @@ export default function OfficeTeamDetailPage() {
     refetch: refetchJobs,
   } = api.office.listJobs.useQuery(
     {
-      team_id: teamId || undefined,
       limit: 20,
       offset: 0,
+      team_id: teamId || undefined,
     },
     {
       enabled: Boolean(teamId),
@@ -181,8 +181,8 @@ export default function OfficeTeamDetailPage() {
           icon={Briefcase}
           onPress={() =>
             router.push({
-              pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
               params: { teamId: team.id },
+              pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
             })
           }
         >
@@ -218,8 +218,8 @@ export default function OfficeTeamDetailPage() {
               ) : undefined
             }
             stats={{
-              memberCount,
               jobCount,
+              memberCount,
               pendingInvitations: pendingInvitationsCount,
             }}
           />
@@ -246,8 +246,8 @@ export default function OfficeTeamDetailPage() {
               }}
               onCreateJob={() =>
                 router.push({
-                  pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                   params: { teamId: team.id },
+                  pathname: ROUTES.OFFICE.CMS.JOBS.CREATE.path,
                 })
               }
             />

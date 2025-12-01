@@ -39,8 +39,8 @@ export default function BackgroundCheckDisputeScreen() {
     <>
       <Stack.Screen
         options={{
-          title: 'Dispute background check',
           headerShown: false,
+          title: 'Dispute background check',
         }}
       />
       <SafeAreaView style={{ flex: 1, paddingTop: insets.top }}>
