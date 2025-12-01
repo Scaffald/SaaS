@@ -18,8 +18,13 @@
 ## Publishing Alpha Version
 
 ```bash
-cd /Users/clay/Development/unicornlove-ui
+# Navigate to standalone repo (path discovered automatically or set UNICORNLOVE_UI_DIR)
+cd $(dirname $(./packages/ui/scripts/publish-alpha.sh | grep -o 'Repository:.*' | cut -d' ' -f2)) || cd ../_packages/unicornlove-ui
 
+# Or use the script directly:
+./packages/ui/scripts/publish-alpha.sh
+
+# Or manually:
 # 1. Verify build
 pnpm build
 
@@ -74,7 +79,7 @@ pnpm add @unicornlove/ui@1.0.0
 After publishing, migrate SCF-Scaffald:
 
 ```bash
-cd /Users/clay/Development/SCF-Scaffald
+# From monorepo root
 ./packages/ui/scripts/migrate-scaffald.sh 1.0.0
 ```
 

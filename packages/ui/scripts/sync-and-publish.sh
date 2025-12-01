@@ -1,11 +1,28 @@
 #!/bin/bash
 # Sync from monorepo to standalone repo, publish, and set up local dev linking
 # This is a complete workflow script for maintaining the hybrid setup
+# Uses dynamic path discovery - set UNICORNLOVE_UI_DIR to override
 
 set -e
 
-SOURCE_DIR="/Users/clay/Development/SCF-Scaffald/packages/ui"
-TARGET_DIR="/Users/clay/Development/_packages/unicornlove-ui"
+# Get script directory and discover monorepo root dynamically
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MONOREPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+SOURCE_DIR="${MONOREPO_ROOT}/packages/ui"
+
+# Allow override via environment variable
+if [ -z "${UNICORNLOVE_UI_DIR}" ]; then
+  # Try common locations
+  if [ -d "${MONOREPO_ROOT}/../_packages/unicornlove-ui" ]; then
+    TARGET_DIR="${MONOREPO_ROOT}/../_packages/unicornlove-ui"
+  elif [ -d "${MONOREPO_ROOT}/../unicornlove-ui" ]; then
+    TARGET_DIR="${MONOREPO_ROOT}/../unicornlove-ui"
+  else
+    TARGET_DIR="${MONOREPO_ROOT}/../_packages/unicornlove-ui"
+  fi
+else
+  TARGET_DIR="${UNICORNLOVE_UI_DIR}"
+fi
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -15,6 +32,8 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}🚀 Syncing, Publishing, and Setting Up Local Dev Workflow${NC}"
+echo "Source: ${SOURCE_DIR}"
+echo "Target: ${TARGET_DIR}"
 echo ""
 
 # Step 1: Sync files
@@ -27,6 +46,9 @@ fi
 
 if [ ! -d "${TARGET_DIR}" ]; then
   echo -e "${RED}❌ Target directory not found: ${TARGET_DIR}${NC}"
+  echo ""
+  echo "Set UNICORNLOVE_UI_DIR environment variable or clone the repository:"
+  echo "  git clone git@github.com:Unicorn/unicornlove-ui.git ${TARGET_DIR}"
   exit 1
 fi
 
@@ -85,21 +107,27 @@ else
   SED_CMD="sed -i"
 fi
 
-if grep -q '"@biomejs/biome": "catalog:"' package.json 2>/dev/null; then
-  $SED_CMD 's/"@biomejs\/biome": "catalog:"/"@biomejs\/biome": "~2.3.6"/' package.json
-  echo "  ✓ @biomejs/biome"
-fi
-if grep -q '"@types/node": "catalog:"' package.json 2>/dev/null; then
-  $SED_CMD 's/"@types\/node": "catalog:"/"@types\/node": "~20.0.0"/' package.json
-  echo "  ✓ @types/node"
-fi
-if grep -q '"@types/react": "catalog:"' package.json 2>/dev/null; then
-  $SED_CMD 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
-  echo "  ✓ @types/react"
-fi
-if grep -q '"typescript": "catalog:"' package.json 2>/dev/null; then
-  $SED_CMD 's/"typescript": "catalog:"/"typescript": "~5.9.2"/' package.json
-  echo "  ✓ typescript"
+# Use helper script if available
+if [ -f "${SOURCE_DIR}/scripts/fix-dev-dependencies.sh" ]; then
+  bash "${SOURCE_DIR}/scripts/fix-dev-dependencies.sh" "${TARGET_DIR}/package.json" "${MONOREPO_ROOT}/pnpm-workspace.yaml"
+else
+  # Inline replacements
+  if grep -q '"@biomejs/biome": "catalog:"' package.json 2>/dev/null; then
+    $SED_CMD 's/"@biomejs\/biome": "catalog:"/"@biomejs\/biome": "~2.3.6"/' package.json
+    echo "  ✓ @biomejs/biome"
+  fi
+  if grep -q '"@types/node": "catalog:"' package.json 2>/dev/null; then
+    $SED_CMD 's/"@types\/node": "catalog:"/"@types\/node": "~20.0.0"/' package.json
+    echo "  ✓ @types/node"
+  fi
+  if grep -q '"@types/react": "catalog:"' package.json 2>/dev/null; then
+    $SED_CMD 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
+    echo "  ✓ @types/react"
+  fi
+  if grep -q '"typescript": "catalog:"' package.json 2>/dev/null; then
+    $SED_CMD 's/"typescript": "catalog:"/"typescript": "~5.9.2"/' package.json
+    echo "  ✓ typescript"
+  fi
 fi
 
 # Step 2: Install dependencies and build
@@ -198,7 +226,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   
   # Link in monorepo
   echo -e "${BLUE}Linking in monorepo...${NC}"
-  cd "${SOURCE_DIR}/../../.."
+  cd "${MONOREPO_ROOT}"
   pnpm link --global @unicornlove/ui
   
   echo ""
@@ -220,4 +248,3 @@ echo "- Files synced from monorepo to standalone repo"
 echo "- Package built and tested"
 echo "- Changes committed"
 echo "- Backup branch: ${BACKUP_BRANCH}"
-

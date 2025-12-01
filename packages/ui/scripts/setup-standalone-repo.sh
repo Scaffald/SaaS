@@ -4,13 +4,20 @@
 
 set -e
 
+# Get script directory and discover monorepo root dynamically
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MONOREPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+SOURCE_DIR="${MONOREPO_ROOT}/packages/ui"
+
+# Allow override via environment variable
+WORKSPACE_DIR="${WORKSPACE_DIR:-$(cd "${MONOREPO_ROOT}/.." && pwd)}"
 REPO_NAME="unicornlove-ui"
 ORG="Unicorn"
-SOURCE_DIR="/Users/clay/Development/SCF-Scaffald/packages/ui"
-WORKSPACE_DIR="/Users/clay/Development"
 TARGET_DIR="${WORKSPACE_DIR}/${REPO_NAME}"
 
 echo "🚀 Setting up standalone repository for @unicornlove/ui"
+echo "Source: ${SOURCE_DIR}"
+echo "Target: ${TARGET_DIR}"
 echo ""
 
 # Step 1: Create GitHub repository
@@ -36,6 +43,7 @@ if [ -d "${TARGET_DIR}" ]; then
     rm -rf "${TARGET_DIR}"
   else
     echo "❌ Aborting. Please remove the directory manually or choose a different location."
+    echo "Set WORKSPACE_DIR environment variable to customize location."
     exit 1
   fi
 fi
@@ -72,42 +80,32 @@ rm -rf dist node_modules .turbo 2>/dev/null || true
 # Replace catalog: references in devDependencies with explicit versions
 echo ""
 echo "🔧 Replacing catalog: references in devDependencies..."
-# Catalog versions from pnpm-workspace.yaml
-# Use the helper script or inline replacements
+
+# Use helper script if available
 if [ -f "${SOURCE_DIR}/scripts/fix-dev-dependencies.sh" ]; then
-  bash "${SOURCE_DIR}/scripts/fix-dev-dependencies.sh" "${TARGET_DIR}/package.json"
+  bash "${SOURCE_DIR}/scripts/fix-dev-dependencies.sh" "${TARGET_DIR}/package.json" "${MONOREPO_ROOT}/pnpm-workspace.yaml"
 else
-  # Inline replacements (macOS sed syntax)
+  # Inline replacements
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    SED_CMD="sed -i ''"
+  else
+    SED_CMD="sed -i"
+  fi
+  
   if grep -q '"@biomejs/biome": "catalog:"' package.json 2>/dev/null; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/"@biomejs\/biome": "catalog:"/"@biomejs\/biome": "~2.3.6"/' package.json
-    else
-      sed -i 's/"@biomejs\/biome": "catalog:"/"@biomejs\/biome": "~2.3.6"/' package.json
-    fi
+    $SED_CMD 's/"@biomejs\/biome": "catalog:"/"@biomejs\/biome": "~2.3.6"/' package.json
     echo "  ✓ @biomejs/biome"
   fi
   if grep -q '"@types/node": "catalog:"' package.json 2>/dev/null; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/"@types\/node": "catalog:"/"@types\/node": "~20.0.0"/' package.json
-    else
-      sed -i 's/"@types\/node": "catalog:"/"@types\/node": "~20.0.0"/' package.json
-    fi
+    $SED_CMD 's/"@types\/node": "catalog:"/"@types\/node": "~20.0.0"/' package.json
     echo "  ✓ @types/node"
   fi
   if grep -q '"@types/react": "catalog:"' package.json 2>/dev/null; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
-    else
-      sed -i 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
-    fi
+    $SED_CMD 's/"@types\/react": "catalog:"/"@types\/react": "~19.1.0"/' package.json
     echo "  ✓ @types/react"
   fi
   if grep -q '"typescript": "catalog:"' package.json 2>/dev/null; then
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/"typescript": "catalog:"/"typescript": "~5.9.2"/' package.json
-    else
-      sed -i 's/"typescript": "catalog:"/"typescript": "~5.9.2"/' package.json
-    fi
+    $SED_CMD 's/"typescript": "catalog:"/"typescript": "~5.9.2"/' package.json
     echo "  ✓ typescript"
   fi
 fi
@@ -121,7 +119,7 @@ git commit -m "chore: initial commit - migrate from monorepo
 - Standalone package configuration
 - All dependencies with explicit versions
 - ESM-only build output
-- Comprehensive test suite (106 tests passing)
+- Comprehensive test suite
 - Storybook documentation
 - CI/CD workflows
 - Semantic-release configuration
@@ -165,4 +163,3 @@ echo ""
 echo "3. Publish alpha version:"
 echo "   cd ${TARGET_DIR}"
 echo "   npm publish --tag alpha --access public"
-

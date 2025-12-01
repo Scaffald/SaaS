@@ -8,7 +8,7 @@ This package uses a **hybrid maintenance approach** that AI agents MUST understa
 
 1. **Two Locations**: 
    - Monorepo: `packages/ui/` (development source of truth)
-   - Standalone: `/Users/clay/Development/_packages/unicornlove-ui` or custom via `UNICORNLOVE_UI_DIR` (publishing)
+   - Standalone: Custom location (default: `../_packages/unicornlove-ui` relative to monorepo, or set `UNICORNLOVE_UI_DIR`) (publishing)
 
 2. **Consumption**: Monorepo uses `@unicornlove/ui@^1.0.1` from npm (published package)
 
