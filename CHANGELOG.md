@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/Unicorn/SCF-Scaffald/compare/v1.1.0...v1.2.0) (2025-12-02)
+
+
+### Features
+
+* **analytics:** enable PostHog analytics on web platform using DRY architecture ([620d10b](https://github.com/Unicorn/SCF-Scaffald/commit/620d10bc765e9eba5303885acc90253a19011841))
+* **sentry:** implement comprehensive error tracking for mobile and web ([2ce1336](https://github.com/Unicorn/SCF-Scaffald/commit/2ce1336d7736afd575855984a86c4eafae2d9840))
+
 # [1.1.0](https://github.com/Unicorn/SCF-Scaffald/compare/v1.0.0...v1.1.0) (2025-12-01)
 
 
