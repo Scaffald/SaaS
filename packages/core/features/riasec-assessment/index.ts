@@ -1,2 +1,2 @@
-export { RIASECAssessmentWidget } from './RIASECAssessmentWidget'
-export { RIASECAssessmentWizard } from './RIASECAssessmentWizard'
+export { RIASECAssessmentWidget } from './RIASECAssessmentWidget.ts'
+export { RIASECAssessmentWizard } from './RIASECAssessmentWizard.ts'

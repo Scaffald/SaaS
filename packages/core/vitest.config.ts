@@ -1,7 +1,7 @@
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { mergeConfig } from 'vitest/config'
-import baseConfig from '../../vitest.config'
+import baseConfig from '../../vitest.config.ts'
 
 const workspaceRoot = fileURLToPath(new URL('../..', import.meta.url))
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import type { ProfileWizardStepId } from '../utils/wizardSteps'
-import type { SaveStepInput, WizardStepPayloads } from './useProfileWizard'
+import type { ProfileWizardStepId } from '../utils/wizardSteps.ts'
+import type { SaveStepInput, WizardStepPayloads } from './useProfileWizard.ts'
 
 interface UseWizardAutoSaveOptions {
   step: ProfileWizardStepId

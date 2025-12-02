@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import type { ReviewAnalytics } from '../types'
+import type { ReviewAnalytics } from '../types.ts'
 
 /**
  * Custom hook to fetch review analytics data for a user

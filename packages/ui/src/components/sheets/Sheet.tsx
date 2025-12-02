@@ -1,19 +1,23 @@
+import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
-import { styled, Sheet as TamaguiSheet, withStaticProperties } from 'tamagui'
-import type { SheetProps } from 'tamagui'
+import { Sheet as TamaguiSheet, withStaticProperties } from 'tamagui'
+import type { SheetProps, SheetFrameProps, SheetOverlayProps } from 'tamagui'
 
 /**
  * Custom Sheet.Frame with default background color
  * This ensures all action sheets have a consistent background globally
  */
-const SheetFrame = styled(TamaguiSheet.Frame, {
-  backgroundColor: '$color1',
-})
+const SheetFrame = forwardRef<unknown, SheetFrameProps>((props, ref) => (
+  <TamaguiSheet.Frame ref={ref} backgroundColor="$color1" {...props} />
+))
 
-const SheetOverlay = styled(TamaguiSheet.Overlay, {
-  backgroundColor: '$color12',
-  opacity: 0.7,
-})
+SheetFrame.displayName = 'SheetFrame'
+
+const SheetOverlay = forwardRef<unknown, SheetOverlayProps>((props, ref) => (
+  <TamaguiSheet.Overlay ref={ref} backgroundColor="$color12" opacity={0.7} {...props} />
+))
+
+SheetOverlay.displayName = 'SheetOverlay'
 
 /**
  * Sheet - Custom action sheet component with default background
@@ -38,6 +42,7 @@ type SheetComponent = ComponentType<SheetProps> & {
 export const Sheet = withStaticProperties(TamaguiSheet, {
   Frame: SheetFrame,
   Overlay: SheetOverlay,
+  Handle: TamaguiSheet.Handle,
   ScrollView: TamaguiSheet.ScrollView,
   Controlled: TamaguiSheet.Controlled,
 }) as unknown as SheetComponent

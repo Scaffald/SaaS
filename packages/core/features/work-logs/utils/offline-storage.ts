@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-import type { OfflineWorkLog, SyncSettings } from '../types/offline'
-import { DEFAULT_SYNC_SETTINGS } from '../types/offline'
+import type { OfflineWorkLog, SyncSettings } from '../types/offline.ts'
+import { DEFAULT_SYNC_SETTINGS } from '../types/offline.ts'
 
 const OFFLINE_WORK_LOGS_KEY = 'scf.workLogs.offlineQueue'
 const WORK_LOG_SYNC_SETTINGS_KEY = 'scf.workLogs.syncSettings'

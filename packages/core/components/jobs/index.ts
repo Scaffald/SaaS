@@ -1,2 +1,2 @@
-export { JobCard, type JobCardProps, type JobOrganization } from './JobCard'
+export { JobCard, type JobCardProps, type JobOrganization } from './JobCard.ts'
 

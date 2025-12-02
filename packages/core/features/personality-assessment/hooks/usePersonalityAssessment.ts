@@ -1,5 +1,5 @@
 import { api } from '@app/core/utils/api'
-import type { AssessmentStep } from '../utils/assessment-steps'
+import type { AssessmentStep } from '../utils/assessment-steps.ts'
 
 export function usePersonalityAssessment() {
   const utils = api.useUtils()

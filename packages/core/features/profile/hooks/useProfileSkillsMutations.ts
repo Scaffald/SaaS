@@ -1,14 +1,14 @@
 import { api } from "@app/core/utils/api";
 import { useToastController } from "@tamagui/toast";
 import { useCallback, useMemo, useRef } from "react";
-import type { ParentSkill } from "../types/profile-skills-types";
+import type { ParentSkill } from "../types/profile-skills-types.ts";
 import {
   completeProfileSync,
   failProfileSync,
   resetProfileSyncError,
   startProfileSync,
-} from "../utils/profile-sync-store";
-import { invalidateProfileQueries } from "../utils/profile-sync";
+} from "../utils/profile-sync-store.ts";
+import { invalidateProfileQueries } from "../utils/profile-sync.ts";
 
 interface UseProfileSkillsMutationsReturn {
   addSkillMutation: ReturnType<

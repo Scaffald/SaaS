@@ -2,6 +2,6 @@ export type {
   CooldownStepProps,
   IntroductionStepProps,
   ResultsStepProps,
-} from './components'
-export { CooldownStep, IntroductionStep, ResultsStep } from './components'
-export { LuscherTestWizard } from './LuscherTestWizard'
+} from './components.ts'
+export { CooldownStep, IntroductionStep, ResultsStep } from './components.ts'
+export { LuscherTestWizard } from './LuscherTestWizard.ts'

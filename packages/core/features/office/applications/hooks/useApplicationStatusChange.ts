@@ -1,6 +1,6 @@
 import { api } from '@app/core/utils/api'
 import { useCallback, useState } from 'react'
-import type { ApplicationStatus } from '../../mock-data/ats-mock-data'
+import type { ApplicationStatus } from '../../mock-data/ats-mock-data.ts'
 
 // Map UI status to database status
 const STATUS_MAP: Record<ApplicationStatus, string> = {

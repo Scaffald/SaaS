@@ -126,11 +126,18 @@ const InnerProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [resolvedTheme])
 
+  // Wrap all platforms with React Navigation theme provider
+  // This is needed because expo-router/drawer uses React Navigation components
+  // that require theme context (like Background, Header, etc.)
   if (Platform.OS === 'web') {
-    return <>{children}</>
+    return (
+      <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
+        {children}
+      </ThemeProvider>
+    )
   }
 
-  // Native: wrap with React Navigation theme provider and status bar
+  // Native: also include status bar
   return (
     <ThemeProvider value={resolvedTheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} hidden />

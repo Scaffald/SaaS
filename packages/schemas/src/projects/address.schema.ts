@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { addressSchema } from '../common/address'
+import { addressSchema } from '../common/address.ts'
 
 /**
  * Property type enum

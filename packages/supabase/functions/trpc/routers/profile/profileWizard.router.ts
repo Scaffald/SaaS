@@ -12,8 +12,8 @@ import {
   profileWizardProgressSchema,
   profileWizardSaveStepInputSchema,
 } from '@app/trpc/schemas'
-import type { Context } from '../../context'
-import { protectedProcedure, t } from '../../middleware'
+import type { Context } from '../../context.ts'
+import { protectedProcedure, t } from '../../middleware.ts'
 
 const TOTAL_WIZARD_WEIGHT = PROFILE_WIZARD_STEPS.reduce(
   (total, step) => total + PROFILE_WIZARD_STEP_WEIGHTS[step],

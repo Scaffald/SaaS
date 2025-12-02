@@ -6,7 +6,7 @@ import {
   type SupportedLocale,
   setLocale as setGlobalLocale,
   subscribeToLocaleChanges,
-} from '../locales'
+} from '../locales.ts'
 
 interface TranslationOptions {
   t: (key: string, params?: Record<string, unknown>) => string

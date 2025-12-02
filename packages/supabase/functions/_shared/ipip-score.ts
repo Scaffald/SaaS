@@ -3,7 +3,7 @@ import type {
   IPIPFacet,
   IPIPScoreOptions,
   IPIPScores,
-} from './ipip-types'
+} from './ipip-types.ts'
 
 function _calcHandler(score: number, count: number): string {
   const average = score / count

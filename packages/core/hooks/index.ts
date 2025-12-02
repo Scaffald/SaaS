@@ -1,2 +1,2 @@
-export { useBreadcrumbs, type UseBreadcrumbsOptions, type UseBreadcrumbsReturn } from './useBreadcrumbs'
+export { useBreadcrumbs, type UseBreadcrumbsOptions, type UseBreadcrumbsReturn } from './useBreadcrumbs.ts'
 

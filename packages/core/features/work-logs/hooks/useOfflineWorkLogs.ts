@@ -9,12 +9,12 @@ import type {
   OfflineWorkLogPhotoInput,
   QueueOfflineWorkLogOptions,
   SyncStatus,
-} from '../types/offline'
+} from '../types/offline.ts'
 import {
   clearOfflineWorkLogs,
   loadOfflineWorkLogs,
   saveOfflineWorkLogs,
-} from '../utils/offline-storage'
+} from '../utils/offline-storage.ts'
 
 type FileSystemModule = typeof import('expo-file-system/legacy')
 

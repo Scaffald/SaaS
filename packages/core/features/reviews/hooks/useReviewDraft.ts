@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
-import type { ReviewDraft, ReviewDraftState } from '../types/review-draft'
-import { createEmptyReviewDraft } from '../types/review-draft'
+import type { ReviewDraft, ReviewDraftState } from '../types/review-draft.ts'
+import { createEmptyReviewDraft } from '../types/review-draft.ts'
 
 interface UseReviewDraftOptions {
   subjectId: string

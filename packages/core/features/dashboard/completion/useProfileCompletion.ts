@@ -1,7 +1,7 @@
 import { api } from '@app/core/utils/api'
 import type { ProfileWizardStepId } from '@app/supabase/client-types'
 import { useMemo } from 'react'
-import { resolveSectionMetadata } from '../../profile-completion/constants/sectionMetadata'
+import { resolveSectionMetadata } from '../../profile-completion/constants/sectionMetadata.ts'
 
 type SectionProgressSummary = {
   id: string

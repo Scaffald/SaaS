@@ -1,1 +1,1 @@
-export * from './feedback.schema'
+export * from './feedback.schema.ts'

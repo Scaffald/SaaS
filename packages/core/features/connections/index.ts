@@ -1,2 +1,2 @@
-export { ConnectionsManagementPage } from './ConnectionsManagementPage'
-export { ConnectionFollowButtons } from './components/ConnectionFollowButtons'
+export { ConnectionsManagementPage } from './ConnectionsManagementPage.ts'
+export { ConnectionFollowButtons } from './components/ConnectionFollowButtons.ts'

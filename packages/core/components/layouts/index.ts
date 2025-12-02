@@ -1,5 +1,5 @@
-export { AssessmentsLayout } from './AssessmentsLayout'
-export { DashboardLayout } from './DashboardLayout'
-export { OfficeLayout } from './OfficeLayout'
-export { ProfileLayout } from './ProfileLayout'
+export { AssessmentsLayout } from './AssessmentsLayout.ts'
+export { DashboardLayout } from './DashboardLayout.ts'
+export { OfficeLayout } from './OfficeLayout.ts'
+export { ProfileLayout } from './ProfileLayout.ts'
 

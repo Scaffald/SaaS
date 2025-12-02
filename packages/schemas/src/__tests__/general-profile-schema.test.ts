@@ -4,7 +4,7 @@ import {
   generalProfileDefaults,
   generalProfileSchema,
   type GeneralProfileFormData,
-} from '../profile/general'
+} from '../profile/general.ts'
 
 const buildValidProfile = (overrides: Partial<GeneralProfileFormData> = {}): GeneralProfileFormData => ({
   ...generalProfileDefaults,

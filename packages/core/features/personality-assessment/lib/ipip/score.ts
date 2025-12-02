@@ -1,11 +1,11 @@
-import results from './data/en.results.json'
+import results from './data/en.results.json.ts'
 import type {
   IPIPAnswer,
   IPIPFacet,
   IPIPResults,
   IPIPScoreOptions,
   IPIPScores,
-} from './types'
+} from './types.ts'
 
 function _calcHandler(score: number, count: number): string {
   const average = score / count

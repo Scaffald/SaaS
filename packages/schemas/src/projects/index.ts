@@ -1,3 +1,3 @@
-export * from './address.schema'
-export * from './project.schema'
-export * from './site.schema'
+export * from './address.schema.ts'
+export * from './project.schema.ts'
+export * from './site.schema.ts'

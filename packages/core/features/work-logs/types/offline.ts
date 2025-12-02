@@ -1,4 +1,4 @@
-import type { CreateWorkLogInput, UpdateWorkLogInput, UploadWorkLogPhotoInput } from '../schemas'
+import type { CreateWorkLogInput, UpdateWorkLogInput, UploadWorkLogPhotoInput } from '../schemas.ts'
 
 export type SyncStatus = 'pending' | 'queued' | 'syncing' | 'synced' | 'failed'
 

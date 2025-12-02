@@ -3,8 +3,8 @@
 import type { Database } from '@app/supabase/types'
 import { useQuery } from '@tanstack/react-query'
 
-import { supabase } from './supabase/client'
-import { useUser } from './useUser'
+import { supabase } from './supabase/client.ts'
+import { useUser } from './useUser.ts'
 
 type TeamMemberRow = Database['core']['Tables']['team_members']['Row']
 type OrganizationRow = Database['core']['Tables']['organizations']['Row']

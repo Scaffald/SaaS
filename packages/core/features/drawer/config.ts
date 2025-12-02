@@ -8,7 +8,7 @@ import {
   User,
   Users,
 } from "@tamagui/lucide-icons";
-import type { DrawerItemConfig } from "./types";
+import type { DrawerItemConfig } from "./types.ts";
 
 /**
  * Generates drawer items dynamically from dashboard routes

@@ -1,2 +1,2 @@
-export { OrganizationCard, type OrganizationCardProps } from './OrganizationCard'
+export { OrganizationCard, type OrganizationCardProps } from './OrganizationCard.ts'
 

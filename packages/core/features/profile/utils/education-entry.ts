@@ -1,5 +1,5 @@
-import { DEGREE_TYPE_OPTIONS } from '../config'
-import type { EducationEntry, EducationEntryFormValues } from '../types/education'
+import { DEGREE_TYPE_OPTIONS } from '../config.ts'
+import type { EducationEntry, EducationEntryFormValues } from '../types/education.ts'
 
 type DegreeOption = (typeof DEGREE_TYPE_OPTIONS)[number]
 

@@ -1,18 +1,18 @@
 import { z } from 'zod'
-import { backgroundCheckStatusEnum } from './background-check-schemas'
-import type { Json } from './database.types'
+import { backgroundCheckStatusEnum } from './background-check-schemas.ts'
+import type { Json } from './database.types.ts'
 import type {
   NotificationChannel,
   NotificationSeverity,
   NotificationSupabaseClient,
   NotificationType,
-} from './notifications/types'
+} from './notifications/types.ts'
 import {
   enqueueDelivery,
   ensureChannelArray,
   getUserContacts,
   insertNotification,
-} from './notifications/utils'
+} from './notifications/utils.ts'
 
 type BackgroundCheckStatus = z.infer<typeof backgroundCheckStatusEnum>
 type JsonRecord = Record<string, Json | undefined>

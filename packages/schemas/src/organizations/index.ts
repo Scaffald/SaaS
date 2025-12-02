@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { addressSchema } from '../common/address'
+import { addressSchema } from '../common/address.ts'
 
 const locationTypeSchema = z.enum(['headquarters', 'branch', 'job_site', 'remote', 'other'])
 

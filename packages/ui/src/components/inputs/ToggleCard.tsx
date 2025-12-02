@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { AnimatePresence, styled, Text, type ThemeName, View, XStack, YStack } from 'tamagui'
+import { AnimatePresence, Text, type ThemeName, View, XStack, YStack } from 'tamagui'
 import { ToggleSwitch } from './ToggleSwitch'
 
 export interface ToggleCardProps {
@@ -26,23 +26,6 @@ export interface ToggleCardProps {
   /** Disable press-to-toggle behavior on the card container */
   cardPressDisabled?: boolean
 }
-
-const AnimatedExpandedContent = styled(YStack, {
-  overflow: 'hidden',
-  variants: {
-    open: {
-      true: {
-        opacity: 1,
-        maxHeight: 1000,
-      },
-      false: {
-        opacity: 0,
-        maxHeight: 0,
-      },
-    },
-  } as const,
-  animation: 'medium',
-})
 
 /**
  * ToggleCard - A reusable toggle component with icon, title, description and expandable content
@@ -158,9 +141,12 @@ export function ToggleCard({
       {expandedContent && (
         <AnimatePresence>
           {checked && (
-            <AnimatedExpandedContent
+            <YStack
               key="expanded-content"
-              open={checked}
+              overflow="hidden"
+              opacity={checked ? 1 : 0}
+              maxHeight={checked ? 1000 : 0}
+              animation="medium"
               borderColor="$borderColor"
               borderWidth={1}
               borderTopWidth={0}
@@ -171,17 +157,9 @@ export function ToggleCard({
               paddingHorizontal="$4"
               paddingVertical="$3"
               backgroundColor="$color1"
-              enterStyle={{
-                opacity: 0,
-                maxHeight: 0,
-              }}
-              exitStyle={{
-                opacity: 0,
-                maxHeight: 0,
-              }}
             >
               {expandedContent}
-            </AnimatedExpandedContent>
+            </YStack>
           )}
         </AnimatePresence>
       )}

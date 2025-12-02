@@ -28,12 +28,8 @@ export const SkeletonBox = ({
 }: SkeletonBoxProps) => {
   return (
     <SkeletonBoxBase
-      width={typeof width === 'string' ? undefined : width}
-      height={typeof height === 'string' ? undefined : height}
-      style={{
-        ...(typeof width === 'string' ? { width } : {}),
-        ...(typeof height === 'string' ? { height } : {}),
-      }}
+      width={width}
+      height={height}
       borderRadius={borderRadius}
       opacity={animated ? 0.6 : 0.5}
       aria-busy={true}

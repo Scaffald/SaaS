@@ -1,6 +1,6 @@
 /* c8 ignore file */
 
-import { api } from './api'
+import { api } from './api.ts'
 
 /**
  * Hook for fetching all organizations (admin view)

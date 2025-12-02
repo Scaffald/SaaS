@@ -1,12 +1,12 @@
 import * as Localization from "expo-localization";
 import { I18n } from "i18n-js";
 
-import en from "./en";
-import es from "./es";
-import fr from "./fr";
-import type { TranslationKey } from "./types";
+import en from "./en.ts";
+import es from "./es.ts";
+import fr from "./fr.ts";
+import type { TranslationKey } from "./types.ts";
 
-export type { TranslationKey, TranslationNamespaces } from "./types";
+export type { TranslationKey, TranslationNamespaces } from "./types.ts";
 
 declare const __DEV__: boolean | undefined;
 

@@ -1,4 +1,4 @@
-import type { TalentProfile } from '../types'
+import type { TalentProfile } from '../types.ts'
 
 export const mockTalentProfiles: TalentProfile[] = [
   {

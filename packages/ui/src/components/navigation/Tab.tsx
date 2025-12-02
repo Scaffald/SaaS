@@ -84,7 +84,11 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
           </Text>
         )}
         {badge !== undefined && (
-          <TabBadge active={isActive}>{typeof badge === 'number' ? badge : badge}</TabBadge>
+          <TabBadge active={isActive}>
+            <Text fontSize="$2" fontWeight="600">
+              {typeof badge === 'number' ? badge : badge}
+            </Text>
+          </TabBadge>
         )}
       </XStack>
     </Tabs.Tab>

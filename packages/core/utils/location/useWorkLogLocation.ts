@@ -7,7 +7,7 @@ import {
   type LocationPermissionStatus,
   type WorkLogLocation,
   type WorkLogLocationState,
-} from './types'
+} from './types.ts'
 
 const getDeviceType = () => {
   if (Platform.OS === 'ios') {

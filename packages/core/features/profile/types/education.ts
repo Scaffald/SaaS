@@ -1,7 +1,7 @@
 import type {
   EducationProfileFormData,
   EducationEntryFormValues as SingleEducationEntryFormValues,
-} from '../config'
+} from '../config.ts'
 
 /**
  * Represents a persisted education entry returned from the profile API.

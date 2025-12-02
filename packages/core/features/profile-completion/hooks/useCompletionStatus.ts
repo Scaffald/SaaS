@@ -2,7 +2,7 @@ import { api } from '@app/core/utils/api'
 import { useUser } from '@app/core/utils/useUser'
 import type { ProfileWizardStepId } from '@app/supabase/client-types'
 import { useMemo } from 'react'
-import { resolveSectionMetadata } from '../constants/sectionMetadata'
+import { resolveSectionMetadata } from '../constants/sectionMetadata.ts'
 
 interface RawCompletionSection {
   id: string

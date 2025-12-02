@@ -11,9 +11,9 @@ import type {
   OfflineWorkLogPhoto,
   SyncSettings,
   SyncStatus,
-} from '../types/offline'
-import { DEFAULT_SYNC_SETTINGS } from '../types/offline'
-import { loadSyncSettings, saveSyncSettings } from '../utils/offline-storage'
+} from '../types/offline.ts'
+import { DEFAULT_SYNC_SETTINGS } from '../types/offline.ts'
+import { loadSyncSettings, saveSyncSettings } from '../utils/offline-storage.ts'
 
 const WORK_LOG_PHOTO_BUCKET = 'work-log-photos'
 const BASE_RETRY_DELAY_MS = 5000

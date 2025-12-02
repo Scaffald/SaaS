@@ -2,7 +2,7 @@
 
 // AppRouter type for client-side tRPC usage
 // Re-export from the placeholder type to avoid importing Deno-specific code
-export type { AppRouter } from '../../app-router-type';
+export type { AppRouter } from '../../app-router-type.ts';
 export type {
   EmploymentProfileFormData,
   ProfileEmploymentInput,
@@ -13,7 +13,7 @@ export type {
   ProfileSkillsOutput,
   UploadAvatarInput,
   UploadAvatarOutput,
-} from './schemas/consolidated';
+} from './schemas/consolidated.ts';
 // Re-export constants and schemas
 export {
   AVAILABILITY_OPTIONS,
@@ -21,4 +21,4 @@ export {
   MILITARY_STATUS_OPTIONS,
   profileEmploymentDefaults,
   profileEmploymentInputSchema,
-} from './schemas/consolidated';
+} from './schemas/consolidated.ts';

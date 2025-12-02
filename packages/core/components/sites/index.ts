@@ -1,2 +1,2 @@
-export { SiteBoundaryDrawer, type SiteBoundaryDrawerProps } from './SiteBoundaryDrawer'
+export { SiteBoundaryDrawer, type SiteBoundaryDrawerProps } from './SiteBoundaryDrawer.ts'
 

@@ -14,6 +14,7 @@
     "posthog-node": "npm:posthog-node@4.18.0",
     "stripe": "npm:stripe@20.0.0",
     "@app/trpc/schemas": "../../../trpc/src/schemas/index.ts",
-    "@app/trpc/utils": "../../../trpc/src/utils/index.ts"
+    "@app/trpc/utils": "../../../trpc/src/utils/index.ts",
+    "@app/supabase/types": "../../types.ts"
   }
 }

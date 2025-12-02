@@ -1,10 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
-import type { IndustryMapping, ParsedJob } from '../types/external-job';
+import type { IndustryMapping, ParsedJob } from '../types/external-job.ts';
 import {
   containsKeyword,
   INDUSTRY_KEYWORDS,
   type IndustryKeywordConfig,
-} from './industry-keywords';
+} from './industry-keywords.ts';
 
 interface IndustryMatch {
   config: IndustryKeywordConfig;

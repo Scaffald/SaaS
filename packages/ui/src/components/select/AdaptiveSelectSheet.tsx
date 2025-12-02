@@ -40,6 +40,11 @@ interface AdaptiveSelectSheetProps {
  * </Select>
  * ```
  */
+const overlayStyles = {
+  enterStyle: { opacity: 0 },
+  exitStyle: { opacity: 0 },
+} as const
+
 export function AdaptiveSelectSheet({
   children,
   native = false,
@@ -55,15 +60,9 @@ export function AdaptiveSelectSheet({
         animationConfig={animationConfig}
       >
         <Sheet.Frame>
-          <Sheet.ScrollView>
-            {children}
-          </Sheet.ScrollView>
+          <Sheet.ScrollView>{children}</Sheet.ScrollView>
         </Sheet.Frame>
-        <Sheet.Overlay
-          animation={overlayAnimation}
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
+        <Sheet.Overlay animation={overlayAnimation} {...overlayStyles} />
       </Sheet>
     </Adapt>
   )

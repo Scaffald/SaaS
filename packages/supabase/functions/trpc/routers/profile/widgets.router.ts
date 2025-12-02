@@ -1,7 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { protectedProcedure, publicProcedure, t } from '../../middleware'
-import { enrichUserSkills } from '../utils/skill-enrichment'
+import { protectedProcedure, publicProcedure, t } from '../../middleware.ts'
+import { enrichUserSkills } from '../utils/skill-enrichment.ts'
 
 /**
  * Profile Widgets router - provides data queries for profile widget components

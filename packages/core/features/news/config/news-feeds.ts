@@ -1,4 +1,4 @@
-import type { IndustryFeeds } from './types'
+import type { IndustryFeeds } from './types.ts'
 
 /**
  * Construction industry news feeds configuration

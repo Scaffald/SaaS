@@ -1,3 +1,3 @@
-export * from './useFeedbackContext'
-export * from './useFeedbackForm'
-export * from './useFeedbackSubmit'
+export * from './useFeedbackContext.ts'
+export * from './useFeedbackForm.ts'
+export * from './useFeedbackSubmit.ts'

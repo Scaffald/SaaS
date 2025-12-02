@@ -6,8 +6,8 @@ import {
   welcomeSlideListSchema,
   welcomeSlideReorderSchema,
   welcomeSlideUpdateSchema,
-} from '../../_shared/cms-schemas'
-import { officeProcedure, publicProcedure, t } from '../middleware'
+} from '../../_shared/cms-schemas.ts'
+import { officeProcedure, publicProcedure, t } from '../middleware.ts'
 
 /**
  * CMS router - Content management operations

@@ -9,7 +9,7 @@ import {
   profileGeneralInputSchema,
   type UserPrivateUpdate,
 } from '@app/trpc/schemas'
-import { protectedProcedure, t } from '../../middleware'
+import { protectedProcedure, t } from '../../middleware.ts'
 
 /**
  * Profile General router - handles basic profile information

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { LOCATION_PERMISSION_STATUS_VALUES } from '../../utils/location/types'
+import { LOCATION_PERMISSION_STATUS_VALUES } from '../../utils/location/types.ts'
 
 const TIME_24_HOUR = /^([01]\d|2[0-3]):([0-5]\d)$/
 

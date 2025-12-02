@@ -1,14 +1,14 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { trackServerEvent } from '../../_shared/analytics'
+import { trackServerEvent } from '../../_shared/analytics.ts'
 import {
   applicationStepUpdateSchema,
   applicationSubmitSchema,
   applicationUpdateSchema,
   fileUploadSchema,
-} from '../../_shared/application-schemas'
-import { autoAssignApplicationToTeam } from '../../_shared/utils/application-assignment'
-import { t } from '../middleware'
+} from '../../_shared/application-schemas.ts'
+import { autoAssignApplicationToTeam } from '../../_shared/utils/application-assignment.ts'
+import { t } from '../middleware.ts'
 
 const publicProcedure = t.procedure
 const router = t.router

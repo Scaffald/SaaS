@@ -1,3 +1,3 @@
-export { ProfileCompletionWidget } from './ProfileCompletionWidget'
-export type { ProfileCompletionData } from './useProfileCompletion'
-export { useProfileCompletion } from './useProfileCompletion'
+export { ProfileCompletionWidget } from './ProfileCompletionWidget.ts'
+export type { ProfileCompletionData } from './useProfileCompletion.ts'
+export { useProfileCompletion } from './useProfileCompletion.ts'

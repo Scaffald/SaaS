@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { addressSchema } from '../address'
+import { addressSchema } from '../address.ts'
 
 describe('addressSchema', () => {
   it('allows undefined values', () => {

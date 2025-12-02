@@ -1,61 +1,19 @@
-import { APP_VERSION } from '@app/core/constants/appVersion'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import Constants from 'expo-constants'
-import * as Updates from 'expo-updates'
 import PostHog, { type PostHogCustomStorage, type PostHogOptions } from 'posthog-react-native'
-import { Platform } from 'react-native'
+import {
+  APP_ENV,
+  CHANNEL,
+  POSTHOG_HOST,
+  POSTHOG_KEY,
+  isAllowedEnvironment,
+} from './config.ts'
 import {
   type AnalyticsEventName,
   type AnalyticsEventProperties,
   validateEventProperties,
-} from './events'
-
-type AnalyticsEnvironment = 'development' | 'staging' | 'production'
-
-interface InitAnalyticsOptions {
-  hasConsent: boolean
-  debug?: boolean
-}
-
-const DEFAULT_POSTHOG_HOST = 'https://app.posthog.com'
-const EXTRA_CONFIG = (Constants.expoConfig?.extra ?? {}) as Record<string, unknown>
-const ANALYTICS_EXTRA = ((EXTRA_CONFIG as { analytics?: { posthog?: Record<string, unknown> } })
-  .analytics?.posthog ?? {}) as Record<string, unknown>
-const APP_ENV: AnalyticsEnvironment =
-  (ANALYTICS_EXTRA.env as AnalyticsEnvironment) ??
-  (EXTRA_CONFIG.appEnv as AnalyticsEnvironment) ??
-  (process.env.APP_ENV as AnalyticsEnvironment) ??
-  'development'
-
-// SECURITY: Only use EXPO_PUBLIC variables - non-public env vars should never be in client bundle
-// Prioritize EXPO_PUBLIC_POSTHOG_API_KEY directly from process.env, then fall back to config values
-const POSTHOG_KEY =
-  process.env.EXPO_PUBLIC_POSTHOG_API_KEY ??
-  (EXTRA_CONFIG.posthogKey as string | undefined) ??
-  (ANALYTICS_EXTRA.key as string | undefined) ??
-  ''
-
-// Prioritize EXPO_PUBLIC_POSTHOG_HOST directly from process.env, then fall back to config values
-const POSTHOG_HOST =
-  process.env.EXPO_PUBLIC_POSTHOG_HOST ??
-  (EXTRA_CONFIG.posthogHost as string | undefined) ??
-  (ANALYTICS_EXTRA.host as string | undefined) ??
-  DEFAULT_POSTHOG_HOST
-
-const CHANNEL = (Updates.channel ||
-  (ANALYTICS_EXTRA.channel as AnalyticsEnvironment | undefined) ||
-  APP_ENV) as AnalyticsEnvironment
-const RUNTIME_VERSION =
-  Updates.runtimeVersion ||
-  Constants.expoConfig?.runtimeVersion ||
-  Constants.expoConfig?.version ||
-  'unknown'
-const IOS_BUNDLE_IDENTIFIER = Constants.expoConfig?.ios?.bundleIdentifier
-const ANDROID_PACKAGE = Constants.expoConfig?.android?.package
-
-const IS_WEB = Platform.OS === 'web'
-const isProductionBuild = APP_ENV === 'production'
-const isAllowedEnvironment = !isProductionBuild || (CHANNEL === 'production' && !__DEV__)
+} from './events.ts'
+import type { EventProperties, InitAnalyticsOptions } from './types.ts'
+import { buildSuperProperties, isAnalyticsAvailable } from './utils.ts'
 
 const CUSTOM_STORAGE: PostHogCustomStorage = {
   getItem: AsyncStorage.getItem,
@@ -65,40 +23,13 @@ const CUSTOM_STORAGE: PostHogCustomStorage = {
 let client: PostHog | null = null
 let lastDebugFlag = false
 
-export const isAnalyticsAvailable = () => Boolean(POSTHOG_KEY && POSTHOG_HOST)
+export { isAnalyticsAvailable }
 export const analyticsEnv = APP_ENV
 export const getAnalyticsClient = () => client
 export const isAnalyticsInitialized = () => Boolean(client)
 
-type EventProperties = Parameters<PostHog['capture']>[1]
 type RegisterProperties = Parameters<PostHog['register']>[0]
 type ResetKeepKeys = Parameters<PostHog['reset']>[0]
-
-const buildSuperProperties = (): RegisterProperties => {
-  const runtimeVersion =
-    typeof RUNTIME_VERSION === 'string'
-      ? RUNTIME_VERSION
-      : RUNTIME_VERSION
-        ? JSON.stringify(RUNTIME_VERSION)
-        : 'unknown'
-
-  const properties = {
-    env: APP_ENV,
-    expo_channel: CHANNEL,
-    runtime_version: runtimeVersion,
-    app_version: APP_VERSION,
-  } as RegisterProperties
-
-  if (IOS_BUNDLE_IDENTIFIER) {
-    properties.app_identifier_ios = IOS_BUNDLE_IDENTIFIER
-  }
-
-  if (ANDROID_PACKAGE) {
-    properties.app_identifier_android = ANDROID_PACKAGE
-  }
-
-  return properties
-}
 
 const applyDebugFlag = (instance: PostHog, debug: boolean) => {
   if (debug !== lastDebugFlag) {
@@ -128,21 +59,13 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
 
   if (!isAnalyticsAvailable()) {
     console.log('[analytics debug] unavailable', {
-      POSTHOG_KEY,
+      POSTHOG_KEY: POSTHOG_KEY ? '***' : undefined,
       POSTHOG_HOST,
       APP_ENV,
       CHANNEL,
-      IS_WEB,
       isAllowedEnvironment,
     })
     console.warn('[analytics] PostHog key or host not configured; analytics disabled.')
-    return
-  }
-
-  if (IS_WEB) {
-    if (debug) {
-      console.info('[analytics] Skipping PostHog init on web platform.')
-    }
     return
   }
 
@@ -174,7 +97,7 @@ export async function initAnalytics({ hasConsent, debug = __DEV__ }: InitAnalyti
     const instance = new PostHog(POSTHOG_KEY, options)
     applyDebugFlag(instance, debug)
     await instance.ready()
-    await instance.register(buildSuperProperties())
+    await instance.register(buildSuperProperties() as RegisterProperties)
     await instance.optIn()
 
     client = instance
@@ -245,3 +168,4 @@ export const shutdownAnalytics = async (timeoutMs?: number) => {
   await client.shutdown(timeoutMs)
   client = null
 }
+

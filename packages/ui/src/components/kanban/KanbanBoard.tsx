@@ -147,7 +147,7 @@ export const KanbanBoard = ({
               <DroppableColumn
                 key={column.id}
                 id={column.id}
-                alignItems={columnItems.map((item) => item.id)}
+                items={columnItems.map((item) => item.id)}
                 title={column.title}
                 count={columnItems.length}
                 color={column.color}

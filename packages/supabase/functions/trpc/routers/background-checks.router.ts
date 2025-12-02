@@ -5,7 +5,7 @@ import { z } from 'zod'
 import {
   notifyBackgroundCheckInvitation,
   notifyBackgroundCheckStatusChange,
-} from '../../_shared/background-check-notifications'
+} from '../../_shared/background-check-notifications.ts'
 import {
   BACKGROUND_CHECK_ALLOWED_MIME_TYPES,
   backgroundCheckDisputeSchema,
@@ -15,7 +15,7 @@ import {
   backgroundCheckStatusEnum,
   backgroundCheckUploadRequestSchema,
   consentMetadataSchema,
-} from '../../_shared/background-check-schemas'
+} from '../../_shared/background-check-schemas.ts'
 import {
   appendStatusHistory,
   BACKGROUND_CHECK_BASE_COLUMNS,
@@ -23,14 +23,14 @@ import {
   mapProviderStatus,
   mergeMetadata,
   shouldSyncStatus,
-} from '../../_shared/background-check-status'
+} from '../../_shared/background-check-status.ts'
 import {
   type CheckStatusResponse,
   createNationSearchClient,
   isNationSearchOutageError,
-} from '../../_shared/nationsearch/client'
-import type { Context } from '../context'
-import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware'
+} from '../../_shared/nationsearch/client.ts'
+import type { Context } from '../context.ts'
+import { officeProcedure, protectedProcedure, publicProcedure, t } from '../middleware.ts'
 
 const listPackagesOutputSchema = z.object({
   id: z.string().uuid(),

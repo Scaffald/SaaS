@@ -1,5 +1,5 @@
-import type { ChannelAdapter } from '../types'
-import { normalizeMetadata } from '../utils'
+import type { ChannelAdapter } from '../types.ts'
+import { normalizeMetadata } from '../utils.ts'
 
 interface SendEmailPayload {
   personalizations: Array<{

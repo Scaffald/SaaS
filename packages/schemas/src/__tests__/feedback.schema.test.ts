@@ -8,7 +8,7 @@ import {
   feedbackSubmitSchema,
   feedbackUploadRequestSchema,
   type FeedbackSubmitInput,
-} from "../feedback/feedback.schema";
+} from "../feedback/feedback.schema.ts";
 
 const baseFeedback = (): FeedbackSubmitInput => ({
   feedbackType: "bug",

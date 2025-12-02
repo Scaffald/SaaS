@@ -6,7 +6,7 @@ import {
   PROFILE_WIZARD_STEPS,
   type ProfileWizardProgress,
   type ProfileWizardStepId,
-} from '../utils/wizardSteps'
+} from '../utils/wizardSteps.ts'
 
 export interface GeneralInfoStepData {
   firstName: string

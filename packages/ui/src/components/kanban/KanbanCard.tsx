@@ -218,7 +218,7 @@ export const KanbanCard = memo(
               paddingHorizontal="$2"
               paddingVertical="$1"
             >
-              Score: {score}
+              Score: {String(score)}
             </Chip>
             <Text fontSize="$1" color="$color10">
               {formattedDate}

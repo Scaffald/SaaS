@@ -1,6 +1,6 @@
 import { Check } from '@tamagui/lucide-icons'
 import { Platform } from 'react-native'
-import { styled, View } from 'tamagui'
+import { View, type ViewProps } from 'tamagui'
 
 export interface CheckboxProps {
   /** Whether the checkbox is checked */
@@ -21,84 +21,36 @@ export interface CheckboxProps {
   ariaDescribedBy?: string
 }
 
-const CheckboxContainer = styled(View, {
-  cursor: 'pointer',
-  animation: 'quick',
-  overflow: 'hidden',
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderWidth: 1,
-  variants: {
-    size: {
-      small: {
-        width: '$1',
-        height: '$1',
-        borderRadius: '$1',
-      },
-      medium: {
-        width: '$1',
-        height: '$1',
-        borderRadius: '$2',
-      },
-      large: {
-        width: '$2',
-        height: '$2',
-        borderRadius: '$2',
-      },
-    },
-    checked: {
-      true: {
-        backgroundColor: '$blue7',
-        borderColor: '$blue7',
-      },
-      false: {
-        backgroundColor: 'transparent',
-        borderColor: '$borderColor',
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-      },
-      false: {
-        opacity: 1,
-        cursor: 'pointer',
-      },
-    },
-  } as const,
-  focusStyle: {
-    borderColor: '$blue7',
-    outlineColor: '$blue7',
-    outlineWidth: 2,
-    outlineStyle: 'solid',
+// Size styles for the checkbox container
+const sizeStyles: Record<NonNullable<CheckboxProps['size']>, Partial<ViewProps>> = {
+  small: {
+    width: '$1',
+    height: '$1',
+    borderRadius: '$1',
   },
-  hoverStyle: {
-    scale: 1.05,
-    borderColor: '$blue8',
+  medium: {
+    width: '$1',
+    height: '$1',
+    borderRadius: '$2',
   },
-  pressStyle: {
-    scale: 0.95,
+  large: {
+    width: '$2',
+    height: '$2',
+    borderRadius: '$2',
   },
-})
+}
 
-const CheckboxIcon = styled(View, {
-  pointerEvents: 'none',
-  width: '100%',
-  height: '100%',
-  alignItems: 'center',
-  justifyContent: 'center',
-  variants: {
-    checked: {
-      true: {
-        opacity: 1,
-      },
-      false: {
-        opacity: 0,
-      },
-    },
-  } as const,
-})
+// Checked state styles
+const checkedStyles: Record<string, Partial<ViewProps>> = {
+  checked: {
+    backgroundColor: '$blue7',
+    borderColor: '$blue7',
+  },
+  unchecked: {
+    backgroundColor: 'transparent',
+    borderColor: '$borderColor',
+  },
+}
 
 /**
  * Checkbox - A custom animated checkbox component
@@ -156,16 +108,50 @@ export function Checkbox({
         }
 
   return (
-    <CheckboxContainer
-      checked={checked}
-      disabled={disabled}
-      size={size}
+    <View
+      {...sizeStyles[size]}
+      {...checkedStyles[checked ? 'checked' : 'unchecked']}
+      cursor={disabled ? 'not-allowed' : 'pointer'}
+      animation="quick"
+      overflow="hidden"
+      alignItems="center"
+      justifyContent="center"
+      borderWidth={1}
+      opacity={disabled ? 0.5 : 1}
       onPress={handlePress}
+      focusStyle={{
+        borderColor: '$blue7',
+        outlineColor: '$blue7',
+        outlineWidth: 2,
+        outlineStyle: 'solid',
+      }}
+      hoverStyle={
+        !disabled
+          ? {
+              scale: 1.05,
+              borderColor: '$blue8',
+            }
+          : undefined
+      }
+      pressStyle={
+        !disabled
+          ? {
+              scale: 0.95,
+            }
+          : undefined
+      }
       {...accessibilityProps}
     >
-      <CheckboxIcon checked={checked}>
+      <View
+        pointerEvents="none"
+        width="100%"
+        height="100%"
+        alignItems="center"
+        justifyContent="center"
+        opacity={checked ? 1 : 0}
+      >
         <Check size={size === 'small' ? 12 : size === 'medium' ? 12 : 12} color="white" />
-      </CheckboxIcon>
-    </CheckboxContainer>
+      </View>
+    </View>
   )
 }

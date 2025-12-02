@@ -3,8 +3,8 @@ import { TRPCError } from '@trpc/server'
 import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
-import { protectedProcedure, publicProcedure, t } from '../middleware'
-import { supabaseServiceKey, supabaseUrl } from '../context'
+import { protectedProcedure, publicProcedure, t } from '../middleware.ts'
+import { supabaseServiceKey, supabaseUrl } from '../context.ts'
 
 const MAGIC_LINK_REDIRECT_FALLBACK =
   Deno.env.get('MAGIC_LINK_REDIRECT_URL') ??

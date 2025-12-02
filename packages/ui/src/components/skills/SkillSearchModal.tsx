@@ -743,7 +743,7 @@ export function SkillSearchModal({
         zIndex={100000}
         animation="medium"
       >
-        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
+        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 } as const} exitStyle={{ opacity: 0 } as const} />
         <Sheet.Frame padding="$4" gap="$4" backgroundColor="$background">
           <Sheet.Handle />
 

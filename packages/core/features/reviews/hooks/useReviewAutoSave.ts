@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import type { ReviewDraft } from '../types/review-draft'
+import type { ReviewDraft } from '../types/review-draft.ts'
 
 interface UseReviewAutoSaveOptions {
   draft: ReviewDraft

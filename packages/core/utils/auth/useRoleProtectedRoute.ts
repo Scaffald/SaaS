@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef } from 'react'
 
-import { useProtectedRoute } from './useProtectedRoute'
-import { useUserRoles } from './useUserRoles'
+import { useProtectedRoute } from './useProtectedRoute.ts'
+import { useUserRoles } from './useUserRoles.ts'
 
 type UseRoleProtectedRouteOptions = {
   unauthorizedRedirectPath?: string

@@ -1,7 +1,7 @@
 import type {
   ProjectSelectorOrganization,
   ProjectSelectorProject,
-} from '../components/ProjectSelector'
+} from '../components/ProjectSelector.ts'
 
 export type ProjectOptionsData = {
   organizations: ProjectSelectorOrganization[]

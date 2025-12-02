@@ -1,2 +1,2 @@
-export { ProfileCard, type ProfileCardProps } from './ProfileCard'
+export { ProfileCard, type ProfileCardProps } from './ProfileCard.ts'
 

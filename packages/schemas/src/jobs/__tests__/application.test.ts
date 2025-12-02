@@ -5,7 +5,7 @@ import {
   applicationQuerySchema,
   applicationUpdateStatusSchema,
   applicationWithdrawSchema,
-} from '../application.schema'
+} from '../application.schema.ts'
 
 const validJobId = '00000000-0000-0000-0000-000000000000'
 const validApplicationId = '11111111-1111-1111-1111-111111111111'

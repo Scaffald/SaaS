@@ -1,4 +1,4 @@
-import { styled, View } from 'tamagui'
+import { View, type ViewProps } from 'tamagui'
 
 export interface ToggleSwitchProps {
   /** Whether the toggle is checked */
@@ -13,111 +13,46 @@ export interface ToggleSwitchProps {
   testID?: string
 }
 
-const CustomToggle = styled(View, {
-  width: 44,
-  height: 24,
-  borderRadius: 12,
-  backgroundColor: '$color5',
-  borderWidth: 1,
-  borderColor: '$color6',
-  position: 'relative',
-  cursor: 'pointer',
-  animation: 'quick',
-  variants: {
-    checked: {
-      true: {
-        backgroundColor: '$blue7',
-        borderColor: '$blue7',
-      },
-      false: {
-        backgroundColor: '$color5',
-        borderColor: '$color6',
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-        backgroundColor: '$color4',
-        borderColor: '$color4',
-      },
-      false: {
-        opacity: 1,
-        cursor: 'pointer',
-      },
-    },
-    size: {
-      small: {
-        width: 32,
-        height: 18,
-        borderRadius: 9,
-      },
-      medium: {
-        width: 44,
-        height: 24,
-        borderRadius: 12,
-      },
-      large: {
-        width: 56,
-        height: 30,
-        borderRadius: 15,
-      },
-    },
-  } as const,
-  focusStyle: {
-    borderColor: '$blue7',
-    outlineColor: '$blue7',
-    outlineWidth: 2,
-    outlineStyle: 'solid',
+// Size styles for the toggle container
+const toggleSizeStyles: Record<NonNullable<ToggleSwitchProps['size']>, Partial<ViewProps>> = {
+  small: {
+    width: 32,
+    height: 18,
+    borderRadius: 9,
   },
-  hoverStyle: {
-    borderColor: '$blue8',
+  medium: {
+    width: 44,
+    height: 24,
+    borderRadius: 12,
   },
-})
+  large: {
+    width: 56,
+    height: 30,
+    borderRadius: 15,
+  },
+}
 
-const ToggleThumb = styled(View, {
-  width: 18,
-  height: 18,
-  borderRadius: 9,
-  backgroundColor: 'white',
-  position: 'absolute',
-  top: 2,
-  left: 2,
-  animation: '200ms',
-  variants: {
-    checked: {
-      true: {
-        left: 22,
-      },
-      false: {
-        left: 2,
-      },
-    },
-    size: {
-      small: {
-        width: 12,
-        height: 12,
-        borderRadius: 6,
-        top: 2,
-        left: 2,
-      },
-      medium: {
-        width: 18,
-        height: 18,
-        borderRadius: 9,
-        top: 2,
-        left: 2,
-      },
-      large: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        top: 2,
-        left: 2,
-      },
-    },
-  } as const,
-})
+// Size styles for the toggle thumb
+const thumbSizeStyles: Record<NonNullable<ToggleSwitchProps['size']>, Partial<ViewProps>> = {
+  small: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    top: 2,
+  },
+  medium: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    top: 2,
+  },
+  large: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    top: 2,
+  },
+}
 
 /**
  * ToggleSwitch - A custom animated toggle switch component
@@ -165,21 +100,41 @@ export function ToggleSwitch({
     return checked ? width - thumbWidth - offset - endOffsetCompensation : offset
   }
 
+  const thumbPosition = getThumbPosition()
+
   return (
-    <CustomToggle
-      checked={checked}
-      disabled={disabled}
-      size={size}
+    <View
+      {...toggleSizeStyles[size]}
+      backgroundColor={disabled ? '$color4' : checked ? '$blue7' : '$color5'}
+      borderWidth={1}
+      borderColor={disabled ? '$color4' : checked ? '$blue7' : '$color6'}
+      position="relative"
+      cursor={disabled ? 'not-allowed' : 'pointer'}
+      animation="quick"
+      opacity={disabled ? 0.5 : 1}
       onPress={handlePress}
       testID={testID}
+      focusStyle={{
+        borderColor: '$blue7',
+        outlineColor: '$blue7',
+        outlineWidth: 2,
+        outlineStyle: 'solid',
+      }}
+      hoverStyle={
+        !disabled
+          ? {
+              borderColor: '$blue8',
+            }
+          : undefined
+      }
     >
-      <ToggleThumb
-        checked={checked}
-        size={size}
-        style={{
-          left: getThumbPosition(),
-        }}
+      <View
+        {...thumbSizeStyles[size]}
+        backgroundColor="white"
+        position="absolute"
+        left={thumbPosition}
+        animation="200ms"
       />
-    </CustomToggle>
+    </View>
   )
 }

@@ -10,11 +10,9 @@ import {
   type YStackProps,
 } from 'tamagui'
 
-// Custom hook that safely calls useHeaderHeightOG
-// React Navigation's useHeaderHeight should not throw, but we provide a fallback
+// React Navigation's useHeaderHeight hook works when ThemeProvider is available
+// UniversalThemeProvider now wraps all platforms (web + native) with ThemeProvider
 const useHeaderHeight = () => {
-  // Always call the hook unconditionally - React Navigation hooks don't throw
-  // They return default values when not in navigation context
   return useHeaderHeightOG()
 }
 

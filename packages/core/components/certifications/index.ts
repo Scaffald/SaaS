@@ -1,4 +1,4 @@
-export { CertificationCheckbox } from './CertificationCheckbox'
-export { CertificationChip } from './CertificationChip'
-export { CertificationProofCard } from './CertificationProofCard'
-export { CertificationSearch } from './CertificationSearch'
+export { CertificationCheckbox } from './CertificationCheckbox.ts'
+export { CertificationChip } from './CertificationChip.ts'
+export { CertificationProofCard } from './CertificationProofCard.ts'
+export { CertificationSearch } from './CertificationSearch.ts'

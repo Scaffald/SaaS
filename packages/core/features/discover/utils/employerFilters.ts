@@ -1,7 +1,7 @@
 import { extractPlainText } from "@unicornlove/ui";
 import type { JSONContent } from "@tiptap/core";
 
-import type { Employer } from "../components/EmployerCard";
+import type { Employer } from "../components/EmployerCard.ts";
 
 export interface EmployerFilters {
   searchQuery: string;

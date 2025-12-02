@@ -1,4 +1,4 @@
-import type { EnTranslations } from './en'
+import type { EnTranslations } from './en.ts'
 
 type DotNestedKeys<T> = {
   [K in keyof T & string]: T[K] extends Record<string, unknown>

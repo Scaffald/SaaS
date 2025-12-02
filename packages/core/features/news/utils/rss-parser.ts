@@ -1,5 +1,5 @@
 import { XMLParser } from 'fast-xml-parser'
-import type { NewsItem, ParsedRSSFeed } from '../config/types'
+import type { NewsItem, ParsedRSSFeed } from '../config/types.ts'
 
 /**
  * RSS/XML Parser utility with cross-platform support

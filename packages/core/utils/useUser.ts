@@ -1,8 +1,8 @@
 /* c8 ignore file */
 
 import { useQuery } from '@tanstack/react-query'
-import { supabase } from './supabase/client'
-import { useSessionContext } from './supabase/useSessionContext'
+import { supabase } from './supabase/client.ts'
+import { useSessionContext } from './supabase/useSessionContext.ts'
 
 // Define the profile type based on the database schema
 type Profile = {

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { styled, View } from 'tamagui'
+import { View, type ViewProps } from 'tamagui'
 
 interface LayoutEvent {
   nativeEvent: {
@@ -36,104 +36,53 @@ export interface RangeSliderProps {
   testID?: string
 }
 
-const SliderTrack = styled(View, {
-  position: 'relative',
-  backgroundColor: '$color4',
-  borderRadius: 6,
-  variants: {
-    size: {
-      small: {
-        height: 8,
-        minWidth: 120,
-      },
-      medium: {
-        height: 10,
-        minWidth: 180,
-      },
-      large: {
-        height: 12,
-        minWidth: 220,
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        backgroundColor: '$color3',
-      },
-      false: {
-        opacity: 1,
-      },
-    },
-  } as const,
-})
-
-const SliderTrackActive = styled(View, {
-  position: 'absolute',
-  backgroundColor: '$color10',
-  borderRadius: 6,
-  variants: {
-    size: {
-      small: {
-        height: 8,
-      },
-      medium: {
-        height: 10,
-      },
-      large: {
-        height: 12,
-      },
-    },
-  } as const,
-})
-
-const SliderThumb = styled(View, {
-  position: 'absolute',
-  backgroundColor: 'white',
-  borderRadius: 50,
-  borderWidth: 2,
-  borderColor: '$color10',
-  cursor: 'pointer',
-  animation: '100ms',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  variants: {
-    size: {
-      small: {
-        width: 18,
-        height: 18,
-        top: -5,
-      },
-      medium: {
-        width: 22,
-        height: 22,
-        top: -6,
-      },
-      large: {
-        width: 26,
-        height: 26,
-        top: -7,
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-        borderColor: '$color4',
-      },
-      false: {
-        opacity: 1,
-        cursor: 'pointer',
-      },
-    },
-  } as const,
-  hoverStyle: {
-    scale: 1.1,
-    boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+// Size styles for the track
+const trackSizeStyles: Record<NonNullable<RangeSliderProps['size']>, Partial<ViewProps>> = {
+  small: {
+    height: 8,
+    minWidth: 120,
   },
-  pressStyle: {
-    scale: 0.95,
-    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+  medium: {
+    height: 10,
+    minWidth: 180,
   },
-})
+  large: {
+    height: 12,
+    minWidth: 220,
+  },
+}
+
+// Size styles for the active track
+const activeTrackSizeStyles: Record<NonNullable<RangeSliderProps['size']>, Partial<ViewProps>> = {
+  small: {
+    height: 8,
+  },
+  medium: {
+    height: 10,
+  },
+  large: {
+    height: 12,
+  },
+}
+
+// Size styles for the thumb
+const thumbSizeStyles: Record<NonNullable<RangeSliderProps['size']>, Partial<ViewProps>> = {
+  small: {
+    width: 18,
+    height: 18,
+    top: -5,
+  },
+  medium: {
+    width: 22,
+    height: 22,
+    top: -6,
+  },
+  large: {
+    width: 26,
+    height: 26,
+    top: -7,
+  },
+}
 
 /**
  * RangeSlider - A custom animated range slider component
@@ -215,9 +164,12 @@ export function RangeSlider({
   }, [])
 
   return (
-    <SliderTrack
-      size={size}
-      disabled={disabled}
+    <View
+      {...trackSizeStyles[size]}
+      position="relative"
+      backgroundColor={disabled ? '$color3' : '$color4'}
+      borderRadius={6}
+      opacity={disabled ? 0.5 : 1}
       onLayout={handleTrackLayout}
       onPress={handleTrackPress}
       testID={testID}
@@ -227,23 +179,46 @@ export function RangeSlider({
         now: clampedValue,
       }}
     >
-      <SliderTrackActive
-        size={size}
-        style={{
-          width: activeTrackWidth,
-        }}
+      <View
+        {...activeTrackSizeStyles[size]}
+        position="absolute"
+        backgroundColor="$color10"
+        borderRadius={6}
+        width={activeTrackWidth}
       />
-      <SliderThumb
-        size={size}
-        disabled={disabled}
-        style={{
-          left: thumbPosition,
-        }}
+      <View
+        {...thumbSizeStyles[size]}
+        position="absolute"
+        backgroundColor="white"
+        borderRadius={50}
+        borderWidth={2}
+        borderColor={disabled ? '$color4' : '$color10'}
+        cursor={disabled ? 'not-allowed' : 'pointer'}
+        animation="100ms"
+        boxShadow="0 2px 4px rgba(0,0,0,0.1)"
+        opacity={disabled ? 0.5 : 1}
+        left={thumbPosition}
         onPress={handleThumbPress}
         onPressIn={handleThumbPress}
         onPressOut={handleThumbRelease}
+        hoverStyle={
+          !disabled
+            ? {
+                scale: 1.1,
+                boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+              }
+            : undefined
+        }
+        pressStyle={
+          !disabled
+            ? {
+                scale: 0.95,
+                boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+              }
+            : undefined
+        }
         aria-label={`Slider thumb at ${value}`}
       />
-    </SliderTrack>
+    </View>
   )
 }

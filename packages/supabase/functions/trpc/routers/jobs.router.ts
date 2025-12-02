@@ -4,10 +4,10 @@ import { z } from 'zod'
 import {
   applicationCreateSchema,
   applicationWithdrawSchema,
-} from '../../_shared/application-schemas'
-import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas'
-import { transformJobSkills } from '../../_shared/skill-helpers'
-import { protectedProcedure, t } from '../middleware'
+} from '../../_shared/application-schemas.ts'
+import { jobSoftSkillRequirementSchema } from '../../_shared/profile-schemas.ts'
+import { transformJobSkills } from '../../_shared/skill-helpers.ts'
+import { protectedProcedure, t } from '../middleware.ts'
 
 type SoftSkillRequirement = z.infer<typeof jobSoftSkillRequirementSchema>
 

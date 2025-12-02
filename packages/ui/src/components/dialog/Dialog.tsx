@@ -1,41 +1,54 @@
+import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
-import { styled, Dialog as TamaguiDialog, withStaticProperties } from 'tamagui'
-import type { DialogProps } from 'tamagui'
+import { Dialog as TamaguiDialog, withStaticProperties } from 'tamagui'
+import type { DialogProps, DialogOverlayProps, DialogContentProps } from 'tamagui'
 
 /**
  * Custom Dialog.Overlay with default styling
  * Ensures consistent overlay appearance across all dialogs
  */
-const DialogOverlay = styled(TamaguiDialog.Overlay, {
-  animation: 'quick',
-  opacity: 0.5,
-  enterStyle: { opacity: 0 },
-  exitStyle: { opacity: 0 },
-})
+const DialogOverlay = forwardRef<unknown, DialogOverlayProps>((props, ref) => (
+  <TamaguiDialog.Overlay
+    ref={ref}
+    animation="quick"
+    opacity={0.5}
+    enterStyle={{ opacity: 0 } as const}
+    exitStyle={{ opacity: 0 } as const}
+    {...props}
+  />
+))
+
+DialogOverlay.displayName = 'DialogOverlay'
 
 /**
  * Custom Dialog.Content with default styling
  * Provides consistent dialog content appearance, animations, and layout
  */
-const DialogContent = styled(TamaguiDialog.Content, {
-  bordered: true,
-  elevate: true,
-  animateOnly: ['transform', 'opacity'],
-  animation: [
-    'quick',
-    {
-      opacity: {
-        overshootClamping: true,
+const DialogContent = forwardRef<unknown, DialogContentProps>((props, ref) => (
+  <TamaguiDialog.Content
+    ref={ref}
+    bordered
+    elevate
+    animateOnly={['transform', 'opacity']}
+    animation={[
+      'quick',
+      {
+        opacity: {
+          overshootClamping: true,
+        },
       },
-    },
-  ],
-  enterStyle: { x: 0, y: -20, opacity: 0, scale: 0.9 },
-  exitStyle: { x: 0, y: 10, opacity: 0, scale: 0.95 },
-  gap: '$4',
-  backgroundColor: '$background',
-  minWidth: 400,
-  maxWidth: '90vw',
-})
+    ]}
+    enterStyle={{ x: 0, y: -20, opacity: 0, scale: 0.9 } as const}
+    exitStyle={{ x: 0, y: 10, opacity: 0, scale: 0.95 } as const}
+    gap="$4"
+    backgroundColor="$background"
+    minWidth={400}
+    maxWidth="90vw"
+    {...props}
+  />
+))
+
+DialogContent.displayName = 'DialogContent'
 
 /**
  * Dialog - Custom dialog component with default styling

@@ -1,4 +1,4 @@
-import { styled, View } from 'tamagui'
+import { View, type ViewProps } from 'tamagui'
 
 export interface RadioProps {
   /** Whether the radio is selected */
@@ -13,94 +13,43 @@ export interface RadioProps {
   testID?: string
 }
 
-const RadioContainer = styled(View, {
-  position: 'relative',
-  cursor: 'pointer',
-  animation: 'quick',
-  variants: {
-    size: {
-      small: {
-        width: 16,
-        height: 16,
-      },
-      medium: {
-        width: 20,
-        height: 20,
-      },
-      large: {
-        width: 24,
-        height: 24,
-      },
-    },
-    checked: {
-      true: {
-        borderColor: '$blue7',
-      },
-      false: {
-        borderColor: '$borderColor',
-      },
-    },
-    disabled: {
-      true: {
-        opacity: 0.5,
-        cursor: 'not-allowed',
-      },
-      false: {
-        opacity: 1,
-        cursor: 'pointer',
-      },
-    },
-  } as const,
-  focusStyle: {
-    borderColor: '$blue7',
-    outlineColor: '$blue7',
-    outlineWidth: 2,
-    outlineStyle: 'solid',
+// Size styles for the radio container
+const containerSizeStyles: Record<NonNullable<RadioProps['size']>, Partial<ViewProps>> = {
+  small: {
+    width: 16,
+    height: 16,
   },
-  hoverStyle: {
-    scale: 1.05,
-    borderColor: '$blue8',
+  medium: {
+    width: 20,
+    height: 20,
   },
-  pressStyle: {
-    scale: 0.95,
+  large: {
+    width: 24,
+    height: 24,
   },
-})
+}
 
-const RadioDot = styled(View, {
-  position: 'absolute',
-  backgroundColor: '$blue7',
-  borderRadius: 50,
-  variants: {
-    size: {
-      small: {
-        width: 8,
-        height: 8,
-        top: 2,
-        left: 2,
-      },
-      medium: {
-        width: 10,
-        height: 10,
-        top: 3,
-        left: 3,
-      },
-      large: {
-        width: 12,
-        height: 12,
-        top: 4,
-        left: 4,
-      },
-    },
-    checked: {
-      true: {
-        opacity: 1,
-      },
-      false: {
-        opacity: 0,
-      },
-    },
-  } as const,
-})
+// Size styles for the radio dot
+const dotSizeStyles: Record<NonNullable<RadioProps['size']>, Partial<ViewProps>> = {
+  small: {
+    width: 8,
+    height: 8,
+    top: 2,
+    left: 2,
+  },
+  medium: {
+    width: 10,
+    height: 10,
+    top: 3,
+    left: 3,
+  },
+  large: {
+    width: 12,
+    height: 12,
+    top: 4,
+    left: 4,
+  },
+}
 
 /**
  * Radio - A custom animated radio button component
@@ -136,17 +85,47 @@ export function Radio({
   }
 
   return (
-    <RadioContainer
-      checked={checked}
-      disabled={disabled}
-      size={size}
-      onPress={handlePress}
-      testID={testID}
+    <View
+      {...containerSizeStyles[size]}
+      position="relative"
+      cursor={disabled ? 'not-allowed' : 'pointer'}
+      animation="quick"
       borderWidth={2}
       borderRadius={50}
       backgroundColor="transparent"
+      borderColor={checked ? '$blue7' : '$borderColor'}
+      opacity={disabled ? 0.5 : 1}
+      onPress={handlePress}
+      testID={testID}
+      focusStyle={{
+        borderColor: '$blue7',
+        outlineColor: '$blue7',
+        outlineWidth: 2,
+        outlineStyle: 'solid',
+      }}
+      hoverStyle={
+        !disabled
+          ? {
+              scale: 1.05,
+              borderColor: '$blue8',
+            }
+          : undefined
+      }
+      pressStyle={
+        !disabled
+          ? {
+              scale: 0.95,
+            }
+          : undefined
+      }
     >
-      <RadioDot checked={checked} size={size} />
-    </RadioContainer>
+      <View
+        {...dotSizeStyles[size]}
+        position="absolute"
+        backgroundColor="$blue7"
+        borderRadius={50}
+        opacity={checked ? 1 : 0}
+      />
+    </View>
   )
 }

@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import type { Context } from '../context'
-import { t } from '../middleware'
-import { enrichUserSkills } from './utils/skill-enrichment'
+import type { Context } from '../context.ts'
+import { t } from '../middleware.ts'
+import { enrichUserSkills } from './utils/skill-enrichment.ts'
 
 async function userHasPlatformRole(ctx: Context): Promise<boolean> {
   if (!ctx.user?.id) return false

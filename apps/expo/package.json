@@ -49,6 +49,7 @@
     "@react-native-community/netinfo": "catalog:",
     "@react-native-google-signin/google-signin": "catalog:",
     "@rnmapbox/maps": "catalog:",
+    "@sentry/react": "^10.28.0",
     "@tamagui/lucide-icons": "catalog:",
     "@tamagui/metro-plugin": "catalog:",
     "@tamagui/toast": "catalog:",

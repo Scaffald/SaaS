@@ -1,6 +1,6 @@
 import { api } from "@app/core/utils/api";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ProfileIndustry } from "../types/profile-skills-types";
+import type { ProfileIndustry } from "../types/profile-skills-types.ts";
 
 /**
  * Hook for managing profile skills queries

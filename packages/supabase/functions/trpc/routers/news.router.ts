@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
-import { officeProcedure, publicProcedure, t } from '../middleware'
+import { officeProcedure, publicProcedure, t } from '../middleware.ts'
 
 /**
  * News router - handles news feed and cached article operations

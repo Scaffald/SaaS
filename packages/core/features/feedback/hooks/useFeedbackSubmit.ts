@@ -17,9 +17,9 @@ import {
   getPendingFeedbackQueue,
   removePendingFeedback,
   updatePendingFeedback,
-} from '../utils/feedbackStorage'
-import type { FeedbackContextPayload } from './useFeedbackContext'
-import type { FeedbackFormValues, FeedbackScreenshotSource } from './useFeedbackForm'
+} from '../utils/feedbackStorage.ts'
+import type { FeedbackContextPayload } from './useFeedbackContext.ts'
+import type { FeedbackFormValues, FeedbackScreenshotSource } from './useFeedbackForm.ts'
 
 const RETRY_INTERVAL_MS = 5 * 60 * 1000
 const MAX_QUEUE_ATTEMPTS = 5

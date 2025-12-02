@@ -18,7 +18,7 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
 
   const { isDragAccept, isDragActive, isDragReject } = useDropZone({
     onOpen: _onOpenNative,
-    mediaTypes: undefined, // MediaTypes don't apply on native
+    // MediaTypes don't apply on native - omit instead of passing undefined
     noClick: true,
     ...rest,
   })

@@ -8,7 +8,7 @@ import {
   isValidPhoneNumber,
   phoneNumberSchema,
   requiredPhoneNumberSchema,
-} from '../phone'
+} from '../phone.ts'
 
 describe('phone schemas', () => {
   it('accepts undefined optional phone numbers', () => {
