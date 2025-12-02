@@ -25,6 +25,9 @@ declare global {
       EXPO_PUBLIC_POSTHOG_API_KEY?: string
       EXPO_PUBLIC_POSTHOG_HOST?: string
       EXPO_PUBLIC_POSTHOG_PROJECT?: string
+
+      EXPO_PUBLIC_SENTRY_DSN_NATIVE?: string
+      EXPO_PUBLIC_SENTRY_DSN_WEB?: string
     }
   }
 }

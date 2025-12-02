@@ -1,19 +1,19 @@
 import { forwardRef } from 'react'
 import type { ComponentType } from 'react'
 import { Sheet as TamaguiSheet, withStaticProperties } from 'tamagui'
-import type { SheetProps, SheetFrameProps, SheetOverlayProps } from 'tamagui'
+import type { SheetProps } from 'tamagui'
 
 /**
  * Custom Sheet.Frame with default background color
  * This ensures all action sheets have a consistent background globally
  */
-const SheetFrame = forwardRef<unknown, SheetFrameProps>((props, ref) => (
+const SheetFrame = forwardRef<HTMLDivElement, React.ComponentProps<typeof TamaguiSheet.Frame>>((props, ref) => (
   <TamaguiSheet.Frame ref={ref} backgroundColor="$color1" {...props} />
 ))
 
 SheetFrame.displayName = 'SheetFrame'
 
-const SheetOverlay = forwardRef<unknown, SheetOverlayProps>((props, ref) => (
+const SheetOverlay = forwardRef<HTMLDivElement, React.ComponentProps<typeof TamaguiSheet.Overlay>>((props, ref) => (
   <TamaguiSheet.Overlay ref={ref} backgroundColor="$color12" opacity={0.7} {...props} />
 ))
 

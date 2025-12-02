@@ -31,27 +31,39 @@ export const CardBadges = memo(
 
     return (
       <XStack gap="$2" flexWrap="wrap" alignItems="center">
-        {displayBadges.map((badge) => (
-          <Chip
-            key={badge.key}
-            backgroundColor={badge.bg ?? '$blue10'}
-            color={typeof badge.color === 'string' ? badge.color : '$color1'}
-            fontSize="$2"
-            paddingHorizontal="$2"
-            paddingVertical="$1"
-          >
-            {badge.icon ? (
-              <XStack alignItems="center" gap="$1">
-                <XStack marginRight="$1" alignItems="center">
-                  {badge.icon}
-                </XStack>
-                <Text>{badge.label}</Text>
+        {displayBadges.map((badge) =>
+          badge.icon ? (
+            <XStack
+              key={badge.key}
+              backgroundColor={badge.bg ?? '$blue10'}
+              borderColor={badge.bg ?? '$blue10'}
+              borderWidth={1}
+              borderRadius="$4"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              alignItems="center"
+              gap="$1"
+            >
+              <XStack alignItems="center">
+                {badge.icon}
               </XStack>
-            ) : (
-              <Text>{badge.label}</Text>
-            )}
-          </Chip>
-        ))}
+              <Text fontSize="$2" color={typeof badge.color === 'string' ? badge.color : '$color1'}>
+                {badge.label}
+              </Text>
+            </XStack>
+          ) : (
+            <Chip
+              key={badge.key}
+              backgroundColor={badge.bg ?? '$blue10'}
+              color={typeof badge.color === 'string' ? badge.color : '$color1'}
+              fontSize="$2"
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+            >
+              {badge.label}
+            </Chip>
+          )
+        )}
         {overflowCount > 0 && (
           <Text fontSize="$2" color={overflowColor}>
             +{overflowCount} more

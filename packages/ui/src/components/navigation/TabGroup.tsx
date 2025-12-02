@@ -60,12 +60,13 @@ export const TabGroup = ({
           variant={variant}
           aria-label={ariaLabel}
         >
-          {scrollable && (
+          {scrollable ? (
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {children}
             </ScrollView>
+          ) : (
+            <>{children}</>
           )}
-          {!scrollable && children}
         </TabList>
       </Tabs>
     </TabGroupVariantContext.Provider>

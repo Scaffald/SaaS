@@ -7,7 +7,7 @@ import type { DialogProps, DialogOverlayProps, DialogContentProps } from 'tamagu
  * Custom Dialog.Overlay with default styling
  * Ensures consistent overlay appearance across all dialogs
  */
-const DialogOverlay = forwardRef<unknown, DialogOverlayProps>((props, ref) => (
+const DialogOverlay = forwardRef<HTMLDivElement, DialogOverlayProps>((props, ref) => (
   <TamaguiDialog.Overlay
     ref={ref}
     animation="quick"
@@ -24,7 +24,7 @@ DialogOverlay.displayName = 'DialogOverlay'
  * Custom Dialog.Content with default styling
  * Provides consistent dialog content appearance, animations, and layout
  */
-const DialogContent = forwardRef<unknown, DialogContentProps>((props, ref) => (
+const DialogContent = forwardRef<HTMLDivElement, DialogContentProps>((props, ref) => (
   <TamaguiDialog.Content
     ref={ref}
     bordered

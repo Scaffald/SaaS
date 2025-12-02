@@ -3,6 +3,7 @@ import '../tamagui-web.css'
 import { ErrorBoundary } from '@app/core/components/ErrorBoundary'
 import { getVersionDebugPayload } from '@app/core/constants/appVersion'
 import { loadThemePromise, Provider } from '@app/core/provider'
+import { initSentry } from '@app/core/utils/sentry'
 import { supabase } from '@app/core/utils/supabase/client'
 import type { Session } from '@supabase/auth-js'
 import { useFonts } from 'expo-font'
@@ -10,6 +11,9 @@ import { SplashScreen, Stack, useSegments } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+
+// Initialize Sentry as early as possible (before any other initialization)
+initSentry()
 
 SplashScreen.preventAutoHideAsync()
 

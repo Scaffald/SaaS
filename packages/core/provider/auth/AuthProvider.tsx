@@ -8,6 +8,7 @@ import {
 } from '@app/core/utils/analytics/client'
 import { captureEventWithQueue, flushQueue } from '@app/core/utils/analytics/queue'
 import { clearAllAuthStorage } from '@app/core/utils/auth/clearAuthStorage'
+import { clearSentryUser, setSentryUser } from '@app/core/utils/sentry'
 import { supabase } from '@app/core/utils/supabase/client'
 import { useCookieConsent } from '@unicornlove/ui'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -296,6 +297,29 @@ export const AuthProvider = ({ children, initialSession }: AuthProviderProps) =>
       cancelled = true
     }
   }, [hasPerformanceConsent, session?.user])
+
+  // Sentry user context (independent of user consent - always active for error tracking)
+  useEffect(() => {
+    if (session?.user) {
+      const traits: Record<string, unknown> = {
+        created_at: session.user.created_at,
+      }
+
+      if (session.user.email_confirmed_at) {
+        traits.email_confirmed_at = session.user.email_confirmed_at
+      }
+
+      const authProvider =
+        session.user.app_metadata?.provider ?? session.user.user_metadata?.provider ?? null
+      if (authProvider) {
+        traits.auth_provider = authProvider
+      }
+
+      setSentryUser(session.user.id, session.user.email, traits)
+    } else {
+      clearSentryUser()
+    }
+  }, [session?.user])
 
   // Auth state change listener with proper typing
   useEffect(() => {

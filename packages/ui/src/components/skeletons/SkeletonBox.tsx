@@ -12,13 +12,6 @@ export interface SkeletonBoxProps {
   borderRadius?: SizeTokens
 }
 
-const SkeletonBoxBase = styled(View, {
-  background: '$color3',
-  borderRadius: '$2',
-  overflow: 'hidden',
-  opacity: 0.6,
-})
-
 export const SkeletonBox = ({
   width,
   height,
@@ -27,11 +20,13 @@ export const SkeletonBox = ({
   ...props
 }: SkeletonBoxProps) => {
   return (
-    <SkeletonBoxBase
+    <View
+      background="$color3"
+      borderRadius={borderRadius}
+      overflow="hidden"
+      opacity={animated ? 0.6 : 0.5}
       width={width}
       height={height}
-      borderRadius={borderRadius}
-      opacity={animated ? 0.6 : 0.5}
       aria-busy={true}
       aria-label="Loading content"
       {...props}

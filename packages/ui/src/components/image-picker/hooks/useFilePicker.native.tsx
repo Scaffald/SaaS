@@ -8,7 +8,7 @@ import { useDropZone } from './useDropZone'
 export function useFilePicker<MT extends MediaTypeOptionsString>(
   props?: UseFilePickerProps<MT>
 ): UseFilePickerControl {
-  const { onPick, typeOfPicker, ...rest } = props || {}
+  const { onPick, typeOfPicker, mediaTypes, ...rest } = props || {}
 
   const _onOpenNative = useEvent((nativeFiles) => {
     if (onPick) {
@@ -18,7 +18,7 @@ export function useFilePicker<MT extends MediaTypeOptionsString>(
 
   const { isDragAccept, isDragActive, isDragReject } = useDropZone({
     onOpen: _onOpenNative,
-    // MediaTypes don't apply on native - omit instead of passing undefined
+    // MediaTypes don't apply on native - explicitly omit from rest spread
     noClick: true,
     ...rest,
   })

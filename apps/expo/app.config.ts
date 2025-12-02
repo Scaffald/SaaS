@@ -55,6 +55,8 @@ const EXPO_PUBLIC_POSTHOG_HOST = process.env.EXPO_PUBLIC_POSTHOG_HOST;
 const EXPO_PUBLIC_POSTHOG_PROJECT = process.env.EXPO_PUBLIC_POSTHOG_PROJECT;
 const EXPO_PUBLIC_SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const EXPO_PUBLIC_SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const EXPO_PUBLIC_SENTRY_DSN_NATIVE = process.env.EXPO_PUBLIC_SENTRY_DSN_NATIVE;
+const EXPO_PUBLIC_SENTRY_DSN_WEB = process.env.EXPO_PUBLIC_SENTRY_DSN_WEB;
 
 // Fallback for app.config.ts (only used during build, not in client bundle)
 const POSTHOG_HOST = EXPO_PUBLIC_POSTHOG_HOST || "https://app.posthog.com";
@@ -206,6 +208,12 @@ export default {
           env: APP_ENV,
           project: EXPO_PUBLIC_POSTHOG_PROJECT,
         },
+      },
+      sentry: {
+        // Only use EXPO_PUBLIC variables - these are safe to expose to clients
+        dsnNative: EXPO_PUBLIC_SENTRY_DSN_NATIVE || "",
+        dsnWeb: EXPO_PUBLIC_SENTRY_DSN_WEB || "",
+        env: APP_ENV,
       },
       supabase: {
         url: EXPO_PUBLIC_SUPABASE_URL,
