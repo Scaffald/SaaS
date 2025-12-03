@@ -324,19 +324,21 @@ export function BadComponent2({ data }: { data?: any[] }) {
 
 **Linting Commands:**
 ```bash
-# Check and fix formatting/linting automatically
-pnpm lint:fix
+# Fast iteration (affected packages only)
+pnpm check:affected         # Lint and type check changed packages
+pnpm lint:affected          # Lint changed packages only
+pnpm typecheck:affected     # Type check changed packages only
 
-# Check linting status (read-only)
-pnpm lint
+# Comprehensive checks (all packages)
+pnpm lint:fix               # Check and fix formatting/linting automatically
+pnpm lint                   # Check linting status (read-only)
+pnpm typecheck              # Type check all packages
 
-# Check hardcoded routes (custom rule)
-pnpm lint:routes
+# Custom rules
+pnpm lint:routes            # Check hardcoded routes (custom rule)
+pnpm lint:sort-package-json # Sort package.json keys
 
-# Sort package.json keys
-pnpm lint:sort-package-json
-
-# Run full pre-commit validation
+# Full pre-commit validation (REQUIRED)
 pnpm check && pnpm build && pnpm check-deps
 ```
 

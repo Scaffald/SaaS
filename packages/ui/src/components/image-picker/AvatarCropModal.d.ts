@@ -13,4 +13,3 @@ declare const AvatarCropModal: ComponentType<AvatarCropModalProps>
 
 export { AvatarCropModal }
 export type { AvatarCropModalProps }
-

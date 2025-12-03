@@ -232,28 +232,28 @@ export function ResponsiveSelect({
           }}
         >
           <Select.Content zIndex={200000} {...contentProps}>
-          <Select.ScrollUpButton />
-          <Select.Viewport>
-            <Select.Group>
-              {options.map((option, index) => (
-                <Select.Item
-                  key={option.value}
-                  value={option.value}
-                  index={index}
-                  disabled={option.disabled}
-                >
-                  <Select.ItemText>{option.label}</Select.ItemText>
-                  {showIndicator && (
-                    <Select.ItemIndicator>
-                      <Check size={16} />
-                    </Select.ItemIndicator>
-                  )}
-                </Select.Item>
-              ))}
-            </Select.Group>
-          </Select.Viewport>
-          <Select.ScrollDownButton />
-        </Select.Content>
+            <Select.ScrollUpButton />
+            <Select.Viewport>
+              <Select.Group>
+                {options.map((option, index) => (
+                  <Select.Item
+                    key={option.value}
+                    value={option.value}
+                    index={index}
+                    disabled={option.disabled}
+                  >
+                    <Select.ItemText>{option.label}</Select.ItemText>
+                    {showIndicator && (
+                      <Select.ItemIndicator>
+                        <Check size={16} />
+                      </Select.ItemIndicator>
+                    )}
+                  </Select.Item>
+                ))}
+              </Select.Group>
+            </Select.Viewport>
+            <Select.ScrollDownButton />
+          </Select.Content>
         </AdaptiveSelectSheet>
       </Select>
 

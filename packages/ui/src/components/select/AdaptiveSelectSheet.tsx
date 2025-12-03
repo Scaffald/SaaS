@@ -52,13 +52,8 @@ export function AdaptiveSelectSheet({
   overlayAnimation = 'lazy',
 }: AdaptiveSelectSheetProps) {
   return (
-    <Adapt when={"sm" as unknown as AdaptWhen} platform="touch">
-      <Sheet
-        native={native}
-        modal
-        dismissOnSnapToBottom
-        animationConfig={animationConfig}
-      >
+    <Adapt when={'sm' as unknown as AdaptWhen} platform="touch">
+      <Sheet native={native} modal dismissOnSnapToBottom animationConfig={animationConfig}>
         <Sheet.Frame>
           <Sheet.ScrollView>{children}</Sheet.ScrollView>
         </Sheet.Frame>
@@ -67,4 +62,3 @@ export function AdaptiveSelectSheet({
     </Adapt>
   )
 }
-

@@ -7,4 +7,3 @@ declare const CardBadges: ComponentType<CardBadgesProps> & {
 
 export { CardBadges }
 export type { CardBadgesProps }
-

@@ -74,27 +74,50 @@ alwaysApply: true
 
 ## Post-Completion Code Quality (MANDATORY)
 
-### Linting Requirements
-**⚠️ REQUIRED**: After completing any work, ALWAYS run `pnpm lint:fix` and address any remaining warnings or errors before considering the work complete.
+### Two-Phase Workflow
 
-### Workflow
-1. **Run `pnpm lint:fix`** after all code changes are complete
-2. **Review any remaining warnings or errors** that couldn't be auto-fixed
-3. **Address all remaining issues** - fix warnings, resolve errors, refactor as needed
-4. **DO NOT leave linting warnings or errors** - all issues must be resolved before work is considered complete
-5. **DO NOT use ignore comments** - fix the root cause instead (see React Imports and Code Quality rules)
+#### Phase 1: During Development (Fast Iteration)
+**⚠️ FAST FEEDBACK**: Use affected checks for quick validation during implementation:
+```bash
+pnpm check:affected       # Lint and type check only changed packages
+pnpm lint:affected        # Lint only changed packages
+pnpm typecheck:affected   # Type check only changed packages
+```
 
-### When to Run
+**Benefits:**
+- 2-5x faster than full checks
+- Immediate feedback on your changes
+- Leverages Nx caching for speed
+- Perfect for iterative development
+
+#### Phase 2: Pre-Commit (Comprehensive Validation)
+**⚠️ REQUIRED BEFORE COMMIT**: Run full validation before marking work complete:
+```bash
+pnpm lint:fix             # Auto-fix linting issues across all packages
+pnpm check                # Full validation (format, lint, type check)
+pnpm build                # Verify all packages build
+pnpm check-deps           # Dependency consistency check
+```
+
+### When to Run Each Phase
+**Fast Iteration (Phase 1):**
 - After implementing new features
 - After fixing bugs
-- After refactoring code
-- Before committing changes
+- During refactoring
 - After responding to review feedback
+- Any time you want quick validation
 
-### Integration with Other Checks
-- `pnpm lint:fix` fixes auto-fixable issues
-- `pnpm check` runs full validation (format, lint, type check) - use this for comprehensive validation
-- Both should pass before work is considered complete
+**Comprehensive Validation (Phase 2):**
+- Before committing changes
+- Before marking BrainGrid tasks as COMPLETED
+- Before creating pull requests
+- Before marking work as done
+
+### Critical Rules
+- **DO NOT leave linting warnings or errors** - all issues must be resolved
+- **DO NOT use ignore comments** - fix the root cause instead (see React Imports and Code Quality rules)
+- **Run affected checks often** - get fast feedback during development
+- **Run full checks before commit** - ensure nothing breaks elsewhere
 
 ## BrainGrid Integration (CRITICAL)
 
@@ -108,8 +131,9 @@ alwaysApply: true
 4. **Creating Blockers**: File new REQ for issues found, add dependencies
 
 ### Code Quality Requirements
-- **RUN `pnpm check` immediately after implementing changes for any BrainGrid requirement** so that formatting, linting, and type checks complete before additional commands
-- **DO NOT bypass or defer `pnpm check`** when working on BrainGrid requirements—even when iterating quickly or responding to review feedback
+- **During Implementation**: Use `pnpm check:affected` for fast feedback while working on BrainGrid tasks
+- **Before Marking COMPLETED**: Run full `pnpm check && pnpm build` before updating task status to COMPLETED
+- **DO NOT bypass pre-completion checks** - Full validation is required before marking BrainGrid work as done
 
 ### Quick Reference
 ```bash

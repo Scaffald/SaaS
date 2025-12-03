@@ -6,6 +6,51 @@ alwaysApply: true
 
 # SCF-Scaffald Workspace Commands Reference
 
+## Quick Reference: Fast Iteration vs. Full Validation
+
+### Fast Iteration Loop (During Development)
+Use affected commands for 2-5x faster feedback while coding:
+
+```bash
+# Make changes → Run affected checks
+pnpm check:affected       # Lint and type check only changed packages
+pnpm lint:affected        # Lint only changed packages
+pnpm typecheck:affected   # Type check only changed packages
+```
+
+**When to use:**
+- During active development
+- After implementing features
+- When fixing bugs
+- For quick feedback cycles
+- While iterating on code
+
+### Pre-Commit Validation (Before Commit)
+Run comprehensive validation before committing or marking work complete:
+
+```bash
+# Final validation before commit
+pnpm lint:fix             # Auto-fix linting issues
+pnpm check                # Lint and type check all packages
+pnpm build                # Verify everything builds
+pnpm check-deps           # Dependency consistency
+```
+
+**When to use:**
+- Before committing changes
+- Before creating pull requests
+- Before marking BrainGrid tasks COMPLETED
+- Before merging branches
+- When work is "done"
+
+### Why This Matters
+- **Fast iteration**: Affected checks are 2-5x faster, focusing only on changed code
+- **Quality assurance**: Full checks ensure nothing breaks in unrelated packages
+- **Nx caching**: Reuses results for unchanged packages
+- **Best of both worlds**: Speed during development, thoroughness before commit
+
+---
+
 ## Development Commands
 ### Core Development
 - `pnpm dev` - Start Expo development server (port 8081)
@@ -21,7 +66,12 @@ alwaysApply: true
 - `pnpm adb:reverse` - Reverse Android port forwarding
 
 ## Code Quality Commands
-### Primary Workflow
+### Fast Iteration (Affected Packages Only)
+- `pnpm check:affected` - Lint and type check affected packages (Nx affected)
+- `pnpm lint:affected` - Lint affected packages only (Nx affected)
+- `pnpm typecheck:affected` - Type check affected packages only (Nx affected)
+
+### Comprehensive Validation (All Packages)
 - `pnpm check` - Lint and type check all packages (Nx run-many)
 - `pnpm build` - Build all packages (Nx run-many)
 - `pnpm format:fix` - Fix formatting with Biome (Nx format:write)

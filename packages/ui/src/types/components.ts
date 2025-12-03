@@ -100,5 +100,3 @@ export interface CardActionsProps {
   /** Whether the card is selected */
   isSelected?: boolean
 }
-
-

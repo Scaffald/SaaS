@@ -37,9 +37,16 @@ The project is structured as a monorepo with the following workspaces:
 
 ### Code Quality
 
+**Fast Iteration (Affected Packages Only):**
+-   Quick check: `pnpm check:affected`
+-   Lint affected: `pnpm lint:affected`
+-   Type check affected: `pnpm typecheck:affected`
+
+**Comprehensive (All Packages - Pre-Commit):**
 -   Format code: `pnpm format:fix`
 -   Lint code: `pnpm lint:fix`
 -   Type check: `pnpm typecheck`
+-   Full validation: `pnpm check && pnpm build`
 
 ### Generators
 

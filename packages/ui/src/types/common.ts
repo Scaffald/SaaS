@@ -62,4 +62,3 @@ export interface RefForwardingProps {
  * Base card props - extends BaseSelectableProps with card-specific patterns
  */
 export interface BaseCardProps extends BaseSelectableProps {}
-

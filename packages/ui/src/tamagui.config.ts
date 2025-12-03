@@ -1,13 +1,13 @@
-import { defaultConfig } from "@tamagui/config/v4";
-import { createTamagui, setupDev } from "tamagui";
-import { animations } from "./config/animations";
-import { themes } from "./themes/scaffald-theme";
+import { defaultConfig } from '@tamagui/config/v4'
+import { createTamagui, setupDev } from 'tamagui'
+import { animations } from './config/animations'
+import { themes } from './themes/scaffald-theme'
 
 // Development setup - only in development
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === 'development') {
   setupDev({
     visualizer: true,
-  });
+  })
 }
 
 export const tamaguiConfig = createTamagui({
@@ -24,4 +24,4 @@ export const tamaguiConfig = createTamagui({
   themes,
   // Explicitly include tokens to ensure available during static extraction
   tokens: defaultConfig.tokens,
-});
+})

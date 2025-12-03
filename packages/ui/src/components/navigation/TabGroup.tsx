@@ -45,6 +45,13 @@ export const TabGroup = ({
 }: TabGroupProps) => {
   const resolvedBordered = variant === 'underlined' ? false : bordered
 
+  const tabListProps = {
+    bordered: resolvedBordered,
+    scrollable,
+    variant,
+    'aria-label': ariaLabel,
+  } as const
+
   return (
     <TabGroupVariantContext.Provider value={variant}>
       <Tabs
@@ -54,20 +61,26 @@ export const TabGroup = ({
         flexDirection="column"
         {...props}
       >
-        <TabList
-          bordered={resolvedBordered}
-          scrollable={scrollable}
-          variant={variant}
-          aria-label={ariaLabel}
-        >
-          {scrollable ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {children}
-            </ScrollView>
-          ) : (
-            children
-          )}
-        </TabList>
+        {(() => {
+          const TabListComponent = BaseTabList as unknown as React.ComponentType<{
+            children: ReactNode
+            bordered: boolean
+            scrollable: boolean
+            variant: TabGroupVariant
+            'aria-label'?: string
+          }>
+          return (
+            <TabListComponent {...tabListProps}>
+              {scrollable ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {children}
+                </ScrollView>
+              ) : (
+                children
+              )}
+            </TabListComponent>
+          )
+        })()}
       </Tabs>
     </TabGroupVariantContext.Provider>
   )
@@ -77,7 +90,7 @@ export const TabGroup = ({
  * TabList - Styled container for tabs
  * Features border, background, and proper spacing
  */
-const TabList = styled(Tabs.List, {
+const BaseTabListStyled = styled(Tabs.List, {
   name: 'TabList',
   borderRadius: '$4',
   flexWrap: 'wrap',
@@ -126,8 +139,7 @@ const TabList = styled(Tabs.List, {
   },
 })
 
-TabList.defaultProps = {
-  bordered: true,
-  scrollable: false,
-  variant: 'default',
-}
+// Type-safe wrapper for BaseTabListStyled that accepts ReactNode children
+const BaseTabList = BaseTabListStyled as unknown as React.ComponentType<
+  Omit<ComponentProps<typeof BaseTabListStyled>, 'children'> & { children?: ReactNode }
+>

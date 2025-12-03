@@ -24,4 +24,3 @@ export type DialogComponent = ComponentType<DialogProps> & {
 declare const Dialog: DialogComponent
 export { Dialog }
 export type { DialogProps }
-

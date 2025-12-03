@@ -273,20 +273,20 @@ export const PhoneNumberInput = ({
               }}
             >
               <Select.Content zIndex={200000}>
-              <Select.ScrollUpButton />
-              <Select.Viewport>
-                {countries.map((country, index) => (
-                  <Select.Item key={country.code} value={country.code} index={index}>
-                    <XStack alignItems="center" gap="$2">
-                      <Text fontSize="$3">{country.flag}</Text>
-                      <Text fontSize="$3">{country.dialCode}</Text>
-                      <Text fontSize="$3">{country.name}</Text>
-                    </XStack>
-                  </Select.Item>
-                ))}
-              </Select.Viewport>
-              <Select.ScrollDownButton />
-            </Select.Content>
+                <Select.ScrollUpButton />
+                <Select.Viewport>
+                  {countries.map((country, index) => (
+                    <Select.Item key={country.code} value={country.code} index={index}>
+                      <XStack alignItems="center" gap="$2">
+                        <Text fontSize="$3">{country.flag}</Text>
+                        <Text fontSize="$3">{country.dialCode}</Text>
+                        <Text fontSize="$3">{country.name}</Text>
+                      </XStack>
+                    </Select.Item>
+                  ))}
+                </Select.Viewport>
+                <Select.ScrollDownButton />
+              </Select.Content>
             </AdaptiveSelectSheet>
           </Select>
         </YStack>

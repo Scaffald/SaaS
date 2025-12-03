@@ -4,4 +4,3 @@ declare const animations: AnimationsType
 export { animations }
 
 export type AnimationDurationName = 'fast' | 'normal' | 'slow' | 'slower'
-

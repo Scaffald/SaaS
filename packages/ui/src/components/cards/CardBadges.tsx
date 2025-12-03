@@ -44,9 +44,7 @@ export const CardBadges = memo(
               alignItems="center"
               gap="$1"
             >
-              <XStack alignItems="center">
-                {badge.icon}
-              </XStack>
+              <XStack alignItems="center">{badge.icon}</XStack>
               <Text fontSize="$2" color={typeof badge.color === 'string' ? badge.color : '$color1'}>
                 {badge.label}
               </Text>

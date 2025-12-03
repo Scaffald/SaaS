@@ -228,9 +228,7 @@ const ButtonBase = forwardRef<HTMLButtonElement, ButtonProps>(
 
 ButtonBase.displayName = 'Button'
 
-type ButtonComponent = ForwardRefExoticComponent<
-  ButtonProps & RefAttributes<HTMLButtonElement>
-> & {
+type ButtonComponent = ForwardRefExoticComponent<ButtonProps & RefAttributes<HTMLButtonElement>> & {
   Text: typeof TamaguiButton.Text
   Icon: typeof TamaguiButton.Icon
 }

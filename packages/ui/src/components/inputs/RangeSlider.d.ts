@@ -15,4 +15,3 @@ declare const RangeSlider: ComponentType<RangeSliderProps>
 
 export { RangeSlider }
 export type { RangeSliderProps }
-

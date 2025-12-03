@@ -30,10 +30,7 @@ export type {
 /**
  * Complete selectable card props
  */
-export interface SelectableCardProps
-  extends BaseCardProps,
-    RefForwardingProps,
-    SpacingProps {
+export interface SelectableCardProps extends BaseCardProps, RefForwardingProps, SpacingProps {
   /** Selection configuration */
   selection?: SelectionConfig
 }

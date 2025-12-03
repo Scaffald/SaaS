@@ -14,4 +14,3 @@ declare const Radio: ComponentType<RadioProps>
 
 export { Radio }
 export type { RadioProps }
-

@@ -18,4 +18,3 @@ export type SheetComponent = ComponentType<SheetProps> & {
 declare const Sheet: SheetComponent
 export { Sheet }
 export type { SheetProps }
-

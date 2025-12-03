@@ -16,4 +16,3 @@ declare const ConfirmationDialog: ComponentType<ConfirmationDialogProps>
 
 export { ConfirmationDialog }
 export type { ConfirmationDialogProps }
-

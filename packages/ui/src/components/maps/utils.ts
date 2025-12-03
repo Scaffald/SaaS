@@ -72,9 +72,7 @@ export function validateGeoJSONFeatureCollection(data: unknown): data is GeoJSON
  * Extract viewport bounds from a Mapbox map instance
  * @throws Error if map bounds are not available
  */
-export function extractViewportBounds(
-  map: mapboxgl.Map
-): ViewportBounds {
+export function extractViewportBounds(map: mapboxgl.Map): ViewportBounds {
   const bounds = map.getBounds()
   if (!bounds) {
     throw new Error('Map bounds are not available')

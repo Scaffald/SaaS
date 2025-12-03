@@ -1,6 +1,14 @@
+import type { ReactElement, ReactNode } from 'react'
+import type { TextProps } from 'tamagui'
 import { styled, Text } from 'tamagui'
 
-export const Chip = styled(Text, {
+export type ChipProps = TextProps & {
+  variant?: 'default' | 'filled'
+  priority?: 'high' | 'medium' | 'low'
+  children?: ReactNode
+}
+
+const ChipBase = styled(Text, {
   name: 'Chip',
   backgroundColor: '$background',
   borderColor: '$borderColor',
@@ -46,3 +54,5 @@ export const Chip = styled(Text, {
     variant: 'default',
   },
 })
+
+export const Chip = ChipBase as unknown as typeof Text & ((props: ChipProps) => ReactElement)

@@ -15,4 +15,3 @@ declare const Checkbox: ComponentType<CheckboxProps>
 
 export { Checkbox }
 export type { CheckboxProps }
-
