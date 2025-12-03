@@ -7,8 +7,8 @@ packages:
   - packages/ui
 
 catalog:
-  '@babel/core': ~7.26.0
-  '@babel/runtime': ~7.26.0
+  '@babel/core': ~7.28.5
+  '@babel/runtime': ~7.28.4
   '@biomejs/biome': ~2.3.6
   '@expo/metro-runtime': ~6.1.2
   '@hookform/resolvers': ~3.1.0
@@ -38,7 +38,7 @@ catalog:
   '@types/mapbox-gl': ~2.7.21
   '@types/node': ~20.0.0
   '@types/react': ~19.2.0
-  awesome-phonenumber: ~7.5.0
+  awesome-phonenumber: ~7.6.0
   babel-loader: ~8.3.0
   babel-plugin-module-resolver: ~4.1.0
   babel-preset-expo: ~54.0.0
@@ -67,9 +67,9 @@ catalog:
   expo-status-bar: ~3.0.8
   expo-system-ui: ~6.0.8
   expo-web-browser: ~15.0.9
-  fast-xml-parser: ~5.2.5
+  fast-xml-parser: ~5.3.2
   i18n-js: ^4.4.3
-  mapbox-gl: ~3.15.0
+  mapbox-gl: ~3.16.0
   moti: ~0.25.3
   react: 19.2.0
   react-dom: 19.2.0
