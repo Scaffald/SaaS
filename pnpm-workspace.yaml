@@ -16,7 +16,7 @@ catalog:
   '@react-native-community/netinfo': ~11.4.1
   '@react-native-google-signin/google-signin': ~16.0.0
   '@rnmapbox/maps': ~10.1.45
-  '@supabase/supabase-js': ~2.58.0
+  '@supabase/supabase-js': ~2.86.0
   '@tamagui/animations-moti': ^1.138.6
   '@tamagui/animations-react-native': ^1.138.6
   '@tamagui/babel-plugin': ^1.138.6
@@ -92,7 +92,7 @@ catalog:
   react-native-web: ^0.21.1
   react-refresh: ~0.14.0
   serve: ~14.2.5
-  supabase: 2.47.2
+  supabase: 2.65.2
   superjson: ~1.13.1
   swr: ~2.3.7
   tamagui: ^1.138.6
