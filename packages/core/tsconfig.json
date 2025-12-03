@@ -36,10 +36,6 @@
     "types.d.ts",
     "types",
     "package.json",
-    "../../package.json",
-    "../api/src",
-    "../supabase/types.ts",
-    "../supabase/helpers.ts",
     "../../types/custom-modules.d.ts"
   ],
   "references": []
