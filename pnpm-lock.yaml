@@ -85,8 +85,8 @@ catalogs:
       specifier: ~19.2.0
       version: 19.2.7
     awesome-phonenumber:
-      specifier: ~7.5.0
-      version: 7.5.0
+      specifier: ~7.6.0
+      version: 7.6.0
     babel-plugin-module-resolver:
       specifier: ~4.1.0
       version: 4.1.0
@@ -169,14 +169,14 @@ catalogs:
       specifier: ~15.0.9
       version: 15.0.9
     fast-xml-parser:
-      specifier: ~5.2.5
-      version: 5.2.5
+      specifier: ~5.3.2
+      version: 5.3.2
     i18n-js:
       specifier: ^4.4.3
       version: 4.5.1
     mapbox-gl:
-      specifier: ~3.15.0
-      version: 3.15.0
+      specifier: ~3.16.0
+      version: 3.16.0
     react:
       specifier: 19.2.0
       version: 19.2.0
@@ -609,7 +609,7 @@ importers:
         version: file:packages/ui(763ee347a8bbba11400c2cc0fc1a12c8)
       awesome-phonenumber:
         specifier: 'catalog:'
-        version: 7.5.0
+        version: 7.6.0
       burnt:
         specifier: 'catalog:'
         version: 0.13.0(expo@54.0.25)(react-dom@19.2.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
@@ -642,7 +642,7 @@ importers:
         version: 15.0.7(expo@54.0.25)
       fast-xml-parser:
         specifier: 'catalog:'
-        version: 5.2.5
+        version: 5.3.2
       hast-util-to-html:
         specifier: ^9.0.0
         version: 9.0.5
@@ -654,7 +654,7 @@ importers:
         version: 2.2.1
       mapbox-gl:
         specifier: 'catalog:'
-        version: 3.15.0
+        version: 3.16.0
       parse-numeric-range:
         specifier: ^1.0.0
         version: 1.3.0
@@ -745,7 +745,7 @@ importers:
     dependencies:
       awesome-phonenumber:
         specifier: 'catalog:'
-        version: 7.5.0
+        version: 7.6.0
       zod:
         specifier: 'catalog:'
         version: 3.23.8
@@ -4790,6 +4790,10 @@ packages:
     resolution: {integrity: sha512-qWQHCiMHMNVyUsICiCcaPJAYbGL4E4kGnIxnrwkS3YCwcPa8VtQCo11HGKY8AbUpXJloDG10c9Bulhw3xYkC/g==}
     engines: {node: '>=18'}
 
+  awesome-phonenumber@7.6.0:
+    resolution: {integrity: sha512-lThkL6OWN5d2P89Kgw4aR6/ShMATIOJcfeLurDW06vVAZ7V8icOpTSdtr3gfOj1Uk5pZKuBuSvVtJ70Y+8QT/Q==}
+    engines: {node: '>=18'}
+
   axios@1.13.2:
     resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
 
@@ -6098,8 +6102,8 @@ packages:
   fast-uri@3.1.0:
     resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
 
-  fast-xml-parser@5.2.5:
-    resolution: {integrity: sha512-pfX9uG9Ki0yekDHx2SiuRIyFdyAr1kMIMitPvb0YBo8SUfKvia7w7FIyd/l6av85pFYRhZscS75MwMnbvY+hcQ==}
+  fast-xml-parser@5.3.2:
+    resolution: {integrity: sha512-n8v8b6p4Z1sMgqRmqLJm3awW4NX7NkaKPfb3uJIBTSH7Pdvufi3PQ3/lJLQrvxcMYl7JI2jnDO90siPEpD8JBA==}
     hasBin: true
 
   fastq@1.19.1:
@@ -7149,8 +7153,8 @@ packages:
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
-  mapbox-gl@3.15.0:
-    resolution: {integrity: sha512-I42ffZpiXwt0PG3PO6gMYQnoz+AInkirLe/+zoHjcfBTFoFkKYtu5gFwT1WGeSvNrVTqG2Bwp9zUjPw0PFGY+w==}
+  mapbox-gl@3.16.0:
+    resolution: {integrity: sha512-rluV1Zp/0oHf1Y9BV+nePRNnKyTdljko3E19CzO5rBqtQaNUYS0ePCMPRtxOuWRwSdKp3f9NWJkOCjemM8nmjw==}
 
   markdown-it@14.1.0:
     resolution: {integrity: sha512-a54IwgWPaeBCAAsv13YgmALOF1elABB08FxO9i+r4VFk5Vl4pKokRPeX8u5TCgSsPi6ec1otfLjdOpVcgbpshg==}
@@ -17156,6 +17160,8 @@ snapshots:
 
   awesome-phonenumber@7.5.0: {}
 
+  awesome-phonenumber@7.6.0: {}
+
   axios@1.13.2:
     dependencies:
       follow-redirects: 1.15.11
@@ -18883,7 +18889,7 @@ snapshots:
 
   fast-uri@3.1.0: {}
 
-  fast-xml-parser@5.2.5:
+  fast-xml-parser@5.3.2:
     dependencies:
       strnum: 2.1.1
 
@@ -20001,7 +20007,7 @@ snapshots:
     dependencies:
       tmpl: 1.0.5
 
-  mapbox-gl@3.15.0:
+  mapbox-gl@3.16.0:
     dependencies:
       '@mapbox/jsonlint-lines-primitives': 2.0.2
       '@mapbox/mapbox-gl-supported': 3.0.0
