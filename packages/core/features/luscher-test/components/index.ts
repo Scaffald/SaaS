@@ -1,8 +1,8 @@
-export type { CooldownStepProps } from './CooldownStep.ts'
-export { CooldownStep } from './CooldownStep.ts'
-export type { IntroductionStepProps } from './IntroductionStep.ts'
-export { IntroductionStep } from './IntroductionStep.ts'
-export type { ResultsSidebarProps } from './ResultsSidebar.ts'
-export { ResultsSidebar } from './ResultsSidebar.ts'
-export type { ResultsStepProps } from './ResultsStep.ts'
-export { ResultsStep } from './ResultsStep.ts'
+export type { CooldownStepProps } from "./CooldownStep";
+export { CooldownStep } from "./CooldownStep";
+export type { IntroductionStepProps } from "./IntroductionStep";
+export { IntroductionStep } from "./IntroductionStep";
+export type { ResultsSidebarProps } from "./ResultsSidebar";
+export { ResultsSidebar } from "./ResultsSidebar";
+export type { ResultsStepProps } from "./ResultsStep";
+export { ResultsStep } from "./ResultsStep";

@@ -1,8 +1,8 @@
-export { ControlledAddressForm } from './ControlledAddressForm.ts'
-export { SmartAddressForm } from './SmartAddressForm.ts'
+export { ControlledAddressForm } from "./ControlledAddressForm";
+export { SmartAddressForm } from "./SmartAddressForm";
 export type {
   ControlledAddressFormProps,
   CustomAddressFieldMapping,
   FieldMappingStrategy,
   SmartAddressFormPresetProps,
-} from './types.ts'
+} from "./types";

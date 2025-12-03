@@ -1,5 +1,5 @@
 import { formatDate } from '@app/core/features/profile/utils/date-formatting'
-import type { PublicWorkLog, PublicWorkLogPhoto } from '@app/core/features/work-logs/schemas'
+import type { PublicWorkLog, PublicWorkLogPhoto } from '@app/schemas'
 import { api } from '@app/core/utils/api'
 import { ShieldCheck } from '@tamagui/lucide-icons'
 import { useMemo } from 'react'

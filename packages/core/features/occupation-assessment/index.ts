@@ -1,2 +1,2 @@
-export { OccupationAssessmentWidget } from './OccupationAssessmentWidget.ts'
-export { OccupationAssessmentWizard } from './OccupationAssessmentWizard.ts'
+export { OccupationAssessmentWidget } from "./OccupationAssessmentWidget";
+export { OccupationAssessmentWizard } from "./OccupationAssessmentWizard";

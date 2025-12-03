@@ -4,23 +4,26 @@
  */
 
 // Configuration and schemas
-export * from './config.ts'
+export * from "./config";
 // Certifications Profile Components
-export { ProfileCertificationsLeft } from './profile-certifications-left.ts'
-export { ProfileCertificationsRight } from './profile-certifications-right.ts'
+export { ProfileCertificationsLeft } from "./profile-certifications-left";
+export { ProfileCertificationsRight } from "./profile-certifications-right";
 // Education Profile Components
-export { ProfileEducationLeft } from './profile-education-left.ts'
-export { ProfileEducationRight } from './profile-education-right.ts'
+export { ProfileEducationLeft } from "./profile-education-left";
+export { ProfileEducationRight } from "./profile-education-right";
 // Employment Profile Components
-export { ProfileEmploymentLeft } from './profile-employment-left.ts'
-export { ProfileEmploymentRight } from './profile-employment-right.ts'
+export { ProfileEmploymentLeft } from "./profile-employment-left";
+export { ProfileEmploymentRight } from "./profile-employment-right";
 // Experience Profile Components
-export { ProfileExperienceLeft } from './profile-experience-left.ts'
-export { ProfileExperienceRight } from './profile-experience-right.ts'
+export { ProfileExperienceLeft } from "./profile-experience-left";
+export { ProfileExperienceRight } from "./profile-experience-right";
 // General Profile Components
-export { ProfileGeneralLeft } from './profile-general-left.ts'
-export { ProfileGeneralRight } from './profile-general-right.ts'
-export { ProfileSkillsProvider, useProfileSkillsContext } from './profile-skills-context.ts'
+export { ProfileGeneralLeft } from "./profile-general-left";
+export { ProfileGeneralRight } from "./profile-general-right";
+export {
+  ProfileSkillsProvider,
+  useProfileSkillsContext,
+} from "./profile-skills-context";
 // Skills Profile Components
-export { ProfileSkillsLeft } from './profile-skills-left.ts'
-export { ProfileSkillsRight } from './profile-skills-right.ts'
+export { ProfileSkillsLeft } from "./profile-skills-left";
+export { ProfileSkillsRight } from "./profile-skills-right";

@@ -116,8 +116,9 @@ export const Tab = ({ value, label, href, badge, children, disabled, ...props }:
 
 /**
  * TabBadge - Badge component for tab counts/notifications
+ * Currently unused but kept for future badge enhancements
  */
-const TabBadge = styled(YStack, {
+const _TabBadge = styled(YStack, {
   name: 'TabBadge',
   paddingHorizontal: '$2',
   paddingVertical: '$1',

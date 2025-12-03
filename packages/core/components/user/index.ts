@@ -1,2 +1,1 @@
-export { UserSearch, type UserSearchProps } from './UserSearch.ts'
-
+export { UserSearch, type UserSearchProps } from "./UserSearch";

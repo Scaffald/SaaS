@@ -1,3 +1,3 @@
-export * from './quiz.ts'
-export * from './score.ts'
-export * from './types.ts'
+export * from "./quiz";
+export * from "./score";
+export * from "./types";

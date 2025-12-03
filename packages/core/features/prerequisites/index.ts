@@ -4,10 +4,10 @@
  */
 
 export {
-  type PrerequisitesFormData,
   prerequisitesDefaults,
+  type PrerequisitesFormData,
   prerequisitesSchema,
   USER_TYPE_OPTIONS,
   type UserType,
-} from './config/prerequisites-schema.ts'
-export { PrerequisiteWidget } from './PrerequisiteWidget.ts'
+} from "./config/prerequisites-schema";
+export { PrerequisiteWidget } from "./PrerequisiteWidget";

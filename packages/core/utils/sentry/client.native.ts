@@ -7,7 +7,6 @@ import {
   IOS_BUNDLE_IDENTIFIER,
   RUNTIME_VERSION,
   SENTRY_DSN_NATIVE,
-  getReplaySampleRate,
   getTraceSampleRate,
 } from './config'
 
@@ -64,7 +63,7 @@ export function initSentry() {
       debug: __DEV__,
 
       // Capture context
-      beforeSend(event, hint) {
+      beforeSend(event, _hint) {
         // Add custom logic here if needed
         // For example, filter out certain errors
         if (__DEV__) {

@@ -1,2 +1,4 @@
-export { NotificationPopover, type NotificationItem } from './NotificationPopover.ts'
-
+export {
+  type NotificationItem,
+  NotificationPopover,
+} from "./NotificationPopover";

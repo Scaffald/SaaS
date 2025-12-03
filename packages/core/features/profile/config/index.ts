@@ -4,24 +4,25 @@
  */
 
 // Certifications Profile
-export * from './certifications-schema.ts'
+export * from "./certifications-schema";
 // Education Profile
-export * from './education-schema.ts'
+export * from "./education-schema";
 // Employment Profile
-export * from './employment-schema.ts'
+export * from "./employment-schema";
 // Experience Profile
-export * from './experience-schema.ts'
+export * from "./experience-schema";
 // General Profile
-export * from './general-schema.ts'
+export * from "./general-schema";
 // Skills Profile
-export * from './skills-schema.ts'
+export * from "./skills-schema";
 
 // Combined type for all profile sections
 export type ProfileSections = {
-  general: import('./general-schema').GeneralProfileFormData
-  employment: import('./employment-schema').EmploymentProfileFormData
-  skills: import('./skills-schema').SkillsProfileFormData
-  certifications: import('./certifications-schema').CertificationsProfileFormData
-  education: import('./education-schema').EducationProfileFormData
-  experience: import('./experience-schema').ExperienceProfileFormData
-}
+  general: import("./general-schema").GeneralProfileFormData;
+  employment: import("./employment-schema").EmploymentProfileFormData;
+  skills: import("./skills-schema").SkillsProfileFormData;
+  certifications:
+    import("./certifications-schema").CertificationsProfileFormData;
+  education: import("./education-schema").EducationProfileFormData;
+  experience: import("./experience-schema").ExperienceProfileFormData;
+};

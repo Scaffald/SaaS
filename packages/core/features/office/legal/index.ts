@@ -1,1 +1,1 @@
-export { OfficeViolationReports } from './OfficeViolationReports.ts'
+export { OfficeViolationReports } from "./OfficeViolationReports";

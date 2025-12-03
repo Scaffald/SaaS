@@ -1,11 +1,11 @@
-import choices from './data/en.choices.json.ts'
-import questions from './data/en.questions.json.ts'
-import type { IPIPChoices, IPIPQuestion } from './types.ts'
+import choices from "./data/en.choices.json";
+import questions from "./data/en.questions.json";
+import type { IPIPChoices, IPIPQuestion } from "./types";
 
 export function getChoices(): IPIPChoices {
-  return choices as unknown as IPIPChoices
+  return choices as unknown as IPIPChoices;
 }
 
 export function getQuestions(): IPIPQuestion[] {
-  return questions as unknown as IPIPQuestion[]
+  return questions as unknown as IPIPQuestion[];
 }

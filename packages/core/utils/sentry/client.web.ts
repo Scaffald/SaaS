@@ -60,7 +60,7 @@ export function initSentry() {
       debug: __DEV__,
 
       // Capture context
-      beforeSend(event, hint) {
+      beforeSend(event, _hint) {
         // Add custom logic here if needed
         if (__DEV__) {
           console.log('[sentry] Capturing event:', event.event_id, event.message)

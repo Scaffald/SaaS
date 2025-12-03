@@ -1,1 +1,1 @@
-export { PaymentIntentForm } from './PaymentIntentForm.ts'
+export { PaymentIntentForm } from "./PaymentIntentForm";

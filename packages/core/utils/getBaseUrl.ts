@@ -1,6 +1,6 @@
 import { isWeb } from "@unicornlove/ui";
 
-import { replaceLocalhost } from "./getLocalhost.native.ts";
+import { replaceLocalhost } from "./getLocalhost.native";
 
 export function _getBaseUrl() {
   if (isWeb && typeof window !== "undefined") {

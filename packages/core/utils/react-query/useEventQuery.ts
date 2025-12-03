@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { supabase } from "../supabase/client.ts";
-import { useUser } from "../useUser.ts";
+import { supabase } from "../supabase/client";
+import { useUser } from "../useUser";
 
 type EventsQueryBuilder = {
   select: (columns?: string) => {

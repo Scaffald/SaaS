@@ -48,7 +48,6 @@ export const getTraceSampleRate = () => {
       return 0.2 // 20% in production
     case 'staging':
       return 0.5 // 50% in staging
-    case 'development':
     default:
       return 1.0 // 100% in development
   }
@@ -60,7 +59,6 @@ export const getReplaySampleRate = () => {
       return 0.1 // 10% in production
     case 'staging':
       return 0.3 // 30% in staging
-    case 'development':
     default:
       return 1.0 // 100% in development
   }

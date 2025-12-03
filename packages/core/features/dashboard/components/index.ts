@@ -1,2 +1,5 @@
-export { ProfileActivityWidget } from './ProfileActivityWidget.ts'
-export { TeamInvitationList, TeamInvitationsWidget } from './TeamInvitationsWidget.ts'
+export { ProfileActivityWidget } from "./ProfileActivityWidget";
+export {
+  TeamInvitationList,
+  TeamInvitationsWidget,
+} from "./TeamInvitationsWidget";

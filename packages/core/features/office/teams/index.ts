@@ -1,3 +1,3 @@
-export * from './components.ts'
-export * from './hooks/useTeamFormOptions.ts'
-export * from './OfficeTeamsList.ts'
+export * from "./components";
+export * from "./hooks/useTeamFormOptions";
+export * from "./OfficeTeamsList";

@@ -1,1 +1,1 @@
-export * from './TamaguiProvider.ts'
+export * from "./TamaguiProvider";

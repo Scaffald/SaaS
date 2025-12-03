@@ -1,2 +1,2 @@
-export * from './QueryProvider.ts'
-export * from './queryClient.ts'
+export * from "./QueryProvider";
+export * from "./queryClient";

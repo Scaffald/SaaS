@@ -1,3 +1,3 @@
-export * from './OrganizationBackgroundCheckRequestForm.ts'
-export * from './OrganizationBackgroundChecksPage.ts'
-export * from './OrganizationCheckDetails.ts'
+export * from "./OrganizationBackgroundCheckRequestForm";
+export * from "./OrganizationBackgroundChecksPage";
+export * from "./OrganizationCheckDetails";

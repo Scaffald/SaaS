@@ -1,11 +1,10 @@
-export { MaximumTravelDistanceCard } from './MaximumTravelDistanceCard.ts'
-export type { MaximumTravelDistanceCardProps } from './MaximumTravelDistanceCard.ts'
-export { OpenToTravelCard } from './OpenToTravelCard.ts'
-export type { OpenToTravelCardProps } from './OpenToTravelCard.ts'
-export { OpenToTravelToggle } from './OpenToTravelToggle.ts'
-export type { OpenToTravelToggleProps } from './OpenToTravelToggle.ts'
-export { USResidentToggle } from './USResidentToggle.ts'
-export type { USResidentToggleProps } from './USResidentToggle.ts'
-export { USPassportToggle } from './USPassportToggle.ts'
-export type { USPassportToggleProps } from './USPassportToggle.ts'
-
+export { MaximumTravelDistanceCard } from "./MaximumTravelDistanceCard";
+export type { MaximumTravelDistanceCardProps } from "./MaximumTravelDistanceCard";
+export { OpenToTravelCard } from "./OpenToTravelCard";
+export type { OpenToTravelCardProps } from "./OpenToTravelCard";
+export { OpenToTravelToggle } from "./OpenToTravelToggle";
+export type { OpenToTravelToggleProps } from "./OpenToTravelToggle";
+export { USResidentToggle } from "./USResidentToggle";
+export type { USResidentToggleProps } from "./USResidentToggle";
+export { USPassportToggle } from "./USPassportToggle";
+export type { USPassportToggleProps } from "./USPassportToggle";

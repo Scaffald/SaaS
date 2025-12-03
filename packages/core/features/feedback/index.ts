@@ -1,2 +1,2 @@
-export { FeedbackWidget } from './FeedbackWidget.ts'
-export * from './hooks.ts'
+export { FeedbackWidget } from "./FeedbackWidget";
+export * from "./hooks";

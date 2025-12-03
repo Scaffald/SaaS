@@ -78,13 +78,18 @@ pnpm web              # Start Expo Web dev server (port 8081)
 pnpm ios              # Build and run iOS app
 pnpm android          # Build and run Android app
 
-# Code quality (ALWAYS run before committing)
+# Quick iteration (FAST - only affected packages)
+pnpm check:affected   # Lint and type check only changed packages
+pnpm lint:affected    # Lint only changed packages
+pnpm typecheck:affected # Type check only changed packages
+
+# Pre-commit validation (COMPREHENSIVE - REQUIRED before committing)
 pnpm check            # Lint and type check all packages (matches CI)
 pnpm build            # Build all packages (matches CI)
 pnpm format:fix       # Fix formatting issues with Biome
 pnpm lint:fix         # Fix linting issues
 
-# Pre-commit validation (REQUIRED workflow)
+# Full pre-commit workflow (REQUIRED)
 pnpm check && pnpm build && pnpm check-deps
 ```
 
@@ -233,10 +238,17 @@ pnpm check-deps         # Dependency consistency
 
 ### Post-Implementation Quality Check (MANDATORY)
 
-After any code changes, **ALWAYS** run:
+**During Development (Fast Iteration):**
 ```bash
-pnpm lint:fix           # Auto-fix linting issues
-pnpm lint              # Verify no remaining errors
+pnpm check:affected     # Lint and type check only changed packages
+# Review and fix any issues in affected packages
+```
+
+**Before Committing (Comprehensive):**
+```bash
+pnpm lint:fix           # Auto-fix linting issues across all packages
+pnpm check              # Verify all packages pass lint and type checks
+pnpm build              # Verify all packages build successfully
 # Review any remaining warnings/errors and fix manually
 ```
 

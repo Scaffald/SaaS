@@ -12,8 +12,8 @@ import { createTRPCReact } from "@trpc/react-query";
 import { observable } from "@trpc/server/observable";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import { clearAllAuthStorage } from "./auth/clearAuthStorage.ts";
-import { supabase } from "./supabase/client.ts";
+import { clearAllAuthStorage } from "./auth/clearAuthStorage";
+import { supabase } from "./supabase/client";
 
 // Create tRPC React client with proper typing from shared supabase package
 // Note: AppRouter is a placeholder type to avoid importing Deno-specific code

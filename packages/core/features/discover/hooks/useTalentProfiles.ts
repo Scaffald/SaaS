@@ -2,7 +2,7 @@ import { supabase } from "@app/core/utils/supabase/client";
 import type { Database } from "@app/supabase/types";
 import type { ViewportBounds } from "@unicornlove/ui";
 import { useQuery } from "@tanstack/react-query";
-import type { TalentProfile } from "../types.ts";
+import type { TalentProfile } from "../types";
 
 // Type for the v_profile_search view with additional fields we select
 type ProfileSearchRow = Database["core"]["Views"]["v_profile_search"]["Row"] & {

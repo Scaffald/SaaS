@@ -65,7 +65,7 @@ export const TabGroup = ({
               {children}
             </ScrollView>
           ) : (
-            <>{children}</>
+            children
           )}
         </TabList>
       </Tabs>

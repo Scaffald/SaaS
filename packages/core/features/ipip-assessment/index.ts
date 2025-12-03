@@ -1,14 +1,14 @@
-export { ChartView } from './components/ChartView.ts'
-export { DomainCard } from './components/DomainCard.ts'
-export { FacetList } from './components/FacetList.ts'
-export { IPIPResultsPage } from './components/IPIPResultsPage.ts'
-export { NarrativeView } from './components/NarrativeView.ts'
-export { ShareResults } from './components/ShareResults.ts'
-export { useIPIPResults } from './hooks/useIPIPResults.ts'
-export { IPIPAssessmentWidget } from './IPIPAssessmentWidget.ts'
-export { IPIPAssessmentWizard } from './IPIPAssessmentWizard.ts'
-export type { ArchetypeResult } from './utils/archetypeMapper.ts'
-export { getAllArchetypeScores, mapToArchetype } from './utils/archetypeMapper.ts'
-export { generateOverallSummary } from './utils/narrativeGenerator.ts'
-export type { NormalizedScores } from './utils/scoreNormalizer.ts'
-export { normalizeScores } from './utils/scoreNormalizer.ts'
+export { ChartView } from "./components/ChartView";
+export { DomainCard } from "./components/DomainCard";
+export { FacetList } from "./components/FacetList";
+export { IPIPResultsPage } from "./components/IPIPResultsPage";
+export { NarrativeView } from "./components/NarrativeView";
+export { ShareResults } from "./components/ShareResults";
+export { useIPIPResults } from "./hooks/useIPIPResults";
+export { IPIPAssessmentWidget } from "./IPIPAssessmentWidget";
+export { IPIPAssessmentWizard } from "./IPIPAssessmentWizard";
+export type { ArchetypeResult } from "./utils/archetypeMapper";
+export { getAllArchetypeScores, mapToArchetype } from "./utils/archetypeMapper";
+export { generateOverallSummary } from "./utils/narrativeGenerator";
+export type { NormalizedScores } from "./utils/scoreNormalizer";
+export { normalizeScores } from "./utils/scoreNormalizer";

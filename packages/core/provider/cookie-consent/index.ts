@@ -1,1 +1,1 @@
-export { CookieConsentProvider } from './CookieConsentProvider.ts'
+export { CookieConsentProvider } from "./CookieConsentProvider";

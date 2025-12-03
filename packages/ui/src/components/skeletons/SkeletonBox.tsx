@@ -1,5 +1,5 @@
 import type { SizeTokens } from 'tamagui'
-import { styled, View } from 'tamagui'
+import { View } from 'tamagui'
 
 export interface SkeletonBoxProps {
   /** Width of the skeleton box */

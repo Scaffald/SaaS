@@ -11,9 +11,9 @@ import {
   createWorkLogSchema,
   hasTimeEntriesOverlap,
   type UpdateWorkLogInput,
-} from "../schemas.ts";
-import type { OfflineWorkLog } from "../types/offline.ts";
-import { useOfflineWorkLogs } from "./useOfflineWorkLogs.ts";
+} from "../schemas";
+import type { OfflineWorkLog } from "../types/offline";
+import { useOfflineWorkLogs } from "./useOfflineWorkLogs";
 
 const DEFAULT_TIME_ENTRY = {
   start: "",

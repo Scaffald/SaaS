@@ -1,9 +1,9 @@
-import auth from './auth.json.ts'
-import common from './common.json.ts'
-import errors from './errors.json.ts'
-import navigation from './navigation.json.ts'
-import routes from './routes.json.ts'
-import validation from './validation.json.ts'
+import auth from "./auth.json";
+import common from "./common.json";
+import errors from "./errors.json";
+import navigation from "./navigation.json";
+import routes from "./routes.json";
+import validation from "./validation.json";
 
 const es = {
   auth,
@@ -12,8 +12,8 @@ const es = {
   navigation,
   routes,
   validation,
-} as const
+} as const;
 
-export type EsTranslations = typeof es
+export type EsTranslations = typeof es;
 
-export default es
+export default es;

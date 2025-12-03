@@ -1,1 +1,1 @@
-export * from './UniversalThemeProvider.ts'
+export * from "./UniversalThemeProvider";

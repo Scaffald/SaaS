@@ -1,6 +1,9 @@
-export type { AssessmentProgressProps, AssessmentStep } from './AssessmentProgress.ts'
-export { AssessmentProgress } from './AssessmentProgress.ts'
-export { AssessmentsLandingLeft } from './AssessmentsLandingLeft.ts'
-export { AssessmentsLandingRight } from './AssessmentsLandingRight.ts'
-export type { AssessmentWizardProps } from './AssessmentWizard.ts'
-export { AssessmentWizard } from './AssessmentWizard.ts'
+export type {
+  AssessmentProgressProps,
+  AssessmentStep,
+} from "./AssessmentProgress";
+export { AssessmentProgress } from "./AssessmentProgress";
+export { AssessmentsLandingLeft } from "./AssessmentsLandingLeft";
+export { AssessmentsLandingRight } from "./AssessmentsLandingRight";
+export type { AssessmentWizardProps } from "./AssessmentWizard";
+export { AssessmentWizard } from "./AssessmentWizard";
