@@ -3,8 +3,9 @@
  * Re-exports from @app/trpc package to avoid importing Deno-specific code
  */
 
-// Re-export AppRouter type (placeholder to avoid Deno imports)
-export type { AppRouter } from './app-router-type'
+// Re-export AppRouter type using safe type export to avoid @ts-nocheck issues
+// The app-router-safe-type.ts provides a fallback that prevents type inference failures
+export type { AppRouter } from './app-router-safe-type'
 
 // Re-export types from @app/trpc schemas
 export type {

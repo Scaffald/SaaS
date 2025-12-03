@@ -1,8 +1,23 @@
 /**
  * tRPC client initialization and configuration
  *
- * Note: AppRouter type is derived from Deno edge function files, but type checking
- * still occurs when using the type in this file.
+ * ## Type Safety Strategy
+ * 
+ * The AppRouter type is imported from @app/supabase/client-types which uses a safe
+ * type export strategy (app-router-safe-type.ts) to avoid issues with @ts-nocheck files.
+ * 
+ * The router structure includes these namespaces:
+ * - profile: Profile management (general, employment, skills, etc.)
+ * - auth: Authentication endpoints
+ * - jobs: Job listings and applications
+ * - applications: Application submissions
+ * - And many more (see packages/supabase/functions/trpc/routers/_app-impl.ts)
+ * 
+ * ## Type Checking
+ * 
+ * - The AppRouter type is extracted directly from the actual router instance
+ * - Type-only imports allow TypeScript to infer types even from @ts-nocheck files
+ * - This ensures proper autocomplete and type safety in the client application
  */
 
 import { getGlobalQueryClient } from "@app/core/provider/react-query/queryClient";
@@ -15,9 +30,24 @@ import { Platform } from "react-native";
 import { clearAllAuthStorage } from "./auth/clearAuthStorage";
 import { supabase } from "./supabase/client";
 
-// Create tRPC React client with proper typing from shared supabase package
-// Note: AppRouter is a placeholder type to avoid importing Deno-specific code
-// The actual router types are provided at runtime
+/**
+ * tRPC React client instance
+ * 
+ * This client provides type-safe access to all backend procedures defined in the AppRouter.
+ * The type is properly inferred from the actual router implementation, ensuring:
+ * - Autocomplete for all available procedures
+ * - Type checking for procedure inputs and outputs
+ * - Runtime type validation via tRPC
+ * 
+ * @example
+ * ```ts
+ * // Query example
+ * const { data } = api.profile.general.get.useQuery();
+ * 
+ * // Mutation example
+ * const mutation = api.profile.skills.addSkill.useMutation();
+ * ```
+ */
 export const api = createTRPCReact<AppRouter>();
 
 // Custom error handling link for session validation
