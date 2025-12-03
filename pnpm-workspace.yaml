@@ -42,9 +42,9 @@ catalog:
   babel-loader: ~8.3.0
   babel-plugin-module-resolver: ~4.1.0
   babel-preset-expo: ~54.0.0
-  burnt: ~0.12.2
+  burnt: ~0.13.0
   cross-env: ~7.0.3
-  expo: 54.0.23
+  expo: 54.0.25
   expo-apple-authentication: ~8.0.7
   expo-build-properties: ~1.0.9
   expo-clipboard: ~8.0.7
@@ -81,13 +81,13 @@ catalog:
   react-native-clean-project: ~4.0.3
   react-native-country-picker-modal: ~2.0.0
   react-native-dotenv: ~3.4.9
-  react-native-gesture-handler: ~2.28.0
+  react-native-gesture-handler: ~2.29.1
   react-native-gifted-charts: ~1.4.64
   react-native-modal: ~14.0.0-rc.1
   react-native-reanimated: ~4.1.2
   react-native-safe-area-context: ~5.6.1
-  react-native-screens: ~4.16.0
-  react-native-svg: 15.12.1
+  react-native-screens: ~4.18.0
+  react-native-svg: 15.15.1
   react-native-url-polyfill: ~3.0.0
   react-native-web: ^0.21.1
   react-refresh: ~0.14.0
