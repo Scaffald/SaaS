@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useOfflineWorkLogs } from "../useOfflineWorkLogs";
 import * as offlineStorage from "../../utils/offline-storage";
 import type { OfflineWorkLog } from "../../types/offline";
-import type { CreateWorkLogInput } from "../../schemas";
+import type { CreateWorkLogInput } from "@app/schemas";
 
 const createWorkLogInput = (
   overrides: Partial<CreateWorkLogInput>,

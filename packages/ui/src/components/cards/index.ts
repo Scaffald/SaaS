@@ -7,6 +7,8 @@ export { DashboardWidget } from './DashboardWidget'
 // JobCard, OrganizationCard, ProfileCard moved to @app/core/components
 export { NewsCard } from './NewsCard'
 export { SelectableCard } from './SelectableCard'
+export { StackedCards } from './CardStack'
+export type { StackedCardsProps } from './CardStack'
 export type {
   ActionButton,
   BadgeConfig,

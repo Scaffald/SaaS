@@ -7,7 +7,7 @@ import { useWorkLogSync } from '../useWorkLogSync';
 import * as api from '@app/core/utils/api';
 import * as offlineStorage from '../../utils/offline-storage';
 import type { OfflineWorkLog } from '../../types/offline';
-import type { CreateWorkLogInput } from '../../schemas';
+import type { CreateWorkLogInput } from '@app/schemas';
 
 const createWorkLogInput = (overrides: Partial<CreateWorkLogInput>): CreateWorkLogInput => ({
   projectId: 'project-1',

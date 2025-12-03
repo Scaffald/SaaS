@@ -4,8 +4,8 @@ import { useToastController } from "@tamagui/toast";
 import { Buffer } from "buffer";
 import type * as ImageManipulator from "expo-image-manipulator";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { UploadWorkLogPhotoInput } from "../schemas";
-import { deleteWorkLogPhotoSchema, updateWorkLogPhotoSchema } from "../schemas";
+import type { UploadWorkLogPhotoInput } from "@app/schemas";
+import { deleteWorkLogPhotoSchema, updateWorkLogPhotoSchema } from "@app/schemas";
 import type { ResolvedWorkLogPhoto, WorkLogPhoto } from "../types/photos";
 
 const WORK_LOG_PHOTO_BUCKET = "work-log-photos";

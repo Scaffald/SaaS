@@ -9,7 +9,7 @@ import { Button, Card, Paragraph, Separator, Spinner, Text, XStack, YStack } fro
 
 import { useOfflineWorkLogs } from '../hooks/useOfflineWorkLogs'
 import { useWorkLogSync } from '../hooks/useWorkLogSync'
-import type { WorkLogListItem } from '../schemas'
+import type { WorkLogListItem } from '@app/schemas'
 import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 
 type IconRenderer = typeof Activity

@@ -4,7 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { Platform } from 'react-native'
 import { Button, Input, Text, XStack, YStack } from '@unicornlove/ui'
 
-import type { CreateWorkLogInput } from '../schemas'
+import type { CreateWorkLogInput } from '@app/schemas'
 
 export interface TimeEntryInputProps {
   index: number

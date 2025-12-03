@@ -11,7 +11,7 @@ import {
   createWorkLogSchema,
   hasTimeEntriesOverlap,
   type UpdateWorkLogInput,
-} from "../schemas";
+} from "@app/schemas";
 import type { OfflineWorkLog } from "../types/offline";
 import { useOfflineWorkLogs } from "./useOfflineWorkLogs";
 

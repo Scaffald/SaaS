@@ -2,7 +2,7 @@ import type {
   CreateWorkLogInput,
   UpdateWorkLogInput,
   UploadWorkLogPhotoInput,
-} from "../schemas";
+} from "@app/schemas";
 
 export type SyncStatus = "pending" | "queued" | "syncing" | "synced" | "failed";
 

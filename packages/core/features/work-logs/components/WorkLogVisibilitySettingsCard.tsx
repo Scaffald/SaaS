@@ -6,7 +6,7 @@ import { DashboardWidget, ToggleSwitch } from '@unicornlove/ui'
 import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import { Button, Paragraph, Spinner, Text, XStack, YStack } from '@unicornlove/ui'
-import type { WorkLogListItem } from '../schemas'
+import type { WorkLogListItem } from '@app/schemas'
 import { getStatusColor, getStatusLabel } from '../utils/status-formatting'
 
 export function WorkLogVisibilitySettingsCard() {

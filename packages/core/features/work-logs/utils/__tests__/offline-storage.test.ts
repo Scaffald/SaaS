@@ -10,7 +10,7 @@ import {
 } from '../offline-storage';
 import type { OfflineWorkLog, SyncSettings } from '../../types/offline';
 import { DEFAULT_SYNC_SETTINGS } from '../../types/offline';
-import type { CreateWorkLogInput } from '../../schemas';
+import type { CreateWorkLogInput } from '@app/schemas';
 
 const createWorkLogInput = (overrides: Partial<CreateWorkLogInput>): CreateWorkLogInput => ({
   projectId: 'project-1',
