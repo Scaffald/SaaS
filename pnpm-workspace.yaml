@@ -93,7 +93,7 @@ catalog:
   react-refresh: ~0.14.0
   serve: ~14.2.5
   supabase: 2.65.2
-  superjson: ~1.13.1
+  superjson: ~2.2.6
   swr: ~2.3.7
   tamagui: ^1.138.6
   typescript: ~5.9.3

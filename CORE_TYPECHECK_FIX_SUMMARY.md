@@ -5,8 +5,10 @@
 ### 1. AppRouter Type Export Strategy
 **Files Modified:**
 - `packages/supabase/app-router-safe-type.ts` - Updated to use original type export
-- `packages/supabase/app-router-stub.d.ts` - Created (attempted solution, not used in final)
 - `packages/supabase/client-types.ts` - Updated to use safe type export
+
+**Files Removed:**
+- `packages/supabase/app-router-stub.d.ts` - Removed (attempted solution with linting errors, not needed)
 
 **Approach:**
 We attempted multiple strategies to fix the AppRouter type inference issues caused by `@ts-nocheck` files. The final approach acknowledges the limitation and documents it.
