@@ -253,8 +253,8 @@ catalogs:
       specifier: ~5.9.3
       version: 5.9.3
     zod:
-      specifier: ~3.23.8
-      version: 3.23.8
+      specifier: ~4.1.13
+      version: 4.1.13
     zustand:
       specifier: ~5.0.2
       version: 5.0.9
@@ -407,7 +407,7 @@ importers:
         version: 11.7.2(typescript@5.9.3)
       '@unicornlove/ui':
         specifier: file:../../packages/ui
-        version: file:packages/ui(7110178f23ccfc9839ca820c2fa2f63a)
+        version: file:packages/ui(cf42c046bef98137738a933f5765fa1b)
       babel-plugin-module-resolver:
         specifier: 'catalog:'
         version: 4.1.0
@@ -606,7 +606,7 @@ importers:
         version: 11.7.2(@tanstack/react-query@5.90.11(react@19.2.0))(@trpc/client@11.7.2(@trpc/server@11.7.2(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.7.2(typescript@5.9.3))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       '@unicornlove/ui':
         specifier: file:../ui
-        version: file:packages/ui(763ee347a8bbba11400c2cc0fc1a12c8)
+        version: file:packages/ui(cf42c046bef98137738a933f5765fa1b)
       awesome-phonenumber:
         specifier: 'catalog:'
         version: 7.6.0
@@ -720,7 +720,7 @@ importers:
         version: 1.138.6(react-dom@19.2.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
       zod:
         specifier: 'catalog:'
-        version: 3.23.8
+        version: 4.1.13
       zustand:
         specifier: 'catalog:'
         version: 5.0.9(@types/react@19.2.7)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0))
@@ -748,7 +748,7 @@ importers:
         version: 7.6.0
       zod:
         specifier: 'catalog:'
-        version: 3.23.8
+        version: 4.1.13
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
@@ -782,7 +782,7 @@ importers:
         version: 5.17.0
       zod:
         specifier: 'catalog:'
-        version: 3.23.8
+        version: 4.1.13
     devDependencies:
       '@types/pg':
         specifier: ^8.15.5
@@ -807,7 +807,7 @@ importers:
     dependencies:
       zod:
         specifier: 'catalog:'
-        version: 3.23.8
+        version: 4.1.13
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
@@ -10052,11 +10052,11 @@ packages:
     peerDependencies:
       zod: ^3.25 || ^4
 
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
-
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
+  zod@4.1.13:
+    resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
 
   zustand@5.0.9:
     resolution: {integrity: sha512-ALBtUj0AfjJt3uNRQoL1tL2tMvj6Gp/6e39dnfT6uzpelGru8v1tPOGBzayOWbPJvujM8JojDk3E1LxeFisBNg==}
@@ -11140,13 +11140,6 @@ snapshots:
       '@dnd-kit/core': 6.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@dnd-kit/utilities': 3.2.2(react@19.1.0)
       react: 19.1.0
-      tslib: 2.8.1
-
-  '@dnd-kit/sortable@10.0.0(@dnd-kit/core@6.3.1(react-dom@19.1.0(react@19.2.0))(react@19.2.0))(react@19.2.0)':
-    dependencies:
-      '@dnd-kit/core': 6.3.1(react-dom@19.1.0(react@19.2.0))(react@19.2.0)
-      '@dnd-kit/utilities': 3.2.2(react@19.2.0)
-      react: 19.2.0
       tslib: 2.8.1
 
   '@dnd-kit/sortable@10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)':
@@ -16459,19 +16452,12 @@ snapshots:
       react-hook-form: 7.63.0(react@19.1.0)
       zod: 3.25.76
 
-  '@ts-react/form@1.6.4(@hookform/resolvers@3.1.1(react-hook-form@7.67.0(react@19.2.0)))(react-hook-form@7.67.0(react@19.2.0))(react@19.2.0)(zod@3.23.8)':
+  '@ts-react/form@1.6.4(@hookform/resolvers@3.1.1(react-hook-form@7.67.0(react@19.2.0)))(react-hook-form@7.67.0(react@19.2.0))(react@19.2.0)(zod@4.1.13)':
     dependencies:
       '@hookform/resolvers': 3.1.1(react-hook-form@7.67.0(react@19.2.0))
       react: 19.2.0
       react-hook-form: 7.67.0(react@19.2.0)
-      zod: 3.23.8
-
-  '@ts-react/form@1.6.4(@hookform/resolvers@3.1.1(react-hook-form@7.67.0(react@19.2.0)))(react-hook-form@7.67.0(react@19.2.0))(react@19.2.0)(zod@3.25.76)':
-    dependencies:
-      '@hookform/resolvers': 3.1.1(react-hook-form@7.67.0(react@19.2.0))
-      react: 19.2.0
-      react-hook-form: 7.67.0(react@19.2.0)
-      zod: 3.25.76
+      zod: 4.1.13
 
   '@tsconfig/node10@1.0.12':
     optional: true
@@ -16733,7 +16719,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@unicornlove/ui@file:packages/ui(7110178f23ccfc9839ca820c2fa2f63a)':
+  '@unicornlove/ui@file:packages/ui(cf42c046bef98137738a933f5765fa1b)':
     dependencies:
       '@dnd-kit/core': 6.3.1(react-dom@19.1.0(react@19.2.0))(react@19.2.0)
       '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
@@ -16754,7 +16740,7 @@ snapshots:
       '@tiptap/pm': 2.27.1
       '@tiptap/react': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)(react-dom@19.1.0(react@19.2.0))(react@19.2.0)
       '@tiptap/starter-kit': 2.27.1
-      '@ts-react/form': 1.6.4(@hookform/resolvers@3.1.1(react-hook-form@7.67.0(react@19.2.0)))(react-hook-form@7.67.0(react@19.2.0))(react@19.2.0)(zod@3.25.76)
+      '@ts-react/form': 1.6.4(@hookform/resolvers@3.1.1(react-hook-form@7.67.0(react@19.2.0)))(react-hook-form@7.67.0(react@19.2.0))(react@19.2.0)(zod@4.1.13)
       awesome-phonenumber: 7.5.0
       expo-router: 6.0.15(978934f7c019155d54f59a0b9c174c05)
       moti: 0.25.4(react-dom@19.1.0(react@19.2.0))(react-native-reanimated@4.1.5(@babel/core@7.28.5)(react-native-worklets@0.6.0(@babel/core@7.28.5)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react@19.2.0)
@@ -16764,63 +16750,9 @@ snapshots:
       react-hook-form: 7.67.0(react@19.2.0)
       react-native-reanimated: 4.1.5(@babel/core@7.28.5)(react-native-worklets@0.6.0(@babel/core@7.28.5)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
       tamagui: 1.138.6(react-dom@19.2.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      zod: 3.25.76
+      zod: 4.1.13
     optionalDependencies:
       expo: 54.0.25(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.15)(graphql@16.12.0)(react-native-webview@13.15.0(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      react-native: 0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0)
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@expo/metro-runtime'
-      - '@react-native-masked-view/masked-view'
-      - '@react-navigation/drawer'
-      - '@testing-library/react-native'
-      - '@types/react'
-      - '@types/react-dom'
-      - expo-constants
-      - expo-linking
-      - react-native-gesture-handler
-      - react-native-safe-area-context
-      - react-native-screens
-      - react-native-svg
-      - react-native-web
-      - react-native-worklets
-      - react-server-dom-webpack
-      - supports-color
-
-  '@unicornlove/ui@file:packages/ui(763ee347a8bbba11400c2cc0fc1a12c8)':
-    dependencies:
-      '@dnd-kit/core': 6.3.1(react-dom@19.1.0(react@19.2.0))(react@19.2.0)
-      '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.1.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
-      '@dnd-kit/utilities': 3.2.2(react@19.2.0)
-      '@hookform/resolvers': 3.1.1(react-hook-form@7.67.0(react@19.2.0))
-      '@tamagui/animations-moti': 1.138.6(react-dom@19.1.0(react@19.2.0))(react-native-reanimated@4.1.5(@babel/core@7.28.5)(react-native-worklets@0.6.0(@babel/core@7.28.5)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tamagui/animations-react-native': 1.138.6(react-dom@19.1.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tamagui/core': 1.138.6(react-dom@19.2.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tamagui/font-inter': 1.138.6(react-dom@19.1.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tamagui/helpers-icon': 1.138.6(react-dom@19.1.0(react@19.2.0))(react-native-svg@15.15.1(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tamagui/lucide-icons': 1.138.6(react-dom@19.1.0(react@19.2.0))(react-native-svg@15.15.1(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tamagui/theme-builder': 1.138.6(react-dom@19.1.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tamagui/toast': 1.138.6(react-dom@19.1.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      '@tanstack/react-table': 8.20.6(react-dom@19.1.0(react@19.2.0))(react@19.2.0)
-      '@tiptap/core': 2.27.1(@tiptap/pm@2.27.1)
-      '@tiptap/extension-placeholder': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)
-      '@tiptap/extension-underline': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))
-      '@tiptap/pm': 2.27.1
-      '@tiptap/react': 2.27.1(@tiptap/core@2.27.1(@tiptap/pm@2.27.1))(@tiptap/pm@2.27.1)(react-dom@19.1.0(react@19.2.0))(react@19.2.0)
-      '@tiptap/starter-kit': 2.27.1
-      '@ts-react/form': 1.6.4(@hookform/resolvers@3.1.1(react-hook-form@7.67.0(react@19.2.0)))(react-hook-form@7.67.0(react@19.2.0))(react@19.2.0)(zod@3.23.8)
-      awesome-phonenumber: 7.5.0
-      expo-router: 6.0.15(978934f7c019155d54f59a0b9c174c05)
-      moti: 0.25.4(react-dom@19.1.0(react@19.2.0))(react-native-reanimated@4.1.5(@babel/core@7.28.5)(react-native-worklets@0.6.0(@babel/core@7.28.5)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react@19.2.0)
-      react: 19.2.0
-      react-dom: 19.1.0(react@19.2.0)
-      react-dropzone: 14.3.8(react@19.2.0)
-      react-hook-form: 7.67.0(react@19.2.0)
-      react-native-reanimated: 4.1.5(@babel/core@7.28.5)(react-native-worklets@0.6.0(@babel/core@7.28.5)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      tamagui: 1.138.6(react-dom@19.2.0(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
-      zod: 3.23.8
-    optionalDependencies:
-      expo: 54.0.25(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.15)(graphql@16.12.0)(react-native-webview@13.16.0(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0))(react@19.2.0)
       react-native: 0.81.5(@babel/core@7.28.5)(@types/react@19.2.7)(react@19.2.0)
     transitivePeerDependencies:
       - '@babel/core'
@@ -23591,9 +23523,9 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  zod@3.23.8: {}
-
   zod@3.25.76: {}
+
+  zod@4.1.13: {}
 
   zustand@5.0.9(@types/react@19.2.7)(react@19.2.0)(use-sync-external-store@1.6.0(react@19.2.0)):
     optionalDependencies:
