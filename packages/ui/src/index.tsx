@@ -53,6 +53,7 @@ export type { ShorthandViewStyleProps, ShorthandTextStyleProps } from 'tamagui'
 export { TamaguiProvider } from 'tamagui'
 
 export { Anchor } from 'tamagui'
+export { Card } from 'tamagui'
 export { EnsureFlexed } from 'tamagui'
 export { Fieldset } from 'tamagui'
 export { H1, H2, H3, H4, H5, H6 } from 'tamagui'

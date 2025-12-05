@@ -130,7 +130,7 @@ echo "════════════════════════�
 echo "📋 Step 3: Seeding Production Database"
 echo "═══════════════════════════════════════"
 
-if pnpm env-prod pnpm --filter @app/supabase seed; then
+if pnpm env-prod pnpm --filter @scf/supabase seed; then
     echo -e "${GREEN}✅ Database seeded successfully${NC}"
 else
     echo -e "${RED}❌ Database seeding failed${NC}"
@@ -143,7 +143,7 @@ echo "════════════════════════�
 echo "📋 Step 4: Deploying Edge Functions"
 echo "═══════════════════════════════════════"
 
-cd packages/supabase
+cd packages/scf-supabase
 
 echo ""
 echo "Deploying tRPC Router..."

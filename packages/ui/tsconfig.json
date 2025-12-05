@@ -3,6 +3,7 @@
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationMap": false,
+    "emitDeclarationOnly": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
@@ -15,7 +16,7 @@
     "resolveJsonModule": true,
     "rootDir": "./src",
     "skipLibCheck": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "strict": false,
     "target": "ES2020"
   },

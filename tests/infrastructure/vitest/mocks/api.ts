@@ -93,6 +93,6 @@ const mockApi = {
   },
 };
 
-vi.mock('@app/core/utils/api', () => ({
+vi.mock('@scf/core/utils/api', () => ({
   api: mockApi,
 }));

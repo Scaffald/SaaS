@@ -1,0 +1,74 @@
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { api } from '@scf/core/utils/api'
+import type { AppRouter } from '@scf/supabase/client-types'
+import { Button, SkeletonCard, Text, YStack } from '@unicornlove/ui'
+import type { inferRouterOutputs } from '@trpc/server'
+import { useRouter } from 'expo-router'
+
+type ApplicationRecord = NonNullable<
+  inferRouterOutputs<AppRouter>['applications']['getUserApplications']
+>[number]
+
+export function InquiryOverviewWidget() {
+  const router = useRouter()
+  const { data, isLoading } = api.applications.getUserApplications.useQuery(
+    { status: 'inquired', limit: 5, offset: 0 },
+    { refetchOnMount: true }
+  )
+
+  if (isLoading) {
+    return <SkeletonCard variant="profile" />
+  }
+
+  if (!data || data.length === 0) {
+    return null
+  }
+
+  const entries = data.slice(0, 3)
+
+  return (
+    <YStack padding="$4" backgroundColor="$color2" borderRadius="$4" gap="$3">
+      <Text fontWeight="600" fontSize="$5">
+        Negotiations
+      </Text>
+      <Text color="$color11">
+        {data.length === 1
+          ? 'You have 1 active inquiry.'
+          : `You have ${data.length} active inquiries.`}
+      </Text>
+      {entries.map((application: ApplicationRecord) => (
+        <YStack
+          key={application.id}
+          padding="$3"
+          gap="$2"
+          backgroundColor="$background"
+          borderRadius="$3"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
+          <Text fontWeight="600" fontSize="$4">
+            {application.job?.title ?? 'Role'}
+          </Text>
+          <Text fontSize="$2" color="$color11">
+            {application.job?.location ?? 'Location TBD'}
+          </Text>
+          <Button
+            size="$3"
+            onPress={() =>
+              router.push(
+                buildPath(ROUTES.DASHBOARD.APPLICATIONS.INQUIRY, { applicationId: application.id })
+              )
+            }
+          >
+            View Inquiry
+          </Button>
+        </YStack>
+      ))}
+      {data.length > entries.length && (
+        <Text fontSize="$2" color="$color11">
+          {data.length - entries.length} more in progress
+        </Text>
+      )}
+    </YStack>
+  )
+}

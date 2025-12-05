@@ -68,7 +68,7 @@ BUCKET_NAME="${AWS_S3_BUCKET:-scaffald-app-$BUCKET_SUFFIX}"
 DISTRIBUTION_ID="${AWS_CLOUDFRONT_DISTRIBUTION_ID}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-BUILD_DIR="$PROJECT_ROOT/apps/expo/dist"
+BUILD_DIR="$PROJECT_ROOT/apps/scaffald/dist"
 VERSION_BUMPED=false
 
 bump_version_if_needed() {
@@ -125,7 +125,7 @@ build_web_app() {
         echo -e "${YELLOW}⚠️  Environment file not found at $env_file${NC}"
     fi
 
-    pnpm --filter expo-app web:build
+    pnpm --filter scaffald-app web:build
 
     echo "/* /index.html 200" > "$BUILD_DIR/_redirects"
     cat > "$BUILD_DIR/_headers" <<'EOF'
@@ -182,7 +182,7 @@ echo ""
 if [ "$FORCE_REBUILD" = true ]; then
     echo -e "${YELLOW}Forcing fresh $ENV build...${NC}"
     rm -rf "$PROJECT_ROOT/.expo" \
-        "$PROJECT_ROOT/apps/expo/.expo" \
+        "$PROJECT_ROOT/apps/scaffald/.expo" \
         "$BUILD_DIR"
     build_web_app "$ENV"
 fi
@@ -269,8 +269,8 @@ if [ ! -d "$BUILD_DIR" ]; then
     echo -e "${BLUE}Building workspace packages...${NC}"
     cd "$PROJECT_ROOT"
     pnpm --filter @unicornlove/ui build
-    pnpm --filter @app/core build
-    pnpm --filter @app/schemas build
+    pnpm --filter @scf/core build
+    pnpm --filter @scf/schemas build
     
     # Build web app
     echo -e "${BLUE}Building web application...${NC}"

@@ -36,24 +36,24 @@ export default defineConfig({
         replacement: reactNativeMockPath,
       },
       {
-        find: "@app/core",
-        replacement: resolve(workspaceRoot, "packages/core"),
+        find: "@scf/core",
+        replacement: resolve(workspaceRoot, "packages/scf-core"),
       },
       {
         find: "@unicornlove/ui",
         replacement: resolve(workspaceRoot, "packages/ui/src"),
       },
       {
-        find: "@app/supabase",
-        replacement: resolve(workspaceRoot, "packages/supabase"),
+        find: "@scf/supabase",
+        replacement: resolve(workspaceRoot, "packages/scf-supabase"),
       },
       {
-        find: "@app/schemas",
-        replacement: resolve(workspaceRoot, "packages/schemas/src"),
+        find: "@scf/schemas",
+        replacement: resolve(workspaceRoot, "packages/scf-schemas/src"),
       },
       {
-        find: "@app/trpc",
-        replacement: resolve(workspaceRoot, "packages/trpc/src"),
+        find: "@scf/trpc",
+        replacement: resolve(workspaceRoot, "packages/scf-trpc/src"),
       },
       {
         find: "@testing-library/react-native",
@@ -84,7 +84,7 @@ export default defineConfig({
         ),
       },
       {
-        find: "@app/core/constants/routes",
+        find: "@scf/core/constants/routes",
         replacement: resolve(
           workspaceRoot,
           "tests/infrastructure/vitest/mocks/routes.ts",
@@ -134,8 +134,8 @@ export default defineConfig({
       "**/dist/**",
       "**/.{idea,git,cache,output,temp}/**",
       // Exclude Deno tests - they run separately with Deno
-      "packages/supabase/tests/routers/**",
-      "packages/supabase/tests/**/*.test.ts",
+      "packages/scf-supabase/tests/routers/**",
+      "packages/scf-supabase/tests/**/*.test.ts",
     ],
     include: ["packages/**/*.{test,spec}.{ts,tsx}"],
     // Limit concurrent tests to reduce memory pressure

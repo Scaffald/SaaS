@@ -18,7 +18,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const ROOT_DIR = path.resolve(__dirname, '..')
-const EXPO_DIR = path.join(ROOT_DIR, 'apps', 'expo')
+const EXPO_DIR = path.join(ROOT_DIR, 'apps', 'scaffald')
 
 // ANSI color codes for output
 const colors = {
@@ -226,7 +226,7 @@ function updateGitignore() {
   const gitignorePath = path.join(EXPO_DIR, '.gitignore')
 
   if (!fs.existsSync(gitignorePath)) {
-    warning('.gitignore not found in apps/expo')
+    warning('.gitignore not found in apps/scaffald')
     return
   }
 

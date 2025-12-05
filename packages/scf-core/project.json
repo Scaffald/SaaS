@@ -1,0 +1,53 @@
+{
+  "name": "scf-core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/scf-core",
+  "projectType": "library",
+  "tags": ["scope:core", "type:feature"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --build",
+        "cwd": "packages/scf-core"
+      },
+      "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"]
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "config": "packages/scf-core/vitest.config.ts",
+        "passWithNoTests": true
+      },
+      "outputs": ["{workspaceRoot}/tests/reports/coverage/scf-core"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint .",
+        "cwd": "packages/scf-core"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint --write .",
+        "cwd": "packages/scf-core"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "packages/scf-core"
+      }
+    },
+    "watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --watch",
+        "cwd": "packages/scf-core"
+      }
+    }
+  }
+}

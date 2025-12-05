@@ -1,0 +1,38 @@
+{
+  "name": "scf-trpc",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/scf-trpc/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --build",
+        "cwd": "packages/scf-trpc"
+      },
+      "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint .",
+        "cwd": "packages/scf-trpc"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint --write .",
+        "cwd": "packages/scf-trpc"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "packages/scf-trpc"
+      }
+    }
+  }
+}

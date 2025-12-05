@@ -14,4 +14,3 @@ export interface CheckboxProps {
 declare const Checkbox: ComponentType<CheckboxProps>
 
 export { Checkbox }
-export type { CheckboxProps }

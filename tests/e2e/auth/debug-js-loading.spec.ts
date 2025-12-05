@@ -1,4 +1,4 @@
-import { ROUTES } from '@app/core/constants/routes'
+import { ROUTES } from '@scf/core/constants/routes'
 import { expect, test } from '@playwright/test'
 
 const EXPO_BASE_URL = 'http://localhost:8081'

@@ -1,0 +1,43 @@
+import { ROUTES, buildPath } from '@scf/core/constants/routes'
+import { useToastController } from '@tamagui/toast'
+import { useRouter } from 'expo-router'
+import { ScrollView } from 'react-native'
+import { Button, Separator, Text, YStack } from '@unicornlove/ui'
+
+import { WorkLogForm } from '../components/WorkLogForm'
+
+export function WorkLogCreateScreen() {
+  const router = useRouter()
+  const toast = useToastController()
+
+  return (
+    <ScrollView contentInsetAdjustmentBehavior="automatic">
+      <YStack padding="$4" gap="$4">
+        <YStack gap="$1">
+          <Text fontSize="$7" fontWeight="700">
+            Record work log
+          </Text>
+          <Text color="$color10">
+            Document the work performed today, capture time entries, tasks, and skills used.
+          </Text>
+        </YStack>
+
+        <Separator />
+
+        <WorkLogForm
+          submitLabel="Save Work Log"
+          onSubmitSuccess={(workLogId) => {
+            toast.show('Work log saved', {
+              message: 'You can review or edit this entry at any time.',
+            })
+            router.replace(buildPath(ROUTES.DASHBOARD.WORK_LOGS.DETAIL, { workLogId }))
+          }}
+        />
+
+        <Button size="$3" variant="outlined" onPress={() => router.back()}>
+          Cancel
+        </Button>
+      </YStack>
+    </ScrollView>
+  )
+}

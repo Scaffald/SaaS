@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const projectRoot = path.resolve(__dirname, '..')
-const expoPackagePath = path.join(projectRoot, 'apps/expo/package.json')
+const expoPackagePath = path.join(projectRoot, 'apps/scaffald/package.json')
 
 const SUPPORTED_LEVELS = new Set(['major', 'minor', 'patch'])
 
@@ -71,9 +71,9 @@ try {
 
   packageJson.version = nextVersion
   writeFileSync(expoPackagePath, `${JSON.stringify(packageJson, null, 2)}\n`)
-  console.log(`[version] Bumped expo-app ${level} version: ${currentVersion} → ${nextVersion}`)
+  console.log(`[version] Bumped scaffald-app ${level} version: ${currentVersion} → ${nextVersion}`)
 } catch (error) {
-  console.error('[version] Failed to update expo-app version')
+  console.error('[version] Failed to update scaffald-app version')
   console.error(error instanceof Error ? error.message : error)
   process.exit(1)
 }

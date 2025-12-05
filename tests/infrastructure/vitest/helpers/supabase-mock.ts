@@ -149,7 +149,7 @@ export function createMockSchemaBuilder(options: MockQueryBuilderOptions = {}) {
  * const client = createMockSupabaseClient()
  *
  * // Use in tests
- * vi.mock('@app/core/utils/supabase/client', () => ({
+ * vi.mock('@scf/core/utils/supabase/client', () => ({
  *   supabase: client,
  * }))
  * ```

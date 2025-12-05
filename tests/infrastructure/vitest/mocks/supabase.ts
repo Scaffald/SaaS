@@ -95,7 +95,7 @@ const mockSupabaseClient = {
 };
 
 // Mock the Supabase client module
-vi.mock('@app/core/utils/supabase/client', () => ({
+vi.mock('@scf/core/utils/supabase/client', () => ({
   supabase: mockSupabaseClient,
 }));
 

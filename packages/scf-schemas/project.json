@@ -1,0 +1,46 @@
+{
+  "name": "scf-schemas",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/scf-schemas/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --build",
+        "cwd": "packages/scf-schemas"
+      },
+      "outputs": ["{projectRoot}/tsconfig.tsbuildinfo"]
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "config": "packages/scf-schemas/vitest.config.ts",
+        "passWithNoTests": true
+      },
+      "outputs": ["{workspaceRoot}/tests/reports/coverage/scf-schemas"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint .",
+        "cwd": "packages/scf-schemas"
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "biome lint --write .",
+        "cwd": "packages/scf-schemas"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "packages/scf-schemas"
+      }
+    }
+  }
+}

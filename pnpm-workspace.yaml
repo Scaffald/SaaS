@@ -1,9 +1,9 @@
 packages:
   - apps/*
-  - packages/core
-  - packages/supabase
-  - packages/schemas
-  - packages/trpc
+  - packages/scf-core
+  - packages/scf-supabase
+  - packages/scf-schemas
+  - packages/scf-trpc
   - packages/ui
 
 catalog:

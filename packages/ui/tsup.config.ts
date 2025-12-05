@@ -7,13 +7,7 @@ export default defineConfig({
     "types/phone": "src/types/phone.ts",
   },
   format: ["esm", "cjs"],
-  dts: {
-    sourcemap: false, // Disable sourcemaps for DTS to avoid sourcemap resolution errors
-    compilerOptions: {
-      skipLibCheck: true,
-      declarationMap: false,
-    },
-  }, // Type declarations enabled - using manual .d.ts files for complex components
+  dts: false, // Using tsc for declaration generation instead
   splitting: false,
   sourcemap: true,
   clean: true,
@@ -29,9 +23,7 @@ export default defineConfig({
     // Removed tsconfigRaw to avoid conflicts with tsup's tsconfig option
   },
   onSuccess: async () => {
-    console.log(
-      "✅ Build complete - type declarations generated",
-    );
+    console.log("✅ Build complete - type declarations generated");
   },
   loader: {
     ".js": "jsx",
