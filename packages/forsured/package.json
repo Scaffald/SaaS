@@ -1,0 +1,44 @@
+{
+  "name": "@unicornlove/forsured",
+  "version": "0.0.1",
+  "description": "Forsured domain schemas and types for insurance compliance platform",
+  "private": true,
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@unicornlove/insurance": "workspace:*",
+    "@unicornlove/compliance": "workspace:*",
+    "@unicornlove/tasks": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "tsup": "^8.0.0",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "license": "MIT"
+}

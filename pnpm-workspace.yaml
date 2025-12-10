@@ -5,6 +5,11 @@ packages:
   - packages/scf-schemas
   - packages/scf-trpc
   - packages/ui
+  # Forsured packages (insurance compliance platform)
+  - packages/forsured
+  - packages/insurance
+  - packages/compliance
+  - packages/tasks
 
 catalog:
   '@babel/core': ~7.28.5
