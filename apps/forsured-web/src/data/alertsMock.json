@@ -1,0 +1,63 @@
+{
+  "alerts": [
+    {
+      "id": "1",
+      "type": "expiry",
+      "severity": "high",
+      "title": "Insurance Policy Expiring Soon",
+      "message": "Golden Gate Electrical - Professional Liability policy expired on Jan 15, 2024. Renewal required immediately.",
+      "subcontractorId": "2",
+      "projectId": "proj-1",
+      "dueDate": "2024-01-18T00:00:00.000Z",
+      "isRead": false
+    },
+    {
+      "id": "2",
+      "type": "missing",
+      "severity": "critical",
+      "title": "Missing Documentation",
+      "message": "West Coast Plumbing has no valid insurance certificates on file. Work cannot proceed without compliance.",
+      "subcontractorId": "3",
+      "projectId": "proj-3",
+      "isRead": false
+    },
+    {
+      "id": "3",
+      "type": "regulatory",
+      "severity": "medium",
+      "title": "New California Compliance Requirement",
+      "message": "Updated OSHA safety certification requirements for construction projects effective February 1, 2025. All active subcontractors must complete training.",
+      "isRead": true
+    },
+    {
+      "id": "4",
+      "type": "expiry",
+      "severity": "medium",
+      "title": "License Renewal Due",
+      "message": "Bay Area Roofing Specialists - CA C-39 Roofing license renewal due in 45 days (expires Dec 31, 2025)",
+      "subcontractorId": "4",
+      "dueDate": "2025-11-15T00:00:00.000Z",
+      "isRead": false
+    },
+    {
+      "id": "5",
+      "type": "risk",
+      "severity": "high",
+      "title": "Compliance Score Drop",
+      "message": "Sierra HVAC Systems compliance score dropped to 65% due to pending C-20 license verification and expiring insurance coverage",
+      "subcontractorId": "5",
+      "isRead": false
+    },
+    {
+      "id": "6",
+      "type": "expiry",
+      "severity": "high",
+      "title": "Workers Comp Certificate Expiring",
+      "message": "Pacific Builders LLC - Workers Compensation certificate expires November 30, 2024. Renewal documentation needed.",
+      "subcontractorId": "1",
+      "projectId": "proj-1",
+      "dueDate": "2024-11-20T00:00:00.000Z",
+      "isRead": false
+    }
+  ]
+}

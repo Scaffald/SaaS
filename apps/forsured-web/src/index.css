@@ -1,0 +1,438 @@
+/* Base styles - Tailwind removed, using Tamagui */
+:root,
+  [data-theme='light'] {
+    --color-blue-100: 240 247 255;
+    --color-blue-200: 204 229 255;
+    --color-blue-300: 153 204 255;
+    --color-blue-400: 77 166 255;
+    --color-blue-500: 1 102 255;
+    --color-blue-600: 1 82 204;
+    --color-blue-700: 1 61 153;
+    --color-blue-800: 0 41 102;
+    --color-blue-900: 0 20 51;
+
+    --color-primary-100: 240 247 255;
+    --color-primary-200: 204 229 255;
+    --color-primary-300: 153 204 255;
+    --color-primary-400: 77 166 255;
+    --color-primary-500: 1 102 255;
+    --color-primary-600: 1 82 204;
+    --color-primary-700: 1 61 153;
+    --color-primary-800: 0 41 102;
+    --color-primary-900: 0 20 51;
+
+    --color-orange-100: 255 248 240;
+    --color-orange-200: 255 235 214;
+    --color-orange-300: 255 214 173;
+    --color-orange-400: 255 184 115;
+    --color-orange-500: 240 160 0;
+    --color-orange-600: 192 128 0;
+    --color-orange-700: 144 96 0;
+    --color-orange-800: 96 64 0;
+    --color-orange-900: 48 32 0;
+
+    --color-secondary-100: 255 248 240;
+    --color-secondary-200: 255 235 214;
+    --color-secondary-300: 255 214 173;
+    --color-secondary-400: 255 184 115;
+    --color-secondary-500: 240 160 0;
+    --color-secondary-600: 192 128 0;
+    --color-secondary-700: 144 96 0;
+    --color-secondary-800: 96 64 0;
+    --color-secondary-900: 48 32 0;
+
+    --color-yellow-100: 254 251 240;
+    --color-yellow-200: 252 245 204;
+    --color-yellow-300: 249 235 153;
+    --color-yellow-400: 245 220 77;
+    --color-yellow-500: 242 210 0;
+    --color-yellow-600: 194 168 0;
+    --color-yellow-700: 145 126 0;
+    --color-yellow-800: 97 84 0;
+    --color-yellow-900: 48 42 0;
+
+    --color-tertiary-100: 254 251 240;
+    --color-tertiary-200: 252 245 204;
+    --color-tertiary-300: 249 235 153;
+    --color-tertiary-400: 245 220 77;
+    --color-tertiary-500: 242 210 0;
+    --color-tertiary-600: 194 168 0;
+    --color-tertiary-700: 145 126 0;
+    --color-tertiary-800: 97 84 0;
+    --color-tertiary-900: 48 42 0;
+
+    --color-gray-100: 247 247 248;
+    --color-gray-200: 236 237 239;
+    --color-gray-300: 214 216 220;
+    --color-gray-400: 173 176 184;
+    --color-gray-500: 93 101 112;
+    --color-gray-600: 74 81 90;
+    --color-gray-700: 56 60 67;
+    --color-gray-800: 37 40 45;
+    --color-gray-900: 19 20 22;
+
+    --color-teal-100: 240 250 250;
+    --color-teal-200: 204 237 239;
+    --color-teal-300: 153 217 221;
+    --color-teal-400: 77 176 184;
+    --color-teal-500: 0 138 148;
+    --color-teal-600: 0 110 118;
+    --color-teal-700: 0 83 89;
+    --color-teal-800: 0 55 59;
+    --color-teal-900: 0 28 30;
+
+    --color-success-50: 240 253 244;
+    --color-success-100: 220 252 231;
+    --color-success-200: 187 247 208;
+    --color-success-300: 134 239 172;
+    --color-success-400: 74 222 128;
+    --color-success-500: 34 197 94;
+    --color-success-600: 22 163 74;
+    --color-success-700: 21 128 61;
+    --color-success-800: 22 101 52;
+    --color-success-900: 20 83 45;
+
+    --color-warning-50: 255 251 235;
+    --color-warning-100: 254 243 199;
+    --color-warning-200: 253 230 138;
+    --color-warning-300: 252 211 77;
+    --color-warning-400: 251 191 36;
+    --color-warning-500: 245 158 11;
+    --color-warning-600: 217 119 6;
+    --color-warning-700: 180 83 9;
+    --color-warning-800: 146 64 14;
+    --color-warning-900: 120 53 15;
+
+    --color-error-50: 254 242 242;
+    --color-error-100: 254 226 226;
+    --color-error-200: 254 202 202;
+    --color-error-300: 252 165 165;
+    --color-error-400: 248 113 113;
+    --color-error-500: 239 68 68;
+    --color-error-600: 220 38 38;
+    --color-error-700: 185 28 28;
+    --color-error-800: 153 27 27;
+    --color-error-900: 127 29 29;
+
+    --color-neutral-100: 247 247 248;
+    --color-neutral-200: 236 237 239;
+    --color-neutral-300: 214 216 220;
+    --color-neutral-400: 173 176 184;
+    --color-neutral-500: 93 101 112;
+    --color-neutral-600: 74 81 90;
+    --color-neutral-700: 56 60 67;
+    --color-neutral-800: 37 40 45;
+    --color-neutral-900: 19 20 22;
+
+    --color-bg-primary: 255 255 255;
+    --color-bg-secondary: 250 250 250;
+    --color-bg-tertiary: 244 244 245;
+
+    --color-surface: 255 255 255;
+    --color-surface-hover: 250 250 250;
+    --color-surface-active: 244 244 245;
+
+    --color-text-primary: 24 24 27;
+    --color-text-secondary: 82 82 91;
+    --color-text-tertiary: 161 161 170;
+    --color-text-inverse: 255 255 255;
+    --color-text-disabled: 212 212 216;
+
+    --color-border: 228 228 231;
+    --color-border-hover: 212 212 216;
+    --color-border-focus: 59 130 246;
+    --color-border-active: 37 99 235;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+
+  [data-theme='dark'] {
+    --color-primary-50: 23 37 84;
+    --color-primary-100: 30 58 138;
+    --color-primary-200: 30 64 175;
+    --color-primary-300: 29 78 216;
+    --color-primary-400: 96 165 250;
+    --color-primary-500: 96 165 250;
+    --color-primary-600: 147 197 253;
+    --color-primary-700: 191 219 254;
+    --color-primary-800: 219 234 254;
+    --color-primary-900: 239 246 255;
+    --color-primary-950: 248 250 252;
+
+    --color-secondary-50: 67 20 7;
+    --color-secondary-100: 124 45 18;
+    --color-secondary-200: 154 52 18;
+    --color-secondary-300: 194 65 12;
+    --color-secondary-400: 249 115 22;
+    --color-secondary-500: 251 146 60;
+    --color-secondary-600: 253 186 116;
+    --color-secondary-700: 254 215 170;
+    --color-secondary-800: 255 237 213;
+    --color-secondary-900: 255 247 237;
+    --color-secondary-950: 255 251 246;
+
+    --color-tertiary-50: 66 32 6;
+    --color-tertiary-100: 113 63 18;
+    --color-tertiary-200: 133 77 14;
+    --color-tertiary-300: 161 98 7;
+    --color-tertiary-400: 234 179 8;
+    --color-tertiary-500: 250 204 21;
+    --color-tertiary-600: 253 224 71;
+    --color-tertiary-700: 254 240 138;
+    --color-tertiary-800: 254 249 195;
+    --color-tertiary-900: 254 252 232;
+    --color-tertiary-950: 255 254 240;
+
+    --color-success-50: 20 83 45;
+    --color-success-100: 22 101 52;
+    --color-success-200: 21 128 61;
+    --color-success-300: 22 163 74;
+    --color-success-400: 74 222 128;
+    --color-success-500: 74 222 128;
+    --color-success-600: 134 239 172;
+    --color-success-700: 187 247 208;
+    --color-success-800: 220 252 231;
+    --color-success-900: 240 253 244;
+
+    --color-warning-50: 120 53 15;
+    --color-warning-100: 146 64 14;
+    --color-warning-200: 180 83 9;
+    --color-warning-300: 217 119 6;
+    --color-warning-400: 251 191 36;
+    --color-warning-500: 252 211 77;
+    --color-warning-600: 253 230 138;
+    --color-warning-700: 254 243 199;
+    --color-warning-800: 255 251 235;
+    --color-warning-900: 255 253 242;
+
+    --color-error-50: 127 29 29;
+    --color-error-100: 153 27 27;
+    --color-error-200: 185 28 28;
+    --color-error-300: 220 38 38;
+    --color-error-400: 248 113 113;
+    --color-error-500: 252 165 165;
+    --color-error-600: 254 202 202;
+    --color-error-700: 254 226 226;
+    --color-error-800: 254 242 242;
+    --color-error-900: 255 248 248;
+
+    --color-neutral-50: 24 24 27;
+    --color-neutral-100: 39 39 42;
+    --color-neutral-200: 63 63 70;
+    --color-neutral-300: 82 82 91;
+    --color-neutral-400: 113 113 122;
+    --color-neutral-500: 161 161 170;
+    --color-neutral-600: 212 212 216;
+    --color-neutral-700: 228 228 231;
+    --color-neutral-800: 244 244 245;
+    --color-neutral-900: 250 250 250;
+
+    --color-bg-primary: 15 23 42;
+    --color-bg-secondary: 24 24 27;
+    --color-bg-tertiary: 39 39 42;
+
+    --color-surface: 30 41 59;
+    --color-surface-hover: 51 65 85;
+    --color-surface-active: 71 85 105;
+
+    --color-text-primary: 250 250 250;
+    --color-text-secondary: 212 212 216;
+    --color-text-tertiary: 161 161 170;
+    --color-text-inverse: 15 23 42;
+    --color-text-disabled: 82 82 91;
+
+    --color-border: 63 63 70;
+    --color-border-hover: 82 82 91;
+    --color-border-focus: 96 165 250;
+    --color-border-active: 147 197 253;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+    --shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+    --shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+    --shadow-xl:
+      0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+  }
+
+  [data-theme='earth'] {
+    --color-blue-100: 240 246 250;
+    --color-blue-200: 214 231 242;
+    --color-blue-300: 173 206 227;
+    --color-blue-400: 120 170 204;
+    --color-blue-500: 71 133 179;
+    --color-blue-600: 57 106 143;
+    --color-blue-700: 43 80 107;
+    --color-blue-800: 29 53 71;
+    --color-blue-900: 14 27 36;
+
+    --color-primary-100: 240 246 250;
+    --color-primary-200: 214 231 242;
+    --color-primary-300: 173 206 227;
+    --color-primary-400: 120 170 204;
+    --color-primary-500: 71 133 179;
+    --color-primary-600: 57 106 143;
+    --color-primary-700: 43 80 107;
+    --color-primary-800: 29 53 71;
+    --color-primary-900: 14 27 36;
+
+    --color-orange-100: 252 246 240;
+    --color-orange-200: 246 229 213;
+    --color-orange-300: 235 199 171;
+    --color-orange-400: 218 157 116;
+    --color-orange-500: 191 117 69;
+    --color-orange-600: 153 94 55;
+    --color-orange-700: 115 70 41;
+    --color-orange-800: 77 47 28;
+    --color-orange-900: 38 23 14;
+
+    --color-secondary-100: 252 246 240;
+    --color-secondary-200: 246 229 213;
+    --color-secondary-300: 235 199 171;
+    --color-secondary-400: 218 157 116;
+    --color-secondary-500: 191 117 69;
+    --color-secondary-600: 153 94 55;
+    --color-secondary-700: 115 70 41;
+    --color-secondary-800: 77 47 28;
+    --color-secondary-900: 38 23 14;
+
+    --color-yellow-100: 253 250 240;
+    --color-yellow-200: 249 241 213;
+    --color-yellow-300: 241 223 166;
+    --color-yellow-400: 228 196 107;
+    --color-yellow-500: 204 162 52;
+    --color-yellow-600: 163 130 42;
+    --color-yellow-700: 122 97 31;
+    --color-yellow-800: 82 65 21;
+    --color-yellow-900: 41 32 10;
+
+    --color-tertiary-100: 253 250 240;
+    --color-tertiary-200: 249 241 213;
+    --color-tertiary-300: 241 223 166;
+    --color-tertiary-400: 228 196 107;
+    --color-tertiary-500: 204 162 52;
+    --color-tertiary-600: 163 130 42;
+    --color-tertiary-700: 122 97 31;
+    --color-tertiary-800: 82 65 21;
+    --color-tertiary-900: 41 32 10;
+
+    --color-success-50: 243 250 239;
+    --color-success-100: 225 243 219;
+    --color-success-200: 195 231 183;
+    --color-success-300: 156 215 137;
+    --color-success-400: 110 193 85;
+    --color-success-500: 76 170 54;
+    --color-success-600: 59 142 39;
+    --color-success-700: 49 111 33;
+    --color-success-800: 43 89 31;
+    --color-success-900: 38 73 29;
+
+    --color-warning-50: 255 252 242;
+    --color-warning-100: 254 246 220;
+    --color-warning-200: 253 232 176;
+    --color-warning-300: 251 211 122;
+    --color-warning-400: 247 181 72;
+    --color-warning-500: 240 154 37;
+    --color-warning-600: 223 127 22;
+    --color-warning-700: 186 99 18;
+    --color-warning-800: 151 79 21;
+    --color-warning-900: 123 65 20;
+
+    --color-error-50: 254 243 238;
+    --color-error-100: 253 227 217;
+    --color-error-200: 251 194 175;
+    --color-error-300: 247 151 125;
+    --color-error-400: 240 103 75;
+    --color-error-500: 229 70 42;
+    --color-error-600: 207 51 27;
+    --color-error-700: 173 39 23;
+    --color-error-800: 143 35 24;
+    --color-error-900: 118 33 24;
+
+    --color-gray-100: 249 246 242;
+    --color-gray-200: 239 233 224;
+    --color-gray-300: 223 212 196;
+    --color-gray-400: 194 178 155;
+    --color-gray-500: 143 125 101;
+    --color-gray-600: 114 100 81;
+    --color-gray-700: 86 75 61;
+    --color-gray-800: 57 50 40;
+    --color-gray-900: 29 25 20;
+
+    --color-teal-100: 244 249 245;
+    --color-teal-200: 222 238 227;
+    --color-teal-300: 184 218 193;
+    --color-teal-400: 132 188 149;
+    --color-teal-500: 82 142 102;
+    --color-teal-600: 66 114 82;
+    --color-teal-700: 49 85 61;
+    --color-teal-800: 33 57 41;
+    --color-teal-900: 16 28 20;
+
+    --color-neutral-100: 249 246 242;
+    --color-neutral-200: 239 233 224;
+    --color-neutral-300: 223 212 196;
+    --color-neutral-400: 194 178 155;
+    --color-neutral-500: 143 125 101;
+    --color-neutral-600: 114 100 81;
+    --color-neutral-700: 86 75 61;
+    --color-neutral-800: 57 50 40;
+    --color-neutral-900: 29 25 20;
+
+    --color-bg-primary: 252 251 249;
+    --color-bg-secondary: 248 246 243;
+    --color-bg-tertiary: 242 239 234;
+
+    --color-surface: 255 254 252;
+    --color-surface-hover: 248 246 243;
+    --color-surface-active: 242 239 234;
+
+    --color-text-primary: 54 43 36;
+    --color-text-secondary: 103 90 73;
+    --color-text-tertiary: 153 137 117;
+    --color-text-inverse: 252 251 249;
+    --color-text-disabled: 186 172 153;
+
+    --color-border: 221 212 199;
+    --color-border-hover: 186 172 153;
+    --color-border-focus: 184 97 54;
+    --color-border-active: 155 77 44;
+
+    --shadow-sm: 0 1px 2px 0 rgb(59 28 16 / 0.08);
+    --shadow-md:
+      0 4px 6px -1px rgb(59 28 16 / 0.12), 0 2px 4px -2px rgb(59 28 16 / 0.08);
+    --shadow-lg:
+      0 10px 15px -3px rgb(59 28 16 / 0.15), 0 4px 6px -4px rgb(59 28 16 / 0.1);
+    --shadow-xl:
+      0 20px 25px -5px rgb(59 28 16 / 0.18),
+      0 8px 10px -6px rgb(59 28 16 / 0.12);
+  }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: rgb(var(--color-bg-primary));
+  color: rgb(var(--color-text-primary));
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Rokkitt', Georgia, serif;
+}
+
+button {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+}
