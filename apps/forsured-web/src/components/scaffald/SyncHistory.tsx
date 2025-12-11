@@ -1,10 +1,9 @@
 /**
  * SyncHistory - Sync history table using Tamagui
  */
-import React from 'react';
 import { YStack, Text } from '@unicornlove/ui';
-import { DataTable } from '@unicornlove/ui';
 import { Chip as Badge } from '@unicornlove/ui';
+import { DataTable } from '../Common/DataTable';
 import type { ColumnDef } from '@tanstack/react-table';
 
 interface SyncLogEntry {
