@@ -395,8 +395,11 @@ test.describe('Admin User Flow', () => {
     // Click Create Invitation button
     await page.click('button:has-text("Create Invitation")');
 
-    // Verify form appears (InvitationForm component)
-    await expect(page.locator('form')).toBeVisible();
+    // Verify form appears (InvitationForm component uses YStack as="form")
+    // The form fields should be visible: Email, Expires At, Max Uses
+    await expect(page.getByText('Email (Optional)')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Expires At')).toBeVisible();
+    await expect(page.getByText('Max Uses')).toBeVisible();
 
     // Fill out the form
     const emailInput = page.locator('input[type="email"]');
@@ -503,6 +506,8 @@ test.describe('Admin User Flow', () => {
 
   test('Admin sidebar navigation works correctly', async ({ page }) => {
     // Verify all sidebar links are present and work
+    // Note: Tamagui's as="nav" may not render actual <nav> element on web,
+    // so we use link text directly with getByRole or href-based selector
     const sidebarLinks = [
       { label: 'Dashboard', url: /admin\/dashboard/ },
       { label: 'Users', url: /admin\/users/ },
@@ -512,7 +517,8 @@ test.describe('Admin User Flow', () => {
     ];
 
     for (const link of sidebarLinks) {
-      await page.click(`nav >> text=${link.label}`);
+      // Use role-based selector for links - more reliable across frameworks
+      await page.getByRole('link', { name: link.label }).click();
       await expect(page).toHaveURL(link.url);
     }
   });

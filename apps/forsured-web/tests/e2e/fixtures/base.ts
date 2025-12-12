@@ -43,6 +43,8 @@ interface BaseFixtures {
   assertNoErrors: () => void;
   getConsoleLogs: () => ConsoleMessage[];
   getNetworkLogs: () => NetworkLog[];
+  getConsoleErrors: () => ConsoleMessage[];
+  getNetworkErrors: () => NetworkLog[];
   loginAs: typeof loginAs;
   setupAuthAs: typeof setupAuthAs;
   testUsers: typeof TEST_USERS;
@@ -222,6 +224,34 @@ export const test = baseTest.extend<BaseFixtures>({
   getNetworkLogs: async ({ page }, use) => {
     const getFn = () => {
       return (page as any)._networkLogs || [];
+    };
+    await use(getFn);
+  },
+
+  /**
+   * Get only console errors (filtered from all logs)
+   */
+  getConsoleErrors: async ({ page }, use) => {
+    const getFn = (): ConsoleMessage[] => {
+      const consoleLogs: ConsoleMessage[] = (page as any)._consoleLogs || [];
+      return consoleLogs.filter(msg => {
+        if (msg.type !== 'error' && msg.type !== 'EXCEPTION') return false;
+        if (msg.text.includes('React DevTools')) return false;
+        if (msg.text.includes('[vite]') || msg.text.includes('HMR')) return false;
+        if (msg.text.includes('supabase') && msg.text.includes('not configured')) return false;
+        return true;
+      });
+    };
+    await use(getFn);
+  },
+
+  /**
+   * Get only network errors (4xx/5xx filtered from all logs)
+   */
+  getNetworkErrors: async ({ page }, use) => {
+    const getFn = (): NetworkLog[] => {
+      const networkLogs: NetworkLog[] = (page as any)._networkLogs || [];
+      return networkLogs.filter(log => log.isError);
     };
     await use(getFn);
   },
