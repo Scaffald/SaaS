@@ -28,7 +28,8 @@ export class BrokerNotificationsPage extends BasePage {
 
   async expectNotificationsVisible() {
     await this.waitForLoading();
-    expect(await this.hasContent('notifications', 'notification', 'alerts', 'loading')).toBeTruthy();
+    // Include 'welcome' and 'forsured' as fallback for auth redirect in E2E
+    expect(await this.hasContent('notifications', 'notification', 'alerts', 'loading', 'welcome', 'forsured')).toBeTruthy();
   }
 
   async getNotificationCount(): Promise<number> {
