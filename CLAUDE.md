@@ -45,38 +45,49 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Structure
 
 ```
-SCF-Scaffald/
+UNI-Construct/
 ├── apps/
-│   └── expo/              # React Native app (primary, includes Expo Web)
+│   ├── scaffald/              # Expo app (iOS, Android, Web) - port 8081
+│   └── forsured-web/          # Vite web app for Forsured - port 5173
 ├── packages/
-│   ├── core/              # Shared business logic and features
-│   │   └── features/      # Route-based feature organization
-│   ├── ui/                # Cross-platform UI components
-│   ├── supabase/          # Database, migrations, Edge Functions
-│   └── fonts/             # Font and icon management
-├── .cursor/rules/         # Cursor AI development rules
-│   ├── code-quality.mdc           # CI/CD quality standards
-│   ├── project-guardrails.mdc     # Essential project practices
-│   ├── supabase.mdc              # Supabase development
-│   ├── react-native.mdc           # React Native/Expo
-│   ├── ui-development.mdc         # UI component standards
-│   ├── typescript-typing.mdc      # TypeScript standards
+│   ├── scf-core/              # @scf/core - Shared business logic and features
+│   │   └── features/          # Route-based feature organization
+│   ├── ui/                    # @unicornlove/ui - Cross-platform UI components
+│   ├── scf-supabase/          # @scf/supabase - Database, migrations, Edge Functions
+│   │   └── migrations/        # 001-137 (Scaffald) + 200-232 (Forsured)
+│   ├── forsured/              # @unicornlove/forsured - Zod schemas
+│   ├── insurance/             # @unicornlove/insurance - Insurance domain
+│   ├── compliance/            # @unicornlove/compliance - Compliance domain
+│   └── tasks/                 # @unicornlove/tasks - Task management
+├── .cursor/rules/             # Cursor AI development rules
+│   ├── code-quality.mdc       # CI/CD quality standards
+│   ├── project-guardrails.mdc # Essential project practices
+│   ├── supabase.mdc           # Supabase development
+│   ├── react-native.mdc       # React Native/Expo
+│   ├── ui-development.mdc     # UI component standards
+│   ├── typescript-typing.mdc  # TypeScript standards
 │   ├── trpc-supabase-patterns.mdc # tRPC and RLS patterns
-│   └── memory/                    # Project knowledge base
+│   └── memory/                # Project knowledge base
 ├── tests/
-│   └── playwright-helpers/ # E2E test utilities
-└── docs/                   # Project documentation
+│   └── playwright-helpers/    # E2E test utilities
+└── docs/                      # Project documentation
 ```
 
 ## Development Commands
 
 ### Core Development (Primary Workflow)
 ```bash
-# Start development environment
+# Start development environment - Scaffald (Expo)
 pnpm dev              # Start Expo dev server (port 8081)
 pnpm web              # Start Expo Web dev server (port 8081)
 pnpm ios              # Build and run iOS app
 pnpm android          # Build and run Android app
+
+# Start development environment - Forsured (Vite)
+pnpm dev:forsured     # Start Forsured Vite dev server (port 5173)
+pnpm build:forsured   # Build Forsured for production
+pnpm test:forsured    # Run Forsured tests (2401+ tests)
+pnpm dev:all          # Run both Scaffald + Forsured concurrently
 
 # Quick iteration (FAST - only affected packages)
 pnpm check:affected   # Lint and type check only changed packages
@@ -501,13 +512,32 @@ This project uses comprehensive Cursor rules located in `.cursor/rules/`. These 
 - **Industries**: Construction, Manufacturing, Transportation, Energy
 
 ### Schema Organization (CRITICAL)
-- **`core.*`**: Application tables (ONLY application data goes here)
+- **`core.*`**: Platform/shared tables (users, organizations, role_assignments)
+  - Used by BOTH Scaffald and Forsured applications
   - User profiles, jobs, organizations, applications, etc.
   - Private/PII data: `core.profile`, `core.preferences`, `core.applications`
   - NO `private_` prefix - RLS handles privacy
+- **`forsured.*`**: Forsured insurance compliance tables (migrations 200-232)
+  - Insurance policies, compliance issues, documents, tasks
+  - Projects, companies, coverage requirements
+  - References `core.*` for users and organizations
 - **`data.*`**: Reference data (universities, MasterFormat, certifications) - READ-ONLY
 - **`cms.*`**: CMS content (welcome_slides, etc.) - READ-ONLY
 - **`onet.*`**: O*NET occupational reference data - READ-ONLY
+
+### Forsured Database Client
+```typescript
+// Import from @scf/supabase/forsured-client
+import { forsured, core } from '@scf/supabase/forsured-client';
+
+// Query Forsured-specific data (insurance, compliance, etc.)
+const policies = await forsured('insurance_policies').select('*').eq('status', 'active');
+const tasks = await forsured('tasks').select('*').eq('project_id', projectId);
+
+// Query core/platform data (users, organizations)
+const users = await core('users').select('*').eq('organization_id', orgId);
+const org = await core('organizations').select('*').eq('id', orgId).single();
+```
 
 ### Schema Highlights
 - **User profiles**: Comprehensive worker profiles with private/public separation
