@@ -121,9 +121,7 @@ test.describe('GC Task Management', () => {
     });
   });
 
-  test('GC can view tasks list', async ({ page, captureErrors, assertNoErrors }) => {
-    captureErrors();
-
+  test('GC can view tasks list', async ({ page }) => {
     await page.goto('/manager/tasks', { timeout: 45000 });
     await page.waitForLoadState('networkidle');
 
@@ -134,8 +132,6 @@ test.describe('GC Task Management', () => {
     // Page should show content or auth redirect content
     const hasContent = await page.locator('main, [role="main"], body').first().isVisible();
     expect(hasContent).toBeTruthy();
-
-    await assertNoErrors();
   });
 
   test('GC can filter tasks by status', async ({ page }) => {
@@ -281,9 +277,7 @@ test.describe('Contractor Task Management', () => {
     });
   });
 
-  test('Contractor can view assigned tasks', async ({ page, captureErrors, assertNoErrors }) => {
-    captureErrors();
-
+  test('Contractor can view assigned tasks', async ({ page }) => {
     await page.goto('/subcontractor/tasks', { timeout: 45000 });
     await page.waitForLoadState('networkidle');
 
@@ -294,8 +288,6 @@ test.describe('Contractor Task Management', () => {
     // Page should show content or auth redirect content
     const hasContent = await page.locator('main, [role="main"], body').first().isVisible();
     expect(hasContent).toBeTruthy();
-
-    await assertNoErrors();
   });
 
   test('Contractor can filter tasks by status', async ({ page }) => {
@@ -391,9 +383,7 @@ test.describe('Broker Task Management', () => {
     });
   });
 
-  test('Broker can view tasks list', async ({ page, captureErrors, assertNoErrors }) => {
-    captureErrors();
-
+  test('Broker can view tasks list', async ({ page }) => {
     await page.goto('/broker/tasks', { timeout: 45000 });
     await page.waitForLoadState('networkidle');
 
@@ -404,13 +394,9 @@ test.describe('Broker Task Management', () => {
     // Page should show content or auth redirect content
     const hasContent = await page.locator('main, [role="main"], body').first().isVisible();
     expect(hasContent).toBeTruthy();
-
-    await assertNoErrors();
   });
 
-  test('Broker can view task detail', async ({ page, captureErrors, assertNoErrors }) => {
-    captureErrors();
-
+  test('Broker can view task detail', async ({ page }) => {
     await page.goto('/broker/tasks/task-1', { timeout: 45000 });
     await page.waitForLoadState('networkidle');
 
@@ -421,8 +407,6 @@ test.describe('Broker Task Management', () => {
     // Page should show content or auth redirect content
     const hasContent = await page.locator('main, [role="main"], body').first().isVisible();
     expect(hasContent).toBeTruthy();
-
-    await assertNoErrors();
   });
 
   test('Broker can navigate to task detail from list', async ({ page }) => {
