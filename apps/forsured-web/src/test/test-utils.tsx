@@ -1,13 +1,15 @@
 /**
  * Custom test utilities for React component testing
  * Provides a customized render function with common providers
+ *
+ * Note: Uses mock providers from @unicornlove/ui which is aliased to
+ * a pure React mock (no tamagui/react-native deps) in vitest.config.ts
  */
 
 import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement, ReactNode } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { TamaguiProvider } from 'tamagui';
-import { tamaguiConfig } from '@unicornlove/ui';
+import { TamaguiProvider, tamaguiConfig } from '@unicornlove/ui';
 
 /**
  * All providers that wrap the app in production should be included here

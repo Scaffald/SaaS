@@ -152,5 +152,20 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Alias @unicornlove/ui to source for proper test transformation
+    alias: {
+      '@unicornlove/ui': path.resolve(__dirname, '../../packages/ui/src'),
+    },
+    // Dependencies that need to be transformed for tests
+    deps: {
+      inline: [
+        'tamagui',
+        '@tamagui/core',
+        '@tamagui/web',
+        '@tamagui/animations-moti',
+        'moti',
+        'react-native-reanimated',
+      ],
+    },
   },
 });
