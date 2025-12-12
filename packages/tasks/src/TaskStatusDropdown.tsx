@@ -4,7 +4,7 @@
  * REQ-259: Auto-save on change with optimistic UI updates
  */
 
-import { styled, YStack, XStack, Text, View, Spinner, type YStackProps } from 'tamagui'
+import { styled, YStack, XStack, Text, View, type YStackProps } from 'tamagui'
 import {
   CheckCircle,
   Circle,
