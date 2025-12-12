@@ -9,10 +9,9 @@ const expoRouterShimPath = path.resolve(__dirname, './src/shims/expo-router-shim
 
 // Patterns that need to be shimmed (internal RN paths that don't exist in react-native-web)
 const shimPatterns = [
-  'react-native/Libraries/Renderer/shims/ReactFabric',
-  'react-native/Libraries/Utilities/codegenNativeComponent',
-  'react-native-web/Libraries/Renderer/shims/ReactFabric',
-  'react-native-web/Libraries/Utilities/codegenNativeComponent',
+  'react-native/Libraries/',
+  'react-native/package.json',
+  'react-native-web/Libraries/',
 ];
 
 /**
@@ -109,10 +108,19 @@ export default defineConfig({
   root: __dirname,
   plugins: [reactNativeShims(), react(), trpcMiddleware()],
   optimizeDeps: {
-    exclude: ['lucide-react', 'expo-router'],
+    exclude: [
+      'lucide-react',
+      'expo-router',
+      'react-native-gesture-handler',
+      'expo-linear-gradient',
+      'react-native-gifted-charts',
+    ],
     include: ['tamagui', 'react-native-web'],
     esbuildOptions: {
       plugins: [reactNativeShimsEsbuild()],
+      loader: {
+        '.js': 'jsx', // Handle JSX in .js files (for expo packages)
+      },
     },
   },
   server: {
