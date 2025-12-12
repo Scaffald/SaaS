@@ -31,17 +31,17 @@ describe.skipIf(SKIP_SMOKE_TESTS)('Vite Dev Server Smoke Test', () => {
   const packageRoot = resolve(__dirname, '../../../');
 
   beforeAll(async () => {
-    // Start Vite dev server
-    serverProcess = spawn('pnpm', ['dev'], {
+    // Start Vite dev server with npx to run vite directly
+    serverProcess = spawn('npx', ['vite', '--host', '127.0.0.1'], {
       cwd: packageRoot,
       stdio: ['pipe', 'pipe', 'pipe'],
-      env: { ...process.env, FORCE_COLOR: '0' },
+      env: { ...process.env, FORCE_COLOR: '0', NO_COLOR: '1' },
     });
 
-    // Wait for server to be ready by looking for "ready" in output
+    // Wait for server to be ready by looking for "ready" or localhost URL in output
     const readyPromise = new Promise<string>((resolve, reject) => {
       const timeout = setTimeout(() => {
-        reject(new Error('Vite dev server failed to start within 30 seconds'));
+        reject(new Error(`Vite dev server failed to start within 30 seconds.\n\nStdout:\n${stdout}\n\nStderr:\n${stderr}`));
       }, 30000);
 
       let stdout = '';
@@ -51,11 +51,13 @@ describe.skipIf(SKIP_SMOKE_TESTS)('Vite Dev Server Smoke Test', () => {
         const chunk = data.toString();
         stdout += chunk;
 
-        // Look for the Local URL line
-        const urlMatch = chunk.match(/Local:\s+(http:\/\/localhost:\d+)/);
+        // Look for localhost URL in output (handles ANSI codes and Unicode)
+        // Match patterns like: "Local:   http://localhost:5173/"
+        // or just "http://localhost:5173" or "http://127.0.0.1:5173"
+        const urlMatch = chunk.match(/http:\/\/(?:localhost|127\.0\.0\.1):(\d+)/);
         if (urlMatch) {
           clearTimeout(timeout);
-          resolve(urlMatch[1]);
+          resolve(`http://127.0.0.1:${urlMatch[1]}`);
         }
       });
 
@@ -99,7 +101,7 @@ describe.skipIf(SKIP_SMOKE_TESTS)('Vite Dev Server Smoke Test', () => {
 
   it('should start Vite dev server without esbuild errors', () => {
     expect(serverUrl).toBeTruthy();
-    expect(serverUrl).toMatch(/^http:\/\/localhost:\d+$/);
+    expect(serverUrl).toMatch(/^http:\/\/(?:localhost|127\.0\.0\.1):\d+$/);
   });
 
   it('should respond to HTTP requests', async () => {
