@@ -335,9 +335,8 @@ test.describe('Contractor Task Management', () => {
     const url = page.url();
     expect(url.includes('/dashboard') || url.includes('/subcontractor') || url.includes('/welcome') || url.includes('/')).toBeTruthy();
 
-    // Dashboard may show task widgets - verify page loads
-    const hasContent = await page.locator('main, body').first().isVisible();
-    expect(hasContent).toBeTruthy();
+    // Wait for page content to be available
+    await page.waitForSelector('body', { timeout: 5000 });
   });
 });
 
@@ -519,9 +518,8 @@ test.describe('Task Dashboard Widgets', () => {
     await page.goto('/subcontractor/dashboard', { timeout: 45000 });
     await page.waitForLoadState('networkidle');
 
-    // Dashboard should load - defensive assertion
-    const hasContent = await page.locator('main, body').first().isVisible();
-    expect(hasContent).toBeTruthy();
+    // Wait for page content to be available
+    await page.waitForSelector('body', { timeout: 5000 });
   });
 
   test('Broker dashboard shows task metrics', async ({ page, setupAuthAs }) => {
