@@ -188,7 +188,7 @@ test.describe('CCPA Data Export Request Flow', () => {
   });
 
   test('should display data categories summary', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show data categories
@@ -200,7 +200,7 @@ test.describe('CCPA Data Export Request Flow', () => {
   });
 
   test('should show record counts for each category', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show record counts
@@ -209,7 +209,7 @@ test.describe('CCPA Data Export Request Flow', () => {
   });
 
   test('should be able to initiate data export request', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Click Request My Data button
@@ -229,7 +229,7 @@ test.describe('CCPA Data Deletion Request Flow', () => {
   });
 
   test('should be able to initiate deletion request', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Click Delete My Data button
@@ -241,7 +241,7 @@ test.describe('CCPA Data Deletion Request Flow', () => {
   });
 
   test('Right to Delete description should be visible', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Check for Right to Delete information
@@ -259,7 +259,7 @@ test.describe('CCPA Request History', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasRequests: false });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show empty state
@@ -271,7 +271,7 @@ test.describe('CCPA Request History', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasRequests: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show request entries
@@ -283,7 +283,7 @@ test.describe('CCPA Request History', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasRequests: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show status badges
@@ -301,7 +301,7 @@ test.describe('CCPA Request History', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasRequests: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should have download button for completed request
@@ -318,7 +318,7 @@ test.describe('CCPA Opt-Out Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
@@ -329,7 +329,7 @@ test.describe('CCPA Opt-Out Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasGPCOptOut: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show GPC message
@@ -341,7 +341,7 @@ test.describe('CCPA Opt-Out Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Check for Right to Opt-Out section
@@ -355,7 +355,7 @@ test.describe('Connected Apps Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasConnectedApps: false });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const emptyState = page.getByText(/no connected applications/i);
@@ -366,7 +366,7 @@ test.describe('Connected Apps Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show app name
@@ -378,7 +378,7 @@ test.describe('Connected Apps Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show permissions section
@@ -390,7 +390,7 @@ test.describe('Connected Apps Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show revoke button
@@ -402,7 +402,7 @@ test.describe('Connected Apps Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show view details button
@@ -414,7 +414,7 @@ test.describe('Connected Apps Management', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page, { hasConnectedApps: true });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show data categories section
@@ -428,7 +428,7 @@ test.describe('CCPA Compliance - 45 Day Processing', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should mention 45-day requirement
@@ -440,7 +440,7 @@ test.describe('CCPA Compliance - 45 Day Processing', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should mention 30-day download availability
@@ -454,7 +454,7 @@ test.describe('CCPA Data Request - Cross User Type', () => {
     await setupAuthAs(page, 'active.contractor@test.forsured.com');
     await setupCCPAMocks(page);
 
-    await page.goto('/subcontractor/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should see all the same rights
@@ -472,7 +472,7 @@ test.describe('CCPA Data Request - Cross User Type', () => {
     await setupAuthAs(page, 'active.broker@test.forsured.com');
     await setupCCPAMocks(page);
 
-    await page.goto('/broker/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should see all the same rights
@@ -492,7 +492,7 @@ test.describe('CCPA - Non-Discrimination Right', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupCCPAMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should show non-discrimination right

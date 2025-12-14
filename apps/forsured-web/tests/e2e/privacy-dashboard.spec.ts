@@ -10,25 +10,26 @@ import { setupAuthAs, TEST_USER_IDS } from '../utils/auth';
 
 test.describe('Privacy Dashboard - All User Types', () => {
   // Test that all authenticated user types can access the privacy dashboard
+  // Note: All users access the same /settings/privacy route
 
   test.describe('GC User - Privacy Dashboard Access', () => {
     test('GC can access privacy dashboard', async ({ page }) => {
       await setupAuthAs(page, 'active.gc@test.forsured.com');
-      await page.goto('/manager/settings/privacy');
+      await page.goto('/settings/privacy');
 
       // Should be on the privacy settings page
-      await expect(page).toHaveURL(/\/manager\/settings\/privacy/);
+      await expect(page).toHaveURL(/\/settings\/privacy/);
     });
 
-    test('GC can see Privacy & Data header', async ({ page }) => {
+    test('GC can see Privacy Settings header', async ({ page }) => {
       await setupAuthAs(page, 'active.gc@test.forsured.com');
-      await page.goto('/manager/settings/privacy');
+      await page.goto('/settings/privacy');
 
       // Wait for page content to load
       await page.waitForTimeout(1000);
 
       // Should see the privacy header
-      const header = page.getByText('Privacy & Data');
+      const header = page.getByText('Privacy Settings');
       await expect(header).toBeVisible();
     });
   });
@@ -36,14 +37,14 @@ test.describe('Privacy Dashboard - All User Types', () => {
   test.describe('Contractor User - Privacy Dashboard Access', () => {
     test('Contractor can access privacy dashboard', async ({ page }) => {
       await setupAuthAs(page, 'active.contractor@test.forsured.com');
-      await page.goto('/subcontractor/settings/privacy');
+      await page.goto('/settings/privacy');
 
-      await expect(page).toHaveURL(/\/subcontractor\/settings\/privacy/);
+      await expect(page).toHaveURL(/\/settings\/privacy/);
     });
 
     test('Contractor can see CCPA rights information', async ({ page }) => {
       await setupAuthAs(page, 'active.contractor@test.forsured.com');
-      await page.goto('/subcontractor/settings/privacy');
+      await page.goto('/settings/privacy');
 
       await page.waitForTimeout(1000);
 
@@ -56,9 +57,9 @@ test.describe('Privacy Dashboard - All User Types', () => {
   test.describe('Broker User - Privacy Dashboard Access', () => {
     test('Broker can access privacy dashboard', async ({ page }) => {
       await setupAuthAs(page, 'active.broker@test.forsured.com');
-      await page.goto('/broker/settings/privacy');
+      await page.goto('/settings/privacy');
 
-      await expect(page).toHaveURL(/\/broker\/settings\/privacy/);
+      await expect(page).toHaveURL(/\/settings\/privacy/);
     });
   });
 });
@@ -66,7 +67,7 @@ test.describe('Privacy Dashboard - All User Types', () => {
 test.describe('Privacy Dashboard - Quick Actions', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
   });
 
@@ -100,7 +101,7 @@ test.describe('Privacy Dashboard - Quick Actions', () => {
 test.describe('Privacy Dashboard - Data Categories', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
   });
 
@@ -131,7 +132,7 @@ test.describe('Privacy Dashboard - Data Categories', () => {
 test.describe('Privacy Dashboard - Privacy Rights', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
   });
 
@@ -179,7 +180,7 @@ test.describe('Privacy Dashboard - Privacy Rights', () => {
 test.describe('Privacy Dashboard - Request History', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
   });
 
@@ -214,7 +215,7 @@ test.describe('Privacy Dashboard - Request History', () => {
 test.describe('Privacy Dashboard - Connected Apps', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
   });
 
@@ -243,7 +244,7 @@ test.describe('Privacy Dashboard - Connected Apps', () => {
 test.describe('Privacy Dashboard - Additional Resources', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
   });
 
@@ -286,7 +287,7 @@ test.describe('Privacy Dashboard - GPC Detection', () => {
       });
     });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should see GPC acknowledgment message
@@ -305,12 +306,12 @@ test.describe('Privacy Dashboard - Loading States', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
 
     // Navigate to privacy page
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
 
     // Check for either loading spinner or loaded content
     // (loading state may be too fast to catch)
     const spinner = page.getByRole('status');
-    const header = page.getByText('Privacy & Data');
+    const header = page.getByText('Privacy Settings');
 
     // Either should be visible at some point
     await expect(header).toBeVisible({ timeout: 10000 });
@@ -330,7 +331,7 @@ test.describe('Privacy Dashboard - Error Handling', () => {
       });
     });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Should either show error state or handle gracefully
@@ -342,14 +343,14 @@ test.describe('Privacy Dashboard - Error Handling', () => {
 test.describe('Privacy Dashboard - Accessibility', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
   });
 
   test('should have proper heading hierarchy', async ({ page }) => {
     // Main heading should be visible
     const mainHeading = page.getByRole('heading', { level: 1 }).or(
-      page.getByText('Privacy & Data').first()
+      page.getByText('Privacy Settings').first()
     );
     await expect(mainHeading).toBeVisible();
   });
@@ -379,11 +380,11 @@ test.describe('Privacy Dashboard - Responsive Design', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 812 });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Key elements should still be visible
-    const header = page.getByText('Privacy & Data');
+    const header = page.getByText('Privacy Settings');
     await expect(header).toBeVisible();
 
     const quickActions = page.getByText('Quick Actions');
@@ -396,11 +397,11 @@ test.describe('Privacy Dashboard - Responsive Design', () => {
     // Set tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Key elements should be visible
-    const header = page.getByText('Privacy & Data');
+    const header = page.getByText('Privacy Settings');
     await expect(header).toBeVisible();
   });
 
@@ -410,11 +411,11 @@ test.describe('Privacy Dashboard - Responsive Design', () => {
     // Set desktop viewport
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Key elements should be visible
-    const header = page.getByText('Privacy & Data');
+    const header = page.getByText('Privacy Settings');
     await expect(header).toBeVisible();
   });
 });

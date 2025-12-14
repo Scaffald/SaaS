@@ -138,7 +138,7 @@ test.describe('Data Request Form - Export Request', () => {
   });
 
   test('should open request form from privacy dashboard', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const requestBtn = page.getByRole('button', { name: /request my data/i });
@@ -148,7 +148,7 @@ test.describe('Data Request Form - Export Request', () => {
   });
 
   test('should display request type selection', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const requestBtn = page.getByRole('button', { name: /request my data/i });
@@ -175,7 +175,7 @@ test.describe('Data Request Form - Deletion Request', () => {
   });
 
   test('should open deletion request form', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const deleteBtn = page.getByRole('button', { name: /delete my data/i });
@@ -185,7 +185,7 @@ test.describe('Data Request Form - Deletion Request', () => {
   });
 
   test('should display deletion warning', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const deleteBtn = page.getByRole('button', { name: /delete my data/i });
@@ -207,7 +207,7 @@ test.describe('Data Request Form - Data Categories', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const requestBtn = page.getByRole('button', { name: /request my data/i });
@@ -230,7 +230,7 @@ test.describe('Data Request Form - Data Categories', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const requestBtn = page.getByRole('button', { name: /request my data/i });
@@ -258,7 +258,7 @@ test.describe('Data Request Form - Confirmation', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const requestBtn = page.getByRole('button', { name: /request my data/i });
@@ -277,7 +277,7 @@ test.describe('Data Request Form - Confirmation', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // The 45-day info is on the privacy dashboard
@@ -293,7 +293,7 @@ test.describe('Opt-Out Manager - Display', () => {
   });
 
   test('should open opt-out manager from privacy dashboard', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
@@ -303,7 +303,7 @@ test.describe('Opt-Out Manager - Display', () => {
   });
 
   test('Right to Opt-Out section should be visible', async ({ page }) => {
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutSection = page.getByText('Right to Opt-Out');
@@ -316,7 +316,7 @@ test.describe('Opt-Out Manager - Categories', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
@@ -335,7 +335,7 @@ test.describe('Opt-Out Manager - Categories', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
@@ -353,7 +353,7 @@ test.describe('Opt-Out Manager - Categories', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
@@ -371,7 +371,7 @@ test.describe('Opt-Out Manager - Categories', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
@@ -419,7 +419,7 @@ test.describe('Opt-Out Manager - GPC Detection', () => {
       });
     });
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Check for GPC message
@@ -435,7 +435,7 @@ test.describe('Opt-Out Manager - Non-Discrimination Notice', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // The non-discrimination info is mentioned in the Rights section
@@ -449,7 +449,7 @@ test.describe('Opt-Out Manager - Legal References', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Check for CCPA reference
@@ -463,7 +463,7 @@ test.describe('Data Request Form - Cross-User Type', () => {
     await setupAuthAs(page, 'active.contractor@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/subcontractor/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const requestBtn = page.getByRole('button', { name: /request my data/i });
@@ -474,7 +474,7 @@ test.describe('Data Request Form - Cross-User Type', () => {
     await setupAuthAs(page, 'active.broker@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/broker/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const requestBtn = page.getByRole('button', { name: /request my data/i });
@@ -487,7 +487,7 @@ test.describe('Data Request Form - Accessibility', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     // Tab through elements
@@ -504,7 +504,7 @@ test.describe('Opt-Out Manager - Toggle Functionality', () => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await setupFormMocks(page);
 
-    await page.goto('/manager/settings/privacy');
+    await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
     const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
