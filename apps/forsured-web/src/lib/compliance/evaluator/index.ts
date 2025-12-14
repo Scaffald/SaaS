@@ -24,7 +24,12 @@ export type {
   BatchEvaluationResult,
   EvaluationMetadata,
   ScoreDeductions,
-  ScoreBoundaries
+  ScoreBoundaries,
+  // REQ-2: Dependency evaluation types
+  DependencyEvaluationContext,
+  DependencyInfo,
+  UmbrellaScheduleInfo,
+  RequirementInfoForEvaluation
 } from './types';
 
 export {
@@ -81,3 +86,10 @@ export type {
   FlagComplianceReport,
   FlagFilterOptions
 } from './flagComplianceChecker';
+
+// REQ-2: Dependency validation
+export {
+  validateRequirementDependencies,
+  createEmptyDependencyContext,
+  createDependencyContext
+} from './dependencyValidation';

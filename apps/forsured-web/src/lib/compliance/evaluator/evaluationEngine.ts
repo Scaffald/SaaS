@@ -15,12 +15,14 @@ import {
   ComplianceStatus,
   GapType,
   GapSeverity,
+  DependencyEvaluationContext,
   RULE_ENGINE_VERSION
 } from './types';
 import { calculateComplianceScore, determineComplianceStatus } from './scoringAlgorithm';
 import { validateCoverageAmounts } from './coverageValidation';
 import { validatePolicyDates } from './dateValidation';
 import { validateEndorsements } from './endorsementValidation';
+import { validateRequirementDependencies } from './dependencyValidation';
 
 /**
  * Main evaluation engine
@@ -34,13 +36,15 @@ export class ComplianceEvaluationEngine {
    * @param projectRequirements List of compliance requirements for the project
    * @param projectStartDate Project start date (ISO format)
    * @param projectEndDate Project end date (ISO format)
+   * @param dependencyContext Optional dependency context for umbrella/dependency validation
    * @returns Evaluation result with score and gaps
    */
   async evaluate(
     request: EvaluationRequest,
     projectRequirements: ComplianceRequirement[],
     projectStartDate: string,
-    projectEndDate: string
+    projectEndDate: string,
+    dependencyContext: DependencyEvaluationContext | null = null
   ): Promise<EvaluationResult> {
     const startTime = Date.now();
     const gaps: ComplianceGap[] = [];
@@ -50,6 +54,20 @@ export class ComplianceEvaluationEngine {
     try {
       // Build requirements map for efficient lookup
       const requirementsMap = this.buildRequirementsMap(projectRequirements);
+
+      // REQ-2: Validate dependencies FIRST (before coverage/date/endorsement validation)
+      // This ensures umbrella policies have required underlying coverages
+      const dependencyGaps = validateRequirementDependencies(
+        projectRequirements,
+        dependencyContext
+      );
+      gaps.push(...dependencyGaps);
+      rulesApplied.push({
+        rule_id: 'dependency-validation',
+        rule_name: 'Requirement Dependency Validation',
+        passed: dependencyGaps.length === 0,
+        gaps_created: dependencyGaps.map(g => g.id)
+      });
 
       // Validate coverage amounts
       const coverageGaps = validateCoverageAmounts(
@@ -165,13 +183,15 @@ export class ComplianceEvaluationEngine {
    * @param projectRequirements List of compliance requirements for the project
    * @param projectStartDate Project start date (ISO format)
    * @param projectEndDate Project end date (ISO format)
+   * @param dependencyContext Optional dependency context for umbrella/dependency validation
    * @returns Batch evaluation result
    */
   async evaluateBatch(
     request: BatchEvaluationRequest,
     projectRequirements: ComplianceRequirement[],
     projectStartDate: string,
-    projectEndDate: string
+    projectEndDate: string,
+    dependencyContext: DependencyEvaluationContext | null = null
   ): Promise<BatchEvaluationResult> {
     const results: EvaluationResult[] = [];
 
@@ -185,7 +205,8 @@ export class ComplianceEvaluationEngine {
         },
         projectRequirements,
         projectStartDate,
-        projectEndDate
+        projectEndDate,
+        dependencyContext
       );
       results.push(result);
     }

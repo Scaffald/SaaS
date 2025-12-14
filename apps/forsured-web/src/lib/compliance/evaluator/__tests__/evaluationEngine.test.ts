@@ -492,7 +492,9 @@ describe('ComplianceEvaluationEngine', () => {
         projectEndDate
       );
 
-      expect(result.rules_applied).toHaveLength(3);
+      // REQ-2: Now 4 rules including dependency validation
+      expect(result.rules_applied).toHaveLength(4);
+      expect(result.rules_applied.some(r => r.rule_id === 'dependency-validation')).toBe(true);
       expect(result.rules_applied.some(r => r.rule_id === 'coverage-validation')).toBe(true);
       expect(result.rules_applied.some(r => r.rule_id === 'date-validation')).toBe(true);
       expect(result.rules_applied.some(r => r.rule_id === 'endorsement-validation')).toBe(true);
