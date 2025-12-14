@@ -23,6 +23,13 @@ vi.mock('../../../../lib/compliance/dependency-resolver', () => ({
   getDependents: vi.fn(),
 }));
 
+// Mock the authorization helper
+const mockRequirePermission = vi.fn();
+vi.mock('../../helpers/complianceAuthorization', () => ({
+  requirePermission: (...args: unknown[]) => mockRequirePermission(...args),
+  createComplianceAuthService: vi.fn(),
+}));
+
 import { complianceDependenciesRouter } from '../complianceDependencies';
 import { validateNoCycles, getDependencyTree, getDependents } from '../../../../lib/compliance/dependency-resolver';
 
@@ -91,6 +98,28 @@ function mockAdminAccess(isAdmin: boolean) {
   );
 }
 
+/**
+ * Helper to mock permission granted
+ */
+function mockPermissionGranted() {
+  mockRequirePermission.mockResolvedValue({
+    hasPermission: vi.fn().mockResolvedValue(true),
+    getRole: vi.fn().mockReturnValue('admin'),
+  });
+}
+
+/**
+ * Helper to mock permission denied
+ */
+function mockPermissionDenied(permission = 'DEPENDENCY_CREATE') {
+  mockRequirePermission.mockRejectedValue(
+    new TRPCError({
+      code: 'FORBIDDEN',
+      message: `Compliance permission denied: ${permission}`,
+    })
+  );
+}
+
 // =============================================================================
 // Tests
 // =============================================================================
@@ -122,6 +151,9 @@ describe('complianceDependenciesRouter', () => {
           depends_on: { id: TEST_DEPENDS_ON_ID, name: 'GL Requirement', code: 'GL-001', type: 'general_liability' },
         },
       ];
+
+      // Mock permission check
+      mockPermissionGranted();
 
       // First call - verify requirement ownership
       mockForsured.mockImplementationOnce(() =>
@@ -158,7 +190,7 @@ describe('complianceDependenciesRouter', () => {
 
   describe('create', () => {
     it('should create a dependency with admin access', async () => {
-      mockAdminAccess(true);
+      mockPermissionGranted();
       vi.mocked(validateNoCycles).mockReturnValue({
         would_create_cycle: false,
         cycle_path: null,
@@ -224,7 +256,7 @@ describe('complianceDependenciesRouter', () => {
     });
 
     it('should reject if cycle would be created', async () => {
-      mockAdminAccess(true);
+      mockPermissionGranted();
       vi.mocked(validateNoCycles).mockReturnValue({
         would_create_cycle: true,
         cycle_path: [TEST_REQUIREMENT_ID, TEST_DEPENDS_ON_ID, TEST_REQUIREMENT_ID],
@@ -274,11 +306,7 @@ describe('complianceDependenciesRouter', () => {
     });
 
     it('should reject without admin access', async () => {
-      mockAdminAccess(false);
-
-      mockForsured.mockImplementation(() =>
-        createChainableMock({ data: { id: TEST_REQUIREMENT_ID }, error: null })
-      );
+      mockPermissionDenied('DEPENDENCY_CREATE');
 
       const caller = complianceDependenciesRouter.createCaller(createMockContext());
 
@@ -289,13 +317,13 @@ describe('complianceDependenciesRouter', () => {
           dependsOnId: TEST_DEPENDS_ON_ID,
           dependencyType: 'requires',
         })
-      ).rejects.toThrow('Admin access required');
+      ).rejects.toThrow('Compliance permission denied');
     });
   });
 
   describe('delete', () => {
     it('should delete a dependency with admin access', async () => {
-      mockAdminAccess(true);
+      mockPermissionGranted();
 
       mockForsured.mockImplementation(() =>
         createChainableMock({
@@ -438,6 +466,9 @@ describe('complianceDependenciesRouter', () => {
         },
       ];
 
+      // Mock permission check
+      mockPermissionGranted();
+
       // First call - verify requirement ownership
       mockForsured.mockImplementationOnce(() =>
         createChainableMock({ data: { id: TEST_REQUIREMENT_ID }, error: null })
@@ -460,7 +491,7 @@ describe('complianceDependenciesRouter', () => {
 
   describe('createUmbrellaSchedule', () => {
     it('should create umbrella schedule entry with admin access', async () => {
-      mockAdminAccess(true);
+      mockPermissionGranted();
 
       const mockCreatedEntry = {
         id: TEST_SCHEDULE_ID,
@@ -510,11 +541,7 @@ describe('complianceDependenciesRouter', () => {
     });
 
     it('should reject without admin access', async () => {
-      mockAdminAccess(false);
-
-      mockForsured.mockImplementation(() =>
-        createChainableMock({ data: { id: TEST_REQUIREMENT_ID }, error: null })
-      );
+      mockPermissionDenied('REQUIREMENT_EDIT');
 
       const caller = complianceDependenciesRouter.createCaller(createMockContext());
 
@@ -526,13 +553,13 @@ describe('complianceDependenciesRouter', () => {
           requiredMinimumLimit: 1000000,
           attachmentPoint: 1000000,
         })
-      ).rejects.toThrow('Admin access required');
+      ).rejects.toThrow('Compliance permission denied');
     });
   });
 
   describe('deleteUmbrellaSchedule', () => {
     it('should delete umbrella schedule entry with admin access', async () => {
-      mockAdminAccess(true);
+      mockPermissionGranted();
 
       mockForsured.mockImplementation(() =>
         createChainableMock({
@@ -596,7 +623,7 @@ describe('complianceDependenciesRouter', () => {
 
   describe('createRule', () => {
     it('should create rule with admin access', async () => {
-      mockAdminAccess(true);
+      mockPermissionGranted();
 
       const mockCreatedRule = {
         id: TEST_RULE_ID,
@@ -636,11 +663,7 @@ describe('complianceDependenciesRouter', () => {
     });
 
     it('should reject without admin access', async () => {
-      mockAdminAccess(false);
-
-      mockForsured.mockImplementation(() =>
-        createChainableMock({ data: { id: TEST_REQUIREMENT_ID }, error: null })
-      );
+      mockPermissionDenied('RULE_CREATE');
 
       const caller = complianceDependenciesRouter.createCaller(createMockContext());
 
@@ -653,13 +676,13 @@ describe('complianceDependenciesRouter', () => {
           conditionOperator: 'equals',
           conditionValue: 'commercial',
         })
-      ).rejects.toThrow('Admin access required');
+      ).rejects.toThrow('Compliance permission denied');
     });
   });
 
   describe('deleteRule', () => {
     it('should delete rule with admin access', async () => {
-      mockAdminAccess(true);
+      mockPermissionGranted();
 
       mockForsured.mockImplementation(() =>
         createChainableMock({

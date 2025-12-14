@@ -1,17 +1,18 @@
 /**
  * Compliance Requirements Router
  * REQ-2, TASK-7: tRPC CRUD Operations for Compliance Requirements
+ * TASK-19: Integrated with Compliance Authorization System
  *
  * Implements full CRUD operations with:
  * - Organization-scoped access control
- * - Admin-only write operations
+ * - Role-based permission checks using CompliancePermission matrix
  * - Automatic versioning on updates
  * - Soft delete (archive) support
  */
 
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { forsured, core } from '../../../lib/supabase';
+import { forsured } from '../../../lib/supabase';
 import {
   requirementListInputSchema,
   requirementGetInputSchema,
@@ -24,43 +25,21 @@ import {
   requirementCompareVersionsInputSchema,
   requirementRestoreVersionInputSchema,
 } from '../../schemas/forsured/compliance-requirements.schema';
+import {
+  createComplianceAuthService,
+  requirePermission,
+} from '../helpers/complianceAuthorization';
+import { CompliancePermission } from '../../../lib/compliance/authorization';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Check if user has admin access to an organization
- * Returns true if user has admin, super_admin, or platform_admin role
- */
-async function hasAdminAccess(
-  userId: string,
-  organizationId: string
-): Promise<boolean> {
-  // Query role_assignments from core schema with a join to roles
-  const { data, error } = await core('role_assignments')
-    .select(`
-      id,
-      roles:role_id (
-        name
-      )
-    `)
-    .eq('user_id', userId)
-    .eq('organization_id', organizationId);
-
-  if (error || !data) return false;
-
-  return data.some((assignment) => {
-    const role = assignment.roles as { name: string } | null;
-    return role && ['admin', 'super_admin', 'platform_admin'].includes(role.name);
-  });
-}
-
-/**
  * Verify organization access - throws FORBIDDEN if user doesn't belong to org
  */
 function verifyOrganizationAccess(
-  userOrgId: string | undefined,
+  userOrgId: string | undefined | null,
   requestOrgId: string
 ): void {
   if (userOrgId !== requestOrgId) {
@@ -78,11 +57,19 @@ function verifyOrganizationAccess(
 export const complianceRequirementsRouter = createTRPCRouter({
   /**
    * List compliance requirements with filtering, sorting, and pagination
+   * Requires REQUIREMENT_VIEW permission
    */
   list: protectedProcedure
     .input(requirementListInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to view requirements
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.REQUIREMENT_VIEW
+      );
 
       let query = forsured('compliance_requirements')
         .select('*', { count: 'exact' })
@@ -140,11 +127,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
 
   /**
    * Get a single compliance requirement by ID
+   * Requires REQUIREMENT_VIEW permission
    */
   get: protectedProcedure
     .input(requirementGetInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to view requirements
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.REQUIREMENT_VIEW
+      );
 
       const { data, error } = await forsured('compliance_requirements')
         .select('*')
@@ -164,28 +159,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
 
   /**
    * Create a new compliance requirement
-   * Requires admin access
+   * Requires REQUIREMENT_CREATE permission (admin, manager, or broker)
    */
   create: protectedProcedure
     .input(requirementCreateInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to create requirements',
-        });
-      }
+      // Check permission to create requirements
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.REQUIREMENT_CREATE
+      );
 
       // Check for duplicate code within organization
       const { data: existing } = await forsured('compliance_requirements')
@@ -244,28 +230,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
   /**
    * Update an existing compliance requirement
    * Creates a new version automatically via database trigger
-   * Requires admin access
+   * Requires REQUIREMENT_EDIT permission (admin, manager, or broker)
    */
   update: protectedProcedure
     .input(requirementUpdateInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to update requirements',
-        });
-      }
+      // Check permission to edit requirements
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.REQUIREMENT_EDIT
+      );
 
       // Verify requirement exists
       const { data: existing, error: fetchError } = await forsured('compliance_requirements')
@@ -348,28 +325,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
   /**
    * Delete (archive) a compliance requirement
    * Soft delete - sets status to 'archived' and sets archived_at timestamp
-   * Requires admin access
+   * Requires REQUIREMENT_DELETE permission (admin or manager)
    */
   delete: protectedProcedure
     .input(requirementDeleteInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to delete requirements',
-        });
-      }
+      // Check permission to delete requirements
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.REQUIREMENT_DELETE
+      );
 
       // Verify requirement exists
       const { data: existing, error: fetchError } = await forsured('compliance_requirements')
@@ -408,28 +376,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
   /**
    * Clone an existing requirement or template
    * Creates a new requirement with the same definition but new code/name
-   * Requires admin access
+   * Requires REQUIREMENT_CREATE permission (admin, manager, or broker)
    */
   clone: protectedProcedure
     .input(requirementCloneInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to clone requirements',
-        });
-      }
+      // Check permission to create requirements (cloning creates a new requirement)
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.REQUIREMENT_CREATE
+      );
 
       // Fetch source requirement
       const { data: source, error: sourceError } = await forsured('compliance_requirements')
@@ -496,11 +455,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
   /**
    * Get version history for a requirement
    * Returns all versions in descending order (newest first)
+   * Requires VERSION_VIEW permission
    */
   getVersions: protectedProcedure
     .input(requirementVersionsInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to view version history
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.VERSION_VIEW
+      );
 
       // Verify requirement exists and belongs to organization
       const { data: requirement, error: reqError } = await forsured('compliance_requirements')
@@ -556,11 +523,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
 
   /**
    * Get a specific version by ID or version number
+   * Requires VERSION_VIEW permission
    */
   getVersion: protectedProcedure
     .input(requirementVersionGetInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to view version history
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.VERSION_VIEW
+      );
 
       // Verify requirement exists and belongs to organization
       const { data: requirement, error: reqError } = await forsured('compliance_requirements')
@@ -614,11 +589,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
   /**
    * Compare two versions side-by-side
    * Returns field-level differences between versions
+   * Requires VERSION_COMPARE permission
    */
   compareVersions: protectedProcedure
     .input(requirementCompareVersionsInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to compare versions
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.VERSION_COMPARE
+      );
 
       // Verify requirement exists and belongs to organization
       const { data: requirement, error: reqError } = await forsured('compliance_requirements')
@@ -713,28 +696,19 @@ export const complianceRequirementsRouter = createTRPCRouter({
   /**
    * Restore a requirement to a previous version
    * Creates a new version with the snapshot from the specified version
-   * Requires admin access
+   * Requires VERSION_RESTORE permission (admin or manager)
    */
   restoreVersion: protectedProcedure
     .input(requirementRestoreVersionInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to restore versions',
-        });
-      }
+      // Check permission to restore versions
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.VERSION_RESTORE
+      );
 
       // Verify requirement exists and belongs to organization
       const { data: requirement, error: reqError } = await forsured('compliance_requirements')

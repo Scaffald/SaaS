@@ -1,6 +1,7 @@
 /**
  * Bulk Operations Router
  * REQ-2, TASK-12: tRPC Endpoints for Bulk Import/Export
+ * TASK-19: Integrated with Compliance Authorization System
  *
  * Implements bulk operations with:
  * - Import preview and execution
@@ -11,7 +12,7 @@
 
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { forsured, core } from '../../../lib/supabase';
+import { forsured } from '../../../lib/supabase';
 import {
   importPreviewInputSchema,
   importExecuteInputSchema,
@@ -26,8 +27,6 @@ import {
   detectFormat,
   generateCSVTemplate,
   generateJSONTemplate,
-  parseCSV,
-  parseJSON,
   type ImportFormat,
   type NormalizedImportRow,
 } from '../../../lib/compliance/bulkImportService';
@@ -41,37 +40,17 @@ import {
   type ExportableVersion,
   type ExportableDependency,
 } from '../../../lib/compliance/bulkExportService';
+import { requirePermission, createComplianceAuthService } from '../helpers/complianceAuthorization';
+import { CompliancePermission } from '../../../lib/compliance/authorization';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Check if user has admin access to an organization
- */
-async function hasAdminAccess(userId: string, organizationId: string): Promise<boolean> {
-  const { data, error } = await core('role_assignments')
-    .select(`
-      id,
-      roles:role_id (
-        name
-      )
-    `)
-    .eq('user_id', userId)
-    .eq('organization_id', organizationId);
-
-  if (error || !data) return false;
-
-  return data.some((assignment) => {
-    const role = assignment.roles as { name: string } | null;
-    return role && ['admin', 'super_admin', 'platform_admin'].includes(role.name);
-  });
-}
-
-/**
  * Verify organization access
  */
-function verifyOrganizationAccess(userOrgId: string | undefined, requestOrgId: string): void {
+function verifyOrganizationAccess(userOrgId: string | undefined | null, requestOrgId: string): void {
   if (userOrgId !== requestOrgId) {
     throw new TRPCError({
       code: 'FORBIDDEN',
@@ -99,11 +78,19 @@ export const bulkOperationsRouter = createTRPCRouter({
   /**
    * Preview import data without actually importing
    * Returns validation results for each row
+   * Requires BULK_IMPORT permission
    */
   importPreview: protectedProcedure
     .input(importPreviewInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to preview import (requires bulk import permission)
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.BULK_IMPORT
+      );
 
       // Detect format if not provided
       const format = input.format ?? detectFormat(input.data);
@@ -119,28 +106,19 @@ export const bulkOperationsRouter = createTRPCRouter({
 
   /**
    * Execute import operation
-   * Requires admin access
+   * Requires BULK_IMPORT permission (broker or admin only)
    */
   importExecute: protectedProcedure
     .input(importExecuteInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to import requirements',
-        });
-      }
+      // Check permission to execute bulk import
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.BULK_IMPORT
+      );
 
       // Detect format if not provided
       const format = input.format ?? detectFormat(input.data);
@@ -262,11 +240,19 @@ export const bulkOperationsRouter = createTRPCRouter({
 
   /**
    * Export requirements with filtering
+   * Requires BULK_EXPORT permission
    */
   export: protectedProcedure
     .input(exportInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to export requirements
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.BULK_EXPORT
+      );
 
       // Validate options
       const validation = validateExportOptions(input);
@@ -380,11 +366,19 @@ export const bulkOperationsRouter = createTRPCRouter({
 
   /**
    * Get export summary without downloading data
+   * Requires BULK_EXPORT permission
    */
   exportSummary: protectedProcedure
     .input(exportSummaryInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to export requirements
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.BULK_EXPORT
+      );
 
       // Fetch requirements
       const { data: requirements, error } = await forsured('compliance_requirements')
@@ -427,28 +421,19 @@ export const bulkOperationsRouter = createTRPCRouter({
 
   /**
    * Bulk archive requirements
-   * Requires admin access
+   * Requires BULK_ARCHIVE permission (admin only)
    */
   bulkArchive: protectedProcedure
     .input(bulkArchiveInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to archive requirements',
-        });
-      }
+      // Check permission to bulk archive
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.BULK_ARCHIVE
+      );
 
       const errors: Array<{ requirementId: string; message: string }> = [];
       let archivedCount = 0;
@@ -482,28 +467,19 @@ export const bulkOperationsRouter = createTRPCRouter({
 
   /**
    * Bulk update requirement status
-   * Requires admin access
+   * Requires BULK_STATUS_UPDATE permission (broker or admin only)
    */
   bulkStatusUpdate: protectedProcedure
     .input(bulkStatusUpdateInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      // Verify admin access
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to update requirements',
-        });
-      }
+      // Check permission to bulk status update
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.BULK_STATUS_UPDATE
+      );
 
       const errors: Array<{ requirementId: string; message: string }> = [];
       let updatedCount = 0;

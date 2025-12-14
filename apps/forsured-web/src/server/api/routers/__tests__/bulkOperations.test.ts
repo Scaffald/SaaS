@@ -1,6 +1,7 @@
 /**
  * Bulk Operations Router Tests
  * REQ-2, TASK-12: tRPC Endpoints for Bulk Import/Export
+ * TASK-19: Integrated with Compliance Authorization System
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -18,6 +19,13 @@ vi.mock('../../../../lib/supabase', () => ({
   },
   forsured: vi.fn(),
   core: vi.fn(),
+}));
+
+// Mock the authorization helper
+const mockRequirePermission = vi.fn();
+vi.mock('../../helpers/complianceAuthorization', () => ({
+  requirePermission: (...args: unknown[]) => mockRequirePermission(...args),
+  createComplianceAuthService: vi.fn(),
 }));
 
 // Test UUIDs (v4 format)
@@ -73,6 +81,28 @@ const createMockUserRole = () => ({
 });
 
 /**
+ * Helper to mock permission granted
+ */
+function mockPermissionGranted() {
+  mockRequirePermission.mockResolvedValue({
+    hasPermission: vi.fn().mockResolvedValue(true),
+    getRole: vi.fn().mockReturnValue('admin'),
+  });
+}
+
+/**
+ * Helper to mock permission denied
+ */
+function mockPermissionDenied(permission = 'BULK_IMPORT') {
+  mockRequirePermission.mockRejectedValue(
+    new TRPCError({
+      code: 'FORBIDDEN',
+      message: `Compliance permission denied: ${permission}`,
+    })
+  );
+}
+
+/**
  * Creates a chainable mock builder that supports Supabase's thenable pattern
  */
 function createChainableMock<T>(
@@ -99,6 +129,7 @@ function createChainableMock<T>(
 describe('Bulk Operations Router', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockRequirePermission.mockReset();
   });
 
   // Helper to create caller context
@@ -118,6 +149,8 @@ describe('Bulk Operations Router', () => {
 
   describe('importPreview', () => {
     it('returns preview for valid JSON import data', async () => {
+      mockPermissionGranted();
+
       const jsonData = JSON.stringify([
         {
           code: 'GL-001',
@@ -152,6 +185,8 @@ describe('Bulk Operations Router', () => {
     });
 
     it('detects duplicate codes', async () => {
+      mockPermissionGranted();
+
       const jsonData = JSON.stringify([
         {
           code: 'GL-001',
@@ -200,6 +235,8 @@ describe('Bulk Operations Router', () => {
 
   describe('importExecute', () => {
     it('imports valid requirements successfully', async () => {
+      mockPermissionGranted();
+
       const jsonData = JSON.stringify([
         {
           code: 'GL-001',
@@ -227,13 +264,6 @@ describe('Bulk Operations Router', () => {
         >;
       });
 
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
-
       const ctx = createContext();
       const caller = bulkOperationsRouter.createCaller(ctx);
 
@@ -248,12 +278,7 @@ describe('Bulk Operations Router', () => {
     });
 
     it('rejects non-admin users', async () => {
-      // Mock non-admin role
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockUserRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      mockPermissionDenied('BULK_IMPORT');
 
       const ctx = createContext();
       const caller = bulkOperationsRouter.createCaller(ctx);
@@ -263,10 +288,12 @@ describe('Bulk Operations Router', () => {
           organizationId: ORG_UUID,
           data: '[]',
         })
-      ).rejects.toThrow(TRPCError);
+      ).rejects.toThrow('Compliance permission denied');
     });
 
     it('skips duplicates when skipDuplicates is true', async () => {
+      mockPermissionGranted();
+
       const jsonData = JSON.stringify([
         {
           code: 'GL-001',
@@ -304,13 +331,6 @@ describe('Bulk Operations Router', () => {
         // Insert call for GL-002
         return createChainableMock({ data: { id: REQUIREMENT_UUID_2 }, error: null }) as ReturnType<
           typeof supabaseModule.forsured
-        >;
-      });
-
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
         >;
       });
 
@@ -364,6 +384,7 @@ describe('Bulk Operations Router', () => {
 
   describe('export', () => {
     it('exports requirements in JSON format', async () => {
+      mockPermissionGranted();
       const mockRequirements = [createMockRequirement()];
 
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
@@ -389,6 +410,7 @@ describe('Bulk Operations Router', () => {
     });
 
     it('exports requirements in CSV format', async () => {
+      mockPermissionGranted();
       const mockRequirements = [createMockRequirement()];
 
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
@@ -411,6 +433,7 @@ describe('Bulk Operations Router', () => {
     });
 
     it('applies filters correctly', async () => {
+      mockPermissionGranted();
       const mockRequirements = [
         createMockRequirement({ status: 'active' }),
         createMockRequirement({ id: REQUIREMENT_UUID_2, code: 'GL-002', status: 'draft' }),
@@ -438,6 +461,7 @@ describe('Bulk Operations Router', () => {
     });
 
     it('includes version history when requested', async () => {
+      mockPermissionGranted();
       const mockRequirements = [createMockRequirement()];
       const mockVersions = [
         { requirement_id: REQUIREMENT_UUID, version: 1, changed_at: '2024-01-01', change_summary: 'Initial', changed_fields: null },
@@ -482,6 +506,7 @@ describe('Bulk Operations Router', () => {
 
   describe('exportSummary', () => {
     it('returns summary statistics', async () => {
+      mockPermissionGranted();
       const mockRequirements = [
         { id: REQUIREMENT_UUID, code: 'GL-001', name: 'General Liability', type: 'general_liability', status: 'active', is_template: false, effective_date: '2024-01-01', description: 'Test' },
         { id: REQUIREMENT_UUID_2, code: 'WC-001', name: 'Workers Comp', type: 'workers_comp', status: 'draft', is_template: true, effective_date: '2024-01-01', description: 'Test' },
@@ -509,6 +534,7 @@ describe('Bulk Operations Router', () => {
     });
 
     it('applies filters to summary', async () => {
+      mockPermissionGranted();
       const mockRequirements = [
         { id: REQUIREMENT_UUID, code: 'GL-001', name: 'General Liability', type: 'general_liability', status: 'active', is_template: false, effective_date: '2024-01-01', description: 'Test' },
         { id: REQUIREMENT_UUID_2, code: 'WC-001', name: 'Workers Comp', type: 'workers_comp', status: 'archived', is_template: false, effective_date: '2024-01-01', description: 'Test' },
@@ -535,16 +561,12 @@ describe('Bulk Operations Router', () => {
 
   describe('bulkArchive', () => {
     it('archives multiple requirements successfully', async () => {
+      mockPermissionGranted();
+
       let callCount = 0;
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         callCount++;
         return createChainableMock({ data: null, error: null }) as ReturnType<typeof supabaseModule.forsured>;
-      });
-
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
       });
 
       const ctx = createContext();
@@ -561,11 +583,7 @@ describe('Bulk Operations Router', () => {
     });
 
     it('rejects non-admin users', async () => {
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockUserRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      mockPermissionDenied('BULK_ARCHIVE');
 
       const ctx = createContext();
       const caller = bulkOperationsRouter.createCaller(ctx);
@@ -575,10 +593,12 @@ describe('Bulk Operations Router', () => {
           organizationId: ORG_UUID,
           requirementIds: [REQUIREMENT_UUID],
         })
-      ).rejects.toThrow(TRPCError);
+      ).rejects.toThrow('Compliance permission denied');
     });
 
     it('handles partial failures', async () => {
+      mockPermissionGranted();
+
       let callCount = 0;
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         callCount++;
@@ -588,12 +608,6 @@ describe('Bulk Operations Router', () => {
         }
         return createChainableMock({ data: null, error: { code: 'PGRST116', message: 'Not found' } }) as ReturnType<
           typeof supabaseModule.forsured
-        >;
-      });
-
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
         >;
       });
 
@@ -613,14 +627,10 @@ describe('Bulk Operations Router', () => {
 
   describe('bulkStatusUpdate', () => {
     it('updates status for multiple requirements', async () => {
+      mockPermissionGranted();
+
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         return createChainableMock({ data: null, error: null }) as ReturnType<typeof supabaseModule.forsured>;
-      });
-
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
       });
 
       const ctx = createContext();
@@ -639,11 +649,7 @@ describe('Bulk Operations Router', () => {
     });
 
     it('rejects non-admin users', async () => {
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockUserRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      mockPermissionDenied('BULK_STATUS_UPDATE');
 
       const ctx = createContext();
       const caller = bulkOperationsRouter.createCaller(ctx);
@@ -655,10 +661,12 @@ describe('Bulk Operations Router', () => {
           status: 'active',
           change_summary: 'Bulk activation',
         })
-      ).rejects.toThrow(TRPCError);
+      ).rejects.toThrow('Compliance permission denied');
     });
 
     it('handles partial failures gracefully', async () => {
+      mockPermissionGranted();
+
       let callCount = 0;
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         callCount++;
@@ -667,12 +675,6 @@ describe('Bulk Operations Router', () => {
         }
         return createChainableMock({ data: null, error: { code: 'ERROR', message: 'Database error' } }) as ReturnType<
           typeof supabaseModule.forsured
-        >;
-      });
-
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
         >;
       });
 

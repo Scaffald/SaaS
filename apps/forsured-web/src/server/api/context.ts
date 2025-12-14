@@ -19,6 +19,7 @@ import type { User } from '@supabase/supabase-js';
 export interface Context {
   db: typeof supabase;
   session: User | null;
+  userId: string | null;
   organizationId: string | null;
 }
 
@@ -36,6 +37,7 @@ export async function createContext(
   const token = authHeader?.replace('Bearer ', '');
 
   let session: User | null = null;
+  let userId: string | null = null;
   let organizationId: string | null = null;
 
   if (token) {
@@ -45,6 +47,7 @@ export async function createContext(
 
       if (!error && data.user) {
         session = data.user;
+        userId = data.user.id;
         // Extract organization ID from user metadata
         organizationId =
           (data.user.user_metadata?.organization_id as string) || null;
@@ -58,6 +61,7 @@ export async function createContext(
   return {
     db: supabase,
     session,
+    userId,
     organizationId,
   };
 }

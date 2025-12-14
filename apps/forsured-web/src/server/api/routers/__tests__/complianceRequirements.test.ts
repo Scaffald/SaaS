@@ -20,6 +20,13 @@ vi.mock('../../../../lib/supabase', () => ({
   core: vi.fn(),
 }));
 
+// Mock the authorization helper
+const mockRequirePermission = vi.fn();
+vi.mock('../../helpers/complianceAuthorization', () => ({
+  requirePermission: (...args: unknown[]) => mockRequirePermission(...args),
+  createComplianceAuthService: vi.fn(),
+}));
+
 // Test UUIDs (v4 format)
 const ORG_UUID = '550e8400-e29b-41d4-a716-446655440000';
 const OTHER_ORG_UUID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
@@ -82,6 +89,28 @@ const createMockAdminRole = () => ({
 });
 
 /**
+ * Helper to mock permission granted
+ */
+function mockPermissionGranted() {
+  mockRequirePermission.mockResolvedValue({
+    hasPermission: vi.fn().mockResolvedValue(true),
+    getRole: vi.fn().mockReturnValue('admin'),
+  });
+}
+
+/**
+ * Helper to mock permission denied
+ */
+function mockPermissionDenied(permission = 'REQUIREMENT_CREATE') {
+  mockRequirePermission.mockRejectedValue(
+    new TRPCError({
+      code: 'FORBIDDEN',
+      message: `Compliance permission denied: ${permission}`,
+    })
+  );
+}
+
+/**
  * Creates a chainable mock builder that supports Supabase's thenable pattern
  * The mock is Promise-like so await resolves to the final value
  */
@@ -131,6 +160,9 @@ describe('Compliance Requirements Router', () => {
     it('returns paginated list of requirements', async () => {
       const mockRequirements = [createMockRequirement(), createMockRequirement({ id: 'req-2', code: 'GL-002' })];
 
+      // Mock permission check for viewing requirements
+      mockPermissionGranted();
+
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         return createChainableMock({ data: mockRequirements, error: null, count: 2 }) as ReturnType<
           typeof supabaseModule.forsured
@@ -167,6 +199,9 @@ describe('Compliance Requirements Router', () => {
     it('returns a single requirement by ID', async () => {
       const mockRequirement = createMockRequirement();
 
+      // Mock permission check
+      mockPermissionGranted();
+
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         return createChainableMock({ data: mockRequirement, error: null }) as ReturnType<
           typeof supabaseModule.forsured
@@ -186,6 +221,9 @@ describe('Compliance Requirements Router', () => {
     });
 
     it('throws NOT_FOUND for non-existent requirement', async () => {
+      // Mock permission check
+      mockPermissionGranted();
+
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         return createChainableMock({ data: null, error: { code: 'PGRST116', message: 'Not found' } }) as ReturnType<
           typeof supabaseModule.forsured
@@ -208,12 +246,8 @@ describe('Compliance Requirements Router', () => {
     it('creates a new requirement when admin', async () => {
       const mockRequirement = createMockRequirement();
 
-      // Mock admin check - returns admin role assignment
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) check duplicate, 2) insert
       let forsuredCallCount = 0;
@@ -253,12 +287,8 @@ describe('Compliance Requirements Router', () => {
     });
 
     it('throws CONFLICT for duplicate code', async () => {
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock duplicate exists
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
@@ -286,11 +316,9 @@ describe('Compliance Requirements Router', () => {
       ).rejects.toThrow('already exists');
     });
 
-    it('throws FORBIDDEN when not admin', async () => {
-      // Mock non-admin check - returns empty array
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [], error: null }) as ReturnType<typeof supabaseModule.core>;
-      });
+    it('throws FORBIDDEN when not authorized', async () => {
+      // Mock permission check - denied
+      mockPermissionDenied('REQUIREMENT_CREATE');
 
       const ctx = createContext();
       const caller = complianceRequirementsRouter.createCaller(ctx);
@@ -308,7 +336,7 @@ describe('Compliance Requirements Router', () => {
             documentation_requirements: [],
           },
         })
-      ).rejects.toThrow('Admin access required');
+      ).rejects.toThrow('Compliance permission denied');
     });
   });
 
@@ -317,12 +345,8 @@ describe('Compliance Requirements Router', () => {
       const existingRequirement = createMockRequirement();
       const updatedRequirement = createMockRequirement({ name: 'Updated Name', current_version: 2 });
 
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) get existing, 2) update
       let forsuredCallCount = 0;
@@ -356,12 +380,8 @@ describe('Compliance Requirements Router', () => {
     });
 
     it('throws NOT_FOUND for non-existent requirement', async () => {
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock not found
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
@@ -388,12 +408,8 @@ describe('Compliance Requirements Router', () => {
     it('soft deletes (archives) a requirement when admin', async () => {
       const existingRequirement = createMockRequirement();
 
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) get existing, 2) update to archived
       let forsuredCallCount = 0;
@@ -420,11 +436,9 @@ describe('Compliance Requirements Router', () => {
       expect(result.success).toBe(true);
     });
 
-    it('throws FORBIDDEN when not admin', async () => {
-      // Mock non-admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [], error: null }) as ReturnType<typeof supabaseModule.core>;
-      });
+    it('throws FORBIDDEN when not authorized', async () => {
+      // Mock permission check - denied
+      mockPermissionDenied('REQUIREMENT_DELETE');
 
       const ctx = createContext();
       const caller = complianceRequirementsRouter.createCaller(ctx);
@@ -434,7 +448,7 @@ describe('Compliance Requirements Router', () => {
           organizationId: ORG_UUID,
           requirementId: REQUIREMENT_UUID,
         })
-      ).rejects.toThrow('Admin access required');
+      ).rejects.toThrow('Compliance permission denied');
     });
   });
 
@@ -448,12 +462,8 @@ describe('Compliance Requirements Router', () => {
         status: 'draft',
       });
 
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) get source, 2) check duplicate, 3) insert
       let forsuredCallCount = 0;
@@ -485,12 +495,8 @@ describe('Compliance Requirements Router', () => {
     });
 
     it('throws NOT_FOUND for non-existent source requirement', async () => {
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock not found
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
@@ -514,6 +520,9 @@ describe('Compliance Requirements Router', () => {
   describe('getVersions', () => {
     it('returns paginated version history', async () => {
       const mockVersions = [createMockVersion(2), createMockVersion(1)];
+
+      // Mock permission check
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) verify requirement exists, 2) get versions
       let forsuredCallCount = 0;
@@ -544,6 +553,9 @@ describe('Compliance Requirements Router', () => {
     });
 
     it('throws NOT_FOUND for non-existent requirement', async () => {
+      // Mock permission check
+      mockPermissionGranted();
+
       vi.mocked(supabaseModule.forsured).mockImplementation(() => {
         return createChainableMock({ data: null, error: { code: 'PGRST116', message: 'Not found' } }) as ReturnType<
           typeof supabaseModule.forsured
@@ -565,6 +577,9 @@ describe('Compliance Requirements Router', () => {
   describe('getVersion', () => {
     it('returns a specific version by version number', async () => {
       const mockVersion = createMockVersion(2);
+
+      // Mock permission check
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) verify requirement exists, 2) get version
       let forsuredCallCount = 0;
@@ -595,6 +610,9 @@ describe('Compliance Requirements Router', () => {
     it('returns a specific version by version ID', async () => {
       const mockVersion = createMockVersion(1, { id: VERSION_UUID });
 
+      // Mock permission check
+      mockPermissionGranted();
+
       // Mock forsured queries: 1) verify requirement exists, 2) get version
       let forsuredCallCount = 0;
       vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
@@ -622,6 +640,9 @@ describe('Compliance Requirements Router', () => {
     });
 
     it('throws NOT_FOUND for non-existent version', async () => {
+      // Mock permission check
+      mockPermissionGranted();
+
       // Mock forsured queries: 1) verify requirement exists, 2) version not found
       let forsuredCallCount = 0;
       vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
@@ -667,6 +688,9 @@ describe('Compliance Requirements Router', () => {
         },
       });
 
+      // Mock permission check
+      mockPermissionGranted();
+
       // Mock forsured queries: 1) verify requirement exists, 2) get both versions
       let forsuredCallCount = 0;
       vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
@@ -707,6 +731,9 @@ describe('Compliance Requirements Router', () => {
     });
 
     it('throws NOT_FOUND when one version does not exist', async () => {
+      // Mock permission check
+      mockPermissionGranted();
+
       // Mock forsured queries: 1) verify requirement exists, 2) only one version found
       let forsuredCallCount = 0;
       vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
@@ -761,12 +788,8 @@ describe('Compliance Requirements Router', () => {
         current_version: 4,
       });
 
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) get existing, 2) get version to restore, 3) update
       let forsuredCallCount = 0;
@@ -800,11 +823,9 @@ describe('Compliance Requirements Router', () => {
       expect(result.name).toBe('Version 1 Name');
     });
 
-    it('throws FORBIDDEN when not admin', async () => {
-      // Mock non-admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [], error: null }) as ReturnType<typeof supabaseModule.core>;
-      });
+    it('throws FORBIDDEN when not authorized', async () => {
+      // Mock permission check - denied
+      mockPermissionDenied('VERSION_RESTORE');
 
       const ctx = createContext();
       const caller = complianceRequirementsRouter.createCaller(ctx);
@@ -816,18 +837,14 @@ describe('Compliance Requirements Router', () => {
           versionNumber: 1,
           change_summary: 'Restoring to version 1',
         })
-      ).rejects.toThrow('Admin access required');
+      ).rejects.toThrow('Compliance permission denied');
     });
 
     it('throws NOT_FOUND for non-existent version', async () => {
       const existingRequirement = createMockRequirement();
 
-      // Mock admin check
-      vi.mocked(supabaseModule.core).mockImplementation(() => {
-        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
-          typeof supabaseModule.core
-        >;
-      });
+      // Mock permission check - granted for admin
+      mockPermissionGranted();
 
       // Mock forsured queries: 1) get existing, 2) version not found
       let forsuredCallCount = 0;

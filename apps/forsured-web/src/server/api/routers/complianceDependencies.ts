@@ -1,6 +1,7 @@
 /**
  * Compliance Dependencies Router
  * REQ-2, TASK-8: tRPC CRUD Operations for Compliance Dependencies
+ * TASK-19: Integrated with Compliance Authorization System
  *
  * Implements:
  * - Dependency CRUD with cycle validation
@@ -11,7 +12,7 @@
 
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { forsured, core } from '../../../lib/supabase';
+import { forsured } from '../../../lib/supabase';
 import {
   dependencyListInputSchema,
   dependencyListAllInputSchema,
@@ -38,37 +39,17 @@ import {
   type RequirementInfo,
 } from '../../../lib/compliance/dependency-resolver';
 import type { RequirementDependency } from '../../../lib/compliance/dependency-types';
+import { requirePermission } from '../helpers/complianceAuthorization';
+import { CompliancePermission } from '../../../lib/compliance/authorization';
 
 // =============================================================================
 // Helper Functions
 // =============================================================================
 
 /**
- * Check if user has admin access to an organization
- */
-async function hasAdminAccess(userId: string, organizationId: string): Promise<boolean> {
-  const { data, error } = await core('role_assignments')
-    .select(`
-      id,
-      roles:role_id (
-        name
-      )
-    `)
-    .eq('user_id', userId)
-    .eq('organization_id', organizationId);
-
-  if (error || !data) return false;
-
-  return data.some((assignment) => {
-    const role = assignment.roles as { name: string } | null;
-    return role && ['admin', 'super_admin', 'platform_admin'].includes(role.name);
-  });
-}
-
-/**
  * Verify organization access
  */
-function verifyOrganizationAccess(userOrgId: string | undefined, requestOrgId: string): void {
+function verifyOrganizationAccess(userOrgId: string | undefined | null, requestOrgId: string): void {
   if (userOrgId !== requestOrgId) {
     throw new TRPCError({
       code: 'FORBIDDEN',
@@ -291,9 +272,18 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * List dependencies for a specific requirement
+   * Requires DEPENDENCY_VIEW permission
    */
   list: protectedProcedure.input(dependencyListInputSchema).query(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+    // Check permission to view dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_VIEW
+    );
+
     await verifyRequirementOwnership(input.requirementId, input.organizationId);
 
     const { data, error } = await forsured('compliance_requirement_dependencies')
@@ -326,9 +316,17 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * List all dependencies in an organization with pagination
+   * Requires DEPENDENCY_VIEW permission
    */
   listAll: protectedProcedure.input(dependencyListAllInputSchema).query(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+    // Check permission to view dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_VIEW
+    );
 
     // Get all requirements for this organization first
     const { data: requirements } = await forsured('compliance_requirements')
@@ -406,9 +404,18 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Get a single dependency by ID
+   * Requires DEPENDENCY_VIEW permission
    */
   get: protectedProcedure.input(dependencyGetInputSchema).query(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+    // Check permission to view dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_VIEW
+    );
+
     await verifyDependencyOwnership(input.dependencyId, input.organizationId);
 
     const { data, error } = await forsured('compliance_requirement_dependencies')
@@ -448,24 +455,17 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Create a new dependency (with cycle validation)
+   * Requires DEPENDENCY_CREATE permission
    */
   create: protectedProcedure.input(dependencyCreateInputSchema).mutation(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-    if (!ctx.userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
-
-    const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-    if (!isAdmin) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Admin access required to create dependencies',
-      });
-    }
+    // Check permission to create dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_CREATE
+    );
 
     // Verify both requirements exist in the organization
     await verifyRequirementOwnership(input.requirementId, input.organizationId);
@@ -528,24 +528,17 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Update an existing dependency
+   * Requires DEPENDENCY_EDIT permission
    */
   update: protectedProcedure.input(dependencyUpdateInputSchema).mutation(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-    if (!ctx.userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
-
-    const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-    if (!isAdmin) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Admin access required to update dependencies',
-      });
-    }
+    // Check permission to edit dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_EDIT
+    );
 
     await verifyDependencyOwnership(input.dependencyId, input.organizationId);
 
@@ -578,24 +571,17 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Delete a dependency
+   * Requires DEPENDENCY_DELETE permission
    */
   delete: protectedProcedure.input(dependencyDeleteInputSchema).mutation(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-    if (!ctx.userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
-
-    const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-    if (!isAdmin) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Admin access required to delete dependencies',
-      });
-    }
+    // Check permission to delete dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_DELETE
+    );
 
     await verifyDependencyOwnership(input.dependencyId, input.organizationId);
 
@@ -619,11 +605,19 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Validate that adding a dependency won't create a cycle
+   * Requires DEPENDENCY_VIEW permission
    */
   validateCycle: protectedProcedure
     .input(validateCycleInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to view dependencies
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.DEPENDENCY_VIEW
+      );
 
       const dependencies = await getOrganizationDependencies(input.organizationId);
       const requirements = await getRequirementInfoMap(input.organizationId);
@@ -633,9 +627,18 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Get the dependency tree for a requirement
+   * Requires DEPENDENCY_VIEW permission
    */
   getTree: protectedProcedure.input(dependencyTreeInputSchema).query(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+    // Check permission to view dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_VIEW
+    );
+
     await verifyRequirementOwnership(input.requirementId, input.organizationId);
 
     const dependencies = await getOrganizationDependencies(input.organizationId);
@@ -662,9 +665,18 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Get requirements that depend on a given requirement
+   * Requires DEPENDENCY_VIEW permission
    */
   getDependents: protectedProcedure.input(dependentsInputSchema).query(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+    // Check permission to view dependencies
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.DEPENDENCY_VIEW
+    );
+
     await verifyRequirementOwnership(input.requirementId, input.organizationId);
 
     const dependencies = await getOrganizationDependencies(input.organizationId);
@@ -682,11 +694,20 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * List umbrella schedule entries for a requirement
+   * Requires DEPENDENCY_VIEW permission
    */
   listUmbrellaSchedule: protectedProcedure
     .input(umbrellaScheduleListInputSchema)
     .query(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Check permission to view dependencies
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.DEPENDENCY_VIEW
+      );
+
       await verifyRequirementOwnership(input.umbrellaRequirementId, input.organizationId);
 
       const { data, error } = await forsured('umbrella_underlying_schedule')
@@ -706,26 +727,19 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Create an umbrella schedule entry
+   * Requires DEPENDENCY_CREATE permission
    */
   createUmbrellaSchedule: protectedProcedure
     .input(umbrellaScheduleCreateInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to manage umbrella schedules',
-        });
-      }
+      // Check permission to create dependencies (umbrella schedules are part of dependency management)
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.DEPENDENCY_CREATE
+      );
 
       await verifyRequirementOwnership(input.umbrellaRequirementId, input.organizationId);
 
@@ -771,26 +785,19 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Update an umbrella schedule entry
+   * Requires DEPENDENCY_EDIT permission
    */
   updateUmbrellaSchedule: protectedProcedure
     .input(umbrellaScheduleUpdateInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to manage umbrella schedules',
-        });
-      }
+      // Check permission to edit dependencies (umbrella schedules are part of dependency management)
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.DEPENDENCY_EDIT
+      );
 
       await verifyUmbrellaScheduleOwnership(input.scheduleId, input.organizationId);
 
@@ -838,26 +845,19 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Delete an umbrella schedule entry
+   * Requires DEPENDENCY_DELETE permission
    */
   deleteUmbrellaSchedule: protectedProcedure
     .input(umbrellaScheduleDeleteInputSchema)
     .mutation(async ({ ctx, input }) => {
       verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-      if (!ctx.userId) {
-        throw new TRPCError({
-          code: 'UNAUTHORIZED',
-          message: 'User not authenticated',
-        });
-      }
-
-      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-      if (!isAdmin) {
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Admin access required to manage umbrella schedules',
-        });
-      }
+      // Check permission to delete dependencies (umbrella schedules are part of dependency management)
+      await requirePermission(
+        ctx.userId,
+        input.organizationId,
+        CompliancePermission.DEPENDENCY_DELETE
+      );
 
       await verifyUmbrellaScheduleOwnership(input.scheduleId, input.organizationId);
 
@@ -881,9 +881,18 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * List rules for a requirement
+   * Requires REQUIREMENT_VIEW permission
    */
   listRules: protectedProcedure.input(rulesListInputSchema).query(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+    // Check permission to view requirements (rules are part of requirement management)
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.REQUIREMENT_VIEW
+    );
+
     await verifyRequirementOwnership(input.requirementId, input.organizationId);
 
     const { data, error } = await forsured('compliance_requirement_rules')
@@ -903,24 +912,17 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Create a rule
+   * Requires REQUIREMENT_EDIT permission (rules are part of requirement configuration)
    */
   createRule: protectedProcedure.input(ruleCreateInputSchema).mutation(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-    if (!ctx.userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
-
-    const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-    if (!isAdmin) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Admin access required to manage rules',
-      });
-    }
+    // Check permission to edit requirements (rules are part of requirement configuration)
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.REQUIREMENT_EDIT
+    );
 
     await verifyRequirementOwnership(input.requirementId, input.organizationId);
 
@@ -949,24 +951,17 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Update a rule
+   * Requires REQUIREMENT_EDIT permission (rules are part of requirement configuration)
    */
   updateRule: protectedProcedure.input(ruleUpdateInputSchema).mutation(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-    if (!ctx.userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
-
-    const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-    if (!isAdmin) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Admin access required to manage rules',
-      });
-    }
+    // Check permission to edit requirements (rules are part of requirement configuration)
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.REQUIREMENT_EDIT
+    );
 
     await verifyRuleOwnership(input.ruleId, input.organizationId);
 
@@ -1008,24 +1003,17 @@ export const complianceDependenciesRouter = createTRPCRouter({
 
   /**
    * Delete a rule
+   * Requires REQUIREMENT_EDIT permission (rules are part of requirement configuration)
    */
   deleteRule: protectedProcedure.input(ruleDeleteInputSchema).mutation(async ({ ctx, input }) => {
     verifyOrganizationAccess(ctx.organizationId, input.organizationId);
 
-    if (!ctx.userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
-
-    const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
-    if (!isAdmin) {
-      throw new TRPCError({
-        code: 'FORBIDDEN',
-        message: 'Admin access required to manage rules',
-      });
-    }
+    // Check permission to edit requirements (rules are part of requirement configuration)
+    await requirePermission(
+      ctx.userId,
+      input.organizationId,
+      CompliancePermission.REQUIREMENT_EDIT
+    );
 
     await verifyRuleOwnership(input.ruleId, input.organizationId);
 
