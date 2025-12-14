@@ -11,6 +11,7 @@
 
 import { t } from '../middleware.ts'
 import { accountDeletionRouter } from './account-deletion.router.ts'
+import { ccpaRouter } from './ccpa.router.ts'
 import { addressesRouter } from './addresses.router.ts'
 import { applicationsRouter } from './applications.router.ts'
 import { authRouter } from './auth.router.ts'
@@ -92,4 +93,5 @@ export const appRouter = t.router({
   accountDeletion: accountDeletionRouter,
   connections: connectionsRouter,
   profileViews: profileViewsRouter,
+  ccpa: ccpaRouter,
 })
