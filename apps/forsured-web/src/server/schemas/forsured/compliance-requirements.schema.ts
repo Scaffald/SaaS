@@ -157,6 +157,39 @@ export const requirementVersionsInputSchema = z.object({
   pageSize: z.number().min(1).max(50).default(10),
 });
 
+/**
+ * Get a specific version by ID or version number
+ */
+export const requirementVersionGetInputSchema = z.object({
+  organizationId: z.string().uuid(),
+  requirementId: z.string().uuid(),
+  versionId: z.string().uuid().optional(),
+  versionNumber: z.number().int().min(1).optional(),
+}).refine(
+  (data) => data.versionId || data.versionNumber,
+  { message: 'Either versionId or versionNumber must be provided' }
+);
+
+/**
+ * Compare two versions
+ */
+export const requirementCompareVersionsInputSchema = z.object({
+  organizationId: z.string().uuid(),
+  requirementId: z.string().uuid(),
+  fromVersionNumber: z.number().int().min(1),
+  toVersionNumber: z.number().int().min(1),
+});
+
+/**
+ * Restore a previous version
+ */
+export const requirementRestoreVersionInputSchema = z.object({
+  organizationId: z.string().uuid(),
+  requirementId: z.string().uuid(),
+  versionNumber: z.number().int().min(1),
+  change_summary: z.string().min(1, 'Change summary is required'),
+});
+
 // =============================================================================
 // Type Exports
 // =============================================================================
@@ -176,3 +209,6 @@ export type RequirementUpdateInput = z.infer<typeof requirementUpdateInputSchema
 export type RequirementDeleteInput = z.infer<typeof requirementDeleteInputSchema>;
 export type RequirementCloneInput = z.infer<typeof requirementCloneInputSchema>;
 export type RequirementVersionsInput = z.infer<typeof requirementVersionsInputSchema>;
+export type RequirementVersionGetInput = z.infer<typeof requirementVersionGetInputSchema>;
+export type RequirementCompareVersionsInput = z.infer<typeof requirementCompareVersionsInputSchema>;
+export type RequirementRestoreVersionInput = z.infer<typeof requirementRestoreVersionInputSchema>;

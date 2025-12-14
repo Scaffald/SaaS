@@ -26,7 +26,7 @@ const OTHER_ORG_UUID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 const USER_UUID = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 const REQUIREMENT_UUID = '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d';
 const NON_EXISTENT_UUID = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee'; // Valid v4 UUID format
-const VERSION_UUID = 'a987fbc9-4bed-3078-cf07-9141ba07c9f3';
+const VERSION_UUID = 'a987fbc9-4bed-3078-8f07-9141ba07c9f3'; // Fixed: variant byte must be 8, 9, a, or b
 
 // Mock requirement data
 const createMockRequirement = (overrides = {}) => ({
@@ -559,6 +559,302 @@ describe('Compliance Requirements Router', () => {
           requirementId: NON_EXISTENT_UUID,
         })
       ).rejects.toThrow(TRPCError);
+    });
+  });
+
+  describe('getVersion', () => {
+    it('returns a specific version by version number', async () => {
+      const mockVersion = createMockVersion(2);
+
+      // Mock forsured queries: 1) verify requirement exists, 2) get version
+      let forsuredCallCount = 0;
+      vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
+        forsuredCallCount++;
+        if (tableName === 'compliance_requirements' || forsuredCallCount === 1) {
+          return createChainableMock({ data: { id: REQUIREMENT_UUID }, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        }
+        // Version query
+        return createChainableMock({ data: mockVersion, error: null }) as ReturnType<typeof supabaseModule.forsured>;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      const result = await caller.getVersion({
+        organizationId: ORG_UUID,
+        requirementId: REQUIREMENT_UUID,
+        versionNumber: 2,
+      });
+
+      expect(result.version).toBe(2);
+      expect(result.requirement_id).toBe(REQUIREMENT_UUID);
+    });
+
+    it('returns a specific version by version ID', async () => {
+      const mockVersion = createMockVersion(1, { id: VERSION_UUID });
+
+      // Mock forsured queries: 1) verify requirement exists, 2) get version
+      let forsuredCallCount = 0;
+      vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
+        forsuredCallCount++;
+        if (tableName === 'compliance_requirements' || forsuredCallCount === 1) {
+          return createChainableMock({ data: { id: REQUIREMENT_UUID }, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        }
+        // Version query
+        return createChainableMock({ data: mockVersion, error: null }) as ReturnType<typeof supabaseModule.forsured>;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      const result = await caller.getVersion({
+        organizationId: ORG_UUID,
+        requirementId: REQUIREMENT_UUID,
+        versionId: VERSION_UUID,
+      });
+
+      expect(result.id).toBe(VERSION_UUID);
+      expect(result.version).toBe(1);
+    });
+
+    it('throws NOT_FOUND for non-existent version', async () => {
+      // Mock forsured queries: 1) verify requirement exists, 2) version not found
+      let forsuredCallCount = 0;
+      vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
+        forsuredCallCount++;
+        if (tableName === 'compliance_requirements' || forsuredCallCount === 1) {
+          return createChainableMock({ data: { id: REQUIREMENT_UUID }, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        }
+        // Version not found
+        return createChainableMock({ data: null, error: { code: 'PGRST116', message: 'Not found' } }) as ReturnType<
+          typeof supabaseModule.forsured
+        >;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      await expect(
+        caller.getVersion({
+          organizationId: ORG_UUID,
+          requirementId: REQUIREMENT_UUID,
+          versionNumber: 999,
+        })
+      ).rejects.toThrow('not found');
+    });
+  });
+
+  describe('compareVersions', () => {
+    it('returns differences between two versions', async () => {
+      const version1 = createMockVersion(1, {
+        snapshot: {
+          name: 'Original Name',
+          description: 'Original description',
+          status: 'draft',
+        },
+      });
+      const version2 = createMockVersion(2, {
+        snapshot: {
+          name: 'Updated Name',
+          description: 'Original description',
+          status: 'active',
+        },
+      });
+
+      // Mock forsured queries: 1) verify requirement exists, 2) get both versions
+      let forsuredCallCount = 0;
+      vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
+        forsuredCallCount++;
+        if (tableName === 'compliance_requirements' || forsuredCallCount === 1) {
+          return createChainableMock({ data: { id: REQUIREMENT_UUID }, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        }
+        // Return both versions
+        return createChainableMock({ data: [version1, version2], error: null }) as ReturnType<
+          typeof supabaseModule.forsured
+        >;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      const result = await caller.compareVersions({
+        organizationId: ORG_UUID,
+        requirementId: REQUIREMENT_UUID,
+        fromVersionNumber: 1,
+        toVersionNumber: 2,
+      });
+
+      expect(result.fromVersion.version).toBe(1);
+      expect(result.toVersion.version).toBe(2);
+      expect(result.differences).toContainEqual({
+        field: 'name',
+        fromValue: 'Original Name',
+        toValue: 'Updated Name',
+      });
+      expect(result.differences).toContainEqual({
+        field: 'status',
+        fromValue: 'draft',
+        toValue: 'active',
+      });
+    });
+
+    it('throws NOT_FOUND when one version does not exist', async () => {
+      // Mock forsured queries: 1) verify requirement exists, 2) only one version found
+      let forsuredCallCount = 0;
+      vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
+        forsuredCallCount++;
+        if (tableName === 'compliance_requirements' || forsuredCallCount === 1) {
+          return createChainableMock({ data: { id: REQUIREMENT_UUID }, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        }
+        // Only one version found
+        return createChainableMock({ data: [createMockVersion(1)], error: null }) as ReturnType<
+          typeof supabaseModule.forsured
+        >;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      await expect(
+        caller.compareVersions({
+          organizationId: ORG_UUID,
+          requirementId: REQUIREMENT_UUID,
+          fromVersionNumber: 1,
+          toVersionNumber: 999,
+        })
+      ).rejects.toThrow('One or both versions not found');
+    });
+  });
+
+  describe('restoreVersion', () => {
+    it('restores a requirement to a previous version when admin', async () => {
+      const existingRequirement = createMockRequirement({ current_version: 3 });
+      const versionToRestore = createMockVersion(1, {
+        snapshot: {
+          code: 'GL-001',
+          name: 'Version 1 Name',
+          type: 'general_liability',
+          description: 'Original description',
+          status: 'active',
+          effective_date: '2024-01-01',
+          expiration_date: null,
+          requirement_definition: {
+            coverage_limits: { per_occurrence: 500000 },
+            required_endorsements: [],
+            policy_conditions: [],
+            documentation_requirements: [],
+          },
+        },
+      });
+      const restoredRequirement = createMockRequirement({
+        name: 'Version 1 Name',
+        current_version: 4,
+      });
+
+      // Mock admin check
+      vi.mocked(supabaseModule.core).mockImplementation(() => {
+        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
+          typeof supabaseModule.core
+        >;
+      });
+
+      // Mock forsured queries: 1) get existing, 2) get version to restore, 3) update
+      let forsuredCallCount = 0;
+      vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
+        forsuredCallCount++;
+        if (tableName === 'compliance_requirements' && forsuredCallCount === 1) {
+          return createChainableMock({ data: existingRequirement, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        } else if (tableName === 'compliance_requirement_versions' || forsuredCallCount === 2) {
+          return createChainableMock({ data: versionToRestore, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        }
+        // Update call
+        return createChainableMock({ data: restoredRequirement, error: null }) as ReturnType<
+          typeof supabaseModule.forsured
+        >;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      const result = await caller.restoreVersion({
+        organizationId: ORG_UUID,
+        requirementId: REQUIREMENT_UUID,
+        versionNumber: 1,
+        change_summary: 'Restoring to version 1',
+      });
+
+      expect(result.name).toBe('Version 1 Name');
+    });
+
+    it('throws FORBIDDEN when not admin', async () => {
+      // Mock non-admin check
+      vi.mocked(supabaseModule.core).mockImplementation(() => {
+        return createChainableMock({ data: [], error: null }) as ReturnType<typeof supabaseModule.core>;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      await expect(
+        caller.restoreVersion({
+          organizationId: ORG_UUID,
+          requirementId: REQUIREMENT_UUID,
+          versionNumber: 1,
+          change_summary: 'Restoring to version 1',
+        })
+      ).rejects.toThrow('Admin access required');
+    });
+
+    it('throws NOT_FOUND for non-existent version', async () => {
+      const existingRequirement = createMockRequirement();
+
+      // Mock admin check
+      vi.mocked(supabaseModule.core).mockImplementation(() => {
+        return createChainableMock({ data: [createMockAdminRole()], error: null }) as ReturnType<
+          typeof supabaseModule.core
+        >;
+      });
+
+      // Mock forsured queries: 1) get existing, 2) version not found
+      let forsuredCallCount = 0;
+      vi.mocked(supabaseModule.forsured).mockImplementation((tableName: string) => {
+        forsuredCallCount++;
+        if (tableName === 'compliance_requirements' || forsuredCallCount === 1) {
+          return createChainableMock({ data: existingRequirement, error: null }) as ReturnType<
+            typeof supabaseModule.forsured
+          >;
+        }
+        // Version not found
+        return createChainableMock({ data: null, error: { code: 'PGRST116', message: 'Not found' } }) as ReturnType<
+          typeof supabaseModule.forsured
+        >;
+      });
+
+      const ctx = createContext();
+      const caller = complianceRequirementsRouter.createCaller(ctx);
+
+      await expect(
+        caller.restoreVersion({
+          organizationId: ORG_UUID,
+          requirementId: REQUIREMENT_UUID,
+          versionNumber: 999,
+          change_summary: 'Restoring to version 999',
+        })
+      ).rejects.toThrow('not found');
     });
   });
 });

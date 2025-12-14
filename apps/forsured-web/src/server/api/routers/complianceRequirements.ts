@@ -20,6 +20,9 @@ import {
   requirementDeleteInputSchema,
   requirementCloneInputSchema,
   requirementVersionsInputSchema,
+  requirementVersionGetInputSchema,
+  requirementCompareVersionsInputSchema,
+  requirementRestoreVersionInputSchema,
 } from '../../schemas/forsured/compliance-requirements.schema';
 
 // =============================================================================
@@ -549,5 +552,247 @@ export const complianceRequirementsRouter = createTRPCRouter({
           totalPages: Math.ceil((count ?? 0) / input.pageSize),
         },
       };
+    }),
+
+  /**
+   * Get a specific version by ID or version number
+   */
+  getVersion: protectedProcedure
+    .input(requirementVersionGetInputSchema)
+    .query(async ({ ctx, input }) => {
+      verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Verify requirement exists and belongs to organization
+      const { data: requirement, error: reqError } = await forsured('compliance_requirements')
+        .select('id')
+        .eq('id', input.requirementId)
+        .eq('organization_id', input.organizationId)
+        .single();
+
+      if (reqError || !requirement) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Requirement not found',
+        });
+      }
+
+      // Build query based on input
+      let query = forsured('compliance_requirement_versions')
+        .select(`
+          id,
+          requirement_id,
+          version,
+          snapshot,
+          changed_fields,
+          change_summary,
+          changed_by,
+          changed_at,
+          parent_version_id
+        `)
+        .eq('requirement_id', input.requirementId);
+
+      if (input.versionId) {
+        query = query.eq('id', input.versionId);
+      } else if (input.versionNumber) {
+        query = query.eq('version', input.versionNumber);
+      }
+
+      const { data, error } = await query.single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: input.versionId
+            ? `Version with ID "${input.versionId}" not found`
+            : `Version ${input.versionNumber} not found`,
+        });
+      }
+
+      return data;
+    }),
+
+  /**
+   * Compare two versions side-by-side
+   * Returns field-level differences between versions
+   */
+  compareVersions: protectedProcedure
+    .input(requirementCompareVersionsInputSchema)
+    .query(async ({ ctx, input }) => {
+      verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Verify requirement exists and belongs to organization
+      const { data: requirement, error: reqError } = await forsured('compliance_requirements')
+        .select('id')
+        .eq('id', input.requirementId)
+        .eq('organization_id', input.organizationId)
+        .single();
+
+      if (reqError || !requirement) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Requirement not found',
+        });
+      }
+
+      // Fetch both versions
+      const { data: versions, error } = await forsured('compliance_requirement_versions')
+        .select(`
+          id,
+          version,
+          snapshot,
+          changed_fields,
+          change_summary,
+          changed_by,
+          changed_at
+        `)
+        .eq('requirement_id', input.requirementId)
+        .in('version', [input.fromVersionNumber, input.toVersionNumber])
+        .order('version', { ascending: true });
+
+      if (error || !versions || versions.length !== 2) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'One or both versions not found',
+        });
+      }
+
+      const fromVersion = versions.find((v) => v.version === input.fromVersionNumber);
+      const toVersion = versions.find((v) => v.version === input.toVersionNumber);
+
+      if (!fromVersion || !toVersion) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'One or both versions not found',
+        });
+      }
+
+      // Compute differences between snapshots
+      const fromSnapshot = fromVersion.snapshot as Record<string, unknown>;
+      const toSnapshot = toVersion.snapshot as Record<string, unknown>;
+
+      const differences: Array<{
+        field: string;
+        fromValue: unknown;
+        toValue: unknown;
+      }> = [];
+
+      // Get all keys from both snapshots
+      const allKeys = new Set([...Object.keys(fromSnapshot), ...Object.keys(toSnapshot)]);
+
+      for (const key of allKeys) {
+        const fromValue = fromSnapshot[key];
+        const toValue = toSnapshot[key];
+
+        // Deep compare values
+        if (JSON.stringify(fromValue) !== JSON.stringify(toValue)) {
+          differences.push({
+            field: key,
+            fromValue,
+            toValue,
+          });
+        }
+      }
+
+      return {
+        fromVersion: {
+          version: fromVersion.version,
+          changed_at: fromVersion.changed_at,
+          changed_by: fromVersion.changed_by,
+          change_summary: fromVersion.change_summary,
+        },
+        toVersion: {
+          version: toVersion.version,
+          changed_at: toVersion.changed_at,
+          changed_by: toVersion.changed_by,
+          change_summary: toVersion.change_summary,
+        },
+        differences,
+      };
+    }),
+
+  /**
+   * Restore a requirement to a previous version
+   * Creates a new version with the snapshot from the specified version
+   * Requires admin access
+   */
+  restoreVersion: protectedProcedure
+    .input(requirementRestoreVersionInputSchema)
+    .mutation(async ({ ctx, input }) => {
+      verifyOrganizationAccess(ctx.organizationId, input.organizationId);
+
+      // Verify admin access
+      if (!ctx.userId) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'User not authenticated',
+        });
+      }
+
+      const isAdmin = await hasAdminAccess(ctx.userId, input.organizationId);
+      if (!isAdmin) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Admin access required to restore versions',
+        });
+      }
+
+      // Verify requirement exists and belongs to organization
+      const { data: requirement, error: reqError } = await forsured('compliance_requirements')
+        .select('*')
+        .eq('id', input.requirementId)
+        .eq('organization_id', input.organizationId)
+        .single();
+
+      if (reqError || !requirement) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Requirement not found',
+        });
+      }
+
+      // Fetch the version to restore
+      const { data: versionToRestore, error: versionError } = await forsured('compliance_requirement_versions')
+        .select('snapshot')
+        .eq('requirement_id', input.requirementId)
+        .eq('version', input.versionNumber)
+        .single();
+
+      if (versionError || !versionToRestore) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: `Version ${input.versionNumber} not found`,
+        });
+      }
+
+      const snapshot = versionToRestore.snapshot as Record<string, unknown>;
+
+      // Update the requirement with values from the snapshot
+      // The database trigger will automatically create a new version
+      const { data, error } = await forsured('compliance_requirements')
+        .update({
+          code: snapshot.code as string,
+          name: snapshot.name as string,
+          type: snapshot.type as string,
+          description: snapshot.description as string | null,
+          status: snapshot.status as string,
+          effective_date: snapshot.effective_date as string,
+          expiration_date: snapshot.expiration_date as string | null,
+          requirement_definition: snapshot.requirement_definition,
+          change_summary: `${input.change_summary} (Restored from version ${input.versionNumber})`,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', input.requirementId)
+        .eq('organization_id', input.organizationId)
+        .select()
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `Failed to restore version: ${error?.message ?? 'Unknown error'}`,
+        });
+      }
+
+      return data;
     }),
 });
