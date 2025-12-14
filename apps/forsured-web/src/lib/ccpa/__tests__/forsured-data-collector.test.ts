@@ -53,20 +53,40 @@ describe('ForsuredDataCollectorService', () => {
         role: 'gc',
       };
 
-      // Mock the chain: schema().from().select().eq().maybeSingle()
-      const maybeSingle = vi.fn().mockResolvedValue({ data: mockUserProfile, error: null });
-      const eq = vi.fn(() => ({ maybeSingle }));
-      const select = vi.fn(() => ({ eq }));
-      const from = vi.fn(() => ({ select }));
-      mockSupabase.schema.mockReturnValue({ from });
+      // Create a more comprehensive mock that handles all query patterns
+      const createQueryMock = (returnData: unknown, isArray = false) => {
+        const result = isArray
+          ? { data: returnData, error: null }
+          : { data: returnData, error: null };
 
-      // Also mock the other queries with empty results
-      const emptySelect = vi.fn(() => ({
-        eq: vi.fn(() => ({ maybeSingle: vi.fn().mockResolvedValue({ data: null }) })),
-        or: vi.fn(() => ({ data: [], error: null })),
-        in: vi.fn(() => ({ data: [], error: null })),
+        const chainEnd = vi.fn().mockResolvedValue(result);
+
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              maybeSingle: chainEnd,
+            }),
+            or: vi.fn().mockResolvedValue({ data: [], error: null }),
+            in: vi.fn().mockResolvedValue({ data: [], error: null }),
+          }),
+        };
+      };
+
+      // Mock schema().from() to return appropriate mocks based on table name
+      mockSupabase.schema.mockImplementation(() => ({
+        from: vi.fn().mockImplementation((tableName: string) => {
+          if (tableName === 'user_profiles') {
+            return createQueryMock(mockUserProfile, false);
+          }
+          // Return empty arrays for other tables
+          return createQueryMock([], true);
+        }),
       }));
-      mockSupabase.from.mockReturnValue({ select: emptySelect, insert: vi.fn() });
+
+      // Mock from() for audit_log insert
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockResolvedValue({ error: null }),
+      });
 
       const result = await service.collectForsuredData('user-123');
 
