@@ -155,9 +155,10 @@ INSERT INTO forsured.user_set_type_lexicon (user_set_type_id, key, value, catego
 
 -- Assign existing test users to Construction user set type
 -- (Only update users who don't have a user_set_type_id yet)
+-- Note: Uses 'manager' as migration 235 converts 'gc' to 'manager'
 UPDATE forsured.user_profiles
 SET user_set_type_id = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
 WHERE user_set_type_id IS NULL
-  AND user_type IN ('gc', 'contractor');
+  AND user_type IN ('manager', 'contractor');
 
 COMMENT ON TABLE forsured.user_set_types IS 'Stores user set types (industry verticals). Seeded with Construction and Property Management.';

@@ -10,7 +10,7 @@ import { forsured } from '../lib/supabase';
 // TYPES
 // =============================================================================
 
-export type UserType = 'gc' | 'contractor' | 'broker' | 'admin';
+export type UserType = 'manager' | 'contractor' | 'broker' | 'admin';
 
 export interface HelpArticle {
   id: string;

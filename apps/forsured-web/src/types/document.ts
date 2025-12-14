@@ -50,7 +50,7 @@ export interface Document {
   status: DocumentStatus;
   clientId: string;
   clientName: string;
-  clientType: 'gc' | 'subcontractor';
+  clientType: 'manager' | 'contractor';
   projectId: string | null;
   projectName: string | null;
   contentPreview: string | null;

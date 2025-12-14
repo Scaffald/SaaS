@@ -1298,7 +1298,7 @@ export type TaskTypeCategory =
 /**
  * REQ-261: Default assignee role for task types
  */
-export type TaskTypeAssigneeRole = 'broker' | 'gc' | 'subcontractor';
+export type TaskTypeAssigneeRole = 'broker' | 'manager' | 'contractor';
 
 /**
  * REQ-261: Auto-assignment rules for task types

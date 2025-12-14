@@ -29,7 +29,7 @@ export type DocumentStatus =
 export interface ClientOption {
   id: string;
   name: string;
-  type: 'gc' | 'subcontractor';
+  type: 'manager' | 'contractor';
 }
 
 /**
