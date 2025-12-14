@@ -88,6 +88,9 @@ export const table = {
   coverageRequirements: 'forsured.coverage_requirements',
   // Coverage Request Workflow (REQ-273)
   coverageRequests: 'forsured.coverage_requests',
+  // User Set Types (REQ-4: Multi-Industry Support)
+  userSetTypes: 'forsured.user_set_types',
+  userSetTypeLexicon: 'forsured.user_set_type_lexicon',
 
   // Core schema tables (Uni-Construct/Scaffald - read-only)
   coreUsers: 'core.users',

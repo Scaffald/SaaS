@@ -41,7 +41,10 @@ type TableName =
   // REQ-261: Task Types
   | 'task_types'
   // REQ-263: Coverage Limit Requirements (Org vs Project)
-  | 'coverage_limit_requirements';
+  | 'coverage_limit_requirements'
+  // REQ-4: User Set Types (Multi-Industry Support)
+  | 'user_set_types'
+  | 'user_set_type_lexicon';
 
 interface QueryOptions {
   column?: string;
@@ -527,7 +530,10 @@ class MockDatabase {
     // REQ-261: Task Types
     task_types: [],
     // REQ-263: Coverage Limit Requirements (Org vs Project)
-    coverage_limit_requirements: []
+    coverage_limit_requirements: [],
+    // REQ-4: User Set Types (Multi-Industry Support)
+    user_set_types: [],
+    user_set_type_lexicon: []
   };
 
   private currentUser: RBACUser | null = null;

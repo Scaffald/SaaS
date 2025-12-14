@@ -19,6 +19,7 @@ import { participantsRouter } from './routers/participants'; // REQ-281
 import { teamMembersRouter } from './routers/teamMembers'; // REQ-283
 import { clientProfileRouter } from './routers/clientProfile'; // REQ-274
 import { notificationRouter } from './routers/notification'; // REQ-264
+import { userSetTypesRouter } from './routers/userSetTypes'; // REQ-4
 
 /**
  * Root tRPC router
@@ -38,6 +39,7 @@ export const appRouter = createTRPCRouter({
   teamMembers: teamMembersRouter, // REQ-283: Team member management UI
   clientProfile: clientProfileRouter, // REQ-274: Client profile with GC relationships
   notification: notificationRouter, // REQ-264: Task history notifications
+  userSetTypes: userSetTypesRouter, // REQ-4: Multi-industry user set types
 });
 
 /**
