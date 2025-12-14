@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText,
@@ -23,9 +23,12 @@ import SubcontractorTasksPanel from '../Subcontractor/SubcontractorTasksPanel';
 import InsuranceRequirementsModal from '../Subcontractor/InsuranceRequirementsModal';
 import Modal from '../Common/Modal';
 import Textarea from '../Common/Textarea';
+import { useLexicon } from '../../contexts/LexiconContext';
 
 export default function EnhancedSubcontractorDashboard() {
   const navigate = useNavigate();
+  // REQ-4: Use lexicon for dynamic labels
+  const { t, getManagerLabel } = useLexicon();
   const { tasks, updateTask, loading } = useTasks();
   const [requirementsModalOpen, setRequirementsModalOpen] = useState(false);
   const [contactBrokerModalOpen, setContactBrokerModalOpen] = useState(false);
@@ -122,12 +125,15 @@ export default function EnhancedSubcontractorDashboard() {
     return null;
   };
 
+  // REQ-4: Use lexicon for manager label
+  const { getManagerLabel } = useLexicon();
+
   // Show empty state when no tasks/projects assigned
   if (!loading && tasks.length === 0) {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">My Dashboard</h1>
+          <h1 className="text-2xl font-bold text-text-primary">{t('nav.dashboard')}</h1>
           <p className="text-text-secondary">
             Track your compliance status and manage documents
           </p>
@@ -135,7 +141,7 @@ export default function EnhancedSubcontractorDashboard() {
         <EmptyState
           icon={Briefcase}
           title="No Active Projects"
-          description="You haven't been assigned to any projects yet. Once a general contractor invites you to a project, you'll see your tasks and compliance requirements here."
+          description={`You haven't been assigned to any projects yet. Once a ${getManagerLabel().toLowerCase()} invites you to a project, you'll see your tasks and compliance requirements here.`}
           action={{
             label: 'View Documents',
             onClick: () => navigate('/subcontractor/documents'),
@@ -148,7 +154,7 @@ export default function EnhancedSubcontractorDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">My Dashboard</h1>
+        <h1 className="text-2xl font-bold text-text-primary">{t('nav.dashboard')}</h1>
         <p className="text-text-secondary">
           Track your compliance status and manage documents
         </p>

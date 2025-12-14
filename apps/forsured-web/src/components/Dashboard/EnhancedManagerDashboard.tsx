@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -16,6 +16,7 @@ import StatusBadge from '../Common/StatusBadge';
 import { useMockDatabase } from '../../contexts/DatabaseContext';
 import { toast } from 'sonner';
 import EnhancedTaskDetailModal from '../Manager/EnhancedTaskDetailModal';
+import { useLexicon } from '../../contexts/LexiconContext';
 
 // Type definitions for database schema
 type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'submitted' | 'in_review' | 'approved' | 'rejected' | 'needs_info';
@@ -98,6 +99,9 @@ export default function EnhancedManagerDashboard() {
   const db = useMockDatabase();
   const navigate = useNavigate();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  // REQ-4: Use lexicon for dynamic labels
+  const { t, getContractorLabel } = useLexicon();
 
   // Data state
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -273,16 +277,16 @@ export default function EnhancedManagerDashboard() {
       <div className="space-y-6">
         <div>
           <h1 className="font-display text-3xl font-bold text-text-primary">
-            Dashboard
+            {t('nav.dashboard')}
           </h1>
           <p className="text-text-secondary text-lg">
-            Manage subcontractor compliance across your projects
+            Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
           </p>
         </div>
         <EmptyState
           icon={FolderPlus}
           title="No Projects Yet"
-          description="Create your first project to start managing subcontractor compliance."
+          description={`Create your first project to start managing ${getContractorLabel(true).toLowerCase()} compliance.`}
           action={{
             label: 'Create Project',
             onClick: () => navigate('/manager/projects/new'),
@@ -296,10 +300,10 @@ export default function EnhancedManagerDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl font-bold text-text-primary">
-          Dashboard
+          {t('nav.dashboard')}
         </h1>
         <p className="text-text-secondary text-lg">
-          Manage subcontractor compliance across your projects
+          Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
         </p>
       </div>
 
@@ -314,7 +318,7 @@ export default function EnhancedManagerDashboard() {
             </span>
           </div>
           <h3 className="text-sm font-medium text-text-secondary">
-            Active Subcontractors
+            Active {getContractorLabel(true)}
           </h3>
           <p className="text-xs text-text-tertiary mt-1">
             Across {activeProjects} projects

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, Filter, Users } from 'lucide-react';
 import EmptyState from '../../ui/EmptyState';
+import { useLexicon } from '../../contexts/LexiconContext';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useTasks } from '../../hooks/useTasks';
@@ -18,6 +19,8 @@ import { Task, BrokerClient } from '../../types';
 
 export default function EnhancedBrokerDashboard() {
   const navigate = useNavigate();
+  // REQ-4: Use lexicon for dynamic labels
+  const { t } = useLexicon();
   const { clients, loading: clientsLoading, fetchClients } = useClients();
   const { policies, loading: policiesLoading } = usePolicies();
   const { tasks, loading: tasksLoading, createTask, updateTask } = useTasks();
@@ -80,7 +83,7 @@ export default function EnhancedBrokerDashboard() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">
-            Broker Dashboard
+            {t('nav.dashboard')}
           </h1>
           <p className="text-text-secondary">
             Comprehensive compliance and task management
@@ -105,7 +108,7 @@ export default function EnhancedBrokerDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-text-primary">
-              Broker Dashboard
+              {t('nav.dashboard')}
             </h1>
             <p className="text-text-secondary">
               Comprehensive compliance and task management

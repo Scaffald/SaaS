@@ -1,12 +1,10 @@
 {
   "name": "@unicornlove/insurance",
   "version": "0.0.1",
-  "description": "Insurance domain components: PolicyCard, CoverageTable, EndorsementList",
   "private": true,
+  "description": "Insurance domain components: PolicyCard, CoverageTable, EndorsementList",
+  "license": "MIT",
   "sideEffects": false,
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -14,19 +12,22 @@
       "require": "./dist/index.js"
     }
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
     "clean": "rm -rf dist",
+    "dev": "tsup --watch",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@unicornlove/ui": "workspace:*",
     "@tamagui/lucide-icons": "catalog:",
+    "@unicornlove/ui": "workspace:*",
     "tamagui": "catalog:"
   },
   "devDependencies": {
@@ -39,6 +40,5 @@
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
-  },
-  "license": "MIT"
+  }
 }

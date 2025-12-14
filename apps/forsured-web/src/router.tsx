@@ -100,6 +100,8 @@ const AdminEnums = lazy(() => import('./pages/admin/Enums'));
 const AdminAuditLog = lazy(() => import('./pages/admin/AuditLog'));
 const AdminCompanies = lazy(() => import('./pages/admin/Companies'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
+const AdminUserSetTypes = lazy(() => import('./pages/admin/UserSetTypes'));
+const AdminLexiconEditor = lazy(() => import('./pages/admin/LexiconEditor'));
 
 // Documentation (public)
 const DocsHome = lazy(() => import('./pages/docs/index'));
@@ -624,6 +626,8 @@ const AppRoutes = () => {
         <Route path="audit-log" element={<AdminAuditLog />} />
         <Route path="companies" element={<AdminCompanies />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="user-set-types" element={<AdminUserSetTypes />} />
+        <Route path="lexicon" element={<AdminLexiconEditor />} />
       </Route>
 
         {/* Catch-all redirect */}

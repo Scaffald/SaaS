@@ -8,6 +8,7 @@ import { Button as CoreButton } from '@unicornlove/ui';
 import { Chip as Badge } from '@unicornlove/ui';
 import { Archive, Building2, Users, CheckCircle } from 'lucide-react';
 import EmptyState from '../../components/Common/EmptyState';
+import { useLexicon } from '../../contexts/LexiconContext';
 
 // Mock projects for testing
 const mockProjects = [
@@ -30,6 +31,9 @@ const mockProjects = [
 ];
 
 function GCDashboard() {
+  // REQ-4: Use lexicon for dynamic labels
+  const { t, getContractorLabel } = useLexicon();
+
   const handleCreateProject = () => {
     console.log('Navigate to create project page');
   };
@@ -39,13 +43,13 @@ function GCDashboard() {
   return (
     <YStack gap="$6">
       <Text fontSize="$8" fontWeight="700" marginBottom="$6">
-        GC Dashboard
+        {t('nav.dashboard')}
       </Text>
       {!hasProjects ? (
         <EmptyState
           icon={<Archive size={48} />}
           title="No Projects Yet"
-          description="Create your first project to start managing subcontractor compliance."
+          description={`Create your first project to start managing ${getContractorLabel().toLowerCase()} compliance.`}
           primaryAction={{ label: 'Create Project', onClick: handleCreateProject }}
           helpLinks={[
             { label: 'Watch Tutorial', href: '#' },

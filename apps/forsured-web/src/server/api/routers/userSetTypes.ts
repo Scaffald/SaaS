@@ -182,6 +182,46 @@ export const userSetTypesRouter = createTRPCRouter({
     };
   }),
 
+  /**
+   * PROTECTED: Get user set type by ID with lexicon
+   * TASK-14: Broker organization-specific lexicon context switching
+   * Returns the lexicon for a specific user set type (used by brokers to switch context)
+   */
+  getByIdWithLexicon: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid('ID must be a valid UUID'),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session?.id) {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Not authenticated',
+        });
+      }
+
+      // Note: We don't require admin access here - brokers need to fetch other user set types
+      // The user set type must be active to be used
+      const { data: userSetType, error } = await forsured('user_set_types')
+        .select('*')
+        .eq('id', input.id)
+        .eq('is_active', true)
+        .single();
+
+      if (error || !userSetType) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User set type not found or inactive',
+        });
+      }
+
+      return {
+        lexicon: userSetType.lexicon as Record<string, string>,
+        userSetType: transformUserSetType(userSetType),
+      };
+    }),
+
   // ==================== ADMIN ENDPOINTS ====================
 
   /**
@@ -537,5 +577,184 @@ export const userSetTypesRouter = createTRPCRouter({
         slug: data.slug as string,
         lexicon: data.lexicon as Record<string, string>,
       };
+    }),
+
+  /**
+   * ADMIN: Get lexicon entries for a user set type
+   * TASK-10: Admin lexicon editor UI
+   */
+  getLexicon: protectedProcedure
+    .input(
+      z.object({
+        userSetTypeId: z.string().uuid('User set type ID must be a valid UUID'),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      if (!ctx.session?.id) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' });
+      }
+
+      await verifyAdminAccess(ctx.session.id);
+
+      const { data, error } = await forsured('user_set_types')
+        .select('lexicon')
+        .eq('id', input.userSetTypeId)
+        .single();
+
+      if (error || !data) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User set type not found',
+        });
+      }
+
+      return {
+        entries: (data.lexicon as Record<string, string>) ?? {},
+      };
+    }),
+
+  /**
+   * ADMIN: Upsert a single lexicon entry
+   * TASK-10: Admin lexicon editor UI
+   */
+  upsertLexiconEntry: protectedProcedure
+    .input(
+      z.object({
+        userSetTypeId: z.string().uuid('User set type ID must be a valid UUID'),
+        key: z.string().min(1, 'Key is required'),
+        value: z.string().min(1, 'Value is required'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session?.id) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' });
+      }
+
+      await verifyAdminAccess(ctx.session.id);
+
+      // Get current lexicon
+      const { data: current, error: getError } = await forsured('user_set_types')
+        .select('lexicon')
+        .eq('id', input.userSetTypeId)
+        .single();
+
+      if (getError || !current) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User set type not found',
+        });
+      }
+
+      // Update the lexicon JSONB with the new entry
+      const updatedLexicon = {
+        ...((current.lexicon as Record<string, string>) ?? {}),
+        [input.key]: input.value,
+      };
+
+      const { error: updateError } = await forsured('user_set_types')
+        .update({ lexicon: updatedLexicon })
+        .eq('id', input.userSetTypeId);
+
+      if (updateError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update lexicon entry',
+          cause: updateError,
+        });
+      }
+
+      return { success: true, key: input.key, value: input.value };
+    }),
+
+  /**
+   * ADMIN: Delete a lexicon entry
+   * TASK-10: Admin lexicon editor UI
+   */
+  deleteLexiconEntry: protectedProcedure
+    .input(
+      z.object({
+        userSetTypeId: z.string().uuid('User set type ID must be a valid UUID'),
+        key: z.string().min(1, 'Key is required'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session?.id) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' });
+      }
+
+      await verifyAdminAccess(ctx.session.id);
+
+      // Get current lexicon
+      const { data: current, error: getError } = await forsured('user_set_types')
+        .select('lexicon')
+        .eq('id', input.userSetTypeId)
+        .single();
+
+      if (getError || !current) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User set type not found',
+        });
+      }
+
+      // Remove the entry from the lexicon JSONB
+      const currentLexicon = (current.lexicon as Record<string, string>) ?? {};
+      const { [input.key]: _, ...updatedLexicon } = currentLexicon;
+
+      const { error: updateError } = await forsured('user_set_types')
+        .update({ lexicon: updatedLexicon })
+        .eq('id', input.userSetTypeId);
+
+      if (updateError) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to delete lexicon entry',
+          cause: updateError,
+        });
+      }
+
+      return { success: true, key: input.key };
+    }),
+
+  /**
+   * ADMIN: Toggle active status of a user set type
+   * TASK-9: Admin user set type management UI
+   */
+  toggleActive: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid('ID must be a valid UUID'),
+        isActive: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.session?.id) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not authenticated' });
+      }
+
+      await verifyAdminAccess(ctx.session.id);
+
+      const { data, error } = await forsured('user_set_types')
+        .update({ is_active: input.isActive })
+        .eq('id', input.id)
+        .select()
+        .single();
+
+      if (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update user set type',
+          cause: error,
+        });
+      }
+
+      if (!data) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User set type not found',
+        });
+      }
+
+      return transformUserSetType(data);
     }),
 });

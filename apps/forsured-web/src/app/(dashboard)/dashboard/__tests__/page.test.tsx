@@ -6,6 +6,37 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@/test/test-utils';
 import DashboardPage from '../page';
 import * as dashboardService from '../../../../lib/api/dashboard/dashboardService';
+import { LexiconProvider } from '../../../../contexts/LexiconContext';
+
+// Mock the trpc client for LexiconContext
+vi.mock('../../../../lib/trpc', () => ({
+  trpc: {
+    userSetTypes: {
+      getUserLexicon: {
+        useQuery: vi.fn(() => ({
+          data: null,
+          isLoading: false,
+          isError: false,
+          refetch: vi.fn(),
+        })),
+      },
+      // TASK-14: Mock for broker context switching
+      getByIdWithLexicon: {
+        useQuery: vi.fn(() => ({
+          data: null,
+          isLoading: false,
+          isError: false,
+          refetch: vi.fn(),
+        })),
+      },
+    },
+  },
+}));
+
+// Wrapper with LexiconProvider for tests
+const renderWithLexicon = (ui: React.ReactElement) => {
+  return render(<LexiconProvider>{ui}</LexiconProvider>);
+};
 
 // Mock the dashboard service
 vi.mock('../../../../lib/api/dashboard/dashboardService', () => ({
@@ -86,15 +117,16 @@ describe('DashboardPage', () => {
   });
 
   it('should render dashboard title', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Manager Dashboard')).toBeInTheDocument();
+      // REQ-4: Uses lexicon t('nav.dashboard') which defaults to 'Dashboard'
+      expect(screen.getByText('Dashboard')).toBeInTheDocument();
     });
   });
 
   it('should display overall compliance score', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Overall Compliance Score')).toBeInTheDocument();
@@ -103,9 +135,10 @@ describe('DashboardPage', () => {
   });
 
   it('should display subcontractor count metrics', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
+      // REQ-4: Uses lexicon getContractorLabel(true) which defaults to 'Subcontractors'
       expect(screen.getByText('Compliant Subcontractors')).toBeInTheDocument();
       expect(screen.getByText('Warning Status')).toBeInTheDocument();
       expect(screen.getByText('Critical Status')).toBeInTheDocument();
@@ -113,7 +146,7 @@ describe('DashboardPage', () => {
   });
 
   it('should display task summary', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Open Tasks')).toBeInTheDocument();
@@ -124,9 +157,10 @@ describe('DashboardPage', () => {
   });
 
   it('should display subcontractor compliance table', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
+      // REQ-4: Uses lexicon getContractorLabel() which defaults to 'Subcontractor'
       expect(screen.getByText('Subcontractor Compliance')).toBeInTheDocument();
       const companyElements = screen.getAllByText('Test Company');
       expect(companyElements.length).toBeGreaterThan(0); // Company appears in table
@@ -134,7 +168,7 @@ describe('DashboardPage', () => {
   });
 
   it('should display expiring policies', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Policies Expiring Soon (30 days)')).toBeInTheDocument();
@@ -144,7 +178,7 @@ describe('DashboardPage', () => {
   });
 
   it('should display activity feed', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Recent Activity')).toBeInTheDocument();
@@ -153,7 +187,7 @@ describe('DashboardPage', () => {
   });
 
   it('should call all data fetch methods on load', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
       expect(dashboardService.dashboardService.getOverview).toHaveBeenCalled();
@@ -165,14 +199,14 @@ describe('DashboardPage', () => {
   });
 
   it('should show loading state initially', () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     const loadingElements = document.querySelectorAll('.animate-pulse');
     expect(loadingElements.length).toBeGreaterThan(0);
   });
 
   it('should have export CSV button', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Export to CSV')).toBeInTheDocument();
@@ -180,16 +214,17 @@ describe('DashboardPage', () => {
   });
 
   it('should display search input', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
+      // REQ-4: Uses lexicon getContractorLabel(true).toLowerCase() which defaults to 'subcontractors'
       const searchInput = screen.getByPlaceholderText('Search subcontractors...');
       expect(searchInput).toBeInTheDocument();
     });
   });
 
   it('should update last updated timestamp', async () => {
-    render(<DashboardPage />);
+    renderWithLexicon(<DashboardPage />);
 
     await waitFor(() => {
       expect(screen.getByText(/Last updated:/)).toBeInTheDocument();

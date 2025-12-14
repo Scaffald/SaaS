@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { dashboardService } from '../../../lib/api/dashboard/dashboardService';
+import { useLexicon } from '../../../contexts/LexiconContext';
 import type {
   DashboardOverview,
   SubcontractorScore,
@@ -18,6 +19,8 @@ import type {
 import { MetricCard } from '../../../components/dashboard/MetricCard';
 
 export default function DashboardPage() {
+  // REQ-4: Use lexicon for dynamic labels
+  const { t, getContractorLabel } = useLexicon();
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [subcontractorScores, setSubcontractorScores] = useState<SubcontractorScore[]>([]);
   const [taskSummary, setTaskSummary] = useState<TaskSummary | null>(null);
@@ -98,9 +101,9 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manager Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('nav.dashboard')}</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Real-time compliance metrics across all projects and subcontractors
+              Real-time compliance metrics across all projects and {getContractorLabel(true).toLowerCase()}
             </p>
             <p className="mt-1 text-xs text-gray-500">
               Last updated: {new Date(lastUpdated).toLocaleTimeString()}
@@ -120,7 +123,7 @@ export default function DashboardPage() {
             <div className="flex-1 relative">
               <input
                 type="text"
-                placeholder="Search subcontractors..."
+                placeholder={`Search ${getContractorLabel(true).toLowerCase()}...`}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -156,10 +159,10 @@ export default function DashboardPage() {
             value={overview?.overall_compliance_score || 0}
             status={overview ? getComplianceStatus(overview.overall_compliance_score) : 'info'}
             loading={loading}
-            subtitle="Across all subcontractors"
+            subtitle={`Across all ${getContractorLabel(true).toLowerCase()}`}
           />
           <MetricCard
-            title="Compliant Subcontractors"
+            title={`Compliant ${getContractorLabel(true)}`}
             value={overview?.compliant_count || 0}
             status="success"
             loading={loading}
@@ -213,7 +216,7 @@ export default function DashboardPage() {
           {/* Subcontractor Scores Table */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Subcontractor Compliance</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{getContractorLabel()} Compliance</h2>
             </div>
             <div className="overflow-x-auto">
               {loading ? (
@@ -296,7 +299,7 @@ export default function DashboardPage() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Subcontractor
+                        {getContractorLabel()}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Policy Type

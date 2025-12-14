@@ -13,6 +13,8 @@ export interface UserProfile {
   id: string;
   scaffald_user_id: string;
   user_type: UserType;
+  /** REQ-4: User set type for industry-specific lexicon */
+  user_set_type_id?: string | null;
   onboarding_completed: boolean;
   company_connected: boolean;
   onboarding_step: number;

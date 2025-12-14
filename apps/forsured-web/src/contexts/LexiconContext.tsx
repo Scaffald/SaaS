@@ -2,15 +2,16 @@
  * Lexicon Context Provider
  * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
  * TASK-5: Create LexiconContext provider and useLexicon hook
+ * TASK-14: Organization-specific lexicon switching for brokers
  *
  * Provides:
  * - Lexicon loading from user's user set type
  * - t() function for lexicon lookups with fallback support
  * - User set type information
- * - Organization-specific lexicon switching for brokers (TASK-14)
+ * - Organization-specific lexicon switching for brokers
  */
 
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
 import { trpc } from '../lib/trpc';
 
 /**
@@ -106,6 +107,23 @@ interface LexiconContextValue {
    * Force refresh the lexicon from the server
    */
   refetch: () => void;
+
+  /**
+   * TASK-14: Set an override user set type for broker context switching
+   * When set, uses the specified user set type's lexicon instead of the user's default
+   * @param userSetTypeId - The ID of the user set type to switch to, or null to clear the override
+   */
+  setOverrideUserSetType: (userSetTypeId: string | null) => void;
+
+  /**
+   * TASK-14: The currently overridden user set type ID (null if using user's default)
+   */
+  overrideUserSetTypeId: string | null;
+
+  /**
+   * TASK-14: Whether the context is using an override user set type
+   */
+  isUsingOverride: boolean;
 }
 
 const LexiconContext = createContext<LexiconContextValue | undefined>(undefined);
@@ -119,6 +137,7 @@ interface LexiconProviderProps {
  *
  * Wraps the application to provide lexicon context.
  * Loads the user's lexicon from their user set type on mount.
+ * TASK-14: Supports override user set type for broker context switching.
  *
  * @example
  * ```tsx
@@ -128,12 +147,15 @@ interface LexiconProviderProps {
  * ```
  */
 export function LexiconProvider({ children }: LexiconProviderProps) {
+  // TASK-14: State for override user set type (used by brokers)
+  const [overrideUserSetTypeId, setOverrideUserSetTypeIdState] = useState<string | null>(null);
+
   // Fetch user's lexicon using tRPC
   const {
-    data,
-    isLoading,
-    isError,
-    refetch,
+    data: userData,
+    isLoading: userLoading,
+    isError: userError,
+    refetch: userRefetch,
   } = trpc.userSetTypes.getUserLexicon.useQuery(undefined, {
     // Don't refetch on window focus (lexicon rarely changes)
     refetchOnWindowFocus: false,
@@ -145,18 +167,57 @@ export function LexiconProvider({ children }: LexiconProviderProps) {
     retry: 1,
   });
 
+  // TASK-14: Fetch override lexicon when an override is set
+  const {
+    data: overrideData,
+    isLoading: overrideLoading,
+    isError: overrideError,
+    refetch: overrideRefetch,
+  } = trpc.userSetTypes.getByIdWithLexicon.useQuery(
+    { id: overrideUserSetTypeId! },
+    {
+      // Only fetch when we have an override ID
+      enabled: !!overrideUserSetTypeId,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+      retry: 1,
+    }
+  );
+
+  // TASK-14: Determine which data to use (override takes precedence)
+  const isUsingOverride = !!overrideUserSetTypeId && !!overrideData;
+  const activeData = isUsingOverride ? overrideData : userData;
+
+  // Combined loading/error states
+  const isLoading = userLoading || (!!overrideUserSetTypeId && overrideLoading);
+  const isError = userError || (!!overrideUserSetTypeId && overrideError);
+
+  // Combined refetch
+  const refetch = useCallback(() => {
+    userRefetch();
+    if (overrideUserSetTypeId) {
+      overrideRefetch();
+    }
+  }, [userRefetch, overrideRefetch, overrideUserSetTypeId]);
+
+  // TASK-14: Function to set/clear the override user set type
+  const setOverrideUserSetType = useCallback((userSetTypeId: string | null) => {
+    setOverrideUserSetTypeIdState(userSetTypeId);
+  }, []);
+
   // Merge user lexicon with defaults (user values override defaults)
   const lexicon = useMemo(() => {
-    if (!data?.lexicon) {
+    if (!activeData?.lexicon) {
       return DEFAULT_LEXICON;
     }
-    return { ...DEFAULT_LEXICON, ...data.lexicon };
-  }, [data?.lexicon]);
+    return { ...DEFAULT_LEXICON, ...activeData.lexicon };
+  }, [activeData?.lexicon]);
 
   // Translation function
   const t = useMemo(() => {
     return (key: string, fallback?: string): string => {
-      // First check user's lexicon
+      // First check active lexicon
       if (lexicon[key]) {
         return lexicon[key];
       }
@@ -172,38 +233,54 @@ export function LexiconProvider({ children }: LexiconProviderProps) {
   // Helper functions for role labels
   const getManagerLabel = useMemo(() => {
     return (plural = false): string => {
-      if (data?.userSetType) {
+      if (activeData?.userSetType) {
         return plural
-          ? data.userSetType.managerLabelPlural
-          : data.userSetType.managerLabelSingular;
+          ? activeData.userSetType.managerLabelPlural
+          : activeData.userSetType.managerLabelSingular;
       }
       return plural ? 'General Contractors' : 'General Contractor';
     };
-  }, [data?.userSetType]);
+  }, [activeData?.userSetType]);
 
   const getContractorLabel = useMemo(() => {
     return (plural = false): string => {
-      if (data?.userSetType) {
+      if (activeData?.userSetType) {
         return plural
-          ? data.userSetType.contractorLabelPlural
-          : data.userSetType.contractorLabelSingular;
+          ? activeData.userSetType.contractorLabelPlural
+          : activeData.userSetType.contractorLabelSingular;
       }
       return plural ? 'Subcontractors' : 'Subcontractor';
     };
-  }, [data?.userSetType]);
+  }, [activeData?.userSetType]);
 
   const value = useMemo(
     () => ({
       t,
       lexicon,
-      userSetType: data?.userSetType ?? null,
+      userSetType: activeData?.userSetType ?? null,
       isLoading,
       isError,
       getManagerLabel,
       getContractorLabel,
       refetch,
+      // TASK-14: New broker context switching props
+      setOverrideUserSetType,
+      overrideUserSetTypeId,
+      isUsingOverride,
     }),
-    [t, lexicon, data?.userSetType, isLoading, isError, getManagerLabel, getContractorLabel, refetch]
+    [
+      t,
+      lexicon,
+      activeData?.userSetType,
+      isLoading,
+      isError,
+      getManagerLabel,
+      getContractorLabel,
+      refetch,
+      setOverrideUserSetType,
+      overrideUserSetTypeId,
+      isUsingOverride,
+    ]
   );
 
   return (

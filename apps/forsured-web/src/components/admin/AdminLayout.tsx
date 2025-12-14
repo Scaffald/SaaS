@@ -9,6 +9,8 @@ const adminMenuItems = [
   { path: '/admin/dashboard', label: 'Dashboard' },
   { path: '/admin/users', label: 'Users' },
   { path: '/admin/brokers', label: 'Brokers' },
+  { path: '/admin/user-set-types', label: 'Industry Verticals' },
+  { path: '/admin/lexicon', label: 'Lexicon Editor' },
   { path: '/admin/enums', label: 'Enums' },
   { path: '/admin/audit-log', label: 'Audit Log' },
   { path: '/admin/settings', label: 'Settings' },

@@ -1,7 +1,7 @@
 /**
  * Sidebar - Navigation sidebar component using Tamagui
+ * REQ-4: Multi-Industry User Set Type System with Configurable Lexicon
  */
-import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -24,6 +24,7 @@ import { User as UserType } from '../../types';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import IconButton from '../Common/IconButton';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLexicon } from '../../contexts/LexiconContext';
 
 interface SidebarProps {
   userRole: 'manager' | 'subcontractor' | 'broker';
@@ -85,46 +86,50 @@ export default function Sidebar({
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+  // REQ-4: Use lexicon for dynamic labels
+  const { t, getManagerLabel, getContractorLabel } = useLexicon();
+
+  // REQ-4: Menu items with lexicon-based labels
   const managerMenuItems = [
-    { path: '/manager/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/manager/tasks', label: 'Tasks', icon: CheckSquare },
-    { path: '/manager/projects', label: 'Projects', icon: Building },
-    { path: '/manager/subcontractors', label: 'Subs', icon: Users },
-    { path: '/manager/documents', label: 'Documents', icon: FileText },
+    { path: '/manager/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { path: '/manager/tasks', label: t('nav.tasks'), icon: CheckSquare },
+    { path: '/manager/projects', label: t('nav.projects'), icon: Building },
+    { path: '/manager/subcontractors', label: t('nav.contractors'), icon: Users },
+    { path: '/manager/documents', label: t('nav.documents'), icon: FileText },
     {
       path: '/manager/acknowledgements',
-      label: 'Acknowledgements',
+      label: t('nav.acknowledgements'),
       icon: ClipboardCheck,
     },
-    { path: '/manager/integrations', label: 'Integrations', icon: Settings },
-    { path: '/manager/help', label: 'Help', icon: LifeBuoy },
+    { path: '/manager/integrations', label: t('nav.integrations'), icon: Settings },
+    { path: '/manager/help', label: t('nav.help'), icon: LifeBuoy },
   ];
 
   const subcontractorMenuItems = [
     {
       path: '/subcontractor/dashboard',
-      label: 'Dashboard',
+      label: t('nav.dashboard'),
       icon: LayoutDashboard,
     },
     {
       path: '/subcontractor/relationships',
-      label: 'Managers',
+      label: t('nav.managers'),
       icon: Handshake,
     },
-    { path: '/subcontractor/projects', label: 'Projects', icon: Building },
-    { path: '/subcontractor/documents', label: 'Documents', icon: FileText },
-    { path: '/subcontractor/help', label: 'Help', icon: LifeBuoy },
+    { path: '/subcontractor/projects', label: t('nav.projects'), icon: Building },
+    { path: '/subcontractor/documents', label: t('nav.documents'), icon: FileText },
+    { path: '/subcontractor/help', label: t('nav.help'), icon: LifeBuoy },
   ];
 
   const brokerMenuItems = [
-    { path: '/broker/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/broker/tasks', label: 'Tasks', icon: CheckSquare },
-    { path: '/broker/clients', label: 'Clients', icon: Briefcase },
-    { path: '/broker/projects', label: 'Projects', icon: Building },
-    { path: '/broker/insurance', label: 'Insurance', icon: Shield },
-    { path: '/broker/team', label: 'Team', icon: Users },
-    { path: '/broker/documents', label: 'Documents', icon: FileText },
-    { path: '/broker/help', label: 'Help', icon: LifeBuoy },
+    { path: '/broker/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { path: '/broker/tasks', label: t('nav.tasks'), icon: CheckSquare },
+    { path: '/broker/clients', label: t('nav.clients'), icon: Briefcase },
+    { path: '/broker/projects', label: t('nav.projects'), icon: Building },
+    { path: '/broker/insurance', label: t('nav.insurance'), icon: Shield },
+    { path: '/broker/team', label: t('nav.team'), icon: Users },
+    { path: '/broker/documents', label: t('nav.documents'), icon: FileText },
+    { path: '/broker/help', label: t('nav.help'), icon: LifeBuoy },
   ];
 
   const menuItems =
@@ -224,12 +229,13 @@ export default function Sidebar({
             <Text fontSize="$1" fontWeight="500" color="$color11" numberOfLines={1}>
               {user.name}
             </Text>
+            {/* REQ-4: Use lexicon for role display */}
             <Text fontSize="$1" color="$color10">
               {user.role === 'broker'
-                ? 'CMR (Broker View)'
+                ? `CMR (${t('role.broker')} View)`
                 : user.role === 'manager'
-                  ? 'MRC (GC View)'
-                  : 'Subcontractor'}
+                  ? `MRC (${t('role.manager_view')})`
+                  : getContractorLabel()}
             </Text>
           </YStack>
         </XStack>
