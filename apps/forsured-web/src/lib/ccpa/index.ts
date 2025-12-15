@@ -28,6 +28,9 @@ export * from './forsured-deletion-handler';
 // Export CA Attorney General reporting (TASK-15)
 export * from './ca-ag-reporting';
 
+// Export CCPA Cookie Consent integration (TASK-21)
+export * from './useCCPACookieConsent';
+
 // Re-export initialization functions
 export { initializeDataExportService } from './dataExport';
 export { initializeDataDeletionService } from './dataDeletion';
