@@ -3,7 +3,8 @@
  * Displays OCR extracted field with confidence indicator and edit capability
  */
 
-import React from 'react';
+import { YStack, XStack, Text } from '@unicornlove/ui';
+import Input from '../Common/Input';
 import { OCRField } from '../../types/ocr.types';
 
 interface OCRFieldDisplayProps {
@@ -25,72 +26,109 @@ export const OCRFieldDisplay: React.FC<OCRFieldDisplayProps> = ({
   disabled = false,
   type = 'text',
 }) => {
-  const getConfidenceColor = () => {
-    if (field.confidence.level === 'high') return 'bg-green-100 text-green-800';
-    if (field.confidence.level === 'medium') return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+  const getConfidenceProps = () => {
+    if (field.confidence.level === 'high')
+      return { bg: '$green2', text: '$green11', border: '$green6' };
+    if (field.confidence.level === 'medium')
+      return { bg: '$yellow2', text: '$yellow11', border: '$yellow6' };
+    return { bg: '$red2', text: '$red11', border: '$red6' };
   };
 
-  const getConfidenceBorderColor = () => {
-    if (field.confidence.level === 'high') return 'border-green-300';
-    if (field.confidence.level === 'medium') return 'border-yellow-300';
-    return 'border-red-300';
-  };
+  const confidenceProps = getConfidenceProps();
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-gray-700">
-          {label}
+    <YStack gap="$2">
+      <XStack alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$2">
+          <Text as="label" display="block" fontSize="$3" fontWeight="500" color="$color11">
+            {label}
+          </Text>
           {field.reviewRequired && (
-            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+            <Text
+              display="inline-flex"
+              alignItems="center"
+              paddingHorizontal="$2"
+              paddingVertical="$0.5"
+              borderRadius="$2"
+              fontSize="$1"
+              fontWeight="500"
+              backgroundColor="$red2"
+              color="$red11"
+            >
               Review Required
-            </span>
+            </Text>
           )}
           {field.edited && (
-            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+            <Text
+              display="inline-flex"
+              alignItems="center"
+              paddingHorizontal="$2"
+              paddingVertical="$0.5"
+              borderRadius="$2"
+              fontSize="$1"
+              fontWeight="500"
+              backgroundColor="$blue2"
+              color="$blue11"
+            >
               Edited
-            </span>
+            </Text>
           )}
-        </label>
-        <div
+        </XStack>
+        <Text
           data-testid="confidence-indicator"
-          className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getConfidenceColor()}`}
+          display="inline-flex"
+          alignItems="center"
+          paddingHorizontal="$2"
+          paddingVertical="$1"
+          borderRadius="$2"
+          fontSize="$1"
+          fontWeight="500"
+          backgroundColor={confidenceProps.bg}
+          color={confidenceProps.text}
         >
           {field.confidence.score}%
-        </div>
-      </div>
+        </Text>
+      </XStack>
 
-      <input
+      <Input
         type={type}
         value={field.value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`block w-full rounded-md shadow-sm sm:text-sm
-          ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : `border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${getConfidenceBorderColor()}`}
-          ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}
-          border-2 px-3 py-2`}
+        error={error}
+        style={{
+          borderWidth: '2px',
+          borderColor: error
+            ? 'var(--color-red-6)'
+            : `var(--color-${field.confidence.level === 'high' ? 'green' : field.confidence.level === 'medium' ? 'yellow' : 'red'}-6)`,
+        }}
         aria-label={label}
         aria-invalid={error ? 'true' : 'false'}
         aria-describedby={error ? `${label}-error` : undefined}
       />
 
       {error && (
-        <p id={`${label}-error`} className="text-sm text-red-600">
+        <Text id={`${label}-error`} fontSize="$3" color="$red10">
           {error}
-        </p>
+        </Text>
       )}
 
       {field.edited && onRevert && (
-        <button
+        <Text
+          as="button"
           type="button"
           onClick={onRevert}
-          className="text-sm text-blue-600 hover:text-blue-800 underline"
+          fontSize="$3"
+          color="$teal9"
+          hoverStyle={{ color: '$teal11' }}
+          textDecorationLine="underline"
           disabled={disabled}
+          disabledStyle={{ opacity: 0.5, cursor: 'not-allowed' }}
+          cursor="pointer"
         >
           Revert to Original
-        </button>
+        </Text>
       )}
-    </div>
+    </YStack>
   );
 };
