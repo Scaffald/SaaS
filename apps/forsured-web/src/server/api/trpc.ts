@@ -74,7 +74,7 @@ export const publicProcedure = t.procedure.use(rateLimitMiddleware);
  * Throws UNAUTHORIZED error if session is missing.
  */
 const isAuthenticated = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.session) {
+  if (!ctx.session || !ctx.userId) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'You must be logged in to access this resource',
@@ -86,6 +86,8 @@ const isAuthenticated = t.middleware(async ({ ctx, next }) => {
       ...ctx,
       // Narrow session type to non-null since we verified it exists
       session: ctx.session,
+      // userId is guaranteed to be non-null since we verified session exists
+      userId: ctx.userId,
       // organizationId might still be null if user doesn't have one
       organizationId: ctx.organizationId,
     },
