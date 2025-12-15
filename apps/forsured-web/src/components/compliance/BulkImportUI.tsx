@@ -11,8 +11,8 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
+import { YStack, XStack, Text, Button, Card, H3, H4, Spinner } from '@unicornlove/ui';
 import { trpc } from '../../lib/trpc';
-import Button from '../Common/Button';
 
 // =============================================================================
 // Types
@@ -214,50 +214,60 @@ export function BulkImportUI({
   // =============================================================================
 
   const renderUploadStep = () => (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Template Download Section */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="text-sm font-medium text-blue-900 mb-2">Download Templates</h4>
-        <p className="text-sm text-blue-700 mb-3">
+      <Card backgroundColor="$blue2" borderColor="$blue5" borderRadius="$4" padding="$4">
+        <H4 fontSize="$4" fontWeight="600" color="$blue11" marginBottom="$2">Download Templates</H4>
+        <Text fontSize="$3" color="$blue10" marginBottom="$3">
           Start with a template to ensure your data is formatted correctly.
-        </p>
-        <div className="flex gap-3">
+        </Text>
+        <XStack gap="$3">
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleDownloadTemplate('csv')}
+            variant="outlined"
+            size="$3"
+            onPress={() => handleDownloadTemplate('csv')}
             disabled={!templatesQuery.data}
           >
             📄 CSV Template
           </Button>
           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleDownloadTemplate('json')}
+            variant="outlined"
+            size="$3"
+            onPress={() => handleDownloadTemplate('json')}
             disabled={!templatesQuery.data}
           >
             📋 JSON Template
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </Card>
 
       {/* File Upload Section */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <YStack>
+        <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$2">
           Upload File
-        </label>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+        </Text>
+        <Card
+          borderWidth={2}
+          borderStyle="dashed"
+          borderColor="$gray6"
+          borderRadius="$4"
+          padding="$6"
+          alignItems="center"
+          hoverStyle={{ borderColor: '$gray7' }}
+          cursor="pointer"
+          onPress={() => fileInputRef.current?.click()}
+        >
           <input
             ref={fileInputRef}
             type="file"
             accept=".csv,.json"
             onChange={handleFileSelect}
-            className="hidden"
+            style={{ display: 'none' }}
             data-testid="file-input"
           />
-          <div className="space-y-2">
+          <YStack gap="$2" alignItems="center">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              style={{ margin: '0 auto', height: '48px', width: '48px', color: '#9CA3AF' }}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -269,94 +279,114 @@ export function BulkImportUI({
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            <p className="text-sm text-gray-600">
+            <Text fontSize="$3" color="$gray10">
               {fileName ? (
-                <span className="font-medium text-blue-600">{fileName}</span>
+                <Text fontWeight="500" color="$blue9">{fileName}</Text>
               ) : (
                 <>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  <Text
+                    color="$blue9"
+                    hoverStyle={{ color: '$blue10' }}
+                    fontWeight="500"
+                    cursor="pointer"
+                    onPress={() => fileInputRef.current?.click()}
                   >
                     Click to upload
-                  </button>{' '}
+                  </Text>{' '}
                   or drag and drop
                 </>
               )}
-            </p>
-            <p className="text-xs text-gray-500">CSV or JSON files up to 10MB</p>
-          </div>
-        </div>
-      </div>
+            </Text>
+            <Text fontSize="$2" color="$gray9">CSV or JSON files up to 10MB</Text>
+          </YStack>
+        </Card>
+      </YStack>
 
       {/* Or Paste Data Section */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or paste data directly</span>
-        </div>
-      </div>
+      <YStack position="relative">
+        <XStack position="absolute" inset={0} alignItems="center">
+          <YStack width="100%" borderTopWidth={1} borderColor="$gray6" />
+        </XStack>
+        <XStack position="relative" justifyContent="center">
+          <Text paddingHorizontal="$2" backgroundColor="$background" fontSize="$3" color="$gray9">
+            Or paste data directly
+          </Text>
+        </XStack>
+      </YStack>
 
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-gray-700">
+      <YStack>
+        <XStack justifyContent="space-between" alignItems="center" marginBottom="$2">
+          <Text fontSize="$3" fontWeight="500" color="$gray11">
             Paste CSV or JSON
-          </label>
+          </Text>
           <select
             value={format ?? ''}
             onChange={(e) =>
               setFormat(e.target.value ? (e.target.value as ImportFormat) : undefined)
             }
-            className="text-sm border border-gray-300 rounded px-2 py-1"
+            style={{
+              fontSize: '14px',
+              border: '1px solid #D1D5DB',
+              borderRadius: '4px',
+              padding: '4px 8px',
+            }}
           >
             <option value="">Auto-detect format</option>
             <option value="csv">CSV</option>
             <option value="json">JSON</option>
           </select>
-        </div>
+        </XStack>
         <textarea
           value={importData}
           onChange={(e) => setImportData(e.target.value)}
           placeholder="Paste your CSV or JSON data here..."
           rows={10}
-          className="w-full border border-gray-300 rounded-lg p-3 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{
+            width: '100%',
+            border: '1px solid #D1D5DB',
+            borderRadius: '8px',
+            padding: '12px',
+            fontFamily: 'monospace',
+            fontSize: '14px',
+          }}
           data-testid="import-data-textarea"
         />
-      </div>
+      </YStack>
 
       {/* Options */}
-      <div className="flex items-center">
+      <XStack alignItems="center">
         <input
           type="checkbox"
           id="skip-duplicates"
           checked={skipDuplicates}
           onChange={(e) => setSkipDuplicates(e.target.checked)}
-          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          style={{
+            borderRadius: '4px',
+            border: '1px solid #D1D5DB',
+            accentColor: '#2563EB',
+          }}
         />
-        <label htmlFor="skip-duplicates" className="ml-2 text-sm text-gray-700">
+        <Text marginLeft="$2" fontSize="$3" color="$gray11">
           Skip duplicate requirement codes (recommended)
-        </label>
-      </div>
+        </Text>
+      </XStack>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
+      <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$gray6">
         {onClose && (
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="outlined" onPress={onClose}>
             Cancel
           </Button>
         )}
         <Button
-          variant="primary"
-          onClick={handlePreview}
+          variant="solid"
+          onPress={handlePreview}
           disabled={!importData.trim() || previewQuery.isFetching}
         >
           {previewQuery.isFetching ? 'Validating...' : 'Validate & Preview'}
         </Button>
-      </div>
-    </div>
+      </XStack>
+    </YStack>
   );
 
   const renderPreviewStep = () => {
@@ -366,33 +396,33 @@ export function BulkImportUI({
     const hasWarnings = previewData.warningRows > 0;
 
     return (
-      <div className="space-y-6">
+      <YStack gap="$6">
         {/* Summary */}
-        <div className="grid grid-cols-4 gap-4">
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-gray-900">{previewData.totalRows}</div>
-            <div className="text-sm text-gray-600">Total Rows</div>
-          </div>
-          <div className="bg-green-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{previewData.validRows}</div>
-            <div className="text-sm text-green-700">Valid</div>
-          </div>
-          <div className="bg-red-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">{previewData.invalidRows}</div>
-            <div className="text-sm text-red-700">Invalid</div>
-          </div>
-          <div className="bg-yellow-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-yellow-600">{previewData.warningRows}</div>
-            <div className="text-sm text-yellow-700">Warnings</div>
-          </div>
-        </div>
+        <XStack flexWrap="wrap" gap="$4">
+          <Card flex={1} minWidth="150px" backgroundColor="$gray2" borderRadius="$4" padding="$4" alignItems="center">
+            <Text fontSize="$9" fontWeight="700" color="$gray12">{previewData.totalRows}</Text>
+            <Text fontSize="$3" color="$gray10">Total Rows</Text>
+          </Card>
+          <Card flex={1} minWidth="150px" backgroundColor="$green2" borderRadius="$4" padding="$4" alignItems="center">
+            <Text fontSize="$9" fontWeight="700" color="$green9">{previewData.validRows}</Text>
+            <Text fontSize="$3" color="$green10">Valid</Text>
+          </Card>
+          <Card flex={1} minWidth="150px" backgroundColor="$red2" borderRadius="$4" padding="$4" alignItems="center">
+            <Text fontSize="$9" fontWeight="700" color="$red9">{previewData.invalidRows}</Text>
+            <Text fontSize="$3" color="$red10">Invalid</Text>
+          </Card>
+          <Card flex={1} minWidth="150px" backgroundColor="$yellow2" borderRadius="$4" padding="$4" alignItems="center">
+            <Text fontSize="$9" fontWeight="700" color="$yellow9">{previewData.warningRows}</Text>
+            <Text fontSize="$3" color="$yellow10">Warnings</Text>
+          </Card>
+        </XStack>
 
         {/* Duplicate Codes Warning */}
         {previewData.duplicateCodes.length > 0 && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-start">
+          <Card backgroundColor="$yellow2" borderColor="$yellow5" borderRadius="$4" padding="$4">
+            <XStack alignItems="flex-start">
               <svg
-                className="h-5 w-5 text-yellow-400 mt-0.5"
+                style={{ height: '20px', width: '20px', color: '#FBBF24', marginTop: '2px' }}
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -402,79 +432,122 @@ export function BulkImportUI({
                   clipRule="evenodd"
                 />
               </svg>
-              <div className="ml-3">
-                <h4 className="text-sm font-medium text-yellow-800">Duplicate Codes Found</h4>
-                <p className="text-sm text-yellow-700 mt-1">
+              <YStack marginLeft="$3" flex={1}>
+                <H4 fontSize="$3" fontWeight="500" color="$yellow11">Duplicate Codes Found</H4>
+                <Text fontSize="$3" color="$yellow10" marginTop="$1">
                   {skipDuplicates
                     ? 'The following codes already exist and will be skipped:'
                     : 'The following codes already exist and may cause conflicts:'}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
+                </Text>
+                <XStack marginTop="$2" flexWrap="wrap" gap="$2">
                   {previewData.duplicateCodes.map((code) => (
-                    <span
+                    <Text
                       key={code}
-                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800"
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$2"
+                      fontSize="$2"
+                      fontWeight="500"
+                      backgroundColor="$yellow3"
+                      color="$yellow11"
                     >
                       {code}
-                    </span>
+                    </Text>
                   ))}
-                </div>
-              </div>
-            </div>
-          </div>
+                </XStack>
+              </YStack>
+            </XStack>
+          </Card>
         )}
 
         {/* Row Details */}
-        <div>
-          <h4 className="text-sm font-medium text-gray-900 mb-3">Row Details</h4>
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <div className="max-h-96 overflow-y-auto">
-              {previewData.rows.map((row) => (
-                <div
+        <YStack>
+          <H4 fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">Row Details</H4>
+          <Card borderColor="$gray5" borderRadius="$4" overflow="hidden">
+            <YStack maxHeight={384} overflowY="auto">
+              {previewData.rows.map((row, idx) => (
+                <YStack
                   key={row.rowIndex}
-                  className={`border-b border-gray-200 last:border-b-0 ${
+                  borderBottomWidth={idx < previewData.rows.length - 1 ? 1 : 0}
+                  borderColor="$gray5"
+                  backgroundColor={
                     !row.isValid
-                      ? 'bg-red-50'
+                      ? '$red2'
                       : row.warnings.length > 0
-                        ? 'bg-yellow-50'
-                        : 'bg-white'
-                  }`}
+                        ? '$yellow2'
+                        : '$background'
+                  }
                 >
-                  <button
-                    type="button"
-                    onClick={() => toggleRowExpansion(row.rowIndex)}
-                    className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-50"
+                  <Button
+                    unstyled
+                    width="100%"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    flexDirection="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    textAlign="left"
+                    hoverStyle={{ backgroundColor: '$gray2' }}
+                    onPress={() => toggleRowExpansion(row.rowIndex)}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-gray-500">
+                    <XStack alignItems="center" gap="$3">
+                      <Text fontSize="$3" fontWeight="500" color="$gray9">
                         Row {row.rowIndex + 1}
-                      </span>
+                      </Text>
                       {row.isValid ? (
                         row.warnings.length > 0 ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                          <Text
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            borderRadius="$2"
+                            fontSize="$2"
+                            fontWeight="500"
+                            backgroundColor="$yellow3"
+                            color="$yellow11"
+                          >
                             ⚠️ {row.warnings.length} warning(s)
-                          </span>
+                          </Text>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                          <Text
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            borderRadius="$2"
+                            fontSize="$2"
+                            fontWeight="500"
+                            backgroundColor="$green3"
+                            color="$green11"
+                          >
                             ✓ Valid
-                          </span>
+                          </Text>
                         )
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                        <Text
+                          paddingHorizontal="$2"
+                          paddingVertical="$1"
+                          borderRadius="$2"
+                          fontSize="$2"
+                          fontWeight="500"
+                          backgroundColor="$red3"
+                          color="$red11"
+                        >
                           ✕ {row.errors.length} error(s)
-                        </span>
+                        </Text>
                       )}
                       {row.normalizedData && (
-                        <span className="text-sm text-gray-600">
+                        <Text fontSize="$3" color="$gray10">
                           {(row.normalizedData as { code?: string }).code} -{' '}
                           {(row.normalizedData as { name?: string }).name}
-                        </span>
+                        </Text>
                       )}
-                    </div>
+                    </XStack>
                     <svg
-                      className={`h-5 w-5 text-gray-400 transform transition-transform ${
-                        expandedRows.has(row.rowIndex) ? 'rotate-180' : ''
-                      }`}
+                      style={{
+                        height: '20px',
+                        width: '20px',
+                        color: '#9CA3AF',
+                        transform: expandedRows.has(row.rowIndex) ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.2s',
+                      }}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -486,107 +559,111 @@ export function BulkImportUI({
                         d="M19 9l-7 7-7-7"
                       />
                     </svg>
-                  </button>
+                  </Button>
 
                   {expandedRows.has(row.rowIndex) && (
-                    <div className="px-4 pb-3 space-y-3">
+                    <YStack paddingHorizontal="$4" paddingBottom="$3" gap="$3">
                       {/* Errors */}
                       {row.errors.length > 0 && (
-                        <div className="space-y-1">
-                          <div className="text-xs font-medium text-red-700 uppercase">
+                        <YStack gap="$1">
+                          <Text fontSize="$2" fontWeight="500" color="$red10" textTransform="uppercase">
                             Errors
-                          </div>
-                          {row.errors.map((error, idx) => (
-                            <div key={idx} className="text-sm text-red-600 flex items-start gap-2">
-                              <span className="text-red-400">•</span>
-                              <span>
-                                <strong>{error.field}:</strong> {error.message}
-                              </span>
-                            </div>
+                          </Text>
+                          {row.errors.map((error, errorIdx) => (
+                            <XStack key={errorIdx} alignItems="flex-start" gap="$2">
+                              <Text fontSize="$3" color="$red7">•</Text>
+                              <Text fontSize="$3" color="$red9">
+                                <Text fontWeight="600">{error.field}:</Text> {error.message}
+                              </Text>
+                            </XStack>
                           ))}
-                        </div>
+                        </YStack>
                       )}
 
                       {/* Warnings */}
                       {row.warnings.length > 0 && (
-                        <div className="space-y-1">
-                          <div className="text-xs font-medium text-yellow-700 uppercase">
+                        <YStack gap="$1">
+                          <Text fontSize="$2" fontWeight="500" color="$yellow10" textTransform="uppercase">
                             Warnings
-                          </div>
-                          {row.warnings.map((warning, idx) => (
-                            <div
-                              key={idx}
-                              className="text-sm text-yellow-600 flex items-start gap-2"
-                            >
-                              <span className="text-yellow-400">•</span>
-                              <span>
-                                <strong>{warning.field}:</strong> {warning.message}
-                              </span>
-                            </div>
+                          </Text>
+                          {row.warnings.map((warning, warnIdx) => (
+                            <XStack key={warnIdx} alignItems="flex-start" gap="$2">
+                              <Text fontSize="$3" color="$yellow7">•</Text>
+                              <Text fontSize="$3" color="$yellow9">
+                                <Text fontWeight="600">{warning.field}:</Text> {warning.message}
+                              </Text>
+                            </XStack>
                           ))}
-                        </div>
+                        </YStack>
                       )}
 
                       {/* Raw Data */}
                       {row.data && (
-                        <div>
-                          <div className="text-xs font-medium text-gray-500 uppercase mb-1">
+                        <YStack>
+                          <Text fontSize="$2" fontWeight="500" color="$gray9" textTransform="uppercase" marginBottom="$1">
                             Raw Data
-                          </div>
-                          <pre className="text-xs bg-gray-100 rounded p-2 overflow-x-auto">
+                          </Text>
+                          <pre style={{
+                            fontSize: '12px',
+                            backgroundColor: '#F3F4F6',
+                            borderRadius: '4px',
+                            padding: '8px',
+                            overflowX: 'auto',
+                            margin: 0,
+                          }}>
                             {JSON.stringify(row.data, null, 2)}
                           </pre>
-                        </div>
+                        </YStack>
                       )}
-                    </div>
+                    </YStack>
                   )}
-                </div>
+                </YStack>
               ))}
-            </div>
-          </div>
-        </div>
+            </YStack>
+          </Card>
+        </YStack>
 
         {/* Cannot Proceed Warning */}
         {!previewData.canProceed && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+          <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$4" padding="$4">
+            <XStack alignItems="center">
+              <svg style={{ height: '20px', width: '20px', color: '#F87171' }} fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="ml-3 text-sm text-red-700">
+              <Text marginLeft="$3" fontSize="$3" color="$red10">
                 Cannot proceed with import. Please fix all errors and try again.
-              </p>
-            </div>
-          </div>
+              </Text>
+            </XStack>
+          </Card>
         )}
 
         {/* Actions */}
-        <div className="flex justify-between pt-4 border-t">
-          <Button variant="ghost" onClick={handleReset}>
+        <XStack justifyContent="space-between" paddingTop="$4" borderTopWidth={1} borderColor="$gray6">
+          <Button variant="outlined" onPress={handleReset}>
             ← Back to Upload
           </Button>
-          <div className="flex gap-3">
+          <XStack gap="$3">
             {onClose && (
-              <Button variant="ghost" onClick={onClose}>
+              <Button variant="outlined" onPress={onClose}>
                 Cancel
               </Button>
             )}
             <Button
-              variant="primary"
-              onClick={handleExecuteImport}
+              variant="solid"
+              onPress={handleExecuteImport}
               disabled={!previewData.canProceed || importMutation.isPending}
             >
               {importMutation.isPending
                 ? 'Importing...'
                 : `Import ${previewData.validRows} Requirement${previewData.validRows !== 1 ? 's' : ''}`}
             </Button>
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </YStack>
     );
   };
 
@@ -594,17 +671,18 @@ export function BulkImportUI({
     if (!importResult) return null;
 
     return (
-      <div className="space-y-6">
+      <YStack gap="$6">
         {/* Success/Failure Header */}
-        <div
-          className={`rounded-lg p-6 text-center ${
-            importResult.success ? 'bg-green-50' : 'bg-yellow-50'
-          }`}
+        <Card
+          borderRadius="$4"
+          padding="$6"
+          alignItems="center"
+          backgroundColor={importResult.success ? '$green2' : '$yellow2'}
         >
           {importResult.success ? (
             <>
               <svg
-                className="mx-auto h-12 w-12 text-green-500"
+                style={{ margin: '0 auto', height: '48px', width: '48px', color: '#10B981' }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -616,16 +694,16 @@ export function BulkImportUI({
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <h3 className="mt-3 text-lg font-medium text-green-900">Import Successful!</h3>
-              <p className="mt-1 text-sm text-green-700">
+              <H3 marginTop="$3" fontSize="$6" fontWeight="500" color="$green11">Import Successful!</H3>
+              <Text marginTop="$1" fontSize="$3" color="$green10">
                 {importResult.successfulImports} requirement
                 {importResult.successfulImports !== 1 ? 's' : ''} imported successfully.
-              </p>
+              </Text>
             </>
           ) : (
             <>
               <svg
-                className="mx-auto h-12 w-12 text-yellow-500"
+                style={{ margin: '0 auto', height: '48px', width: '48px', color: '#F59E0B' }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -637,72 +715,76 @@ export function BulkImportUI({
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-              <h3 className="mt-3 text-lg font-medium text-yellow-900">Import Partially Complete</h3>
-              <p className="mt-1 text-sm text-yellow-700">
+              <H3 marginTop="$3" fontSize="$6" fontWeight="500" color="$yellow11">Import Partially Complete</H3>
+              <Text marginTop="$1" fontSize="$3" color="$yellow10">
                 {importResult.successfulImports} succeeded, {importResult.failedImports} failed.
-              </p>
+              </Text>
             </>
           )}
-        </div>
+        </Card>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-gray-900">
+        <XStack flexWrap="wrap" gap="$4">
+          <Card flex={1} minWidth="150px" backgroundColor="$gray2" borderRadius="$4" padding="$4" alignItems="center">
+            <Text fontSize="$9" fontWeight="700" color="$gray12">
               {importResult.totalAttempted}
-            </div>
-            <div className="text-sm text-gray-600">Attempted</div>
-          </div>
-          <div className="bg-green-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">
+            </Text>
+            <Text fontSize="$3" color="$gray10">Attempted</Text>
+          </Card>
+          <Card flex={1} minWidth="150px" backgroundColor="$green2" borderRadius="$4" padding="$4" alignItems="center">
+            <Text fontSize="$9" fontWeight="700" color="$green9">
               {importResult.successfulImports}
-            </div>
-            <div className="text-sm text-green-700">Succeeded</div>
-          </div>
-          <div className="bg-red-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">{importResult.failedImports}</div>
-            <div className="text-sm text-red-700">Failed</div>
-          </div>
-        </div>
+            </Text>
+            <Text fontSize="$3" color="$green10">Succeeded</Text>
+          </Card>
+          <Card flex={1} minWidth="150px" backgroundColor="$red2" borderRadius="$4" padding="$4" alignItems="center">
+            <Text fontSize="$9" fontWeight="700" color="$red9">{importResult.failedImports}</Text>
+            <Text fontSize="$3" color="$red10">Failed</Text>
+          </Card>
+        </XStack>
 
         {/* Errors List */}
         {importResult.errors.length > 0 && (
-          <div>
-            <h4 className="text-sm font-medium text-gray-900 mb-3">Import Errors</h4>
-            <div className="border border-red-200 rounded-lg overflow-hidden">
-              <div className="max-h-64 overflow-y-auto">
+          <YStack>
+            <H4 fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">Import Errors</H4>
+            <Card borderColor="$red5" borderRadius="$4" overflow="hidden">
+              <YStack maxHeight={256} overflowY="auto">
                 {importResult.errors.map((error, idx) => (
-                  <div
+                  <YStack
                     key={idx}
-                    className="px-4 py-3 border-b border-red-100 last:border-b-0 bg-red-50"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderBottomWidth={idx < importResult.errors.length - 1 ? 1 : 0}
+                    borderColor="$red4"
+                    backgroundColor="$red2"
                   >
-                    <div className="flex items-start gap-3">
-                      <span className="text-sm font-medium text-red-700">
+                    <XStack alignItems="flex-start" gap="$3">
+                      <Text fontSize="$3" fontWeight="500" color="$red10">
                         Row {error.rowIndex + 1}
-                      </span>
-                      <span className="text-sm text-red-600">
-                        <strong>{error.code}:</strong> {error.message}
-                      </span>
-                    </div>
-                  </div>
+                      </Text>
+                      <Text fontSize="$3" color="$red9">
+                        <Text fontWeight="600">{error.code}:</Text> {error.message}
+                      </Text>
+                    </XStack>
+                  </YStack>
                 ))}
-              </div>
-            </div>
-          </div>
+              </YStack>
+            </Card>
+          </YStack>
         )}
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t">
-          <Button variant="ghost" onClick={handleReset}>
+        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$gray6">
+          <Button variant="outlined" onPress={handleReset}>
             Import More
           </Button>
           {onClose && (
-            <Button variant="primary" onClick={onClose}>
+            <Button variant="solid" onPress={onClose}>
               Done
             </Button>
           )}
-        </div>
-      </div>
+        </XStack>
+      </YStack>
     );
   };
 
@@ -711,37 +793,54 @@ export function BulkImportUI({
   // =============================================================================
 
   return (
-    <div className="bg-white rounded-lg shadow-lg">
+    <Card backgroundColor="$background" borderRadius="$4" elevation={4}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Bulk Import Requirements</h3>
-        <p className="mt-1 text-sm text-gray-500">
+      <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray5">
+        <H3 fontSize="$6" fontWeight="600" color="$gray12">Bulk Import Requirements</H3>
+        <Text marginTop="$1" fontSize="$3" color="$gray9">
           Import multiple compliance requirements from a CSV or JSON file.
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
       {/* Step Indicator */}
-      <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
-        <div className="flex items-center justify-center">
+      <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray4" backgroundColor="$gray2">
+        <XStack alignItems="center" justifyContent="center">
           {(['upload', 'preview', 'result'] as const).map((s, idx) => (
-            <div key={s} className="flex items-center">
+            <XStack key={s} alignItems="center">
               {idx > 0 && (
-                <div
-                  className={`w-12 h-0.5 mx-2 ${
-                    step === 'preview' || step === 'result' ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
+                <YStack
+                  width={48}
+                  height={2}
+                  marginHorizontal="$2"
+                  backgroundColor={
+                    step === 'preview' || step === 'result' ? '$blue9' : '$gray6'
+                  }
                 />
               )}
-              <div className="flex flex-col items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+              <YStack alignItems="center">
+                <YStack
+                  width={32}
+                  height={32}
+                  borderRadius={9999}
+                  alignItems="center"
+                  justifyContent="center"
+                  fontSize="$3"
+                  fontWeight="500"
+                  backgroundColor={
                     step === s
-                      ? 'bg-blue-600 text-white'
+                      ? '$blue9'
                       : (step === 'preview' && s === 'upload') ||
                           (step === 'result' && (s === 'upload' || s === 'preview'))
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-200 text-gray-600'
-                  }`}
+                        ? '$green9'
+                        : '$gray5'
+                  }
+                  color={
+                    step === s ||
+                    (step === 'preview' && s === 'upload') ||
+                    (step === 'result' && (s === 'upload' || s === 'preview'))
+                      ? '$background'
+                      : '$gray10'
+                  }
                 >
                   {(step === 'preview' && s === 'upload') ||
                   (step === 'result' && (s === 'upload' || s === 'preview')) ? (
@@ -749,21 +848,21 @@ export function BulkImportUI({
                   ) : (
                     idx + 1
                   )}
-                </div>
-                <span className="mt-1 text-xs text-gray-600 capitalize">{s}</span>
-              </div>
-            </div>
+                </YStack>
+                <Text marginTop="$1" fontSize="$2" color="$gray10" textTransform="capitalize">{s}</Text>
+              </YStack>
+            </XStack>
           ))}
-        </div>
-      </div>
+        </XStack>
+      </YStack>
 
       {/* Content */}
-      <div className="p-6">
+      <YStack padding="$6">
         {step === 'upload' && renderUploadStep()}
         {step === 'preview' && renderPreviewStep()}
         {step === 'result' && renderResultStep()}
-      </div>
-    </div>
+      </YStack>
+    </Card>
   );
 }
 
