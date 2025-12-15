@@ -6,6 +6,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { YStack, XStack, Text, Button, Card, H1, H2, H3, Input } from '@unicornlove/ui';
+import { Search } from 'lucide-react';
 import { dashboardService } from '../../../lib/api/dashboard/dashboardService';
 import { useLexicon } from '../../../contexts/LexiconContext';
 import type {
@@ -96,64 +98,74 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <YStack minHeight="100vh" backgroundColor="$gray2">
+      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('nav.dashboard')}</h1>
-            <p className="mt-2 text-sm text-gray-600">
+        <XStack marginBottom="$8" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap="$4">
+          <YStack>
+            <H1>{t('nav.dashboard')}</H1>
+            <Text marginTop="$2" fontSize="$2" color="$gray11">
               Real-time compliance metrics across all projects and {getContractorLabel(true).toLowerCase()}
-            </p>
-            <p className="mt-1 text-xs text-gray-500">
+            </Text>
+            <Text marginTop="$1" fontSize="$1" color="$gray10">
               Last updated: {new Date(lastUpdated).toLocaleTimeString()}
-            </p>
-          </div>
-          <button
-            onClick={handleExportCSV}
-            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+            </Text>
+          </YStack>
+          <Button
+            onPress={handleExportCSV}
+            backgroundColor="$blue9"
+            color="white"
+            fontSize="$2"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$blue10' }}
           >
             Export to CSV
-          </button>
-        </div>
+          </Button>
+        </XStack>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1 relative">
-              <input
+        <Card padding="$6" marginBottom="$6">
+          <XStack gap="$4" alignItems="center" flexWrap="wrap">
+            <XStack flex={1} position="relative" minWidth={200}>
+              <XStack
+                position="absolute"
+                left="$3"
+                top="50%"
+                transform="translateY(-50%)"
+                zIndex={1}
+              >
+                <Search size={20} color="$gray10" />
+              </XStack>
+              <Input
                 type="text"
                 placeholder={`Search ${getContractorLabel(true).toLowerCase()}...`}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(value) => handleSearchChange(value)}
+                paddingLeft="$10"
+                flex={1}
+                borderWidth={1}
+                borderColor="$gray6"
+                borderRadius="$4"
               />
-              <svg
-                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
+            </XStack>
             {(filters.subcontractor_search || filters.status_filter || filters.project_ids) && (
-              <button
-                onClick={() => setFilters({})}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
+              <Button
+                onPress={() => setFilters({})}
+                fontSize="$2"
+                color="$gray11"
+                borderWidth={1}
+                borderColor="$gray6"
+                borderRadius="$4"
+                backgroundColor="transparent"
+                hoverStyle={{ backgroundColor: '$gray3', color: '$gray12' }}
               >
                 Clear Filters
-              </button>
+              </Button>
             )}
-          </div>
-        </div>
+          </XStack>
+        </Card>
 
         {/* Overall Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <XStack flexWrap="wrap" gap="$6" marginBottom="$8">
           <MetricCard
             title="Overall Compliance Score"
             value={overview?.overall_compliance_score || 0}
@@ -182,10 +194,10 @@ export default function DashboardPage() {
             loading={loading}
             subtitle="Immediate action required"
           />
-        </div>
+        </XStack>
 
         {/* Task Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <XStack flexWrap="wrap" gap="$6" marginBottom="$8">
           <MetricCard
             title="Open Tasks"
             value={taskSummary?.total_open_tasks || 0}
@@ -210,190 +222,246 @@ export default function DashboardPage() {
             status="warning"
             loading={loading}
           />
-        </div>
+        </XStack>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <XStack flexWrap="wrap" gap="$6" marginBottom="$8">
           {/* Subcontractor Scores Table */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">{getContractorLabel()} Compliance</h2>
-            </div>
-            <div className="overflow-x-auto">
+          <Card flex={1} minWidth={400} overflow="hidden">
+            <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray6">
+              <H3>{getContractorLabel()} Compliance</H3>
+            </YStack>
+            <YStack>
               {loading ? (
-                <div className="p-6">
-                  <div className="animate-pulse space-y-3">
+                <YStack padding="$6">
+                  <YStack gap="$3">
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="h-12 bg-gray-200 rounded"></div>
+                      <YStack key={i} height={48} backgroundColor="$gray4" borderRadius="$2" />
                     ))}
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Company
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Score
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Open Tasks
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                <YStack>
+                  <XStack backgroundColor="$gray2" paddingHorizontal="$6" paddingVertical="$3">
+                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                      Company
+                    </Text>
+                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                      Score
+                    </Text>
+                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                      Status
+                    </Text>
+                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                      Open Tasks
+                    </Text>
+                  </XStack>
+                  <YStack>
                     {subcontractorScores.slice(0, 10).map((score) => (
-                      <tr key={score.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <XStack
+                        key={score.id}
+                        paddingHorizontal="$6"
+                        paddingVertical="$4"
+                        borderBottomWidth={1}
+                        borderColor="$gray6"
+                        hoverStyle={{ backgroundColor: '$gray2' }}
+                      >
+                        <Text flex={1} fontSize="$2" fontWeight="500" color="$gray12" whiteSpace="nowrap">
                           {score.company_name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        </Text>
+                        <Text flex={1} fontSize="$2" color="$gray12" whiteSpace="nowrap">
                           {score.compliance_score}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        </Text>
+                        <YStack flex={1} alignItems="flex-start">
+                          <XStack
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            borderRadius={9999}
+                            backgroundColor={
                               score.status === 'compliant'
-                                ? 'bg-green-100 text-green-800'
+                                ? '$green2'
                                 : score.status === 'warning'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-red-100 text-red-800'
-                            }`}
+                                  ? '$yellow2'
+                                  : '$red2'
+                            }
                           >
-                            {score.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <Text
+                              fontSize="$1"
+                              fontWeight="600"
+                              color={
+                                score.status === 'compliant'
+                                  ? '$green11'
+                                  : score.status === 'warning'
+                                    ? '$yellow11'
+                                    : '$red11'
+                              }
+                            >
+                              {score.status}
+                            </Text>
+                          </XStack>
+                        </YStack>
+                        <Text flex={1} fontSize="$2" color="$gray11" whiteSpace="nowrap">
                           {score.open_tasks_count}
-                        </td>
-                      </tr>
+                        </Text>
+                      </XStack>
                     ))}
-                  </tbody>
-                </table>
+                  </YStack>
+                </YStack>
               )}
-            </div>
-          </div>
+            </YStack>
+          </Card>
 
           {/* Expiring Policies */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">
+          <Card flex={1} minWidth={400} overflow="hidden">
+            <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray6">
+              <H3>
                 Policies Expiring Soon (30 days)
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
+              </H3>
+            </YStack>
+            <YStack>
               {loading ? (
-                <div className="p-6">
-                  <div className="animate-pulse space-y-3">
+                <YStack padding="$6">
+                  <YStack gap="$3">
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="h-12 bg-gray-200 rounded"></div>
+                      <YStack key={i} height={48} backgroundColor="$gray4" borderRadius="$2" />
                     ))}
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
               ) : (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {getContractorLabel()}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Policy Type
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Days Left
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                <YStack>
+                  <XStack backgroundColor="$gray2" paddingHorizontal="$6" paddingVertical="$3">
+                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                      {getContractorLabel()}
+                    </Text>
+                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                      Policy Type
+                    </Text>
+                    <Text flex={1} fontSize="$1" fontWeight="500" color="$gray11" textTransform="uppercase" letterSpacing={0.5}>
+                      Days Left
+                    </Text>
+                  </XStack>
+                  <YStack>
                     {expiringPolicies.slice(0, 10).map((policy) => (
-                      <tr key={policy.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <XStack
+                        key={policy.id}
+                        paddingHorizontal="$6"
+                        paddingVertical="$4"
+                        borderBottomWidth={1}
+                        borderColor="$gray6"
+                        hoverStyle={{ backgroundColor: '$gray2' }}
+                      >
+                        <Text flex={1} fontSize="$2" fontWeight="500" color="$gray12" whiteSpace="nowrap">
                           {policy.subcontractor_name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        </Text>
+                        <Text flex={1} fontSize="$2" color="$gray12" whiteSpace="nowrap">
                           {policy.policy_type.replace(/_/g, ' ')}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        </Text>
+                        <YStack flex={1} alignItems="flex-start">
+                          <XStack
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            borderRadius={9999}
+                            backgroundColor={
                               policy.days_remaining <= 7
-                                ? 'bg-red-100 text-red-800'
+                                ? '$red2'
                                 : policy.days_remaining <= 14
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-blue-100 text-blue-800'
-                            }`}
+                                  ? '$yellow2'
+                                  : '$blue2'
+                            }
                           >
-                            {policy.days_remaining} days
-                          </span>
-                        </td>
-                      </tr>
+                            <Text
+                              fontSize="$1"
+                              fontWeight="600"
+                              color={
+                                policy.days_remaining <= 7
+                                  ? '$red11'
+                                  : policy.days_remaining <= 14
+                                    ? '$yellow11'
+                                    : '$blue11'
+                              }
+                            >
+                              {policy.days_remaining} days
+                            </Text>
+                          </XStack>
+                        </YStack>
+                      </XStack>
                     ))}
                     {expiringPolicies.length === 0 && (
-                      <tr>
-                        <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+                      <YStack padding="$6" alignItems="center">
+                        <Text fontSize="$2" color="$gray11">
                           No policies expiring in the next 30 days
-                        </td>
-                      </tr>
+                        </Text>
+                      </YStack>
                     )}
-                  </tbody>
-                </table>
+                  </YStack>
+                </YStack>
               )}
-            </div>
-          </div>
-        </div>
+            </YStack>
+          </Card>
+        </XStack>
 
         {/* Activity Feed */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-          </div>
-          <div className="divide-y divide-gray-200">
+        <Card overflow="hidden">
+          <YStack paddingHorizontal="$6" paddingVertical="$4" borderBottomWidth={1} borderColor="$gray6">
+            <H3>Recent Activity</H3>
+          </YStack>
+          <YStack>
             {loading ? (
-              <div className="p-6">
-                <div className="animate-pulse space-y-4">
+              <YStack padding="$6">
+                <YStack gap="$4">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                      <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                      </div>
-                    </div>
+                    <XStack key={i} alignItems="flex-start" gap="$3">
+                      <YStack width={32} height={32} backgroundColor="$gray4" borderRadius={9999} />
+                      <YStack flex={1} gap="$2">
+                        <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="75%" />
+                        <YStack height={12} backgroundColor="$gray4" borderRadius="$2" width="25%" />
+                      </YStack>
+                    </XStack>
                   ))}
-                </div>
-              </div>
+                </YStack>
+              </YStack>
             ) : (
-              <>
+              <YStack>
                 {activities.map((activity) => (
-                  <div key={activity.id} className="px-6 py-4 hover:bg-gray-50">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-2 h-2 mt-2 bg-blue-500 rounded-full"></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-900">{activity.description}</p>
-                        <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
-                          {activity.subcontractor_name && <span>{activity.subcontractor_name}</span>}
-                          <span>•</span>
-                          <span>{new Date(activity.timestamp).toLocaleString()}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <XStack
+                    key={activity.id}
+                    paddingHorizontal="$6"
+                    paddingVertical="$4"
+                    borderBottomWidth={1}
+                    borderColor="$gray6"
+                    hoverStyle={{ backgroundColor: '$gray2' }}
+                  >
+                    <XStack alignItems="flex-start" gap="$3" flex={1} minWidth={0}>
+                      <YStack
+                        flexShrink={0}
+                        width={8}
+                        height={8}
+                        marginTop="$2"
+                        backgroundColor="$blue9"
+                        borderRadius={9999}
+                      />
+                      <YStack flex={1} minWidth={0}>
+                        <Text fontSize="$2" color="$gray12">{activity.description}</Text>
+                        <XStack marginTop="$1" alignItems="center" gap="$2">
+                          {activity.subcontractor_name && <Text fontSize="$1" color="$gray11">{activity.subcontractor_name}</Text>}
+                          {activity.subcontractor_name && <Text fontSize="$1" color="$gray11">•</Text>}
+                          <Text fontSize="$1" color="$gray11">{new Date(activity.timestamp).toLocaleString()}</Text>
+                        </XStack>
+                      </YStack>
+                    </XStack>
+                  </XStack>
                 ))}
                 {activities.length === 0 && (
-                  <div className="px-6 py-8 text-center text-sm text-gray-500">
-                    No recent activity
-                  </div>
+                  <YStack padding="$8" alignItems="center">
+                    <Text fontSize="$2" color="$gray11">
+                      No recent activity
+                    </Text>
+                  </YStack>
                 )}
-              </>
+              </YStack>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </YStack>
+        </Card>
+      </YStack>
+    </YStack>
   );
 }
