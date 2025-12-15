@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps, @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FileText,
   Download,
@@ -12,6 +12,7 @@ import {
   History as HistoryIcon,
   FileCheck,
 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import {
@@ -153,20 +154,6 @@ export default function DocumentDetailModal({
     }
   }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'verified':
-        return 'bg-success-100 text-success-700 border-success-300';
-      case 'pending':
-        return 'bg-warning-100 text-warning-700 border-warning-300';
-      case 'expired':
-        return 'bg-error-100 text-error-700 border-error-300';
-      case 'expiring':
-        return 'bg-warning-100 text-warning-700 border-warning-300';
-      default:
-        return 'bg-neutral-100 text-neutral-700 border-neutral-300';
-    }
-  };
 
   const formatFileSize = (size?: string | number) => {
     if (!size) return 'N/A';
@@ -199,50 +186,92 @@ export default function DocumentDetailModal({
       title=""
       size={viewMode === 'split-screen' ? 'xl' : 'lg'}
     >
-      <div className="space-y-6">
+      <YStack gap="$6">
         {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-2">
-              <FileText className="text-primary-600" size={24} />
-              <h2 className="text-2xl font-bold text-text-primary">
+        <XStack alignItems="flex-start" justifyContent="space-between">
+          <YStack flex={1}>
+            <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <FileText color="$teal9" size={24} />
+              <H2 fontSize="$8" fontWeight="bold" color="$color12">
                 {documentName}
-              </h2>
-              <span
-                className={`px-2.5 py-1 text-xs font-medium rounded border ${getStatusColor(status)}`}
+              </H2>
+              <Text
+                paddingHorizontal="$2.5"
+                paddingVertical="$1"
+                fontSize="$1"
+                fontWeight="500"
+                borderRadius="$2"
+                borderWidth={1}
+                {...(status === 'verified' && {
+                  backgroundColor: '$green2',
+                  color: '$green11',
+                  borderColor: '$green6',
+                })}
+                {...(status === 'pending' && {
+                  backgroundColor: '$yellow2',
+                  color: '$yellow11',
+                  borderColor: '$yellow6',
+                })}
+                {...(status === 'expired' && {
+                  backgroundColor: '$red2',
+                  color: '$red11',
+                  borderColor: '$red6',
+                })}
+                {...(status === 'expiring' && {
+                  backgroundColor: '$yellow2',
+                  color: '$yellow11',
+                  borderColor: '$yellow6',
+                })}
+                {...(!['verified', 'pending', 'expired', 'expiring'].includes(status) && {
+                  backgroundColor: '$gray2',
+                  color: '$gray11',
+                  borderColor: '$gray6',
+                })}
               >
                 {status.toUpperCase()}
-              </span>
-            </div>
-            <div className="flex items-center space-x-4 text-sm text-text-secondary">
-              <span className="flex items-center space-x-1">
+              </Text>
+            </XStack>
+            <XStack alignItems="center" gap="$4" fontSize="$3" color="$color11">
+              <XStack alignItems="center" gap="$1">
                 <Calendar size={14} />
-                <span>Uploaded {formatDate(uploadDate)}</span>
-              </span>
+                <Text>Uploaded {formatDate(uploadDate)}</Text>
+              </XStack>
               {expiryDate && (
-                <span
-                  className={`flex items-center space-x-1 ${daysUntilExpiry !== null && daysUntilExpiry <= 30 ? 'text-warning-600' : ''}`}
+                <XStack
+                  alignItems="center"
+                  gap="$1"
+                  color={
+                    daysUntilExpiry !== null && daysUntilExpiry <= 30
+                      ? '$yellow10'
+                      : '$color11'
+                  }
                 >
                   <Clock size={14} />
-                  <span>
+                  <Text>
                     Expires {formatDate(expiryDate)}
                     {daysUntilExpiry !== null &&
                       daysUntilExpiry <= 30 &&
                       ` (${daysUntilExpiry} days)`}
-                  </span>
-                </span>
+                  </Text>
+                </XStack>
               )}
-              {fileSize && <span>{formatFileSize(fileSize)}</span>}
-            </div>
-          </div>
-        </div>
+              {fileSize && <Text>{formatFileSize(fileSize)}</Text>}
+            </XStack>
+          </YStack>
+        </XStack>
 
         {/* View Mode Toggle */}
-        <div className="flex items-center justify-between p-3 bg-bg-secondary rounded-lg">
-          <span className="text-sm font-medium text-text-secondary">
+        <XStack
+          alignItems="center"
+          justifyContent="space-between"
+          padding="$3"
+          backgroundColor="$background"
+          borderRadius="$4"
+        >
+          <Text fontSize="$3" fontWeight="500" color="$color11">
             View Mode:
-          </span>
-          <div className="flex items-center space-x-2">
+          </Text>
+          <XStack alignItems="center" gap="$2">
             <Button
               variant={viewMode === 'inline' ? 'primary' : 'ghost'}
               size="sm"
@@ -267,8 +296,8 @@ export default function DocumentDetailModal({
             >
               Split
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </XStack>
 
         {/* AI Processing Indicator */}
         {aiProcessingState && (
@@ -290,381 +319,527 @@ export default function DocumentDetailModal({
         )}
 
         {/* Main Content Area */}
-        <div
-          className={
-            viewMode === 'split-screen' ? 'grid grid-cols-2 gap-6' : ''
-          }
-        >
-          {/* PDF Viewer */}
-          <div className={viewMode === 'split-screen' ? '' : 'mb-6'}>
-            <div className="border border-border rounded-lg overflow-hidden bg-bg-secondary">
-              <div className="flex items-center justify-between p-3 bg-bg-tertiary border-b border-border">
-                <span className="text-sm font-medium text-text-secondary">
+        {viewMode === 'split-screen' ? (
+          <XStack gap="$6">
+            {/* PDF Viewer */}
+            <YStack flex={1}>
+              <Card
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                overflow="hidden"
+                backgroundColor="$background"
+              >
+                <XStack
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$3"
+                  backgroundColor="$backgroundHover"
+                  borderBottomWidth={1}
+                  borderBottomColor="$borderColor"
+                >
+                  <Text fontSize="$3" fontWeight="500" color="$color11">
+                    {documentType}
+                  </Text>
+                  <XStack alignItems="center" gap="$2">
+                    {pdfUrl && (
+                      <XStack
+                        as="a"
+                        href={pdfUrl}
+                        download={documentName}
+                        padding="$2"
+                        color="$teal9"
+                        hoverStyle={{ backgroundColor: '$teal2' }}
+                        borderRadius="$2"
+                        cursor="pointer"
+                      >
+                        <Download size={16} />
+                      </XStack>
+                    )}
+                  </XStack>
+                </XStack>
+                <YStack
+                  position="relative"
+                  height={viewMode === 'inline' ? 600 : 400}
+                  minHeight={400}
+                >
+                  {pdfUrl ? (
+                    <iframe
+                      src={pdfUrl}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      title={documentName}
+                    />
+                  ) : (
+                    <YStack
+                      alignItems="center"
+                      justifyContent="center"
+                      height="100%"
+                    >
+                      <YStack alignItems="center" gap="$2">
+                        <FileText color="$color10" size={48} />
+                        <Text color="$color11">No preview available</Text>
+                      </YStack>
+                    </YStack>
+                  )}
+                </YStack>
+              </Card>
+            </YStack>
+
+            {/* AI Extracted Fields & Details */}
+            {(viewMode === 'split-screen' || viewMode === 'modal') && (
+              <YStack flex={1} gap="$6">
+                {/* AI Extracted Fields */}
+                {currentExtraction && (
+                  <Card
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    padding="$4"
+                    backgroundColor="$background"
+                  >
+                    <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                      <XStack alignItems="center" gap="$2">
+                        <FileCheck size={16} />
+                        <H3 fontSize="$3" fontWeight="600" color="$color12">
+                          AI-Extracted Fields
+                        </H3>
+                      </XStack>
+                      <Text
+                        fontSize="$1"
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        backgroundColor="$teal2"
+                        color="$teal11"
+                        borderRadius="$2"
+                      >
+                        {currentExtraction.confidence}% confidence
+                      </Text>
+                    </XStack>
+
+                    <YStack gap="$3">
+                      {currentExtraction.policy_number && (
+                        <YStack>
+                          <Text fontSize="$1" color="$color10">
+                            Policy Number
+                          </Text>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                            {currentExtraction.policy_number}
+                          </Text>
+                        </YStack>
+                      )}
+                      {currentExtraction.carrier && (
+                        <YStack>
+                          <Text fontSize="$1" color="$color10">
+                            Carrier
+                          </Text>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                            {currentExtraction.carrier}
+                          </Text>
+                        </YStack>
+                      )}
+                      {currentExtraction.coverage_amounts &&
+                        currentExtraction.coverage_amounts.length > 0 && (
+                          <YStack>
+                            <Text fontSize="$1" color="$color10">
+                              Coverage Amounts
+                            </Text>
+                            <YStack gap="$1" marginTop="$1">
+                              {currentExtraction.coverage_amounts.map(
+                                (coverage, index) => (
+                                  <XStack
+                                    key={index}
+                                    justifyContent="space-between"
+                                    fontSize="$3"
+                                  >
+                                    <Text color="$color11">{coverage.type}:</Text>
+                                    <Text fontWeight="500" color="$color12">
+                                      ${coverage.amount.toLocaleString()}
+                                    </Text>
+                                  </XStack>
+                                )
+                              )}
+                            </YStack>
+                          </YStack>
+                        )}
+                      {currentExtraction.effective_date && (
+                        <YStack>
+                          <Text fontSize="$1" color="$color10">
+                            Effective Date
+                          </Text>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                            {formatDate(currentExtraction.effective_date)}
+                          </Text>
+                        </YStack>
+                      )}
+                      {currentExtraction.expiry_date && (
+                        <YStack>
+                          <Text fontSize="$1" color="$color10">
+                            Expiry Date
+                          </Text>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
+                            {formatDate(currentExtraction.expiry_date)}
+                          </Text>
+                        </YStack>
+                      )}
+                      {currentExtraction.named_insureds &&
+                        currentExtraction.named_insureds.length > 0 && (
+                          <YStack>
+                            <Text fontSize="$1" color="$color10">
+                              Named Insureds
+                            </Text>
+                            <YStack gap="$1" marginTop="$1">
+                              {currentExtraction.named_insureds.map(
+                                (insured, index) => (
+                                  <Text
+                                    key={index}
+                                    fontSize="$3"
+                                    color="$color12"
+                                  >
+                                    • {insured}
+                                  </Text>
+                                )
+                              )}
+                            </YStack>
+                          </YStack>
+                        )}
+                    </YStack>
+
+                    <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleExtractFields}
+                        fullWidth
+                      >
+                        Re-extract Fields
+                      </Button>
+                    </YStack>
+                  </Card>
+                )}
+
+                {/* Metadata */}
+                <Card
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  padding="$4"
+                  backgroundColor="$background"
+                >
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                    Metadata
+                  </H3>
+                  <YStack gap="$3">
+                    <YStack>
+                      <Text fontSize="$1" color="$color10">
+                        Document Type
+                      </Text>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                        {documentType}
+                      </Text>
+                    </YStack>
+                    <YStack>
+                      <Text fontSize="$1" color="$color10">
+                        Uploaded By
+                      </Text>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                        {uploadedBy}
+                      </Text>
+                    </YStack>
+                    <YStack>
+                      <Text fontSize="$1" color="$color10">
+                        Upload Date
+                      </Text>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                        {formatDate(uploadDate)}
+                      </Text>
+                    </YStack>
+                    {fileSize && (
+                      <YStack>
+                        <Text fontSize="$1" color="$color10">
+                          File Size
+                        </Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                          {formatFileSize(fileSize)}
+                        </Text>
+                      </YStack>
+                    )}
+                    {expiryDate && (
+                      <YStack>
+                        <Text fontSize="$1" color="$color10">
+                          Expiry Date
+                        </Text>
+                        <Text
+                          fontSize="$3"
+                          fontWeight="500"
+                          color={
+                            daysUntilExpiry !== null && daysUntilExpiry <= 30
+                              ? '$yellow10'
+                              : '$color12'
+                          }
+                        >
+                          {formatDate(expiryDate)}
+                          {daysUntilExpiry !== null && daysUntilExpiry <= 30 && (
+                            <Text marginLeft="$2" display="inline">
+                              ⚠️ {daysUntilExpiry} days left
+                            </Text>
+                          )}
+                        </Text>
+                      </YStack>
+                    )}
+                  </YStack>
+                </Card>
+
+                {/* Version History */}
+                {versions.length > 0 && (
+                  <Card
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    padding="$4"
+                    backgroundColor="$background"
+                  >
+                    <XStack alignItems="center" gap="$2" marginBottom="$4">
+                      <HistoryIcon size={16} />
+                      <H3 fontSize="$3" fontWeight="600" color="$color12">
+                        Version History
+                      </H3>
+                    </XStack>
+                    <YStack gap="$2">
+                      {versions.map((version) => (
+                        <XStack
+                          key={version.id}
+                          alignItems="center"
+                          justifyContent="space-between"
+                          padding="$2"
+                          backgroundColor="$backgroundHover"
+                          borderRadius="$2"
+                        >
+                          <YStack>
+                            <Text fontSize="$3" fontWeight="500" color="$color12">
+                              Version {version.version_number}
+                            </Text>
+                            <Text fontSize="$1" color="$color10">
+                              {formatDate(version.uploaded_at)} by{' '}
+                              {version.uploaded_by}
+                            </Text>
+                          </YStack>
+                          <Text fontSize="$1" color="$color10">
+                            {formatFileSize(version.file_size)}
+                          </Text>
+                        </XStack>
+                      ))}
+                    </YStack>
+                  </Card>
+                )}
+
+                {/* Related Items */}
+                {(projectId || documentComments.length > 0) && (
+                  <Card
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    padding="$4"
+                    backgroundColor="$background"
+                  >
+                    <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
+                      Related Items
+                    </H3>
+                    <YStack gap="$2">
+                      {projectId && (
+                        <XStack alignItems="center" gap="$2" fontSize="$3">
+                          <Building size={14} color="$color10" />
+                          <Text color="$color11">Project: </Text>
+                          <Text color="$color12" fontWeight="500">
+                            {projectId}
+                          </Text>
+                        </XStack>
+                      )}
+                      {documentComments.length > 0 && (
+                        <XStack alignItems="center" gap="$2" fontSize="$3">
+                          <FileText size={14} color="$color10" />
+                          <Text color="$color11">
+                            {documentComments.length} comments
+                          </Text>
+                        </XStack>
+                      )}
+                    </YStack>
+                  </Card>
+                )}
+              </YStack>
+            )}
+          </XStack>
+        ) : (
+          <YStack marginBottom="$6">
+            <Card
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              overflow="hidden"
+              backgroundColor="$background"
+            >
+              <XStack
+                alignItems="center"
+                justifyContent="space-between"
+                padding="$3"
+                backgroundColor="$backgroundHover"
+                borderBottomWidth={1}
+                borderBottomColor="$borderColor"
+              >
+                <Text fontSize="$3" fontWeight="500" color="$color11">
                   {documentType}
-                </span>
-                <div className="flex items-center space-x-2">
+                </Text>
+                <XStack alignItems="center" gap="$2">
                   {pdfUrl && (
-                    <a
+                    <XStack
+                      as="a"
                       href={pdfUrl}
                       download={documentName}
-                      className="p-2 text-primary-600 hover:bg-primary-50 rounded"
+                      padding="$2"
+                      color="$teal9"
+                      hoverStyle={{ backgroundColor: '$teal2' }}
+                      borderRadius="$2"
+                      cursor="pointer"
                     >
                       <Download size={16} />
-                    </a>
+                    </XStack>
                   )}
-                </div>
-              </div>
-              <div
-                className="relative"
-                style={{
-                  height: viewMode === 'inline' ? '600px' : '400px',
-                  minHeight: '400px',
-                }}
+                </XStack>
+              </XStack>
+              <YStack
+                position="relative"
+                height={viewMode === 'inline' ? 600 : 400}
+                minHeight={400}
               >
                 {pdfUrl ? (
                   <iframe
                     src={pdfUrl}
-                    className="w-full h-full border-0"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
                     title={documentName}
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-center">
-                      <FileText
-                        className="mx-auto text-text-tertiary mb-2"
-                        size={48}
-                      />
-                      <p className="text-text-secondary">
-                        No preview available
-                      </p>
-                    </div>
-                  </div>
+                  <YStack
+                    alignItems="center"
+                    justifyContent="center"
+                    height="100%"
+                  >
+                    <YStack alignItems="center" gap="$2">
+                      <FileText color="$color10" size={48} />
+                      <Text color="$color11">No preview available</Text>
+                    </YStack>
+                  </YStack>
                 )}
-              </div>
-            </div>
-          </div>
-
-          {/* AI Extracted Fields & Details */}
-          {(viewMode === 'split-screen' || viewMode === 'modal') && (
-            <div className="space-y-6">
-              {/* AI Extracted Fields */}
-              {currentExtraction && (
-                <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-semibold text-text-primary flex items-center space-x-2">
-                      <FileCheck size={16} />
-                      <span>AI-Extracted Fields</span>
-                    </h3>
-                    <span className="text-xs px-2 py-1 bg-primary-100 text-primary-700 rounded">
-                      {currentExtraction.confidence}% confidence
-                    </span>
-                  </div>
-
-                  <div className="space-y-3">
-                    {currentExtraction.policy_number && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
-                          Policy Number
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
-                          {currentExtraction.policy_number}
-                        </p>
-                      </div>
-                    )}
-                    {currentExtraction.carrier && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
-                          Carrier
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
-                          {currentExtraction.carrier}
-                        </p>
-                      </div>
-                    )}
-                    {currentExtraction.coverage_amounts &&
-                      currentExtraction.coverage_amounts.length > 0 && (
-                        <div>
-                          <span className="text-xs text-text-tertiary">
-                            Coverage Amounts
-                          </span>
-                          <div className="space-y-1 mt-1">
-                            {currentExtraction.coverage_amounts.map(
-                              (coverage, index) => (
-                                <div
-                                  key={index}
-                                  className="flex justify-between text-sm"
-                                >
-                                  <span className="text-text-secondary">
-                                    {coverage.type}:
-                                  </span>
-                                  <span className="font-medium text-text-primary">
-                                    ${coverage.amount.toLocaleString()}
-                                  </span>
-                                </div>
-                              )
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    {currentExtraction.effective_date && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
-                          Effective Date
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
-                          {formatDate(currentExtraction.effective_date)}
-                        </p>
-                      </div>
-                    )}
-                    {currentExtraction.expiry_date && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
-                          Expiry Date
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
-                          {formatDate(currentExtraction.expiry_date)}
-                        </p>
-                      </div>
-                    )}
-                    {currentExtraction.named_insureds &&
-                      currentExtraction.named_insureds.length > 0 && (
-                        <div>
-                          <span className="text-xs text-text-tertiary">
-                            Named Insureds
-                          </span>
-                          <div className="space-y-1 mt-1">
-                            {currentExtraction.named_insureds.map(
-                              (insured, index) => (
-                                <p
-                                  key={index}
-                                  className="text-sm text-text-primary"
-                                >
-                                  • {insured}
-                                </p>
-                              )
-                            )}
-                          </div>
-                        </div>
-                      )}
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={handleExtractFields}
-                      fullWidth
-                    >
-                      Re-extract Fields
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Metadata */}
-              <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                <h3 className="text-sm font-semibold text-text-primary mb-4">
-                  Metadata
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <span className="text-xs text-text-tertiary">
-                      Document Type
-                    </span>
-                    <p className="text-sm font-medium text-text-primary">
-                      {documentType}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-text-tertiary">
-                      Uploaded By
-                    </span>
-                    <p className="text-sm font-medium text-text-primary">
-                      {uploadedBy}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-text-tertiary">
-                      Upload Date
-                    </span>
-                    <p className="text-sm font-medium text-text-primary">
-                      {formatDate(uploadDate)}
-                    </p>
-                  </div>
-                  {fileSize && (
-                    <div>
-                      <span className="text-xs text-text-tertiary">
-                        File Size
-                      </span>
-                      <p className="text-sm font-medium text-text-primary">
-                        {formatFileSize(fileSize)}
-                      </p>
-                    </div>
-                  )}
-                  {expiryDate && (
-                    <div>
-                      <span className="text-xs text-text-tertiary">
-                        Expiry Date
-                      </span>
-                      <p
-                        className={`text-sm font-medium ${daysUntilExpiry !== null && daysUntilExpiry <= 30 ? 'text-warning-600' : 'text-text-primary'}`}
-                      >
-                        {formatDate(expiryDate)}
-                        {daysUntilExpiry !== null && daysUntilExpiry <= 30 && (
-                          <span className="ml-2">
-                            ⚠️ {daysUntilExpiry} days left
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Version History */}
-              {versions.length > 0 && (
-                <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                  <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center space-x-2">
-                    <HistoryIcon size={16} />
-                    <span>Version History</span>
-                  </h3>
-                  <div className="space-y-2">
-                    {versions.map((version) => (
-                      <div
-                        key={version.id}
-                        className="flex items-center justify-between p-2 bg-bg-primary rounded"
-                      >
-                        <div>
-                          <p className="text-sm font-medium text-text-primary">
-                            Version {version.version_number}
-                          </p>
-                          <p className="text-xs text-text-tertiary">
-                            {formatDate(version.uploaded_at)} by{' '}
-                            {version.uploaded_by}
-                          </p>
-                        </div>
-                        <span className="text-xs text-text-tertiary">
-                          {formatFileSize(version.file_size)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Related Items */}
-              {(projectId || documentComments.length > 0) && (
-                <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                  <h3 className="text-sm font-semibold text-text-primary mb-4">
-                    Related Items
-                  </h3>
-                  <div className="space-y-2">
-                    {projectId && (
-                      <div className="flex items-center space-x-2 text-sm">
-                        <Building size={14} className="text-text-tertiary" />
-                        <span className="text-text-secondary">Project: </span>
-                        <span className="text-text-primary font-medium">
-                          {projectId}
-                        </span>
-                      </div>
-                    )}
-                    {documentComments.length > 0 && (
-                      <div className="flex items-center space-x-2 text-sm">
-                        <FileText size={14} className="text-text-tertiary" />
-                        <span className="text-text-secondary">
-                          {documentComments.length} comments
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+              </YStack>
+            </Card>
+          </YStack>
+        )}
 
           {/* Inline Mode: Show extracted fields below PDF */}
           {viewMode === 'inline' && currentExtraction && (
-            <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-text-primary flex items-center space-x-2">
+            <Card
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              padding="$4"
+              backgroundColor="$background"
+            >
+              <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                <XStack alignItems="center" gap="$2">
                   <FileCheck size={16} />
-                  <span>AI-Extracted Fields</span>
-                </h3>
-                <span className="text-xs px-2 py-1 bg-primary-100 text-primary-700 rounded">
+                  <H3 fontSize="$3" fontWeight="600" color="$color12">
+                    AI-Extracted Fields
+                  </H3>
+                </XStack>
+                <Text
+                  fontSize="$1"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  backgroundColor="$teal2"
+                  color="$teal11"
+                  borderRadius="$2"
+                >
                   {currentExtraction.confidence}% confidence
-                </span>
-              </div>
+                </Text>
+              </XStack>
 
-              <div className="grid grid-cols-2 gap-4">
+              <XStack flexWrap="wrap" gap="$4">
                 {currentExtraction.policy_number && (
-                  <div>
-                    <span className="text-xs text-text-tertiary">
+                  <YStack flex={1} minWidth="50%">
+                    <Text fontSize="$1" color="$color10">
                       Policy Number
-                    </span>
-                    <p className="text-sm font-medium text-text-primary">
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {currentExtraction.policy_number}
-                    </p>
-                  </div>
+                    </Text>
+                  </YStack>
                 )}
                 {currentExtraction.carrier && (
-                  <div>
-                    <span className="text-xs text-text-tertiary">Carrier</span>
-                    <p className="text-sm font-medium text-text-primary">
+                  <YStack flex={1} minWidth="50%">
+                    <Text fontSize="$1" color="$color10">Carrier</Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {currentExtraction.carrier}
-                    </p>
-                  </div>
+                    </Text>
+                  </YStack>
                 )}
                 {currentExtraction.effective_date && (
-                  <div>
-                    <span className="text-xs text-text-tertiary">
+                  <YStack flex={1} minWidth="50%">
+                    <Text fontSize="$1" color="$color10">
                       Effective Date
-                    </span>
-                    <p className="text-sm font-medium text-text-primary">
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {formatDate(currentExtraction.effective_date)}
-                    </p>
-                  </div>
+                    </Text>
+                  </YStack>
                 )}
                 {currentExtraction.expiry_date && (
-                  <div>
-                    <span className="text-xs text-text-tertiary">
+                  <YStack flex={1} minWidth="50%">
+                    <Text fontSize="$1" color="$color10">
                       Expiry Date
-                    </span>
-                    <p className="text-sm font-medium text-text-primary">
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {formatDate(currentExtraction.expiry_date)}
-                    </p>
-                  </div>
+                    </Text>
+                  </YStack>
                 )}
-              </div>
+              </XStack>
 
               {currentExtraction.coverage_amounts &&
                 currentExtraction.coverage_amounts.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <span className="text-xs text-text-tertiary">
+                  <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+                    <Text fontSize="$1" color="$color10">
                       Coverage Amounts
-                    </span>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
+                    </Text>
+                    <XStack flexWrap="wrap" gap="$2" marginTop="$2">
                       {currentExtraction.coverage_amounts.map(
                         (coverage, index) => (
-                          <div
+                          <YStack
                             key={index}
-                            className="p-2 bg-bg-primary rounded"
+                            padding="$2"
+                            backgroundColor="$backgroundHover"
+                            borderRadius="$2"
+                            flex={1}
+                            minWidth="50%"
                           >
-                            <span className="text-xs text-text-secondary">
+                            <Text fontSize="$1" color="$color11">
                               {coverage.type}:
-                            </span>
-                            <p className="text-sm font-medium text-text-primary">
+                            </Text>
+                            <Text fontSize="$3" fontWeight="500" color="$color12">
                               ${coverage.amount.toLocaleString()}
-                            </p>
-                          </div>
+                            </Text>
+                          </YStack>
                         )
                       )}
-                    </div>
-                  </div>
+                    </XStack>
+                  </YStack>
                 )}
-            </div>
+            </Card>
           )}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
+
 
       {/* AI Summary Modal */}
       {showAISummary && currentExtraction && (
