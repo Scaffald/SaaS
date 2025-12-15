@@ -3,8 +3,8 @@
  * Side-by-side document viewer for OCR review
  */
 
-import React from 'react';
 import { FileText } from 'lucide-react';
+import { YStack, XStack, Text, H3, Card } from '@unicornlove/ui';
 
 interface DocumentPreviewProps {
   documentUrl?: string;
@@ -21,22 +21,44 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   const isImage = fileType.startsWith('image/');
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 rounded-lg border border-gray-300">
-      <div className="p-4 border-b border-gray-300 bg-white rounded-t-lg">
-        <div className="flex items-center">
-          <FileText className="h-5 w-5 text-gray-500 mr-2" />
-          <h3 className="text-sm font-medium text-gray-900 truncate">{fileName}</h3>
-        </div>
-      </div>
+    <YStack
+      height="100%"
+      flexDirection="column"
+      backgroundColor="$gray2"
+      borderRadius="$4"
+      borderWidth={1}
+      borderColor="$gray6"
+    >
+      <YStack
+        padding="$4"
+        borderBottomWidth={1}
+        borderBottomColor="$gray6"
+        backgroundColor="$background"
+        borderTopLeftRadius="$4"
+        borderTopRightRadius="$4"
+      >
+        <XStack alignItems="center">
+          <FileText size={20} color="$color10" marginRight="$2" />
+          <H3 fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
+            {fileName}
+          </H3>
+        </XStack>
+      </YStack>
 
-      <div className="flex-1 overflow-auto p-4">
+      <YStack flex={1} overflow="auto" padding="$4">
         {documentUrl ? (
           <>
             {isPDF && (
               <iframe
                 src={documentUrl}
                 title={fileName}
-                className="w-full h-full min-h-[600px] rounded border border-gray-200"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  minHeight: '600px',
+                  borderRadius: '8px',
+                  border: '1px solid var(--color-gray-5)',
+                }}
                 aria-label={`Preview of ${fileName}`}
               />
             )}
@@ -44,24 +66,29 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               <img
                 src={documentUrl}
                 alt={fileName}
-                className="w-full h-auto rounded border border-gray-200"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '8px',
+                  border: '1px solid var(--color-gray-5)',
+                }}
               />
             )}
             {!isPDF && !isImage && (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                <p>Preview not available for this file type</p>
-              </div>
+              <YStack alignItems="center" justifyContent="center" height="100%" color="$color10">
+                <Text>Preview not available for this file type</Text>
+              </YStack>
             )}
           </>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            <div className="text-center">
-              <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-              <p>Document preview not available</p>
-            </div>
-          </div>
+          <YStack alignItems="center" justifyContent="center" height="100%" color="$color10">
+            <YStack alignItems="center" gap="$4">
+              <FileText size={64} color="$color9" />
+              <Text>Document preview not available</Text>
+            </YStack>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 };
