@@ -14,6 +14,8 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { YStack, XStack, Text, Button, Card, H1, H2, H3 } from '@unicornlove/ui';
+import { Plus } from 'lucide-react';
 import {
   TeamMembersList,
   MemberDetailModal,
@@ -205,69 +207,64 @@ export default function TeamPage() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <YStack minHeight="100vh" backgroundColor="$gray2">
+      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Team Members</h1>
-            <p className="mt-2 text-sm text-gray-600">
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$8" flexWrap="wrap" gap="$4">
+          <YStack>
+            <H1>Team Members</H1>
+            <Text marginTop="$2" fontSize="$2" color="$gray11">
               Manage your organization's team members and their roles
-            </p>
-          </div>
-          <button
-            onClick={handleAddMember}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            </Text>
+          </YStack>
+          <Button
+            onPress={handleAddMember}
+            backgroundColor="$blue9"
+            color="white"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$blue10' }}
           >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            Invite Member
-          </button>
-        </div>
+            <XStack alignItems="center" gap="$2">
+              <Plus size={20} />
+              <Text>Invite Member</Text>
+            </XStack>
+          </Button>
+        </XStack>
 
         {/* Summary Cards */}
         {summaryData && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <p className="text-sm text-gray-600">Total Members</p>
-              <p className="text-2xl font-bold text-gray-900">{summaryData.total}</p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-purple-200 p-4">
-              <p className="text-sm text-purple-600">Admins</p>
-              <p className="text-2xl font-bold text-purple-700">
+          <XStack flexWrap="wrap" gap="$4" marginBottom="$8">
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$gray6">
+              <Text fontSize="$2" color="$gray11">Total Members</Text>
+              <Text fontSize="$8" fontWeight="700" color="$gray12">{summaryData.total}</Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$purple6">
+              <Text fontSize="$2" color="$purple11">Admins</Text>
+              <Text fontSize="$8" fontWeight="700" color="$purple12">
                 {summaryData.byRole.admin}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-blue-200 p-4">
-              <p className="text-sm text-blue-600">Managers</p>
-              <p className="text-2xl font-bold text-blue-700">
+              </Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$blue6">
+              <Text fontSize="$2" color="$blue11">Managers</Text>
+              <Text fontSize="$8" fontWeight="700" color="$blue12">
                 {summaryData.byRole.manager}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-green-200 p-4">
-              <p className="text-sm text-green-600">Brokers</p>
-              <p className="text-2xl font-bold text-green-700">
+              </Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$green6">
+              <Text fontSize="$2" color="$green11">Brokers</Text>
+              <Text fontSize="$8" fontWeight="700" color="$green12">
                 {summaryData.byRole.broker}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-orange-200 p-4">
-              <p className="text-sm text-orange-600">Subcontractors</p>
-              <p className="text-2xl font-bold text-orange-700">
+              </Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$orange6">
+              <Text fontSize="$2" color="$orange11">Subcontractors</Text>
+              <Text fontSize="$8" fontWeight="700" color="$orange12">
                 {summaryData.byRole.subcontractor}
-              </p>
-            </div>
-          </div>
+              </Text>
+            </Card>
+          </XStack>
         )}
 
         {/* Team Members List */}
@@ -280,7 +277,7 @@ export default function TeamPage() {
           onSearch={handleSearch}
           onRoleFilter={handleRoleFilter}
         />
-      </div>
+      </YStack>
 
       {/* Member Detail Modal */}
       <MemberDetailModal
@@ -301,6 +298,6 @@ export default function TeamPage() {
         loading={inviteMemberMutation.isPending}
         existingEmails={existingEmails}
       />
-    </div>
+    </YStack>
   );
 }
