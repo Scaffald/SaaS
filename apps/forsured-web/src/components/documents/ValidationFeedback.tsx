@@ -3,7 +3,7 @@
  * Displays real-time validation feedback for OCR fields
  */
 
-import React from 'react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { ValidationResult } from '../../types/ocr.types';
 import { AlertCircle, AlertTriangle, CheckCircle } from 'lucide-react';
 
@@ -21,77 +21,87 @@ export const ValidationFeedback: React.FC<ValidationFeedbackProps> = ({ validati
   // Success state: valid with no warnings
   if (isValid && warnings.length === 0) {
     return (
-      <div
+      <Card
         data-testid="success-section"
-        className="rounded-md bg-green-50 p-4 border border-green-200"
+        borderRadius="$4"
+        backgroundColor="$green2"
+        padding="$4"
+        borderWidth={1}
+        borderColor="$green6"
         role="alert"
       >
-        <div className="flex">
-          <CheckCircle className="h-5 w-5 text-green-400" aria-hidden="true" />
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-green-800">All fields are valid</h3>
-            <p className="text-sm text-green-700 mt-1">
+        <XStack>
+          <CheckCircle size={20} color="$green10" aria-hidden="true" />
+          <YStack marginLeft="$3">
+            <Text fontSize="$3" fontWeight="500" color="$green12">
+              All fields are valid
+            </Text>
+            <Text fontSize="$3" color="$green11" marginTop="$1">
               You can save these changes and trigger compliance re-evaluation.
-            </p>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </YStack>
+        </XStack>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <YStack gap="$4">
       {/* Errors Section */}
       {errors.length > 0 && (
-        <div
+        <Card
           data-testid="error-section"
-          className="rounded-md bg-red-50 p-4 border border-red-200"
+          borderRadius="$4"
+          backgroundColor="$red2"
+          padding="$4"
+          borderWidth={1}
+          borderColor="$red6"
           role="alert"
           aria-live="polite"
         >
-          <div className="flex">
-            <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
-            <div className="ml-3 flex-1">
-              <h3 className="text-sm font-medium text-red-800">
+          <XStack>
+            <AlertCircle size={20} color="$red10" aria-hidden="true" />
+            <YStack flex={1} marginLeft="$3">
+              <Text fontSize="$3" fontWeight="500" color="$red12">
                 {errors.length} {errors.length === 1 ? 'error' : 'errors'} found
-              </h3>
-              <div className="mt-2 text-sm text-red-700">
-                <ul className="list-disc space-y-1 pl-5">
-                  {errors.map((error, index) => (
-                    <li key={`${error.field}-${index}`}>{error.message}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+              </Text>
+              <YStack marginTop="$2" fontSize="$3" color="$red11" gap="$1">
+                {errors.map((error, index) => (
+                  <Text key={`${error.field}-${index}`}>• {error.message}</Text>
+                ))}
+              </YStack>
+            </YStack>
+          </XStack>
+        </Card>
       )}
 
       {/* Warnings Section */}
       {warnings.length > 0 && (
-        <div
+        <Card
           data-testid="warning-section"
-          className="rounded-md bg-yellow-50 p-4 border border-yellow-200"
+          borderRadius="$4"
+          backgroundColor="$yellow2"
+          padding="$4"
+          borderWidth={1}
+          borderColor="$yellow6"
           role="alert"
           aria-live="polite"
         >
-          <div className="flex">
-            <AlertTriangle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
-            <div className="ml-3 flex-1">
-              <h3 className="text-sm font-medium text-yellow-800">
+          <XStack>
+            <AlertTriangle size={20} color="$yellow10" aria-hidden="true" />
+            <YStack flex={1} marginLeft="$3">
+              <Text fontSize="$3" fontWeight="500" color="$yellow12">
                 {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}
-              </h3>
-              <div className="mt-2 text-sm text-yellow-700">
-                <ul className="list-disc space-y-1 pl-5">
-                  {warnings.map((warning, index) => (
-                    <li key={`${warning.field}-${index}`}>{warning.message}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+              </Text>
+              <YStack marginTop="$2" fontSize="$3" color="$yellow11" gap="$1">
+                {warnings.map((warning, index) => (
+                  <Text key={`${warning.field}-${index}`}>• {warning.message}</Text>
+                ))}
+              </YStack>
+            </YStack>
+          </XStack>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 };

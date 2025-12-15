@@ -3,7 +3,8 @@
  * Displays audit trail of field changes
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { AuditEntry } from '../../types/ocr.types';
 import { History, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -28,73 +29,96 @@ export const AuditHistoryPanel: React.FC<AuditHistoryPanelProps> = ({ auditHisto
 
   if (auditHistory.length === 0) {
     return (
-      <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-        <div className="flex items-center text-gray-500">
-          <History className="h-5 w-5 mr-2" />
-          <span className="text-sm">No audit history</span>
-        </div>
-      </div>
+      <Card
+        backgroundColor="$gray2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+        padding="$4"
+      >
+        <XStack alignItems="center" color="$color10">
+          <History size={20} marginRight="$2" />
+          <Text fontSize="$3">No audit history</Text>
+        </XStack>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
-      <button
+    <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
+      <XStack
+        as="button"
+        width="100%"
+        alignItems="center"
+        justifyContent="space-between"
+        padding="$4"
+        hoverStyle={{ backgroundColor: '$backgroundHover' }}
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
         aria-expanded={isExpanded}
         aria-controls="audit-history-content"
+        cursor="pointer"
       >
-        <div className="flex items-center">
-          <History className="h-5 w-5 text-gray-500 mr-2" />
-          <span className="text-sm font-medium text-gray-900">
+        <XStack alignItems="center">
+          <History size={20} color="$color10" marginRight="$2" />
+          <Text fontSize="$3" fontWeight="500" color="$color12">
             Audit History ({auditHistory.length} {auditHistory.length === 1 ? 'entry' : 'entries'})
-          </span>
-        </div>
+          </Text>
+        </XStack>
         {isExpanded ? (
-          <ChevronUp className="h-5 w-5 text-gray-500" />
+          <ChevronUp size={20} color="$color10" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500" />
+          <ChevronDown size={20} color="$color10" />
         )}
-      </button>
+      </XStack>
 
       {isExpanded && (
-        <div id="audit-history-content" className="border-t border-gray-200">
-          <div className="max-h-96 overflow-y-auto">
-            {auditHistory.map((entry) => (
-              <div
-                key={entry.id}
-                className="p-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">{entry.fieldName}</p>
-                    <div className="mt-1 text-sm text-gray-600">
-                      <p>
-                        <span className="font-medium">From:</span>{' '}
-                        <span className="text-red-600">{formatValue(entry.oldValue)}</span>
-                      </p>
-                      <p>
-                        <span className="font-medium">To:</span>{' '}
-                        <span className="text-green-600">{formatValue(entry.newValue)}</span>
-                      </p>
-                    </div>
-                    <div className="mt-2 flex items-center space-x-3 text-xs text-gray-500">
-                      <span>
-                        <span className="font-medium">Changed by:</span> {entry.changedBy}
-                      </span>
-                      <span>
-                        <span className="font-medium">Confidence:</span> {entry.confidenceAtEdit}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-2 text-xs text-gray-400">{formatDate(entry.changedAt)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <YStack
+          id="audit-history-content"
+          borderTopWidth={1}
+          borderTopColor="$borderColor"
+          maxHeight={384}
+          overflowY="auto"
+        >
+          {auditHistory.map((entry, index) => (
+            <YStack
+              key={entry.id}
+              padding="$4"
+              borderBottomWidth={index < auditHistory.length - 1 ? 1 : 0}
+              borderBottomColor="$borderColor"
+              hoverStyle={{ backgroundColor: '$backgroundHover' }}
+            >
+              <XStack alignItems="flex-start" justifyContent="space-between">
+                <YStack flex={1}>
+                  <Text fontSize="$3" fontWeight="500" color="$color12">
+                    {entry.fieldName}
+                  </Text>
+                  <YStack marginTop="$1" fontSize="$3" color="$color11" gap="$1">
+                    <Text>
+                      <Text fontWeight="500">From:</Text>{' '}
+                      <Text color="$red10">{formatValue(entry.oldValue)}</Text>
+                    </Text>
+                    <Text>
+                      <Text fontWeight="500">To:</Text>{' '}
+                      <Text color="$green10">{formatValue(entry.newValue)}</Text>
+                    </Text>
+                  </YStack>
+                  <XStack marginTop="$2" alignItems="center" gap="$3" fontSize="$1" color="$color10">
+                    <Text>
+                      <Text fontWeight="500">Changed by:</Text> {entry.changedBy}
+                    </Text>
+                    <Text>
+                      <Text fontWeight="500">Confidence:</Text> {entry.confidenceAtEdit}%
+                    </Text>
+                  </XStack>
+                </YStack>
+              </XStack>
+              <Text marginTop="$2" fontSize="$1" color="$color9">
+                {formatDate(entry.changedAt)}
+              </Text>
+            </YStack>
+          ))}
+        </YStack>
       )}
-    </div>
+    </Card>
   );
 };
