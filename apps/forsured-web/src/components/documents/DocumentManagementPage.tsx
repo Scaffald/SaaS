@@ -3,7 +3,9 @@
  * Complete document management page with upload, table, and RBAC
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
+import { YStack, XStack, Text, H1, Card, Spinner } from '@unicornlove/ui';
 import { FileUploadZone } from './FileUploadZone';
 import { DocumentTable } from './DocumentTable';
 import { DocumentService } from '../../lib/documents/documentService';
@@ -122,66 +124,70 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Documents</h1>
-        <p className="mt-2 text-sm text-gray-600">
+    <YStack
+      maxWidth={1280}
+      marginHorizontal="auto"
+      paddingHorizontal={{ sm: '$4', md: '$6', lg: '$8' }}
+      paddingVertical="$8"
+    >
+      <YStack marginBottom="$8">
+        <H1 fontSize="$9" fontWeight="bold" color="$color12">
+          Documents
+        </H1>
+        <Text marginTop="$2" fontSize="$3" color="$color11">
           Upload and manage insurance certificates for this project.
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-red-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">{error}</h3>
-            </div>
-            <div className="ml-auto pl-3">
-              <button
+        <Card
+          marginBottom="$6"
+          backgroundColor="$red2"
+          borderWidth={1}
+          borderColor="$red6"
+          borderRadius="$4"
+          padding="$4"
+        >
+          <XStack alignItems="flex-start">
+            <XStack flexShrink={0}>
+              <X size={20} color="$red10" />
+            </XStack>
+            <XStack flex={1} marginLeft="$3">
+              <Text fontSize="$3" fontWeight="500" color="$red12">
+                {error}
+              </Text>
+            </XStack>
+            <XStack marginLeft="auto" paddingLeft="$3">
+              <XStack
+                as="button"
+                display="inline-flex"
+                color="$red10"
+                hoverStyle={{ color: '$red11' }}
                 onClick={() => setError(null)}
-                className="inline-flex text-red-400 hover:text-red-500"
+                cursor="pointer"
               >
-                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
+                <X size={20} />
+              </XStack>
+            </XStack>
+          </XStack>
+        </Card>
       )}
 
       {canUpload() && (
-        <div className="mb-8">
+        <YStack marginBottom="$8">
           <FileUploadZone
             projectId={projectId}
             uploaderId={currentUser.id}
             onUpload={handleUpload}
             onError={handleUploadError}
           />
-        </div>
+        </YStack>
       )}
 
       {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        </div>
+        <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
+          <Spinner size="large" color="$teal9" />
+        </YStack>
       ) : (
         <DocumentTable
           documents={documents}
@@ -191,6 +197,6 @@ export const DocumentManagementPage: React.FC<DocumentManagementPageProps> = ({
           canReprocess={canReprocess}
         />
       )}
-    </div>
+    </YStack>
   );
 };
