@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Building,
   FileText,
@@ -14,8 +14,8 @@ import {
   Info,
   Search,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Button, Card, Input, TextArea, Select, Checkbox, Spinner } from '@unicornlove/ui';
 import ForsuredLogo from '../Common/ForsuredLogo';
-import Button from '../Common/Button';
 
 interface PrequalificationWizardProps {
   invitationData?: {
@@ -243,52 +243,59 @@ export default function SubcontractorPrequalificationWizard({
   };
 
   return (
-    <div className="min-h-screen bg-bg-secondary py-8">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <YStack minHeight="100vh" backgroundColor="$background" paddingVertical="$8">
+      <YStack maxWidth={1280} width="100%" marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {onSkip && (
-          <button
-            onClick={onSkip}
-            className="absolute top-6 right-6 text-text-secondary hover:text-text-primary transition-colors flex items-center space-x-2"
+          <Button
+            position="absolute"
+            top="$6"
+            right="$6"
+            variant="ghost"
+            onPress={onSkip}
+            color="$color11"
+            hoverStyle={{ color: '$color12' }}
           >
-            <span>Skip for now</span>
+            <XStack gap="$2" alignItems="center">
+              <Text>Skip for now</Text>
             <X size={18} />
-          </button>
+            </XStack>
+          </Button>
         )}
 
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
+        <YStack alignItems="center" marginBottom="$8">
+          <XStack justifyContent="center" marginBottom="$6">
             <ForsuredLogo className="h-8" />
-          </div>
+          </XStack>
           {invitationData ? (
-            <>
-              <h1 className="text-3xl font-bold text-text-primary mb-2">
+            <YStack alignItems="center">
+              <H1 fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">
                 Subcontractor Prequalification
-              </h1>
-              <p className="text-lg text-text-secondary mb-4">
+              </H1>
+              <Text fontSize="$6" color="$color11" marginBottom="$4">
                 Complete your prequalification for {invitationData.gcName}
-              </p>
+              </Text>
               {invitationData.customMessage && (
-                <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 max-w-2xl mx-auto">
-                  <p className="text-sm text-primary-900">
+                <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4" maxWidth={672} width="100%" marginHorizontal="auto">
+                  <Text fontSize="$3" color="$blue11">
                     {invitationData.customMessage}
-                  </p>
-                </div>
+                  </Text>
+                </Card>
               )}
-            </>
+            </YStack>
           ) : (
-            <>
-              <h1 className="text-3xl font-bold text-text-primary mb-2">
+            <YStack alignItems="center">
+              <H1 fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">
                 Complete Your Profile
-              </h1>
-              <p className="text-lg text-text-secondary">
+              </H1>
+              <Text fontSize="$6" color="$color11">
                 Provide your company information to get prequalified
-              </p>
-            </>
+              </Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-6 mb-8">
-          <div className="flex items-center justify-between overflow-x-auto">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" marginBottom="$8">
+          <XStack alignItems="center" justifyContent="space-between" overflowX="auto">
             {STEPS.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === step.id;
@@ -296,44 +303,51 @@ export default function SubcontractorPrequalificationWizard({
               const isValid = isStepValid(step.id);
 
               return (
-                <div key={step.id} className="flex items-center min-w-0">
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
+                <XStack key={step.id} alignItems="center" minWidth={0}>
+                  <YStack alignItems="center">
+                    <YStack
+                      width={48}
+                      height={48}
+                      borderRadius={9999}
+                      alignItems="center"
+                      justifyContent="center"
+                      backgroundColor={
                         isCompleted
-                          ? 'bg-success-600 text-white'
+                          ? '$green10'
                           : isActive
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-bg-tertiary text-text-secondary'
-                      }`}
+                            ? '$blue10'
+                            : '$backgroundHover'
+                      }
+                      color={isCompleted || isActive ? 'white' : '$color11'}
                     >
                       {isCompleted ? (
                         <CheckCircle size={20} />
                       ) : (
                         <Icon size={20} />
                       )}
-                    </div>
-                    <div className="mt-2 text-center min-w-0">
-                      <p
-                        className={`text-xs font-medium truncate ${
-                          isActive ? 'text-text-primary' : 'text-text-secondary'
-                        }`}
+                    </YStack>
+                    <YStack marginTop="$2" alignItems="center" minWidth={0}>
+                      <Text
+                        fontSize="$1"
+                        fontWeight="500"
+                        numberOfLines={1}
+                        color={isActive ? '$color12' : '$color11'}
                       >
                         {step.title}
-                      </p>
-                    </div>
-                  </div>
+                      </Text>
+                    </YStack>
+                  </YStack>
                   {index < STEPS.length - 1 && (
-                    <div className="w-8 h-0.5 bg-border mx-2 flex-shrink-0" />
+                    <YStack width={32} height={2} backgroundColor="$borderColor" marginHorizontal="$2" flexShrink={0} />
                   )}
-                </div>
+                </XStack>
               );
             })}
-          </div>
-        </div>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border">
-          <div className="p-8">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
+          <YStack padding="$8">
             {currentStep === 1 && (
               <CompanyInfoStep
                 data={formData.companyInfo}
@@ -391,56 +405,68 @@ export default function SubcontractorPrequalificationWizard({
                 }
               />
             )}
-          </div>
+          </YStack>
 
-          <div className="px-8 py-6 bg-bg-secondary border-t border-border flex items-center justify-between">
-            <button
-              onClick={handlePrevious}
+          <XStack paddingHorizontal="$8" paddingVertical="$6" backgroundColor="$backgroundHover" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="space-between">
+            <Button
+              onPress={handlePrevious}
               disabled={currentStep === 1}
-              className={`flex items-center space-x-2 px-6 py-2 rounded-lg transition-colors ${
-                currentStep === 1
-                  ? 'text-text-tertiary cursor-not-allowed'
-                  : 'text-text-primary hover:bg-bg-tertiary'
-              }`}
+              variant="ghost"
+              color={currentStep === 1 ? '$color10' : '$color12'}
+              disabledStyle={{ color: '$color10', cursor: 'not-allowed' }}
+              hoverStyle={currentStep === 1 ? undefined : { backgroundColor: '$backgroundHover' }}
             >
+              <XStack gap="$2" alignItems="center">
               <ArrowLeft size={16} />
-              <span>Previous</span>
-            </button>
+                <Text>Previous</Text>
+              </XStack>
+            </Button>
 
-            <div className="flex items-center space-x-2">
+            <XStack gap="$2" alignItems="center">
               {STEPS.map((step) => (
-                <div
+                <YStack
                   key={step.id}
-                  className={`w-2 h-2 rounded-full ${
-                    currentStep >= step.id ? 'bg-primary-600' : 'bg-neutral-300'
-                  }`}
+                  width={8}
+                  height={8}
+                  borderRadius={9999}
+                  backgroundColor={currentStep >= step.id ? '$blue10' : '$gray8'}
                 />
               ))}
-            </div>
+            </XStack>
 
             {currentStep < STEPS.length ? (
-              <button
-                onClick={handleNext}
+              <Button
+                onPress={handleNext}
                 disabled={!isStepValid(currentStep)}
-                className="flex items-center space-x-2 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:bg-neutral-300 disabled:cursor-not-allowed"
+                backgroundColor="$blue10"
+                color="white"
+                hoverStyle={{ backgroundColor: '$blue11' }}
+                disabledStyle={{ backgroundColor: '$gray8', cursor: 'not-allowed' }}
               >
-                <span>Next</span>
+                <XStack gap="$2" alignItems="center">
+                  <Text>Next</Text>
                 <ArrowRight size={16} />
-              </button>
+                </XStack>
+              </Button>
             ) : (
-              <button
-                onClick={handleSubmit}
+              <Button
+                onPress={handleSubmit}
                 disabled={!isStepValid(currentStep)}
-                className="flex items-center space-x-2 px-6 py-2 bg-success-600 text-white rounded-lg hover:bg-success-700 transition-colors disabled:bg-neutral-300 disabled:cursor-not-allowed"
+                backgroundColor="$green10"
+                color="white"
+                hoverStyle={{ backgroundColor: '$green11' }}
+                disabledStyle={{ backgroundColor: '$gray8', cursor: 'not-allowed' }}
               >
+                <XStack gap="$2" alignItems="center">
                 <CheckCircle size={16} />
-                <span>Submit</span>
-              </button>
+                  <Text>Submit</Text>
+                </XStack>
+              </Button>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </XStack>
+        </Card>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -520,33 +546,42 @@ function CertificationSearchSelect({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div className="border border-border rounded-lg p-3 min-h-[100px]">
-        <div className="flex flex-wrap gap-2 mb-2">
+    <YStack position="relative" ref={dropdownRef}>
+      <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$3" minHeight={100}>
+        <XStack flexWrap="wrap" gap="$2" marginBottom="$2">
           {selectedCertifications.map((cert) => (
-            <span
+            <XStack
               key={cert}
-              className="inline-flex items-center space-x-1 bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm"
+              alignItems="center"
+              gap="$1"
+              backgroundColor="$blue2"
+              color="$blue11"
+              paddingHorizontal="$3"
+              paddingVertical="$1"
+              borderRadius={9999}
             >
-              <span>{cert}</span>
-              <button
+              <Text fontSize="$3">{cert}</Text>
+              <Button
                 type="button"
-                onClick={() => handleRemoveCertification(cert)}
-                className="hover:text-primary-900 transition-colors"
+                onPress={() => handleRemoveCertification(cert)}
+                variant="ghost"
+                size="$1"
+                hoverStyle={{ color: '$blue12' }}
               >
                 <X size={14} />
-              </button>
-            </span>
+              </Button>
+            </XStack>
           ))}
-        </div>
+        </XStack>
 
-        <div className="relative">
-          <div className="flex items-center space-x-2 border border-border rounded-lg px-3 py-2 bg-white">
-            <Search size={16} className="text-text-secondary" />
-            <input
+        <YStack position="relative">
+          <XStack alignItems="center" gap="$2" borderWidth={1} borderColor="$borderColor" borderRadius="$4" paddingHorizontal="$3" paddingVertical="$2" backgroundColor="$background">
+            <Search size={16} color="$color11" />
+            <Input
               type="text"
               placeholder="Search certifications..."
-              className="flex-1 outline-none text-sm"
+              flex={1}
+              fontSize="$3"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -554,28 +589,49 @@ function CertificationSearchSelect({
               }}
               onFocus={() => setIsOpen(true)}
             />
-          </div>
+          </XStack>
 
           {isOpen && filteredCertifications.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <Card
+              position="absolute"
+              zIndex={10}
+              width="100%"
+              marginTop="$1"
+              backgroundColor="$background"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              elevation={4}
+              maxHeight={240}
+              overflow="hidden"
+            >
+              <YStack maxHeight={240} overflowY="auto">
               {filteredCertifications.map((cert) => (
-                <button
+                  <Button
                   key={cert}
                   type="button"
-                  onClick={() => handleAddCertification(cert)}
-                  className="w-full text-left px-4 py-2 hover:bg-bg-secondary transition-colors text-sm text-text-primary"
-                >
+                    onPress={() => handleAddCertification(cert)}
+                    variant="ghost"
+                    width="100%"
+                    alignItems="flex-start"
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                  >
+                    <Text fontSize="$3" color="$color12">
                   {cert}
-                </button>
-              ))}
-            </div>
+                    </Text>
+                  </Button>
+                ))}
+              </YStack>
+            </Card>
           )}
-        </div>
-      </div>
-      <p className="text-xs text-text-secondary mt-1">
+        </YStack>
+      </Card>
+      <Text fontSize="$1" color="$color11" marginTop="$1">
         Search and select your certifications. Click the X to remove.
-      </p>
-    </div>
+      </Text>
+    </YStack>
   );
 }
 
@@ -587,135 +643,168 @@ function CompanyInfoStep({
   onChange: (data: CompanyInfo) => void;
 }) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
+    <YStack gap="$6">
+      <YStack>
+        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
           Company Information
-        </h2>
-        <p className="text-text-secondary">
+        </H2>
+        <Text color="$color11">
           Tell us about your construction business
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Company Name <span className="text-error-500">*</span>
-          </label>
-          <input
+      <XStack flexWrap="wrap" gap="$6">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Company Name <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Legal company name"
             value={data.companyName}
-            onChange={(e) => onChange({ ...data, companyName: e.target.value })}
+            onChange={(e) => onChange({ ...data, companyName: e.target.value as string })}
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             DBA (if applicable)
-          </label>
-          <input
+          </Text>
+          <Input
             type="text"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Doing business as"
             value={data.dba || ''}
             onChange={(e) => onChange({ ...data, dba: e.target.value })}
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Federal Tax ID / EIN <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Federal Tax ID / EIN <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="XX-XXXXXXX"
             value={data.federalTaxId}
             onChange={(e) =>
               onChange({ ...data, federalTaxId: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Primary Address <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Primary Address <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Street address, city, state, zip"
             value={data.primaryAddress}
             onChange={(e) =>
               onChange({ ...data, primaryAddress: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Mailing Address (if different)
-          </label>
-          <input
+          </Text>
+          <Input
             type="text"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Street address, city, state, zip"
             value={data.mailingAddress || ''}
             onChange={(e) =>
               onChange({ ...data, mailingAddress: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Website URL
-          </label>
-          <input
+          </Text>
+          <Input
             type="url"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="https://example.com"
             value={data.websiteUrl || ''}
             onChange={(e) => onChange({ ...data, websiteUrl: e.target.value })}
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Business Type <span className="text-error-500">*</span>
-          </label>
-          <select
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Select
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            label="Business Type"
             value={data.businessType}
-            onChange={(e) =>
-              onChange({ ...data, businessType: e.target.value })
+            onValueChange={(value) =>
+              onChange({ ...data, businessType: value })
             }
-          >
-            <option value="">Select type</option>
-            <option value="corporation">Corporation</option>
-            <option value="llc">LLC</option>
-            <option value="sole_proprietor">Sole Proprietor</option>
-            <option value="partnership">Partnership</option>
-          </select>
-        </div>
+            options={[
+              { value: '', label: 'Select type' },
+              { value: 'corporation', label: 'Corporation' },
+              { value: 'llc', label: 'LLC' },
+              { value: 'sole_proprietor', label: 'Sole Proprietor' },
+              { value: 'partnership', label: 'Partnership' },
+            ]}
+          />
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Years in Business <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Years in Business <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="number"
             required
-            min="0"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            min={0}
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="0"
-            value={data.yearsInBusiness || ''}
+            value={data.yearsInBusiness?.toString() || ''}
             onChange={(e) =>
               onChange({
                 ...data,
@@ -723,73 +812,93 @@ function CompanyInfoStep({
               })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Primary Contact Name <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Primary Contact Name <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Full name"
             value={data.primaryContactName}
             onChange={(e) =>
               onChange({ ...data, primaryContactName: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Primary Contact Title <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Primary Contact Title <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Job title"
             value={data.primaryContactTitle}
             onChange={(e) =>
               onChange({ ...data, primaryContactTitle: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Primary Contact Email <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Primary Contact Email <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="email"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="email@example.com"
             value={data.primaryContactEmail}
             onChange={(e) =>
               onChange({ ...data, primaryContactEmail: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Primary Contact Phone <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Primary Contact Phone <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="tel"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="(555) 123-4567"
             value={data.primaryContactPhone}
             onChange={(e) =>
               onChange({ ...data, primaryContactPhone: e.target.value })
             }
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   );
 }
 
@@ -801,112 +910,125 @@ function LicensingInfoStep({
   onChange: (data: LicensingInfo) => void;
 }) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
+    <YStack gap="$6">
+      <YStack>
+        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
           Licensing and Registration
-        </h2>
-        <p className="text-text-secondary">
+        </H2>
+        <Text color="$color11">
           Provide your license and certification details
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+      <XStack flexWrap="wrap" gap="$6">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             State Contractor License Number{' '}
-            <span className="text-error-500">*</span>
-          </label>
-          <input
+            <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="License number"
             value={data.licenseNumber}
             onChange={(e) =>
               onChange({ ...data, licenseNumber: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             License Classification / Trade{' '}
-            <span className="text-error-500">*</span>
-          </label>
-          <input
+            <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="e.g., C-10 Electrical"
             value={data.licenseClassification}
             onChange={(e) =>
               onChange({ ...data, licenseClassification: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Issuing State <span className="text-error-500">*</span>
-          </label>
-          <select
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Select
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            label="Issuing State"
             value={data.issuingState}
-            onChange={(e) =>
-              onChange({ ...data, issuingState: e.target.value })
+            onValueChange={(value) =>
+              onChange({ ...data, issuingState: value })
             }
-          >
-            <option value="">Select state</option>
-            <option value="CA">California</option>
-            <option value="TX">Texas</option>
-            <option value="FL">Florida</option>
-            <option value="NY">New York</option>
-          </select>
-        </div>
+            options={[
+              { value: '', label: 'Select state' },
+              { value: 'CA', label: 'California' },
+              { value: 'TX', label: 'Texas' },
+              { value: 'FL', label: 'Florida' },
+              { value: 'NY', label: 'New York' },
+            ]}
+          />
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            License Expiration Date <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            License Expiration Date <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="date"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             value={data.licenseExpiration}
             onChange={(e) =>
               onChange({ ...data, licenseExpiration: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Business License File
-          </label>
-          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-            <Upload className="mx-auto text-text-secondary mb-2" size={32} />
-            <p className="text-sm text-text-secondary mb-2">
+          </Text>
+          <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
+            <Upload color="$color11" marginBottom="$2" size={32} />
+            <Text fontSize="$3" color="$color11" marginBottom="$2">
               Drag and drop or click to upload
-            </p>
+            </Text>
             <Button variant="outline" size="sm">
               Choose File
             </Button>
-          </div>
-        </div>
+          </Card>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Professional / Trade Certifications
-          </label>
+          </Text>
           <CertificationSearchSelect
             selectedCertifications={data.certifications}
             onChange={(certs) => onChange({ ...data, certifications: certs })}
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   );
 }
 
@@ -920,80 +1042,86 @@ function InsuranceInfoStep({
   requirements?: Record<string, unknown>;
 }) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
+    <YStack gap="$6">
+      <YStack>
+        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
           Insurance and Compliance
-        </h2>
-        <p className="text-text-secondary">
+        </H2>
+        <Text color="$color11">
           Upload insurance documents and coverage details
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
       {requirements && (
-        <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
-          <div className="flex items-start space-x-2">
-            <Info className="text-primary-600 mt-0.5 flex-shrink-0" size={16} />
-            <div>
-              <p className="text-sm font-medium text-primary-900">
+        <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
+          <XStack alignItems="flex-start" gap="$2">
+            <Info color="$blue10" marginTop={2} flexShrink={0} size={16} />
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$blue11">
                 Required Coverage
-              </p>
-              <p className="text-sm text-primary-700">
+              </Text>
+              <Text fontSize="$3" color="$blue11">
                 Your GC requires minimum coverage amounts. Make sure your
                 policies meet these requirements.
-              </p>
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+          </XStack>
+        </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            W-9 Form <span className="text-error-500">*</span>
-          </label>
-          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-            <Upload className="mx-auto text-text-secondary mb-2" size={32} />
-            <p className="text-sm text-text-secondary mb-2">
+      <XStack flexWrap="wrap" gap="$6">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            W-9 Form <Text color="$red10">*</Text>
+          </Text>
+          <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
+            <Upload color="$color11" marginBottom="$2" size={32} />
+            <Text fontSize="$3" color="$color11" marginBottom="$2">
               Upload current W-9 form
-            </p>
+            </Text>
             <Button variant="outline" size="sm">
               Choose File
             </Button>
-          </div>
-        </div>
+          </Card>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Certificate of Insurance (COI){' '}
-            <span className="text-error-500">*</span>
-          </label>
-          <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-            <Upload className="mx-auto text-text-secondary mb-2" size={32} />
-            <p className="text-sm text-text-secondary mb-2">
+            <Text color="$red10">*</Text>
+          </Text>
+          <Card borderWidth={2} borderStyle="dashed" borderColor="$borderColor" borderRadius="$4" padding="$6" alignItems="center">
+            <Upload color="$color11" marginBottom="$2" size={32} />
+            <Text fontSize="$3" color="$color11" marginBottom="$2">
               Upload current COI
-            </p>
+            </Text>
             <Button variant="outline" size="sm">
               Choose File
             </Button>
-          </div>
-        </div>
+          </Card>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            General Liability Coverage <span className="text-error-500">*</span>
-          </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary">
+        <YStack width="100%" $gtMd={{ width: '50%' }} position="relative">
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            General Liability Coverage <Text color="$red10">*</Text>
+          </Text>
+          <XStack position="relative" width="100%">
+            <Text position="absolute" left="$3" top="50%" transform="translateY(-50%)" color="$color10" zIndex={1}>
               $
-            </span>
-            <input
+            </Text>
+            <Input
               type="number"
               required
-              min="0"
-              className="w-full pl-8 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              min={0}
+              width="100%"
+              paddingLeft="$8"
+              paddingRight="$4"
+              paddingVertical="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
               placeholder="0"
-              value={data.generalLiabilityCoverage || ''}
+              value={data.generalLiabilityCoverage?.toString() || ''}
               onChange={(e) =>
                 onChange({
                   ...data,
@@ -1001,24 +1129,30 @@ function InsuranceInfoStep({
                 })
               }
             />
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Auto Liability Coverage <span className="text-error-500">*</span>
-          </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary">
+        <YStack width="100%" $gtMd={{ width: '50%' }} position="relative">
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Auto Liability Coverage <Text color="$red10">*</Text>
+          </Text>
+          <XStack position="relative" width="100%">
+            <Text position="absolute" left="$3" top="50%" transform="translateY(-50%)" color="$color10" zIndex={1}>
               $
-            </span>
-            <input
+            </Text>
+            <Input
               type="number"
               required
-              min="0"
-              className="w-full pl-8 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              min={0}
+              width="100%"
+              paddingLeft="$8"
+              paddingRight="$4"
+              paddingVertical="$3"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
               placeholder="0"
-              value={data.autoLiabilityCoverage || ''}
+              value={data.autoLiabilityCoverage?.toString() || ''}
               onChange={(e) =>
                 onChange({
                   ...data,
@@ -1026,52 +1160,67 @@ function InsuranceInfoStep({
                 })
               }
             />
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Insurance Carrier <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Insurance Carrier <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Carrier name"
             value={data.insuranceCarrier}
             onChange={(e) =>
               onChange({ ...data, insuranceCarrier: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Policy Expiration Date <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Policy Expiration Date <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="date"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             value={data.policyExpiration}
             onChange={(e) =>
               onChange({ ...data, policyExpiration: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             EMR Rating (Experience Modification Rate)
-          </label>
-          <input
+          </Text>
+          <Input
             type="number"
-            step="0.01"
-            min="0"
-            max="2"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            step={0.01}
+            min={0}
+            max={2}
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="1.00"
-            value={data.emrRating || ''}
+            value={data.emrRating?.toString() || ''}
             onChange={(e) =>
               onChange({
                 ...data,
@@ -1079,9 +1228,9 @@ function InsuranceInfoStep({
               })
             }
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   );
 }
 
@@ -1093,114 +1242,123 @@ function SafetyInfoStep({
   onChange: (data: SafetyInfo) => void;
 }) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
+    <YStack gap="$6">
+      <YStack>
+        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
           Safety and Risk Management
-        </h2>
-        <p className="text-text-secondary">
+        </H2>
+        <Text color="$color11">
           Provide safety program and contact information
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Safety Manager Name <span className="text-error-500">*</span>
-          </label>
-          <input
+      <XStack flexWrap="wrap" gap="$6">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Safety Manager Name <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Full name"
             value={data.safetyManagerName}
             onChange={(e) =>
               onChange({ ...data, safetyManagerName: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Safety Manager Email <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Safety Manager Email <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="email"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="email@example.com"
             value={data.safetyManagerEmail}
             onChange={(e) =>
               onChange({ ...data, safetyManagerEmail: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <div className="space-y-3">
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <YStack gap="$3">
+            <XStack alignItems="center" gap="$3">
+              <Checkbox
                 checked={data.hasWrittenSafetyProgram}
-                onChange={(e) =>
+                onCheckedChange={(checked) =>
                   onChange({
                     ...data,
-                    hasWrittenSafetyProgram: e.target.checked,
+                    hasWrittenSafetyProgram: checked === true,
                   })
                 }
-                className="rounded border-border text-primary-600"
               />
-              <span className="text-sm text-text-primary">
+              <Text fontSize="$3" color="$color12">
                 We have a written safety program
-              </span>
-            </label>
+              </Text>
+            </XStack>
 
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
+            <XStack alignItems="center" gap="$3">
+              <Checkbox
                 checked={data.hasJobsiteOrientation}
-                onChange={(e) =>
-                  onChange({ ...data, hasJobsiteOrientation: e.target.checked })
+                onCheckedChange={(checked) =>
+                  onChange({ ...data, hasJobsiteOrientation: checked === true })
                 }
-                className="rounded border-border text-primary-600"
               />
-              <span className="text-sm text-text-primary">
+              <Text fontSize="$3" color="$color12">
                 We conduct jobsite orientation programs
-              </span>
-            </label>
+              </Text>
+            </XStack>
 
-            <label className="flex items-center space-x-3">
-              <input
-                type="checkbox"
+            <XStack alignItems="center" gap="$3">
+              <Checkbox
                 checked={data.hasDrugFreePolicy}
-                onChange={(e) =>
-                  onChange({ ...data, hasDrugFreePolicy: e.target.checked })
+                onCheckedChange={(checked) =>
+                  onChange({ ...data, hasDrugFreePolicy: checked === true })
                 }
-                className="rounded border-border text-primary-600"
               />
-              <span className="text-sm text-text-primary">
+              <Text fontSize="$3" color="$color12">
                 We maintain a drug-free workplace policy
-              </span>
-            </label>
-          </div>
-        </div>
+              </Text>
+            </XStack>
+          </YStack>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             OSHA Violations (if any)
-          </label>
-          <textarea
+          </Text>
+          <TextArea
             rows={4}
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Describe any OSHA violations in the last 3 years"
             value={data.oshaViolations || ''}
             onChange={(e) =>
               onChange({ ...data, oshaViolations: e.target.value })
             }
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   );
 }
 
@@ -1212,54 +1370,57 @@ function FinancialInfoStep({
   onChange: (data: FinancialInfo) => void;
 }) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
+    <YStack gap="$6">
+      <YStack>
+        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
           Financial and Capacity Information
-        </h2>
-        <p className="text-text-secondary">
+        </H2>
+        <Text color="$color11">
           Optional financial details (helps with prequalification)
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="bg-warning-50 border border-warning-200 rounded-lg p-4">
-        <p className="text-sm text-warning-900">
+      <Card backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4" padding="$4">
+        <Text fontSize="$3" color="$yellow11">
           All fields on this page are optional but providing this information
           can improve your prequalification score.
-        </p>
-      </div>
+        </Text>
+      </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Annual Revenue Range
-          </label>
-          <select
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      <XStack flexWrap="wrap" gap="$6">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Select
+            label="Annual Revenue Range"
             value={data.annualRevenueRange || ''}
-            onChange={(e) =>
-              onChange({ ...data, annualRevenueRange: e.target.value })
+            onValueChange={(value) =>
+              onChange({ ...data, annualRevenueRange: value })
             }
-          >
-            <option value="">Select range</option>
-            <option value="<500k">Under $500k</option>
-            <option value="500k-1m">$500k - $1M</option>
-            <option value="1m-5m">$1M - $5M</option>
-            <option value="5m-10m">$5M - $10M</option>
-            <option value="10m+">$10M+</option>
-          </select>
-        </div>
+            options={[
+              { value: '', label: 'Select range' },
+              { value: '<500k', label: 'Under $500k' },
+              { value: '500k-1m', label: '$500k - $1M' },
+              { value: '1m-5m', label: '$1M - $5M' },
+              { value: '5m-10m', label: '$5M - $10M' },
+              { value: '10m+', label: '$10M+' },
+            ]}
+          />
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Number of Full-Time Employees
-          </label>
-          <input
+          </Text>
+          <Input
             type="number"
-            min="0"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            min={0}
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="0"
-            value={data.fullTimeEmployees || ''}
+            value={data.fullTimeEmployees?.toString() || ''}
             onChange={(e) =>
               onChange({
                 ...data,
@@ -1267,54 +1428,69 @@ function FinancialInfoStep({
               })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Bonding Capacity
-          </label>
-          <input
+          </Text>
+          <Input
             type="text"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Single project and aggregate limits"
             value={data.bondingCapacity || ''}
             onChange={(e) =>
               onChange({ ...data, bondingCapacity: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '50%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Bonding Company
-          </label>
-          <input
+          </Text>
+          <Input
             type="text"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Surety company name"
             value={data.bondingCompany || ''}
             onChange={(e) =>
               onChange({ ...data, bondingCompany: e.target.value })
             }
           />
-        </div>
+        </YStack>
 
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack width="100%" $gtMd={{ width: '100%' }}>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Bank Reference
-          </label>
-          <input
+          </Text>
+          <Input
             type="text"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Institution name and contact"
             value={data.bankReference || ''}
             onChange={(e) =>
               onChange({ ...data, bankReference: e.target.value })
             }
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   );
 }
 
@@ -1339,30 +1515,29 @@ function TradeCapabilitiesStep({
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
+    <YStack gap="$6">
+      <YStack>
+        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
           Trade Capabilities and Experience
-        </h2>
-        <p className="text-text-secondary">
+        </H2>
+        <Text color="$color11">
           Describe your trades and project experience
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Primary Trades / Scopes <span className="text-error-500">*</span>
-          </label>
-          <div className="border border-border rounded-lg p-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <YStack gap="$6">
+        <YStack>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Primary Trades / Scopes <Text color="$red10">*</Text>
+          </Text>
+          <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+            <XStack flexWrap="wrap" gap="$3" $gtMd={{ flexDirection: 'row' }}>
               {trades.map((trade) => (
-                <label key={trade} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
+                <XStack key={trade} alignItems="center" gap="$2" width="100%" $gtMd={{ width: '33%' }}>
+                  <Checkbox
                     checked={data.primaryTrades.includes(trade)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
+                    onCheckedChange={(checked) => {
+                      if (checked === true) {
                         onChange({
                           ...data,
                           primaryTrades: [...data.primaryTrades, trade],
@@ -1376,22 +1551,26 @@ function TradeCapabilitiesStep({
                         });
                       }
                     }}
-                    className="rounded border-border text-primary-600"
                   />
-                  <span className="text-sm text-text-primary">{trade}</span>
-                </label>
+                  <Text fontSize="$3" color="$color12">{trade}</Text>
+                </XStack>
               ))}
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </Card>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Geographic Coverage Area
-          </label>
-          <input
+          </Text>
+          <Input
             type="text"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Counties or states (e.g., Los Angeles County, Orange County)"
             value={data.geographicCoverage.join(', ')}
             onChange={(e) =>
@@ -1403,81 +1582,80 @@ function TradeCapabilitiesStep({
               })
             }
           />
-        </div>
+        </YStack>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Typical Project Size
-            </label>
-            <select
-              className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        <XStack flexWrap="wrap" gap="$6">
+          <YStack width="100%" $gtMd={{ width: '50%' }}>
+            <Select
+              label="Typical Project Size"
               value={data.typicalProjectSize || ''}
-              onChange={(e) =>
-                onChange({ ...data, typicalProjectSize: e.target.value })
+              onValueChange={(value) =>
+                onChange({ ...data, typicalProjectSize: value })
               }
-            >
-              <option value="">Select size</option>
-              <option value="<50k">Under $50k</option>
-              <option value="50k-250k">$50k - $250k</option>
-              <option value="250k-1m">$250k - $1M</option>
-              <option value="1m+">$1M+</option>
-            </select>
-          </div>
+              options={[
+                { value: '', label: 'Select size' },
+                { value: '<50k', label: 'Under $50k' },
+                { value: '50k-250k', label: '$50k - $250k' },
+                { value: '250k-1m', label: '$250k - $1M' },
+                { value: '1m+', label: '$1M+' },
+              ]}
+            />
+          </YStack>
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Labor Classification
-            </label>
-            <select
-              className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          <YStack width="100%" $gtMd={{ width: '50%' }}>
+            <Select
+              label="Labor Classification"
               value={data.laborClassification || ''}
-              onChange={(e) =>
-                onChange({ ...data, laborClassification: e.target.value })
+              onValueChange={(value) =>
+                onChange({ ...data, laborClassification: value })
               }
-            >
-              <option value="">Select classification</option>
-              <option value="union">Union</option>
-              <option value="non-union">Non-Union</option>
-            </select>
-          </div>
-        </div>
+              options={[
+                { value: '', label: 'Select classification' },
+                { value: 'union', label: 'Union' },
+                { value: 'non-union', label: 'Non-Union' },
+              ]}
+            />
+          </YStack>
+        </XStack>
 
-        <div>
-          <label className="flex items-center space-x-3">
-            <input
-              type="checkbox"
+        <YStack>
+          <XStack alignItems="center" gap="$3">
+            <Checkbox
               checked={data.prevailingWageExperience}
-              onChange={(e) =>
+              onCheckedChange={(checked) =>
                 onChange({
                   ...data,
-                  prevailingWageExperience: e.target.checked,
+                  prevailingWageExperience: checked === true,
                 })
               }
-              className="rounded border-border text-primary-600"
             />
-            <span className="text-sm text-text-primary">
+            <Text fontSize="$3" color="$color12">
               We have prevailing wage experience
-            </span>
-          </label>
-        </div>
+            </Text>
+          </XStack>
+        </YStack>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
+        <YStack>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
             Special Equipment or Certifications
-          </label>
-          <textarea
+          </Text>
+          <TextArea
             rows={3}
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Describe any special equipment, cranes, welding certifications, etc."
             value={data.specialEquipment || ''}
             onChange={(e) =>
               onChange({ ...data, specialEquipment: e.target.value })
             }
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 
@@ -1489,111 +1667,114 @@ function ReviewStep({
   onChange: (acknowledgments: Acknowledgments) => void;
 }) {
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
+    <YStack gap="$6">
+      <YStack>
+        <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
           Review and Submit
-        </h2>
-        <p className="text-text-secondary">
+        </H2>
+        <Text color="$color11">
           Review your information and acknowledge compliance
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="bg-bg-secondary rounded-lg p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-text-primary">
+      <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$6" gap="$4">
+        <H3 fontSize="$6" fontWeight="600" color="$color12">
           Application Summary
-        </h3>
+        </H3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <p className="text-sm text-text-secondary">Company Name</p>
-            <p className="font-medium text-text-primary">
+        <XStack flexWrap="wrap" gap="$4">
+          <YStack width="100%" $gtMd={{ width: '50%' }}>
+            <Text fontSize="$3" color="$color11">Company Name</Text>
+            <Text fontWeight="500" color="$color12">
               {data.companyInfo.companyName}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-text-secondary">Primary Trade</p>
-            <p className="font-medium text-text-primary">
+            </Text>
+          </YStack>
+          <YStack width="100%" $gtMd={{ width: '50%' }}>
+            <Text fontSize="$3" color="$color11">Primary Trade</Text>
+            <Text fontWeight="500" color="$color12">
               {data.tradeCapabilities.primaryTrades.join(', ') ||
                 'None selected'}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-text-secondary">License Number</p>
-            <p className="font-medium text-text-primary">
+            </Text>
+          </YStack>
+          <YStack width="100%" $gtMd={{ width: '50%' }}>
+            <Text fontSize="$3" color="$color11">License Number</Text>
+            <Text fontWeight="500" color="$color12">
               {data.licensingInfo.licenseNumber}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-text-secondary">Years in Business</p>
-            <p className="font-medium text-text-primary">
+            </Text>
+          </YStack>
+          <YStack width="100%" $gtMd={{ width: '50%' }}>
+            <Text fontSize="$3" color="$color11">Years in Business</Text>
+            <Text fontWeight="500" color="$color12">
               {data.companyInfo.yearsInBusiness} years
-            </p>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </YStack>
+        </XStack>
+      </Card>
 
-      <div className="space-y-4">
-        <div className="border border-border rounded-lg p-4">
-          <label className="flex items-start space-x-3">
-            <input
-              type="checkbox"
+      <YStack gap="$4">
+        <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+          <XStack alignItems="flex-start" gap="$3">
+            <Checkbox
               checked={data.acknowledgments.accuracyAffirmation}
-              onChange={(e) =>
+              onCheckedChange={(checked) =>
                 onChange({
                   ...data.acknowledgments,
-                  accuracyAffirmation: e.target.checked,
+                  accuracyAffirmation: checked === true,
                 })
               }
-              className="mt-1 rounded border-border text-primary-600"
+              marginTop="$1"
             />
-            <div>
-              <span className="text-sm font-medium text-text-primary">
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$color12">
                 Affirmation of Accuracy{' '}
-                <span className="text-error-500">*</span>
-              </span>
-              <p className="text-xs text-text-secondary mt-1">
+                <Text color="$red10">*</Text>
+              </Text>
+              <Text fontSize="$1" color="$color11" marginTop="$1">
                 I certify that all information provided in this application is
                 true and accurate to the best of my knowledge.
-              </p>
-            </div>
-          </label>
-        </div>
+              </Text>
+            </YStack>
+          </XStack>
+        </Card>
 
-        <div className="border border-border rounded-lg p-4">
-          <label className="flex items-start space-x-3">
-            <input
-              type="checkbox"
+        <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+          <XStack alignItems="flex-start" gap="$3">
+            <Checkbox
               checked={data.acknowledgments.complianceAgreement}
-              onChange={(e) =>
+              onCheckedChange={(checked) =>
                 onChange({
                   ...data.acknowledgments,
-                  complianceAgreement: e.target.checked,
+                  complianceAgreement: checked === true,
                 })
               }
-              className="mt-1 rounded border-border text-primary-600"
+              marginTop="$1"
             />
-            <div>
-              <span className="text-sm font-medium text-text-primary">
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$color12">
                 Agreement to Compliance Requirements{' '}
-                <span className="text-error-500">*</span>
-              </span>
-              <p className="text-xs text-text-secondary mt-1">
+                <Text color="$red10">*</Text>
+              </Text>
+              <Text fontSize="$1" color="$color11" marginTop="$1">
                 I agree to comply with all insurance, safety, and policy
                 requirements established by the General Contractor.
-              </p>
-            </div>
-          </label>
-        </div>
+              </Text>
+            </YStack>
+          </XStack>
+        </Card>
 
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Digital Signature <span className="text-error-500">*</span>
-          </label>
-          <input
+        <YStack>
+          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+            Digital Signature <Text color="$red10">*</Text>
+          </Text>
+          <Input
             type="text"
             required
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            width="100%"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$3"
             placeholder="Type your full name to sign"
             value={data.acknowledgments.digitalSignature}
             onChange={(e) =>
@@ -1603,11 +1784,11 @@ function ReviewStep({
               })
             }
           />
-          <p className="text-xs text-text-secondary mt-1">
+          <Text fontSize="$1" color="$color11" marginTop="$1">
             By typing your name, you are providing a legal digital signature
-          </p>
-        </div>
-      </div>
-    </div>
+          </Text>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }

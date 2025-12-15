@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Clock,
   Building,
@@ -11,9 +11,10 @@ import {
   Mail,
   DollarSign,
 } from 'lucide-react';
+import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
 import { Task, SeverityLevel, SubcontractorTaskMetadata } from '../../types';
 import { formatDate, isOverdue } from '../../utils/dateHelpers';
-import Button from '../Common/Button';
+import CommonButton from '../Common/Button';
 
 interface SubcontractorTasksPanelProps {
   tasks: Task[];
@@ -81,29 +82,45 @@ export default function SubcontractorTasksPanel({
 
   const sortedTasks = sortTasksBySeverity(filteredTasks);
 
-  const getSeverityColor = (severity: SeverityLevel) => {
+  const getSeverityColors = (severity: SeverityLevel) => {
     switch (severity) {
       case 'critical':
-        return 'text-error-600 bg-error-50 border-error-200';
+        return {
+          textColor: '$red10',
+          backgroundColor: '$red3',
+          borderColor: '$red6',
+        };
       case 'high':
-        return 'text-warning-600 bg-warning-50 border-warning-200';
+        return {
+          textColor: '$orange10',
+          backgroundColor: '$orange3',
+          borderColor: '$orange6',
+        };
       case 'medium':
-        return 'text-primary-600 bg-primary-50 border-primary-200';
+        return {
+          textColor: '$blue10',
+          backgroundColor: '$blue3',
+          borderColor: '$blue6',
+        };
       case 'low':
-        return 'text-secondary-600 bg-secondary-50 border-secondary-200';
+        return {
+          textColor: '$gray10',
+          backgroundColor: '$gray3',
+          borderColor: '$gray6',
+        };
     }
   };
 
-  const getSeverityBadgeColor = (severity: SeverityLevel) => {
+  const getSeverityBadgeColors = (severity: SeverityLevel) => {
     switch (severity) {
       case 'critical':
-        return 'bg-error-600 text-white';
+        return { backgroundColor: '$red9', color: 'white' };
       case 'high':
-        return 'bg-warning-600 text-white';
+        return { backgroundColor: '$orange9', color: 'white' };
       case 'medium':
-        return 'bg-primary-600 text-white';
+        return { backgroundColor: '$blue9', color: 'white' };
       case 'low':
-        return 'bg-secondary-600 text-white';
+        return { backgroundColor: '$gray9', color: 'white' };
     }
   };
 
@@ -128,13 +145,13 @@ export default function SubcontractorTasksPanel({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle className="text-success-600" size={16} />;
+        return <CheckCircle color="$green10" size={16} />;
       case 'rejected':
-        return <XCircle className="text-error-600" size={16} />;
+        return <XCircle color="$red10" size={16} />;
       case 'submitted':
-        return <Clock className="text-primary-600" size={16} />;
+        return <Clock color="$blue10" size={16} />;
       default:
-        return <AlertCircle className="text-warning-600" size={16} />;
+        return <AlertCircle color="$orange10" size={16} />;
     }
   };
 
@@ -177,258 +194,320 @@ export default function SubcontractorTasksPanel({
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-sm border border-border">
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-text-primary">
+    <Card elevation={1} borderWidth={1} borderColor="$borderColor">
+      <YStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor">
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+          <YStack>
+            <Text fontSize="$6" fontWeight="600" color="$color12">
               My Tasks
-            </h2>
-            <p className="text-sm text-text-secondary">Tasks assigned to you</p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-3 py-1 text-xs font-medium rounded ${
-                filter === 'all'
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-neutral-100 text-text-secondary'
-              }`}
+            </Text>
+            <Text fontSize="$2" color="$color11">Tasks assigned to you</Text>
+          </YStack>
+          <XStack alignItems="center" gap="$2">
+            <Button
+              onPress={() => setFilter('all')}
+              paddingHorizontal="$3"
+              paddingVertical="$1"
+              fontSize="$1"
+              fontWeight="500"
+              borderRadius="$2"
+              backgroundColor={filter === 'all' ? '$blue9' : '$gray3'}
+              color={filter === 'all' ? 'white' : '$color11'}
             >
               All
-            </button>
-            <button
-              onClick={() => setFilter('broker')}
-              className={`px-3 py-1 text-xs font-medium rounded ${
-                filter === 'broker'
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-neutral-100 text-text-secondary'
-              }`}
+            </Button>
+            <Button
+              onPress={() => setFilter('broker')}
+              paddingHorizontal="$3"
+              paddingVertical="$1"
+              fontSize="$1"
+              fontWeight="500"
+              borderRadius="$2"
+              backgroundColor={filter === 'broker' ? '$blue9' : '$gray3'}
+              color={filter === 'broker' ? 'white' : '$color11'}
             >
               From Broker
-            </button>
-            <button
-              onClick={() => setFilter('manager')}
-              className={`px-3 py-1 text-xs font-medium rounded ${
-                filter === 'manager'
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-neutral-100 text-text-secondary'
-              }`}
+            </Button>
+            <Button
+              onPress={() => setFilter('manager')}
+              paddingHorizontal="$3"
+              paddingVertical="$1"
+              fontSize="$1"
+              fontWeight="500"
+              borderRadius="$2"
+              backgroundColor={filter === 'manager' ? '$blue9' : '$gray3'}
+              color={filter === 'manager' ? 'white' : '$color11'}
             >
               From Manager
-            </button>
-          </div>
-        </div>
-      </div>
+            </Button>
+          </XStack>
+        </XStack>
+      </YStack>
 
-      <div className="p-6">
-        <div className="space-y-4">
+      <YStack padding="$6">
+        <YStack gap="$4">
           {sortedTasks.map((task) => {
             const metadata = task.metadata as
               | SubcontractorTaskMetadata
               | undefined;
             const severity = getSeverityLevel(task);
+            const severityColors = getSeverityColors(severity);
+            const badgeColors = getSeverityBadgeColors(severity);
 
             return (
-              <div
+              <Card
                 key={task.id}
-                className={`border-2 rounded-lg p-4 transition-all cursor-pointer hover:shadow-md ${getSeverityColor(severity)}`}
-                onClick={() => onTaskClick?.(task)}
+                borderWidth={2}
+                borderRadius="$4"
+                padding="$4"
+                cursor="pointer"
+                elevation={0}
+                hoverStyle={{
+                  elevation: 2,
+                }}
+                backgroundColor={severityColors.backgroundColor}
+                borderColor={severityColors.borderColor}
+                onPress={() => onTaskClick?.(task)}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2 flex-wrap">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase ${getSeverityBadgeColor(severity)}`}
+                <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                  <YStack flex={1}>
+                    <XStack alignItems="center" gap="$2" marginBottom="$2" flexWrap="wrap">
+                      <XStack
+                        display="inline-flex"
+                        alignItems="center"
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        borderRadius="$2"
+                        backgroundColor={badgeColors.backgroundColor}
                       >
-                        {severity}
-                      </span>
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                          task.origin_role === 'broker'
-                            ? 'bg-secondary-600 text-white'
-                            : 'bg-primary-600 text-white'
-                        }`}
+                        <Text fontSize="$1" fontWeight="bold" textTransform="uppercase" color={badgeColors.color}>
+                          {severity}
+                        </Text>
+                      </XStack>
+                      <XStack
+                        display="inline-flex"
+                        alignItems="center"
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        borderRadius="$2"
+                        backgroundColor={task.origin_role === 'broker' ? '$gray9' : '$blue9'}
                       >
-                        {task.origin_role || 'manager'}
-                      </span>
-                      <span className="text-xs font-medium text-text-secondary px-2 py-0.5 bg-neutral-100 rounded">
-                        {getTaskTypeLabel(task.task_type)}
-                      </span>
-                      <div className="flex items-center space-x-1 text-xs text-text-secondary">
+                        <Text fontSize="$1" fontWeight="500" color="white">
+                          {task.origin_role || 'manager'}
+                        </Text>
+                      </XStack>
+                      <XStack
+                        display="inline-flex"
+                        alignItems="center"
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        borderRadius="$2"
+                        backgroundColor="$gray3"
+                      >
+                        <Text fontSize="$1" fontWeight="500" color="$color11">
+                          {getTaskTypeLabel(task.task_type)}
+                        </Text>
+                      </XStack>
+                      <XStack alignItems="center" gap="$1">
                         {getStatusIcon(task.status)}
-                        <span>{getStatusLabel(task.status)}</span>
-                      </div>
-                    </div>
+                        <Text fontSize="$1" color="$color11">
+                          {getStatusLabel(task.status)}
+                        </Text>
+                      </XStack>
+                    </XStack>
 
-                    <h3 className="text-sm font-semibold text-text-primary mb-1">
+                    <Text fontSize="$2" fontWeight="600" color="$color12" marginBottom="$1">
                       {task.title}
-                    </h3>
+                    </Text>
                     {task.description && (
-                      <p className="text-sm text-text-secondary mb-2">
+                      <Text fontSize="$2" color="$color11" marginBottom="$2">
                         {task.description}
-                      </p>
+                      </Text>
                     )}
 
                     {/* Project and GC Info */}
                     {(task.project_name || task.gc_company_name) && (
-                      <div className="flex items-center space-x-4 text-xs text-text-secondary mb-2">
+                      <XStack alignItems="center" gap="$4" marginBottom="$2">
                         {task.project_name && (
-                          <span className="flex items-center">
-                            <Building size={12} className="mr-1" />
-                            {task.project_name}
-                          </span>
+                          <XStack alignItems="center">
+                            <Building size={12} marginRight="$1" />
+                            <Text fontSize="$1" color="$color11">
+                              {task.project_name}
+                            </Text>
+                          </XStack>
                         )}
                         {task.gc_company_name && (
-                          <span>{task.gc_company_name}</span>
+                          <Text fontSize="$1" color="$color11">
+                            {task.gc_company_name}
+                          </Text>
                         )}
-                      </div>
+                      </XStack>
                     )}
 
                     {/* Policy Number */}
                     {task.policy_number && (
-                      <div className="text-xs text-text-secondary mb-2">
+                      <Text fontSize="$1" color="$color11" marginBottom="$2">
                         Policy: {task.policy_number}
-                      </div>
+                      </Text>
                     )}
 
                     {/* Metadata Details */}
                     {metadata && (
-                      <div className="mt-2 space-y-1">
+                      <YStack marginTop="$2" gap="$1">
                         {metadata.missing_endorsement && (
-                          <div className="text-xs text-text-secondary">
-                            <strong>Missing:</strong>{' '}
+                          <Text fontSize="$1" color="$color11">
+                            <Text fontWeight="bold">Missing:</Text>{' '}
                             {metadata.missing_endorsement}
-                          </div>
+                          </Text>
                         )}
                         {metadata.required_endorsement_form && (
-                          <div className="text-xs text-text-secondary">
-                            <strong>Required Form:</strong>{' '}
+                          <Text fontSize="$1" color="$color11">
+                            <Text fontWeight="bold">Required Form:</Text>{' '}
                             {metadata.required_endorsement_form}
-                          </div>
+                          </Text>
                         )}
                         {metadata.current_limit && metadata.required_limit && (
-                          <div className="text-xs text-text-secondary">
-                            <strong>Current:</strong> $
+                          <Text fontSize="$1" color="$color11">
+                            <Text fontWeight="bold">Current:</Text> $
                             {(metadata.current_limit / 1000000).toFixed(1)}M |{' '}
-                            <strong>Required:</strong> $
+                            <Text fontWeight="bold">Required:</Text> $
                             {(metadata.required_limit / 1000000).toFixed(1)}M
-                          </div>
+                          </Text>
                         )}
                         {metadata.current_symbol &&
                           metadata.required_symbol && (
-                            <div className="text-xs text-text-secondary">
-                              <strong>Current:</strong>{' '}
+                            <Text fontSize="$1" color="$color11">
+                              <Text fontWeight="bold">Current:</Text>{' '}
                               {metadata.current_symbol} |{' '}
-                              <strong>Required:</strong>{' '}
+                              <Text fontWeight="bold">Required:</Text>{' '}
                               {metadata.required_symbol}
-                            </div>
+                            </Text>
                           )}
                         {metadata.rejection_reason && (
-                          <div className="text-xs text-error-600 bg-error-50 p-2 rounded mt-2">
-                            <strong>Rejection Reason:</strong>{' '}
-                            {metadata.rejection_reason}
-                          </div>
+                          <Card
+                            backgroundColor="$red3"
+                            padding="$2"
+                            borderRadius="$2"
+                            marginTop="$2"
+                          >
+                            <Text fontSize="$1" color="$red10">
+                              <Text fontWeight="bold">Rejection Reason:</Text>{' '}
+                              {metadata.rejection_reason}
+                            </Text>
+                          </Card>
                         )}
-                      </div>
+                      </YStack>
                     )}
-                  </div>
-                </div>
+                  </YStack>
+                </XStack>
 
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
-                  <div className="flex items-center space-x-4 text-xs text-text-secondary">
+                <XStack alignItems="center" justifyContent="space-between" marginTop="$3" paddingTop="$3" borderTopWidth={1} borderTopColor="$borderColor" opacity={0.5}>
+                  <XStack alignItems="center" gap="$4">
                     {task.created_by && (
-                      <div className="flex items-center">
-                        <Building size={12} className="mr-1" />
-                        {task.created_by.name}
-                      </div>
+                      <XStack alignItems="center">
+                        <Building size={12} marginRight="$1" />
+                        <Text fontSize="$1" color="$color11">
+                          {task.created_by.name}
+                        </Text>
+                      </XStack>
                     )}
                     {task.due_date && (
-                      <div className="flex items-center">
-                        <Clock size={12} className="mr-1" />
+                      <XStack alignItems="center">
+                        <Clock size={12} marginRight="$1" />
                         {isOverdue(task.due_date) ? (
-                          <span className="text-error-600 font-medium">
+                          <Text fontSize="$1" color="$red10" fontWeight="500">
                             Overdue!
-                          </span>
+                          </Text>
                         ) : (
-                          <span>Due {formatDate(task.due_date)}</span>
+                          <Text fontSize="$1" color="$color11">
+                            Due {formatDate(task.due_date)}
+                          </Text>
                         )}
-                      </div>
+                      </XStack>
                     )}
                     {task.document_link && (
-                      <a
+                      <XStack
+                        as="a"
                         href={task.document_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center text-primary-600 hover:text-primary-700"
-                        onClick={(e) => e.stopPropagation()}
+                        alignItems="center"
+                        color="$blue10"
+                        hoverStyle={{
+                          color: '$blue12',
+                        }}
+                        onPress={(e) => e.stopPropagation()}
                       >
-                        <FileText size={12} className="mr-1" />
-                        View Doc
-                      </a>
+                        <FileText size={12} marginRight="$1" />
+                        <Text fontSize="$1">View Doc</Text>
+                      </XStack>
                     )}
-                  </div>
+                  </XStack>
 
-                  <div className="flex items-center space-x-2">
+                  <XStack alignItems="center" gap="$2">
                     {/* Quick Actions */}
                     {task.quick_actions && task.quick_actions.length > 0 && (
                       <>
                         {task.quick_actions.includes('upload_document') && (
-                          <Button
+                          <CommonButton
                             size="sm"
                             variant="ghost"
                             onClick={(e) =>
                               handleQuickAction('upload_document', task, e)
                             }
-                            className="flex items-center space-x-1 text-xs"
                           >
-                            <Upload size={14} />
-                            <span>Upload</span>
-                          </Button>
+                            <XStack alignItems="center" gap="$1">
+                              <Upload size={14} />
+                              <Text fontSize="$1">Upload</Text>
+                            </XStack>
+                          </CommonButton>
                         )}
                         {task.quick_actions.includes('view_requirements') && (
-                          <Button
+                          <CommonButton
                             size="sm"
                             variant="ghost"
                             onClick={(e) =>
                               handleQuickAction('view_requirements', task, e)
                             }
-                            className="flex items-center space-x-1 text-xs"
                           >
-                            <Eye size={14} />
-                            <span>Requirements</span>
-                          </Button>
+                            <XStack alignItems="center" gap="$1">
+                              <Eye size={14} />
+                              <Text fontSize="$1">Requirements</Text>
+                            </XStack>
+                          </CommonButton>
                         )}
                         {task.quick_actions.includes('contact_broker') && (
-                          <Button
+                          <CommonButton
                             size="sm"
                             variant="ghost"
                             onClick={(e) =>
                               handleQuickAction('contact_broker', task, e)
                             }
-                            className="flex items-center space-x-1 text-xs"
                           >
-                            <Mail size={14} />
-                            <span>Broker</span>
-                          </Button>
+                            <XStack alignItems="center" gap="$1">
+                              <Mail size={14} />
+                              <Text fontSize="$1">Broker</Text>
+                            </XStack>
+                          </CommonButton>
                         )}
                         {(task.quick_actions.includes('request_quote') ||
                           task.quick_actions.includes('view_quote')) && (
-                          <Button
+                          <CommonButton
                             size="sm"
                             variant="ghost"
                             onClick={(e) =>
                               handleQuickAction('request_quote', task, e)
                             }
-                            className="flex items-center space-x-1 text-xs"
                           >
-                            <DollarSign size={14} />
-                            <span>
-                              {task.quick_actions.includes('view_quote')
-                                ? 'Quote'
-                                : 'Request Quote'}
-                            </span>
-                          </Button>
+                            <XStack alignItems="center" gap="$1">
+                              <DollarSign size={14} />
+                              <Text fontSize="$1">
+                                {task.quick_actions.includes('view_quote')
+                                  ? 'Quote'
+                                  : 'Request Quote'}
+                              </Text>
+                            </XStack>
+                          </CommonButton>
                         )}
                       </>
                     )}
@@ -436,33 +515,38 @@ export default function SubcontractorTasksPanel({
                     {/* Complete Button - only show for pending/submitted tasks */}
                     {(task.status === 'pending' ||
                       task.status === 'submitted') && (
-                      <Button
+                      <CommonButton
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           onCompleteTask?.(task.id);
                         }}
-                        className="text-xs"
                       >
-                        <CheckCircle size={14} className="mr-1" />
-                        Complete
-                      </Button>
+                        <XStack alignItems="center" gap="$1">
+                          <CheckCircle size={14} />
+                          <Text fontSize="$1">Complete</Text>
+                        </XStack>
+                      </CommonButton>
                     )}
-                  </div>
-                </div>
-              </div>
+                  </XStack>
+                </XStack>
+              </Card>
             );
           })}
-        </div>
+        </YStack>
 
         {sortedTasks.length === 0 && (
-          <div className="text-center py-12">
-            <CheckCircle className="mx-auto text-success-500 mb-3" size={48} />
-            <p className="text-text-primary font-medium">All caught up!</p>
-            <p className="text-text-secondary text-sm">No pending tasks</p>
-          </div>
+          <YStack alignItems="center" paddingVertical="$12">
+            <CheckCircle color="$green10" size={48} marginBottom="$3" />
+            <Text color="$color12" fontWeight="500" marginBottom="$2">
+              All caught up!
+            </Text>
+            <Text color="$color11" fontSize="$2">
+              No pending tasks
+            </Text>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </Card>
   );
 }
