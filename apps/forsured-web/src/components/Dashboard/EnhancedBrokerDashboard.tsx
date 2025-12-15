@@ -1,94 +1,84 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { RefreshCw, Filter, Users } from 'lucide-react';
-import EmptyState from '../../ui/EmptyState';
-import { useLexicon } from '../../contexts/LexiconContext';
-import { useClients } from '../../hooks/useClients';
-import { usePolicies } from '../../hooks/usePolicies';
-import { useTasks } from '../../hooks/useTasks';
-import { useProjects } from '../../hooks/useProjects';
-import { useUsers } from '../../hooks/useUsers';
-import ComplianceOverviewWidget from '../Broker/ComplianceOverviewWidget';
-import ClientsTable from '../Broker/ClientsTable';
-import TasksInbox from '../Broker/TasksInbox';
-import TaskModal from '../Broker/TaskModal';
-import Button from '../Common/Button';
-import { DashboardSkeleton } from '../Common/SkeletonLoader';
-import { Task, BrokerClient } from '../../types';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { RefreshCw, Filter, Users } from 'lucide-react'
+import { EmptyState, YStack, XStack, Text } from '@unicornlove/ui'
+import { useLexicon } from '../../contexts/LexiconContext'
+import { useClients } from '../../hooks/useClients'
+import { usePolicies } from '../../hooks/usePolicies'
+import { useTasks } from '../../hooks/useTasks'
+import { useProjects } from '../../hooks/useProjects'
+import { useUsers } from '../../hooks/useUsers'
+import ComplianceOverviewWidget from '../Broker/ComplianceOverviewWidget'
+import ClientsTable from '../Broker/ClientsTable'
+import TasksInbox from '../Broker/TasksInbox'
+import TaskModal from '../Broker/TaskModal'
+import Button from '../Common/Button'
+import { DashboardSkeleton } from '../Common/SkeletonLoader'
+import type { Task, BrokerClient } from '../../types'
 
 export default function EnhancedBrokerDashboard() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   // REQ-4: Use lexicon for dynamic labels
-  const { t } = useLexicon();
-  const { clients, loading: clientsLoading, fetchClients } = useClients();
-  const { policies, loading: policiesLoading } = usePolicies();
-  const { tasks, loading: tasksLoading, createTask, updateTask } = useTasks();
-  const { projects, loading: projectsLoading } = useProjects();
-  const { users, loading: usersLoading } = useUsers();
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined);
-  const [projectFilter, setProjectFilter] = useState<string>('all');
+  const { t } = useLexicon()
+  const { clients, loading: clientsLoading, fetchClients } = useClients()
+  const { policies, loading: policiesLoading } = usePolicies()
+  const { tasks, loading: tasksLoading, createTask, updateTask } = useTasks()
+  const { projects, loading: projectsLoading } = useProjects()
+  const { users, loading: usersLoading } = useUsers()
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<Task | undefined>(undefined)
+  const [projectFilter, setProjectFilter] = useState<string>('all')
 
   const handleUpdateTaskStatus = async (taskId: string, status: string) => {
-    await updateTask(taskId, { status: status as any });
-  };
+    await updateTask(taskId, { status: status as any })
+  }
 
   const handleTaskClick = (task: Task) => {
-    setSelectedTask(task);
-    setIsTaskModalOpen(true);
-  };
+    setSelectedTask(task)
+    setIsTaskModalOpen(true)
+  }
 
   const handleCreateTask = () => {
-    setSelectedTask(undefined);
-    setIsTaskModalOpen(true);
-  };
+    setSelectedTask(undefined)
+    setIsTaskModalOpen(true)
+  }
 
   const handleSaveTask = async (taskData: Partial<Task>) => {
     if (selectedTask) {
-      await updateTask(selectedTask.id, taskData);
+      await updateTask(selectedTask.id, taskData)
     } else {
-      await createTask(taskData as any);
+      await createTask(taskData as any)
     }
-    setIsTaskModalOpen(false);
-    setSelectedTask(undefined);
-  };
+    setIsTaskModalOpen(false)
+    setSelectedTask(undefined)
+  }
 
   const filteredTasks =
-    projectFilter === 'all'
-      ? tasks
-      : tasks.filter((t) => t.project_id === projectFilter);
+    projectFilter === 'all' ? tasks : tasks.filter((t) => t.project_id === projectFilter)
 
   const filteredClients =
     projectFilter === 'all'
       ? clients
-      : clients.filter((c) =>
-          projects.some((p) => p.id === projectFilter && p.client_id === c.id)
-        );
+      : clients.filter((c) => projects.some((p) => p.id === projectFilter && p.client_id === c.id))
 
   const isLoading =
-    clientsLoading ||
-    policiesLoading ||
-    tasksLoading ||
-    projectsLoading ||
-    usersLoading;
+    clientsLoading || policiesLoading || tasksLoading || projectsLoading || usersLoading
 
   if (isLoading) {
-    return <DashboardSkeleton />;
+    return <DashboardSkeleton />
   }
 
   // Show empty state when no clients exist
   if (clients.length === 0) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">
+      <YStack gap="$6">
+        <YStack>
+          <Text fontSize="$8" fontWeight="700" color="$color12">
             {t('nav.dashboard')}
-          </h1>
-          <p className="text-text-secondary">
-            Comprehensive compliance and task management
-          </p>
-        </div>
+          </Text>
+          <Text color="$color11">Comprehensive compliance and task management</Text>
+        </YStack>
         <EmptyState
           icon={Users}
           title="No Clients Yet"
@@ -98,29 +88,42 @@ export default function EnhancedBrokerDashboard() {
             onClick: () => navigate('/broker/clients/new'),
           }}
         />
-      </div>
-    );
+      </YStack>
+    )
   }
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-text-primary">
+      <YStack gap="$6">
+        <XStack alignItems="center" justifyContent="space-between">
+          <YStack>
+            <Text fontSize="$8" fontWeight="700" color="$color12">
               {t('nav.dashboard')}
-            </h1>
-            <p className="text-text-secondary">
-              Comprehensive compliance and task management
-            </p>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2 bg-surface border border-border rounded-lg px-4 py-2">
-              <Filter size={18} className="text-text-secondary" />
+            </Text>
+            <Text color="$color11">Comprehensive compliance and task management</Text>
+          </YStack>
+          <XStack alignItems="center" gap="$3">
+            <XStack
+              alignItems="center"
+              gap="$2"
+              backgroundColor="$background"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+            >
+              <Filter size={18} color="var(--color11)" />
               <select
                 value={projectFilter}
                 onChange={(e) => setProjectFilter(e.target.value)}
-                className="bg-transparent focus:outline-none text-sm text-text-primary"
+                style={{
+                  background: 'transparent',
+                  outline: 'none',
+                  fontSize: '14px',
+                  color: 'var(--color12)',
+                  border: 'none',
+                }}
               >
                 <option value="all">All Projects</option>
                 {projects.map((project) => (
@@ -129,17 +132,15 @@ export default function EnhancedBrokerDashboard() {
                   </option>
                 ))}
               </select>
-            </div>
-            <Button
-              variant="ghost"
-              onClick={fetchClients}
-              className="flex items-center space-x-2"
-            >
-              <RefreshCw size={18} />
-              <span>Refresh</span>
+            </XStack>
+            <Button variant="ghost" onClick={fetchClients}>
+              <XStack alignItems="center" gap="$2">
+                <RefreshCw size={18} />
+                <Text>Refresh</Text>
+              </XStack>
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </XStack>
 
         <ComplianceOverviewWidget
           clients={filteredClients}
@@ -160,13 +161,13 @@ export default function EnhancedBrokerDashboard() {
           policies={policies}
           onClientClick={(client: BrokerClient) => navigate(`/broker/clients/${client.id}`)}
         />
-      </div>
+      </YStack>
 
       <TaskModal
         isOpen={isTaskModalOpen}
         onClose={() => {
-          setIsTaskModalOpen(false);
-          setSelectedTask(undefined);
+          setIsTaskModalOpen(false)
+          setSelectedTask(undefined)
         }}
         onSave={handleSaveTask}
         task={selectedTask}
@@ -177,5 +178,5 @@ export default function EnhancedBrokerDashboard() {
         currentUserId={users[0]?.id}
       />
     </>
-  );
+  )
 }
