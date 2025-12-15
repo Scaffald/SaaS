@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   CheckCircle,
   X,
@@ -13,6 +13,7 @@ import {
   UserCheck,
   AlertOctagon,
 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import Textarea from '../Common/Textarea';
@@ -255,30 +256,13 @@ export default function COIComparisonViewer({
 
   const getGapStatusIcon = (gap: CoverageGap) => {
     if (gap.actual >= gap.required) {
-      return <CheckCircle className="text-success-600" size={20} />;
+      return <CheckCircle color="$green10" size={20} />;
     }
     const percentage = (gap.actual / gap.required) * 100;
     if (percentage >= 80) {
-      return <AlertTriangle className="text-warning-600" size={20} />;
+      return <AlertTriangle color="$yellow10" size={20} />;
     }
-    return <XCircle className="text-error-600" size={20} />;
-  };
-
-  const getGapStatusColor = (gap: CoverageGap) => {
-    if (gap.actual >= gap.required) {
-      return 'bg-success-50 border-success-200';
-    }
-    const percentage = (gap.actual / gap.required) * 100;
-    if (percentage >= 80) {
-      return 'bg-warning-50 border-warning-200';
-    }
-    return 'bg-error-50 border-error-200';
-  };
-
-  const getMatchColor = (match: number) => {
-    if (match >= 100) return 'text-success-600';
-    if (match >= 80) return 'text-warning-600';
-    return 'text-error-600';
+    return <XCircle color="$red10" size={20} />;
   };
 
   const pdfUrl =
@@ -288,67 +272,82 @@ export default function COIComparisonViewer({
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
-        <div className="space-y-6">
+        <YStack gap="$6">
           {/* Header */}
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2">
+          <XStack alignItems="flex-start" justifyContent="space-between">
+            <YStack>
+              <H2 fontSize="$8" fontWeight="bold" color="$color12" marginBottom="$2">
                 COI Comparison
-              </h2>
-              <p className="text-text-secondary">{documentName}</p>
+              </H2>
+              <Text color="$color11">{documentName}</Text>
               {project && (
-                <p className="text-sm text-text-tertiary mt-1">
+                <Text fontSize="$3" color="$color10" marginTop="$1">
                   Project: {project.name}
-                </p>
+                </Text>
               )}
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
           {/* Main Content: Split Screen */}
-          <div className="grid grid-cols-2 gap-6">
+          <XStack gap="$6">
             {/* Left: PDF Viewer */}
-            <div>
-              <div className="border border-border rounded-lg overflow-hidden bg-bg-secondary">
-                <div className="flex items-center justify-between p-3 bg-bg-tertiary border-b border-border">
-                  <span className="text-sm font-medium text-text-secondary">
+            <YStack flex={1}>
+              <Card
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                overflow="hidden"
+                backgroundColor="$background"
+              >
+                <XStack
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$3"
+                  backgroundColor="$backgroundHover"
+                  borderBottomWidth={1}
+                  borderBottomColor="$borderColor"
+                >
+                  <Text fontSize="$3" fontWeight="500" color="$color11">
                     Document Preview
-                  </span>
+                  </Text>
                   {pdfUrl && (
-                    <a
+                    <XStack
+                      as="a"
                       href={pdfUrl}
                       download={documentName}
-                      className="p-2 text-primary-600 hover:bg-primary-50 rounded"
+                      padding="$2"
+                      color="$teal9"
+                      hoverStyle={{ backgroundColor: '$teal2' }}
+                      borderRadius="$2"
+                      cursor="pointer"
                     >
                       <Download size={16} />
-                    </a>
+                    </XStack>
                   )}
-                </div>
-                <div className="relative" style={{ height: '600px' }}>
+                </XStack>
+                <YStack position="relative" height={600}>
                   {pdfUrl ? (
                     <iframe
                       src={pdfUrl}
-                      className="w-full h-full border-0"
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
                       title={documentName}
                     />
                   ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center">
-                        <FileText
-                          className="mx-auto text-text-tertiary mb-2"
-                          size={48}
-                        />
-                        <p className="text-text-secondary">
-                          No preview available
-                        </p>
-                      </div>
-                    </div>
+                    <YStack alignItems="center" justifyContent="center" height="100%">
+                      <YStack alignItems="center" gap="$2">
+                        <FileText color="$color10" size={48} />
+                        <Text color="$color11">No preview available</Text>
+                      </YStack>
+                    </YStack>
                   )}
-                </div>
-              </div>
-            </div>
+                </YStack>
+              </Card>
+            </YStack>
 
             {/* Right: Comparison Panel */}
-            <div className="space-y-6">
+            <YStack flex={1} gap="$6">
               {/* AI Processing Indicator */}
               {aiProcessingState && (
                 <AIProcessingIndicator
@@ -370,230 +369,324 @@ export default function COIComparisonViewer({
 
               {/* Overall Match Score */}
               {comparisonResult && !aiProcessingState && (
-                <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-semibold text-text-primary flex items-center space-x-2">
+                <Card
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  padding="$4"
+                  backgroundColor="$background"
+                >
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="center" gap="$2">
                       <Shield size={16} />
-                      <span>Overall Match</span>
-                    </h3>
-                    <span
-                      className={`text-2xl font-bold ${getMatchColor(comparisonResult.overallMatch)}`}
+                      <H3 fontSize="$3" fontWeight="600" color="$color12">
+                        Overall Match
+                      </H3>
+                    </XStack>
+                    <Text
+                      fontSize="$9"
+                      fontWeight="bold"
+                      color={
+                        comparisonResult.overallMatch >= 100
+                          ? '$green10'
+                          : comparisonResult.overallMatch >= 80
+                            ? '$yellow10'
+                            : '$red10'
+                      }
                     >
                       {comparisonResult.overallMatch}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-bg-tertiary rounded-full h-3">
-                    <div
-                      className={`h-3 rounded-full transition-all ${
+                    </Text>
+                  </XStack>
+                  <YStack width="100%" backgroundColor="$backgroundHover" borderRadius={9999} height={12}>
+                    <YStack
+                      height={12}
+                      borderRadius={9999}
+                      backgroundColor={
                         comparisonResult.overallMatch >= 100
-                          ? 'bg-success-600'
+                          ? '$green9'
                           : comparisonResult.overallMatch >= 80
-                            ? 'bg-warning-600'
-                            : 'bg-error-600'
-                      }`}
-                      style={{ width: `${comparisonResult.overallMatch}%` }}
+                            ? '$yellow9'
+                            : '$red9'
+                      }
+                      width={`${comparisonResult.overallMatch}%`}
                     />
-                  </div>
-                  <p className="text-xs text-text-tertiary mt-2">
+                  </YStack>
+                  <Text fontSize="$1" color="$color10" marginTop="$2">
                     AI Confidence: {comparisonResult.confidence}%
-                  </p>
-                </div>
+                  </Text>
+                </Card>
               )}
 
               {/* AI Extracted Fields */}
               {currentExtraction && (
-                <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                  <h3 className="text-sm font-semibold text-text-primary mb-4">
+                <Card
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  padding="$4"
+                  backgroundColor="$background"
+                >
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
                     Extracted Fields
-                  </h3>
-                  <div className="space-y-3">
+                  </H3>
+                  <YStack gap="$3">
                     {currentExtraction.policy_number && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
+                      <YStack>
+                        <Text fontSize="$1" color="$color10">
                           Policy Number
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
+                        </Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {currentExtraction.policy_number}
-                        </p>
-                      </div>
+                        </Text>
+                      </YStack>
                     )}
                     {currentExtraction.carrier && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
-                          Carrier
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
+                      <YStack>
+                        <Text fontSize="$1" color="$color10">Carrier</Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {currentExtraction.carrier}
-                        </p>
-                      </div>
+                        </Text>
+                      </YStack>
                     )}
                     {currentExtraction.effective_date && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
+                      <YStack>
+                        <Text fontSize="$1" color="$color10">
                           Effective Date
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
+                        </Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {formatDate(currentExtraction.effective_date)}
-                        </p>
-                      </div>
+                        </Text>
+                      </YStack>
                     )}
                     {currentExtraction.expiry_date && (
-                      <div>
-                        <span className="text-xs text-text-tertiary">
+                      <YStack>
+                        <Text fontSize="$1" color="$color10">
                           Expiry Date
-                        </span>
-                        <p className="text-sm font-medium text-text-primary">
+                        </Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {formatDate(currentExtraction.expiry_date)}
-                        </p>
-                      </div>
+                        </Text>
+                      </YStack>
                     )}
-                  </div>
-                </div>
+                  </YStack>
+                </Card>
               )}
 
               {/* Requirements vs Extracted */}
               {project && (
-                <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                  <h3 className="text-sm font-semibold text-text-primary mb-4">
+                <Card
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  padding="$4"
+                  backgroundColor="$background"
+                >
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
                     Project Requirements
-                  </h3>
-                  <div className="space-y-3">
+                  </H3>
+                  <YStack gap="$3">
                     {project.general_liability_required && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-text-secondary">
+                      <XStack justifyContent="space-between" alignItems="center">
+                        <Text fontSize="$3" color="$color11">
                           General Liability
-                        </span>
-                        <span className="text-sm font-medium text-text-primary">
+                        </Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {formatCurrency(project.general_liability_required)}
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
                     )}
                     {project.workers_comp_required && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-text-secondary">
+                      <XStack justifyContent="space-between" alignItems="center">
+                        <Text fontSize="$3" color="$color11">
                           Workers Comp
-                        </span>
-                        <span className="text-sm font-medium text-text-primary">
+                        </Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {formatCurrency(project.workers_comp_required)}
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
                     )}
                     {project.auto_liability_required && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-text-secondary">
+                      <XStack justifyContent="space-between" alignItems="center">
+                        <Text fontSize="$3" color="$color11">
                           Auto Liability
-                        </span>
-                        <span className="text-sm font-medium text-text-primary">
+                        </Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {formatCurrency(project.auto_liability_required)}
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
                     )}
                     {project.umbrella_required && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-text-secondary">
-                          Umbrella
-                        </span>
-                        <span className="text-sm font-medium text-text-primary">
+                      <XStack justifyContent="space-between" alignItems="center">
+                        <Text fontSize="$3" color="$color11">Umbrella</Text>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {formatCurrency(project.umbrella_required)}
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
                     )}
-                  </div>
-                </div>
+                  </YStack>
+                </Card>
               )}
 
               {/* Gap Analysis */}
               {loadingComparison ? (
-                <div className="border border-border rounded-lg p-8 bg-bg-secondary text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-                  <p className="text-sm text-text-secondary">
-                    Analyzing coverage...
-                  </p>
-                </div>
+                <Card
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  padding="$8"
+                  backgroundColor="$background"
+                  alignItems="center"
+                >
+                  <YStack alignItems="center" gap="$2">
+                    <YStack
+                      width={32}
+                      height={32}
+                      borderRadius={9999}
+                      borderWidth={2}
+                      borderColor="$teal9"
+                      borderBottomColor="transparent"
+                      animation="spin"
+                    />
+                    <Text fontSize="$3" color="$color11">
+                      Analyzing coverage...
+                    </Text>
+                  </YStack>
+                </Card>
               ) : comparisonResult && comparisonResult.gaps.length > 0 ? (
-                <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                  <h3 className="text-sm font-semibold text-text-primary mb-4 flex items-center space-x-2">
-                    <AlertOctagon className="text-error-600" size={16} />
-                    <span>Coverage Gaps ({comparisonResult.gaps.length})</span>
-                  </h3>
-                  <div className="space-y-3">
+                <Card
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  padding="$4"
+                  backgroundColor="$background"
+                >
+                  <XStack alignItems="center" gap="$2" marginBottom="$4">
+                    <AlertOctagon color="$red10" size={16} />
+                    <H3 fontSize="$3" fontWeight="600" color="$color12">
+                      Coverage Gaps ({comparisonResult.gaps.length})
+                    </H3>
+                  </XStack>
+                  <YStack gap="$3">
                     {comparisonResult.gaps.map((gap, index) => (
-                      <div
+                      <Card
                         key={index}
-                        className={`p-3 rounded-lg border ${getGapStatusColor(gap)}`}
+                        padding="$3"
+                        borderRadius="$4"
+                        borderWidth={1}
+                        backgroundColor={
+                          gap.actual >= gap.required
+                            ? '$green2'
+                            : (gap.actual / gap.required) * 100 >= 80
+                              ? '$yellow2'
+                              : '$red2'
+                        }
+                        borderColor={
+                          gap.actual >= gap.required
+                            ? '$green6'
+                            : (gap.actual / gap.required) * 100 >= 80
+                              ? '$yellow6'
+                              : '$red6'
+                        }
                       >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center space-x-2">
+                        <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                          <XStack alignItems="center" gap="$2">
                             {getGapStatusIcon(gap)}
-                            <span className="text-sm font-medium text-text-primary">
+                            <Text fontSize="$3" fontWeight="500" color="$color12">
                               {gap.type}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="space-y-1 ml-7">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-text-secondary">
-                              Required:
-                            </span>
-                            <span className="font-medium text-text-primary">
+                            </Text>
+                          </XStack>
+                        </XStack>
+                        <YStack gap="$1" marginLeft="$7">
+                          <XStack justifyContent="space-between" fontSize="$1">
+                            <Text color="$color11">Required:</Text>
+                            <Text fontWeight="500" color="$color12">
                               {formatCurrency(gap.required)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-xs">
-                            <span className="text-text-secondary">Actual:</span>
-                            <span className="font-medium text-text-primary">
+                            </Text>
+                          </XStack>
+                          <XStack justifyContent="space-between" fontSize="$1">
+                            <Text color="$color11">Actual:</Text>
+                            <Text fontWeight="500" color="$color12">
                               {formatCurrency(gap.actual)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-xs pt-1 border-t border-border">
-                            <span className="text-text-secondary">Gap:</span>
-                            <span className="font-medium text-error-600">
+                            </Text>
+                          </XStack>
+                          <XStack
+                            justifyContent="space-between"
+                            fontSize="$1"
+                            paddingTop="$1"
+                            borderTopWidth={1}
+                            borderTopColor="$borderColor"
+                          >
+                            <Text color="$color11">Gap:</Text>
+                            <Text fontWeight="500" color="$red10">
                               {formatCurrency(gap.required - gap.actual)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                            </Text>
+                          </XStack>
+                        </YStack>
+                      </Card>
                     ))}
-                  </div>
-                </div>
+                  </YStack>
+                </Card>
               ) : comparisonResult && comparisonResult.gaps.length === 0 ? (
-                <div className="border border-success-200 rounded-lg p-4 bg-success-50">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="text-success-600" size={20} />
-                    <span className="text-sm font-medium text-success-900">
+                <Card
+                  borderWidth={1}
+                  borderColor="$green6"
+                  borderRadius="$4"
+                  padding="$4"
+                  backgroundColor="$green2"
+                >
+                  <XStack alignItems="center" gap="$2">
+                    <CheckCircle color="$green10" size={20} />
+                    <Text fontSize="$3" fontWeight="500" color="$green12">
                       All coverage requirements are met
-                    </span>
-                  </div>
-                </div>
+                    </Text>
+                  </XStack>
+                </Card>
               ) : null}
 
               {/* Recommendations */}
               {comparisonResult &&
                 comparisonResult.recommendations.length > 0 && (
-                  <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                    <h3 className="text-sm font-semibold text-text-primary mb-4">
+                  <Card
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    padding="$4"
+                    backgroundColor="$background"
+                  >
+                    <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
                       Recommendations
-                    </h3>
-                    <ul className="space-y-2">
+                    </H3>
+                    <YStack gap="$2">
                       {comparisonResult.recommendations.map((rec, index) => (
-                        <li
+                        <XStack
                           key={index}
-                          className="flex items-start space-x-2 text-sm text-text-secondary"
+                          alignItems="flex-start"
+                          gap="$2"
+                          fontSize="$3"
+                          color="$color11"
                         >
-                          <span className="text-primary-600 mt-0.5">•</span>
-                          <span>{rec}</span>
-                        </li>
+                          <Text color="$teal9" marginTop="$0.5">
+                            •
+                          </Text>
+                          <Text>{rec}</Text>
+                        </XStack>
                       ))}
-                    </ul>
-                  </div>
+                    </YStack>
+                  </Card>
                 )}
 
               {/* Actions */}
-              <div className="border border-border rounded-lg p-4 bg-bg-secondary">
-                <h3 className="text-sm font-semibold text-text-primary mb-4">
+              <Card
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                padding="$4"
+                backgroundColor="$background"
+              >
+                <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
                   Actions
-                </h3>
-                <div className="space-y-2">
+                </H3>
+                <YStack gap="$2">
                   <Button
                     variant="success"
                     onClick={handleApprove}
@@ -620,11 +713,11 @@ export default function COIComparisonViewer({
                       Override with Exception
                     </Button>
                   )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                </YStack>
+              </Card>
+            </YStack>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* Request Changes Modal */}
@@ -637,7 +730,7 @@ export default function COIComparisonViewer({
         title="Request Changes"
         size="sm"
       >
-        <div className="space-y-4">
+        <YStack gap="$4">
           <Textarea
             label="Specify required changes"
             value={requestChangesComment}
@@ -647,7 +740,7 @@ export default function COIComparisonViewer({
             fullWidth
             required
           />
-          <div className="flex space-x-3">
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => {
@@ -666,8 +759,8 @@ export default function COIComparisonViewer({
             >
               Send Request
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* Override Modal */}
@@ -680,13 +773,19 @@ export default function COIComparisonViewer({
         title="Override Approval"
         size="sm"
       >
-        <div className="space-y-4">
-          <div className="p-3 bg-warning-50 border border-warning-200 rounded-lg">
-            <p className="text-xs text-warning-900">
+        <YStack gap="$4">
+          <Card
+            padding="$3"
+            backgroundColor="$yellow2"
+            borderWidth={1}
+            borderColor="$yellow6"
+            borderRadius="$4"
+          >
+            <Text fontSize="$1" color="$yellow12">
               This will approve the document despite coverage gaps. Please
               provide a reason for the exception.
-            </p>
-          </div>
+            </Text>
+          </Card>
           <Textarea
             label="Reason for override"
             value={overrideReason}
@@ -696,7 +795,7 @@ export default function COIComparisonViewer({
             fullWidth
             required
           />
-          <div className="flex space-x-3">
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => {
@@ -715,8 +814,8 @@ export default function COIComparisonViewer({
             >
               Override & Approve
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* AI Summary Modal */}
