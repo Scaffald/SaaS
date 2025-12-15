@@ -10,6 +10,7 @@ import type { Document } from '../../types/document';
 interface FileUploadZoneProps {
   projectId: string;
   uploaderId: string;
+  organizationId: string;
   subcontractorId?: string;
   maxFiles?: number;
   onUpload?: (document: Document) => void;
@@ -27,6 +28,7 @@ interface FileQueueItem {
 export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   projectId,
   uploaderId,
+  organizationId,
   subcontractorId,
   maxFiles = 10,
   onUpload,
@@ -134,9 +136,9 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
 
       // Upload the document
       const document = await documentService.uploadDocument({
-        project_id: projectId,
-        uploader_id: uploaderId,
-        subcontractor_id: subcontractorId,
+        projectId,
+        uploadedBy: uploaderId,
+        organizationId,
         file: queueItem.file
       });
 

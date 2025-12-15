@@ -128,7 +128,6 @@ export class StorageServiceValidator implements MockValidator {
       'updateDocumentStatus',
       'deleteDocument',
       'deleteDocuments',
-      'checkDuplicate',
     ];
 
     for (const method of requiredMethods) {

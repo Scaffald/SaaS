@@ -22,6 +22,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
       />
     );
@@ -35,6 +36,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
       />
     );
@@ -54,6 +56,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
       />
     );
@@ -81,6 +84,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
         onError={mockOnError}
       />
@@ -111,6 +115,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
       />
     );
@@ -135,6 +140,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
         maxFiles={3}
       />
@@ -167,6 +173,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
         onError={mockOnError}
         maxFiles={2}
@@ -200,6 +207,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
       />
     );
@@ -229,6 +237,7 @@ describe('FileUploadZone', () => {
       <FileUploadZone
         projectId="project-123"
         uploaderId="user-123"
+        organizationId="org-123"
         onUpload={mockOnUpload}
       />
     );
