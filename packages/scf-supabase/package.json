@@ -8,12 +8,15 @@
     "./functions/_shared/client-types": "./functions/_shared/client-types.ts",
     "./functions/_shared/schemas": "./functions/_shared/schemas/index.ts",
     "./functions/_shared/types": "./functions/_shared/types.ts",
+    "./seeds/forsured": "./seeds/forsured/index.ts",
+    "./seeds/forsured/test-ids": "./seeds/forsured/test-ids.ts",
     "./types": "./types.ts"
   },
   "scripts": {
     "convert-onet": "pnpx tsx scripts/convert-onet-sql.ts",
     "download-onet": "pnpx tsx scripts/download-onet.ts",
     "seed": "pnpx tsx scripts/seed-all.ts",
+    "seed:forsured": "pnpx tsx seeds/forsured/seed-forsured.ts",
     "seed:news-feeds": "pnpx tsx scripts/seed-news-feeds.ts",
     "seed:news-import": "pnpx tsx scripts/trigger-news-import.ts",
     "seed:onet": "pnpx tsx scripts/seed-onet.ts",
