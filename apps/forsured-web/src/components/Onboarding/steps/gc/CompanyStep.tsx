@@ -1,9 +1,8 @@
 // src/components/onboarding/steps/gc/CompanyStep.tsx
 // REQ-126: GC Onboarding - Company Information Step
-import React, { useState } from 'react';
-import { Input as TextInput } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
-import { Heading2 } from '@unicornlove/ui';
+import { useState } from 'react';
+import { YStack } from '@unicornlove/ui';
+import { Input as TextInput, Button, Heading2 } from '@unicornlove/ui';
 
 interface CompanyStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -40,9 +39,9 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
   };
 
   return (
-    <div className="company-step">
-      <Heading2 className="mb-6">Company Information</Heading2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <YStack>
+      <Heading2 marginBottom="$6">Company Information</Heading2>
+      <YStack as="form" onSubmit={handleSubmit} gap="$4">
         <TextInput
           label="Company Name"
           value={companyName}
@@ -68,7 +67,7 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
           keyboardType="phone-pad"
           required
         />
-        <div className="mt-6">
+        <YStack marginTop="$6">
           <Button
             type="submit"
             variant="primary"
@@ -76,9 +75,9 @@ function CompanyStep({ onComplete, initialData = {}, isLoading = false }: Compan
           >
             {isLoading ? 'Saving...' : 'Continue'}
           </Button>
-        </div>
-      </form>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 

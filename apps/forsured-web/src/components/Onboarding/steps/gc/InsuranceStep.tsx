@@ -1,9 +1,8 @@
 // src/components/onboarding/steps/gc/InsuranceStep.tsx
 // REQ-126: GC Onboarding - Insurance Requirements Step
-import React, { useState } from 'react';
-import { Input as TextInput, Checkbox } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
-import { Heading2, BodyText } from '@unicornlove/ui';
+import { useState } from 'react';
+import { YStack, XStack } from '@unicornlove/ui';
+import { Input as TextInput, Checkbox, Button, Heading2, BodyText } from '@unicornlove/ui';
 
 interface InsuranceStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -62,13 +61,13 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
   };
 
   return (
-    <div className="insurance-step">
-      <Heading2 className="mb-2">Default Insurance Requirements</Heading2>
-      <BodyText className="mb-6 text-gray-600">
+    <YStack>
+      <Heading2 marginBottom="$2">Default Insurance Requirements</Heading2>
+      <BodyText marginBottom="$6" color="$color10">
         Set your default insurance requirements for subcontractors
       </BodyText>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-4">
+      <YStack as="form" onSubmit={handleSubmit} gap="$4">
+        <YStack gap="$4">
           <TextInput
             label="General Liability Per Occurrence ($)"
             value={glPerOccurrence}
@@ -87,33 +86,33 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
             keyboardType="numeric"
             required
           />
-        </div>
+        </YStack>
 
-        <div className="mt-6 space-y-3">
-          <div className="flex items-center gap-2">
+        <YStack marginTop="$6" gap="$3">
+          <XStack alignItems="center" gap="$2">
             <Checkbox
               checked={wcRequired}
               onCheckedChange={setWcRequired}
             />
             <BodyText>Workers Compensation Required</BodyText>
-          </div>
-          <div className="flex items-center gap-2">
+          </XStack>
+          <XStack alignItems="center" gap="$2">
             <Checkbox
               checked={autoRequired}
               onCheckedChange={setAutoRequired}
             />
             <BodyText>Auto Liability Required</BodyText>
-          </div>
-          <div className="flex items-center gap-2">
+          </XStack>
+          <XStack alignItems="center" gap="$2">
             <Checkbox
               checked={umbrellaRequired}
               onCheckedChange={setUmbrellaRequired}
             />
             <BodyText>Umbrella Coverage Required</BodyText>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
-        <div className="mt-6">
+        <YStack marginTop="$6">
           <Button
             type="submit"
             variant="primary"
@@ -121,9 +120,9 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           >
             {isLoading ? 'Saving...' : 'Continue'}
           </Button>
-        </div>
-      </form>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 

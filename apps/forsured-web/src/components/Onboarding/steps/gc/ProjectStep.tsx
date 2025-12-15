@@ -1,9 +1,8 @@
 // src/components/onboarding/steps/gc/ProjectStep.tsx
 // REQ-126: GC Onboarding - First Project Step (Optional)
-import React, { useState } from 'react';
-import { Input as TextInput } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
-import { Heading2, BodyText } from '@unicornlove/ui';
+import { useState } from 'react';
+import { YStack } from '@unicornlove/ui';
+import { Input as TextInput, Button, Heading2, BodyText } from '@unicornlove/ui';
 
 interface ProjectStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -29,12 +28,12 @@ function ProjectStep({ onComplete, initialData = {}, isLoading = false }: Projec
   };
 
   return (
-    <div className="project-step">
-      <Heading2 className="mb-2">Create Your First Project (Optional)</Heading2>
-      <BodyText className="mb-6 text-gray-600">
+    <YStack>
+      <Heading2 marginBottom="$2">Create Your First Project (Optional)</Heading2>
+      <BodyText marginBottom="$6" color="$color10">
         You can skip this step and create a project later
       </BodyText>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <YStack as="form" onSubmit={handleSubmit} gap="$4">
         <TextInput
           label="Project Name"
           value={projectName}
@@ -54,7 +53,7 @@ function ProjectStep({ onComplete, initialData = {}, isLoading = false }: Projec
           placeholder="YYYY-MM-DD"
           helperText="Optional: You can set this later"
         />
-        <div className="mt-6">
+        <YStack marginTop="$6">
           <Button
             type="submit"
             variant="primary"
@@ -62,9 +61,9 @@ function ProjectStep({ onComplete, initialData = {}, isLoading = false }: Projec
           >
             {isLoading ? 'Saving...' : 'Continue'}
           </Button>
-        </div>
-      </form>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 

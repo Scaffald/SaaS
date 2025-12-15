@@ -1,9 +1,8 @@
 // src/components/onboarding/steps/gc/SuccessStep.tsx
 // REQ-126: GC Onboarding - Success/Completion Step
-import React from 'react';
-import { Button } from '@unicornlove/ui';
-import { Heading2, BodyText } from '@unicornlove/ui';
-import { Check } from '@unicornlove/ui';
+import { CheckCircle } from 'lucide-react';
+import { YStack, XStack } from '@unicornlove/ui';
+import { Button, Heading2, BodyText } from '@unicornlove/ui';
 
 interface SuccessStepProps {
   onComplete: () => Promise<void>;
@@ -12,25 +11,35 @@ interface SuccessStepProps {
 
 function SuccessStep({ onComplete, isLoading = false }: SuccessStepProps) {
   return (
-    <div className="success-step text-center py-8">
-      <div className="mb-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-          <Check className="w-8 h-8 text-green-600" />
-        </div>
-        <Heading2 className="mb-2">Onboarding Complete!</Heading2>
-        <BodyText className="text-gray-600">
+    <YStack alignItems="center" paddingVertical="$8">
+      <YStack alignItems="center" marginBottom="$6">
+        <YStack
+          alignItems="center"
+          justifyContent="center"
+          width={64}
+          height={64}
+          borderRadius={9999}
+          backgroundColor="$green2"
+          marginBottom="$4"
+        >
+          <CheckCircle size={32} color="var(--green10)" />
+        </YStack>
+        <Heading2 marginBottom="$2" textAlign="center">
+          Onboarding Complete!
+        </Heading2>
+        <BodyText color="$color10" textAlign="center">
           You're all set to manage subcontractor compliance and track insurance requirements.
         </BodyText>
-      </div>
+      </YStack>
       <Button
-        onClick={onComplete}
+        onPress={onComplete}
         variant="primary"
         disabled={isLoading}
         size="lg"
       >
         {isLoading ? 'Loading...' : 'Go to Dashboard'}
       </Button>
-    </div>
+    </YStack>
   );
 }
 
