@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, SizableText, Input, Checkbox } from '@unicornlove/ui';
 import Modal from '../Common/Modal';
-import Button from '../Common/Button';
-import Input from '../Common/Input';
-import Select from '../Common/Select';
 import { useUserInvitations } from '../../hooks/useUserInvitations';
 import { useProjects } from '../../hooks/useProjects';
 import { useClients } from '../../hooks/useClients';
@@ -116,137 +114,185 @@ export default function UserInvitationModal({
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Invite User" size="md">
-      <div className="space-y-4">
+      <YStack gap="$4">
         {error && (
-          <div className="bg-error-50 border border-error-200 rounded-lg p-3">
-            <p className="text-sm text-error-700">{error}</p>
-          </div>
+          <YStack
+            backgroundColor="$red2"
+            borderWidth={1}
+            borderColor="$red6"
+            borderRadius="$4"
+            padding="$3"
+          >
+            <SizableText fontSize="$3" color="$red11">
+              {error}
+            </SizableText>
+          </YStack>
         )}
 
         <Input
           label="Email Address"
           type="email"
           value={email}
+          onChangeText={setEmail}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="user@example.com"
-          fullWidth
+          width="100%"
           required
         />
 
         <Input
           label="Full Name"
           value={name}
+          onChangeText={setName}
           onChange={(e) => setName(e.target.value)}
           placeholder="John Doe"
-          fullWidth
+          width="100%"
           required
         />
 
-        <Select
-          label="Role"
+        <select
           value={role}
           onChange={(e) => setRole(e.target.value as UserRoleRBAC)}
-          options={[
-            { value: 'admin', label: 'Admin' },
-            { value: 'manager', label: 'Manager' },
-            { value: 'user', label: 'User' },
-          ]}
-          fullWidth
-        />
+          style={{
+            width: '100%',
+            padding: '8px 12px',
+            border: '1px solid var(--borderColor)',
+            borderRadius: '8px',
+            backgroundColor: 'var(--background)',
+          }}
+        >
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+          <option value="user">User</option>
+        </select>
 
         {/* Role Description */}
-        <div className="bg-bg-secondary rounded-lg p-3 text-sm">
-          <p className="font-medium text-text-primary mb-1">
+        <YStack backgroundColor="$color2" borderRadius="$4" padding="$3">
+          <SizableText fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
             {role === 'admin' &&
               'Admin: Full access to all features and settings'}
             {role === 'manager' &&
               'Manager: Can manage projects, approve documents, invite users'}
             {role === 'user' &&
               'User: Can view assigned projects, upload documents, complete tasks'}
-          </p>
-        </div>
+          </SizableText>
+        </YStack>
 
         {/* Project Assignment */}
         {projects.length > 0 && (
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <SizableText fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Assign to Projects (Optional)
-            </label>
-            <div className="border border-border rounded-lg max-h-48 overflow-y-auto p-2 space-y-2">
-              {projects.map((project) => (
-                <label
-                  key={project.id}
-                  className="flex items-center space-x-2 p-2 hover:bg-bg-secondary rounded cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedProjects.includes(project.id)}
-                    onChange={() => toggleProject(project.id)}
-                    className="rounded border-border text-primary-600 focus:ring-primary-500"
-                  />
-                  <span className="text-sm text-text-primary">
-                    {project.name}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
+            </SizableText>
+            <Card
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              maxHeight={192}
+              overflow="scroll"
+              padding="$2"
+            >
+              <YStack gap="$2">
+                {projects.map((project) => (
+                  <XStack
+                    key={project.id}
+                    alignItems="center"
+                    gap="$2"
+                    padding="$2"
+                    borderRadius="$2"
+                    cursor="pointer"
+                    hoverStyle={{ backgroundColor: '$color2' }}
+                    onPress={() => toggleProject(project.id)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedProjects.includes(project.id)}
+                      onChange={() => toggleProject(project.id)}
+                      style={{ borderRadius: '4px', border: '1px solid var(--borderColor)' }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <SizableText fontSize="$3" color="$color12">
+                      {project.name}
+                    </SizableText>
+                  </XStack>
+                ))}
+              </YStack>
+            </Card>
+          </YStack>
         )}
 
         {/* Client Assignment (for brokers) */}
         {isBroker && clients.length > 0 && (
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <SizableText fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Assign to Clients (Optional)
-            </label>
-            <div className="border border-border rounded-lg max-h-48 overflow-y-auto p-2 space-y-2">
-              {clients.map((client) => (
-                <label
-                  key={client.id}
-                  className="flex items-center space-x-2 p-2 hover:bg-bg-secondary rounded cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedClients.includes(client.id)}
-                    onChange={() => toggleClient(client.id)}
-                    className="rounded border-border text-primary-600 focus:ring-primary-500"
-                  />
-                  <span className="text-sm text-text-primary">
-                    {client.name}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
+            </SizableText>
+            <Card
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              maxHeight={192}
+              overflow="scroll"
+              padding="$2"
+            >
+              <YStack gap="$2">
+                {clients.map((client) => (
+                  <XStack
+                    key={client.id}
+                    alignItems="center"
+                    gap="$2"
+                    padding="$2"
+                    borderRadius="$2"
+                    cursor="pointer"
+                    hoverStyle={{ backgroundColor: '$color2' }}
+                    onPress={() => toggleClient(client.id)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedClients.includes(client.id)}
+                      onChange={() => toggleClient(client.id)}
+                      style={{ borderRadius: '4px', border: '1px solid var(--borderColor)' }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <SizableText fontSize="$3" color="$color12">
+                      {client.name}
+                    </SizableText>
+                  </XStack>
+                ))}
+              </YStack>
+            </Card>
+          </YStack>
         )}
 
-        <div className="bg-primary-50 border border-primary-200 rounded-lg p-3">
-          <p className="text-xs text-primary-900">
+        <YStack backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$3">
+          <SizableText fontSize="$1" color="$blue11">
             An invitation email will be sent to the user with instructions to
             join and complete onboarding.
-          </p>
-        </div>
+          </SizableText>
+        </YStack>
 
-        <div className="flex space-x-3 pt-4 border-t border-border">
+        <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
           <Button
-            variant="secondary"
-            onClick={handleClose}
-            fullWidth
+            variant="outlined"
+            onPress={handleClose}
+            flex={1}
             disabled={loading}
           >
             Cancel
           </Button>
           <Button
-            variant="primary"
-            onClick={handleSubmit}
-            fullWidth
+            onPress={handleSubmit}
+            flex={1}
             disabled={loading || !email.trim() || !name.trim()}
-            leftIcon={UserPlus}
+            opacity={loading || !email.trim() || !name.trim() ? 0.5 : 1}
           >
-            {loading ? 'Sending...' : 'Send Invitation'}
+            <XStack alignItems="center" gap="$2">
+              <UserPlus size={16} />
+              <Text>{loading ? 'Sending...' : 'Send Invitation'}</Text>
+            </XStack>
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </YStack>
     </Modal>
   );
 }
