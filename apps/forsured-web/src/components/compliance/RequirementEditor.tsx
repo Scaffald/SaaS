@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { YStack, XStack, Text, Button, Card, H3, Input } from '@unicornlove/ui';
 import {
   CoverageType,
   RequirementStatus,
@@ -224,327 +225,450 @@ export default function RequirementEditor({
   }
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return (
+      <YStack alignItems="center" paddingVertical="$8">
+        <Text>Loading...</Text>
+      </YStack>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {errors.general && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-red-800">{errors.general}</p>
-        </div>
-      )}
-
-      {/* Basic Information */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Name <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Type <span className="text-red-600">*</span>
-          </label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as CoverageType)}
-            disabled={!!requirementId}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value={CoverageType.GENERAL_LIABILITY}>General Liability</option>
-            <option value={CoverageType.WORKERS_COMP}>Workers Compensation</option>
-            <option value={CoverageType.AUTO_LIABILITY}>Auto Liability</option>
-            <option value={CoverageType.UMBRELLA}>Umbrella/Excess Liability</option>
-            <option value={CoverageType.CUSTOM}>Custom</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as RequirementStatus)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value={RequirementStatus.DRAFT}>Draft</option>
-              <option value={RequirementStatus.ACTIVE}>Active</option>
-              <option value={RequirementStatus.ARCHIVED}>Archived</option>
-            </select>
-          </div>
-
-          {!requirementId && (
-            <div className="flex items-center">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={isTemplate}
-                  onChange={(e) => setIsTemplate(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">Save as template</span>
-              </label>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Coverage Limits */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900">Coverage Limits</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Per Occurrence
-            </label>
-            <input
-              type="number"
-              value={perOccurrence}
-              onChange={(e) => setPerOccurrence(e.target.value)}
-              placeholder="1000000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors['coverage_limits.per_occurrence'] && (
-              <p className="text-red-600 text-sm mt-1">{errors['coverage_limits.per_occurrence']}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Aggregate
-            </label>
-            <input
-              type="number"
-              value={aggregate}
-              onChange={(e) => setAggregate(e.target.value)}
-              placeholder="2000000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors['coverage_limits.aggregate'] && (
-              <p className="text-red-600 text-sm mt-1">{errors['coverage_limits.aggregate']}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Maximum Deductible
-            </label>
-            <input
-              type="number"
-              value={deductibleMax}
-              onChange={(e) => setDeductibleMax(e.target.value)}
-              placeholder="10000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Required Endorsements */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Required Endorsements</h3>
-          <button
-            type="button"
-            onClick={addEndorsement}
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
-            + Add Endorsement
-          </button>
-        </div>
-
-        {endorsements.map((endorsement, index) => (
-          <div key={index} className="border border-gray-200 rounded-md p-4 space-y-3">
-            <div className="flex items-start justify-between">
-              <div className="flex-1 space-y-3">
-                <input
-                  type="text"
-                  value={endorsement.endorsement_type}
-                  onChange={(e) => updateEndorsement(index, 'endorsement_type', e.target.value)}
-                  placeholder="Endorsement Type (e.g., Additional Insured)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <textarea
-                  value={endorsement.description}
-                  onChange={(e) => updateEndorsement(index, 'description', e.target.value)}
-                  placeholder="Description of what this endorsement must include"
-                  rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => removeEndorsement(index)}
-                className="ml-2 text-red-600 hover:text-red-800"
-              >
-                Remove
-              </button>
-            </div>
-          </div>
-        ))}
-        {errors.required_endorsements && (
-          <p className="text-red-600 text-sm">{errors.required_endorsements}</p>
+    <form onSubmit={handleSubmit}>
+      <YStack gap="$6">
+        {errors.general && (
+          <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$2" padding="$4">
+            <Text color="$red11">{errors.general}</Text>
+          </Card>
         )}
-      </div>
 
-      {/* Policy Conditions */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Policy Conditions</h3>
-          <button
-            type="button"
-            onClick={addCondition}
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
-            + Add Condition
-          </button>
-        </div>
+        {/* Basic Information */}
+        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+          <YStack gap="$4">
+            <H3 fontSize="$6" fontWeight="600" color="$gray12">Basic Information</H3>
 
-        {conditions.length === 0 ? (
-          <p className="text-gray-500 text-sm">No conditions specified</p>
-        ) : (
-          conditions.map((condition, index) => (
-            <div key={index} className="border border-gray-200 rounded-md p-4 space-y-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-3">
-                  <input
-                    type="text"
-                    value={condition.condition_type}
-                    onChange={(e) => updateCondition(index, 'condition_type', e.target.value)}
-                    placeholder="Condition Type (e.g., Primary & Non-Contributory)"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <textarea
-                    value={condition.description}
-                    onChange={(e) => updateCondition(index, 'description', e.target.value)}
-                    placeholder="Description of this condition"
-                    rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeCondition(index)}
-                  className="ml-2 text-red-600 hover:text-red-800"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Documentation Requirements */}
-      <div className="bg-white rounded-lg shadow p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Documentation Requirements</h3>
-          <button
-            type="button"
-            onClick={addDocumentation}
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
-            + Add Document
-          </button>
-        </div>
-
-        {documentation.map((doc, index) => (
-          <div key={index} className="border border-gray-200 rounded-md p-4">
-            <div className="flex items-center justify-between space-x-3">
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                Name <Text color="$red9">*</Text>
+              </Text>
               <input
                 type="text"
-                value={doc.document_type}
-                onChange={(e) => updateDocumentation(index, 'document_type', e.target.value)}
-                placeholder="Document Type (e.g., Certificate of Insurance)"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                }}
               />
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={doc.is_required}
-                  onChange={(e) => updateDocumentation(index, 'is_required', e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700">Required</span>
-              </label>
-              <button
-                type="button"
-                onClick={() => removeDocumentation(index)}
-                className="text-red-600 hover:text-red-800"
+              {errors.name && <Text color="$red9" fontSize="$3" marginTop="$1">{errors.name}</Text>}
+            </YStack>
+
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                Type <Text color="$red9">*</Text>
+              </Text>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value as CoverageType)}
+                disabled={!!requirementId}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                }}
               >
-                Remove
-              </button>
-            </div>
-          </div>
-        ))}
-        {errors.documentation_requirements && (
-          <p className="text-red-600 text-sm">{errors.documentation_requirements}</p>
+                <option value={CoverageType.GENERAL_LIABILITY}>General Liability</option>
+                <option value={CoverageType.WORKERS_COMP}>Workers Compensation</option>
+                <option value={CoverageType.AUTO_LIABILITY}>Auto Liability</option>
+                <option value={CoverageType.UMBRELLA}>Umbrella/Excess Liability</option>
+                <option value={CoverageType.CUSTOM}>Custom</option>
+              </select>
+            </YStack>
+
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                Description
+              </Text>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                }}
+              />
+            </YStack>
+
+            <XStack gap="$4" flexWrap="wrap">
+              <YStack flex={1} minWidth="200px">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                  Status
+                </Text>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as RequirementStatus)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                  }}
+                >
+                  <option value={RequirementStatus.DRAFT}>Draft</option>
+                  <option value={RequirementStatus.ACTIVE}>Active</option>
+                  <option value={RequirementStatus.ARCHIVED}>Archived</option>
+                </select>
+              </YStack>
+
+              {!requirementId && (
+                <XStack alignItems="center" flex={1} minWidth="200px">
+                  <XStack alignItems="center" gap="$2">
+                    <input
+                      type="checkbox"
+                      checked={isTemplate}
+                      onChange={(e) => setIsTemplate(e.target.checked)}
+                      style={{
+                        borderRadius: '4px',
+                        border: '1px solid #D1D5DB',
+                        accentColor: '#2563EB',
+                      }}
+                    />
+                    <Text fontSize="$3" fontWeight="500" color="$gray11">Save as template</Text>
+                  </XStack>
+                </XStack>
+              )}
+            </XStack>
+          </YStack>
+        </Card>
+
+        {/* Coverage Limits */}
+        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+          <YStack gap="$4">
+            <H3 fontSize="$6" fontWeight="600" color="$gray12">Coverage Limits</H3>
+
+            <XStack flexWrap="wrap" gap="$4">
+              <YStack flex={1} minWidth="200px">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                  Per Occurrence
+                </Text>
+                <input
+                  type="number"
+                  value={perOccurrence}
+                  onChange={(e) => setPerOccurrence(e.target.value)}
+                  placeholder="1000000"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                  }}
+                />
+                {errors['coverage_limits.per_occurrence'] && (
+                  <Text color="$red9" fontSize="$3" marginTop="$1">{errors['coverage_limits.per_occurrence']}</Text>
+                )}
+              </YStack>
+
+              <YStack flex={1} minWidth="200px">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                  Aggregate
+                </Text>
+                <input
+                  type="number"
+                  value={aggregate}
+                  onChange={(e) => setAggregate(e.target.value)}
+                  placeholder="2000000"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                  }}
+                />
+                {errors['coverage_limits.aggregate'] && (
+                  <Text color="$red9" fontSize="$3" marginTop="$1">{errors['coverage_limits.aggregate']}</Text>
+                )}
+              </YStack>
+
+              <YStack flex={1} minWidth="200px">
+                <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+                  Maximum Deductible
+                </Text>
+                <input
+                  type="number"
+                  value={deductibleMax}
+                  onChange={(e) => setDeductibleMax(e.target.value)}
+                  placeholder="10000"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                  }}
+                />
+              </YStack>
+            </XStack>
+          </YStack>
+        </Card>
+
+        {/* Required Endorsements */}
+        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+          <YStack gap="$4">
+            <XStack alignItems="center" justifyContent="space-between">
+              <H3 fontSize="$6" fontWeight="600" color="$gray12">Required Endorsements</H3>
+              <Button
+                unstyled
+                fontSize="$3"
+                color="$blue9"
+                hoverStyle={{ color: '$blue10' }}
+                onPress={addEndorsement}
+              >
+                + Add Endorsement
+              </Button>
+            </XStack>
+
+            {endorsements.map((endorsement, index) => (
+              <Card key={index} borderColor="$gray5" borderRadius="$2" padding="$4">
+                <YStack gap="$3">
+                  <XStack alignItems="flex-start" justifyContent="space-between">
+                    <YStack flex={1} gap="$3">
+                      <input
+                        type="text"
+                        value={endorsement.endorsement_type}
+                        onChange={(e) => updateEndorsement(index, 'endorsement_type', e.target.value)}
+                        placeholder="Endorsement Type (e.g., Additional Insured)"
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          border: '1px solid #D1D5DB',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                        }}
+                      />
+                      <textarea
+                        value={endorsement.description}
+                        onChange={(e) => updateEndorsement(index, 'description', e.target.value)}
+                        placeholder="Description of what this endorsement must include"
+                        rows={2}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          border: '1px solid #D1D5DB',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                        }}
+                      />
+                    </YStack>
+                    <Button
+                      unstyled
+                      marginLeft="$2"
+                      color="$red9"
+                      hoverStyle={{ color: '$red10' }}
+                      onPress={() => removeEndorsement(index)}
+                    >
+                      Remove
+                    </Button>
+                  </XStack>
+                </YStack>
+              </Card>
+            ))}
+            {errors.required_endorsements && (
+              <Text color="$red9" fontSize="$3">{errors.required_endorsements}</Text>
+            )}
+          </YStack>
+        </Card>
+
+        {/* Policy Conditions */}
+        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+          <YStack gap="$4">
+            <XStack alignItems="center" justifyContent="space-between">
+              <H3 fontSize="$6" fontWeight="600" color="$gray12">Policy Conditions</H3>
+              <Button
+                unstyled
+                fontSize="$3"
+                color="$blue9"
+                hoverStyle={{ color: '$blue10' }}
+                onPress={addCondition}
+              >
+                + Add Condition
+              </Button>
+            </XStack>
+
+            {conditions.length === 0 ? (
+              <Text color="$gray9" fontSize="$3">No conditions specified</Text>
+            ) : (
+              conditions.map((condition, index) => (
+                <Card key={index} borderColor="$gray5" borderRadius="$2" padding="$4">
+                  <YStack gap="$3">
+                    <XStack alignItems="flex-start" justifyContent="space-between">
+                      <YStack flex={1} gap="$3">
+                        <input
+                          type="text"
+                          value={condition.condition_type}
+                          onChange={(e) => updateCondition(index, 'condition_type', e.target.value)}
+                          placeholder="Condition Type (e.g., Primary & Non-Contributory)"
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid #D1D5DB',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                          }}
+                        />
+                        <textarea
+                          value={condition.description}
+                          onChange={(e) => updateCondition(index, 'description', e.target.value)}
+                          placeholder="Description of this condition"
+                          rows={2}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid #D1D5DB',
+                            borderRadius: '6px',
+                            fontSize: '14px',
+                          }}
+                        />
+                      </YStack>
+                      <Button
+                        unstyled
+                        marginLeft="$2"
+                        color="$red9"
+                        hoverStyle={{ color: '$red10' }}
+                        onPress={() => removeCondition(index)}
+                      >
+                        Remove
+                      </Button>
+                    </XStack>
+                  </YStack>
+                </Card>
+              ))
+            )}
+          </YStack>
+        </Card>
+
+        {/* Documentation Requirements */}
+        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+          <YStack gap="$4">
+            <XStack alignItems="center" justifyContent="space-between">
+              <H3 fontSize="$6" fontWeight="600" color="$gray12">Documentation Requirements</H3>
+              <Button
+                unstyled
+                fontSize="$3"
+                color="$blue9"
+                hoverStyle={{ color: '$blue10' }}
+                onPress={addDocumentation}
+              >
+                + Add Document
+              </Button>
+            </XStack>
+
+            {documentation.map((doc, index) => (
+              <Card key={index} borderColor="$gray5" borderRadius="$2" padding="$4">
+                <XStack alignItems="center" justifyContent="space-between" gap="$3">
+                  <input
+                    type="text"
+                    value={doc.document_type}
+                    onChange={(e) => updateDocumentation(index, 'document_type', e.target.value)}
+                    placeholder="Document Type (e.g., Certificate of Insurance)"
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      border: '1px solid #D1D5DB',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                    }}
+                  />
+                  <XStack alignItems="center" gap="$2">
+                    <input
+                      type="checkbox"
+                      checked={doc.is_required}
+                      onChange={(e) => updateDocumentation(index, 'is_required', e.target.checked)}
+                      style={{
+                        borderRadius: '4px',
+                        border: '1px solid #D1D5DB',
+                        accentColor: '#2563EB',
+                      }}
+                    />
+                    <Text fontSize="$3" color="$gray11">Required</Text>
+                  </XStack>
+                  <Button
+                    unstyled
+                    color="$red9"
+                    hoverStyle={{ color: '$red10' }}
+                    onPress={() => removeDocumentation(index)}
+                  >
+                    Remove
+                  </Button>
+                </XStack>
+              </Card>
+            ))}
+            {errors.documentation_requirements && (
+              <Text color="$red9" fontSize="$3">{errors.documentation_requirements}</Text>
+            )}
+          </YStack>
+        </Card>
+
+        {/* Change Summary (for updates only) */}
+        {requirementId && (
+          <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+            <Text fontSize="$3" fontWeight="500" color="$gray11" marginBottom="$1">
+              Change Summary <Text color="$red9">*</Text>
+            </Text>
+            <textarea
+              value={changeSummary}
+              onChange={(e) => setChangeSummary(e.target.value)}
+              required
+              placeholder="Describe what changed in this version"
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                border: '1px solid #D1D5DB',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
+            />
+          </Card>
         )}
-      </div>
 
-      {/* Change Summary (for updates only) */}
-      {requirementId && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Change Summary <span className="text-red-600">*</span>
-          </label>
-          <textarea
-            value={changeSummary}
-            onChange={(e) => setChangeSummary(e.target.value)}
-            required
-            placeholder="Describe what changed in this version"
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="flex justify-end space-x-3">
-        {onCancel && (
+        {/* Actions */}
+        <XStack justifyContent="flex-end" gap="$3">
+          {onCancel && (
+            <Button variant="outlined" onPress={onCancel}>
+              Cancel
+            </Button>
+          )}
           <button
-            type="button"
-            onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            type="submit"
+            disabled={saving}
+            style={{
+              padding: '8px 24px',
+              backgroundColor: '#2563EB',
+              color: 'white',
+              borderRadius: '6px',
+              border: 'none',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: saving ? 'not-allowed' : 'pointer',
+              opacity: saving ? 0.5 : 1,
+            }}
           >
-            Cancel
+            {saving ? 'Saving...' : requirementId ? 'Update Requirement' : 'Create Requirement'}
           </button>
-        )}
-        <button
-          type="submit"
-          disabled={saving}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-        >
-          {saving ? 'Saving...' : requirementId ? 'Update Requirement' : 'Create Requirement'}
-        </button>
-      </div>
+        </XStack>
+      </YStack>
     </form>
   );
 }
