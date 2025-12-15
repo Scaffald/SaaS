@@ -6,6 +6,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { YStack, XStack, Text, Button, Card, H1, H2, H3, Input } from '@unicornlove/ui';
+import { Search } from 'lucide-react';
 import { Task, TaskStatus, TaskPriority, User } from '../../../types';
 import { TaskList } from '../../../components/tasks/TaskList';
 import { taskService, TaskFilters } from '../../../lib/api/taskService';
@@ -113,119 +115,162 @@ export default function TasksPage() {
   const hasActiveFilters = Object.keys(filters).length > 0 || searchQuery.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <YStack minHeight="100vh" backgroundColor="$gray2">
+      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
-          <p className="mt-2 text-sm text-gray-600">
+        <YStack marginBottom="$8">
+          <H1>Tasks</H1>
+          <Text marginTop="$2" fontSize="$2" color="$gray11">
             Manage compliance remediation tasks and workflows
-          </p>
-        </div>
+          </Text>
+        </YStack>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6 space-y-4">
-          {/* Search Bar */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search tasks by title, description, project..."
-              defaultValue={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-
-          {/* Filter Chips */}
-          <div className="flex flex-wrap gap-4">
-            {/* Status Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select
-                multiple
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                onChange={(e) => {
-                  const selected = Array.from(e.target.selectedOptions, (option) => option.value as TaskStatus);
-                  handleFilterChange('status', selected.length > 0 ? selected : undefined);
-                }}
+        <Card padding="$6" marginBottom="$6">
+          <YStack gap="$4">
+            {/* Search Bar */}
+            <XStack position="relative">
+              <XStack
+                position="absolute"
+                left="$3"
+                top="50%"
+                transform="translateY(-50%)"
+                zIndex={1}
               >
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
+                <Search size={20} color="$gray10" />
+              </XStack>
+              <Input
+                type="text"
+                placeholder="Search tasks by title, description, project..."
+                value={searchQuery}
+                onChange={(value) => handleSearchChange(value)}
+                paddingLeft="$10"
+                flex={1}
+                borderWidth={1}
+                borderColor="$gray6"
+                borderRadius="$4"
+              />
+            </XStack>
 
-            {/* Priority Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-              <select
-                multiple
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                onChange={(e) => {
-                  const selected = Array.from(e.target.selectedOptions, (option) => option.value as TaskPriority);
-                  handleFilterChange('priority', selected.length > 0 ? selected : undefined);
-                }}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
-            </div>
-
-            {/* Clear Filters */}
-            {hasActiveFilters && (
-              <div className="flex items-end">
-                <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
+            {/* Filter Chips */}
+            <XStack flexWrap="wrap" gap="$4">
+              {/* Status Filter */}
+              <YStack>
+                <Text fontSize="$2" fontWeight="500" color="$gray12" marginBottom="$1" display="block">Status</Text>
+                <select
+                  multiple
+                  style={{
+                    borderWidth: 1,
+                    borderColor: 'var(--color-gray-6)',
+                    borderRadius: 'var(--radius-4)',
+                    padding: 'var(--space-2) var(--space-3)',
+                    fontSize: 'var(--font-size-2)',
+                  }}
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.selectedOptions, (option) => option.value as TaskStatus);
+                    handleFilterChange('status', selected.length > 0 ? selected : undefined);
+                  }}
                 >
-                  Clear Filters
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </YStack>
+
+              {/* Priority Filter */}
+              <YStack>
+                <Text fontSize="$2" fontWeight="500" color="$gray12" marginBottom="$1" display="block">Priority</Text>
+                <select
+                  multiple
+                  style={{
+                    borderWidth: 1,
+                    borderColor: 'var(--color-gray-6)',
+                    borderRadius: 'var(--radius-4)',
+                    padding: 'var(--space-2) var(--space-3)',
+                    fontSize: 'var(--font-size-2)',
+                  }}
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.selectedOptions, (option) => option.value as TaskPriority);
+                    handleFilterChange('priority', selected.length > 0 ? selected : undefined);
+                  }}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </YStack>
+
+              {/* Clear Filters */}
+              {hasActiveFilters && (
+                <YStack justifyContent="flex-end">
+                  <Button
+                    onPress={clearFilters}
+                    fontSize="$2"
+                    color="$gray11"
+                    borderWidth={1}
+                    borderColor="$gray6"
+                    borderRadius="$4"
+                    backgroundColor="transparent"
+                    hoverStyle={{ backgroundColor: '$gray3', color: '$gray12' }}
+                  >
+                    Clear Filters
+                  </Button>
+                </YStack>
+              )}
+            </XStack>
+          </YStack>
+        </Card>
 
         {/* Bulk Actions */}
         {selectedTaskIds.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-center justify-between">
-            <span className="text-sm font-medium text-blue-900">
+          <YStack backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4" marginBottom="$6" flexDirection="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
+            <Text fontSize="$2" fontWeight="500" color="$blue11">
               {selectedTaskIds.length} task{selectedTaskIds.length > 1 ? 's' : ''} selected
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleBulkAction('complete')}
-                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+            </Text>
+            <XStack gap="$2">
+              <Button
+                onPress={() => handleBulkAction('complete')}
+                backgroundColor="$blue9"
+                color="white"
+                fontSize="$2"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$blue10' }}
               >
                 Mark Complete
-              </button>
-              <button
-                onClick={() => handleBulkAction('export')}
-                className="px-4 py-2 bg-white text-blue-600 text-sm border border-blue-600 rounded-lg hover:bg-blue-50"
+              </Button>
+              <Button
+                onPress={() => handleBulkAction('export')}
+                backgroundColor="white"
+                color="$blue11"
+                fontSize="$2"
+                borderWidth={1}
+                borderColor="$blue9"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$blue3' }}
               >
                 Export
-              </button>
-              <button
-                onClick={() => setSelectedTaskIds([])}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+              </Button>
+              <Button
+                onPress={() => setSelectedTaskIds([])}
+                fontSize="$2"
+                color="$gray11"
+                backgroundColor="transparent"
+                hoverStyle={{ color: '$gray12' }}
               >
                 Cancel
-              </button>
-            </div>
-          </div>
+              </Button>
+            </XStack>
+          </YStack>
         )}
 
         {/* Task Count */}
-        <div className="mb-4">
-          <span className="text-sm text-gray-600">
+        <YStack marginBottom="$4">
+          <Text fontSize="$2" color="$gray11">
             {tasks.length} task{tasks.length !== 1 ? 's' : ''} found
-          </span>
-        </div>
+          </Text>
+        </YStack>
 
         {/* Task List */}
         <TaskList
@@ -234,7 +279,7 @@ export default function TasksPage() {
           onSelectTask={handleSelectTask}
           selectedTaskIds={selectedTaskIds}
         />
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
