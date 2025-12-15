@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Users,
   Shield,
@@ -10,112 +10,121 @@ import {
   CheckCircle,
   Loader2,
   FolderPlus,
-} from 'lucide-react';
-import EmptyState from '../../ui/EmptyState';
-import StatusBadge from '../Common/StatusBadge';
-import { useMockDatabase } from '../../contexts/DatabaseContext';
-import { toast } from 'sonner';
-import EnhancedTaskDetailModal from '../Manager/EnhancedTaskDetailModal';
-import { useLexicon } from '../../contexts/LexiconContext';
+} from 'lucide-react'
+import { EmptyState, YStack, XStack, Text, Button, Circle, Card, H1, H2, H3 } from '@unicornlove/ui'
+import StatusBadge from '../Common/StatusBadge'
+import { useMockDatabase } from '../../contexts/DatabaseContext'
+import { toast } from 'sonner'
+import EnhancedTaskDetailModal from '../Manager/EnhancedTaskDetailModal'
+import { useLexicon } from '../../contexts/LexiconContext'
 
 // Type definitions for database schema
-type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'submitted' | 'in_review' | 'approved' | 'rejected' | 'needs_info';
-type TaskPriority = 'urgent' | 'high' | 'medium' | 'low';
+type TaskStatus =
+  | 'pending'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled'
+  | 'submitted'
+  | 'in_review'
+  | 'approved'
+  | 'rejected'
+  | 'needs_info'
+type TaskPriority = 'urgent' | 'high' | 'medium' | 'low'
 
 interface Task {
-  id: string;
-  project_id: string;
-  subcontractor_id: string | null;
-  assigned_to_user_id: string | null;
-  created_by_user_id: string;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  priority: TaskPriority;
-  due_date: string;
-  task_type: string;
-  origin_role: string;
-  target_role: string;
+  id: string
+  project_id: string
+  subcontractor_id: string | null
+  assigned_to_user_id: string | null
+  created_by_user_id: string
+  title: string
+  description: string
+  status: TaskStatus
+  priority: TaskPriority
+  due_date: string
+  task_type: string
+  origin_role: string
+  target_role: string
   metadata?: {
-    blockers?: string[];
-    quick_actions?: string[];
-    tags?: string[];
-    project_name?: string;
-    [key: string]: unknown;
-  };
-  created_at: string;
-  updated_at: string;
+    blockers?: string[]
+    quick_actions?: string[]
+    tags?: string[]
+    project_name?: string
+    [key: string]: unknown
+  }
+  created_at: string
+  updated_at: string
 }
 
 interface Subcontractor {
-  id: string;
-  organization_id: string;
-  company_name: string;
-  contact_name: string;
+  id: string
+  organization_id: string
+  company_name: string
+  contact_name: string
   contact_info: {
-    email: string;
-    phone: string;
-  };
-  trade_type: string;
-  license_number: string;
-  status: string;
-  compliance_score: number;
-  risk_level: string;
-  last_activity_at: string;
-  created_at: string;
-  updated_at: string;
+    email: string
+    phone: string
+  }
+  trade_type: string
+  license_number: string
+  status: string
+  compliance_score: number
+  risk_level: string
+  last_activity_at: string
+  created_at: string
+  updated_at: string
 }
 
 interface ComplianceGap {
-  type: string;
-  policy_type: string;
-  severity: string;
-  description: string;
-  required_amount?: number;
-  current_amount?: number;
+  type: string
+  policy_type: string
+  severity: string
+  description: string
+  required_amount?: number
+  current_amount?: number
 }
 
 interface ComplianceScore {
-  id: string;
-  project_id: string;
-  subcontractor_id: string;
-  overall_score: number;
-  status: 'compliant' | 'warning' | 'critical';
-  gaps: ComplianceGap[];
-  notes?: string;
-  last_evaluated_at: string;
-  expires_at: string;
+  id: string
+  project_id: string
+  subcontractor_id: string
+  overall_score: number
+  status: 'compliant' | 'warning' | 'critical'
+  gaps: ComplianceGap[]
+  notes?: string
+  last_evaluated_at: string
+  expires_at: string
 }
 
 interface Project {
-  id: string;
-  name: string;
-  description: string;
-  manager_org_id: string;
-  compliance_status: string;
+  id: string
+  name: string
+  description: string
+  manager_org_id: string
+  compliance_status: string
 }
 
 export default function EnhancedManagerDashboard() {
-  const db = useMockDatabase();
-  const navigate = useNavigate();
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const db = useMockDatabase()
+  const navigate = useNavigate()
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
   // REQ-4: Use lexicon for dynamic labels
-  const { t, getContractorLabel } = useLexicon();
+  const { t, getContractorLabel } = useLexicon()
 
   // Data state
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([]);
-  const [complianceScores, setComplianceScores] = useState<ComplianceScore[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [subcontractors, setSubcontractors] = useState<Subcontractor[]>([])
+  const [complianceScores, setComplianceScores] = useState<ComplianceScore[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
 
   // Fetch all data on mount
   useEffect(() => {
     async function fetchDashboardData() {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
       try {
         // Fetch all data sources in parallel
@@ -124,32 +133,32 @@ export default function EnhancedManagerDashboard() {
           db.from('subcontractors').select('*'),
           db.from('compliance_scores').select('*'),
           db.from('projects').select('*'),
-        ]);
+        ])
 
-        if (tasksResult.error) throw tasksResult.error;
-        if (subsResult.error) throw subsResult.error;
-        if (complianceResult.error) throw complianceResult.error;
-        if (projectsResult.error) throw projectsResult.error;
+        if (tasksResult.error) throw tasksResult.error
+        if (subsResult.error) throw subsResult.error
+        if (complianceResult.error) throw complianceResult.error
+        if (projectsResult.error) throw projectsResult.error
 
-        setTasks(tasksResult.data || []);
-        setSubcontractors(subsResult.data || []);
-        setComplianceScores(complianceResult.data || []);
-        setProjects(projectsResult.data || []);
+        setTasks(tasksResult.data || [])
+        setSubcontractors(subsResult.data || [])
+        setComplianceScores(complianceResult.data || [])
+        setProjects(projectsResult.data || [])
       } catch (err) {
-        const error = err as Error;
-        setError(error);
-        toast.error(error.message || 'Failed to load dashboard data');
+        const error = err as Error
+        setError(error)
+        toast.error(error.message || 'Failed to load dashboard data')
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
 
-    fetchDashboardData();
-  }, [db]);
+    fetchDashboardData()
+  }, [db])
 
   // Computed metrics
-  const totalSubcontractors = subcontractors.filter(s => s.status === 'active').length;
-  const activeProjects = projects.length;
+  const totalSubcontractors = subcontractors.filter((s) => s.status === 'active').length
+  const activeProjects = projects.length
 
   // Task metrics using new status values
   const urgentTasks = useMemo(() => {
@@ -159,39 +168,39 @@ export default function EnhancedManagerDashboard() {
           (t.priority === 'urgent' || t.priority === 'high') &&
           (t.status === 'pending' || t.status === 'in_progress')
       )
-      .slice(0, 5);
-  }, [tasks]);
+      .slice(0, 5)
+  }, [tasks])
 
   const tasksOverdue = useMemo(() => {
     return tasks.filter((t) => {
-      const dueDate = new Date(t.due_date);
-      return dueDate < new Date() && t.status !== 'completed' && t.status !== 'cancelled';
-    }).length;
-  }, [tasks]);
+      const dueDate = new Date(t.due_date)
+      return dueDate < new Date() && t.status !== 'completed' && t.status !== 'cancelled'
+    }).length
+  }, [tasks])
 
   const tasksInProgress = useMemo(() => {
-    return tasks.filter((t) => t.status === 'in_progress').length;
-  }, [tasks]);
+    return tasks.filter((t) => t.status === 'in_progress').length
+  }, [tasks])
 
   // Note: "blocked" status doesn't exist in new schema, check metadata.blockers instead
   const tasksBlocked = useMemo(() => {
-    return tasks.filter((t) => t.metadata?.blockers && t.metadata.blockers.length > 0).length;
-  }, [tasks]);
+    return tasks.filter((t) => t.metadata?.blockers && t.metadata.blockers.length > 0).length
+  }, [tasks])
 
   // Build critical compliance items from compliance_scores gaps
   const criticalItems = useMemo(() => {
     const items: Array<{
-      type: string;
-      subcontractor: string;
-      project: string;
-      severity: string;
-      dueDate: string;
-    }> = [];
+      type: string
+      subcontractor: string
+      project: string
+      severity: string
+      dueDate: string
+    }> = []
 
     complianceScores.forEach((score) => {
       if (score.gaps && score.gaps.length > 0) {
-        const subcontractor = subcontractors.find(s => s.id === score.subcontractor_id);
-        const project = projects.find(p => p.id === score.project_id);
+        const subcontractor = subcontractors.find((s) => s.id === score.subcontractor_id)
+        const project = projects.find((p) => p.id === score.project_id)
 
         score.gaps.forEach((gap) => {
           items.push({
@@ -199,90 +208,86 @@ export default function EnhancedManagerDashboard() {
             subcontractor: subcontractor?.company_name || 'Unknown',
             project: project?.name || 'Unknown',
             severity: gap.severity?.toLowerCase() || 'medium',
-            dueDate: score.expires_at
-              ? new Date(score.expires_at).toLocaleDateString()
-              : 'ASAP',
-          });
-        });
+            dueDate: score.expires_at ? new Date(score.expires_at).toLocaleDateString() : 'ASAP',
+          })
+        })
       }
-    });
+    })
 
-    return items;
-  }, [complianceScores, subcontractors, projects]);
+    return items
+  }, [complianceScores, subcontractors, projects])
 
   const formatDueDate = (dueAt: string) => {
-    const date = new Date(dueAt);
-    const now = new Date();
-    const diffTime = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const date = new Date(dueAt)
+    const now = new Date()
+    const diffTime = date.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)}d overdue`,
-        color: 'text-error-600',
-      };
-    if (diffDays === 0) return { text: 'Due today', color: 'text-warning-600' };
-    if (diffDays === 1)
-      return { text: 'Due tomorrow', color: 'text-warning-600' };
-    if (diffDays <= 3)
-      return { text: `Due in ${diffDays}d`, color: 'text-warning-600' };
-    return { text: date.toLocaleDateString(), color: 'text-text-secondary' };
-  };
+        color: '$red10' as const,
+      }
+    if (diffDays === 0) return { text: 'Due today', color: '$orange10' as const }
+    if (diffDays === 1) return { text: 'Due tomorrow', color: '$orange10' as const }
+    if (diffDays <= 3) return { text: `Due in ${diffDays}d`, color: '$orange10' as const }
+    return { text: date.toLocaleDateString(), color: '$color11' as const }
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-error-500';
+        return '$red9' as const
       case 'high':
-        return 'bg-warning-500';
+        return '$orange9' as const
       case 'medium':
-        return 'bg-primary-500';
+        return '$blue9' as const
       case 'low':
-        return 'bg-gray-400';
+        return '$gray9' as const
       default:
-        return 'bg-gray-400';
+        return '$gray9' as const
     }
-  };
+  }
 
   // Show loading state
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-          <p className="text-text-secondary">Loading dashboard...</p>
-        </div>
-      </div>
-    );
+      <YStack alignItems="center" justifyContent="center" minHeight={400}>
+        <YStack alignItems="center" gap="$4">
+          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Text color="$color11">Loading dashboard...</Text>
+        </YStack>
+      </YStack>
+    )
   }
 
   // Show error state
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <AlertTriangle className="mx-auto text-error-500 mb-4" size={48} />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+      <YStack alignItems="center" justifyContent="center" minHeight={400}>
+        <YStack alignItems="center">
+          <AlertTriangle size={48} color="$red10" style={{ marginBottom: 16 }} />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             Failed to load dashboard
-          </h3>
-          <p className="text-text-secondary">{error.message}</p>
-        </div>
-      </div>
-    );
+          </H3>
+          <Text color="$color11">{error.message}</Text>
+        </YStack>
+      </YStack>
+    )
   }
 
   // Show empty state when no projects exist
   if (projects.length === 0) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-text-primary">
+      <YStack gap="$6">
+        <YStack>
+          <H1 fontFamily="$heading" fontSize="$10" fontWeight="700" color="$color12">
             {t('nav.dashboard')}
-          </h1>
-          <p className="text-text-secondary text-lg">
+          </H1>
+          <Text color="$color11" fontSize="$6">
             Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <EmptyState
           icon={FolderPlus}
           title="No Projects Yet"
@@ -292,261 +297,419 @@ export default function EnhancedManagerDashboard() {
             onClick: () => navigate('/manager/projects/new'),
           }}
         />
-      </div>
-    );
+      </YStack>
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-bold text-text-primary">
+    <YStack gap="$6">
+      <YStack>
+        <H1 fontFamily="$heading" fontSize="$10" fontWeight="700" color="$color12">
           {t('nav.dashboard')}
-        </h1>
-        <p className="text-text-secondary text-lg">
+        </H1>
+        <Text color="$color11" fontSize="$6">
           Manage {getContractorLabel(true).toLowerCase()} compliance across your projects
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
-              <Users className="text-primary-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">
+      <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }} $gtLg={{ flexWrap: 'wrap' }}>
+        <Card
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 8px)' }}
+          $gtLg={{ width: 'calc(25% - 12px)' }}
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$5"
+        >
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack
+              width={40}
+              height={40}
+              backgroundColor="$blue3"
+              borderRadius="$4"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Users size={20} color="$blue10" />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$color12">
               {totalSubcontractors}
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">
             Active {getContractorLabel(true)}
-          </h3>
-          <p className="text-xs text-text-tertiary mt-1">
+          </H3>
+          <Text fontSize="$2" color="$color10" marginTop="$1">
             Across {activeProjects} projects
-          </p>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="text-success-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">
+        <Card
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 8px)' }}
+          $gtLg={{ width: 'calc(25% - 12px)' }}
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$5"
+        >
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack
+              width={40}
+              height={40}
+              backgroundColor="$green3"
+              borderRadius="$4"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <CheckCircle size={20} color="$green10" />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$color12">
               {tasks.length - tasksOverdue}
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">
             Tasks On Track
-          </h3>
-          <p className="text-xs text-text-tertiary mt-1">
+          </H3>
+          <Text fontSize="$2" color="$color10" marginTop="$1">
             {tasksInProgress} in progress
-          </p>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-error-100 rounded-lg flex items-center justify-center">
-              <Clock className="text-error-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-error-600">
+        <Card
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 8px)' }}
+          $gtLg={{ width: 'calc(25% - 12px)' }}
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$5"
+        >
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack
+              width={40}
+              height={40}
+              backgroundColor="$red3"
+              borderRadius="$4"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Clock size={20} color="$red10" />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$red10">
               {tasksOverdue}
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">
             Overdue Tasks
-          </h3>
-          <p className="text-xs text-text-tertiary mt-1">
+          </H3>
+          <Text fontSize="$2" color="$color10" marginTop="$1">
             Require immediate action
-          </p>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="text-warning-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-warning-600">
+        <Card
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 8px)' }}
+          $gtLg={{ width: 'calc(25% - 12px)' }}
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$5"
+        >
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack
+              width={40}
+              height={40}
+              backgroundColor="$orange3"
+              borderRadius="$4"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <AlertTriangle size={20} color="$orange10" />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$orange10">
               {tasksBlocked}
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">
             Blocked Tasks
-          </h3>
-          <p className="text-xs text-text-tertiary mt-1">
+          </H3>
+          <Text fontSize="$2" color="$color10" marginTop="$1">
             Waiting on dependencies
-          </p>
-        </div>
-      </div>
+          </Text>
+        </Card>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-text-primary">
+      <Card
+        backgroundColor="$background"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
+        <XStack
+          padding="$6"
+          borderBottomWidth={1}
+          borderColor="$borderColor"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <YStack>
+            <H2 fontSize="$6" fontWeight="600" color="$color12">
               Urgent Tasks
-            </h2>
-            <p className="text-sm text-text-secondary mt-1">
+            </H2>
+            <Text fontSize="$3" color="$color11" marginTop="$1">
               High priority items requiring attention
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-warning-600">
+            </Text>
+          </YStack>
+          <XStack alignItems="center" gap="$2">
+            <Text fontSize="$9" fontWeight="700" color="$orange10">
               {urgentTasks.length}
-            </span>
-            <AlertTriangle className="text-warning-600" size={20} />
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="space-y-3">
+            </Text>
+            <AlertTriangle size={20} color="$orange10" />
+          </XStack>
+        </XStack>
+        <YStack padding="$6">
+          <YStack gap="$3">
             {urgentTasks.map((task) => {
-              const dueDate = formatDueDate(task.due_date);
-              const projectName = task.metadata?.project_name || projects.find(p => p.id === task.project_id)?.name || 'Unknown Project';
-              const blockers = task.metadata?.blockers || [];
+              const dueDate = formatDueDate(task.due_date)
+              const projectName =
+                task.metadata?.project_name ||
+                projects.find((p) => p.id === task.project_id)?.name ||
+                'Unknown Project'
+              const blockers = task.metadata?.blockers || []
               return (
-                <div
+                <XStack
                   key={task.id}
-                  onClick={() => setSelectedTask(task)}
-                  className="flex items-start justify-between p-4 border border-border rounded-lg hover:border-primary-300 transition-colors cursor-pointer group"
+                  onPress={() => setSelectedTask(task)}
+                  padding="$4"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  hoverStyle={{ borderColor: '$blue8' }}
+                  cursor="pointer"
+                  alignItems="flex-start"
+                  justifyContent="space-between"
+                  group
                 >
-                  <div className="flex items-start space-x-3 flex-1">
-                    <div
-                      className={`mt-0.5 w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}
-                    ></div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-semibold text-text-primary text-sm group-hover:text-primary-600 transition-colors">
-                          {task.title}
-                        </h3>
-                        <span
-                          className={`px-2 py-0.5 text-xs font-medium rounded uppercase ${
-                            task.priority === 'urgent'
-                              ? 'bg-error-100 text-error-700'
-                              : task.priority === 'high'
-                                ? 'bg-warning-100 text-warning-700'
-                                : 'bg-primary-100 text-primary-700'
-                          }`}
+                  <XStack alignItems="flex-start" gap="$3" flex={1}>
+                    <Circle
+                      size={8}
+                      marginTop={2}
+                      backgroundColor={getPriorityColor(task.priority)}
+                    />
+                    <YStack flex={1}>
+                      <XStack alignItems="center" gap="$2" marginBottom="$1">
+                        <H3
+                          fontSize="$3"
+                          fontWeight="600"
+                          color="$color12"
+                          $group-hover={{ color: '$blue10' }}
                         >
-                          {task.priority}
-                        </span>
+                          {task.title}
+                        </H3>
+                        <XStack
+                          paddingHorizontal="$2"
+                          paddingVertical="$0.5"
+                          borderRadius="$2"
+                          backgroundColor={
+                            task.priority === 'urgent'
+                              ? '$red3'
+                              : task.priority === 'high'
+                                ? '$orange3'
+                                : '$blue3'
+                          }
+                        >
+                          <Text
+                            fontSize="$1"
+                            fontWeight="500"
+                            textTransform="uppercase"
+                            color={
+                              task.priority === 'urgent'
+                                ? '$red11'
+                                : task.priority === 'high'
+                                  ? '$orange11'
+                                  : '$blue11'
+                            }
+                          >
+                            {task.priority}
+                          </Text>
+                        </XStack>
                         {blockers.length > 0 && (
-                          <span className="px-2 py-0.5 text-xs font-medium rounded bg-error-100 text-error-700">
-                            BLOCKED
-                          </span>
+                          <XStack
+                            paddingHorizontal="$2"
+                            paddingVertical="$0.5"
+                            borderRadius="$2"
+                            backgroundColor="$red3"
+                          >
+                            <Text fontSize="$1" fontWeight="500" color="$red11">
+                              BLOCKED
+                            </Text>
+                          </XStack>
                         )}
-                      </div>
-                      <p className="text-sm text-text-secondary mb-2">
+                      </XStack>
+                      <Text fontSize="$3" color="$color11" marginBottom="$2">
                         {task.description}
-                      </p>
-                      <div className="flex items-center space-x-3 text-xs text-text-tertiary">
-                        <span className="flex items-center">
-                          <Building size={12} className="mr-1" />
-                          {projectName}
-                        </span>
-                        <span className="flex items-center">
-                          <Calendar size={12} className="mr-1" />
-                          <span className={dueDate.color}>{dueDate.text}</span>
-                        </span>
+                      </Text>
+                      <XStack alignItems="center" gap="$3">
+                        <XStack alignItems="center">
+                          <Building size={12} style={{ marginRight: 4 }} color="$color10" />
+                          <Text fontSize="$2" color="$color10">
+                            {projectName}
+                          </Text>
+                        </XStack>
+                        <XStack alignItems="center">
+                          <Calendar size={12} style={{ marginRight: 4 }} color="$color10" />
+                          <Text fontSize="$2" color={dueDate.color}>
+                            {dueDate.text}
+                          </Text>
+                        </XStack>
                         {blockers.length > 0 && (
-                          <span className="flex items-center text-error-600">
-                            <AlertTriangle size={12} className="mr-1" />
-                            {blockers.length} blocker
-                            {blockers.length > 1 ? 's' : ''}
-                          </span>
+                          <XStack alignItems="center">
+                            <AlertTriangle size={12} style={{ marginRight: 4 }} color="$red10" />
+                            <Text fontSize="$2" color="$red10">
+                              {blockers.length} blocker{blockers.length > 1 ? 's' : ''}
+                            </Text>
+                          </XStack>
                         )}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedTask(task);
+                      </XStack>
+                    </YStack>
+                  </XStack>
+                  <Button
+                    onPress={(e) => {
+                      e.stopPropagation()
+                      setSelectedTask(task)
                     }}
-                    className="px-3 py-1.5 text-xs font-medium text-primary-600 border border-primary-600 rounded hover:bg-primary-50 transition-colors"
+                    paddingHorizontal="$3"
+                    paddingVertical="$1.5"
+                    fontSize="$2"
+                    fontWeight="500"
+                    color="$blue10"
+                    borderWidth={1}
+                    borderColor="$blue10"
+                    borderRadius="$2"
+                    backgroundColor="transparent"
+                    hoverStyle={{ backgroundColor: '$blue2' }}
                   >
                     View Details
-                  </button>
-                </div>
-              );
+                  </Button>
+                </XStack>
+              )
             })}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </YStack>
+      </Card>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border">
-        <div className="p-6 border-b border-border flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-text-primary">
+      <Card
+        backgroundColor="$background"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
+        <XStack
+          padding="$6"
+          borderBottomWidth={1}
+          borderColor="$borderColor"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <YStack>
+            <H2 fontSize="$6" fontWeight="600" color="$color12">
               Critical Compliance Items
-            </h2>
-            <p className="text-sm text-text-secondary mt-1">
+            </H2>
+            <Text fontSize="$3" color="$color11" marginTop="$1">
               Issues requiring immediate attention
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-error-600">
+            </Text>
+          </YStack>
+          <XStack alignItems="center" gap="$2">
+            <Text fontSize="$9" fontWeight="700" color="$red10">
               {criticalItems.length}
-            </span>
-            <Shield className="text-error-600" size={20} />
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="space-y-3">
+            </Text>
+            <Shield size={20} color="$red10" />
+          </XStack>
+        </XStack>
+        <YStack padding="$6">
+          <YStack gap="$3">
             {criticalItems.map((item, index) => (
-              <div
+              <XStack
                 key={index}
-                className="flex items-start justify-between p-4 border border-border rounded-lg hover:border-primary-300 transition-colors"
+                padding="$4"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                hoverStyle={{ borderColor: '$blue8' }}
+                alignItems="flex-start"
+                justifyContent="space-between"
               >
-                <div className="flex items-start space-x-3 flex-1">
-                  <div
-                    className={`mt-0.5 w-2 h-2 rounded-full ${
-                      item.severity === 'critical'
-                        ? 'bg-error-500'
-                        : 'bg-warning-500'
-                    }`}
-                  ></div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-text-primary text-sm">
+                <XStack alignItems="flex-start" gap="$3" flex={1}>
+                  <Circle
+                    size={8}
+                    marginTop={2}
+                    backgroundColor={item.severity === 'critical' ? '$red9' : '$orange9'}
+                  />
+                  <YStack flex={1}>
+                    <XStack alignItems="center" gap="$2" marginBottom="$1">
+                      <H3 fontSize="$3" fontWeight="600" color="$color12">
                         {item.type}
-                      </h3>
+                      </H3>
                       <StatusBadge
-                        status={
-                          item.severity === 'critical' ? 'critical' : 'warning'
-                        }
+                        status={item.severity === 'critical' ? 'critical' : 'warning'}
                         size="sm"
                       />
-                    </div>
-                    <p className="text-sm text-text-secondary mb-1">
+                    </XStack>
+                    <Text fontSize="$3" color="$color11" marginBottom="$1">
                       {item.subcontractor}
-                    </p>
-                    <div className="flex items-center space-x-3 text-xs text-text-tertiary">
-                      <span className="flex items-center">
-                        <Building size={12} className="mr-1" />
-                        {item.project}
-                      </span>
-                      <span className="flex items-center">
-                        <Calendar size={12} className="mr-1" />
-                        Due {item.dueDate}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button className="px-3 py-1.5 text-xs font-medium text-primary-600 border border-primary-600 rounded hover:bg-primary-50 transition-colors">
+                    </Text>
+                    <XStack alignItems="center" gap="$3">
+                      <XStack alignItems="center">
+                        <Building size={12} style={{ marginRight: 4 }} color="$color10" />
+                        <Text fontSize="$2" color="$color10">
+                          {item.project}
+                        </Text>
+                      </XStack>
+                      <XStack alignItems="center">
+                        <Calendar size={12} style={{ marginRight: 4 }} color="$color10" />
+                        <Text fontSize="$2" color="$color10">
+                          Due {item.dueDate}
+                        </Text>
+                      </XStack>
+                    </XStack>
+                  </YStack>
+                </XStack>
+                <Button
+                  paddingHorizontal="$3"
+                  paddingVertical="$1.5"
+                  fontSize="$2"
+                  fontWeight="500"
+                  color="$blue10"
+                  borderWidth={1}
+                  borderColor="$blue10"
+                  borderRadius="$2"
+                  backgroundColor="transparent"
+                  hoverStyle={{ backgroundColor: '$blue2' }}
+                >
                   Review
-                </button>
-              </div>
+                </Button>
+              </XStack>
             ))}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </YStack>
+      </Card>
 
       <EnhancedTaskDetailModal
         task={selectedTask}
         isOpen={!!selectedTask}
         onClose={() => setSelectedTask(null)}
         onUpdateTask={(taskId, updates) => {
-          console.log('Updating task:', taskId, updates);
-          setSelectedTask(null);
+          console.log('Updating task:', taskId, updates)
+          setSelectedTask(null)
         }}
       />
-    </div>
-  );
+    </YStack>
+  )
 }
