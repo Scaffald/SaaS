@@ -3,7 +3,9 @@
  * Drag-and-drop file upload zone with validation and progress tracking
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { Upload, X, CheckCircle, XCircle } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { DocumentService } from '../../lib/documents/documentService';
 import type { Document } from '../../types/document';
 
@@ -184,17 +186,20 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
   };
 
   return (
-    <div className="w-full">
-      <div
+    <YStack width="100%">
+      <Card
         data-testid="drop-zone"
-        className={`
-          border-2 border-dashed rounded-lg p-8 text-center
-          transition-colors duration-200 cursor-pointer
-          ${isDragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-gray-400'
-          }
-        `}
+        borderWidth={2}
+        borderStyle="dashed"
+        borderRadius="$4"
+        padding="$8"
+        alignItems="center"
+        cursor="pointer"
+        borderColor={isDragging ? '$teal9' : '$gray6'}
+        backgroundColor={isDragging ? '$teal2' : 'transparent'}
+        hoverStyle={{
+          borderColor: isDragging ? '$teal9' : '$gray7',
+        }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -206,109 +211,98 @@ export const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           accept=".pdf,application/pdf"
           multiple
           onChange={handleFileSelect}
-          className="hidden"
+          style={{ display: 'none' }}
           aria-label="Browse files"
         />
 
-        <div className="space-y-2">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400"
-            stroke="currentColor"
-            fill="none"
-            viewBox="0 0 48 48"
-            aria-hidden="true"
-          >
-            <path
-              d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-
-          <div className="text-sm text-gray-600">
-            <span className="font-medium text-blue-600 hover:text-blue-500">
+        <YStack alignItems="center" gap="$2">
+          <Upload size={48} color="$color10" />
+          <XStack fontSize="$3" color="$color11" gap="$1">
+            <Text fontWeight="500" color="$teal9" hoverStyle={{ color: '$teal10' }}>
               Browse files
-            </span>
-            {' '}or drag and drop PDF files here
-          </div>
-
-          <p className="text-xs text-gray-500">
+            </Text>
+            <Text>or drag and drop PDF files here</Text>
+          </XStack>
+          <Text fontSize="$1" color="$color10">
             PDF files only, up to 10MB each
-          </p>
-        </div>
-      </div>
+          </Text>
+        </YStack>
+      </Card>
 
       {fileQueue.length > 0 && (
-        <div className="mt-4 space-y-2">
-          {fileQueue.map(item => (
-            <div
+        <YStack marginTop="$4" gap="$2">
+          {fileQueue.map((item) => (
+            <Card
               key={item.id}
-              className="bg-white border rounded-lg p-4 shadow-sm"
+              backgroundColor="$background"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              padding="$4"
+              elevation={1}
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+              <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                <YStack flex={1} minWidth={0}>
+                  <Text fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
                     {item.file.name}
-                  </p>
-                  <p className="text-xs text-gray-500">
+                  </Text>
+                  <Text fontSize="$1" color="$color10">
                     {(item.file.size / 1024).toFixed(1)} KB
-                  </p>
-                </div>
+                  </Text>
+                </YStack>
 
                 {item.status === 'queued' && (
-                  <button
-                    onClick={() => removeFile(item.id)}
-                    className="ml-4 text-gray-400 hover:text-gray-500"
+                  <XStack
+                    as="button"
+                    marginLeft="$4"
+                    color="$color9"
+                    hoverStyle={{ color: '$color10' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFile(item.id);
+                    }}
                     aria-label={`Remove ${item.file.name}`}
+                    cursor="pointer"
                   >
-                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
+                    <X size={20} />
+                  </XStack>
                 )}
 
                 {item.status === 'complete' && (
-                  <svg className="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <CheckCircle size={20} color="$green10" />
                 )}
 
                 {item.status === 'error' && (
-                  <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <XCircle size={20} color="$red10" />
                 )}
-              </div>
+              </XStack>
 
               {(item.status === 'uploading' || item.status === 'queued') && (
-                <div className="w-full bg-gray-200 rounded-full h-2" role="progressbar">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${item.progress}%` }}
+                <YStack
+                  width="100%"
+                  backgroundColor="$gray4"
+                  borderRadius={9999}
+                  height={8}
+                  role="progressbar"
+                >
+                  <YStack
+                    backgroundColor="$teal9"
+                    height={8}
+                    borderRadius={9999}
+                    width={`${item.progress}%`}
                   />
-                </div>
+                </YStack>
               )}
 
               {item.status === 'error' && item.error && (
-                <p className="text-xs text-red-600 mt-1">{item.error}</p>
+                <Text fontSize="$1" color="$red10" marginTop="$1">
+                  {item.error}
+                </Text>
               )}
-            </div>
+            </Card>
           ))}
-        </div>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 };
