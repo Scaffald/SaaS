@@ -12,7 +12,9 @@
 
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { Search, Users as UsersIcon } from 'lucide-react';
+import { YStack, XStack, Text, Input, Button, Card, SizableText } from '@unicornlove/ui';
 import { TeamMemberCard, type TeamMember } from './TeamMemberCard';
 
 type RoleFilter = 'all' | TeamMember['role'];
@@ -97,72 +99,97 @@ export function TeamMembersList({
   // Loading skeleton
   if (loading) {
     return (
-      <div className="space-y-4">
+      <YStack gap="$4">
         {/* Search and Filter Bar */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
-            <div className="h-10 bg-gray-200 rounded-lg animate-pulse" />
-          </div>
-          <div className="w-40">
-            <div className="h-10 bg-gray-200 rounded-lg animate-pulse" />
-          </div>
-        </div>
+        <XStack
+          flexDirection="column"
+          $gtSm={{ flexDirection: 'row' }}
+          gap="$4"
+        >
+          <YStack flex={1}>
+            <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
+          </YStack>
+          <YStack width={160} $gtSm={{ width: 160 }}>
+            <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
+          </YStack>
+        </XStack>
 
         {/* Skeleton Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <XStack flexWrap="wrap" gap="$4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div
+            <Card
               key={i}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+              backgroundColor="$background"
+              borderRadius="$4"
+              elevation={1}
+              borderWidth={1}
+              borderColor="$borderColor"
+              padding="$4"
+              width="100%"
+              $gtMd={{ width: 'calc(50% - 8px)' }}
+              $gtLg={{ width: 'calc(33.333% - 11px)' }}
             >
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
-                  <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2" />
-                </div>
-              </div>
-            </div>
+              <XStack alignItems="flex-start" gap="$3">
+                <YStack width={48} height={48} borderRadius={9999} backgroundColor="$color3" />
+                <YStack flex={1} gap="$2">
+                  <YStack height={16} backgroundColor="$color3" borderRadius="$2" width="75%" />
+                  <YStack height={12} backgroundColor="$color3" borderRadius="$2" width="50%" />
+                </YStack>
+              </XStack>
+            </Card>
           ))}
-        </div>
-      </div>
+        </XStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <YStack gap="$4">
       {/* Search and Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <XStack
+        flexDirection="column"
+        $gtSm={{ flexDirection: 'row' }}
+        gap="$4"
+      >
         {/* Search Input */}
-        <div className="flex-1 relative">
-          <input
+        <XStack flex={1} position="relative" alignItems="center">
+          <Search
+            size={20}
+            style={{ position: 'absolute', left: 12, zIndex: 1 }}
+            color="var(--color10)"
+          />
+          <Input
             type="text"
             placeholder="Search by name, email, or company..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            width="100%"
+            paddingLeft="$10"
+            paddingRight="$4"
+            paddingVertical="$2"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            focusStyle={{
+              borderColor: '$blue10',
+              outlineWidth: 2,
+              outlineColor: '$blue10',
+            }}
           />
-          <svg
-            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
+        </XStack>
 
         {/* Role Filter */}
-        <div className="w-full sm:w-40">
+        <XStack width="100%" $gtSm={{ width: 160 }}>
           <select
             value={activeRole}
             onChange={(e) => handleRoleChange(e.target.value as RoleFilter)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              border: '1px solid var(--borderColor)',
+              borderRadius: '8px',
+              backgroundColor: 'var(--background)',
+            }}
             aria-label="Filter by role"
           >
             {ROLE_OPTIONS.map((option) => (
@@ -171,68 +198,70 @@ export function TeamMembersList({
               </option>
             ))}
           </select>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Results Count */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
+      <XStack alignItems="center" justifyContent="space-between">
+        <SizableText fontSize="$3" color="$color10">
           {filteredMembers.length} member{filteredMembers.length !== 1 ? 's' : ''} found
-        </p>
+        </SizableText>
         {(searchQuery || activeRole !== 'all') && (
-          <button
-            onClick={() => {
+          <Button
+            onPress={() => {
               setSearchQuery('');
               setActiveRole('all');
               onSearch?.('');
               onRoleFilter?.('all');
             }}
-            className="text-sm text-blue-600 hover:text-blue-800"
+            variant="outlined"
+            size="$2"
           >
             Clear filters
-          </button>
+          </Button>
         )}
-      </div>
+      </XStack>
 
       {/* Member Cards Grid */}
       {filteredMembers.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <XStack flexWrap="wrap" gap="$4">
           {filteredMembers.map((member) => (
-            <TeamMemberCard
+            <YStack
               key={member.id}
-              member={member}
-              onClick={onMemberClick}
-              onEdit={onMemberEdit}
-              onRemove={onMemberRemove}
-            />
+              width="100%"
+              $gtMd={{ width: 'calc(50% - 8px)' }}
+              $gtLg={{ width: 'calc(33.333% - 11px)' }}
+            >
+              <TeamMemberCard
+                member={member}
+                onClick={onMemberClick}
+                onEdit={onMemberEdit}
+                onRemove={onMemberRemove}
+              />
+            </YStack>
           ))}
-        </div>
+        </XStack>
       ) : (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
-          <h3 className="mt-4 text-lg font-medium text-gray-900">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$12"
+          alignItems="center"
+        >
+          <UsersIcon size={48} color="var(--color10)" />
+          <Text fontSize="$6" fontWeight="500" color="$color12" marginTop="$4">
             No team members found
-          </h3>
-          <p className="mt-2 text-sm text-gray-500">
+          </Text>
+          <SizableText fontSize="$3" color="$color10" marginTop="$2" textAlign="center">
             {searchQuery || activeRole !== 'all'
               ? 'Try adjusting your search or filters'
               : 'Get started by inviting team members'}
-          </p>
-        </div>
+          </SizableText>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }
 

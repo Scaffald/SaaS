@@ -12,7 +12,9 @@
 
 'use client';
 
-import React from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, SizableText } from '@unicornlove/ui';
 
 export interface TeamMember {
   id: string;
@@ -35,19 +37,19 @@ interface TeamMemberCardProps {
 /**
  * Get role badge color based on role type
  */
-function getRoleBadgeColor(role: TeamMember['role']): string {
+function getRoleBadgeColor(role: TeamMember['role']): { bg: string; text: string } {
   switch (role) {
     case 'admin':
-      return 'bg-purple-100 text-purple-800';
+      return { bg: '$purple2', text: '$purple11' };
     case 'manager':
-      return 'bg-blue-100 text-blue-800';
+      return { bg: '$blue2', text: '$blue11' };
     case 'broker':
-      return 'bg-green-100 text-green-800';
+      return { bg: '$green2', text: '$green11' };
     case 'subcontractor':
-      return 'bg-orange-100 text-orange-800';
+      return { bg: '$orange2', text: '$orange11' };
     case 'user':
     default:
-      return 'bg-gray-100 text-gray-800';
+      return { bg: '$color2', text: '$color11' };
   }
 }
 
@@ -76,11 +78,11 @@ export function TeamMemberCard({
   onRemove,
   onClick,
 }: TeamMemberCardProps) {
-  const [showMenu, setShowMenu] = React.useState(false);
-  const menuRef = React.useRef<HTMLDivElement>(null);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
-  React.useEffect(() => {
+  useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowMenu(false);
@@ -112,10 +114,19 @@ export function TeamMemberCard({
     onRemove?.(member);
   };
 
+  const badgeColors = getRoleBadgeColor(member.role);
+
   return (
-    <div
-      className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
-      onClick={handleCardClick}
+    <Card
+      backgroundColor="$background"
+      borderRadius="$4"
+      elevation={1}
+      borderWidth={1}
+      borderColor="$borderColor"
+      padding="$4"
+      cursor="pointer"
+      hoverStyle={{ elevation: 2 }}
+      onPress={handleCardClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -125,95 +136,145 @@ export function TeamMemberCard({
       }}
       aria-label={`View ${member.name}'s profile`}
     >
-      <div className="flex items-start justify-between">
+      <XStack alignItems="flex-start" justifyContent="space-between">
         {/* Avatar and Info */}
-        <div className="flex items-center gap-3">
+        <XStack alignItems="center" gap="$3">
           {/* Avatar */}
           {member.avatar ? (
-            <img
-              src={member.avatar}
-              alt={member.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+            <YStack
+              width={48}
+              height={48}
+              borderRadius={9999}
+              overflow="hidden"
+              backgroundColor="$color3"
+            >
+              <img
+                src={member.avatar}
+                alt={member.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </YStack>
           ) : (
-            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-600 font-medium text-sm">
+            <YStack
+              width={48}
+              height={48}
+              borderRadius={9999}
+              backgroundColor="$color3"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <SizableText fontSize="$3" fontWeight="500" color="$color11">
                 {getInitials(member.name)}
-              </span>
-            </div>
+              </SizableText>
+            </YStack>
           )}
 
           {/* Name and Email */}
-          <div>
-            <h3 className="font-medium text-gray-900">{member.name}</h3>
-            <p className="text-sm text-gray-500">{member.email}</p>
+          <YStack>
+            <Text fontSize="$4" fontWeight="500" color="$color12">
+              {member.name}
+            </Text>
+            <SizableText fontSize="$3" color="$color10">
+              {member.email}
+            </SizableText>
             {member.company && (
-              <p className="text-xs text-gray-400 mt-0.5">{member.company}</p>
+              <SizableText fontSize="$1" color="$color10" marginTop="$0.5">
+                {member.company}
+              </SizableText>
             )}
-          </div>
-        </div>
+          </YStack>
+        </XStack>
 
         {/* Role Badge and Menu */}
-        <div className="flex items-center gap-2">
+        <XStack alignItems="center" gap="$2">
           {/* Role Badge */}
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(
-              member.role
-            )}`}
+          <YStack
+            alignItems="center"
+            paddingHorizontal="$2.5"
+            paddingVertical="$0.5"
+            borderRadius={9999}
+            backgroundColor={badgeColors.bg as any}
           >
-            {formatRole(member.role)}
-          </span>
+            <SizableText fontSize="$1" fontWeight="500" color={badgeColors.text as any}>
+              {formatRole(member.role)}
+            </SizableText>
+          </YStack>
 
           {/* Action Menu */}
           {(onEdit || onRemove) && (
-            <div className="relative" ref={menuRef}>
-              <button
-                onClick={handleMenuClick}
-                className="p-1 rounded hover:bg-gray-100 transition-colors"
+            <YStack position="relative" ref={menuRef}>
+              <Button
+                onPress={handleMenuClick}
+                variant="outlined"
+                size="$2"
+                padding="$1"
                 aria-label="More options"
                 aria-expanded={showMenu}
                 aria-haspopup="menu"
               >
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                </svg>
-              </button>
+                <MoreVertical size={20} />
+              </Button>
 
               {/* Dropdown Menu */}
               {showMenu && (
-                <div
-                  className="absolute right-0 mt-1 w-36 bg-white rounded-md shadow-lg border border-gray-200 z-10"
+                <Card
+                  position="absolute"
+                  right={0}
+                  marginTop="$1"
+                  width={144}
+                  backgroundColor="$background"
+                  borderRadius="$2"
+                  elevation={4}
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  zIndex={10}
                   role="menu"
                 >
                   {onEdit && (
-                    <button
-                      onClick={handleEdit}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    <Button
+                      onPress={handleEdit}
+                      variant="outlined"
+                      size="$2"
+                      width="100%"
+                      justifyContent="flex-start"
+                      paddingHorizontal="$4"
+                      paddingVertical="$2"
                       role="menuitem"
                     >
-                      Edit Member
-                    </button>
+                      <XStack alignItems="center" gap="$2">
+                        <Edit size={16} />
+                        <SizableText fontSize="$3" color="$color11">
+                          Edit Member
+                        </SizableText>
+                      </XStack>
+                    </Button>
                   )}
                   {onRemove && (
-                    <button
-                      onClick={handleRemove}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    <Button
+                      onPress={handleRemove}
+                      variant="outlined"
+                      size="$2"
+                      width="100%"
+                      justifyContent="flex-start"
+                      paddingHorizontal="$4"
+                      paddingVertical="$2"
                       role="menuitem"
                     >
-                      Remove
-                    </button>
+                      <XStack alignItems="center" gap="$2">
+                        <Trash2 size={16} />
+                        <SizableText fontSize="$3" color="$red10">
+                          Remove
+                        </SizableText>
+                      </XStack>
+                    </Button>
                   )}
-                </div>
+                </Card>
               )}
-            </div>
+            </YStack>
           )}
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </XStack>
+    </Card>
   );
 }
 

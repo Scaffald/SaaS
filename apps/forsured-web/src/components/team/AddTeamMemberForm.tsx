@@ -12,7 +12,9 @@
 
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { Loader2 } from 'lucide-react';
+import { YStack, XStack, Text, Input, Button, SizableText, Spinner } from '@unicornlove/ui';
 import { AccessLevelSelector, type AccessLevel } from './AccessLevelSelector';
 
 interface AddTeamMemberFormProps {
@@ -129,119 +131,122 @@ export function AddTeamMemberForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <YStack as="form" onSubmit={handleSubmit} gap="$4">
       {/* General Error */}
       {errors.general && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{errors.general}</p>
-        </div>
+        <YStack
+          padding="$3"
+          backgroundColor="$red2"
+          borderWidth={1}
+          borderColor="$red6"
+          borderRadius="$4"
+        >
+          <SizableText fontSize="$3" color="$red11">
+            {errors.general}
+          </SizableText>
+        </YStack>
       )}
 
       {/* Name Field */}
-      <div className="space-y-1">
-        <label htmlFor="member-name" className="block text-sm font-medium text-gray-700">
-          Full Name <span className="text-red-500">*</span>
-        </label>
-        <input
+      <YStack gap="$1">
+        <SizableText htmlFor="member-name" fontSize="$3" fontWeight="500" color="$color11">
+          Full Name <Text color="$red10">*</Text>
+        </SizableText>
+        <Input
           id="member-name"
           type="text"
           value={name}
           onChange={handleNameChange}
           onBlur={handleNameBlur}
           placeholder="Enter full name"
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            errors.name && touched.name
-              ? 'border-red-300 bg-red-50'
-              : 'border-gray-300'
-          }`}
+          width="100%"
+          padding="$2"
+          borderWidth={1}
+          borderColor={errors.name && touched.name ? '$red6' : '$borderColor'}
+          backgroundColor={errors.name && touched.name ? '$red2' : '$background'}
+          borderRadius="$4"
           disabled={loading}
           aria-invalid={!!(errors.name && touched.name)}
           aria-describedby={errors.name ? 'name-error' : undefined}
         />
         {errors.name && touched.name && (
-          <p id="name-error" className="text-xs text-red-600">
+          <SizableText id="name-error" fontSize="$1" color="$red10">
             {errors.name}
-          </p>
+          </SizableText>
         )}
-      </div>
+      </YStack>
 
       {/* Email Field */}
-      <div className="space-y-1">
-        <label htmlFor="member-email" className="block text-sm font-medium text-gray-700">
-          Email Address <span className="text-red-500">*</span>
-        </label>
-        <input
+      <YStack gap="$1">
+        <SizableText htmlFor="member-email" fontSize="$3" fontWeight="500" color="$color11">
+          Email Address <Text color="$red10">*</Text>
+        </SizableText>
+        <Input
           id="member-email"
           type="email"
           value={email}
           onChange={handleEmailChange}
           onBlur={handleEmailBlur}
           placeholder="Enter email address"
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-            errors.email && touched.email
-              ? 'border-red-300 bg-red-50'
-              : 'border-gray-300'
-          }`}
+          width="100%"
+          padding="$2"
+          borderWidth={1}
+          borderColor={errors.email && touched.email ? '$red6' : '$borderColor'}
+          backgroundColor={errors.email && touched.email ? '$red2' : '$background'}
+          borderRadius="$4"
           disabled={loading}
           aria-invalid={!!(errors.email && touched.email)}
           aria-describedby={errors.email ? 'email-error' : undefined}
         />
         {errors.email && touched.email && (
-          <p id="email-error" className="text-xs text-red-600">
+          <SizableText id="email-error" fontSize="$1" color="$red10">
             {errors.email}
-          </p>
+          </SizableText>
         )}
-      </div>
+      </YStack>
 
       {/* Access Level Field */}
       <AccessLevelSelector value={role} onChange={setRole} disabled={loading} />
 
       {/* Action Buttons */}
-      <div className="flex gap-3 pt-4">
-        <button
+      <XStack gap="$3" paddingTop="$4">
+        <Button
           type="submit"
           disabled={loading}
-          className="flex-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          flex={1}
+          backgroundColor="$blue10"
+          color="white"
+          size="$3"
+          opacity={loading ? 0.5 : 1}
         >
           {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Sending Invitation...
-            </span>
+            <XStack alignItems="center" justifyContent="center" gap="$2">
+              <Spinner size="small" color="white" />
+              <SizableText fontSize="$3" color="white">
+                Sending Invitation...
+              </SizableText>
+            </XStack>
           ) : (
             'Send Invitation'
           )}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          onClick={onCancel}
+          onPress={onCancel}
           disabled={loading}
-          className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50"
+          variant="outlined"
+          size="$3"
+          opacity={loading ? 0.5 : 1}
         >
           Cancel
-        </button>
-      </div>
+        </Button>
+      </XStack>
 
       {/* Help Text */}
-      <p className="text-xs text-gray-500 text-center">
+      <SizableText fontSize="$1" color="$color10" textAlign="center">
         An invitation email will be sent to the provided email address.
-      </p>
-    </form>
+      </SizableText>
+    </YStack>
   );
 }
 

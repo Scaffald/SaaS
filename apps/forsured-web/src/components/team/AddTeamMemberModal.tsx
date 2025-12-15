@@ -8,7 +8,9 @@
 
 'use client';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import { UserPlus, X } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, H2, SizableText } from '@unicornlove/ui';
 import { AddTeamMemberForm } from './AddTeamMemberForm';
 import type { AccessLevel } from './AccessLevelSelector';
 
@@ -61,74 +63,89 @@ export function AddTeamMemberModal({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={handleBackdropClick}
+    <YStack
+      position="fixed"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      zIndex={50}
+      alignItems="center"
+      justifyContent="center"
+      backgroundColor="rgba(0,0,0,0.5)"
       role="dialog"
       aria-modal="true"
       aria-labelledby="add-member-modal-title"
+      onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+      <Card
+        backgroundColor="$background"
+        borderRadius="$4"
+        elevation={4}
+        width="100%"
+        maxWidth={448}
+        marginHorizontal="$4"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <svg
-                className="w-5 h-5 text-blue-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h2
+        <XStack
+          alignItems="center"
+          justifyContent="space-between"
+          padding="$4"
+          borderBottomWidth={1}
+          borderColor="$borderColor"
+        >
+          <XStack alignItems="center" gap="$3">
+            <YStack
+              width={40}
+              height={40}
+              borderRadius={9999}
+              backgroundColor="$blue2"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <UserPlus size={20} color="var(--blue10)" />
+            </YStack>
+            <YStack>
+              <H2
                 id="add-member-modal-title"
-                className="text-lg font-semibold text-gray-900"
+                fontSize="$6"
+                fontWeight="600"
+                color="$color12"
               >
                 Invite Team Member
-              </h2>
-              <p className="text-sm text-gray-500">
+              </H2>
+              <SizableText fontSize="$3" color="$color10">
                 Send an invitation to join your team
-              </p>
-            </div>
-          </div>
+              </SizableText>
+            </YStack>
+          </XStack>
 
           {/* Close Button */}
-          <button
-            onClick={onClose}
+          <Button
+            onPress={onClose}
             disabled={loading}
-            className="text-gray-400 hover:text-gray-600 p-1 disabled:opacity-50"
+            variant="outlined"
+            size="$2"
+            padding="$1"
+            opacity={loading ? 0.5 : 1}
             aria-label="Close modal"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
+            <X size={20} />
+          </Button>
+        </XStack>
 
         {/* Form Content */}
-        <div className="p-4">
+        <YStack padding="$4">
           <AddTeamMemberForm
             onSubmit={onSubmit}
             onCancel={onClose}
             loading={loading}
             existingEmails={existingEmails}
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </Card>
+    </YStack>
   );
 }
 
