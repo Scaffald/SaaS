@@ -3,7 +3,8 @@
  * Display and manage uploaded documents with filtering and actions
  */
 
-import React from 'react';
+import { Download, RotateCw, Trash2, FileText } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import type { Document, DocumentStatus } from '../../types/document';
 
 interface DocumentTableProps {
@@ -40,21 +41,14 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const getStatusBadge = (status: DocumentStatus) => {
-    const badges = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      processing: 'bg-blue-100 text-blue-800',
-      completed: 'bg-green-100 text-green-800',
-      error: 'bg-red-100 text-red-800'
+  const getStatusBadgeProps = (status: DocumentStatus) => {
+    const badgeMap: Record<DocumentStatus, { bg: string; text: string }> = {
+      pending: { bg: '$yellow2', text: '$yellow11' },
+      processing: { bg: '$blue2', text: '$blue11' },
+      completed: { bg: '$green2', text: '$green11' },
+      error: { bg: '$red2', text: '$red11' },
     };
-
-    return (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badges[status]}`}
-      >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
+    return badgeMap[status] || { bg: '$gray2', text: '$gray11' };
   };
 
   const handleDownload = (document: Document) => {
@@ -84,124 +78,196 @@ export const DocumentTable: React.FC<DocumentTableProps> = ({
 
   if (documents.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <svg
-          className="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-        <h3 className="mt-2 text-sm font-medium text-gray-900">No documents</h3>
-        <p className="mt-1 text-sm text-gray-500">
-          Upload your first document to get started.
-        </p>
-      </div>
+      <Card
+        alignItems="center"
+        paddingVertical="$12"
+        backgroundColor="$gray2"
+        borderRadius="$4"
+      >
+        <YStack alignItems="center" gap="$2">
+          <FileText size={48} color="$color10" />
+          <Text marginTop="$2" fontSize="$3" fontWeight="500" color="$color12">
+            No documents
+          </Text>
+          <Text marginTop="$1" fontSize="$3" color="$color10">
+            Upload your first document to get started.
+          </Text>
+        </YStack>
+      </Card>
     );
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    <Card overflowX="auto" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ backgroundColor: 'var(--color-gray-2)' }}>
+            <th
+              style={{
+                padding: '12px 24px',
+                textAlign: 'left',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: 'var(--color-gray-10)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
               File Name
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              style={{
+                padding: '12px 24px',
+                textAlign: 'left',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: 'var(--color-gray-10)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
               Size
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              style={{
+                padding: '12px 24px',
+                textAlign: 'left',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: 'var(--color-gray-10)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
               Upload Date
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              style={{
+                padding: '12px 24px',
+                textAlign: 'left',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: 'var(--color-gray-10)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
               Status
             </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              style={{
+                padding: '12px 24px',
+                textAlign: 'right',
+                fontSize: '11px',
+                fontWeight: 500,
+                color: 'var(--color-gray-10)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
               Actions
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {documents.map((document) => (
-            <tr key={document.id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">{document.file_name}</div>
-                {document.error_message && (
-                  <div className="text-xs text-red-600 mt-1">{document.error_message}</div>
-                )}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {formatFileSize(document.file_size)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {formatDate(document.upload_date)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {getStatusBadge(document.status)}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div className="flex justify-end space-x-2">
-                  <button
-                    onClick={() => handleDownload(document)}
-                    className="text-indigo-600 hover:text-indigo-900"
-                    title="Download"
+        <tbody>
+          {documents.map((document) => {
+            const badgeProps = getStatusBadgeProps(document.status);
+            return (
+              <tr
+                key={document.id}
+                style={{
+                  borderTop: '1px solid var(--color-border)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-background-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                  <YStack>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      {document.file_name}
+                    </Text>
+                    {document.error_message && (
+                      <Text fontSize="$1" color="$red10" marginTop="$1">
+                        {document.error_message}
+                      </Text>
+                    )}
+                  </YStack>
+                </td>
+                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                  <Text fontSize="$3" color="$color10">
+                    {formatFileSize(document.file_size)}
+                  </Text>
+                </td>
+                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                  <Text fontSize="$3" color="$color10">
+                    {formatDate(document.upload_date)}
+                  </Text>
+                </td>
+                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                  <Text
+                    display="inline-flex"
+                    alignItems="center"
+                    paddingHorizontal="$2.5"
+                    paddingVertical="$0.5"
+                    borderRadius={9999}
+                    fontSize="$1"
+                    fontWeight="500"
+                    backgroundColor={badgeProps.bg}
+                    color={badgeProps.text}
                   >
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                      />
-                    </svg>
-                  </button>
-
-                  {document.status === 'error' && canReprocess(document) && onReprocess && (
-                    <button
-                      onClick={() => onReprocess(document.id)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title="Re-process"
+                    {document.status.charAt(0).toUpperCase() + document.status.slice(1)}
+                  </Text>
+                </td>
+                <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                  <XStack justifyContent="flex-end" gap="$2" fontSize="$3" fontWeight="500">
+                    <XStack
+                      as="button"
+                      color="$teal9"
+                      hoverStyle={{ color: '$teal11' }}
+                      onClick={() => handleDownload(document)}
+                      title="Download"
+                      cursor="pointer"
                     >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        />
-                      </svg>
-                    </button>
-                  )}
+                      <Download size={20} />
+                    </XStack>
 
-                  {canDelete(document) && onDelete && (
-                    <button
-                      onClick={() => handleDelete(document.id)}
-                      className="text-red-600 hover:text-red-900"
-                      title="Delete"
-                    >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+                    {document.status === 'error' && canReprocess(document) && onReprocess && (
+                      <XStack
+                        as="button"
+                        color="$blue9"
+                        hoverStyle={{ color: '$blue11' }}
+                        onClick={() => onReprocess(document.id)}
+                        title="Re-process"
+                        cursor="pointer"
+                      >
+                        <RotateCw size={20} />
+                      </XStack>
+                    )}
+
+                    {canDelete(document) && onDelete && (
+                      <XStack
+                        as="button"
+                        color="$red9"
+                        hoverStyle={{ color: '$red11' }}
+                        onClick={() => handleDelete(document.id)}
+                        title="Delete"
+                        cursor="pointer"
+                      >
+                        <Trash2 size={20} />
+                      </XStack>
+                    )}
+                  </XStack>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-    </div>
+    </Card>
   );
 };
