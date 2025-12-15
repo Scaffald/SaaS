@@ -3,11 +3,10 @@
  */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { YStack, XStack, Text, Button, Input } from '@unicornlove/ui';
+import { YStack, XStack, Text, Spinner } from '@unicornlove/ui';
 import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
 import { initiateOAuth } from '../lib/auth/oauth';
-import { Loader2 } from 'lucide-react';
 
 function StartPage() {
   const [email, setEmail] = useState('');
@@ -96,7 +95,7 @@ function StartPage() {
           >
             {isLoading ? (
               <XStack gap="$2" alignItems="center">
-                <Loader2 size={20} className="animate-spin" />
+                <Spinner size="small" color="$color1" />
                 <Text>Redirecting...</Text>
               </XStack>
             ) : (

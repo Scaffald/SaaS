@@ -5,7 +5,7 @@
  */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { YStack, XStack, Text, styled } from '@unicornlove/ui';
+import { YStack, XStack, Text, styled, Spinner } from '@unicornlove/ui';
 import { Button as CoreButton } from '@unicornlove/ui';
 import { Input as TextInput } from '@unicornlove/ui';
 import { Checkbox } from '@unicornlove/ui';
@@ -14,7 +14,7 @@ import { createProfile } from '../services/userProfileService';
 import { validateInvitation, markInvitationUsed } from '../lib/invitations';
 import { scaffaldClient } from '../lib/scaffald/client';
 import { trpc } from '../lib/trpc';
-import { Building2, HardHat, Shield, Loader2, Factory, Home, Briefcase, ChevronLeft } from 'lucide-react';
+import { Building2, HardHat, Shield, Factory, Home, Briefcase, ChevronLeft } from 'lucide-react';
 
 type UserType = 'manager' | 'subcontractor' | 'broker';
 
@@ -245,7 +245,7 @@ function SignupPage() {
         backgroundColor="$gray2"
       >
         <YStack alignItems="center" gap="$4">
-          <Loader2 size={32} className="animate-spin" color="currentColor" />
+          <Spinner size="large" />
           <Text color="$color11">Loading...</Text>
         </YStack>
       </YStack>
@@ -309,7 +309,7 @@ function SignupPage() {
             gap="$3"
           >
             <XStack alignItems="center" gap="$3">
-              <Loader2 size={20} className="animate-spin" color="currentColor" />
+              <Spinner size="small" />
               <Text color="$color10">Checking for existing company...</Text>
             </XStack>
           </YStack>
@@ -375,7 +375,7 @@ function SignupPage() {
 
             {isLoadingUserSetTypes ? (
               <YStack alignItems="center" padding="$8">
-                <Loader2 size={32} className="animate-spin" color="currentColor" />
+                <Spinner size="large" />
                 <Text color="$color10" marginTop="$4">Loading industries...</Text>
               </YStack>
             ) : (
@@ -494,7 +494,7 @@ function SignupPage() {
                     justifyContent="center"
                     borderRadius="$md"
                   >
-                    <Loader2 size={24} className="animate-spin" color="currentColor" />
+                    <Spinner />
                   </YStack>
                 )}
               </UserTypeCard>
@@ -542,7 +542,7 @@ function SignupPage() {
                     justifyContent="center"
                     borderRadius="$md"
                   >
-                    <Loader2 size={24} className="animate-spin" color="currentColor" />
+                    <Spinner />
                   </YStack>
                 )}
               </UserTypeCard>
@@ -605,7 +605,7 @@ function SignupPage() {
                   >
                     {isLoading ? (
                       <XStack gap="$2" alignItems="center">
-                        <Loader2 size={16} className="animate-spin" />
+                        <Spinner size="small" color="$color1" />
                         <Text>Verifying...</Text>
                       </XStack>
                     ) : (
