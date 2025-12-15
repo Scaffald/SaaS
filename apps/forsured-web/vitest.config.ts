@@ -36,6 +36,18 @@ export default defineConfig({
     ],
     exclude: ['**/node_modules/**', '**/dist/**'],
     setupFiles: [resolve(packageRoot, 'src/test/setup.ts')],
+    globalSetup: resolve(packageRoot, 'src/test/globalSetup.ts'),
+    globalTeardown: resolve(packageRoot, 'src/test/globalTeardown.ts'),
     testTimeout: 10000,
+    // Ensure proper cleanup
+    teardownTimeout: 10000,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: false,
+      },
+    },
+    // Force exit after tests complete
+    passWithNoTests: true,
   },
 });

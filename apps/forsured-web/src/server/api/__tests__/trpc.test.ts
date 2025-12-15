@@ -85,6 +85,7 @@ describe('tRPC Base Configuration', () => {
       const ctx = {
         db: {} as any,
         session: null,
+        userId: null, // Required by isAuthenticated middleware
         organizationId: null,
       };
 
@@ -110,6 +111,7 @@ describe('tRPC Base Configuration', () => {
       const ctx = {
         db: {} as any,
         session: null,
+        userId: null, // Required by isAuthenticated middleware
         organizationId: null,
       };
 
@@ -140,6 +142,7 @@ describe('tRPC Base Configuration', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: 'user-123', // Required by isAuthenticated middleware
         organizationId: 'org-123',
       };
 
@@ -175,6 +178,7 @@ describe('tRPC Base Configuration', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: 'user-456', // Required by isAuthenticated middleware
         organizationId: null, // User exists but has no organization yet
       };
 

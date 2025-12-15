@@ -12,6 +12,9 @@ import userEvent from '@testing-library/user-event';
 import BrokerOnboarding from '../BrokerOnboarding';
 import { ThemeProvider } from '../../../contexts/ThemeContext';
 
+// Setup userEvent instance for proper event sequencing (v14+ best practice)
+const user = userEvent.setup();
+
 // Mock window.matchMedia and localStorage
 beforeAll(() => {
   Object.defineProperty(window, 'matchMedia', {
@@ -183,14 +186,14 @@ describe('BrokerOnboarding', () => {
     it('submit button is enabled when all fields are filled', async () => {
       renderWithProviders(<BrokerOnboarding />);
 
-      await userEvent.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
-      await userEvent.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
-      await userEvent.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
-      await userEvent.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
-      await userEvent.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
-      await userEvent.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
-      await userEvent.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
-      await userEvent.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
+      await user.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
+      await user.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
+      await user.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
+      await user.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
+      await user.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
+      await user.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
 
       const submitButton = screen.getByRole('button', { name: /continue to dashboard/i });
       expect(submitButton).not.toBeDisabled();
@@ -200,14 +203,14 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       // Fill all fields with invalid email
-      await userEvent.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
-      await userEvent.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
-      await userEvent.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
-      await userEvent.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
-      await userEvent.type(screen.getByPlaceholderText('Enter your email address'), 'invalid-email');
-      await userEvent.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
-      await userEvent.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
-      await userEvent.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
+      await user.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
+      await user.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
+      await user.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
+      await user.type(screen.getByPlaceholderText('Enter your email address'), 'invalid-email');
+      await user.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
+      await user.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
 
       // Submit form via form element
       const form = screen.getByRole('button', { name: /continue to dashboard/i }).closest('form');
@@ -223,14 +226,14 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       // Fill all fields with invalid phone
-      await userEvent.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
-      await userEvent.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
-      await userEvent.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
-      await userEvent.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
-      await userEvent.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
-      await userEvent.type(screen.getByPlaceholderText('(555) 123-4567'), '123');
-      await userEvent.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
-      await userEvent.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
+      await user.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
+      await user.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
+      await user.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
+      await user.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
+      await user.type(screen.getByPlaceholderText('(555) 123-4567'), '123');
+      await user.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
 
       // Submit form via form element
       const form = screen.getByRole('button', { name: /continue to dashboard/i }).closest('form');
@@ -246,14 +249,14 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       // Fill all fields with weak password (no special char)
-      await userEvent.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
-      await userEvent.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
-      await userEvent.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
-      await userEvent.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
-      await userEvent.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
-      await userEvent.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
-      await userEvent.type(screen.getByPlaceholderText('Create a password'), 'password1');
-      await userEvent.type(screen.getByPlaceholderText('Confirm your password'), 'password1');
+      await user.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
+      await user.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
+      await user.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
+      await user.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
+      await user.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
+      await user.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
+      await user.type(screen.getByPlaceholderText('Create a password'), 'password1');
+      await user.type(screen.getByPlaceholderText('Confirm your password'), 'password1');
 
       // Submit form via form element
       const form = screen.getByRole('button', { name: /continue to dashboard/i }).closest('form');
@@ -269,14 +272,14 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       // Fill all fields with mismatched passwords
-      await userEvent.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
-      await userEvent.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
-      await userEvent.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
-      await userEvent.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
-      await userEvent.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
-      await userEvent.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
-      await userEvent.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
-      await userEvent.type(screen.getByPlaceholderText('Confirm your password'), 'DifferentPassword1!');
+      await user.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
+      await user.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
+      await user.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
+      await user.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
+      await user.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
+      await user.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
+      await user.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Confirm your password'), 'DifferentPassword1!');
 
       // Submit form via form element
       const form = screen.getByRole('button', { name: /continue to dashboard/i }).closest('form');
@@ -294,14 +297,14 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       // Fill all fields
-      await userEvent.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
-      await userEvent.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
-      await userEvent.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
-      await userEvent.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
-      await userEvent.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
-      await userEvent.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
-      await userEvent.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
-      await userEvent.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Enter your brokerage name'), 'ABC Insurance');
+      await user.type(screen.getByPlaceholderText('Enter license number'), 'LIC123456');
+      await user.type(screen.getByPlaceholderText('City, State'), 'New York, NY');
+      await user.type(screen.getByPlaceholderText('Enter your full name'), 'John Doe');
+      await user.type(screen.getByPlaceholderText('Enter your email address'), 'john@example.com');
+      await user.type(screen.getByPlaceholderText('(555) 123-4567'), '555-123-4567');
+      await user.type(screen.getByPlaceholderText('Create a password'), 'Password1!');
+      await user.type(screen.getByPlaceholderText('Confirm your password'), 'Password1!');
 
       // Submit form via form element
       const form = screen.getByRole('button', { name: /continue to dashboard/i }).closest('form');
@@ -319,7 +322,7 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       const skipButton = screen.getByText('Skip for now');
-      await userEvent.click(skipButton);
+      await user.click(skipButton);
 
       expect(mockNavigate).toHaveBeenCalledWith('/broker/dashboard');
     });
@@ -330,7 +333,7 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       const input = screen.getByPlaceholderText('Enter your brokerage name');
-      await userEvent.type(input, 'Test Brokerage');
+      await user.type(input, 'Test Brokerage');
 
       expect(input).toHaveValue('Test Brokerage');
     });
@@ -339,7 +342,7 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       const input = screen.getByPlaceholderText('Enter your email address');
-      await userEvent.type(input, 'test@example.com');
+      await user.type(input, 'test@example.com');
 
       expect(input).toHaveValue('test@example.com');
     });
@@ -348,7 +351,7 @@ describe('BrokerOnboarding', () => {
       renderWithProviders(<BrokerOnboarding />);
 
       const input = screen.getByPlaceholderText('Create a password');
-      await userEvent.type(input, 'TestPassword1!');
+      await user.type(input, 'TestPassword1!');
 
       expect(input).toHaveValue('TestPassword1!');
     });
@@ -368,7 +371,7 @@ describe('BrokerOnboarding', () => {
       // The first toggle button should be for the password field
       const toggleButton = toggleButtons[1]; // Skip the skip button
 
-      await userEvent.click(toggleButton);
+      await user.click(toggleButton);
 
       expect(passwordInput).toHaveAttribute('type', 'text');
     });
@@ -401,8 +404,8 @@ describe('BrokerOnboarding', () => {
       const emailInput = screen.getByPlaceholderText('colleague@example.com');
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
-      await userEvent.type(emailInput, 'teammate@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate@example.com');
+      await user.click(addButton);
 
       expect(screen.getByText('teammate@example.com')).toBeInTheDocument();
       expect(screen.getByText('Pending Invitations (1)')).toBeInTheDocument();
@@ -413,7 +416,7 @@ describe('BrokerOnboarding', () => {
 
       const emailInput = screen.getByPlaceholderText('colleague@example.com');
 
-      await userEvent.type(emailInput, 'teammate@example.com{enter}');
+      await user.type(emailInput, 'teammate@example.com{enter}');
 
       expect(screen.getByText('teammate@example.com')).toBeInTheDocument();
     });
@@ -424,8 +427,8 @@ describe('BrokerOnboarding', () => {
       const emailInput = screen.getByPlaceholderText('colleague@example.com');
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
-      await userEvent.type(emailInput, 'invalid-email');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'invalid-email');
+      await user.click(addButton);
 
       expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
     });
@@ -435,7 +438,7 @@ describe('BrokerOnboarding', () => {
 
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
-      await userEvent.click(addButton);
+      await user.click(addButton);
 
       expect(screen.getByText('Please enter an email address')).toBeInTheDocument();
     });
@@ -447,12 +450,12 @@ describe('BrokerOnboarding', () => {
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
       // Add first email
-      await userEvent.type(emailInput, 'teammate@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate@example.com');
+      await user.click(addButton);
 
       // Try to add same email again
-      await userEvent.type(emailInput, 'teammate@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate@example.com');
+      await user.click(addButton);
 
       expect(screen.getByText('This email has already been added')).toBeInTheDocument();
     });
@@ -462,14 +465,14 @@ describe('BrokerOnboarding', () => {
 
       // First set the admin email
       const adminEmailInput = screen.getByPlaceholderText('Enter your email address');
-      await userEvent.type(adminEmailInput, 'admin@example.com');
+      await user.type(adminEmailInput, 'admin@example.com');
 
       // Try to add same email as team member
       const teamEmailInput = screen.getByPlaceholderText('colleague@example.com');
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
-      await userEvent.type(teamEmailInput, 'admin@example.com');
-      await userEvent.click(addButton);
+      await user.type(teamEmailInput, 'admin@example.com');
+      await user.click(addButton);
 
       expect(screen.getByText('This email is already used for the administrator account')).toBeInTheDocument();
     });
@@ -481,14 +484,14 @@ describe('BrokerOnboarding', () => {
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
       // Add email
-      await userEvent.type(emailInput, 'teammate@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate@example.com');
+      await user.click(addButton);
 
       expect(screen.getByText('teammate@example.com')).toBeInTheDocument();
 
       // Remove email
       const removeButton = screen.getByRole('button', { name: /remove teammate@example.com/i });
-      await userEvent.click(removeButton);
+      await user.click(removeButton);
 
       expect(screen.queryByText('teammate@example.com')).not.toBeInTheDocument();
       expect(screen.queryByText('Pending Invitations')).not.toBeInTheDocument();
@@ -500,8 +503,8 @@ describe('BrokerOnboarding', () => {
       const emailInput = screen.getByPlaceholderText('colleague@example.com') as HTMLInputElement;
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
-      await userEvent.type(emailInput, 'teammate@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate@example.com');
+      await user.click(addButton);
 
       expect(emailInput.value).toBe('');
     });
@@ -513,16 +516,16 @@ describe('BrokerOnboarding', () => {
       const addButton = screen.getByRole('button', { name: /add team member/i });
 
       // Add first email
-      await userEvent.type(emailInput, 'teammate1@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate1@example.com');
+      await user.click(addButton);
 
       // Add second email
-      await userEvent.type(emailInput, 'teammate2@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate2@example.com');
+      await user.click(addButton);
 
       // Add third email
-      await userEvent.type(emailInput, 'teammate3@example.com');
-      await userEvent.click(addButton);
+      await user.type(emailInput, 'teammate3@example.com');
+      await user.click(addButton);
 
       expect(screen.getByText('teammate1@example.com')).toBeInTheDocument();
       expect(screen.getByText('teammate2@example.com')).toBeInTheDocument();

@@ -44,6 +44,7 @@ describe('Client Profile Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID, // Required by isAuthenticated middleware
         organizationId: ORG_UUID,
       };
 
@@ -139,6 +140,7 @@ describe('Client Profile Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID, // Required by isAuthenticated middleware
         organizationId: ORG_UUID,
       };
 
@@ -169,6 +171,7 @@ describe('Client Profile Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID, // Required by isAuthenticated middleware
         organizationId: null,
       };
 
@@ -199,6 +202,7 @@ describe('Client Profile Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID, // Required by isAuthenticated middleware
         organizationId: ORG_UUID,
       };
 
@@ -244,6 +248,7 @@ describe('Client Profile Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID, // Required by isAuthenticated middleware
         organizationId: ORG_UUID,
       };
 
@@ -303,6 +308,7 @@ describe('Client Profile Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID, // Required by isAuthenticated middleware
         organizationId: ORG_UUID,
       };
 

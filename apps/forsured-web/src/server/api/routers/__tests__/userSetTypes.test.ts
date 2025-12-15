@@ -89,6 +89,7 @@ describe('User Set Types Router', () => {
   });
 
   // Helper to create caller context
+  // Must match the Context interface from ../context.ts
   const createContext = (userId: string | null = ADMIN_USER_UUID) => {
     const mockUser: User | null = userId
       ? ({
@@ -100,6 +101,8 @@ describe('User Set Types Router', () => {
     return {
       db: {},
       session: mockUser,
+      userId: userId, // Required by isAuthenticated middleware
+      organizationId: null,
     };
   };
 
@@ -235,7 +238,7 @@ describe('User Set Types Router', () => {
     });
 
     it('throws UNAUTHORIZED when no session exists', async () => {
-      const ctx = { db: {}, session: null };
+      const ctx = createContext(null);
       const caller = userSetTypesRouter.createCaller(ctx);
 
       // protectedProcedure throws this message, not our custom check
@@ -324,7 +327,7 @@ describe('User Set Types Router', () => {
     });
 
     it('throws UNAUTHORIZED when no session exists', async () => {
-      const ctx = { db: {}, session: null };
+      const ctx = createContext(null);
       const caller = userSetTypesRouter.createCaller(ctx);
 
       await expect(caller.getByIdWithLexicon({ id: UST_CONSTRUCTION_UUID })).rejects.toThrow(

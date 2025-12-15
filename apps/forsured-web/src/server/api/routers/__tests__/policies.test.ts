@@ -67,6 +67,7 @@ describe('Policies Router', () => {
   });
 
   // Helper to create caller context
+  // Must match the Context interface from ../context.ts
   const createContext = (organizationId: string | null = ORG_UUID) => {
     const mockUser: User = {
       id: USER_UUID,
@@ -76,6 +77,7 @@ describe('Policies Router', () => {
     return {
       db: {} as any,
       session: mockUser,
+      userId: USER_UUID, // Required by isAuthenticated middleware
       organizationId,
     };
   };

@@ -4,6 +4,8 @@
  */
 
 import '@testing-library/jest-dom';
+import { afterEach, afterAll, vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
 /**
  * Set up environment variables for tests
@@ -23,19 +25,23 @@ process.env.SKIP_SUPABASE_TESTS = 'true';
 /**
  * Mock window.matchMedia for jsdom
  * Required for Tamagui components that use media queries
+ * Made robust to handle edge cases during test cleanup
  */
+const createMatchMediaMock = (query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(() => false),
+});
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false,
-  }),
+  configurable: true,
+  value: vi.fn().mockImplementation(createMatchMediaMock),
 });
 
 /**
@@ -64,3 +70,28 @@ if (typeof File.prototype.arrayBuffer !== 'function') {
     });
   };
 }
+
+/**
+ * Cleanup after each test
+ * Ensures React components are unmounted and DOM is cleaned
+ */
+afterEach(() => {
+  // Clean up React Testing Library's rendered components
+  cleanup();
+  // Clear all mock call history but preserve implementations
+  vi.clearAllMocks();
+});
+
+/**
+ * Final cleanup after all tests complete
+ * Ensures vitest properly exits
+ */
+afterAll(() => {
+  // Clear any pending timers
+  vi.clearAllTimers();
+  // Use real timers if fake timers were enabled
+  vi.useRealTimers();
+  // Note: We don't call vi.restoreAllMocks() as it would remove
+  // critical browser API mocks (matchMedia, ResizeObserver) that
+  // might still be needed during final component cleanup
+});

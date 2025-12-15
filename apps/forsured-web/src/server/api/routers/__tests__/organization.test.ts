@@ -42,6 +42,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -79,6 +80,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -101,6 +103,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: null,
       };
 
@@ -123,6 +126,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -145,6 +149,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -198,6 +203,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -225,6 +231,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -271,6 +278,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -355,6 +363,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 
@@ -379,6 +388,7 @@ describe('Organization Router', () => {
       const ctx = {
         db: {} as any,
         session: mockUser,
+        userId: USER_UUID_123, // Required by isAuthenticated middleware
         organizationId: ORG_UUID_123,
       };
 

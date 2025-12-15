@@ -84,6 +84,7 @@ describe('Task Router', () => {
   });
 
   // Helper to create caller context
+  // Must match the Context interface from ../context.ts
   const createContext = (userId: string | null = USER_UUID, organizationId: string | null = ORG_UUID) => {
     const mockUser: User | null = userId
       ? ({
@@ -95,6 +96,7 @@ describe('Task Router', () => {
     return {
       db: {} as any,
       session: mockUser,
+      userId, // Required by isAuthenticated middleware
       organizationId,
     };
   };

@@ -210,4 +210,37 @@ export class TestDatabase {
   static generateId(prefix: string): string {
     return `${prefix}-${uuidv4()}`;
   }
+
+  /**
+   * Setup and teardown helpers for use with vitest hooks
+   * Ensures cleanup happens even if tests fail
+   *
+   * Usage in test files:
+   * ```ts
+   * import { TestDatabase } from '../helpers/testDatabase';
+   *
+   * describe('My Tests', () => {
+   *   beforeEach(async () => {
+   *     await TestDatabase.cleanAll();
+   *   });
+   *
+   *   afterEach(async () => {
+   *     await TestDatabase.cleanAll();
+   *   });
+   * });
+   * ```
+   */
+  static setupTestHooks(): {
+    beforeEach: () => Promise<void>;
+    afterEach: () => Promise<void>;
+  } {
+    return {
+      beforeEach: async () => {
+        await TestDatabase.cleanAll();
+      },
+      afterEach: async () => {
+        await TestDatabase.cleanAll();
+      },
+    };
+  }
 }

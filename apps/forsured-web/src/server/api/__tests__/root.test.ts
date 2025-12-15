@@ -65,6 +65,7 @@ describe('API Handler', () => {
     const ctx = {
       db: {} as any,
       session: mockUser,
+      userId: USER_UUID, // Required by isAuthenticated middleware
       organizationId: ORG_UUID,
     };
 
@@ -100,6 +101,7 @@ describe('API Handler', () => {
     const ctx = {
       db: {} as any,
       session: mockUser,
+      userId: USER_UUID, // Required by isAuthenticated middleware
       organizationId: ORG_UUID,
     };
 
