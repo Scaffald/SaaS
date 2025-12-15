@@ -11,8 +11,10 @@
 
 'use client';
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Search, FileText, AlertCircle, RefreshCw } from 'lucide-react';
+import { YStack, XStack, Text, Card, Button, Spinner } from '@unicornlove/ui';
+import Input from '../Common/Input';
 import { DocumentFilterPanel } from './DocumentFilterPanel';
 import type {
   DocumentFilterState,
@@ -27,13 +29,7 @@ import {
 import type { DocumentListItem } from '../../types/document';
 import { trpc } from '../../lib/trpc';
 
-// Status badge color mapping
-const STATUS_BADGE_CLASSES: Record<string, string> = {
-  green: 'bg-green-100 text-green-800',
-  yellow: 'bg-yellow-100 text-yellow-800',
-  orange: 'bg-orange-100 text-orange-800',
-  red: 'bg-red-100 text-red-800',
-};
+// Status badge color mapping - now using inline Tamagui props
 
 interface DocumentListProps {
   /** Organization ID for data fetching */
@@ -159,10 +155,16 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
     });
   };
 
-  // Get status badge classes
-  const getStatusBadgeClasses = (status: string): string => {
+  // Get status badge props for Tamagui
+  const getStatusBadgeProps = (status: string) => {
     const color = DOCUMENT_STATUS_COLORS[status as keyof typeof DOCUMENT_STATUS_COLORS] || 'gray';
-    return STATUS_BADGE_CLASSES[color] || 'bg-gray-100 text-gray-800';
+    const colorMap: Record<string, { bg: string; text: string }> = {
+      green: { bg: '$green2', text: '$green11' },
+      yellow: { bg: '$yellow2', text: '$yellow11' },
+      orange: { bg: '$orange2', text: '$orange11' },
+      red: { bg: '$red2', text: '$red11' },
+    };
+    return colorMap[color] || { bg: '$gray2', text: '$gray11' };
   };
 
   const isLoading = clientsLoading || projectsLoading || documentsLoading;
@@ -170,7 +172,7 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
   const totalCount = documentsData?.total || 0;
 
   return (
-    <div className="space-y-4">
+    <YStack gap="$4">
       {/* Filter Panel */}
       <DocumentFilterPanel
         filters={filters}
@@ -181,21 +183,36 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
       />
 
       {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <input
+      <XStack position="relative" alignItems="center">
+        <XStack
+          position="absolute"
+          left="$3"
+          alignItems="center"
+          justifyContent="center"
+          pointerEvents="none"
+          zIndex={1}
+        >
+          <Search size={16} color="$color10" />
+        </XStack>
+        <Input
           type="text"
           placeholder="Search by filename..."
           value={searchTerm}
           onChange={handleSearchChange}
           disabled={isLoading}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+          style={{
+            width: '100%',
+            paddingLeft: '40px',
+            paddingRight: '16px',
+            paddingTop: '8px',
+            paddingBottom: '8px',
+          }}
         />
-      </div>
+      </XStack>
 
       {/* Results Summary */}
-      <div className="flex items-center justify-between text-sm text-gray-600">
-        <span>
+      <XStack alignItems="center" justifyContent="space-between" fontSize="$3" color="$color10">
+        <Text>
           {isLoading ? (
             'Loading documents...'
           ) : documentsError ? (
@@ -203,157 +220,271 @@ export function DocumentList({ organizationId, onDocumentClick }: DocumentListPr
           ) : (
             `${totalCount} document${totalCount !== 1 ? 's' : ''} found`
           )}
-        </span>
+        </Text>
         {!isLoading && !documentsError && (
-          <button
+          <XStack
+            as="button"
+            alignItems="center"
+            color="$teal9"
+            hoverStyle={{ color: '$teal11' }}
             onClick={handleRetry}
-            className="flex items-center text-blue-600 hover:text-blue-800"
+            cursor="pointer"
           >
-            <RefreshCw className="h-4 w-4 mr-1" />
-            Refresh
-          </button>
+            <RefreshCw size={16} />
+            <Text marginLeft="$1">Refresh</Text>
+          </XStack>
         )}
-      </div>
+      </XStack>
 
       {/* Error State */}
       {documentsError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-            <div>
-              <p className="text-sm font-medium text-red-800">Failed to load documents</p>
-              <p className="text-sm text-red-600 mt-1">
+        <Card
+          backgroundColor="$red2"
+          borderWidth={1}
+          borderColor="$red6"
+          borderRadius="$4"
+          padding="$4"
+        >
+          <XStack alignItems="center" marginBottom="$3">
+            <AlertCircle size={20} color="$red10" marginRight="$2" />
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$red12">
+                Failed to load documents
+              </Text>
+              <Text fontSize="$3" color="$red11" marginTop="$1">
                 {documentsError.message || 'An unexpected error occurred'}
-              </p>
-            </div>
-          </div>
-          <button
+              </Text>
+            </YStack>
+          </XStack>
+          <Button
             onClick={handleRetry}
-            className="mt-3 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 text-sm font-medium"
+            marginTop="$3"
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            backgroundColor="$red3"
+            color="$red11"
+            hoverStyle={{ backgroundColor: '$red4' }}
+            fontSize="$3"
+            fontWeight="500"
+            borderRadius="$4"
           >
             Try Again
-          </button>
-        </div>
+          </Button>
+        </Card>
       )}
 
       {/* Loading State */}
       {isLoading && !documentsError && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <div className="flex flex-col items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-3" />
-            <p className="text-sm text-gray-600">Loading documents...</p>
-          </div>
-        </div>
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$8"
+        >
+          <YStack alignItems="center" justifyContent="center" gap="$3">
+            <Spinner size="large" color="$teal9" />
+            <Text fontSize="$3" color="$color10">
+              Loading documents...
+            </Text>
+          </YStack>
+        </Card>
       )}
 
       {/* Empty State */}
       {!isLoading && !documentsError && documents.length === 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <div className="flex flex-col items-center justify-center text-center">
-            <FileText className="h-12 w-12 text-gray-400 mb-3" />
-            <p className="text-gray-900 font-medium">No documents found</p>
-            <p className="text-sm text-gray-600 mt-1">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$8"
+        >
+          <YStack alignItems="center" justifyContent="center" gap="$3">
+            <FileText size={48} color="$color10" />
+            <Text color="$color12" fontWeight="500">
+              No documents found
+            </Text>
+            <Text fontSize="$3" color="$color10" marginTop="$1">
               {Object.keys(filters).length > 0 || searchTerm
                 ? 'Try adjusting your filters or search term'
                 : 'No documents have been uploaded yet'}
-            </p>
-          </div>
-        </div>
+            </Text>
+          </YStack>
+        </Card>
       )}
 
       {/* Document List */}
       {!isLoading && !documentsError && documents.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          overflow="hidden"
+        >
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ backgroundColor: 'var(--color-gray-2)' }}>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Document
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Type
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Status
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Client
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Project
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: 'var(--color-gray-10)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Updated
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {documents.map((document) => (
-                <tr
-                  key={document.id}
-                  onClick={() => handleDocumentClick(document)}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <FileText className="h-5 w-5 text-gray-400 mr-3" />
-                      <div className="text-sm font-medium text-gray-900">
-                        {document.filename}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">
-                      {DOCUMENT_TYPE_LABELS[document.docType as keyof typeof DOCUMENT_TYPE_LABELS] ||
-                        document.docType}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeClasses(document.status)}`}
-                    >
-                      {DOCUMENT_STATUS_LABELS[document.status as keyof typeof DOCUMENT_STATUS_LABELS] ||
-                        document.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{document.clientName}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">
-                      {document.projectName || '-'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">
-                      {formatDate(document.updatedAt)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+            <tbody>
+              {documents.map((document) => {
+                const badgeProps = getStatusBadgeProps(document.status);
+                return (
+                  <tr
+                    key={document.id}
+                    onClick={() => handleDocumentClick(document)}
+                    style={{
+                      cursor: 'pointer',
+                      borderTop: '1px solid var(--color-border)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-background-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      <XStack alignItems="center">
+                        <FileText size={20} color="$color10" marginRight="$3" />
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                          {document.filename}
+                        </Text>
+                      </XStack>
+                    </td>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      <Text fontSize="$3" color="$color11">
+                        {DOCUMENT_TYPE_LABELS[document.docType as keyof typeof DOCUMENT_TYPE_LABELS] ||
+                          document.docType}
+                      </Text>
+                    </td>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      <Text
+                        display="inline-flex"
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        fontSize="$1"
+                        fontWeight="500"
+                        borderRadius={9999}
+                        backgroundColor={badgeProps.bg}
+                        color={badgeProps.text}
+                      >
+                        {DOCUMENT_STATUS_LABELS[document.status as keyof typeof DOCUMENT_STATUS_LABELS] ||
+                          document.status}
+                      </Text>
+                    </td>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      <Text fontSize="$3" color="$color11">
+                        {document.clientName}
+                      </Text>
+                    </td>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      <Text fontSize="$3" color="$color11">
+                        {document.projectName || '-'}
+                      </Text>
+                    </td>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      <Text fontSize="$3" color="$color11">
+                        {formatDate(document.updatedAt)}
+                      </Text>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-        </div>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }
 
