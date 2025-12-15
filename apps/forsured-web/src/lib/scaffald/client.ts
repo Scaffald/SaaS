@@ -4,6 +4,20 @@
 // Scaffald API client with feature flag support for mock/real modes
 
 import { getTokens, isTokenExpired, refreshAccessToken, clearTokens } from './auth';
+import type {
+  ScaffaldDocument,
+  ScaffaldDocumentVersion,
+  UploadDocumentInput,
+  UploadDocumentResponse,
+  ListDocumentsInput,
+  ListDocumentsResponse,
+  UpdateDocumentInput,
+  GetDownloadUrlInput,
+  GetDownloadUrlResponse,
+  UploadVersionInput,
+  UploadVersionResponse,
+  DocumentCategory,
+} from './types';
 
 // Feature flag to toggle between mock and real Scaffald
 const USE_REAL_AUTH = import.meta.env.VITE_USE_REAL_AUTH === 'true';
@@ -91,6 +105,16 @@ interface ScaffaldClient {
     getByCompany(companyId: string): Promise<any[]>;
     invite(companyId: string, email: string): Promise<any>;
   };
+  documents: {
+    upload(input: UploadDocumentInput): Promise<UploadDocumentResponse>;
+    get(documentId: string): Promise<ScaffaldDocument>;
+    list(input: ListDocumentsInput): Promise<ListDocumentsResponse>;
+    update(documentId: string, input: UpdateDocumentInput): Promise<ScaffaldDocument>;
+    delete(documentId: string): Promise<void>;
+    getVersions(documentId: string): Promise<ScaffaldDocumentVersion[]>;
+    uploadVersion(input: UploadVersionInput): Promise<UploadVersionResponse>;
+    getDownloadUrl(input: GetDownloadUrlInput): Promise<GetDownloadUrlResponse>;
+  };
 }
 
 /**
@@ -141,6 +165,24 @@ async function fetchWithAuth(
     console.error('[ScaffaldClient] Fetch error:', error);
     throw error;
   }
+}
+
+/**
+ * Fetch with OAuth App ID header for document operations
+ * Adds X-OAuth-App-ID: forsured header to identify the calling application
+ */
+async function fetchDocumentApi(
+  url: string,
+  options: RequestInit = {},
+  retries = 3
+): Promise<Response> {
+  return fetchWithAuth(url, {
+    ...options,
+    headers: {
+      'X-OAuth-App-ID': 'forsured',
+      ...options.headers,
+    },
+  }, retries);
 }
 
 /**
@@ -292,6 +334,85 @@ function createRealScaffaldClient(config: {
             body: JSON.stringify({ email }),
           }
         );
+        return response.json();
+      },
+    },
+
+    documents: {
+      async upload(input: UploadDocumentInput): Promise<UploadDocumentResponse> {
+        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents`, {
+          method: 'POST',
+          body: JSON.stringify(input),
+        });
+        return response.json();
+      },
+
+      async get(documentId: string): Promise<ScaffaldDocument> {
+        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}`);
+        return response.json();
+      },
+
+      async list(input: ListDocumentsInput): Promise<ListDocumentsResponse> {
+        const params = new URLSearchParams();
+        params.set('organizationId', input.organizationId);
+        if (input.folderId) params.set('folderId', input.folderId);
+        if (input.category) params.set('category', input.category);
+        if (input.tags?.length) params.set('tags', input.tags.join(','));
+        if (input.isTemplate !== undefined) params.set('isTemplate', String(input.isTemplate));
+        if (input.includeDeleted) params.set('includeDeleted', 'true');
+        if (input.search) params.set('search', input.search);
+        if (input.page) params.set('page', String(input.page));
+        if (input.limit) params.set('limit', String(input.limit));
+        if (input.sortBy) params.set('sortBy', input.sortBy);
+        if (input.sortOrder) params.set('sortOrder', input.sortOrder);
+
+        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents?${params.toString()}`);
+        return response.json();
+      },
+
+      async update(documentId: string, input: UpdateDocumentInput): Promise<ScaffaldDocument> {
+        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(input),
+        });
+        return response.json();
+      },
+
+      async delete(documentId: string): Promise<void> {
+        await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}`, {
+          method: 'DELETE',
+        });
+      },
+
+      async getVersions(documentId: string): Promise<ScaffaldDocumentVersion[]> {
+        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${documentId}/versions`);
+        return response.json();
+      },
+
+      async uploadVersion(input: UploadVersionInput): Promise<UploadVersionResponse> {
+        const response = await fetchDocumentApi(`${config.baseUrl}/api/v1/documents/${input.documentId}/versions`, {
+          method: 'POST',
+          body: JSON.stringify({
+            file: input.file,
+            fileName: input.fileName,
+            contentType: input.contentType,
+            fileSize: input.fileSize,
+            notes: input.notes,
+          }),
+        });
+        return response.json();
+      },
+
+      async getDownloadUrl(input: GetDownloadUrlInput): Promise<GetDownloadUrlResponse> {
+        const params = new URLSearchParams();
+        if (input.versionId) params.set('versionId', input.versionId);
+        if (input.expiresIn) params.set('expiresIn', String(input.expiresIn));
+
+        const url = params.toString()
+          ? `${config.baseUrl}/api/v1/documents/${input.documentId}/download?${params.toString()}`
+          : `${config.baseUrl}/api/v1/documents/${input.documentId}/download`;
+
+        const response = await fetchDocumentApi(url);
         return response.json();
       },
     },
@@ -451,6 +572,121 @@ function createMockScaffaldClient(): ScaffaldClient {
       },
       async invite(companyId: string, email: string) {
         return { id: `mock-invite-${Date.now()}`, companyId, email };
+      },
+    },
+
+    documents: {
+      async upload(input: UploadDocumentInput): Promise<UploadDocumentResponse> {
+        console.log('[Mock ScaffaldClient] documents.upload()', input.name);
+        const now = new Date().toISOString();
+        return {
+          id: `mock-doc-${Date.now()}`,
+          name: input.name,
+          category: input.category || 'general',
+          storageBackend: 'supabase',
+          storagePath: `org/${input.organizationId}/docs/${input.fileName}`,
+          downloadUrl: null,
+          oauthAppId: 'forsured',
+          version: 1,
+          fileSize: input.fileSize,
+          mimeType: input.contentType,
+          checksum: `mock-checksum-${Date.now().toString(16)}`,
+          createdAt: now,
+          uploadedBy: 'mock-user',
+        };
+      },
+
+      async get(documentId: string): Promise<ScaffaldDocument> {
+        console.log('[Mock ScaffaldClient] documents.get()', documentId);
+        const now = new Date().toISOString();
+        return {
+          id: documentId,
+          name: 'Mock Document',
+          description: 'A mock document for development',
+          category: 'general' as DocumentCategory,
+          tags: [],
+          isTemplate: false,
+          versionCount: 1,
+          latestVersionNumber: 1,
+          latestSizeBytes: 1024,
+          latestMimeType: 'application/pdf',
+          oauthAppId: 'forsured',
+          storagePath: `org/mock-org/docs/${documentId}`,
+          storageBackend: 'supabase',
+          downloadUrl: null,
+          createdAt: now,
+          updatedAt: now,
+          folderId: null,
+          folder: null,
+          createdByUser: null,
+        };
+      },
+
+      async list(input: ListDocumentsInput): Promise<ListDocumentsResponse> {
+        console.log('[Mock ScaffaldClient] documents.list()', input);
+        return {
+          documents: [],
+          pagination: {
+            page: input.page || 1,
+            limit: input.limit || 20,
+            total: 0,
+            totalPages: 0,
+          },
+        };
+      },
+
+      async update(documentId: string, input: UpdateDocumentInput): Promise<ScaffaldDocument> {
+        console.log('[Mock ScaffaldClient] documents.update()', documentId, input);
+        const now = new Date().toISOString();
+        return {
+          id: documentId,
+          name: input.name || 'Updated Mock Document',
+          description: input.description ?? null,
+          category: (input.category || 'general') as DocumentCategory,
+          tags: input.tags || [],
+          isTemplate: input.isTemplate || false,
+          versionCount: 1,
+          latestVersionNumber: 1,
+          latestSizeBytes: 1024,
+          latestMimeType: 'application/pdf',
+          oauthAppId: 'forsured',
+          storagePath: `org/mock-org/docs/${documentId}`,
+          storageBackend: 'supabase',
+          downloadUrl: null,
+          createdAt: now,
+          updatedAt: now,
+          folderId: input.folderId ?? null,
+          folder: null,
+          createdByUser: null,
+        };
+      },
+
+      async delete(documentId: string): Promise<void> {
+        console.log('[Mock ScaffaldClient] documents.delete()', documentId);
+      },
+
+      async getVersions(documentId: string): Promise<ScaffaldDocumentVersion[]> {
+        console.log('[Mock ScaffaldClient] documents.getVersions()', documentId);
+        return [];
+      },
+
+      async uploadVersion(input: UploadVersionInput): Promise<UploadVersionResponse> {
+        console.log('[Mock ScaffaldClient] documents.uploadVersion()', input.documentId);
+        return {
+          versionId: `mock-version-${Date.now()}`,
+          versionNumber: 2,
+          downloadUrl: null,
+          checksum: `mock-checksum-${Date.now().toString(16)}`,
+          createdAt: new Date().toISOString(),
+        };
+      },
+
+      async getDownloadUrl(input: GetDownloadUrlInput): Promise<GetDownloadUrlResponse> {
+        console.log('[Mock ScaffaldClient] documents.getDownloadUrl()', input.documentId);
+        return {
+          downloadUrl: null,
+          expiresIn: input.expiresIn || 3600,
+        };
       },
     },
   };

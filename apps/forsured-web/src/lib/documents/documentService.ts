@@ -1,9 +1,33 @@
 /**
  * REQ-124: Document Upload & Storage - DocumentService
- * Handles document upload, validation, storage, and retrieval
+ * REQ-1: Document Management with Scaffald integration
+ *
+ * Handles document upload, validation, storage, and retrieval.
+ * Supports dual-mode: MockDatabase (development) and Scaffald (production).
+ *
+ * ## Migration Notice
+ *
+ * The MockDatabase storage backend is **DEPRECATED** and will be removed
+ * in a future version. New deployments should use Scaffald storage by setting:
+ *
+ *   VITE_USE_SCAFFALD_DOCUMENTS=true
+ *
+ * To migrate existing MockDatabase documents to Scaffald, run:
+ *
+ *   npx tsx scripts/migrate-documents-to-scaffald.ts --org-id <org-id>
+ *
+ * ## Storage Backends
+ *
+ * Scaffald supports multiple storage backends:
+ * - `supabase` (default): Built-in Supabase Storage
+ * - `dropbox`: User's Dropbox account (requires OAuth)
+ * - `google_drive`: User's Google Drive account (requires OAuth)
+ *
+ * Users can configure their preferred backend in Settings > Document Storage.
  */
 
 import mockDatabase from '../../utils/mockDataStore';
+import { scaffaldClient } from '../scaffald/client';
 import type {
   Document,
   DocumentUpload,
@@ -17,6 +41,25 @@ import {
   ALLOWED_FILE_TYPE,
   ALLOWED_FILE_EXTENSION
 } from '../../types/document';
+import type { DocumentCategory, UploadDocumentResponse } from '../scaffald/types';
+
+/**
+ * Feature flag to toggle between MockDatabase and Scaffald document storage.
+ *
+ * @deprecated MockDatabase storage is deprecated. Set VITE_USE_SCAFFALD_DOCUMENTS=true
+ * to use Scaffald storage. MockDatabase will be removed in a future release.
+ */
+const USE_SCAFFALD_DOCUMENTS = import.meta.env.VITE_USE_SCAFFALD_DOCUMENTS === 'true';
+
+// Log the current mode and deprecation warning on module load
+if (!USE_SCAFFALD_DOCUMENTS) {
+  console.warn(
+    '[DocumentService] WARNING: Using deprecated MockDatabase storage. ' +
+      'Set VITE_USE_SCAFFALD_DOCUMENTS=true to use Scaffald. ' +
+      'Run migrate-documents-to-scaffald.ts to migrate existing documents.'
+  );
+}
+console.log(`[DocumentService] Mode: ${USE_SCAFFALD_DOCUMENTS ? 'Scaffald' : 'MockDatabase (DEPRECATED)'}`);
 
 export class DocumentService {
   /**
@@ -97,9 +140,22 @@ export class DocumentService {
   }
 
   /**
-   * Upload a document
+   * Upload a document (dual-mode: MockDatabase or Scaffald)
+   *
+   * When VITE_USE_SCAFFALD_DOCUMENTS=true, uploads via Scaffald API.
+   * Otherwise, uses MockDatabase for development.
    */
-  async uploadDocument(uploadData: DocumentUpload): Promise<Document> {
+  async uploadDocument(
+    uploadData: DocumentUpload & {
+      // Extended fields for Scaffald integration
+      organizationId?: string;
+      category?: DocumentCategory;
+      description?: string;
+      tags?: string[];
+      isTemplate?: boolean;
+      folderId?: string | null;
+    }
+  ): Promise<Document> {
     // Validate file
     const validation = this.validateFile(uploadData.file);
     if (!validation.valid) {
@@ -115,7 +171,28 @@ export class DocumentService {
     // Sanitize file name
     const sanitizedName = this.sanitizeFileName(uploadData.file.name);
 
-    // Create document record
+    // Use Scaffald when enabled
+    if (USE_SCAFFALD_DOCUMENTS && uploadData.organizationId) {
+      console.log('[DocumentService] Uploading via Scaffald');
+      try {
+        const scaffaldResponse = await this.uploadToScaffald({
+          ...uploadData,
+          organizationId: uploadData.organizationId,
+          fileName: sanitizedName,
+          fileData,
+          fileHash,
+        });
+
+        // Convert Scaffald response to local Document format
+        return this.scaffaldToLocalDocument(scaffaldResponse, uploadData);
+      } catch (error) {
+        console.error('[DocumentService] Scaffald upload failed:', error);
+        throw error;
+      }
+    }
+
+    // Use MockDatabase when Scaffald is disabled or organizationId is not provided
+    console.log('[DocumentService] Uploading via MockDatabase');
     const documentData = {
       project_id: uploadData.project_id,
       subcontractor_id: uploadData.subcontractor_id,
@@ -133,6 +210,75 @@ export class DocumentService {
     const document = await mockDatabase.insert<Document>('documents', documentData);
 
     return document;
+  }
+
+  /**
+   * Upload document to Scaffald API
+   */
+  private async uploadToScaffald(params: {
+    organizationId: string;
+    file: File;
+    fileName: string;
+    fileData: string;
+    fileHash: string;
+    category?: DocumentCategory;
+    description?: string;
+    tags?: string[];
+    isTemplate?: boolean;
+    folderId?: string | null;
+  }): Promise<UploadDocumentResponse> {
+    return scaffaldClient.documents.upload({
+      organizationId: params.organizationId,
+      name: params.fileName,
+      file: params.fileData,
+      fileName: params.fileName,
+      contentType: params.file.type,
+      fileSize: params.file.size,
+      category: params.category || 'compliance',
+      description: params.description,
+      tags: params.tags || [],
+      isTemplate: params.isTemplate || false,
+      folderId: params.folderId,
+    });
+  }
+
+  /**
+   * Convert Scaffald response to local Document format
+   */
+  private scaffaldToLocalDocument(
+    response: UploadDocumentResponse,
+    uploadData: DocumentUpload & { organizationId?: string }
+  ): Document {
+    return {
+      id: response.id,
+      filename: response.name,
+      docType: 'coi' as any, // Default to COI for insurance documents
+      status: 'pending',
+      clientId: uploadData.organizationId || '',
+      clientName: '',
+      clientType: 'subcontractor',
+      projectId: uploadData.projectId || null,
+      projectName: null,
+      contentPreview: null,
+      fileSize: response.fileSize,
+      mimeType: response.mimeType,
+      uploadedBy: uploadData.uploadedBy,
+      uploadedAt: response.createdAt,
+      verifiedAt: null,
+      expiresAt: null,
+      createdAt: response.createdAt,
+      updatedAt: response.createdAt,
+      // Extended properties for internal use
+      scaffaldId: response.id,
+      storageBackend: response.storageBackend,
+      storagePath: response.storagePath,
+      downloadUrl: response.downloadUrl,
+    } as Document & {
+      scaffaldId: string;
+      storageBackend: string;
+      storagePath: string;
+      downloadUrl: string | null;
+    };
   }
 
   /**
@@ -188,4 +334,14 @@ export class DocumentService {
       await mockDatabase.delete('documents', id);
     }
   }
+
+  /**
+   * Check if Scaffald document storage is enabled
+   */
+  isScaffaldEnabled(): boolean {
+    return USE_SCAFFALD_DOCUMENTS;
+  }
 }
+
+// Export the feature flag for components that need to check the mode
+export const isUsingScaffaldDocuments = USE_SCAFFALD_DOCUMENTS;

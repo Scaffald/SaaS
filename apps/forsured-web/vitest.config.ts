@@ -29,7 +29,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    include: [
+      'src/**/*.{test,spec}.{ts,tsx}',
+      'tests/integration/**/*.{test,spec}.{ts,tsx}',
+      'tests/performance/**/*.{test,spec}.{ts,tsx}',
+    ],
     exclude: ['**/node_modules/**', '**/dist/**'],
     setupFiles: [resolve(packageRoot, 'src/test/setup.ts')],
     testTimeout: 10000,

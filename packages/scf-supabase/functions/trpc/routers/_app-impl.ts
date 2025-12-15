@@ -12,6 +12,7 @@
 import { t } from '../middleware.ts'
 import { accountDeletionRouter } from './account-deletion.router.ts'
 import { addressesRouter } from './addresses.router.ts'
+import { documentsRouter } from './documents.router.ts'
 import { applicationsRouter } from './applications.router.ts'
 import { authRouter } from './auth.router.ts'
 import { backgroundChecksRouter } from './background-checks.router.ts'
@@ -59,6 +60,7 @@ export const appRouter = t.router({
   profileWizard: profileWizardRouter,
   auth: authRouter,
   cms: cmsRouter,
+  documents: documentsRouter,
   office: officeRouter,
   jobs: jobsRouter,
   applications: applicationsRouter,
