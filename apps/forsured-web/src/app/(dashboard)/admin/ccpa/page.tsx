@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { YStack, XStack, Text, Button, Card, H1, H2, H3, Spinner } from '@unicornlove/ui';
 
 // Types
 interface ComplianceMetrics {
@@ -44,27 +45,27 @@ interface CCPARequest {
   is_overdue: boolean;
 }
 
-// Status badge colors
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  processing: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  failed: 'bg-red-100 text-red-800',
-  cancelled: 'bg-gray-100 text-gray-800',
+// Status badge colors - using Tamagui color tokens
+const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
+  pending: { bg: '$yellow2', text: '$yellow11' },
+  processing: { bg: '$blue2', text: '$blue11' },
+  completed: { bg: '$green2', text: '$green11' },
+  failed: { bg: '$red2', text: '$red11' },
+  cancelled: { bg: '$gray2', text: '$gray11' },
 };
 
-const PRIORITY_COLORS: Record<string, string> = {
-  low: 'bg-gray-100 text-gray-800',
-  medium: 'bg-blue-100 text-blue-800',
-  high: 'bg-orange-100 text-orange-800',
-  urgent: 'bg-red-100 text-red-800',
+const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
+  low: { bg: '$gray2', text: '$gray11' },
+  medium: { bg: '$blue2', text: '$blue11' },
+  high: { bg: '$orange2', text: '$orange11' },
+  urgent: { bg: '$red2', text: '$red11' },
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  export: 'bg-blue-100 text-blue-800',
-  deletion: 'bg-red-100 text-red-800',
-  correction: 'bg-purple-100 text-purple-800',
-  opt_out: 'bg-green-100 text-green-800',
+const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
+  export: { bg: '$blue2', text: '$blue11' },
+  deletion: { bg: '$red2', text: '$red11' },
+  correction: { bg: '$purple2', text: '$purple11' },
+  opt_out: { bg: '$green2', text: '$green11' },
 };
 
 export default function CCPAAdminDashboard() {
@@ -177,271 +178,300 @@ export default function CCPAAdminDashboard() {
 
   if (loading) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
+        <YStack opacity={0.5}>
+          <YStack height={32} backgroundColor="$gray4" borderRadius="$2" width="33%" marginBottom="$4" />
+          <XStack flexWrap="wrap" gap="$4" marginBottom="$8">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+              <YStack key={i} height={96} backgroundColor="$gray4" borderRadius="$2" flex={1} minWidth={200} />
             ))}
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <YStack padding="$6" maxWidth={1120} marginHorizontal="auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">CCPA Compliance Dashboard</h1>
-        <p className="text-gray-600">
+      <YStack marginBottom="$8">
+        <H2 marginBottom="$2">CCPA Compliance Dashboard</H2>
+        <Text color="$gray11">
           Monitor and manage CCPA data requests across your organization.
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
       {/* Overdue Warning */}
       {overdueRequests.length > 0 && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-red-600 text-xl">⚠️</span>
-            <div>
-              <h3 className="font-semibold text-red-800">
+        <YStack marginBottom="$6" padding="$4" backgroundColor="$red2" borderWidth={1} borderColor="$red6" borderRadius="$4">
+          <XStack alignItems="center" gap="$2">
+            <Text fontSize="$6" color="$red11">⚠️</Text>
+            <YStack>
+              <Text fontWeight="600" color="$red11">
                 {overdueRequests.length} request(s) have exceeded the 45-day CCPA deadline
-              </h3>
-              <p className="text-red-700 text-sm">
+              </Text>
+              <Text color="$red10" fontSize="$2">
                 Immediate action required to maintain compliance.
-              </p>
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+          </XStack>
+        </YStack>
       )}
 
       {/* Compliance Metrics */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Compliance Metrics</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="p-4 bg-white border rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Total Requests</p>
-            <p className="text-2xl font-bold text-gray-900">{metrics?.total_requests}</p>
-          </div>
-          <div className="p-4 bg-white border rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Pending</p>
-            <p className="text-2xl font-bold text-yellow-600">{metrics?.pending_requests}</p>
-          </div>
-          <div className="p-4 bg-white border rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Processing</p>
-            <p className="text-2xl font-bold text-blue-600">{metrics?.processing_requests}</p>
-          </div>
-          <div className="p-4 bg-white border rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Completed</p>
-            <p className="text-2xl font-bold text-green-600">{metrics?.completed_requests}</p>
-          </div>
-        </div>
+      <YStack marginBottom="$8">
+        <H3 marginBottom="$4">Compliance Metrics</H3>
+        <XStack flexWrap="wrap" gap="$4">
+          <Card padding="$4" flex={1} minWidth={200}>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1">Total Requests</Text>
+            <Text fontSize="$8" fontWeight="700" color="$gray12">{metrics?.total_requests}</Text>
+          </Card>
+          <Card padding="$4" flex={1} minWidth={200}>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1">Pending</Text>
+            <Text fontSize="$8" fontWeight="700" color="$yellow11">{metrics?.pending_requests}</Text>
+          </Card>
+          <Card padding="$4" flex={1} minWidth={200}>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1">Processing</Text>
+            <Text fontSize="$8" fontWeight="700" color="$blue11">{metrics?.processing_requests}</Text>
+          </Card>
+          <Card padding="$4" flex={1} minWidth={200}>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1">Completed</Text>
+            <Text fontSize="$8" fontWeight="700" color="$green11">{metrics?.completed_requests}</Text>
+          </Card>
+        </XStack>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <div className="p-4 bg-white border rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Avg Processing Days</p>
-            <p className="text-2xl font-bold text-gray-900">
+        <XStack flexWrap="wrap" gap="$4" marginTop="$4">
+          <Card padding="$4" flex={1} minWidth={200}>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1">Avg Processing Days</Text>
+            <Text fontSize="$8" fontWeight="700" color="$gray12">
               {metrics?.average_processing_days.toFixed(1)}
-            </p>
-          </div>
-          <div className="p-4 bg-white border rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Compliance Rate</p>
-            <p className="text-2xl font-bold text-green-600">
+            </Text>
+          </Card>
+          <Card padding="$4" flex={1} minWidth={200}>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1">Compliance Rate</Text>
+            <Text fontSize="$8" fontWeight="700" color="$green11">
               {((metrics?.compliance_rate || 0) * 100).toFixed(0)}%
-            </p>
-          </div>
-          <div className="p-4 bg-white border rounded-lg">
-            <p className="text-sm text-gray-500 mb-1">Overdue Requests</p>
-            <p className={`text-2xl font-bold ${
-              (metrics?.overdue_count || 0) > 0 ? 'text-red-600' : 'text-green-600'
-            }`}>
+            </Text>
+          </Card>
+          <Card padding="$4" flex={1} minWidth={200}>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1">Overdue Requests</Text>
+            <Text fontSize="$8" fontWeight="700" color={(metrics?.overdue_count || 0) > 0 ? '$red11' : '$green11'}>
               {metrics?.overdue_count}
-            </p>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </Card>
+        </XStack>
+      </YStack>
 
       {/* Request Management */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Request Management</h2>
-        </div>
+      <YStack marginBottom="$8">
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+          <H3>Request Management</H3>
+        </XStack>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 mb-4">
-          <div>
-            <span className="block text-sm text-gray-600 mb-1">Status</span>
-            <div className="flex gap-2">
+        <XStack flexWrap="wrap" gap="$4" marginBottom="$4">
+          <YStack>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1" display="block">Status</Text>
+            <XStack gap="$2">
               {['all', 'pending', 'processing', 'completed'].map(status => (
-                <button
-                  type="button"
+                <Button
                   key={status}
-                  onClick={() => setStatusFilter(status)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    statusFilter === status
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  onPress={() => setStatusFilter(status)}
+                  size="$3"
+                  backgroundColor={statusFilter === status ? '$blue9' : '$gray3'}
+                  color={statusFilter === status ? 'white' : '$gray11'}
+                  hoverStyle={{ backgroundColor: statusFilter === status ? '$blue10' : '$gray4' }}
                 >
                   {status.charAt(0).toUpperCase() + status.slice(1)}
-                </button>
+                </Button>
               ))}
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
-          <div>
-            <span className="block text-sm text-gray-600 mb-1">Type</span>
-            <div className="flex gap-2">
+          <YStack>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1" display="block">Type</Text>
+            <XStack gap="$2">
               {['all', 'export', 'deletion', 'correction'].map(type => (
-                <button
-                  type="button"
+                <Button
                   key={type}
-                  onClick={() => setTypeFilter(type)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    typeFilter === type
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  onPress={() => setTypeFilter(type)}
+                  size="$3"
+                  backgroundColor={typeFilter === type ? '$blue9' : '$gray3'}
+                  color={typeFilter === type ? 'white' : '$gray11'}
+                  hoverStyle={{ backgroundColor: typeFilter === type ? '$blue10' : '$gray4' }}
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
+                </Button>
               ))}
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
-          <div>
-            <span className="block text-sm text-gray-600 mb-1">Priority</span>
-            <div className="flex gap-2">
+          <YStack>
+            <Text fontSize="$2" color="$gray11" marginBottom="$1" display="block">Priority</Text>
+            <XStack gap="$2">
               {['all', 'urgent', 'high', 'medium', 'low'].map(priority => (
-                <button
-                  type="button"
+                <Button
                   key={priority}
-                  onClick={() => setPriorityFilter(priority)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    priorityFilter === priority
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                  onPress={() => setPriorityFilter(priority)}
+                  size="$3"
+                  backgroundColor={priorityFilter === priority ? '$blue9' : '$gray3'}
+                  color={priorityFilter === priority ? 'white' : '$gray11'}
+                  hoverStyle={{ backgroundColor: priorityFilter === priority ? '$blue10' : '$gray4' }}
                 >
                   {priority.charAt(0).toUpperCase() + priority.slice(1)}
-                </button>
+                </Button>
               ))}
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </YStack>
+        </XStack>
 
         {/* Requests Table */}
-        <div className="bg-white border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">User</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Type</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Priority</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Days</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Submitted</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {filteredRequests.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                    No requests match your filters.
-                  </td>
-                </tr>
-              ) : (
-                filteredRequests.map(req => (
-                  <tr key={req.id} className={req.is_overdue ? 'bg-red-50' : ''}>
-                    <td className="px-4 py-3">
-                      <div>
-                        <p className="font-medium text-gray-900">{req.user_name}</p>
-                        <p className="text-sm text-gray-500">{req.user_email}</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded text-sm ${TYPE_COLORS[req.type]}`}>
-                        {req.type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded text-sm ${STATUS_COLORS[req.status]}`}>
-                        {req.status}
-                      </span>
+        <Card overflow="hidden">
+          <YStack>
+            <XStack backgroundColor="$gray2" paddingHorizontal="$4" paddingVertical="$3">
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">User</Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">Type</Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">Status</Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">Priority</Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">Days</Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">Submitted</Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$gray11">Actions</Text>
+            </XStack>
+            {filteredRequests.length === 0 ? (
+              <YStack padding="$8" alignItems="center">
+                <Text color="$gray11">No requests match your filters.</Text>
+              </YStack>
+            ) : (
+              <YStack>
+                {filteredRequests.map(req => (
+                  <XStack
+                    key={req.id}
+                    backgroundColor={req.is_overdue ? '$red2' : 'transparent'}
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderBottomWidth={1}
+                    borderColor="$borderColor"
+                  >
+                    <YStack flex={1}>
+                      <Text fontWeight="500" color="$gray12">{req.user_name}</Text>
+                      <Text fontSize="$2" color="$gray11">{req.user_email}</Text>
+                    </YStack>
+                    <YStack flex={1} alignItems="flex-start">
+                      <XStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$2"
+                        backgroundColor={TYPE_COLORS[req.type].bg}
+                      >
+                        <Text fontSize="$2" color={TYPE_COLORS[req.type].text}>{req.type}</Text>
+                      </XStack>
+                    </YStack>
+                    <YStack flex={1} alignItems="flex-start" gap="$2">
+                      <XStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$2"
+                        backgroundColor={STATUS_COLORS[req.status].bg}
+                      >
+                        <Text fontSize="$2" color={STATUS_COLORS[req.status].text}>{req.status}</Text>
+                      </XStack>
                       {req.is_overdue && (
-                        <span className="ml-2 px-2 py-1 bg-red-600 text-white rounded text-xs">
-                          OVERDUE
-                        </span>
+                        <XStack
+                          paddingHorizontal="$2"
+                          paddingVertical="$1"
+                          backgroundColor="$red9"
+                          borderRadius="$2"
+                        >
+                          <Text fontSize="$1" color="white">OVERDUE</Text>
+                        </XStack>
                       )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded text-sm ${PRIORITY_COLORS[req.priority]}`}>
-                        {req.priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {req.days_elapsed}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {formatDate(req.created_at)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <button type="button" className="text-blue-600 hover:text-blue-800 text-sm">
-                          View
-                        </button>
-                        {req.status === 'pending' && (
-                          <>
-                            <button type="button" className="text-green-600 hover:text-green-800 text-sm">
-                              Process
-                            </button>
-                            <button type="button" className="text-purple-600 hover:text-purple-800 text-sm">
-                              Assign
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    </YStack>
+                    <YStack flex={1} alignItems="flex-start">
+                      <XStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$2"
+                        backgroundColor={PRIORITY_COLORS[req.priority].bg}
+                      >
+                        <Text fontSize="$2" color={PRIORITY_COLORS[req.priority].text}>{req.priority}</Text>
+                      </XStack>
+                    </YStack>
+                    <YStack flex={1} justifyContent="center">
+                      <Text color="$gray11">{req.days_elapsed}</Text>
+                    </YStack>
+                    <YStack flex={1} justifyContent="center">
+                      <Text color="$gray11">{formatDate(req.created_at)}</Text>
+                    </YStack>
+                    <XStack flex={1} gap="$2">
+                      <Button
+                        size="$2"
+                        backgroundColor="transparent"
+                        color="$blue11"
+                        hoverStyle={{ backgroundColor: '$blue3' }}
+                        onPress={() => {}}
+                      >
+                        <Text fontSize="$2">View</Text>
+                      </Button>
+                      {req.status === 'pending' && (
+                        <>
+                          <Button
+                            size="$2"
+                            backgroundColor="transparent"
+                            color="$green11"
+                            hoverStyle={{ backgroundColor: '$green3' }}
+                            onPress={() => {}}
+                          >
+                            <Text fontSize="$2">Process</Text>
+                          </Button>
+                          <Button
+                            size="$2"
+                            backgroundColor="transparent"
+                            color="$purple11"
+                            hoverStyle={{ backgroundColor: '$purple3' }}
+                            onPress={() => {}}
+                          >
+                            <Text fontSize="$2">Assign</Text>
+                          </Button>
+                        </>
+                      )}
+                    </XStack>
+                  </XStack>
+                ))}
+              </YStack>
+            )}
+          </YStack>
+        </Card>
+      </YStack>
 
       {/* Quick Actions */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="flex flex-wrap gap-3">
-          <button type="button" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      <YStack marginBottom="$8">
+        <H3 marginBottom="$4">Quick Actions</H3>
+        <XStack flexWrap="wrap" gap="$3">
+          <Button backgroundColor="$blue9" color="white" hoverStyle={{ backgroundColor: '$blue10' }} onPress={() => {}}>
             Generate Compliance Report
-          </button>
-          <button type="button" className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+          </Button>
+          <Button backgroundColor="$gray3" color="$gray11" hoverStyle={{ backgroundColor: '$gray4' }} onPress={() => {}}>
             Export All Requests
-          </button>
-          <button type="button" className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+          </Button>
+          <Button backgroundColor="$gray3" color="$gray11" hoverStyle={{ backgroundColor: '$gray4' }} onPress={() => {}}>
             View Breach Notifications
-          </button>
-          <button type="button" className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+          </Button>
+          <Button backgroundColor="$gray3" color="$gray11" hoverStyle={{ backgroundColor: '$gray4' }} onPress={() => {}}>
             Audit Log
-          </button>
-        </div>
-      </div>
+          </Button>
+        </XStack>
+      </YStack>
 
       {/* CCPA Timeline Requirements */}
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="font-semibold text-blue-900 mb-2">CCPA Timeline Requirements</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• <strong>10 days</strong> - Acknowledge receipt of request</li>
-          <li>• <strong>45 days</strong> - Complete request (extendable by 45 days with notice)</li>
-          <li>• <strong>12 months</strong> - Retain records of requests and responses</li>
-          <li>• <strong>72 hours</strong> - Notify affected parties in case of data breach</li>
-        </ul>
-      </div>
-    </div>
+      <YStack padding="$4" backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4">
+        <Text fontWeight="600" color="$blue11" marginBottom="$2">CCPA Timeline Requirements</Text>
+        <YStack gap="$1">
+          <Text fontSize="$2" color="$blue11">• <Text fontWeight="600">10 days</Text> - Acknowledge receipt of request</Text>
+          <Text fontSize="$2" color="$blue11">• <Text fontWeight="600">45 days</Text> - Complete request (extendable by 45 days with notice)</Text>
+          <Text fontSize="$2" color="$blue11">• <Text fontWeight="600">12 months</Text> - Retain records of requests and responses</Text>
+          <Text fontSize="$2" color="$blue11">• <Text fontWeight="600">72 hours</Text> - Notify affected parties in case of data breach</Text>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
