@@ -9,8 +9,6 @@
  * - Generate compliance reports
  */
 
-'use client';
-
 import { useState, useEffect } from 'react';
 
 // Types
@@ -80,85 +78,85 @@ export default function CCPAAdminDashboard() {
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
 
   useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Mock metrics
+        setMetrics({
+          total_requests: 150,
+          pending_requests: 5,
+          processing_requests: 10,
+          completed_requests: 130,
+          failed_requests: 5,
+          average_processing_days: 12.5,
+          compliance_rate: 0.97,
+          overdue_count: 0,
+          requests_by_type: {
+            export: 80,
+            deletion: 50,
+            correction: 15,
+            opt_out: 5,
+          },
+        });
+
+        // Mock requests
+        setRequests([
+          {
+            id: 'req-001',
+            user_id: 'user-1',
+            user_email: 'user1@example.com',
+            user_name: 'John Doe',
+            type: 'export',
+            status: 'pending',
+            created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            priority: 'medium',
+            days_elapsed: 5,
+            is_overdue: false,
+          },
+          {
+            id: 'req-002',
+            user_id: 'user-2',
+            user_email: 'user2@example.com',
+            user_name: 'Jane Smith',
+            type: 'deletion',
+            status: 'processing',
+            created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+            assigned_to: 'admin@forsured.com',
+            priority: 'high',
+            days_elapsed: 10,
+            is_overdue: false,
+          },
+          {
+            id: 'req-003',
+            user_id: 'user-3',
+            user_email: 'user3@example.com',
+            user_name: 'Bob Wilson',
+            type: 'export',
+            status: 'completed',
+            created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            assigned_to: 'admin@forsured.com',
+            priority: 'low',
+            days_elapsed: 20,
+            is_overdue: false,
+          },
+        ]);
+
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadDashboardData();
   }, []);
-
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Mock metrics
-      setMetrics({
-        total_requests: 150,
-        pending_requests: 5,
-        processing_requests: 10,
-        completed_requests: 130,
-        failed_requests: 5,
-        average_processing_days: 12.5,
-        compliance_rate: 0.97,
-        overdue_count: 0,
-        requests_by_type: {
-          export: 80,
-          deletion: 50,
-          correction: 15,
-          opt_out: 5,
-        },
-      });
-
-      // Mock requests
-      setRequests([
-        {
-          id: 'req-001',
-          user_id: 'user-1',
-          user_email: 'user1@example.com',
-          user_name: 'John Doe',
-          type: 'export',
-          status: 'pending',
-          created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          priority: 'medium',
-          days_elapsed: 5,
-          is_overdue: false,
-        },
-        {
-          id: 'req-002',
-          user_id: 'user-2',
-          user_email: 'user2@example.com',
-          user_name: 'Jane Smith',
-          type: 'deletion',
-          status: 'processing',
-          created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-          assigned_to: 'admin@forsured.com',
-          priority: 'high',
-          days_elapsed: 10,
-          is_overdue: false,
-        },
-        {
-          id: 'req-003',
-          user_id: 'user-3',
-          user_email: 'user3@example.com',
-          user_name: 'Bob Wilson',
-          type: 'export',
-          status: 'completed',
-          created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          assigned_to: 'admin@forsured.com',
-          priority: 'low',
-          days_elapsed: 20,
-          is_overdue: false,
-        },
-      ]);
-
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -274,10 +272,11 @@ export default function CCPAAdminDashboard() {
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Status</label>
+            <span className="block text-sm text-gray-600 mb-1">Status</span>
             <div className="flex gap-2">
               {['all', 'pending', 'processing', 'completed'].map(status => (
                 <button
+                  type="button"
                   key={status}
                   onClick={() => setStatusFilter(status)}
                   className={`px-3 py-1 rounded text-sm ${
@@ -293,10 +292,11 @@ export default function CCPAAdminDashboard() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Type</label>
+            <span className="block text-sm text-gray-600 mb-1">Type</span>
             <div className="flex gap-2">
               {['all', 'export', 'deletion', 'correction'].map(type => (
                 <button
+                  type="button"
                   key={type}
                   onClick={() => setTypeFilter(type)}
                   className={`px-3 py-1 rounded text-sm ${
@@ -312,10 +312,11 @@ export default function CCPAAdminDashboard() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Priority</label>
+            <span className="block text-sm text-gray-600 mb-1">Priority</span>
             <div className="flex gap-2">
               {['all', 'urgent', 'high', 'medium', 'low'].map(priority => (
                 <button
+                  type="button"
                   key={priority}
                   onClick={() => setPriorityFilter(priority)}
                   className={`px-3 py-1 rounded text-sm ${
@@ -389,15 +390,15 @@ export default function CCPAAdminDashboard() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button className="text-blue-600 hover:text-blue-800 text-sm">
+                        <button type="button" className="text-blue-600 hover:text-blue-800 text-sm">
                           View
                         </button>
                         {req.status === 'pending' && (
                           <>
-                            <button className="text-green-600 hover:text-green-800 text-sm">
+                            <button type="button" className="text-green-600 hover:text-green-800 text-sm">
                               Process
                             </button>
-                            <button className="text-purple-600 hover:text-purple-800 text-sm">
+                            <button type="button" className="text-purple-600 hover:text-purple-800 text-sm">
                               Assign
                             </button>
                           </>
@@ -416,16 +417,16 @@ export default function CCPAAdminDashboard() {
       <div className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          <button type="button" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
             Generate Compliance Report
           </button>
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+          <button type="button" className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
             Export All Requests
           </button>
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+          <button type="button" className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
             View Breach Notifications
           </button>
-          <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+          <button type="button" className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
             Audit Log
           </button>
         </div>

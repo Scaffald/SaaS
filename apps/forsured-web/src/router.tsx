@@ -100,6 +100,10 @@ const AdminEnums = lazy(() => import('./pages/admin/Enums'));
 const AdminAuditLog = lazy(() => import('./pages/admin/AuditLog'));
 const AdminCompanies = lazy(() => import('./pages/admin/Companies'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
+const AdminCCPA = lazy(() => import('./app/(dashboard)/admin/ccpa/page'));
+
+// Privacy Settings (REQ-3: CCPA Compliance)
+const PrivacySettings = lazy(() => import('./app/(dashboard)/settings/privacy/page'));
 
 // Documentation (public)
 const DocsHome = lazy(() => import('./pages/docs/index'));
@@ -605,6 +609,16 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Privacy Settings (REQ-3: CCPA Compliance) - Accessible to all authenticated users */}
+        <Route
+          path="settings/privacy"
+          element={
+            <ProtectedRoute allowedTypes={['manager', 'subcontractor', 'broker']}>
+              <PrivacySettings />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       {/* Admin routes with AdminLayout */}
@@ -624,6 +638,7 @@ const AppRoutes = () => {
         <Route path="audit-log" element={<AdminAuditLog />} />
         <Route path="companies" element={<AdminCompanies />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="ccpa" element={<AdminCCPA />} />
       </Route>
 
         {/* Catch-all redirect */}

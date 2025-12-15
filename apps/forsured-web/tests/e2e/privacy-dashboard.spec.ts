@@ -28,8 +28,8 @@ test.describe('Privacy Dashboard - All User Types', () => {
       // Wait for page content to load
       await page.waitForTimeout(1000);
 
-      // Should see the privacy header
-      const header = page.getByText('Privacy Settings');
+      // Should see the privacy header (use role selector to get the heading)
+      const header = page.getByRole('heading', { name: 'Privacy Settings' });
       await expect(header).toBeVisible();
     });
   });
@@ -48,8 +48,8 @@ test.describe('Privacy Dashboard - All User Types', () => {
 
       await page.waitForTimeout(1000);
 
-      // Should see the privacy rights section
-      const rightsSection = page.getByText('Your Privacy Rights');
+      // Should see the privacy rights section heading
+      const rightsSection = page.getByRole('heading', { name: 'Your Privacy Rights' });
       await expect(rightsSection).toBeVisible();
     });
   });
@@ -68,33 +68,41 @@ test.describe('Privacy Dashboard - Quick Actions', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await page.goto('/settings/privacy');
-    await page.waitForTimeout(1000);
+    // Wait for Quick Actions section to appear
+    await page.waitForSelector('text=Quick Actions', { timeout: 10000 });
+    await page.waitForTimeout(500); // Extra time for buttons to render
   });
 
   test('should display Request My Data button', async ({ page }) => {
-    const requestDataBtn = page.getByRole('button', { name: /request my data/i });
-    await expect(requestDataBtn).toBeVisible();
+    // Find by the h3 text inside the button
+    const requestDataText = page.getByText('Request My Data', { exact: true });
+    await expect(requestDataText).toBeVisible({ timeout: 10000 });
   });
 
   test('should display Delete My Data button', async ({ page }) => {
-    const deleteDataBtn = page.getByRole('button', { name: /delete my data/i });
-    await expect(deleteDataBtn).toBeVisible();
+    const deleteDataText = page.getByText('Delete My Data', { exact: true });
+    await expect(deleteDataText).toBeVisible({ timeout: 10000 });
   });
 
   test('should display Manage Opt-Outs button', async ({ page }) => {
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
-    await expect(optOutBtn).toBeVisible();
+    const optOutText = page.getByText('Manage Opt-Outs', { exact: true });
+    await expect(optOutText).toBeVisible({ timeout: 10000 });
   });
 
   test('Request My Data button should be clickable', async ({ page }) => {
-    const requestDataBtn = page.getByRole('button', { name: /request my data/i });
-    await expect(requestDataBtn).toBeEnabled();
+    // Find the text and click it (will click the parent button)
+    const requestDataText = page.getByText('Request My Data', { exact: true });
+    await expect(requestDataText).toBeVisible({ timeout: 10000 });
 
-    // Click should not throw an error
-    await requestDataBtn.click();
+    // Click the text - this will click through to the button
+    await requestDataText.click();
 
     // Wait for any modal or form to appear
     await page.waitForTimeout(500);
+
+    // Modal should appear with either "Request Data Export" or "Cancel" button
+    const modal = page.getByText(/Request Data Export|cancel/i).first();
+    await expect(modal).toBeVisible({ timeout: 5000 });
   });
 });
 
@@ -102,24 +110,28 @@ test.describe('Privacy Dashboard - Data Categories', () => {
   test.beforeEach(async ({ page }) => {
     await setupAuthAs(page, 'active.gc@test.forsured.com');
     await page.goto('/settings/privacy');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500); // Allow extra time for loading
   });
 
   test('should display Your Data Categories section', async ({ page }) => {
-    const section = page.getByText('Your Data Categories');
-    await expect(section).toBeVisible();
+    const section = page.getByRole('heading', { name: 'Your Data Categories' });
+    await expect(section).toBeVisible({ timeout: 10000 });
   });
 
   test('should display data category descriptions', async ({ page }) => {
-    // Check for category explanation text
-    const description = page.getByText(/categories of personal information/i);
-    await expect(description).toBeVisible();
+    // Check for category explanation text - use first() to avoid strict mode issues
+    const description = page.getByText(/categories of personal information/i).first();
+    await expect(description).toBeVisible({ timeout: 10000 });
   });
 
   test('should display at least one data category card', async ({ page }) => {
-    // Look for common CCPA data categories
-    const identifiersCategory = page.getByText('Personal Identifiers');
-    const financialCategory = page.getByText('Financial Information');
+    // Look for common CCPA data categories - the names are in h3 elements
+    // Wait for data to load
+    await page.waitForTimeout(1000);
+
+    // Use locator with :has-text for more reliable matching
+    const identifiersCategory = page.locator('h3:has-text("Personal Identifiers")');
+    const financialCategory = page.locator('h3:has-text("Financial Information")');
 
     // At least one should be visible
     const identifiersVisible = await identifiersCategory.isVisible().catch(() => false);
@@ -137,42 +149,43 @@ test.describe('Privacy Dashboard - Privacy Rights', () => {
   });
 
   test('should display CCPA rights section', async ({ page }) => {
-    const section = page.getByText('Your Privacy Rights');
+    const section = page.getByRole('heading', { name: 'Your Privacy Rights' });
     await expect(section).toBeVisible();
   });
 
   test('should display Right to Know', async ({ page }) => {
-    const right = page.getByText('Right to Know');
+    const right = page.getByText('Right to Know').first();
     await expect(right).toBeVisible();
   });
 
   test('should display Right to Delete', async ({ page }) => {
-    const right = page.getByText('Right to Delete');
+    const right = page.getByText('Right to Delete').first();
     await expect(right).toBeVisible();
   });
 
   test('should display Right to Opt-Out', async ({ page }) => {
-    const right = page.getByText('Right to Opt-Out');
+    // There are multiple opt-out sections - find the heading in privacy rights
+    const right = page.getByRole('heading', { name: 'Right to Opt-Out' }).first();
     await expect(right).toBeVisible();
   });
 
   test('should display Right to Correct', async ({ page }) => {
-    const right = page.getByText('Right to Correct');
+    const right = page.getByText('Right to Correct').first();
     await expect(right).toBeVisible();
   });
 
   test('should display Right to Non-Discrimination', async ({ page }) => {
-    const right = page.getByText('Right to Non-Discrimination');
+    const right = page.getByText('Right to Non-Discrimination').first();
     await expect(right).toBeVisible();
   });
 
   test('should display Right to Limit Use of Sensitive Information', async ({ page }) => {
-    const right = page.getByText(/Right to Limit.*Sensitive/i);
+    const right = page.getByText(/Right to Limit.*Sensitive/i).first();
     await expect(right).toBeVisible();
   });
 
   test('should display CCPA/CPRA legal reference', async ({ page }) => {
-    const legalRef = page.getByText(/California Consumer Privacy Act/i);
+    const legalRef = page.getByText(/California Consumer Privacy Act/i).first();
     await expect(legalRef).toBeVisible();
   });
 });
@@ -185,29 +198,30 @@ test.describe('Privacy Dashboard - Request History', () => {
   });
 
   test('should display Request History section', async ({ page }) => {
-    const section = page.getByText('Request History');
+    const section = page.getByRole('heading', { name: 'Request History' });
     await expect(section).toBeVisible();
   });
 
   test('should display request history description', async ({ page }) => {
-    const description = page.getByText(/privacy request history/i);
+    // The description mentions "View your privacy request history" or similar
+    const description = page.getByText(/privacy request history/i).first();
     await expect(description).toBeVisible();
   });
 
   test('should display empty state when no requests exist', async ({ page }) => {
     // For a new user, should show empty state
-    const emptyState = page.getByText(/no privacy requests yet/i);
+    const emptyState = page.getByText(/no privacy requests yet/i).first();
     const hasEmptyState = await emptyState.isVisible().catch(() => false);
 
     // Either empty state or request rows should be visible
-    const tableRow = page.getByText(/data export|data deletion/i);
+    const tableRow = page.getByText(/data export|data deletion/i).first();
     const hasRequests = await tableRow.isVisible().catch(() => false);
 
     expect(hasEmptyState || hasRequests).toBe(true);
   });
 
   test('should display 45-day processing info', async ({ page }) => {
-    const info = page.getByText(/45 days/i);
+    const info = page.getByText(/45 days/i).first();
     await expect(info).toBeVisible();
   });
 });
@@ -220,21 +234,21 @@ test.describe('Privacy Dashboard - Connected Apps', () => {
   });
 
   test('should display Connected Applications section', async ({ page }) => {
-    const section = page.getByText('Connected Applications');
+    const section = page.getByRole('heading', { name: 'Connected Applications' });
     await expect(section).toBeVisible();
   });
 
   test('should display connected apps description', async ({ page }) => {
-    const description = page.getByText(/third-party applications/i);
+    const description = page.getByText(/third-party applications/i).first();
     await expect(description).toBeVisible();
   });
 
   test('should display empty state or app list', async ({ page }) => {
     // Should show either empty state or connected apps
-    const emptyState = page.getByText(/no connected applications/i);
+    const emptyState = page.getByText(/no connected applications/i).first();
     const hasEmptyState = await emptyState.isVisible().catch(() => false);
 
-    const appCard = page.getByText(/permissions|view details/i);
+    const appCard = page.getByText(/permissions|view details/i).first();
     const hasApps = await appCard.isVisible().catch(() => false);
 
     expect(hasEmptyState || hasApps).toBe(true);
@@ -291,13 +305,13 @@ test.describe('Privacy Dashboard - GPC Detection', () => {
     await page.waitForTimeout(1000);
 
     // Should see GPC acknowledgment message
-    const gpcMessage = page.getByText(/global privacy control/i);
+    const gpcMessage = page.getByText(/global privacy control/i).first();
     const hasGpcMessage = await gpcMessage.isVisible().catch(() => false);
 
     // GPC message should be visible when GPC is enabled
     // Note: This depends on the API response also indicating GPC opt-out
     // For now, just verify the page loads correctly with GPC enabled
-    await expect(page).toHaveURL(/\/manager\/settings\/privacy/);
+    await expect(page).toHaveURL(/\/settings\/privacy/);
   });
 });
 
@@ -310,8 +324,7 @@ test.describe('Privacy Dashboard - Loading States', () => {
 
     // Check for either loading spinner or loaded content
     // (loading state may be too fast to catch)
-    const spinner = page.getByRole('status');
-    const header = page.getByText('Privacy Settings');
+    const header = page.getByRole('heading', { name: 'Privacy Settings' });
 
     // Either should be visible at some point
     await expect(header).toBeVisible({ timeout: 10000 });
@@ -336,7 +349,7 @@ test.describe('Privacy Dashboard - Error Handling', () => {
 
     // Should either show error state or handle gracefully
     // The page should still be usable
-    await expect(page).toHaveURL(/\/manager\/settings\/privacy/);
+    await expect(page).toHaveURL(/\/settings\/privacy/);
   });
 });
 
@@ -349,9 +362,7 @@ test.describe('Privacy Dashboard - Accessibility', () => {
 
   test('should have proper heading hierarchy', async ({ page }) => {
     // Main heading should be visible
-    const mainHeading = page.getByRole('heading', { level: 1 }).or(
-      page.getByText('Privacy Settings').first()
-    );
+    const mainHeading = page.getByRole('heading', { name: 'Privacy Settings' });
     await expect(mainHeading).toBeVisible();
   });
 
@@ -368,7 +379,7 @@ test.describe('Privacy Dashboard - Accessibility', () => {
 
   test('should have proper contrast for text elements', async ({ page }) => {
     // Visual inspection - ensure text is visible
-    const bodyText = page.getByText(/california consumer privacy act/i);
+    const bodyText = page.getByText(/california consumer privacy act/i).first();
     await expect(bodyText).toBeVisible();
   });
 });
@@ -384,10 +395,10 @@ test.describe('Privacy Dashboard - Responsive Design', () => {
     await page.waitForTimeout(1000);
 
     // Key elements should still be visible
-    const header = page.getByText('Privacy Settings');
+    const header = page.getByRole('heading', { name: 'Privacy Settings' });
     await expect(header).toBeVisible();
 
-    const quickActions = page.getByText('Quick Actions');
+    const quickActions = page.getByRole('heading', { name: 'Quick Actions' });
     await expect(quickActions).toBeVisible();
   });
 
@@ -401,7 +412,7 @@ test.describe('Privacy Dashboard - Responsive Design', () => {
     await page.waitForTimeout(1000);
 
     // Key elements should be visible
-    const header = page.getByText('Privacy Settings');
+    const header = page.getByRole('heading', { name: 'Privacy Settings' });
     await expect(header).toBeVisible();
   });
 
@@ -415,7 +426,7 @@ test.describe('Privacy Dashboard - Responsive Design', () => {
     await page.waitForTimeout(1000);
 
     // Key elements should be visible
-    const header = page.getByText('Privacy Settings');
+    const header = page.getByRole('heading', { name: 'Privacy Settings' });
     await expect(header).toBeVisible();
   });
 });

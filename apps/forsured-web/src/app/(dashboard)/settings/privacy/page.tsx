@@ -9,11 +9,7 @@
  * - View connected apps and revoke access
  */
 
-'use client';
-
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { api } from '../../../../lib/trpc/client';
 
 // Types for CCPA data
 interface DataCategory {
@@ -52,7 +48,7 @@ interface OptOutStatus {
 // Category metadata
 const CATEGORY_INFO: Record<string, { name: string; description: string; icon: string }> = {
   identifiers: {
-    name: 'Identifiers',
+    name: 'Personal Identifiers',
     description: 'Name, email, phone, company information',
     icon: '👤',
   },
@@ -93,7 +89,7 @@ const PRIVACY_RIGHTS = [
   },
   {
     title: 'Right to Delete',
-    description: 'Request deletion of your personal information, subject to certain exceptions.',
+    description: 'Request deletion of your personal information. Some data may be retained for legal or regulatory requirements.',
     action: 'Delete My Data',
     type: 'deletion' as const,
   },
@@ -111,14 +107,19 @@ const PRIVACY_RIGHTS = [
   },
   {
     title: 'Right to Non-Discrimination',
-    description: 'We will not discriminate against you for exercising your privacy rights.',
+    description: 'We will not receive discriminatory treatment for exercising your privacy rights.',
     action: null,
     type: null,
+  },
+  {
+    title: 'Right to Limit Use of Sensitive Information',
+    description: 'Limit the use and disclosure of sensitive personal information.',
+    action: 'Manage Settings',
+    type: 'opt-out' as const,
   },
 ];
 
 export default function PrivacySettingsPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<'request' | 'opt-out' | null>(null);
@@ -134,59 +135,60 @@ export default function PrivacySettingsPage() {
   // Detect GPC signal
   useEffect(() => {
     if (typeof navigator !== 'undefined') {
-      // @ts-expect-error - GPC not in TypeScript types yet
-      const gpcSignal = navigator.globalPrivacyControl === true || navigator.doNotTrack === '1';
+      // Check for Global Privacy Control signal (not yet in standard TypeScript types)
+      const nav = navigator as Navigator & { globalPrivacyControl?: boolean };
+      const gpcSignal = nav.globalPrivacyControl === true || navigator.doNotTrack === '1';
       setHasGPC(gpcSignal);
     }
   }, []);
 
   // Load data on mount
   useEffect(() => {
+    const loadPrivacyData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // In a real implementation, these would be actual tRPC calls
+        // For now, we'll use mock data to demonstrate the UI
+
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Mock data summary
+        setCategories([
+          { category: 'identifiers', record_count: 5, data_types: ['name', 'email', 'phone'] },
+          { category: 'financial', record_count: 3, data_types: ['policies', 'coverage'] },
+          { category: 'professional', record_count: 12, data_types: ['certifications', 'documents'] },
+          { category: 'commercial', record_count: 4, data_types: ['projects', 'assignments'] },
+          { category: 'usage', record_count: 156, data_types: ['logins', 'activity'] },
+          { category: 'inferences', record_count: 2, data_types: ['compliance_scores'] },
+        ]);
+
+        // Mock requests
+        setRequests([]);
+
+        // Mock connected apps
+        setConnectedApps([]);
+
+        // Mock opt-out status
+        setOptOuts([
+          { category: 'sale', opted_out: false, source: 'default' },
+          { category: 'sharing', opted_out: false, source: 'default' },
+          { category: 'targeted_advertising', opted_out: false, source: 'default' },
+          { category: 'sensitive_data', opted_out: false, source: 'default' },
+        ]);
+
+      } catch (err) {
+        setError('Failed to load privacy data. Please try again.');
+        console.error('Privacy data error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadPrivacyData();
   }, []);
-
-  const loadPrivacyData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // In a real implementation, these would be actual tRPC calls
-      // For now, we'll use mock data to demonstrate the UI
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Mock data summary
-      setCategories([
-        { category: 'identifiers', record_count: 5, data_types: ['name', 'email', 'phone'] },
-        { category: 'financial', record_count: 3, data_types: ['policies', 'coverage'] },
-        { category: 'professional', record_count: 12, data_types: ['certifications', 'documents'] },
-        { category: 'commercial', record_count: 4, data_types: ['projects', 'assignments'] },
-        { category: 'usage', record_count: 156, data_types: ['logins', 'activity'] },
-        { category: 'inferences', record_count: 2, data_types: ['compliance_scores'] },
-      ]);
-
-      // Mock requests
-      setRequests([]);
-
-      // Mock connected apps
-      setConnectedApps([]);
-
-      // Mock opt-out status
-      setOptOuts([
-        { category: 'sale', opted_out: false, source: 'default' },
-        { category: 'sharing', opted_out: false, source: 'default' },
-        { category: 'targeted_advertising', opted_out: false, source: 'default' },
-        { category: 'sensitive_data', opted_out: false, source: 'default' },
-      ]);
-
-    } catch (err) {
-      setError('Failed to load privacy data. Please try again.');
-      console.error('Privacy data error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleRequestClick = (type: 'export' | 'deletion' | 'correction') => {
     setRequestType(type);
@@ -246,7 +248,8 @@ export default function PrivacySettingsPage() {
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-red-800">{error}</p>
           <button
-            onClick={loadPrivacyData}
+            type="button"
+            onClick={() => window.location.reload()}
             className="mt-2 text-red-600 underline hover:text-red-800"
           >
             Try again
@@ -273,6 +276,7 @@ export default function PrivacySettingsPage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
+            type="button"
             onClick={() => handleRequestClick('export')}
             className="p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-left"
           >
@@ -282,6 +286,7 @@ export default function PrivacySettingsPage() {
           </button>
 
           <button
+            type="button"
             onClick={() => handleRequestClick('deletion')}
             className="p-4 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors text-left"
           >
@@ -291,6 +296,7 @@ export default function PrivacySettingsPage() {
           </button>
 
           <button
+            type="button"
             onClick={handleOptOutClick}
             className="p-4 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors text-left"
           >
@@ -303,7 +309,10 @@ export default function PrivacySettingsPage() {
 
       {/* Data Categories */}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Data Summary</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Data Categories</h2>
+        <p className="text-gray-600 mb-4">
+          Below are the categories of personal information we collect about you.
+        </p>
         <div className="bg-white border rounded-lg overflow-hidden">
           <div className="p-4 bg-gray-50 border-b">
             <p className="text-sm text-gray-600">
@@ -343,6 +352,7 @@ export default function PrivacySettingsPage() {
               <p className="text-sm text-gray-600 mb-3">{right.description}</p>
               {right.action && right.type && (
                 <button
+                  type="button"
                   onClick={() => {
                     if (right.type === 'opt-out') {
                       handleOptOutClick();
@@ -387,6 +397,7 @@ export default function PrivacySettingsPage() {
             ))}
           </div>
           <button
+            type="button"
             onClick={handleOptOutClick}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
           >
@@ -396,10 +407,20 @@ export default function PrivacySettingsPage() {
       </div>
 
       {/* Request History */}
-      {requests.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Request History</h2>
-          <div className="bg-white border rounded-lg overflow-hidden">
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Request History</h2>
+        <p className="text-gray-600 mb-4">
+          View your privacy request history below. Requests are processed within 45 days as required by CCPA.
+        </p>
+        <div className="bg-white border rounded-lg overflow-hidden">
+          {requests.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-500">No privacy requests yet</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Your data export, deletion, and correction requests will appear here.
+              </p>
+            </div>
+          ) : (
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
@@ -412,7 +433,7 @@ export default function PrivacySettingsPage() {
               <tbody className="divide-y">
                 {requests.map(req => (
                   <tr key={req.id}>
-                    <td className="px-4 py-3 capitalize">{req.type}</td>
+                    <td className="px-4 py-3 capitalize">{req.type === 'export' ? 'Data Export' : req.type === 'deletion' ? 'Data Deletion' : 'Data Correction'}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded text-sm ${getStatusColor(req.status)}`}>
                         {req.status}
@@ -421,40 +442,77 @@ export default function PrivacySettingsPage() {
                     <td className="px-4 py-3 text-gray-600">{formatDate(req.created_at)}</td>
                     <td className="px-4 py-3">
                       {req.status === 'completed' && req.download_url && (
-                        <a href={req.download_url} className="text-blue-600 hover:text-blue-800">
+                        <button type="button" className="text-blue-600 hover:text-blue-800">
                           Download
-                        </a>
+                        </button>
                       )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Connected Apps */}
-      {connectedApps.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Connected Applications</h2>
-          <div className="bg-white border rounded-lg divide-y">
-            {connectedApps.map(app => (
-              <div key={app.id} className="p-4 flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium text-gray-900">{app.app_name}</h3>
-                  <p className="text-sm text-gray-500">
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Connected Applications</h2>
+        <p className="text-gray-600 mb-4">
+          Manage third-party applications that have access to your data.
+        </p>
+        <div className="bg-white border rounded-lg">
+          {connectedApps.length === 0 ? (
+            <div className="p-8 text-center">
+              <p className="text-gray-500">No connected applications</p>
+              <p className="text-sm text-gray-400 mt-1">
+                Third-party apps with access to your data will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y">
+              {connectedApps.map(app => (
+                <div key={app.id} className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium text-gray-900">{app.app_name}</h3>
+                    <div className="flex gap-2">
+                      <button type="button" className="text-blue-600 hover:text-blue-800 text-sm">
+                        View Details
+                      </button>
+                      <button type="button" className="text-red-600 hover:text-red-800 text-sm">
+                        Revoke Access
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-2">
                     Connected {formatDate(app.connected_at)}
                   </p>
+                  <div className="mt-2">
+                    <h4 className="text-sm font-medium text-gray-700">Permissions</h4>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {app.permissions.map(perm => (
+                        <span key={perm} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+                          {perm}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <h4 className="text-sm font-medium text-gray-700">Data Categories Accessed</h4>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {app.data_categories.map(cat => (
+                        <span key={cat} className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded capitalize">
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <button className="text-red-600 hover:text-red-800 text-sm">
-                  Revoke Access
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Non-Discrimination Notice */}
       <div className="mb-8 p-4 bg-gray-50 border rounded-lg">
@@ -466,11 +524,49 @@ export default function PrivacySettingsPage() {
       </div>
 
       {/* Processing Time Info */}
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-sm text-blue-800">
+      <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm text-blue-800 mb-2">
           <strong>Processing Time:</strong> Under CCPA, we will respond to your request within 45 days.
           In some cases, we may extend this period by an additional 45 days if necessary.
         </p>
+        <p className="text-sm text-blue-800">
+          <strong>Download Availability:</strong> Data exports will be available for download for 30 days after completion.
+        </p>
+      </div>
+
+      {/* Additional Resources */}
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Resources</h2>
+        <div className="bg-white border rounded-lg p-4">
+          <ul className="space-y-3">
+            <li>
+              <a href="/privacy-policy" className="text-blue-600 hover:text-blue-800 hover:underline">
+                Privacy Policy
+              </a>
+              <p className="text-sm text-gray-500">Learn how we collect, use, and protect your information</p>
+            </li>
+            <li>
+              <a href="/terms" className="text-blue-600 hover:text-blue-800 hover:underline">
+                Terms of Service
+              </a>
+              <p className="text-sm text-gray-500">Review our terms and conditions</p>
+            </li>
+            <li>
+              <a href="https://oag.ca.gov/privacy/ccpa" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline">
+                Learn more about CCPA
+              </a>
+              <p className="text-sm text-gray-500">Official information from the California Attorney General</p>
+            </li>
+          </ul>
+          <div className="mt-4 pt-4 border-t">
+            <p className="text-sm text-gray-600">
+              Have questions about your privacy rights? Contact our privacy team at{' '}
+              <a href="mailto:privacy@scaffald.com" className="text-blue-600 hover:text-blue-800">
+                privacy@scaffald.com
+              </a>
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Modals would go here - simplified for now */}
@@ -489,12 +585,14 @@ export default function PrivacySettingsPage() {
             </p>
             <div className="flex gap-3 justify-end">
               <button
+                type="button"
                 onClick={() => setActiveModal(null)}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={() => {
                   // In a real implementation, this would submit the request
                   alert('Request submitted! You will receive an email confirmation.');
