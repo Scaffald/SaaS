@@ -1,0 +1,189 @@
+/**
+ * Data Category Summary Component
+ * REQ-3: CCPA Compliance Implementation
+ *
+ * Displays the 6 CCPA data categories with indicators
+ * showing what types of personal information are collected
+ */
+
+import { Text, XStack, YStack } from '@unicornlove/ui'
+
+/**
+ * CCPA data category type
+ */
+export type CCPACategory =
+  | 'identifiers'
+  | 'financial'
+  | 'professional'
+  | 'commercial'
+  | 'usage'
+  | 'inferences'
+
+/**
+ * Category metadata structure
+ */
+interface CategoryInfo {
+  name: string
+  description: string
+  examples: string[]
+  hasData: boolean
+  recordCount?: number
+}
+
+/**
+ * Props for DataCategorySummary component
+ */
+interface DataCategorySummaryProps {
+  categories: Array<{
+    category: CCPACategory
+    record_count: number
+    data_types: string[]
+  }>
+}
+
+/**
+ * Category metadata with descriptions and examples
+ */
+const CATEGORY_METADATA: Record<CCPACategory, Omit<CategoryInfo, 'hasData' | 'recordCount'>> = {
+  identifiers: {
+    name: 'Personal Identifiers',
+    description: 'Information that identifies you directly or indirectly',
+    examples: ['Name', 'Email', 'Phone number', 'Address', 'Account ID'],
+  },
+  financial: {
+    name: 'Financial Information',
+    description: 'Financial data and transaction information',
+    examples: ['Insurance policies', 'Payment methods', 'Coverage amounts', 'Claims'],
+  },
+  professional: {
+    name: 'Professional Information',
+    description: 'Employment and professional data',
+    examples: ['Company name', 'Job title', 'Licenses', 'Certifications'],
+  },
+  commercial: {
+    name: 'Commercial Information',
+    description: 'Business and transactional data',
+    examples: ['Projects', 'Contracts', 'Business relationships'],
+  },
+  usage: {
+    name: 'Usage Data',
+    description: 'Information about how you use our services',
+    examples: ['Tasks completed', 'Features used', 'Login history'],
+  },
+  inferences: {
+    name: 'Inferences',
+    description: 'Insights derived from your data',
+    examples: ['Compliance scores', 'Risk assessments', 'Recommendations'],
+  },
+}
+
+/**
+ * Single category card component
+ */
+function CategoryCard({ info }: { info: CategoryInfo }) {
+  return (
+    <YStack
+      padding="$4"
+      backgroundColor="$color2"
+      borderRadius="$3"
+      borderWidth={1}
+      borderColor={info.hasData ? '$green6' : '$borderColor'}
+      gap="$2"
+      flex={1}
+      minWidth={280}
+    >
+      <XStack justifyContent="space-between" alignItems="center">
+        <Text fontSize="$4" fontWeight="600">
+          {info.name}
+        </Text>
+        {info.hasData ? (
+          <XStack
+            backgroundColor="$green3"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+          >
+            <Text fontSize="$2" color="$green11" fontWeight="500">
+              {info.recordCount || 0} records
+            </Text>
+          </XStack>
+        ) : (
+          <XStack
+            backgroundColor="$color4"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+          >
+            <Text fontSize="$2" color="$color11" fontWeight="500">
+              No data
+            </Text>
+          </XStack>
+        )}
+      </XStack>
+
+      <Text fontSize="$3" color="$color11">
+        {info.description}
+      </Text>
+
+      <YStack gap="$1" marginTop="$1">
+        <Text fontSize="$2" color="$color10" fontWeight="500">
+          Examples:
+        </Text>
+        <Text fontSize="$2" color="$color10">
+          {info.examples.join(' • ')}
+        </Text>
+      </YStack>
+    </YStack>
+  )
+}
+
+/**
+ * Data Category Summary Component
+ *
+ * Displays all CCPA data categories with indicators for what data
+ * the user has stored in the system.
+ */
+export function DataCategorySummary({ categories }: DataCategorySummaryProps) {
+  // Build category info with actual data
+  const categoryInfos: CategoryInfo[] = (Object.keys(CATEGORY_METADATA) as CCPACategory[]).map(
+    (categoryKey) => {
+      const metadata = CATEGORY_METADATA[categoryKey]
+      const categoryData = categories.find((c) => c.category === categoryKey)
+
+      return {
+        ...metadata,
+        hasData: (categoryData?.record_count || 0) > 0,
+        recordCount: categoryData?.record_count || 0,
+      }
+    }
+  )
+
+  // Count categories with data
+  const categoriesWithData = categoryInfos.filter((c) => c.hasData).length
+
+  return (
+    <YStack gap="$4">
+      {/* Summary banner */}
+      <XStack
+        padding="$3"
+        backgroundColor="$blue2"
+        borderRadius="$3"
+        gap="$2"
+        alignItems="center"
+      >
+        <Text fontSize="$3" color="$blue11">
+          We collect data in {categoriesWithData} of 6 CCPA categories. View details below.
+        </Text>
+      </XStack>
+
+      {/* Category cards grid */}
+      <XStack flexWrap="wrap" gap="$3">
+        {categoryInfos.map((info) => (
+          <CategoryCard key={info.name} info={info} />
+        ))}
+      </XStack>
+    </YStack>
+  )
+}
+
+export default DataCategorySummary
