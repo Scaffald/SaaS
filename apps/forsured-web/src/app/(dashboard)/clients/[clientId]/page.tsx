@@ -14,6 +14,7 @@
 import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, AlertCircle, Building2, Clock } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, H1, H2, H3 } from '@unicornlove/ui';
 import { trpc } from '../../../../lib/trpc';
 import StatusBadge from '../../../../components/Common/StatusBadge';
 
@@ -75,59 +76,76 @@ export default function ClientProfilePage() {
   // Loading state
   if (isLoading) {
     return (
-      <div
-        className="min-h-screen bg-gray-50"
+      <YStack
+        minHeight="100vh"
+        backgroundColor="$gray2"
         data-testid="client-profile-container"
       >
-        <div
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        <YStack
+          maxWidth={1120}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          paddingVertical="$8"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
           data-testid="client-profile-content"
         >
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-              <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+          <YStack opacity={0.5}>
+            <YStack height={32} backgroundColor="$gray4" borderRadius="$2" width="25%" marginBottom="$4" />
+            <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="50%" marginBottom="$8" />
+            <Card padding="$6" marginBottom="$6">
+              <YStack height={24} backgroundColor="$gray4" borderRadius="$2" width="33%" marginBottom="$4" />
+              <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="100%" marginBottom="$2" />
+              <YStack height={16} backgroundColor="$gray4" borderRadius="$2" width="75%" />
+            </Card>
+          </YStack>
+        </YStack>
+      </YStack>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div
-        className="min-h-screen bg-gray-50"
+      <YStack
+        minHeight="100vh"
+        backgroundColor="$gray2"
         data-testid="client-profile-container"
       >
-        <div
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        <YStack
+          maxWidth={1120}
+          marginHorizontal="auto"
+          paddingHorizontal="$4"
+          paddingVertical="$8"
+          $gtSm={{ paddingHorizontal: '$6' }}
+          $gtLg={{ paddingHorizontal: '$8' }}
           data-testid="client-profile-content"
         >
-          <button
-            onClick={handleBack}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+          <Button
+            onPress={handleBack}
+            backgroundColor="transparent"
+            color="$gray11"
+            hoverStyle={{ color: '$gray12' }}
+            marginBottom="$4"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </button>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <div className="flex items-center">
-              <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
-              <h2 className="text-lg font-semibold text-red-800">
+            <XStack alignItems="center" gap="$1">
+              <ArrowLeft size={16} />
+              <Text fontSize="$2">Back</Text>
+            </XStack>
+          </Button>
+          <YStack backgroundColor="$red2" borderWidth={1} borderColor="$red6" borderRadius="$4" padding="$6">
+            <XStack alignItems="center" gap="$2">
+              <AlertCircle size={20} color="$red11" />
+              <H3 color="$red11">
                 Error Loading Client
-              </h2>
-            </div>
-            <p className="mt-2 text-sm text-red-600">
+              </H3>
+            </XStack>
+            <Text marginTop="$2" fontSize="$2" color="$red11">
               {error.message || 'Failed to load client profile'}
-            </p>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </YStack>
+        </YStack>
+      </YStack>
     );
   }
 
@@ -136,144 +154,164 @@ export default function ClientProfilePage() {
   const recentActivity = profileData?.recentActivity || [];
 
   return (
-    <div
-      className="min-h-screen bg-gray-50"
+    <YStack
+      minHeight="100vh"
+      backgroundColor="$gray2"
       data-testid="client-profile-container"
     >
-      <div
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      <YStack
+        maxWidth={1120}
+        marginHorizontal="auto"
+        paddingHorizontal="$4"
+        paddingVertical="$8"
+        $gtSm={{ paddingHorizontal: '$6' }}
+        $gtLg={{ paddingHorizontal: '$8' }}
         data-testid="client-profile-content"
       >
         {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={handleBack}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+        <YStack marginBottom="$8">
+          <Button
+            onPress={handleBack}
+            backgroundColor="transparent"
+            color="$gray11"
+            hoverStyle={{ color: '$gray12' }}
+            marginBottom="$4"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">Client Profile</h1>
-          <p className="mt-2 text-lg text-gray-700" data-testid="client-name">
+            <XStack alignItems="center" gap="$1">
+              <ArrowLeft size={16} />
+              <Text fontSize="$2">Back</Text>
+            </XStack>
+          </Button>
+          <H1>Client Profile</H1>
+          <Text marginTop="$2" fontSize="$5" color="$gray12" data-testid="client-name">
             {clientName}
-          </p>
-          <p className="mt-1 text-xs text-gray-400" data-testid="client-id">
+          </Text>
+          <Text marginTop="$1" fontSize="$1" color="$gray10" data-testid="client-id">
             {clientId}
-          </p>
-        </div>
+          </Text>
+        </YStack>
 
         {/* GC Relationships Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <Card padding="$6" marginBottom="$6">
+          <H3 marginBottom="$4">
             GC Relationships
-          </h2>
+          </H3>
           {gcRelationships.length > 0 ? (
-            <div className="space-y-3" data-testid="gc-relationships-list">
+            <YStack gap="$3" data-testid="gc-relationships-list">
               {gcRelationships.map((relationship) => (
-                <div
+                <XStack
                   key={relationship.gcId}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$4"
+                  backgroundColor="$gray2"
+                  borderRadius="$4"
+                  borderWidth={1}
+                  borderColor="$gray4"
                   data-testid="gc-relationship-item"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Building2 className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div>
+                  <XStack alignItems="center" gap="$3">
+                    <YStack width={40} height={40} borderRadius={9999} backgroundColor="$blue2" alignItems="center" justifyContent="center">
+                      <Building2 size={20} color="$blue11" />
+                    </YStack>
+                    <YStack>
                       <Link
                         to={`/clients/${relationship.gcId}`}
-                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
                         data-testid="gc-name-link"
                       >
-                        {relationship.gcName}
+                        <Text fontWeight="500" color="$blue11" hoverStyle={{ color: '$blue12', textDecorationLine: 'underline' }}>
+                          {relationship.gcName}
+                        </Text>
                       </Link>
-                      <p className="text-sm text-gray-500">
+                      <Text fontSize="$2" color="$gray11">
                         Compliance Score: {relationship.complianceScore}%
-                      </p>
-                    </div>
-                  </div>
+                      </Text>
+                    </YStack>
+                  </XStack>
                   <StatusBadge
                     status={relationship.complianceStatus as 'compliant' | 'warning' | 'critical'}
                     size="sm"
                     data-testid="compliance-badge"
                   />
-                </div>
+                </XStack>
               ))}
-            </div>
+            </YStack>
           ) : (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <Text fontSize="$2" color="$gray11" textAlign="center" paddingVertical="$4">
               No GC relationships found for this client
-            </p>
+            </Text>
           )}
-        </div>
+        </Card>
 
         {/* Compliance Status Section - Summary view */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <Card padding="$6" marginBottom="$6">
+          <H3 marginBottom="$4">
             Compliance Status
-          </h2>
+          </H3>
           {gcRelationships.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4" data-testid="compliance-summary">
-              <div className="p-4 bg-green-50 rounded-lg border border-green-100">
-                <p className="text-sm text-green-600 font-medium">Compliant</p>
-                <p className="text-2xl font-bold text-green-700">
+            <XStack flexWrap="wrap" gap="$4" data-testid="compliance-summary">
+              <Card padding="$4" backgroundColor="$green2" borderWidth={1} borderColor="$green6" flex={1} minWidth={200}>
+                <Text fontSize="$2" color="$green11" fontWeight="500">Compliant</Text>
+                <Text fontSize="$8" fontWeight="700" color="$green12">
                   {gcRelationships.filter((r) => r.complianceStatus === 'compliant').length}
-                </p>
-              </div>
-              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-100">
-                <p className="text-sm text-yellow-600 font-medium">Warning</p>
-                <p className="text-2xl font-bold text-yellow-700">
+                </Text>
+              </Card>
+              <Card padding="$4" backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" flex={1} minWidth={200}>
+                <Text fontSize="$2" color="$yellow11" fontWeight="500">Warning</Text>
+                <Text fontSize="$8" fontWeight="700" color="$yellow12">
                   {gcRelationships.filter((r) => r.complianceStatus === 'warning').length}
-                </p>
-              </div>
-              <div className="p-4 bg-red-50 rounded-lg border border-red-100">
-                <p className="text-sm text-red-600 font-medium">Critical</p>
-                <p className="text-2xl font-bold text-red-700">
+                </Text>
+              </Card>
+              <Card padding="$4" backgroundColor="$red2" borderWidth={1} borderColor="$red6" flex={1} minWidth={200}>
+                <Text fontSize="$2" color="$red11" fontWeight="500">Critical</Text>
+                <Text fontSize="$8" fontWeight="700" color="$red12">
                   {gcRelationships.filter((r) => r.complianceStatus === 'critical').length}
-                </p>
-              </div>
-            </div>
+                </Text>
+              </Card>
+            </XStack>
           ) : (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <Text fontSize="$2" color="$gray11" textAlign="center" paddingVertical="$4">
               No compliance data available
-            </p>
+            </Text>
           )}
-        </div>
+        </Card>
 
         {/* Recent Activity Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <Card padding="$6">
+          <H3 marginBottom="$4">
             Recent Activity
-          </h2>
+          </H3>
           {recentActivity.length > 0 ? (
-            <div className="space-y-0 max-h-80 overflow-y-auto" data-testid="activity-feed">
+            <YStack gap={0} maxHeight={320} overflowY="auto" data-testid="activity-feed">
               {recentActivity.map((activity, index) => (
-                <div
+                <XStack
                   key={activity.id}
-                  className={`flex items-start gap-3 py-3 ${
-                    index !== recentActivity.length - 1 ? 'border-b border-gray-100' : ''
-                  }`}
+                  alignItems="flex-start"
+                  gap="$3"
+                  paddingVertical="$3"
+                  borderBottomWidth={index !== recentActivity.length - 1 ? 1 : 0}
+                  borderColor="$gray4"
                   data-testid="activity-item"
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900">{activity.description}</p>
-                    <p className="text-xs text-gray-500">
+                  <YStack flexShrink={0} width={32} height={32} borderRadius={9999} backgroundColor="$gray3" alignItems="center" justifyContent="center">
+                    <Clock size={16} color="$gray11" />
+                  </YStack>
+                  <YStack flex={1} minWidth={0}>
+                    <Text fontSize="$2" color="$gray12">{activity.description}</Text>
+                    <Text fontSize="$1" color="$gray11">
                       {formatTimestamp(activity.timestamp)}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </YStack>
+                </XStack>
               ))}
-            </div>
+            </YStack>
           ) : (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <Text fontSize="$2" color="$gray11" textAlign="center" paddingVertical="$4">
               No recent activity
-            </p>
+            </Text>
           )}
-        </div>
-      </div>
-    </div>
+        </Card>
+      </YStack>
+    </YStack>
   );
 }
