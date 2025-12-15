@@ -1,4 +1,5 @@
 export * from './address'
+export * from './alert'
 export * from './avatars'
 export * from './breadcrumb'
 export * from './buttons'
