@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { YStack, XStack, Text, Button, Card, H2, H3 } from '@unicornlove/ui';
 import {
   ComplianceRequirement,
   CoverageType,
@@ -77,228 +78,252 @@ export default function RequirementDetail({
   }
 
   function getStatusBadge(status: RequirementStatus) {
-    const colors = {
-      [RequirementStatus.ACTIVE]: 'bg-green-100 text-green-800',
-      [RequirementStatus.DRAFT]: 'bg-yellow-100 text-yellow-800',
-      [RequirementStatus.ARCHIVED]: 'bg-gray-100 text-gray-800'
+    const badgeConfig = {
+      [RequirementStatus.ACTIVE]: { bg: '$green3', color: '$green11' },
+      [RequirementStatus.DRAFT]: { bg: '$yellow3', color: '$yellow11' },
+      [RequirementStatus.ARCHIVED]: { bg: '$gray3', color: '$gray11' }
     };
 
+    const config = badgeConfig[status] || badgeConfig[RequirementStatus.DRAFT];
+
     return (
-      <span className={`px-3 py-1 text-sm font-medium rounded-full ${colors[status]}`}>
+      <Text
+        paddingHorizontal="$3"
+        paddingVertical="$1"
+        fontSize="$3"
+        fontWeight="500"
+        borderRadius={9999}
+        backgroundColor={config.bg}
+        color={config.color}
+      >
         {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
+      </Text>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading requirement details...</div>
-      </div>
+      <YStack alignItems="center" justifyContent="center" height={256}>
+        <Text color="$gray9">Loading requirement details...</Text>
+      </YStack>
     );
   }
 
   if (error || !requirement) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-800">Error: {error || 'Requirement not found'}</p>
+      <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$2" padding="$4">
+        <Text color="$red11">Error: {error || 'Requirement not found'}</Text>
         {onClose && (
-          <button
-            onClick={onClose}
-            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+          <Button
+            unstyled
+            marginTop="$2"
+            fontSize="$3"
+            color="$red9"
+            hoverStyle={{ color: '$red10' }}
+            onPress={onClose}
           >
             Close
-          </button>
+          </Button>
         )}
-      </div>
+      </Card>
     );
   }
 
   const { requirement_definition } = requirement;
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-2">
-              <h2 className="text-2xl font-bold text-gray-900">{requirement.name}</h2>
+      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+        <XStack alignItems="flex-start" justifyContent="space-between">
+          <YStack flex={1}>
+            <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <H2 fontSize="$9" fontWeight="700" color="$gray12">{requirement.name}</H2>
               {getStatusBadge(requirement.status)}
               {requirement.is_template && (
-                <span className="px-3 py-1 text-sm font-medium rounded-full bg-purple-100 text-purple-800">
+                <Text
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  fontSize="$3"
+                  fontWeight="500"
+                  borderRadius={9999}
+                  backgroundColor="$purple3"
+                  color="$purple11"
+                >
                   Template
-                </span>
+                </Text>
               )}
-            </div>
-            <div className="text-sm text-gray-500 space-y-1">
-              <div>Type: {getTypeLabel(requirement.type)}</div>
-              <div>Version: {requirement.version}</div>
-              <div>
+            </XStack>
+            <YStack gap="$1">
+              <Text fontSize="$3" color="$gray9">Type: {getTypeLabel(requirement.type)}</Text>
+              <Text fontSize="$3" color="$gray9">Version: {requirement.version}</Text>
+              <Text fontSize="$3" color="$gray9">
                 Effective Date: {new Date(requirement.effective_date).toLocaleDateString()}
-              </div>
+              </Text>
               {requirement.superseded_date && (
-                <div className="text-orange-600">
+                <Text fontSize="$3" color="$orange9">
                   Superseded: {new Date(requirement.superseded_date).toLocaleDateString()}
-                </div>
+                </Text>
               )}
-            </div>
+            </YStack>
             {requirement.description && (
-              <p className="mt-4 text-gray-700">{requirement.description}</p>
+              <Text marginTop="$4" color="$gray11">{requirement.description}</Text>
             )}
-          </div>
-          <div className="flex space-x-2">
+          </YStack>
+          <XStack gap="$2">
             {onEdit && requirement.status !== RequirementStatus.ARCHIVED && (
-              <button
-                onClick={onEdit}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+              <Button variant="solid" onPress={onEdit}>
                 Edit
-              </button>
+              </Button>
             )}
             {onClose && (
-              <button
-                onClick={onClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              >
+              <Button variant="outlined" onPress={onClose}>
                 Close
-              </button>
+              </Button>
             )}
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </Card>
 
       {/* Coverage Limits */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Coverage Limits</h3>
+      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Coverage Limits</H3>
         {Object.keys(requirement_definition.coverage_limits).length === 0 ? (
-          <p className="text-gray-500">Statutory or per policy</p>
+          <Text color="$gray9">Statutory or per policy</Text>
         ) : (
-          <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <XStack flexWrap="wrap" gap="$4">
             {Object.entries(requirement_definition.coverage_limits).map(([key, value]) => {
               if (value === undefined) return null;
               return (
-                <div key={key}>
-                  <dt className="text-sm font-medium text-gray-500 capitalize">
+                <YStack key={key} flex={1} minWidth="200px">
+                  <Text fontSize="$3" fontWeight="500" color="$gray9" textTransform="capitalize">
                     {key.replace(/_/g, ' ')}
-                  </dt>
-                  <dd className="text-lg font-semibold text-gray-900">{formatCurrency(value)}</dd>
-                </div>
+                  </Text>
+                  <Text fontSize="$6" fontWeight="600" color="$gray12">{formatCurrency(value)}</Text>
+                </YStack>
               );
             })}
-          </dl>
+          </XStack>
         )}
-      </div>
+      </Card>
 
       {/* Required Endorsements */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Required Endorsements</h3>
+      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Required Endorsements</H3>
         {requirement_definition.required_endorsements.length === 0 ? (
-          <p className="text-gray-500">No endorsements required</p>
+          <Text color="$gray9">No endorsements required</Text>
         ) : (
-          <div className="space-y-4">
+          <YStack gap="$4">
             {requirement_definition.required_endorsements.map((endorsement, index) => (
-              <div key={index} className="border-l-4 border-blue-500 pl-4">
-                <h4 className="font-medium text-gray-900">{endorsement.endorsement_type}</h4>
-                <p className="text-sm text-gray-600 mt-1">{endorsement.description}</p>
-              </div>
+              <YStack key={index} borderLeftWidth={4} borderColor="$blue9" paddingLeft="$4">
+                <Text fontWeight="500" color="$gray12">{endorsement.endorsement_type}</Text>
+                <Text fontSize="$3" color="$gray10" marginTop="$1">{endorsement.description}</Text>
+              </YStack>
             ))}
-          </div>
+          </YStack>
         )}
-      </div>
+      </Card>
 
       {/* Policy Conditions */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Policy Conditions</h3>
+      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Policy Conditions</H3>
         {requirement_definition.policy_conditions.length === 0 ? (
-          <p className="text-gray-500">No special conditions</p>
+          <Text color="$gray9">No special conditions</Text>
         ) : (
-          <div className="space-y-4">
+          <YStack gap="$4">
             {requirement_definition.policy_conditions.map((condition, index) => (
-              <div key={index} className="border-l-4 border-green-500 pl-4">
-                <h4 className="font-medium text-gray-900">{condition.condition_type}</h4>
-                <p className="text-sm text-gray-600 mt-1">{condition.description}</p>
-              </div>
+              <YStack key={index} borderLeftWidth={4} borderColor="$green9" paddingLeft="$4">
+                <Text fontWeight="500" color="$gray12">{condition.condition_type}</Text>
+                <Text fontSize="$3" color="$gray10" marginTop="$1">{condition.description}</Text>
+              </YStack>
             ))}
-          </div>
+          </YStack>
         )}
-      </div>
+      </Card>
 
       {/* Documentation Requirements */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Documentation Requirements</h3>
+      <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+        <H3 fontSize="$6" fontWeight="600" color="$gray12" marginBottom="$4">Documentation Requirements</H3>
         {requirement_definition.documentation_requirements.length === 0 ? (
-          <p className="text-gray-500">No documentation specified</p>
+          <Text color="$gray9">No documentation specified</Text>
         ) : (
-          <ul className="space-y-2">
+          <YStack gap="$2">
             {requirement_definition.documentation_requirements.map((doc, index) => (
-              <li key={index} className="flex items-center space-x-2">
-                <span className={doc.is_required ? 'text-red-600 font-bold' : 'text-gray-400'}>
+              <XStack key={index} alignItems="center" gap="$2">
+                <Text color={doc.is_required ? '$red9' : '$gray7'} fontWeight={doc.is_required ? '700' : '400'}>
                   {doc.is_required ? '* Required' : 'Optional'}
-                </span>
-                <span className="text-gray-900">{doc.document_type}</span>
-              </li>
+                </Text>
+                <Text color="$gray12">{doc.document_type}</Text>
+              </XStack>
             ))}
-          </ul>
+          </YStack>
         )}
-      </div>
+      </Card>
 
       {/* Version History */}
       {versions.length > 1 && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Version History</h3>
-            <button
-              onClick={() => setShowVersions(!showVersions)}
-              className="text-sm text-blue-600 hover:text-blue-800"
+        <Card backgroundColor="$background" borderRadius="$4" elevation={2} padding="$6">
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+            <H3 fontSize="$6" fontWeight="600" color="$gray12">Version History</H3>
+            <Button
+              unstyled
+              fontSize="$3"
+              color="$blue9"
+              hoverStyle={{ color: '$blue10' }}
+              onPress={() => setShowVersions(!showVersions)}
             >
               {showVersions ? 'Hide' : 'Show'} Versions ({versions.length})
-            </button>
-          </div>
+            </Button>
+          </XStack>
           {showVersions && (
-            <div className="space-y-2">
+            <YStack gap="$2">
               {versions.map((version) => (
-                <div
+                <Card
                   key={version.id}
-                  className={`p-3 border rounded-md ${
-                    version.id === requirement.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:bg-gray-50'
-                  }`}
+                  padding="$3"
+                  borderColor={version.id === requirement.id ? '$blue9' : '$gray5'}
+                  backgroundColor={version.id === requirement.id ? '$blue2' : '$background'}
+                  borderRadius="$2"
+                  hoverStyle={{ backgroundColor: '$gray2' }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="font-medium">Version {version.version}</span>
-                      {version.id === requirement.id && (
-                        <span className="ml-2 text-sm text-blue-600">(Current)</span>
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <YStack>
+                      <XStack alignItems="center" gap="$2">
+                        <Text fontWeight="500">Version {version.version}</Text>
+                        {version.id === requirement.id && (
+                          <Text fontSize="$3" color="$blue9">(Current)</Text>
+                        )}
+                        {version.superseded_date && (
+                          <Text fontSize="$3" color="$gray9">
+                            (Superseded {new Date(version.superseded_date).toLocaleDateString()})
+                          </Text>
+                        )}
+                      </XStack>
+                      {version.change_summary && (
+                        <Text fontSize="$3" color="$gray10" marginTop="$1">{version.change_summary}</Text>
                       )}
-                      {version.superseded_date && (
-                        <span className="ml-2 text-sm text-gray-500">
-                          (Superseded {new Date(version.superseded_date).toLocaleDateString()})
-                        </span>
-                      )}
-                    </div>
+                      <Text fontSize="$2" color="$gray9" marginTop="$1">
+                        Effective: {new Date(version.effective_date).toLocaleDateString()}
+                      </Text>
+                    </YStack>
                     {onViewVersion && version.id !== requirement.id && (
-                      <button
-                        onClick={() => onViewVersion(version.id)}
-                        className="text-sm text-blue-600 hover:text-blue-800"
+                      <Button
+                        unstyled
+                        fontSize="$3"
+                        color="$blue9"
+                        hoverStyle={{ color: '$blue10' }}
+                        onPress={() => onViewVersion(version.id)}
                       >
                         View
-                      </button>
+                      </Button>
                     )}
-                  </div>
-                  {version.change_summary && (
-                    <p className="text-sm text-gray-600 mt-1">{version.change_summary}</p>
-                  )}
-                  <div className="text-xs text-gray-500 mt-1">
-                    Effective: {new Date(version.effective_date).toLocaleDateString()}
-                  </div>
-                </div>
+                  </XStack>
+                </Card>
               ))}
-            </div>
+            </YStack>
           )}
-        </div>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }
