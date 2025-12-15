@@ -12,7 +12,8 @@
 
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { YStack, XStack, Text, Card, Spinner } from '@unicornlove/ui';
 import {
   DocumentFilterPanelProps,
   DocumentFilterState,
@@ -122,36 +123,77 @@ export function DocumentFilterPanel({
   const isDisabled = disabled || loading;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-900">Filters</h3>
+    <Card
+      backgroundColor="$background"
+      borderRadius="$4"
+      elevation={1}
+      borderWidth={1}
+      borderColor="$borderColor"
+      padding="$4"
+    >
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <Text fontSize="$3" fontWeight="500" color="$color12">
+          Filters
+        </Text>
         {hasActiveFilters && (
-          <button
+          <Text
+            as="button"
             type="button"
             onClick={handleClearFilters}
             disabled={isDisabled}
-            className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            fontSize="$3"
+            color="$teal9"
+            hoverStyle={{ color: '$teal11' }}
+            disabledStyle={{
+              opacity: 0.5,
+              cursor: 'not-allowed',
+            }}
+            cursor="pointer"
           >
             Clear all
-          </button>
+          </Text>
         )}
-      </div>
+      </XStack>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <XStack
+        flexWrap="wrap"
+        gap="$4"
+        $sm={{ flexDirection: 'row' }}
+        $lg={{ flexDirection: 'row' }}
+      >
         {/* Client Filter */}
-        <div className="space-y-1">
-          <label
+        <YStack flex={1} minWidth={{ sm: '50%', lg: '25%' }} gap="$1">
+          <Text
+            as="label"
             htmlFor="filter-client"
-            className="block text-xs font-medium text-gray-700"
+            display="block"
+            fontSize="$1"
+            fontWeight="500"
+            color="$color11"
           >
             Client
-          </label>
+          </Text>
           <select
             id="filter-client"
             value={filters.clientId || ''}
             onChange={handleClientChange}
             disabled={isDisabled}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              fontSize: '13px',
+              border: '1px solid var(--color-gray-6)',
+              borderRadius: '8px',
+              outline: 'none',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
+              e.currentTarget.style.borderWidth = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
+              e.currentTarget.style.borderWidth = '1px';
+            }}
           >
             <option value="">All Clients</option>
             {clients.map((client) => (
@@ -160,22 +202,41 @@ export function DocumentFilterPanel({
               </option>
             ))}
           </select>
-        </div>
+        </YStack>
 
         {/* Project Filter */}
-        <div className="space-y-1">
-          <label
+        <YStack flex={1} minWidth={{ sm: '50%', lg: '25%' }} gap="$1">
+          <Text
+            as="label"
             htmlFor="filter-project"
-            className="block text-xs font-medium text-gray-700"
+            display="block"
+            fontSize="$1"
+            fontWeight="500"
+            color="$color11"
           >
             Project
-          </label>
+          </Text>
           <select
             id="filter-project"
             value={filters.projectId || ''}
             onChange={handleProjectChange}
             disabled={isDisabled}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              fontSize: '13px',
+              border: '1px solid var(--color-gray-6)',
+              borderRadius: '8px',
+              outline: 'none',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
+              e.currentTarget.style.borderWidth = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
+              e.currentTarget.style.borderWidth = '1px';
+            }}
           >
             <option value="">All Projects</option>
             {filteredProjects.map((project) => (
@@ -184,22 +245,41 @@ export function DocumentFilterPanel({
               </option>
             ))}
           </select>
-        </div>
+        </YStack>
 
         {/* Document Type Filter */}
-        <div className="space-y-1">
-          <label
+        <YStack flex={1} minWidth={{ sm: '50%', lg: '25%' }} gap="$1">
+          <Text
+            as="label"
             htmlFor="filter-doc-type"
-            className="block text-xs font-medium text-gray-700"
+            display="block"
+            fontSize="$1"
+            fontWeight="500"
+            color="$color11"
           >
             Document Type
-          </label>
+          </Text>
           <select
             id="filter-doc-type"
             value={filters.docType || ''}
             onChange={handleDocTypeChange}
             disabled={isDisabled}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              fontSize: '13px',
+              border: '1px solid var(--color-gray-6)',
+              borderRadius: '8px',
+              outline: 'none',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
+              e.currentTarget.style.borderWidth = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
+              e.currentTarget.style.borderWidth = '1px';
+            }}
           >
             <option value="">All Types</option>
             {DOCUMENT_TYPE_OPTIONS.map((option) => (
@@ -208,22 +288,41 @@ export function DocumentFilterPanel({
               </option>
             ))}
           </select>
-        </div>
+        </YStack>
 
         {/* Status Filter */}
-        <div className="space-y-1">
-          <label
+        <YStack flex={1} minWidth={{ sm: '50%', lg: '25%' }} gap="$1">
+          <Text
+            as="label"
             htmlFor="filter-status"
-            className="block text-xs font-medium text-gray-700"
+            display="block"
+            fontSize="$1"
+            fontWeight="500"
+            color="$color11"
           >
             Status
-          </label>
+          </Text>
           <select
             id="filter-status"
             value={filters.status || ''}
             onChange={handleStatusChange}
             disabled={isDisabled}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              fontSize: '13px',
+              border: '1px solid var(--color-gray-6)',
+              borderRadius: '8px',
+              outline: 'none',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-teal-9)';
+              e.currentTarget.style.borderWidth = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-gray-6)';
+              e.currentTarget.style.borderWidth = '1px';
+            }}
           >
             <option value="">All Statuses</option>
             {DOCUMENT_STATUS_OPTIONS.map((option) => (
@@ -232,35 +331,17 @@ export function DocumentFilterPanel({
               </option>
             ))}
           </select>
-        </div>
-      </div>
+        </YStack>
+      </XStack>
 
       {/* Loading indicator */}
       {loading && (
-        <div className="mt-3 flex items-center text-sm text-gray-500">
-          <svg
-            className="animate-spin h-4 w-4 mr-2"
-            viewBox="0 0 24 24"
-            fill="none"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-          Updating filters...
-        </div>
+        <XStack alignItems="center" marginTop="$3" fontSize="$3" color="$color10" gap="$2">
+          <Spinner size="small" color="$teal9" />
+          <Text>Updating filters...</Text>
+        </XStack>
       )}
-    </div>
+    </Card>
   );
 }
 
