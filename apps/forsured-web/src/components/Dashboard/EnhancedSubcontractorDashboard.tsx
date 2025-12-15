@@ -125,9 +125,6 @@ export default function EnhancedSubcontractorDashboard() {
     return null;
   };
 
-  // REQ-4: Use lexicon for manager label
-  const { getManagerLabel } = useLexicon();
-
   // Show empty state when no tasks/projects assigned
   if (!loading && tasks.length === 0) {
     return (
