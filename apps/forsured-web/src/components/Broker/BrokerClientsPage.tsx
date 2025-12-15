@@ -1,7 +1,7 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, TrendingUp, AlertTriangle, Shield, Users } from 'lucide-react';
-import EmptyState from '../../ui/EmptyState';
+import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
+import { EmptyState } from '@unicornlove/ui';
 import { useClients } from '../../hooks/useClients';
 import { usePolicies } from '../../hooks/usePolicies';
 import { useProjects } from '../../hooks/useProjects';
@@ -44,13 +44,13 @@ export default function BrokerClientsPage() {
   // Show empty state when no clients exist
   if (clients.length === 0) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Clients</h1>
-          <p className="text-text-secondary">
+      <YStack gap="$6">
+        <YStack>
+          <H1 fontSize="$8" fontWeight="bold" color="$color12">Clients</H1>
+          <Text color="$color11">
             Manage your client portfolio and monitor compliance
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <EmptyState
           icon={Users}
           title="No Clients Yet"
@@ -60,167 +60,220 @@ export default function BrokerClientsPage() {
             onClick: () => navigate('/broker/clients/new'),
           }}
         />
-      </div>
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">Clients</h1>
-        <p className="text-text-secondary">
+    <YStack gap="$6">
+      <YStack>
+        <H1 fontSize="$8" fontWeight="bold" color="$color12">Clients</H1>
+        <Text color="$color11">
           Manage your client portfolio and monitor compliance
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Total Clients</p>
-              <p className="text-3xl font-bold text-text-primary mt-1">
+      <XStack
+        flexDirection="column"
+        $gtMd={{ flexDirection: 'row' }}
+        gap="$6"
+        flexWrap="wrap"
+      >
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="20%"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$3">Total Clients</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
                 {stats.total}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <Briefcase className="text-primary-600" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-text-secondary">
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <Briefcase color="$blue10" size={24} />
+            </YStack>
+          </XStack>
+          <Text marginTop="$3" fontSize="$3" color="$color11">
             {stats.active} active accounts
-          </div>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Avg Compliance</p>
-              <p className="text-3xl font-bold text-success-600 mt-1">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="20%"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$3">Avg Compliance</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$green10" marginTop="$1">
                 {stats.avgCompliance}%
-              </p>
-            </div>
-            <div className="bg-success-100 p-3 rounded-lg">
-              <Shield className="text-success-600" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-success-600">
-            <TrendingUp size={14} className="inline mr-1" />
-            Above target
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$green3" padding="$3" borderRadius="$4">
+              <Shield color="$green10" size={24} />
+            </YStack>
+          </XStack>
+          <XStack marginTop="$3" fontSize="$3" color="$green10" alignItems="center">
+            <TrendingUp size={14} marginRight="$1" color="$green10" />
+            <Text fontSize="$3" color="$green10">Above target</Text>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">High Risk</p>
-              <p className="text-3xl font-bold text-error-600 mt-1">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="20%"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$3">High Risk</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$red10" marginTop="$1">
                 {stats.highRisk}
-              </p>
-            </div>
-            <div className="bg-error-100 p-3 rounded-lg">
-              <AlertTriangle className="text-error-600" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-text-secondary">
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$red3" padding="$3" borderRadius="$4">
+              <AlertTriangle color="$red10" size={24} />
+            </YStack>
+          </XStack>
+          <Text marginTop="$3" fontSize="$3" color="$color11">
             Require attention
-          </div>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Active Projects</p>
-              <p className="text-3xl font-bold text-primary-600 mt-1">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="20%"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$3">Active Projects</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
                 {projects.filter((p) => p.status === 'active').length}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <Briefcase className="text-primary-600" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-text-secondary">
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <Briefcase color="$blue10" size={24} />
+            </YStack>
+          </XStack>
+          <Text marginTop="$3" fontSize="$3" color="$color11">
             Across all clients
-          </div>
-        </div>
-      </div>
+          </Text>
+        </Card>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-        <h2 className="text-lg font-semibold text-text-primary mb-4">
+      <Card
+        backgroundColor="$background"
+        borderRadius="$4"
+        elevation={1}
+        borderWidth={1}
+        borderColor="$borderColor"
+        padding="$6"
+      >
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
           Client Overview
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <p className="text-sm text-text-secondary mb-2">By Type</p>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-text-primary">
+        </H2>
+        <XStack
+          flexDirection="column"
+          $gtMd={{ flexDirection: 'row' }}
+          gap="$6"
+          flexWrap="wrap"
+        >
+          <YStack flex={1} minWidth="30%">
+            <Text fontSize="$3" color="$color11" marginBottom="$2">By Type</Text>
+            <YStack gap="$2">
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" color="$color12">
                   General Contractors
-                </span>
-                <span className="text-sm font-semibold text-text-primary">
+                </Text>
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   {
                     clients.filter(
                       (c) => c.client_type === 'general_contractor'
                     ).length
                   }
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-text-primary">
+                </Text>
+              </XStack>
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" color="$color12">
                   Subcontractors
-                </span>
-                <span className="text-sm font-semibold text-text-primary">
+                </Text>
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   {
                     clients.filter((c) => c.client_type === 'subcontractor')
                       .length
                   }
-                </span>
-              </div>
-            </div>
-          </div>
+                </Text>
+              </XStack>
+            </YStack>
+          </YStack>
 
-          <div>
-            <p className="text-sm text-text-secondary mb-2">By Risk Level</p>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-success-600">Low Risk</span>
-                <span className="text-sm font-semibold text-text-primary">
+          <YStack flex={1} minWidth="30%">
+            <Text fontSize="$3" color="$color11" marginBottom="$2">By Risk Level</Text>
+            <YStack gap="$2">
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" color="$green10">Low Risk</Text>
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   {clients.filter((c) => c.risk_level === 'low').length}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-warning-600">Medium Risk</span>
-                <span className="text-sm font-semibold text-text-primary">
+                </Text>
+              </XStack>
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" color="$yellow10">Medium Risk</Text>
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   {clients.filter((c) => c.risk_level === 'medium').length}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-error-600">High Risk</span>
-                <span className="text-sm font-semibold text-text-primary">
+                </Text>
+              </XStack>
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" color="$red10">High Risk</Text>
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   {clients.filter((c) => c.risk_level === 'high').length}
-                </span>
-              </div>
-            </div>
-          </div>
+                </Text>
+              </XStack>
+            </YStack>
+          </YStack>
 
-          <div>
-            <p className="text-sm text-text-secondary mb-2">Active Policies</p>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-text-primary">Total Active</span>
-                <span className="text-sm font-semibold text-text-primary">
+          <YStack flex={1} minWidth="30%">
+            <Text fontSize="$3" color="$color11" marginBottom="$2">Active Policies</Text>
+            <YStack gap="$2">
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" color="$color12">Total Active</Text>
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   {policies.filter((p) => p.status === 'active').length}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-warning-600">Expiring Soon</span>
-                <span className="text-sm font-semibold text-text-primary">
+                </Text>
+              </XStack>
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" color="$yellow10">Expiring Soon</Text>
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   {policies.filter((p) => p.status === 'expiring').length}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+                </Text>
+              </XStack>
+            </YStack>
+          </YStack>
+        </XStack>
+      </Card>
 
       <ClientsTable
         clients={clients}
@@ -237,6 +290,6 @@ export default function BrokerClientsPage() {
           }
         }}
       />
-    </div>
+    </YStack>
   );
 }

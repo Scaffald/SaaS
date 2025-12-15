@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Search,
   Plus,
@@ -14,10 +14,12 @@ import {
   AlertTriangle,
   CheckCircle,
   X,
+  Info,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Button, Card, Input, TextArea, Select, Spinner, Checkbox } from '@unicornlove/ui';
 import StatusBadge from '../Common/StatusBadge';
-import Button from '../Common/Button';
 import IconButton from '../Common/IconButton';
+import Modal from '../Common/Modal';
 import { mockProjects, mockSubcontractors } from '../../utils/mockData';
 import { Project } from '../../types';
 
@@ -142,174 +144,181 @@ export default function ProjectManagement() {
         .filter(Boolean) || [];
 
     return (
-      <div className="space-y-6">
+      <YStack gap="$6">
         {/* Header with Back Button */}
-        <div className="flex items-center space-x-4">
+        <XStack alignItems="center" gap="$4">
           <Button
             onClick={() => setSelectedProjectId(null)}
             variant="ghost"
-            className="text-text-secondary hover:text-text-primary"
+            color="$color11"
+            hoverStyle={{ color: "$color12" }}
           >
             ← Back to Projects
           </Button>
-        </div>
+        </XStack>
 
         {/* Project Header */}
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-bold text-text-primary mb-2">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
+          <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+            <YStack>
+              <H1 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
                 {selectedProject.name}
-              </h1>
+              </H1>
               {selectedProject.description && (
-                <p className="text-text-secondary mb-4">
+                <Text color="$color11" marginBottom="$4">
                   {selectedProject.description}
-                </p>
+                </Text>
               )}
-              <div className="flex items-center space-x-6 text-sm">
-                <div className="flex items-center space-x-2">
-                  <Building className="text-text-tertiary" size={16} />
-                  <span className="text-text-secondary">
+              <XStack alignItems="center" gap="$6" $gtMd={{ gap: "$6" }}>
+                <XStack alignItems="center" gap="$2">
+                  <Building color="$color10" size={16} />
+                  <Text fontSize="$3" color="$color11">
                     {selectedProject.location || 'Location not specified'}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Calendar className="text-text-tertiary" size={16} />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="center" gap="$2">
+                  <Calendar color="$color10" size={16} />
+                  <Text fontSize="$3" color="$color11">
                     {selectedProject.startDate.toLocaleDateString()} -{' '}
                     {selectedProject.endDate?.toLocaleDateString() || 'Ongoing'}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Users className="text-text-tertiary" size={16} />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="center" gap="$2">
+                  <Users color="$color10" size={16} />
+                  <Text fontSize="$3" color="$color11">
                     {projectSubcontractors.length} subcontractors
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
+                  </Text>
+                </XStack>
+              </XStack>
+            </YStack>
+            <XStack alignItems="center" gap="$4">
               <StatusBadge status={selectedProject.status} size="lg" />
               <Button
                 variant="primary"
-                leftIcon={Edit}
+                backgroundColor="$blue10"
+                hoverStyle={{ backgroundColor: "$blue11" }}
+                icon={Edit}
                 iconSize={16}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 Edit Project
               </Button>
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </XStack>
+        </Card>
 
         {/* Project Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-text-secondary text-sm">Budget</p>
-                <p className="text-2xl font-bold text-text-primary">
+        <XStack flexWrap="wrap" gap="$6">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+            <XStack alignItems="center" justifyContent="space-between">
+              <YStack>
+                <Text fontSize="$3" color="$color11">Budget</Text>
+                <Text fontSize="$8" fontWeight="700" color="$color12">
                   {selectedProject.budget
                     ? `$${(selectedProject.budget / 1000000).toFixed(1)}M`
                     : 'N/A'}
-                </p>
-              </div>
-              <div className="bg-success-100 p-3 rounded-full">
-                <DollarSign className="text-success-600" size={20} />
-              </div>
-            </div>
-          </div>
+                </Text>
+              </YStack>
+              <YStack backgroundColor="$green2" padding="$3" borderRadius={9999}>
+                <DollarSign color="$green10" size={20} />
+              </YStack>
+            </XStack>
+          </Card>
 
-          <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-text-secondary text-sm">Subcontractors</p>
-                <p className="text-2xl font-bold text-text-primary">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+            <XStack alignItems="center" justifyContent="space-between">
+              <YStack>
+                <Text fontSize="$3" color="$color11">Subcontractors</Text>
+                <Text fontSize="$8" fontWeight="700" color="$color12">
                   {projectSubcontractors.length}
-                </p>
-              </div>
-              <div className="bg-primary-100 p-3 rounded-full">
-                <Users className="text-primary-600" size={20} />
-              </div>
-            </div>
-          </div>
+                </Text>
+              </YStack>
+              <YStack backgroundColor="$blue2" padding="$3" borderRadius={9999}>
+                <Users color="$blue10" size={20} />
+              </YStack>
+            </XStack>
+          </Card>
 
-          <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-text-secondary text-sm">Phase</p>
-                <p className="text-2xl font-bold text-text-primary">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+            <XStack alignItems="center" justifyContent="space-between">
+              <YStack>
+                <Text fontSize="$3" color="$color11">Phase</Text>
+                <Text fontSize="$8" fontWeight="700" color="$color12">
                   {selectedProject.phase || 'N/A'}
-                </p>
-              </div>
-              <div className="bg-secondary-100 p-3 rounded-full">
-                <Building className="text-secondary-500" size={20} />
-              </div>
-            </div>
-          </div>
+                </Text>
+              </YStack>
+              <YStack backgroundColor="$gray2" padding="$3" borderRadius={9999}>
+                <Building color="$gray10" size={20} />
+              </YStack>
+            </XStack>
+          </Card>
 
-          <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-text-secondary text-sm">Compliance</p>
-                <p className="text-2xl font-bold text-text-primary">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+            <XStack alignItems="center" justifyContent="space-between">
+              <YStack>
+                <Text fontSize="$3" color="$color11">Compliance</Text>
+                <Text fontSize="$8" fontWeight="700" color="$color12">
                   <StatusBadge
                     status={selectedProject.complianceStatus}
                     showIcon={false}
                   />
-                </p>
-              </div>
-              <div className="bg-secondary-100 p-3 rounded-full">
-                <AlertTriangle className="text-secondary-600" size={20} />
-              </div>
-            </div>
-          </div>
-        </div>
+                </Text>
+              </YStack>
+              <YStack backgroundColor="$gray2" padding="$3" borderRadius={9999}>
+                <AlertTriangle color="$gray10" size={20} />
+              </YStack>
+            </XStack>
+          </Card>
+        </XStack>
 
         {/* Subcontractors Section */}
-        <div className="bg-surface rounded-lg shadow-sm border border-border">
-          <div className="p-6 border-b border-border">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-text-primary">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
+          <YStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor">
+            <XStack alignItems="center" justifyContent="space-between">
+              <H2 fontSize="$6" fontWeight="600" color="$color12">
                 Project Subcontractors
-              </h2>
+              </H2>
               <Button
                 variant="primary"
-                leftIcon={Plus}
+                backgroundColor="$blue10"
+                hoverStyle={{ backgroundColor: "$blue11" }}
+                icon={Plus}
                 iconSize={16}
-                className="bg-blue-600 hover:bg-blue-700"
               >
                 Add Subcontractor
               </Button>
-            </div>
-          </div>
-          <div className="p-6">
+            </XStack>
+          </YStack>
+          <YStack padding="$6">
             {projectSubcontractors.length > 0 ? (
-              <div className="space-y-3">
+              <YStack gap="$3">
                 {projectSubcontractors.map((subcontractor) => (
-                  <div
+                  <Card
                     key={subcontractor.id}
-                    className="flex items-center justify-between p-4 border border-border rounded-lg"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    padding="$4"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-bg-tertiary rounded-full flex items-center justify-center">
-                        <span className="text-sm font-medium text-text-secondary">
+                    <XStack alignItems="center" justifyContent="space-between">
+                      <XStack alignItems="center" gap="$3">
+                        <YStack width={40} height={40} backgroundColor="$backgroundHover" borderRadius={9999} alignItems="center" justifyContent="center">
+                          <Text fontSize="$3" fontWeight="500" color="$color11">
                           {subcontractor.name
                             .split(' ')
                             .map((n) => n[0])
                             .join('')}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-text-primary">
+                          </Text>
+                        </YStack>
+                        <YStack>
+                          <Text fontWeight="500" color="$color12">
                           {subcontractor.name}
-                        </p>
-                        <p className="text-sm text-text-secondary">
+                          </Text>
+                          <Text fontSize="$3" color="$color11">
                           {subcontractor.company}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
+                          </Text>
+                        </YStack>
+                      </XStack>
+                      <XStack alignItems="center" gap="$2">
                       <StatusBadge status={subcontractor.status} size="sm" />
                       <IconButton
                         icon={Eye}
@@ -317,208 +326,202 @@ export default function ProjectManagement() {
                         variant="ghost"
                         tooltip="View subcontractor"
                       />
-                    </div>
-                  </div>
+                      </XStack>
+                    </XStack>
+                  </Card>
                 ))}
-              </div>
+              </YStack>
             ) : (
-              <div className="text-center py-8 text-text-secondary">
-                <Users size={48} className="mx-auto mb-3 text-gray-300" />
-                <p>No subcontractors assigned</p>
-                <p className="text-sm">Add subcontractors to this project</p>
-              </div>
+              <YStack alignItems="center" paddingVertical="$8" gap="$3">
+                <Users size={48} color="$color8" />
+                <Text color="$color11">No subcontractors assigned</Text>
+                <Text fontSize="$3" color="$color11">Add subcontractors to this project</Text>
+              </YStack>
             )}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </Card>
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">
+      <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
+        <YStack>
+          <H1 fontSize="$8" fontWeight="700" color="$color12">
             Project Management
-          </h1>
-          <p className="text-text-secondary">
+          </H1>
+          <Text color="$color11">
             Manage construction projects and track compliance
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <Button variant="ghost" leftIcon={Plus} iconSize={16}>
+          </Text>
+        </YStack>
+        <XStack alignItems="center" gap="$3">
+          <Button variant="ghost" icon={Plus} iconSize={16}>
             Import
           </Button>
           <Button
             onClick={() => setShowNewProjectModal(true)}
             variant="primary"
-            leftIcon={Plus}
+            backgroundColor="$blue10"
+            hoverStyle={{ backgroundColor: "$blue11" }}
+            icon={Plus}
             iconSize={16}
-            className="bg-blue-600 hover:bg-blue-700"
           >
             New Project
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Total Projects</p>
-              <p className="text-3xl font-bold text-text-primary">
+      <XStack flexWrap="wrap" gap="$6">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">Total Projects</Text>
+              <Text fontSize="$9" fontWeight="700" color="$color12">
                 {totalProjects}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-full">
-              <Building className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$blue2" padding="$3" borderRadius={9999}>
+              <Building color="$blue10" size={24} />
+            </YStack>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Active</p>
-              <p className="text-3xl font-bold text-success-600">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">Active</Text>
+              <Text fontSize="$9" fontWeight="700" color="$green10">
                 {activeProjects}
-              </p>
-            </div>
-            <div className="bg-success-100 p-3 rounded-full">
-              <CheckCircle className="text-success-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$green2" padding="$3" borderRadius={9999}>
+              <CheckCircle color="$green10" size={24} />
+            </YStack>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Completed</p>
-              <p className="text-3xl font-bold text-primary-600">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">Completed</Text>
+              <Text fontSize="$9" fontWeight="700" color="$blue10">
                 {completedProjects}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-full">
-              <TrendingUp className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$blue2" padding="$3" borderRadius={9999}>
+              <TrendingUp color="$blue10" size={24} />
+            </YStack>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" width="100%" $gtMd={{ width: '25%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">
                 Total Subcontractors
-              </p>
-              <p className="text-3xl font-bold text-text-primary">
+              </Text>
+              <Text fontSize="$9" fontWeight="700" color="$color12">
                 {totalSubcontractors}
-              </p>
-            </div>
-            <div className="bg-secondary-100 p-3 rounded-full">
-              <Users className="text-secondary-500" size={24} />
-            </div>
-          </div>
-        </div>
-      </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$gray2" padding="$3" borderRadius={9999}>
+              <Users color="$gray10" size={24} />
+            </YStack>
+          </XStack>
+        </Card>
+      </XStack>
 
       {/* Search and Filters */}
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
+      <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$4">
+        <XStack flexDirection="column" $gtSm={{ flexDirection: 'row' }} gap="$4">
+          <XStack flex={1} position="relative">
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
+              position="absolute"
+              left="$3"
+              top="50%"
+              transform="translateY(-50%)"
+              color="$color10"
               size={20}
+              zIndex={1}
             />
-            <input
+            <Input
               type="text"
               placeholder="Search projects..."
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              width="100%"
+              paddingLeft="$10"
+              paddingRight="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>
-          <div className="flex gap-2">
-            <select
+          </XStack>
+          <XStack gap="$2">
+            <Select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="pending">Pending</option>
-            </select>
-            <Button variant="outline" leftIcon={Filter} iconSize={16}>
+              onValueChange={(value) => setStatusFilter(value)}
+              options={[
+                { value: 'all', label: 'All Status' },
+                { value: 'active', label: 'Active' },
+                { value: 'completed', label: 'Completed' },
+                { value: 'pending', label: 'Pending' },
+              ]}
+            />
+            <Button variant="outline" icon={Filter} iconSize={16}>
               More Filters
             </Button>
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </Card>
 
-      {/* Projects Table */}
-      <div className="bg-surface rounded-lg shadow-sm border border-border">
-        <div className="p-6 border-b border-border">
-          <h2 className="text-lg font-semibold text-text-primary">
+      {/* Projects List */}
+      <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
+        <YStack padding="$6" borderBottomWidth={1} borderBottomColor="$borderColor">
+          <H2 fontSize="$6" fontWeight="600" color="$color12">
             Projects ({filteredProjects.length})
-          </h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-bg-secondary">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Project Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Compliance
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Insurance
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-surface divide-y divide-gray-200">
+          </H2>
+        </YStack>
+        <YStack gap={0}>
               {filteredProjects.map((project) => (
-                <tr key={project.id} className="hover:bg-bg-secondary">
-                  <td className="px-4 py-3 w-1/4">
-                    <div>
-                      <div className="text-sm font-medium text-text-primary truncate">
+            <Card
+              key={project.id}
+              borderBottomWidth={1}
+              borderBottomColor="$borderColor"
+              padding="$4"
+              hoverStyle={{ backgroundColor: "$backgroundHover" }}
+            >
+              <XStack alignItems="center" gap="$4" flexWrap="wrap">
+                <YStack flex={1} minWidth={200}>
+                  <Text fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
                         {project.name}
-                      </div>
-                      <div className="text-xs text-text-secondary truncate">
+                  </Text>
+                  <Text fontSize="$2" color="$color11" numberOfLines={1}>
                         {project.location || 'Location not specified'}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap w-1/6">
+                  </Text>
+                </YStack>
+                <XStack alignItems="center" gap="$2" $gtMd={{ minWidth: 100 }}>
                     <StatusBadge status={project.status} />
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap w-1/6">
+                </XStack>
+                <XStack alignItems="center" gap="$2" $gtMd={{ minWidth: 100 }}>
                     <StatusBadge status={project.complianceStatus} />
-                  </td>
-                  <td className="px-4 py-3 w-1/4">
-                    <div>
-                      <div className="text-sm text-text-primary">
+                </XStack>
+                <YStack $gtMd={{ minWidth: 150 }}>
+                  <Text fontSize="$3" color="$color12">
                         GL: $2,000,000
-                      </div>
-                      <div className="text-xs text-text-secondary">
+                  </Text>
+                  <Text fontSize="$2" color="$color11">
                         WC: $1,000,000
-                      </div>
-                      <div className="text-xs text-text-secondary">
+                  </Text>
+                  <Text fontSize="$2" color="$color11">
                         Auto: $1,000,000
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium w-1/6">
-                    <div className="flex items-center space-x-2">
+                  </Text>
+                </YStack>
+                <XStack alignItems="center" gap="$2">
                       <IconButton
                         onClick={() => setSelectedProjectId(project.id)}
                         icon={Eye}
@@ -539,56 +542,50 @@ export default function ProjectManagement() {
                         variant="danger"
                         tooltip="Delete project"
                       />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                </XStack>
+              </XStack>
+            </Card>
+          ))}
+        </YStack>
       </div>
 
       {/* Empty State */}
       {filteredProjects.length === 0 && (
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-12 text-center">
-          <Building size={48} className="mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
+          <Building size={48} color="$color8" marginBottom="$4" />
+          <H3 fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
             No projects found
-          </h3>
-          <p className="text-text-secondary mb-4">
+          </H3>
+          <Text color="$color11" marginBottom="$4">
             {searchTerm || statusFilter !== 'all'
               ? 'Try adjusting your search terms or filters'
               : 'Get started by creating your first project'}
-          </p>
+          </Text>
           {!searchTerm && statusFilter === 'all' && (
-            <Button variant="primary" className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              variant="primary"
+              backgroundColor="$blue10"
+              hoverStyle={{ backgroundColor: "$blue11" }}
+              onClick={() => setShowNewProjectModal(true)}
+            >
               Create First Project
             </Button>
           )}
-        </div>
+        </Card>
       )}
 
       {/* New/Edit Project Modal */}
-      {showNewProjectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-surface rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-text-primary">
-                {isEditing ? 'Edit Project' : 'Create New Project'}
-              </h3>
-              <IconButton
-                onClick={() => {
+      <Modal
+        isOpen={showNewProjectModal}
+        onClose={() => {
                   setShowNewProjectModal(false);
                   resetForm();
                 }}
-                icon={X}
-                size="md"
-                variant="ghost"
-                tooltip="Close"
-              />
-            </div>
-
-            <form
+        title={isEditing ? 'Edit Project' : 'Create New Project'}
+        size="large"
+      >
+        <YStack
+          component="form"
               onSubmit={(e) => {
                 e.preventDefault();
                 console.log(
@@ -598,33 +595,43 @@ export default function ProjectManagement() {
                 setShowNewProjectModal(false);
                 resetForm();
               }}
-              className="space-y-6"
+          gap="$6"
             >
               {/* Project Name */}
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Project Name <span className="text-red-500">*</span>
-                </label>
-                <input
+          <YStack>
+            <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+              Project Name <Text color="$red10">*</Text>
+            </Text>
+            <Input
                   type="text"
                   required
-                  className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              width="100%"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
                   placeholder="Enter project name"
                   value={newProject.name}
                   onChange={(e) =>
                     setNewProject((prev) => ({ ...prev, name: e.target.value }))
                   }
                 />
-              </div>
+          </YStack>
 
               {/* Project Description */}
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                   Description
-                </label>
-                <textarea
+            </Text>
+            <TextArea
                   rows={3}
-                  className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              width="100%"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
                   placeholder="Describe the project scope and requirements"
                   value={newProject.description}
                   onChange={(e) =>
@@ -634,18 +641,23 @@ export default function ProjectManagement() {
                     }))
                   }
                 />
-              </div>
+          </YStack>
 
               {/* Location and Budget */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Location <span className="text-red-500">*</span>
-                  </label>
-                  <input
+          <XStack flexWrap="wrap" gap="$4">
+            <YStack flex={1} minWidth={200}>
+              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+                Location <Text color="$red10">*</Text>
+              </Text>
+              <Input
                     type="text"
                     required
-                    className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                width="100%"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
                     placeholder="City, State"
                     value={newProject.location}
                     onChange={(e) =>
@@ -655,14 +667,19 @@ export default function ProjectManagement() {
                       }))
                     }
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
+            </YStack>
+            <YStack flex={1} minWidth={200}>
+              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                     Budget ($)
-                  </label>
-                  <input
+              </Text>
+              <Input
                     type="number"
-                    className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                width="100%"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
                     placeholder="Project budget"
                     value={newProject.budget}
                     onChange={(e) =>
@@ -672,19 +689,24 @@ export default function ProjectManagement() {
                       }))
                     }
                   />
-                </div>
-              </div>
+            </YStack>
+          </XStack>
 
               {/* Start and End Dates */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Start Date <span className="text-red-500">*</span>
-                  </label>
-                  <input
+          <XStack flexWrap="wrap" gap="$4">
+            <YStack flex={1} minWidth={200}>
+              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
+                Start Date <Text color="$red10">*</Text>
+              </Text>
+              <Input
                     type="date"
                     required
-                    className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                width="100%"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
                     value={newProject.startDate}
                     onChange={(e) =>
                       setNewProject((prev) => ({
@@ -693,14 +715,19 @@ export default function ProjectManagement() {
                       }))
                     }
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
+            </YStack>
+            <YStack flex={1} minWidth={200}>
+              <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                     End Date
-                  </label>
-                  <input
+              </Text>
+              <Input
                     type="date"
-                    className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                width="100%"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
                     value={newProject.endDate}
                     onChange={(e) =>
                       setNewProject((prev) => ({
@@ -709,17 +736,22 @@ export default function ProjectManagement() {
                       }))
                     }
                   />
-                </div>
-              </div>
+            </YStack>
+          </XStack>
 
               {/* Project Manager */}
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                   Project Manager
-                </label>
-                <input
+            </Text>
+            <Input
                   type="text"
-                  className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              width="100%"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
                   placeholder="Project manager name"
                   value={newProject.projectManager}
                   onChange={(e) =>
@@ -729,16 +761,16 @@ export default function ProjectManagement() {
                     }))
                   }
                 />
-              </div>
+          </YStack>
 
               {/* Insurance Requirements */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-text-primary">
+          <YStack>
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <H3 fontSize="$6" fontWeight="600" color="$color12">
                     Insurance Requirements
-                  </h4>
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center">
+              </H3>
+              <XStack alignItems="center" gap="$4">
+                <XStack alignItems="center" gap="$2">
                       <input
                         type="radio"
                         name="insuranceSettings"
@@ -749,13 +781,12 @@ export default function ProjectManagement() {
                             useDefaultInsurance: true,
                           }))
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
                       />
-                      <span className="ml-2 text-sm text-text-primary">
+                  <Text fontSize="$3" color="$color12">
                         Use Default Settings
-                      </span>
-                    </label>
-                    <label className="flex items-center">
+                  </Text>
+                </XStack>
+                <XStack alignItems="center" gap="$2">
                       <input
                         type="radio"
                         name="insuranceSettings"
@@ -766,378 +797,322 @@ export default function ProjectManagement() {
                             useDefaultInsurance: false,
                           }))
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
                       />
-                      <span className="ml-2 text-sm text-text-primary">
+                  <Text fontSize="$3" color="$color12">
                         Custom Settings
-                      </span>
-                    </label>
-                  </div>
-                </div>
+                  </Text>
+                </XStack>
+              </XStack>
+            </XStack>
 
                 {newProject.useDefaultInsurance ? (
-                  <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-start space-x-2">
-                      <div className="text-primary-600 mt-0.5">
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm text-blue-900 font-medium">
+                  <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
+                    <XStack alignItems="flex-start" gap="$2">
+                      <Info color="$blue10" size={20} marginTop={2} />
+                      <YStack>
+                        <Text fontSize="$3" color="$blue11" fontWeight="500">
                           Using Company Default Insurance Settings
-                        </p>
-                        <p className="text-sm text-blue-700 mt-1">
+                        </Text>
+                        <Text fontSize="$3" color="$blue10" marginTop="$1">
                           This project will use your company's default insurance
                           requirements. You can change this later if needed.
-                        </p>
-                        <div className="mt-3 space-y-2 text-sm text-blue-800">
-                          <div className="flex items-center justify-between">
-                            <span>• General Liability:</span>
-                            <span className="font-medium">
+                        </Text>
+                        <YStack marginTop="$3" gap="$2">
+                          <XStack alignItems="center" justifyContent="space-between">
+                            <Text fontSize="$3" color="$blue11">• General Liability:</Text>
+                            <Text fontSize="$3" color="$blue11" fontWeight="500">
                               $2,000,000 (Required)
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>• Workers Compensation:</span>
-                            <span className="font-medium">
+                            </Text>
+                          </XStack>
+                          <XStack alignItems="center" justifyContent="space-between">
+                            <Text fontSize="$3" color="$blue11">• Workers Compensation:</Text>
+                            <Text fontSize="$3" color="$blue11" fontWeight="500">
                               $1,000,000 (Required)
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>• Professional Liability:</span>
-                            <span className="font-medium">Optional</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>• Commercial Auto:</span>
-                            <span className="font-medium">Optional</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span>• Umbrella Policy:</span>
-                            <span className="font-medium">Optional</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                            </Text>
+                          </XStack>
+                          <XStack alignItems="center" justifyContent="space-between">
+                            <Text fontSize="$3" color="$blue11">• Professional Liability:</Text>
+                            <Text fontSize="$3" color="$blue11" fontWeight="500">Optional</Text>
+                          </XStack>
+                          <XStack alignItems="center" justifyContent="space-between">
+                            <Text fontSize="$3" color="$blue11">• Commercial Auto:</Text>
+                            <Text fontSize="$3" color="$blue11" fontWeight="500">Optional</Text>
+                          </XStack>
+                          <XStack alignItems="center" justifyContent="space-between">
+                            <Text fontSize="$3" color="$blue11">• Umbrella Policy:</Text>
+                            <Text fontSize="$3" color="$blue11" fontWeight="500">Optional</Text>
+                          </XStack>
+                        </YStack>
+                      </YStack>
+                    </XStack>
+                  </Card>
                 ) : (
-                  <div className="space-y-4">
+                  <YStack gap="$4">
                     {/* General Liability */}
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h5 className="font-medium text-text-primary">
+                    <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                        <YStack>
+                          <Text fontWeight="500" color="$color12">
                             General Liability
-                          </h5>
-                          <p className="text-sm text-text-secondary">
+                          </Text>
+                          <Text fontSize="$3" color="$color11">
                             Bodily injury and property damage coverage
-                          </p>
-                        </div>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={
-                              newProject.insuranceRequirements.generalLiability
-                                .required
-                            }
-                            onChange={(e) =>
+                          </Text>
+                        </YStack>
+                        <XStack alignItems="center" gap="$2">
+                          <Checkbox
+                            checked={newProject.insuranceRequirements.generalLiability.required}
+                            onCheckedChange={(checked) =>
                               updateInsuranceRequirement(
                                 'generalLiability',
                                 'required',
-                                e.target.checked
+                                checked === true
                               )
                             }
-                            className="rounded border-border text-primary-600 focus:ring-blue-500"
                           />
-                          <span className="ml-2 text-sm text-text-primary">
+                          <Text fontSize="$3" color="$color12">
                             Required
-                          </span>
-                        </label>
-                      </div>
-                      {newProject.insuranceRequirements.generalLiability
-                        .required && (
-                        <div>
-                          <label className="block text-sm font-medium text-text-primary mb-2">
+                          </Text>
+                        </XStack>
+                      </XStack>
+                      {newProject.insuranceRequirements.generalLiability.required && (
+                        <YStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                             Minimum Coverage
-                          </label>
-                          <select
-                            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={
-                              newProject.insuranceRequirements.generalLiability
-                                .minimumCoverage
-                            }
-                            onChange={(e) =>
+                          </Text>
+                          <Select
+                            value={newProject.insuranceRequirements.generalLiability.minimumCoverage.toString()}
+                            onValueChange={(value) =>
                               updateInsuranceRequirement(
                                 'generalLiability',
                                 'minimumCoverage',
-                                parseInt(e.target.value)
+                                parseInt(value)
                               )
                             }
-                          >
-                            <option value={1000000}>$1,000,000</option>
-                            <option value={2000000}>$2,000,000</option>
-                            <option value={3000000}>$3,000,000</option>
-                            <option value={5000000}>$5,000,000</option>
-                          </select>
-                        </div>
+                            options={[
+                              { value: '1000000', label: '$1,000,000' },
+                              { value: '2000000', label: '$2,000,000' },
+                              { value: '3000000', label: '$3,000,000' },
+                              { value: '5000000', label: '$5,000,000' },
+                            ]}
+                          />
+                        </YStack>
                       )}
-                    </div>
+                    </Card>
 
                     {/* Workers Compensation */}
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h5 className="font-medium text-text-primary">
+                    <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                        <YStack>
+                          <Text fontWeight="500" color="$color12">
                             Workers Compensation
-                          </h5>
-                          <p className="text-sm text-text-secondary">
+                          </Text>
+                          <Text fontSize="$3" color="$color11">
                             Employee injury and illness coverage
-                          </p>
-                        </div>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={
-                              newProject.insuranceRequirements
-                                .workersCompensation.required
-                            }
-                            onChange={(e) =>
+                          </Text>
+                        </YStack>
+                        <XStack alignItems="center" gap="$2">
+                          <Checkbox
+                            checked={newProject.insuranceRequirements.workersCompensation.required}
+                            onCheckedChange={(checked) =>
                               updateInsuranceRequirement(
                                 'workersCompensation',
                                 'required',
-                                e.target.checked
+                                checked === true
                               )
                             }
-                            className="rounded border-border text-primary-600 focus:ring-blue-500"
                           />
-                          <span className="ml-2 text-sm text-text-primary">
+                          <Text fontSize="$3" color="$color12">
                             Required
-                          </span>
-                        </label>
-                      </div>
-                      {newProject.insuranceRequirements.workersCompensation
-                        .required && (
-                        <div>
-                          <label className="block text-sm font-medium text-text-primary mb-2">
+                          </Text>
+                        </XStack>
+                      </XStack>
+                      {newProject.insuranceRequirements.workersCompensation.required && (
+                        <YStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                             Minimum Coverage
-                          </label>
-                          <select
-                            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={
-                              newProject.insuranceRequirements
-                                .workersCompensation.minimumCoverage
-                            }
-                            onChange={(e) =>
+                          </Text>
+                          <Select
+                            value={newProject.insuranceRequirements.workersCompensation.minimumCoverage.toString()}
+                            onValueChange={(value) =>
                               updateInsuranceRequirement(
                                 'workersCompensation',
                                 'minimumCoverage',
-                                parseInt(e.target.value)
+                                parseInt(value)
                               )
                             }
-                          >
-                            <option value={500000}>$500,000</option>
-                            <option value={1000000}>$1,000,000</option>
-                            <option value={1500000}>$1,500,000</option>
-                            <option value={2000000}>$2,000,000</option>
-                          </select>
-                        </div>
+                            options={[
+                              { value: '500000', label: '$500,000' },
+                              { value: '1000000', label: '$1,000,000' },
+                              { value: '1500000', label: '$1,500,000' },
+                              { value: '2000000', label: '$2,000,000' },
+                            ]}
+                          />
+                        </YStack>
                       )}
-                    </div>
+                    </Card>
 
                     {/* Professional Liability */}
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h5 className="font-medium text-text-primary">
+                    <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                        <YStack>
+                          <Text fontWeight="500" color="$color12">
                             Professional Liability
-                          </h5>
-                          <p className="text-sm text-text-secondary">
+                          </Text>
+                          <Text fontSize="$3" color="$color11">
                             Errors and omissions coverage
-                          </p>
-                        </div>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={
-                              newProject.insuranceRequirements
-                                .professionalLiability.required
-                            }
-                            onChange={(e) =>
+                          </Text>
+                        </YStack>
+                        <XStack alignItems="center" gap="$2">
+                          <Checkbox
+                            checked={newProject.insuranceRequirements.professionalLiability.required}
+                            onCheckedChange={(checked) =>
                               updateInsuranceRequirement(
                                 'professionalLiability',
                                 'required',
-                                e.target.checked
+                                checked === true
                               )
                             }
-                            className="rounded border-border text-primary-600 focus:ring-blue-500"
                           />
-                          <span className="ml-2 text-sm text-text-primary">
+                          <Text fontSize="$3" color="$color12">
                             Required
-                          </span>
-                        </label>
-                      </div>
-                      {newProject.insuranceRequirements.professionalLiability
-                        .required && (
-                        <div>
-                          <label className="block text-sm font-medium text-text-primary mb-2">
+                          </Text>
+                        </XStack>
+                      </XStack>
+                      {newProject.insuranceRequirements.professionalLiability.required && (
+                        <YStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                             Minimum Coverage
-                          </label>
-                          <select
-                            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={
-                              newProject.insuranceRequirements
-                                .professionalLiability.minimumCoverage
-                            }
-                            onChange={(e) =>
+                          </Text>
+                          <Select
+                            value={newProject.insuranceRequirements.professionalLiability.minimumCoverage.toString()}
+                            onValueChange={(value) =>
                               updateInsuranceRequirement(
                                 'professionalLiability',
                                 'minimumCoverage',
-                                parseInt(e.target.value)
+                                parseInt(value)
                               )
                             }
-                          >
-                            <option value={500000}>$500,000</option>
-                            <option value={1000000}>$1,000,000</option>
-                            <option value={2000000}>$2,000,000</option>
-                            <option value={5000000}>$5,000,000</option>
-                          </select>
-                        </div>
+                            options={[
+                              { value: '500000', label: '$500,000' },
+                              { value: '1000000', label: '$1,000,000' },
+                              { value: '2000000', label: '$2,000,000' },
+                              { value: '5000000', label: '$5,000,000' },
+                            ]}
+                          />
+                        </YStack>
                       )}
-                    </div>
+                    </Card>
 
                     {/* Commercial Auto */}
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h5 className="font-medium text-text-primary">
+                    <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                        <YStack>
+                          <Text fontWeight="500" color="$color12">
                             Commercial Auto
-                          </h5>
-                          <p className="text-sm text-text-secondary">
+                          </Text>
+                          <Text fontSize="$3" color="$color11">
                             Business vehicle coverage
-                          </p>
-                        </div>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={
-                              newProject.insuranceRequirements.commercialAuto
-                                .required
-                            }
-                            onChange={(e) =>
+                          </Text>
+                        </YStack>
+                        <XStack alignItems="center" gap="$2">
+                          <Checkbox
+                            checked={newProject.insuranceRequirements.commercialAuto.required}
+                            onCheckedChange={(checked) =>
                               updateInsuranceRequirement(
                                 'commercialAuto',
                                 'required',
-                                e.target.checked
+                                checked === true
                               )
                             }
-                            className="rounded border-border text-primary-600 focus:ring-blue-500"
                           />
-                          <span className="ml-2 text-sm text-text-primary">
+                          <Text fontSize="$3" color="$color12">
                             Required
-                          </span>
-                        </label>
-                      </div>
-                      {newProject.insuranceRequirements.commercialAuto
-                        .required && (
-                        <div>
-                          <label className="block text-sm font-medium text-text-primary mb-2">
+                          </Text>
+                        </XStack>
+                      </XStack>
+                      {newProject.insuranceRequirements.commercialAuto.required && (
+                        <YStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                             Minimum Coverage
-                          </label>
-                          <select
-                            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={
-                              newProject.insuranceRequirements.commercialAuto
-                                .minimumCoverage
-                            }
-                            onChange={(e) =>
+                          </Text>
+                          <Select
+                            value={newProject.insuranceRequirements.commercialAuto.minimumCoverage.toString()}
+                            onValueChange={(value) =>
                               updateInsuranceRequirement(
                                 'commercialAuto',
                                 'minimumCoverage',
-                                parseInt(e.target.value)
+                                parseInt(value)
                               )
                             }
-                          >
-                            <option value={500000}>$500,000</option>
-                            <option value={1000000}>$1,000,000</option>
-                            <option value={1500000}>$1,500,000</option>
-                            <option value={2000000}>$2,000,000</option>
-                          </select>
-                        </div>
+                            options={[
+                              { value: '500000', label: '$500,000' },
+                              { value: '1000000', label: '$1,000,000' },
+                              { value: '1500000', label: '$1,500,000' },
+                              { value: '2000000', label: '$2,000,000' },
+                            ]}
+                          />
+                        </YStack>
                       )}
-                    </div>
+                    </Card>
 
                     {/* Umbrella Policy */}
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h5 className="font-medium text-text-primary">
+                    <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$4">
+                      <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                        <YStack>
+                          <Text fontWeight="500" color="$color12">
                             Umbrella Policy
-                          </h5>
-                          <p className="text-sm text-text-secondary">
+                          </Text>
+                          <Text fontSize="$3" color="$color11">
                             Additional liability protection
-                          </p>
-                        </div>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={
-                              newProject.insuranceRequirements.umbrella.required
-                            }
-                            onChange={(e) =>
+                          </Text>
+                        </YStack>
+                        <XStack alignItems="center" gap="$2">
+                          <Checkbox
+                            checked={newProject.insuranceRequirements.umbrella.required}
+                            onCheckedChange={(checked) =>
                               updateInsuranceRequirement(
                                 'umbrella',
                                 'required',
-                                e.target.checked
+                                checked === true
                               )
                             }
-                            className="rounded border-border text-primary-600 focus:ring-blue-500"
                           />
-                          <span className="ml-2 text-sm text-text-primary">
+                          <Text fontSize="$3" color="$color12">
                             Required
-                          </span>
-                        </label>
-                      </div>
+                          </Text>
+                        </XStack>
+                      </XStack>
                       {newProject.insuranceRequirements.umbrella.required && (
-                        <div>
-                          <label className="block text-sm font-medium text-text-primary mb-2">
+                        <YStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2" display="block">
                             Minimum Coverage
-                          </label>
-                          <select
-                            className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            value={
-                              newProject.insuranceRequirements.umbrella
-                                .minimumCoverage
-                            }
-                            onChange={(e) =>
+                          </Text>
+                          <Select
+                            value={newProject.insuranceRequirements.umbrella.minimumCoverage.toString()}
+                            onValueChange={(value) =>
                               updateInsuranceRequirement(
                                 'umbrella',
                                 'minimumCoverage',
-                                parseInt(e.target.value)
+                                parseInt(value)
                               )
                             }
-                          >
-                            <option value={1000000}>$1,000,000</option>
-                            <option value={5000000}>$5,000,000</option>
-                            <option value={10000000}>$10,000,000</option>
-                            <option value={25000000}>$25,000,000</option>
-                          </select>
-                        </div>
+                            options={[
+                              { value: '1000000', label: '$1,000,000' },
+                              { value: '5000000', label: '$5,000,000' },
+                              { value: '10000000', label: '$10,000,000' },
+                              { value: '25000000', label: '$25,000,000' },
+                            ]}
+                          />
+                        </YStack>
                       )}
-                    </div>
+                    </Card>
                   </div>
                 )}
               </div>
 
               {/* Form Actions */}
-              <div className="flex justify-end space-x-3 pt-4 border-t border-border">
+          <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
                 <Button
                   type="button"
                   onClick={() => {
@@ -1152,16 +1127,15 @@ export default function ProjectManagement() {
                 <Button
                   type="submit"
                   variant="primary"
+              backgroundColor="$blue10"
+              hoverStyle={{ backgroundColor: "$blue11" }}
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   {isEditing ? 'Update Project' : 'Create Project'}
                 </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+          </XStack>
+        </YStack>
+      </Modal>
+    </YStack>
   );
 }
