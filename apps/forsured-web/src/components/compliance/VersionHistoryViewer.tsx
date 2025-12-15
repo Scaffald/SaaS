@@ -24,8 +24,8 @@ import {
   Minus,
   Edit3,
 } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, H3, H4, Spinner } from '@unicornlove/ui';
 import { trpc } from '../../lib/trpc';
-import Button from '../Common/Button';
 
 // =============================================================================
 // Types
@@ -130,58 +130,65 @@ function VersionListItem({
   const isToSelected = selectedTo === version.version;
 
   return (
-    <div
-      className={`p-4 border rounded-lg transition-colors ${
-        isSelected
-          ? 'border-primary-500 bg-primary-50'
-          : 'border-border bg-surface hover:border-primary-200'
-      }`}
+    <Card
+      padding="$4"
+      borderColor={isSelected ? '$blue9' : '$borderColor'}
+      backgroundColor={isSelected ? '$blue2' : '$background'}
+      borderRadius="$4"
+      hoverStyle={{ borderColor: '$blue7' }}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-text-primary">
+      <XStack alignItems="flex-start" justifyContent="space-between">
+        <YStack flex={1}>
+          <XStack alignItems="center" gap="$2">
+            <Text fontWeight="500" color="$color12">
               Version {version.version}
-            </span>
+            </Text>
             {version.version === 1 && (
-              <span className="px-1.5 py-0.5 text-xs bg-success-100 text-success-700 rounded">
+              <Text
+                paddingHorizontal="$1.5"
+                paddingVertical="$1"
+                fontSize="$2"
+                backgroundColor="$green3"
+                color="$green10"
+                borderRadius="$2"
+              >
                 Initial
-              </span>
+              </Text>
             )}
-          </div>
+          </XStack>
           {version.change_summary && (
-            <p className="text-sm text-text-secondary mt-1">{version.change_summary}</p>
+            <Text fontSize="$3" color="$color11" marginTop="$1">{version.change_summary}</Text>
           )}
-          <div className="flex items-center gap-4 mt-2 text-xs text-text-tertiary">
-            <span className="flex items-center gap-1">
+          <XStack alignItems="center" gap="$4" marginTop="$2">
+            <XStack alignItems="center" gap="$1">
               <Clock size={12} />
-              {formatDate(version.changed_at)}
-            </span>
+              <Text fontSize="$2" color="$color10">{formatDate(version.changed_at)}</Text>
+            </XStack>
             {version.changed_by && (
-              <span className="flex items-center gap-1">
+              <XStack alignItems="center" gap="$1">
                 <User size={12} />
-                {version.changed_by}
-              </span>
+                <Text fontSize="$2" color="$color10">{version.changed_by}</Text>
+              </XStack>
             )}
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
-        <div className="flex items-center gap-2">
+        <XStack alignItems="center" gap="$2">
           {/* Compare selection buttons */}
           {selectionMode && (
             <>
               <Button
-                variant={isFromSelected ? 'primary' : 'secondary'}
-                size="xs"
-                onClick={() => onSelect(version.version, 'from')}
+                variant={isFromSelected ? 'solid' : 'outlined'}
+                size="$2"
+                onPress={() => onSelect(version.version, 'from')}
                 disabled={isToSelected}
               >
                 From
               </Button>
               <Button
-                variant={isToSelected ? 'primary' : 'secondary'}
-                size="xs"
-                onClick={() => onSelect(version.version, 'to')}
+                variant={isToSelected ? 'solid' : 'outlined'}
+                size="$2"
+                onPress={() => onSelect(version.version, 'to')}
                 disabled={isFromSelected}
               >
                 To
@@ -192,18 +199,18 @@ function VersionListItem({
           {/* Restore button (not for current version) */}
           {version.version > 1 && !selectionMode && (
             <Button
-              variant="secondary"
-              size="xs"
-              onClick={() => onRestore(version.version)}
+              variant="outlined"
+              size="$2"
+              onPress={() => onRestore(version.version)}
               disabled={isRestoring}
               title="Restore this version"
             >
               <RotateCcw size={14} />
             </Button>
           )}
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </XStack>
+    </Card>
   );
 }
 
@@ -244,132 +251,152 @@ function DiffView({ comparison }: DiffViewProps) {
   }, [comparison.changes]);
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden">
+    <Card borderColor="$borderColor" borderRadius="$4" overflow="hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-bg-secondary border-b border-border">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <GitCompare size={18} className="text-text-tertiary" />
-            <span className="font-medium text-text-primary">
+      <XStack alignItems="center" justifyContent="space-between" padding="$4" backgroundColor="$gray2" borderBottomWidth={1} borderColor="$borderColor">
+        <XStack alignItems="center" gap="$4">
+          <XStack alignItems="center" gap="$2">
+            <GitCompare size={18} color="var(--color10)" />
+            <Text fontWeight="500" color="$color12">
               Version {comparison.from_version.version} → Version{' '}
               {comparison.to_version.version}
-            </span>
-          </div>
-        </div>
+            </Text>
+          </XStack>
+        </XStack>
 
-        <div className="flex items-center gap-3 text-xs">
+        <XStack alignItems="center" gap="$3">
           {changeStats.added > 0 && (
-            <span className="flex items-center gap-1 text-success-600">
-              <Plus size={12} />
-              {changeStats.added} added
-            </span>
+            <XStack alignItems="center" gap="$1">
+              <Plus size={12} color="var(--green9)" />
+              <Text fontSize="$2" color="$green9">
+                {changeStats.added} added
+              </Text>
+            </XStack>
           )}
           {changeStats.removed > 0 && (
-            <span className="flex items-center gap-1 text-error-600">
-              <Minus size={12} />
-              {changeStats.removed} removed
-            </span>
+            <XStack alignItems="center" gap="$1">
+              <Minus size={12} color="var(--red9)" />
+              <Text fontSize="$2" color="$red9">
+                {changeStats.removed} removed
+              </Text>
+            </XStack>
           )}
           {changeStats.modified > 0 && (
-            <span className="flex items-center gap-1 text-warning-600">
-              <Edit3 size={12} />
-              {changeStats.modified} modified
-            </span>
+            <XStack alignItems="center" gap="$1">
+              <Edit3 size={12} color="var(--yellow9)" />
+              <Text fontSize="$2" color="$yellow9">
+                {changeStats.modified} modified
+              </Text>
+            </XStack>
           )}
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Changes list */}
-      <div className="divide-y divide-border">
-        {sortedChanges.map((change) => {
+      <YStack>
+        {sortedChanges.map((change, idx) => {
           const isExpanded = expandedFields.has(change.field);
           const hasLongValue =
             formatValue(change.oldValue).length > 50 ||
             formatValue(change.newValue).length > 50;
 
           return (
-            <div key={change.field} className="bg-surface">
+            <YStack key={change.field} backgroundColor="$background" borderTopWidth={idx > 0 ? 1 : 0} borderColor="$borderColor">
               {/* Field header */}
-              <button
-                type="button"
-                onClick={() => toggleField(change.field)}
-                className="w-full flex items-center justify-between p-3 hover:bg-bg-secondary transition-colors"
+              <Button
+                unstyled
+                width="100%"
+                flexDirection="row"
+                alignItems="center"
+                justifyContent="space-between"
+                padding="$3"
+                hoverStyle={{ backgroundColor: '$gray2' }}
+                onPress={() => toggleField(change.field)}
               >
-                <div className="flex items-center gap-3">
+                <XStack alignItems="center" gap="$3">
                   {/* Change type icon */}
                   {change.type === 'added' && (
-                    <Plus size={16} className="text-success-600" />
+                    <Plus size={16} color="var(--green9)" />
                   )}
                   {change.type === 'removed' && (
-                    <Minus size={16} className="text-error-600" />
+                    <Minus size={16} color="var(--red9)" />
                   )}
                   {change.type === 'modified' && (
-                    <Edit3 size={16} className="text-warning-600" />
+                    <Edit3 size={16} color="var(--yellow9)" />
                   )}
                   {change.type === 'unchanged' && (
-                    <span className="w-4 h-4 text-text-tertiary">—</span>
+                    <Text width={16} height={16} color="$color10">—</Text>
                   )}
 
-                  <span
-                    className={`font-medium ${
-                      change.type === 'unchanged'
-                        ? 'text-text-tertiary'
-                        : 'text-text-primary'
-                    }`}
+                  <Text
+                    fontWeight="500"
+                    color={change.type === 'unchanged' ? '$color10' : '$color12'}
                   >
                     {formatFieldName(change.field)}
-                  </span>
-                </div>
+                  </Text>
+                </XStack>
 
                 {(hasLongValue || change.type !== 'unchanged') && (
                   isExpanded ? (
-                    <ChevronUp size={16} className="text-text-tertiary" />
+                    <ChevronUp size={16} color="var(--color10)" />
                   ) : (
-                    <ChevronDown size={16} className="text-text-tertiary" />
+                    <ChevronDown size={16} color="var(--color10)" />
                   )
                 )}
-              </button>
+              </Button>
 
               {/* Expanded diff content */}
               {isExpanded && change.type !== 'unchanged' && (
-                <div className="grid grid-cols-2 gap-0 border-t border-border">
+                <XStack borderTopWidth={1} borderColor="$borderColor">
                   {/* Old value */}
-                  <div className="p-3 bg-error-50/50 border-r border-border">
-                    <span className="text-xs font-medium text-error-700 mb-2 block">
+                  <YStack flex={1} padding="$3" backgroundColor="rgba(239, 68, 68, 0.1)" borderRightWidth={1} borderColor="$borderColor">
+                    <Text fontSize="$2" fontWeight="500" color="$red10" marginBottom="$2">
                       Version {comparison.from_version.version}
-                    </span>
-                    <pre className="text-sm text-error-800 whitespace-pre-wrap font-mono">
+                    </Text>
+                    <pre style={{
+                      fontSize: '14px',
+                      color: '#991B1B',
+                      whiteSpace: 'pre-wrap',
+                      fontFamily: 'monospace',
+                      margin: 0,
+                    }}>
                       {change.type === 'added'
                         ? '(not present)'
                         : formatValue(change.oldValue)}
                     </pre>
-                  </div>
+                  </YStack>
 
                   {/* New value */}
-                  <div className="p-3 bg-success-50/50">
-                    <span className="text-xs font-medium text-success-700 mb-2 block">
+                  <YStack flex={1} padding="$3" backgroundColor="rgba(16, 185, 129, 0.1)">
+                    <Text fontSize="$2" fontWeight="500" color="$green10" marginBottom="$2">
                       Version {comparison.to_version.version}
-                    </span>
-                    <pre className="text-sm text-success-800 whitespace-pre-wrap font-mono">
+                    </Text>
+                    <pre style={{
+                      fontSize: '14px',
+                      color: '#065F46',
+                      whiteSpace: 'pre-wrap',
+                      fontFamily: 'monospace',
+                      margin: 0,
+                    }}>
                       {change.type === 'removed'
                         ? '(removed)'
                         : formatValue(change.newValue)}
                     </pre>
-                  </div>
-                </div>
+                  </YStack>
+                </XStack>
               )}
-            </div>
+            </YStack>
           );
         })}
-      </div>
+      </YStack>
 
       {/* No changes message */}
       {sortedChanges.every((c) => c.type === 'unchanged') && (
-        <div className="p-8 text-center">
-          <p className="text-text-secondary">No differences between these versions</p>
-        </div>
+        <YStack padding="$8" alignItems="center">
+          <Text color="$color11">No differences between these versions</Text>
+        </YStack>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -468,20 +495,28 @@ export function VersionHistoryViewer({
   // Loading state
   if (isLoadingHistory) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
-      </div>
+      <YStack alignItems="center" justifyContent="center" height={256}>
+        <Spinner size="large" color="$blue9" />
+      </YStack>
     );
   }
 
   // Error state
   if (historyError) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 bg-error-50 rounded-lg border border-error-200">
-        <AlertCircle className="text-error-500 mb-2" size={32} />
-        <p className="text-error-700 font-medium">Failed to load version history</p>
-        <p className="text-error-600 text-sm mt-1">{historyError.message}</p>
-      </div>
+      <YStack
+        alignItems="center"
+        justifyContent="center"
+        height={256}
+        backgroundColor="$red2"
+        borderRadius="$4"
+        borderColor="$red5"
+        borderWidth={1}
+      >
+        <AlertCircle color="var(--red9)" marginBottom="$2" size={32} />
+        <Text color="$red10" fontWeight="500">Failed to load version history</Text>
+        <Text color="$red9" fontSize="$3" marginTop="$1">{historyError.message}</Text>
+      </YStack>
     );
   }
 
@@ -489,58 +524,58 @@ export function VersionHistoryViewer({
   const pagination = historyData?.pagination;
 
   return (
-    <div className="space-y-4">
+    <YStack gap="$4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <History size={20} className="text-text-tertiary" />
-          <h3 className="font-medium text-text-primary">Version History</h3>
+      <XStack alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$2">
+          <History size={20} color="var(--color10)" />
+          <H3 fontWeight="500" color="$color12">Version History</H3>
           {pagination && (
-            <span className="text-sm text-text-tertiary">
+            <Text fontSize="$3" color="$color10">
               ({pagination.total} version{pagination.total !== 1 ? 's' : ''})
-            </span>
+            </Text>
           )}
-        </div>
+        </XStack>
 
         <Button
-          variant={isCompareMode ? 'primary' : 'secondary'}
-          size="sm"
-          onClick={toggleCompareMode}
+          variant={isCompareMode ? 'solid' : 'outlined'}
+          size="$3"
+          onPress={toggleCompareMode}
         >
-          <GitCompare size={16} className="mr-1" />
+          <GitCompare size={16} style={{ marginRight: '4px' }} />
           {isCompareMode ? 'Exit Compare' : 'Compare'}
         </Button>
-      </div>
+      </XStack>
 
       {/* Compare mode instructions */}
       {isCompareMode && (
-        <div className="p-3 bg-primary-50 border border-primary-200 rounded-lg">
-          <p className="text-sm text-primary-700">
+        <Card padding="$3" backgroundColor="$blue2" borderColor="$blue5" borderRadius="$4">
+          <Text fontSize="$3" color="$blue10">
             Select a &quot;From&quot; and &quot;To&quot; version to compare changes
             {selectedFrom && selectedTo && ' - viewing comparison below'}
-          </p>
-        </div>
+          </Text>
+        </Card>
       )}
 
       {/* Comparison view */}
       {isCompareMode && selectedFrom && selectedTo && (
-        <div className="mb-4">
+        <YStack marginBottom="$4">
           {isLoadingComparison ? (
-            <div className="flex items-center justify-center h-32 bg-bg-secondary rounded-lg">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500" />
-            </div>
+            <YStack alignItems="center" justifyContent="center" height={128} backgroundColor="$gray2" borderRadius="$4">
+              <Spinner size="small" color="$blue9" />
+            </YStack>
           ) : comparisonData ? (
             <DiffView comparison={comparisonData as VersionComparison} />
           ) : null}
-        </div>
+        </YStack>
       )}
 
       {/* Version list */}
-      <div className="space-y-2">
+      <YStack gap="$2">
         {versions.length === 0 ? (
-          <div className="p-8 text-center bg-bg-secondary rounded-lg">
-            <p className="text-text-secondary">No version history available</p>
-          </div>
+          <YStack padding="$8" alignItems="center" backgroundColor="$gray2" borderRadius="$4">
+            <Text color="$color11">No version history available</Text>
+          </YStack>
         ) : (
           versions.map((version) => (
             <VersionListItem
@@ -558,33 +593,33 @@ export function VersionHistoryViewer({
             />
           ))
         )}
-      </div>
+      </YStack>
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-4">
+        <XStack alignItems="center" justifyContent="center" gap="$2" paddingTop="$4">
           <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            variant="outlined"
+            size="$3"
+            onPress={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
           >
             Previous
           </Button>
-          <span className="text-sm text-text-secondary">
+          <Text fontSize="$3" color="$color11">
             Page {page} of {pagination.totalPages}
-          </span>
+          </Text>
           <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+            variant="outlined"
+            size="$3"
+            onPress={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             disabled={page === pagination.totalPages}
           >
             Next
           </Button>
-        </div>
+        </XStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
