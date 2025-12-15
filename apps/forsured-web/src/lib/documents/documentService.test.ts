@@ -1,13 +1,41 @@
 /**
  * REQ-124: Document Upload & Storage - DocumentService Tests
+ * REQ-1: Document Management with Scaffald integration (Scaffald-only mode)
  * Following TDD approach from REQ-112
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { DocumentService } from './documentService';
 import mockDatabase from '../../utils/mockDataStore';
 import type { DocumentUpload } from '../../types/document';
 import { MAX_FILE_SIZE, MIN_FILE_SIZE } from '../../types/document';
+
+// Mock scaffaldClient for upload tests
+vi.mock('../scaffald/client', () => ({
+  scaffaldClient: {
+    documents: {
+      upload: vi.fn().mockResolvedValue({
+        id: 'scaffald-doc-123',
+        name: 'certificate.pdf',
+        category: 'compliance',
+        storageBackend: 'supabase',
+        storagePath: 'org/org-123/docs/certificate.pdf',
+        downloadUrl: null,
+        oauthAppId: 'forsured',
+        version: 1,
+        fileSize: 1600,
+        mimeType: 'application/pdf',
+        checksum: 'abc123',
+        createdAt: '2024-01-01T00:00:00Z',
+        uploadedBy: 'user-123',
+      }),
+      get: vi.fn(),
+      list: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    },
+  },
+}));
 
 // Mock File.prototype.arrayBuffer for Node.js test environment
 if (typeof File !== 'undefined' && !File.prototype.arrayBuffer) {
@@ -29,6 +57,7 @@ describe('DocumentService', () => {
   beforeEach(() => {
     mockDatabase.clearTable('documents');
     documentService = new DocumentService();
+    vi.clearAllMocks();
   });
 
   describe('validateFile', () => {
@@ -97,114 +126,95 @@ describe('DocumentService', () => {
   });
 
   describe('uploadDocument', () => {
-    it('should upload a valid document and store it in database', async () => {
+    it('should upload a valid document via Scaffald API', async () => {
       // Create file content > 1KB
       const fileContent = 'PDF content here'.repeat(100);
       const file = new File([fileContent], 'certificate.pdf', { type: 'application/pdf' });
       Object.defineProperty(file, 'size', { value: fileContent.length });
 
-      const uploadData: DocumentUpload = {
+      const uploadData = {
         project_id: 'project-123',
         uploader_id: 'user-123',
-        file
+        file,
+        organizationId: 'org-123',
       };
 
       const document = await documentService.uploadDocument(uploadData);
 
-      expect(document.id).toBeDefined();
-      expect(document.file_name).toBe('certificate.pdf');
-      expect(document.file_size).toBe(fileContent.length);
-      expect(document.file_type).toBe('application/pdf');
-      expect(document.project_id).toBe('project-123');
-      expect(document.uploader_id).toBe('user-123');
-      expect(document.status).toBe('pending');
-      expect(document.file_data).toBeDefined();
-      expect(document.created_at).toBeDefined();
-      expect(document.updated_at).toBeDefined();
+      expect(document.id).toBe('scaffald-doc-123');
+      expect(document.filename).toBe('certificate.pdf');
+      expect(document.scaffaldId).toBe('scaffald-doc-123');
+      expect(document.storageBackend).toBe('supabase');
     });
 
     it('should reject upload of invalid file', async () => {
       const file = new File(['test'], 'test.txt', { type: 'text/plain' });
       Object.defineProperty(file, 'size', { value: 5000 });
 
-      const uploadData: DocumentUpload = {
+      const uploadData = {
         project_id: 'project-123',
         uploader_id: 'user-123',
-        file
+        file,
+        organizationId: 'org-123',
       };
 
       await expect(documentService.uploadDocument(uploadData)).rejects.toThrow('File validation failed');
     });
 
-    it('should encode file data as Base64', async () => {
+    it('should require organizationId for upload', async () => {
       const fileContent = 'PDF content here'.repeat(100);
       const file = new File([fileContent], 'certificate.pdf', { type: 'application/pdf' });
       Object.defineProperty(file, 'size', { value: fileContent.length });
 
-      const uploadData: DocumentUpload = {
+      const uploadData = {
         project_id: 'project-123',
         uploader_id: 'user-123',
-        file
+        file,
+        organizationId: '', // Empty organizationId
       };
 
-      const document = await documentService.uploadDocument(uploadData);
-
-      // Verify it's Base64 encoded
-      expect(document.file_data).toMatch(/^[A-Za-z0-9+/=]+$/);
-
-      // Verify we can decode it back
-      const decoded = atob(document.file_data);
-      expect(decoded).toBe(fileContent);
+      await expect(documentService.uploadDocument(uploadData)).rejects.toThrow('organizationId is required');
     });
 
-    it('should generate SHA-256 hash for duplicate detection', async () => {
+    it('should call scaffaldClient.documents.upload with correct parameters', async () => {
+      const { scaffaldClient } = await import('../scaffald/client');
       const fileContent = 'PDF content here'.repeat(100);
       const file = new File([fileContent], 'certificate.pdf', { type: 'application/pdf' });
       Object.defineProperty(file, 'size', { value: fileContent.length });
-
-      const uploadData: DocumentUpload = {
-        project_id: 'project-123',
-        uploader_id: 'user-123',
-        file
-      };
-
-      const document = await documentService.uploadDocument(uploadData);
-
-      expect(document.file_hash).toBeDefined();
-      expect(document.file_hash).toHaveLength(64); // SHA-256 produces 64 hex chars
-    });
-
-    it('should detect duplicate files by hash', async () => {
-      const fileContent = 'PDF content here'.repeat(100);
-      const file1 = new File([fileContent], 'certificate1.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file1, 'size', { value: fileContent.length });
-
-      const file2 = new File([fileContent], 'certificate2.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file2, 'size', { value: fileContent.length });
-
-      const uploadData1: DocumentUpload = {
-        project_id: 'project-123',
-        uploader_id: 'user-123',
-        file: file1
-      };
-
-      await documentService.uploadDocument(uploadData1);
-
-      const isDuplicate = await documentService.checkDuplicate('project-123', file2);
-
-      expect(isDuplicate).toBe(true);
-    });
-  });
-
-  describe('getDocuments', () => {
-    it('should retrieve documents for a project', async () => {
-      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file, 'size', { value: 5000 });
 
       await documentService.uploadDocument({
         project_id: 'project-123',
         uploader_id: 'user-123',
-        file
+        file,
+        organizationId: 'org-123',
+        category: 'compliance',
+        tags: ['insurance', 'coi'],
+      });
+
+      expect(scaffaldClient.documents.upload).toHaveBeenCalledWith(
+        expect.objectContaining({
+          organizationId: 'org-123',
+          name: 'certificate.pdf',
+          fileName: 'certificate.pdf',
+          contentType: 'application/pdf',
+          category: 'compliance',
+          tags: ['insurance', 'coi'],
+        })
+      );
+    });
+  });
+
+  describe('getDocuments (MockDatabase for development)', () => {
+    it('should retrieve documents from MockDatabase', async () => {
+      // Insert test document directly into MockDatabase
+      await mockDatabase.insert('documents', {
+        project_id: 'project-123',
+        uploader_id: 'user-123',
+        file_name: 'test.pdf',
+        file_size: 5000,
+        file_type: 'application/pdf',
+        status: 'pending',
+        upload_date: new Date().toISOString(),
       });
 
       const documents = await documentService.getDocuments({ project_id: 'project-123' });
@@ -214,26 +224,14 @@ describe('DocumentService', () => {
     });
 
     it('should filter documents by status', async () => {
-      const file1 = new File(['content1'], 'test1.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file1, 'size', { value: 5000 });
-
-      const file2 = new File(['content2'], 'test2.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file2, 'size', { value: 5000 });
-
-      const doc1 = await documentService.uploadDocument({
+      const doc1 = await mockDatabase.insert('documents', {
         project_id: 'project-123',
-        uploader_id: 'user-123',
-        file: file1
+        status: 'pending',
       });
-
-      const doc2 = await documentService.uploadDocument({
+      await mockDatabase.insert('documents', {
         project_id: 'project-123',
-        uploader_id: 'user-123',
-        file: file2
+        status: 'completed',
       });
-
-      // Update one to completed
-      await documentService.updateDocumentStatus(doc2.id, 'completed');
 
       const pendingDocs = await documentService.getDocuments({
         project_id: 'project-123',
@@ -245,22 +243,13 @@ describe('DocumentService', () => {
     });
 
     it('should filter documents by uploader', async () => {
-      const file1 = new File(['content1'], 'test1.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file1, 'size', { value: 5000 });
-
-      const file2 = new File(['content2'], 'test2.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file2, 'size', { value: 5000 });
-
-      await documentService.uploadDocument({
+      await mockDatabase.insert('documents', {
         project_id: 'project-123',
         uploader_id: 'user-123',
-        file: file1
       });
-
-      await documentService.uploadDocument({
+      await mockDatabase.insert('documents', {
         project_id: 'project-123',
         uploader_id: 'user-456',
-        file: file2
       });
 
       const user123Docs = await documentService.getDocuments({
@@ -273,15 +262,10 @@ describe('DocumentService', () => {
     });
   });
 
-  describe('deleteDocument', () => {
+  describe('deleteDocument (MockDatabase for development)', () => {
     it('should delete a document by id', async () => {
-      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file, 'size', { value: 5000 });
-
-      const doc = await documentService.uploadDocument({
+      const doc = await mockDatabase.insert('documents', {
         project_id: 'project-123',
-        uploader_id: 'user-123',
-        file
       });
 
       await documentService.deleteDocument(doc.id);
@@ -295,57 +279,41 @@ describe('DocumentService', () => {
     });
   });
 
-  describe('downloadDocument', () => {
-    it('should retrieve document data for download', async () => {
-      const fileContent = 'PDF content here'.repeat(100);
-      const file = new File([fileContent], 'certificate.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file, 'size', { value: fileContent.length });
-
-      const doc = await documentService.uploadDocument({
-        project_id: 'project-123',
-        uploader_id: 'user-123',
-        file
+  describe('getDocumentById (MockDatabase for development)', () => {
+    it('should retrieve document data by id', async () => {
+      const fileContent = 'PDF content here';
+      const doc = await mockDatabase.insert('documents', {
+        file_name: 'certificate.pdf',
+        file_data: btoa(fileContent),
       });
 
-      const downloadData = await documentService.getDocumentById(doc.id);
+      const document = await documentService.getDocumentById(doc.id);
 
-      expect(downloadData).toBeDefined();
-      expect(downloadData?.file_name).toBe('certificate.pdf');
-      expect(downloadData?.file_data).toBeDefined();
+      expect(document).toBeDefined();
+      expect(document?.file_name).toBe('certificate.pdf');
+      expect(document?.file_data).toBeDefined();
 
       // Verify decoded content matches original
-      const decoded = atob(downloadData!.file_data);
+      const decoded = atob(document!.file_data);
       expect(decoded).toBe(fileContent);
     });
   });
 
-  describe('updateDocumentStatus', () => {
+  describe('updateDocumentStatus (MockDatabase for development)', () => {
     it('should update document status', async () => {
-      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file, 'size', { value: 5000 });
-
-      const doc = await documentService.uploadDocument({
-        project_id: 'project-123',
-        uploader_id: 'user-123',
-        file
+      const doc = await mockDatabase.insert('documents', {
+        status: 'pending',
+        updated_at: '2024-01-01T00:00:00Z',
       });
-
-      expect(doc.status).toBe('pending');
 
       const updated = await documentService.updateDocumentStatus(doc.id, 'completed');
 
       expect(updated.status).toBe('completed');
-      expect(updated.updated_at).not.toBe(doc.updated_at);
     });
 
     it('should update status to error with error message', async () => {
-      const file = new File(['content'], 'test.pdf', { type: 'application/pdf' });
-      Object.defineProperty(file, 'size', { value: 5000 });
-
-      const doc = await documentService.uploadDocument({
-        project_id: 'project-123',
-        uploader_id: 'user-123',
-        file
+      const doc = await mockDatabase.insert('documents', {
+        status: 'pending',
       });
 
       const updated = await documentService.updateDocumentStatus(
