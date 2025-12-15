@@ -13,6 +13,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { YStack, XStack, Text, Card, H1, H2, H3 } from '@unicornlove/ui';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   DocumentList,
@@ -98,10 +99,10 @@ export default function DocumentsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <YStack minHeight="100vh" backgroundColor="$gray2">
+      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {/* Header */}
-        <div className="mb-8">
+        <YStack marginBottom="$8">
           <DocumentBreadcrumb
             clientId={clientIdFromUrl}
             clientName={selectedClientName}
@@ -110,44 +111,44 @@ export default function DocumentsPage() {
             basePath="/dashboard"
             onNavigate={handleBreadcrumbNavigate}
           />
-          <h1 className="text-3xl font-bold text-gray-900 mt-4">Documents</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <H1 marginTop="$4">Documents</H1>
+          <Text marginTop="$2" fontSize="$2" color="$gray11">
             Browse and manage your organization's documents by client, project, type, and status
-          </p>
-        </div>
+          </Text>
+        </YStack>
 
         {/* Summary Cards */}
         {summaryData && (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <p className="text-sm text-gray-600">Total Documents</p>
-              <p className="text-2xl font-bold text-gray-900">{summaryData.total}</p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-green-200 p-4">
-              <p className="text-sm text-green-600">Verified</p>
-              <p className="text-2xl font-bold text-green-700">
+          <XStack flexWrap="wrap" gap="$4" marginBottom="$8">
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$gray6">
+              <Text fontSize="$2" color="$gray11">Total Documents</Text>
+              <Text fontSize="$8" fontWeight="700" color="$gray12">{summaryData.total}</Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$green6">
+              <Text fontSize="$2" color="$green11">Verified</Text>
+              <Text fontSize="$8" fontWeight="700" color="$green12">
                 {summaryData.byStatus.verified}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-yellow-200 p-4">
-              <p className="text-sm text-yellow-600">Pending</p>
-              <p className="text-2xl font-bold text-yellow-700">
+              </Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$yellow6">
+              <Text fontSize="$2" color="$yellow11">Pending</Text>
+              <Text fontSize="$8" fontWeight="700" color="$yellow12">
                 {summaryData.byStatus.pending}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-orange-200 p-4">
-              <p className="text-sm text-orange-600">Expiring Soon</p>
-              <p className="text-2xl font-bold text-orange-700">
+              </Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$orange6">
+              <Text fontSize="$2" color="$orange11">Expiring Soon</Text>
+              <Text fontSize="$8" fontWeight="700" color="$orange12">
                 {summaryData.byStatus.expiring}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm border border-red-200 p-4">
-              <p className="text-sm text-red-600">Expired</p>
-              <p className="text-2xl font-bold text-red-700">
+              </Text>
+            </Card>
+            <Card flex={1} minWidth={150} padding="$4" borderWidth={1} borderColor="$red6">
+              <Text fontSize="$2" color="$red11">Expired</Text>
+              <Text fontSize="$8" fontWeight="700" color="$red12">
                 {summaryData.byStatus.expired}
-              </p>
-            </div>
-          </div>
+              </Text>
+            </Card>
+          </XStack>
         )}
 
         {/* Document List (includes filter panel and search) */}
@@ -155,7 +156,7 @@ export default function DocumentsPage() {
           organizationId={MOCK_ORG_ID}
           onDocumentClick={handleDocumentClick}
         />
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }

@@ -8,6 +8,7 @@
 'use client';
 
 import React from 'react';
+import { YStack, XStack, Text, Button, H1, H2, H3 } from '@unicornlove/ui';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { ParticipantsComplianceView } from '../../../../../components/participants/ParticipantsComplianceView';
@@ -31,22 +32,27 @@ export default function ParticipantsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <YStack minHeight="100vh" backgroundColor="$gray2">
+      <YStack maxWidth={1120} marginHorizontal="auto" paddingHorizontal="$4" paddingVertical="$8" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={handleBack}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+        <YStack marginBottom="$8">
+          <Button
+            onPress={handleBack}
+            backgroundColor="transparent"
+            color="$gray11"
+            hoverStyle={{ color: '$gray12' }}
+            marginBottom="$4"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back to Project
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">Participants</h1>
-          <p className="mt-2 text-sm text-gray-600">
+            <XStack alignItems="center" gap="$1">
+              <ArrowLeft size={16} />
+              <Text fontSize="$2">Back to Project</Text>
+            </XStack>
+          </Button>
+          <H1>Participants</H1>
+          <Text marginTop="$2" fontSize="$2" color="$gray11">
             View and filter project participants by compliance status
-          </p>
-        </div>
+          </Text>
+        </YStack>
 
         {/* Compliance View */}
         <ParticipantsComplianceView
@@ -54,7 +60,7 @@ export default function ParticipantsPage() {
           projectId={projectId}
           onParticipantClick={handleParticipantClick}
         />
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
