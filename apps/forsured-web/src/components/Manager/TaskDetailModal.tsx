@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X, Calendar, User, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
 import { Task } from '../../types';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
@@ -74,102 +75,113 @@ export default function TaskDetailModal({
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColorProps = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'text-error-600 bg-error-50';
+        return { color: '$red10', backgroundColor: '$red2' };
       case 'high':
-        return 'text-warning-600 bg-warning-50';
+        return { color: '$orange10', backgroundColor: '$orange2' };
       default:
-        return 'text-primary-600 bg-primary-50';
+        return { color: '$blue10', backgroundColor: '$blue2' };
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColorProps = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'text-success-600 bg-success-50';
+        return { color: '$green10', backgroundColor: '$green2' };
       case 'in_progress':
-        return 'text-primary-600 bg-primary-50';
+        return { color: '$blue10', backgroundColor: '$blue2' };
       case 'pending':
-        return 'text-text-secondary bg-gray-50';
+        return { color: '$color11', backgroundColor: '$gray2' };
       default:
-        return 'text-text-secondary bg-gray-50';
+        return { color: '$color11', backgroundColor: '$gray2' };
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="">
-      <div className="space-y-6">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-text-primary mb-2">
+      <YStack gap="$6">
+        <XStack alignItems="flex-start" justifyContent="space-between">
+          <YStack flex={1}>
+            <H2 fontSize="$8" fontWeight="600" color="$color12" marginBottom="$2">
               {task.title}
-            </h2>
-            <div className="flex items-center space-x-2">
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded ${getPriorityColor(task.priority)}`}
+            </H2>
+            <XStack alignItems="center" gap="$2">
+              <Text
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                fontSize="$1"
+                fontWeight="500"
+                borderRadius="$2"
+                {...getPriorityColorProps(task.priority)}
               >
                 {task.priority}
-              </span>
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded ${getStatusColor(task.status)}`}
+              </Text>
+              <Text
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                fontSize="$1"
+                fontWeight="500"
+                borderRadius="$2"
+                {...getStatusColorProps(task.status)}
               >
                 {task.status.replace('_', ' ')}
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-text-tertiary hover:text-text-primary transition-colors"
+              </Text>
+            </XStack>
+          </YStack>
+          <XStack
+            onPress={onClose}
+            cursor="pointer"
+            hoverStyle={{ opacity: 0.8 }}
           >
-            <X size={20} />
-          </button>
-        </div>
+            <X size={20} color="$color10" />
+          </XStack>
+        </XStack>
 
         {task.description && (
-          <div>
-            <h3 className="text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Description
-            </h3>
-            <p className="text-sm text-text-secondary">{task.description}</p>
-          </div>
+            </H3>
+            <Text fontSize="$3" color="$color11">{task.description}</Text>
+          </YStack>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
+        <XStack flexWrap="wrap" gap="$4">
           {task.due_date && (
-            <div>
-              <h3 className="text-xs font-medium text-text-tertiary mb-1">
+            <YStack flex={1} minWidth="calc(50% - 8px)">
+              <H3 fontSize="$1" fontWeight="500" color="$color10" marginBottom="$1">
                 Due Date
-              </h3>
-              <div className="flex items-center text-sm text-text-primary">
-                <Calendar size={14} className="mr-2" />
-                {formatDate(task.due_date)}
-              </div>
-            </div>
+              </H3>
+              <XStack alignItems="center" fontSize="$3" color="$color12">
+                <Calendar size={14} marginRight="$2" />
+                <Text fontSize="$3" color="$color12">{formatDate(task.due_date)}</Text>
+              </XStack>
+            </YStack>
           )}
 
-          <div>
-            <h3 className="text-xs font-medium text-text-tertiary mb-1">
+          <YStack flex={1} minWidth="calc(50% - 8px)">
+            <H3 fontSize="$1" fontWeight="500" color="$color10" marginBottom="$1">
               Task Type
-            </h3>
-            <p className="text-sm text-text-primary capitalize">
+            </H3>
+            <Text fontSize="$3" color="$color12" textTransform="capitalize">
               {task.task_type || 'General'}
-            </p>
-          </div>
-        </div>
+            </Text>
+          </YStack>
+        </XStack>
 
         {task.status !== 'completed' && (
           <>
-            <div>
-              <h3 className="text-sm font-medium text-text-primary mb-2">
+            <YStack>
+              <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                 Reassign Task
-              </h3>
-              <div className="flex items-center space-x-2">
+              </H3>
+              <XStack alignItems="center" gap="$2">
                 <Select
                   value={selectedAssignee}
                   onChange={(e) => setSelectedAssignee(e.target.value)}
-                  className="flex-1"
+                  style={{ flex: 1 }}
                   options={[
                     { value: '', label: 'Select assignee' },
                     ...availableUsers.map((user) => ({
@@ -188,35 +200,35 @@ export default function TaskDetailModal({
                 >
                   Reassign
                 </Button>
-              </div>
-            </div>
+              </XStack>
+            </YStack>
 
-            <div>
-              <h3 className="text-sm font-medium text-text-primary mb-2">
+            <YStack>
+              <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                 Mark as Complete
-              </h3>
+              </H3>
               {!showCompletionForm ? (
                 <Button
                   onClick={() => setShowCompletionForm(true)}
                   variant="secondary"
                   icon={CheckCircle2}
-                  className="w-full"
+                  width="100%"
                 >
                   Complete Task
                 </Button>
               ) : (
-                <div className="space-y-3 p-4 bg-success-50 border border-success-200 rounded-lg">
+                <Card gap="$3" padding="$4" backgroundColor="$green2" borderWidth={1} borderColor="$green8" borderRadius="$4">
                   <Textarea
                     value={completionNote}
                     onChange={(e) => setCompletionNote(e.target.value)}
                     placeholder="Add completion notes (optional)"
                     rows={3}
                   />
-                  <div className="flex space-x-2">
+                  <XStack gap="$2">
                     <Button
                       onClick={handleComplete}
                       variant="primary"
-                      className="flex-1"
+                      flex={1}
                     >
                       Confirm Complete
                     </Button>
@@ -226,55 +238,59 @@ export default function TaskDetailModal({
                         setCompletionNote('');
                       }}
                       variant="ghost"
-                      className="flex-1"
+                      flex={1}
                     >
                       Cancel
                     </Button>
-                  </div>
-                </div>
+                  </XStack>
+                </Card>
               )}
-            </div>
+            </YStack>
           </>
         )}
 
-        <div>
-          <h3 className="text-sm font-medium text-text-primary mb-2 flex items-center">
-            <MessageSquare size={16} className="mr-2" />
-            Comments
-          </h3>
+        <YStack>
+          <XStack alignItems="center" gap="$2" marginBottom="$2">
+            <MessageSquare size={16} />
+            <H3 fontSize="$3" fontWeight="500" color="$color12">
+              Comments
+            </H3>
+          </XStack>
 
-          <div className="space-y-3 mb-3 max-h-40 overflow-y-auto">
+          <YStack gap="$3" marginBottom="$3" maxHeight={160} overflowY="auto">
             {task.metadata?.comments?.length > 0 ? (
               task.metadata.comments.map((comment: unknown) => (
-                <div
+                <Card
                   key={comment.id}
-                  className="p-3 bg-bg-secondary rounded-lg"
+                  padding="$3"
+                  backgroundColor="$backgroundHover"
+                  borderRadius="$4"
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-text-primary">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+                    <Text fontSize="$1" fontWeight="500" color="$color12">
                       {comment.author}
-                    </span>
-                    <span className="text-xs text-text-tertiary">
+                    </Text>
+                    <Text fontSize="$1" color="$color10">
                       {formatDate(comment.timestamp)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-text-secondary">{comment.text}</p>
-                </div>
+                    </Text>
+                  </XStack>
+                  <Text fontSize="$3" color="$color11">{comment.text}</Text>
+                </Card>
               ))
             ) : (
-              <p className="text-sm text-text-tertiary italic">
+              <Text fontSize="$3" color="$color10" fontStyle="italic">
                 No comments yet
-              </p>
+              </Text>
             )}
-          </div>
+          </YStack>
 
-          <div className="flex space-x-2">
+          <XStack gap="$2">
             <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Add a comment..."
               rows={2}
-              className="flex-1"
+              style={{ flex: 1 }}
             />
             <Button
               onClick={handleAddComment}
@@ -283,20 +299,20 @@ export default function TaskDetailModal({
             >
               Add
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
 
         {task.metadata?.completion_note && (
-          <div className="p-4 bg-success-50 border border-success-200 rounded-lg">
-            <h3 className="text-sm font-medium text-success-700 mb-2">
+          <Card padding="$4" backgroundColor="$green2" borderWidth={1} borderColor="$green8" borderRadius="$4">
+            <H3 fontSize="$3" fontWeight="500" color="$green10" marginBottom="$2">
               Completion Notes
-            </h3>
-            <p className="text-sm text-text-secondary">
+            </H3>
+            <Text fontSize="$3" color="$color11">
               {task.metadata.completion_note}
-            </p>
-          </div>
+            </Text>
+          </Card>
         )}
-      </div>
+      </YStack>
     </Modal>
   );
 }
