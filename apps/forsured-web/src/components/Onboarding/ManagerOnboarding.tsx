@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, ArrowRight, X } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, Circle, Input, H1 } from 'tamagui';
+import { ResponsiveSelect } from '@unicornlove/ui';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -58,105 +60,161 @@ export default function ManagerOnboarding() {
     formData.companyName && formData.companySize && formData.primaryLocation;
 
   return (
-    <div className="min-h-screen bg-bg-secondary flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <button
-          onClick={handleSkip}
+    <YStack
+      minHeight="100vh"
+      backgroundColor="$background"
+      alignItems="center"
+      justifyContent="center"
+      padding="$4"
+    >
+      <YStack width="100%" maxWidth={448} position="relative">
+        <Button
+          onPress={handleSkip}
           disabled={isSubmitting}
-          className="absolute top-6 right-6 text-text-secondary hover:text-text-primary transition-colors flex items-center space-x-2 text-sm disabled:opacity-50"
+          position="absolute"
+          top="$6"
+          right="$6"
+          variant="ghost"
+          size="$3"
+          opacity={isSubmitting ? 0.5 : 1}
         >
-          <span>Skip for now</span>
+          <XStack gap="$2" alignItems="center">
+            <Text fontSize="$3">Skip for now</Text>
           <X size={18} />
-        </button>
+          </XStack>
+        </Button>
 
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
+        <YStack alignItems="center" marginBottom="$8">
+          <YStack alignItems="center" marginBottom="$6">
             <ForsuredLogo className="h-8" />
-          </div>
-          <h1 className="text-2xl font-bold text-text-primary mb-2">
+          </YStack>
+          <H1 fontSize="$8" fontWeight="bold" marginBottom="$2" textAlign="center">
             Welcome, General Contractor
-          </h1>
-          <p className="text-text-secondary">Let's get your company set up</p>
-        </div>
+          </H1>
+          <Text color="$color11" textAlign="center">Let's get your company set up</Text>
+        </YStack>
 
-        <div className="bg-surface rounded-lg shadow-lg border border-border p-8">
-          <div className="flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mx-auto mb-6">
-            <Building className="text-primary-600" size={32} />
-          </div>
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          elevation={4}
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$8"
+        >
+          <YStack alignItems="center" marginBottom="$6">
+            <Circle
+              size={64}
+              backgroundColor="$blue3"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Building color="$blue10" size={32} />
+            </Circle>
+          </YStack>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Company Name
-              </label>
-              <input
-                type="text"
-                required
-                className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="Enter your company name"
-                value={formData.companyName}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    companyName: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Company Size
-              </label>
-              <select
-                required
-                className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                value={formData.companySize}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    companySize: e.target.value,
-                  }))
-                }
+          <YStack tag="form" onSubmit={handleSubmit} gap="$6">
+            <YStack>
+              <Text
+                fontSize="$3"
+                fontWeight="600"
+                color="$color12"
+                marginBottom="$2"
+                display="block"
               >
-                <option value="">Select company size</option>
-                <option value="1-10">1-10 employees</option>
-                <option value="11-50">11-50 employees</option>
-                <option value="51-200">51-200 employees</option>
-                <option value="201+">201+ employees</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Primary Location
-              </label>
-              <input
-                type="text"
-                required
-                className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="City, State"
-                value={formData.primaryLocation}
-                onChange={(e) =>
+                Company Name
+              </Text>
+              <Input
+                value={formData.companyName}
+                onChangeText={(value) =>
                   setFormData((prev) => ({
                     ...prev,
-                    primaryLocation: e.target.value,
+                    companyName: value,
                   }))
                 }
+                placeholder="Enter your company name"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                paddingHorizontal="$4"
+                paddingVertical="$3"
+                width="100%"
+                required
               />
-            </div>
+            </YStack>
 
-            <button
+            <YStack>
+              <ResponsiveSelect
+                label="Company Size"
+                value={formData.companySize}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    companySize: value,
+                  }))
+                }
+                placeholder="Select company size"
+                options={[
+                  { value: '', label: 'Select company size' },
+                  { value: '1-10', label: '1-10 employees' },
+                  { value: '11-50', label: '11-50 employees' },
+                  { value: '51-200', label: '51-200 employees' },
+                  { value: '201+', label: '201+ employees' },
+                ]}
+                size="$4"
+                required
+              />
+            </YStack>
+
+            <YStack>
+              <Text
+                fontSize="$3"
+                fontWeight="600"
+                color="$color12"
+                marginBottom="$2"
+                display="block"
+              >
+                Primary Location
+              </Text>
+              <Input
+                value={formData.primaryLocation}
+                onChangeText={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    primaryLocation: value,
+                  }))
+                }
+                placeholder="City, State"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                paddingHorizontal="$4"
+                paddingVertical="$3"
+                width="100%"
+                required
+              />
+            </YStack>
+
+            <Button
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="w-full flex items-center justify-center space-x-2 bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors disabled:bg-neutral-300 disabled:cursor-not-allowed font-medium"
+              width="100%"
+              variant="primary"
+              paddingHorizontal="$6"
+              paddingVertical="$3"
+              borderRadius="$4"
+              fontWeight="600"
+              opacity={!isValid || isSubmitting ? 0.5 : 1}
+              cursor={!isValid || isSubmitting ? 'not-allowed' : 'pointer'}
             >
-              <span>Continue to Dashboard</span>
+              <XStack gap="$2" alignItems="center" justifyContent="center">
+                <Text color="white">Continue to Dashboard</Text>
               <ArrowRight size={18} />
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+              </XStack>
+            </Button>
+          </YStack>
+        </Card>
+      </YStack>
+    </YStack>
   );
 }
