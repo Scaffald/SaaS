@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Building,
@@ -9,8 +9,9 @@ import {
   AlertCircle,
   CheckCircle,
   FolderPlus,
+  X,
 } from 'lucide-react';
-import EmptyState from '../../ui/EmptyState';
+import { EmptyState, YStack, XStack, Text, H1, H2, H3, Card } from '@unicornlove/ui';
 import { useProjects } from '../../hooks/useProjects';
 import { DashboardSkeleton } from '../Common/SkeletonLoader';
 import Button from '../Common/Button';
@@ -55,28 +56,42 @@ export default function ManagerProjectsPage() {
   const getComplianceIcon = (status: string) => {
     switch (status) {
       case 'compliant':
-        return <CheckCircle className="text-success-600" size={18} />;
+        return <CheckCircle color="$green10" size={18} />;
       case 'warning':
-        return <AlertCircle className="text-warning-600" size={18} />;
+        return <AlertCircle color="$orange10" size={18} />;
       case 'critical':
-        return <AlertCircle className="text-error-600" size={18} />;
+        return <AlertCircle color="$red10" size={18} />;
       default:
-        return <Shield className="text-neutral-400" size={18} />;
+        return <Shield color="$gray10" size={18} />;
     }
   };
 
-  const getComplianceBadge = (status: string) => {
-    const baseClasses =
-      'inline-flex items-center px-2 py-1 rounded text-xs font-medium';
+  const getComplianceBadgeProps = (status: string) => {
     switch (status) {
       case 'compliant':
-        return `${baseClasses} bg-success-100 text-success-700 border border-success-300`;
+        return {
+          backgroundColor: '$green2',
+          color: '$green10',
+          borderColor: '$green8',
+        };
       case 'warning':
-        return `${baseClasses} bg-warning-100 text-warning-700 border border-warning-300`;
+        return {
+          backgroundColor: '$orange2',
+          color: '$orange10',
+          borderColor: '$orange8',
+        };
       case 'critical':
-        return `${baseClasses} bg-error-100 text-error-700 border border-error-300`;
+        return {
+          backgroundColor: '$red2',
+          color: '$red10',
+          borderColor: '$red8',
+        };
       default:
-        return `${baseClasses} bg-neutral-100 text-neutral-700 border border-neutral-300`;
+        return {
+          backgroundColor: '$gray2',
+          color: '$gray10',
+          borderColor: '$gray8',
+        };
     }
   };
   const handleInviteUser = (project: Project) => {
@@ -103,13 +118,13 @@ export default function ManagerProjectsPage() {
   // Show empty state when no projects exist
   if (projects.length === 0) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Projects</h1>
-          <p className="text-text-secondary">
+      <YStack gap="$6">
+        <YStack>
+          <H1 fontSize="$9" fontWeight="700" color="$color12">Projects</H1>
+          <Text color="$color11" fontSize="$4">
             Manage projects and insurance requirements
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <EmptyState
           icon={FolderPlus}
           title="No Projects Yet"
@@ -119,394 +134,512 @@ export default function ManagerProjectsPage() {
             onClick: () => navigate('/manager/projects/new'),
           }}
         />
-      </div>
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">Projects</h1>
-        <p className="text-text-secondary">
+    <YStack gap="$6">
+      <YStack>
+        <H1 fontSize="$9" fontWeight="700" color="$color12">Projects</H1>
+        <Text color="$color11" fontSize="$4">
           Manage projects and insurance requirements
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="flex items-center space-x-6 text-sm">
-        <div>
-          <span className="font-semibold text-text-primary">{stats.total}</span>
-          <span className="text-text-secondary ml-1">Projects</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div>
-          <span className="font-semibold text-success-600">
+      <XStack alignItems="center" gap="$6" fontSize="$3">
+        <XStack alignItems="center">
+          <Text fontWeight="600" color="$color12">{stats.total}</Text>
+          <Text color="$color11" marginLeft="$1">Projects</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center">
+          <Text fontWeight="600" color="$green10">
             {stats.compliant}
-          </span>
-          <span className="text-text-secondary ml-1">Compliant</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div>
-          <span className="font-semibold text-warning-600">
+          </Text>
+          <Text color="$color11" marginLeft="$1">Compliant</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center">
+          <Text fontWeight="600" color="$orange10">
             {stats.warning}
-          </span>
-          <span className="text-text-secondary ml-1">Warning</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div>
-          <span className="font-semibold text-error-600">{stats.critical}</span>
-          <span className="text-text-secondary ml-1">Critical</span>
-        </div>
-      </div>
+          </Text>
+          <Text color="$color11" marginLeft="$1">Warning</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center">
+          <Text fontWeight="600" color="$red10">{stats.critical}</Text>
+          <Text color="$color11" marginLeft="$1">Critical</Text>
+        </XStack>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <Filter size={20} className="text-text-secondary" />
-            <h2 className="text-lg font-semibold text-text-primary">
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$6" elevation={1}>
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+          <XStack alignItems="center" gap="$2">
+            <Filter size={20} color="$color11" />
+            <H2 fontSize="$6" fontWeight="600" color="$color12">
               Filter Projects
-            </h2>
-          </div>
-          <button
-            onClick={() => setComplianceFilter('all')}
-            className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary border border-border rounded-lg"
+            </H2>
+          </XStack>
+          <XStack
+            onPress={() => setComplianceFilter('all')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$3"
+            fontWeight="500"
+            color="$color11"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            hoverStyle={{ color: '$color12' }}
+            cursor="pointer"
           >
-            Clear Filters
-          </button>
-        </div>
+            <Text fontSize="$3" fontWeight="500" color="$color11">
+              Clear Filters
+            </Text>
+          </XStack>
+        </XStack>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
+          <YStack flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
+            <Text
+              as="label"
+              display="block"
+              fontSize="$3"
+              fontWeight="500"
+              color="$color11"
+              marginBottom="$2"
+            >
               Compliance Status
-            </label>
+            </Text>
             <select
               value={complianceFilter}
               onChange={(e) => setComplianceFilter(e.target.value)}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-surface text-text-primary"
+              style={{
+                width: '100%',
+                padding: '8px 16px',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                backgroundColor: 'var(--background)',
+                color: 'var(--color-12)',
+              }}
             >
               <option value="all">All Statuses</option>
               <option value="compliant">Compliant</option>
               <option value="warning">Warning</option>
               <option value="critical">Critical</option>
             </select>
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </XStack>
+      </Card>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-border">
-            <thead className="bg-bg-secondary">
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" elevation={1} overflow="hidden">
+        <YStack overflowX="auto">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead style={{ backgroundColor: 'var(--background-hover)' }}>
               <tr>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Project
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Status
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   GL
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   WC
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Auto
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Umbrella
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Prof
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider"
+                  style={{
+                    padding: '12px 24px',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-11)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
                 >
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-surface divide-y divide-border">
+            <tbody style={{ backgroundColor: 'var(--background)' }}>
               {filteredProjects.map((project) => (
                 <tr
                   key={project.id}
-                  className="hover:bg-bg-secondary transition-colors"
+                  style={{
+                    borderTop: '1px solid var(--border-color)',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--background-hover)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--background)';
+                  }}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Building className="text-primary-600" size={20} />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-text-primary">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <XStack alignItems="center">
+                      <YStack
+                        width={40}
+                        height={40}
+                        backgroundColor="$blue2"
+                        borderRadius="$4"
+                        alignItems="center"
+                        justifyContent="center"
+                        flexShrink={0}
+                      >
+                        <Building color="$blue10" size={20} />
+                      </YStack>
+                      <YStack marginLeft="$4">
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
                           {project.name}
-                        </div>
-                        <div className="text-sm text-text-secondary">
+                        </Text>
+                        <Text fontSize="$3" color="$color11">
                           {project.location}
-                        </div>
-                      </div>
-                    </div>
+                        </Text>
+                      </YStack>
+                    </XStack>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <XStack alignItems="center" gap="$2">
                       {getComplianceIcon(project.compliance_status)}
-                      <span
-                        className={getComplianceBadge(
-                          project.compliance_status
-                        )}
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        fontSize="$1"
+                        fontWeight="500"
+                        borderRadius="$2"
+                        borderWidth={1}
+                        {...getComplianceBadgeProps(project.compliance_status)}
                       >
                         {project.compliance_status}
-                      </span>
-                    </div>
+                      </Text>
+                    </XStack>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-medium">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color-12)', fontWeight: 500 }}>
                     {formatShortCurrency(project.general_liability_required)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-medium">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color-12)', fontWeight: 500 }}>
                     {formatShortCurrency(project.workers_comp_required)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-medium">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color-12)', fontWeight: 500 }}>
                     {formatShortCurrency(project.auto_liability_required)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-medium">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color-12)', fontWeight: 500 }}>
                     {formatShortCurrency(project.umbrella_required)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-medium">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color-12)', fontWeight: 500 }}>
                     {formatShortCurrency(
                       project.professional_liability_required
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-2">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', fontWeight: 500 }}>
+                    <XStack alignItems="center" gap="$2">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() =>
                           navigate(`/manager/projects/${project.id}`)
                         }
-                        className="flex items-center space-x-1"
                       >
-                        <Eye size={14} />
-                        <span>View</span>
+                        <XStack alignItems="center" gap="$1">
+                          <Eye size={14} />
+                          <Text>View</Text>
+                        </XStack>
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleInviteUser(project)}
-                        className="flex items-center space-x-1"
                       >
-                        <UserPlus size={14} />
-                        <span>Invite</span>
+                        <XStack alignItems="center" gap="$1">
+                          <UserPlus size={14} />
+                          <Text>Invite</Text>
+                        </XStack>
                       </Button>
-                    </div>
+                    </XStack>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </YStack>
 
         {filteredProjects.length === 0 && (
-          <div className="p-12">
-            <div className="text-center">
-              <Building className="mx-auto text-text-tertiary mb-4" size={48} />
-              <p className="text-text-primary font-medium mb-2">
-                No projects found
-              </p>
-              <p className="text-text-secondary text-sm">
-                Try adjusting your filters
-              </p>
-            </div>
-          </div>
+          <YStack padding="$12" alignItems="center">
+            <Building color="$color10" size={48} marginBottom="$4" />
+            <Text color="$color12" fontWeight="500" marginBottom="$2">
+              No projects found
+            </Text>
+            <Text color="$color11" fontSize="$3">
+              Try adjusting your filters
+            </Text>
+          </YStack>
         )}
-      </div>
+      </Card>
 
       {selectedProject && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-border">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-text-primary">
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={50}
+          padding="$4"
+        >
+          <Card
+            backgroundColor="$background"
+            borderRadius="$4"
+            maxWidth={896}
+            width="100%"
+            maxHeight="90vh"
+            overflowY="auto"
+            elevation={10}
+          >
+            <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+              <XStack alignItems="center" justifyContent="space-between">
+                <H2 fontSize="$8" fontWeight="700" color="$color12">
                   {selectedProject.name}
-                </h2>
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="text-text-secondary hover:text-text-primary"
+                </H2>
+                <XStack
+                  onPress={() => setSelectedProject(null)}
+                  cursor="pointer"
+                  hoverStyle={{ opacity: 0.8 }}
                 >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
+                  <X size={24} color="$color11" />
+                </XStack>
+              </XStack>
+            </YStack>
 
-            <div className="p-6 space-y-6">
-              <div>
-                <h3 className="text-sm font-medium text-text-secondary mb-2">
+            <YStack padding="$6" gap="$6">
+              <YStack>
+                <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                   Description
-                </h3>
-                <p className="text-text-primary">
+                </H3>
+                <Text color="$color12">
                   {selectedProject.description}
-                </p>
-              </div>
+                </Text>
+              </YStack>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium text-text-secondary mb-2">
+              <XStack flexWrap="wrap" gap="$4">
+                <YStack flex={1} minWidth="calc(50% - 8px)">
+                  <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                     Location
-                  </h3>
-                  <p className="text-text-primary">
+                  </H3>
+                  <Text color="$color12">
                     {selectedProject.location}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-text-secondary mb-2">
+                  </Text>
+                </YStack>
+                <YStack flex={1} minWidth="calc(50% - 8px)">
+                  <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                     Project Manager
-                  </h3>
-                  <p className="text-text-primary">
+                  </H3>
+                  <Text color="$color12">
                     {selectedProject.project_manager}
-                  </p>
-                </div>
-              </div>
+                  </Text>
+                </YStack>
+              </XStack>
 
-              <div>
-                <h3 className="text-sm font-medium text-text-secondary mb-3">
+              <YStack>
+                <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$3">
                   Insurance Requirements
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
+                </H3>
+                <XStack flexWrap="wrap" gap="$4">
                   {selectedProject.general_liability_required && (
-                    <div className="p-3 bg-bg-secondary rounded-lg">
-                      <p className="text-xs text-text-secondary">
+                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                      <Text fontSize="$1" color="$color11">
                         General Liability
-                      </p>
-                      <p className="text-lg font-semibold text-text-primary">
+                      </Text>
+                      <Text fontSize="$7" fontWeight="600" color="$color12">
                         {formatCurrency(
                           selectedProject.general_liability_required
                         )}
-                      </p>
-                    </div>
+                      </Text>
+                    </Card>
                   )}
                   {selectedProject.workers_comp_required && (
-                    <div className="p-3 bg-bg-secondary rounded-lg">
-                      <p className="text-xs text-text-secondary">
+                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                      <Text fontSize="$1" color="$color11">
                         Workers Comp
-                      </p>
-                      <p className="text-lg font-semibold text-text-primary">
+                      </Text>
+                      <Text fontSize="$7" fontWeight="600" color="$color12">
                         {formatCurrency(selectedProject.workers_comp_required)}
-                      </p>
-                    </div>
+                      </Text>
+                    </Card>
                   )}
                   {selectedProject.auto_liability_required && (
-                    <div className="p-3 bg-bg-secondary rounded-lg">
-                      <p className="text-xs text-text-secondary">
+                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                      <Text fontSize="$1" color="$color11">
                         Auto Liability
-                      </p>
-                      <p className="text-lg font-semibold text-text-primary">
+                      </Text>
+                      <Text fontSize="$7" fontWeight="600" color="$color12">
                         {formatCurrency(
                           selectedProject.auto_liability_required
                         )}
-                      </p>
-                    </div>
+                      </Text>
+                    </Card>
                   )}
                   {selectedProject.umbrella_required && (
-                    <div className="p-3 bg-bg-secondary rounded-lg">
-                      <p className="text-xs text-text-secondary">Umbrella</p>
-                      <p className="text-lg font-semibold text-text-primary">
+                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                      <Text fontSize="$1" color="$color11">Umbrella</Text>
+                      <Text fontSize="$7" fontWeight="600" color="$color12">
                         {formatCurrency(selectedProject.umbrella_required)}
-                      </p>
-                    </div>
+                      </Text>
+                    </Card>
                   )}
                   {selectedProject.professional_liability_required && (
-                    <div className="p-3 bg-bg-secondary rounded-lg">
-                      <p className="text-xs text-text-secondary">
+                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                      <Text fontSize="$1" color="$color11">
                         Professional Liability
-                      </p>
-                      <p className="text-lg font-semibold text-text-primary">
+                      </Text>
+                      <Text fontSize="$7" fontWeight="600" color="$color12">
                         {formatCurrency(
                           selectedProject.professional_liability_required
                         )}
-                      </p>
-                    </div>
+                      </Text>
+                    </Card>
                   )}
                   {selectedProject.pollution_liability_required && (
-                    <div className="p-3 bg-bg-secondary rounded-lg">
-                      <p className="text-xs text-text-secondary">
+                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                      <Text fontSize="$1" color="$color11">
                         Pollution Liability
-                      </p>
-                      <p className="text-lg font-semibold text-text-primary">
+                      </Text>
+                      <Text fontSize="$7" fontWeight="600" color="$color12">
                         {formatCurrency(
                           selectedProject.pollution_liability_required
                         )}
-                      </p>
-                    </div>
+                      </Text>
+                    </Card>
                   )}
-                </div>
-              </div>
+                </XStack>
+              </YStack>
 
               {selectedProject.additional_insureds &&
                 selectedProject.additional_insureds.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-medium text-text-secondary mb-2">
+                  <YStack>
+                    <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                       Additional Insureds
-                    </h3>
-                    <div className="space-y-1">
+                    </H3>
+                    <YStack gap="$1">
                       {selectedProject.additional_insureds.map(
                         (insured, index) => (
-                          <p key={index} className="text-sm text-text-primary">
+                          <Text key={index} fontSize="$3" color="$color12">
                             • {insured}
-                          </p>
+                          </Text>
                         )
                       )}
-                    </div>
-                  </div>
+                    </YStack>
+                  </YStack>
                 )}
 
               {selectedProject.special_provisions && (
-                <div>
-                  <h3 className="text-sm font-medium text-text-secondary mb-2">
+                <YStack>
+                  <H3 fontSize="$3" fontWeight="500" color="$color11" marginBottom="$2">
                     Special Provisions
-                  </h3>
-                  <p className="text-sm text-text-primary">
+                  </H3>
+                  <Text fontSize="$3" color="$color12">
                     {selectedProject.special_provisions}
-                  </p>
-                </div>
+                  </Text>
+                </YStack>
               )}
-            </div>
-          </div>
-        </div>
+            </YStack>
+          </Card>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
