@@ -1,6 +1,7 @@
 // src/pages/admin/Brokers.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Trash2, Mail, RefreshCcw, Loader2 } from 'lucide-react';
+import { YStack, XStack, Text, Button, H1, H3, Card } from 'tamagui';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAdminAction, AUDIT_ACTIONS } from '../../services/auditLogService';
 import InvitationForm from '../../components/admin/InvitationForm';
@@ -156,45 +157,57 @@ function AdminBrokers() {
 
   if (isLoading && invitations.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
-        <span className="ml-2">Loading invitations...</span>
-      </div>
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
+        <XStack alignItems="center" gap="$2">
+          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Text>Loading invitations...</Text>
+        </XStack>
+      </YStack>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 bg-red-50 rounded-lg">
-        <p className="text-red-600">Error: {error}</p>
-        <button onClick={fetchInvitations} className="mt-2 text-blue-500 hover:underline">
-          Try again
-        </button>
-      </div>
+      <Card padding="$6" borderRadius="$4" backgroundColor="$red4">
+        <Text color="$red11">Error: {error}</Text>
+        <Button onPress={fetchInvitations} marginTop="$2" backgroundColor="transparent" padding={0}>
+          <Text color="$blue10" textDecorationLine="underline">Try again</Text>
+        </Button>
+      </Card>
     );
   }
 
   return (
-    <div className="admin-brokers-page">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Broker Invitations</h1>
-        <div className="flex space-x-3">
-          <button
-            onClick={fetchInvitations}
+    <YStack>
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <H1 fontSize="$8" fontWeight="700">Broker Invitations</H1>
+        <XStack gap="$3">
+          <Button
+            onPress={fetchInvitations}
             disabled={isLoading}
-            className="flex items-center px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
+            icon={isLoading ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            borderWidth={1}
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+            opacity={isLoading ? 0.5 : 1}
           >
-            <RefreshCcw size={16} className={`mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
-          </button>
-          <button
-            onClick={() => setShowInvitationForm(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          </Button>
+          <Button
+            onPress={() => setShowInvitationForm(true)}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            backgroundColor="$blue10"
+            color="white"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: "$blue11" }}
           >
             Create Invitation
-          </button>
-        </div>
-      </div>
+          </Button>
+        </XStack>
+      </XStack>
 
       {showInvitationForm && (
         <InvitationForm
@@ -204,83 +217,106 @@ function AdminBrokers() {
         />
       )}
 
-      <div className="bg-white p-6 rounded-lg shadow mb-6">
+      <Card padding="$6" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
         {invitations.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No invitations yet. Create one to invite brokers to the platform.
-          </div>
+          <YStack alignItems="center" paddingVertical="$8">
+            <Text color="$color11">
+              No invitations yet. Create one to invite brokers to the platform.
+            </Text>
+          </YStack>
         ) : (
-          <table className="min-w-full bg-white">
+          <table style={{ width: '100%', minWidth: '100%' }}>
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b text-left">Code</th>
-                <th className="py-2 px-4 border-b text-left">Email</th>
-                <th className="py-2 px-4 border-b text-left">Expires</th>
-                <th className="py-2 px-4 border-b text-left">Usage</th>
-                <th className="py-2 px-4 border-b text-left">Status</th>
-                <th className="py-2 px-4 border-b text-left">Created</th>
-                <th className="py-2 px-4 border-b text-left">Actions</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Code</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Email</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Expires</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Usage</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Status</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Created</th>
+                <th style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)', textAlign: 'left' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {invitations.map((inv) => (
                 <tr key={inv.id}>
-                  <td className="py-2 px-4 border-b font-mono">{inv.code}</td>
-                  <td className="py-2 px-4 border-b">{inv.email || 'Any'}</td>
-                  <td className="py-2 px-4 border-b">
-                    {new Date(inv.expires_at).toLocaleDateString()}
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text fontFamily="$mono">{inv.code}</Text>
                   </td>
-                  <td className="py-2 px-4 border-b">
-                    {inv.use_count}/{inv.max_uses}
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text>{inv.email || 'Any'}</Text>
                   </td>
-                  <td className="py-2 px-4 border-b">
-                    <span
-                      className={`px-2 py-1 rounded text-xs capitalize ${
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text>{new Date(inv.expires_at).toLocaleDateString()}</Text>
+                  </td>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text>{inv.use_count}/{inv.max_uses}</Text>
+                  </td>
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <XStack
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$2"
+                      backgroundColor={
                         inv.status === 'active'
-                          ? 'bg-green-100 text-green-700'
+                          ? '$green4'
                           : inv.status === 'used'
-                            ? 'bg-blue-100 text-blue-700'
+                            ? '$blue4'
                             : inv.status === 'expired'
-                              ? 'bg-gray-100 text-gray-700'
-                              : 'bg-red-100 text-red-700'
-                      }`}
+                              ? '$backgroundHover'
+                              : '$red4'
+                      }
                     >
-                      {inv.status}
-                    </span>
+                      <Text fontSize="$1" textTransform="capitalize" color={
+                        inv.status === 'active'
+                          ? '$green11'
+                          : inv.status === 'used'
+                            ? '$blue11'
+                            : inv.status === 'expired'
+                              ? '$color11'
+                              : '$red11'
+                      }>
+                        {inv.status}
+                      </Text>
+                    </XStack>
                   </td>
-                  <td className="py-2 px-4 border-b">
-                    {new Date(inv.created_at).toLocaleDateString()}
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
+                    <Text>{new Date(inv.created_at).toLocaleDateString()}</Text>
                   </td>
-                  <td className="py-2 px-4 border-b">
+                  <td style={{ padding: '8px 16px', borderBottomWidth: 1, borderBottomStyle: 'solid', borderBottomColor: 'var(--borderColor)' }}>
                     {inv.status === 'active' && (
-                      <div className="flex items-center space-x-2">
+                      <XStack alignItems="center" gap="$2">
                         {inv.email && (
-                          <button
-                            onClick={() => handleResendInvitation(inv.id)}
+                          <Button
+                            onPress={() => handleResendInvitation(inv.id)}
                             disabled={actionInProgress === inv.id}
-                            className="text-blue-500 hover:text-blue-700 disabled:opacity-50"
-                            title="Resend email"
+                            backgroundColor="transparent"
+                            padding="$1"
+                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                            opacity={actionInProgress === inv.id ? 0.5 : 1}
                           >
                             {actionInProgress === inv.id ? (
-                              <Loader2 size={16} className="animate-spin" />
+                              <Loader2 size={16} className="animate-spin" color="$blue10" />
                             ) : (
-                              <Mail size={16} />
+                              <Mail size={16} color="$blue10" />
                             )}
-                          </button>
+                          </Button>
                         )}
-                        <button
-                          onClick={() => handleRevokeInvitation(inv.id)}
+                        <Button
+                          onPress={() => handleRevokeInvitation(inv.id)}
                           disabled={actionInProgress === inv.id}
-                          className="text-red-500 hover:text-red-700 disabled:opacity-50"
-                          title="Revoke invitation"
+                          backgroundColor="transparent"
+                          padding="$1"
+                          hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                          opacity={actionInProgress === inv.id ? 0.5 : 1}
                         >
                           {actionInProgress === inv.id ? (
-                            <Loader2 size={16} className="animate-spin" />
+                            <Loader2 size={16} className="animate-spin" color="$red10" />
                           ) : (
-                            <Trash2 size={16} />
+                            <Trash2 size={16} color="$red10" />
                           )}
-                        </button>
-                      </div>
+                        </Button>
+                      </XStack>
                     )}
                   </td>
                 </tr>
@@ -288,8 +324,8 @@ function AdminBrokers() {
             </tbody>
           </table>
         )}
-      </div>
-    </div>
+      </Card>
+    </YStack>
   );
 }
 
