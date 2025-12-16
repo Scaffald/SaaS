@@ -1,6 +1,7 @@
 // src/components/onboarding/steps/contractor/InsuranceStep.tsx
 // REQ-126: Contractor Onboarding - Insurance Information Step
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { YStack, XStack } from 'tamagui';
 import { Input as TextInput } from '@unicornlove/ui';
 import { Button } from '@unicornlove/ui';
 import { Heading2, BodyText } from '@unicornlove/ui';
@@ -56,12 +57,12 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
   };
 
   return (
-    <div className="insurance-step">
-      <Heading2 className="mb-2">Your Insurance Information</Heading2>
-      <BodyText className="mb-6 text-gray-600">
+    <YStack>
+      <Heading2 marginBottom="$2">Your Insurance Information</Heading2>
+      <BodyText marginBottom="$6" color="$color10">
         Provide your current insurance policy details
       </BodyText>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <YStack tag="form" onSubmit={handleSubmit} gap="$4">
         <TextInput
           label="Insurance Carrier"
           value={carrier}
@@ -78,26 +79,30 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           placeholder="Enter policy number"
           required
         />
-        <div className="grid grid-cols-2 gap-4">
-          <TextInput
-            label="Per Occurrence Limit ($)"
-            value={glPerOccurrence}
-            onChangeText={setGlPerOccurrence}
-            error={errors.glPerOccurrence}
-            placeholder="e.g., 1000000"
-            keyboardType="numeric"
-            required
-          />
-          <TextInput
-            label="Aggregate Limit ($)"
-            value={glAggregate}
-            onChangeText={setGlAggregate}
-            error={errors.glAggregate}
-            placeholder="e.g., 2000000"
-            keyboardType="numeric"
-            required
-          />
-        </div>
+        <XStack gap="$4" flexWrap="wrap">
+          <YStack flex={1} minWidth="45%">
+            <TextInput
+              label="Per Occurrence Limit ($)"
+              value={glPerOccurrence}
+              onChangeText={setGlPerOccurrence}
+              error={errors.glPerOccurrence}
+              placeholder="e.g., 1000000"
+              keyboardType="numeric"
+              required
+            />
+          </YStack>
+          <YStack flex={1} minWidth="45%">
+            <TextInput
+              label="Aggregate Limit ($)"
+              value={glAggregate}
+              onChangeText={setGlAggregate}
+              error={errors.glAggregate}
+              placeholder="e.g., 2000000"
+              keyboardType="numeric"
+              required
+            />
+          </YStack>
+        </XStack>
         <TextInput
           label="Expiration Date"
           value={glExpirationDate}
@@ -106,7 +111,7 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           placeholder="YYYY-MM-DD"
           required
         />
-        <div className="mt-6">
+        <YStack marginTop="$6">
           <Button
             type="submit"
             variant="primary"
@@ -114,9 +119,9 @@ function InsuranceStep({ onComplete, initialData = {}, isLoading = false }: Insu
           >
             {isLoading ? 'Saving...' : 'Continue'}
           </Button>
-        </div>
-      </form>
-    </div>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
 
