@@ -12,6 +12,15 @@
 import { useState, useEffect } from 'react'
 import { X, Save, AlertCircle } from 'lucide-react'
 import {
+  YStack,
+  XStack,
+  Text,
+  Input,
+  TextArea,
+  Button,
+  H2,
+} from '@unicornlove/ui'
+import {
   useCreateComplianceRequirement,
   useUpdateComplianceRequirement,
   type ComplianceRequirement,
@@ -19,7 +28,6 @@ import {
   type RequirementStatus,
   type RequirementDefinition,
 } from '../../../hooks/useComplianceRequirements'
-import { Button } from '../../Common/Button'
 import { LoadingSpinner } from '../../Common/LoadingSpinner'
 
 // =============================================================================
@@ -263,65 +271,120 @@ export function RequirementEditor({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <YStack
+      position="fixed"
+      inset={0}
+      zIndex={50}
+      alignItems="center"
+      justifyContent="center"
+    >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <YStack
+        position="absolute"
+        inset={0}
+        backgroundColor="rgba(0,0,0,0.5)"
+        onPress={onClose}
+      />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <YStack
+        position="relative"
+        backgroundColor="$background"
+        borderRadius="$4"
+        elevation={4}
+        width="100%"
+        maxWidth="42rem"
+        maxHeight="90vh"
+        overflow="scroll"
+      >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">
+        <XStack
+          position="sticky"
+          top={0}
+          backgroundColor="$background"
+          borderBottomWidth={1}
+          borderColor="$borderColor"
+          paddingHorizontal="$6"
+          paddingVertical="$4"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <H2 fontWeight="600">
             {isEditing ? 'Edit Requirement' : 'New Compliance Requirement'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+          </H2>
+          <Button
+            unstyled
+            padding="$2"
+            color="$gray10"
+            hoverStyle={{ color: '$gray12', backgroundColor: '$gray2' }}
+            borderRadius="$2"
+            onPress={onClose}
           >
             <X size={20} />
-          </button>
-        </div>
+          </Button>
+        </XStack>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <YStack as="form" onSubmit={handleSubmit} padding="$6" gap="$6">
           {/* Error Alert */}
           {(createMutation.error || updateMutation.error) && (
-            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-              <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-medium">Error saving requirement</p>
-                <p className="text-sm">{(createMutation.error || updateMutation.error)?.message}</p>
-              </div>
-            </div>
+            <XStack
+              alignItems="flex-start"
+              gap="$3"
+              padding="$4"
+              backgroundColor="$red2"
+              borderWidth={1}
+              borderColor="$red6"
+              borderRadius="$4"
+              color="$red10"
+            >
+              <YStack flexShrink={0} marginTop="$0.5">
+                <AlertCircle size={20} style={{ color: 'var(--color-red-10)' }} />
+              </YStack>
+              <YStack>
+                <Text fontWeight="600">Error saving requirement</Text>
+                <Text fontSize="$3">{(createMutation.error || updateMutation.error)?.message}</Text>
+              </YStack>
+            </XStack>
           )}
 
           {/* Basic Info */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Code <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
+          <XStack gap="$4" flexWrap="wrap">
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+                Code <Text color="$red10">*</Text>
+              </Text>
+              <Input
+                width="100%"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderRadius="$4"
+                borderColor={errors.code ? '$red8' : '$gray8'}
                 value={formData.code}
                 onChange={(e) => handleChange('code', e.target.value.toUpperCase())}
                 placeholder="GL-REQ-001"
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.code ? 'border-red-500' : 'border-gray-300'
-                }`}
                 disabled={isEditing}
               />
-              {errors.code && <p className="mt-1 text-sm text-red-500">{errors.code}</p>}
-            </div>
+              {errors.code && (
+                <Text marginTop="$1" fontSize="$3" color="$red10">{errors.code}</Text>
+              )}
+            </YStack>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Type <span className="text-red-500">*</span>
-              </label>
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+                Type <Text color="$red10">*</Text>
+              </Text>
               <select
                 value={formData.type}
                 onChange={(e) => handleChange('type', e.target.value as CoverageType)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid var(--color-gray-8)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
               >
                 {COVERAGE_TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -329,116 +392,151 @@ export function RequirementEditor({
                   </option>
                 ))}
               </select>
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
+          <YStack>
+            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+              Name <Text color="$red10">*</Text>
+            </Text>
+            <Input
+              width="100%"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderRadius="$4"
+              borderColor={errors.name ? '$red8' : '$gray8'}
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="General Liability - Standard Construction"
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              }`}
             />
-            {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
-          </div>
+            {errors.name && (
+              <Text marginTop="$1" fontSize="$3" color="$red10">{errors.name}</Text>
+            )}
+          </YStack>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea
+          <YStack>
+            <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">Description</Text>
+            <TextArea
+              width="100%"
+              paddingHorizontal="$3"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$gray8"
+              borderRadius="$4"
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="Describe the requirement..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
+          </YStack>
 
           {/* Coverage Limits */}
-          <div className="border-t pt-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Coverage Limits</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+            <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">Coverage Limits</Text>
+            <XStack gap="$4" flexWrap="wrap">
+              <YStack flex={1} minWidth="150px">
+                <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
                   Per Occurrence
-                </label>
-                <input
-                  type="text"
+                </Text>
+                <Input
+                  width="100%"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  borderWidth={1}
+                  borderColor="$gray8"
+                  borderRadius="$4"
                   value={formData.per_occurrence}
                   onChange={(e) => handleCurrencyChange('per_occurrence', e.target.value)}
                   placeholder="$1,000,000"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Aggregate</label>
-                <input
-                  type="text"
+              </YStack>
+              <YStack flex={1} minWidth="150px">
+                <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">Aggregate</Text>
+                <Input
+                  width="100%"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  borderWidth={1}
+                  borderColor="$gray8"
+                  borderRadius="$4"
                   value={formData.aggregate}
                   onChange={(e) => handleCurrencyChange('aggregate', e.target.value)}
                   placeholder="$2,000,000"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              </YStack>
+              <YStack flex={1} minWidth="150px">
+                <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
                   Max Deductible
-                </label>
-                <input
-                  type="text"
+                </Text>
+                <Input
+                  width="100%"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  borderWidth={1}
+                  borderColor="$gray8"
+                  borderRadius="$4"
                   value={formData.deductible_max}
                   onChange={(e) => handleCurrencyChange('deductible_max', e.target.value)}
                   placeholder="$10,000"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-            </div>
-          </div>
+              </YStack>
+            </XStack>
+          </YStack>
 
           {/* Dates */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Effective Date <span className="text-red-500">*</span>
-              </label>
-              <input
+          <XStack gap="$4" flexWrap="wrap">
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+                Effective Date <Text color="$red10">*</Text>
+              </Text>
+              <Input
                 type="date"
+                width="100%"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderRadius="$4"
+                borderColor={errors.effective_date ? '$red8' : '$gray8'}
                 value={formData.effective_date}
                 onChange={(e) => handleChange('effective_date', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.effective_date ? 'border-red-500' : 'border-gray-300'
-                }`}
               />
               {errors.effective_date && (
-                <p className="mt-1 text-sm text-red-500">{errors.effective_date}</p>
+                <Text marginTop="$1" fontSize="$3" color="$red10">{errors.effective_date}</Text>
               )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            </YStack>
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
                 Expiration Date
-              </label>
-              <input
+              </Text>
+              <Input
                 type="date"
+                width="100%"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderColor="$gray8"
+                borderRadius="$4"
                 value={formData.expiration_date}
                 onChange={(e) => handleChange('expiration_date', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
           {/* Status and Template */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <XStack gap="$4" flexWrap="wrap">
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">Status</Text>
               <select
                 value={formData.status}
                 onChange={(e) => handleChange('status', e.target.value as RequirementStatus)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid var(--color-gray-8)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
               >
                 {STATUS_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -446,65 +544,89 @@ export function RequirementEditor({
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="flex items-center pt-6">
-              <label className="flex items-center gap-2 cursor-pointer">
+            </YStack>
+            <YStack flex={1} alignItems="center" paddingTop="$6">
+              <XStack alignItems="center" gap="$2" cursor="pointer">
                 <input
                   type="checkbox"
                   checked={formData.is_template}
                   onChange={(e) => handleChange('is_template', e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '4px',
+                    border: '1px solid var(--color-gray-8)',
+                  }}
                 />
-                <span className="text-sm text-gray-700">Save as template</span>
-              </label>
-            </div>
-          </div>
+                <Text fontSize="$3" color="$color11">Save as template</Text>
+              </XStack>
+            </YStack>
+          </XStack>
 
           {/* Change Summary (for updates) */}
           {isEditing && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Change Summary <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
+            <YStack>
+              <Text fontSize="$3" fontWeight="600" color="$color11" marginBottom="$1">
+                Change Summary <Text color="$red10">*</Text>
+              </Text>
+              <Input
+                width="100%"
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderColor="$gray8"
+                borderRadius="$4"
                 value={changeSummary}
                 onChange={(e) => setChangeSummary(e.target.value)}
                 placeholder="Brief description of changes..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <p className="mt-1 text-xs text-gray-500">
+              <Text marginTop="$1" fontSize="$1" color="$gray11">
                 This will be recorded in the version history
-              </p>
-            </div>
+              </Text>
+            </YStack>
           )}
-        </form>
+        </YStack>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t px-6 py-4 flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+        <XStack
+          position="sticky"
+          bottom={0}
+          backgroundColor="$background"
+          borderTopWidth={1}
+          borderColor="$borderColor"
+          paddingHorizontal="$6"
+          paddingVertical="$4"
+          alignItems="center"
+          justifyContent="flex-end"
+          gap="$3"
+        >
+          <Button
+            unstyled
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            color="$gray12"
+            hoverStyle={{ backgroundColor: '$gray2' }}
+            borderRadius="$4"
+            onPress={onClose}
           >
-            Cancel
-          </button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            <Text>Cancel</Text>
+          </Button>
+          <Button onPress={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? (
-              <>
-                <LoadingSpinner size="sm" className="mr-2" />
-                Saving...
-              </>
+              <XStack alignItems="center" gap="$2">
+                <LoadingSpinner size="sm" />
+                <Text>Saving...</Text>
+              </XStack>
             ) : (
-              <>
-                <Save size={16} className="mr-1" />
-                {isEditing ? 'Update' : 'Create'} Requirement
-              </>
+              <XStack alignItems="center" gap="$1">
+                <Save size={16} />
+                <Text>{isEditing ? 'Update' : 'Create'} Requirement</Text>
+              </XStack>
             )}
           </Button>
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </YStack>
+    </YStack>
   )
 }
 
