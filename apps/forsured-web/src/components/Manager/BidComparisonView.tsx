@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   CheckCircle,
   XCircle,
@@ -13,6 +13,7 @@ import {
   ArrowUpDown,
   Sparkles,
 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card, Spinner } from '@unicornlove/ui';
 import { useBids } from '../../hooks/useBids';
 import { useProjects } from '../../hooks/useProjects';
 import { useUsers } from '../../hooks/useUsers';
@@ -240,10 +241,10 @@ export default function BidComparisonView({
     }
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-success-600 bg-success-50 border-success-200';
-    if (score >= 60) return 'text-warning-600 bg-warning-50 border-warning-200';
-    return 'text-error-600 bg-error-50 border-error-200';
+  const getScoreColorProps = (score: number) => {
+    if (score >= 80) return { color: '$green10', backgroundColor: '$green2', borderColor: '$green8' };
+    if (score >= 60) return { color: '$orange10', backgroundColor: '$orange2', borderColor: '$orange8' };
+    return { color: '$red10', backgroundColor: '$red2', borderColor: '$red8' };
   };
 
   const formatCurrency = (amount: number) => {
@@ -262,18 +263,18 @@ export default function BidComparisonView({
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="Bid Comparison" size="xl">
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-xl font-bold text-text-primary mb-1">
+        <YStack gap="$6">
+          <YStack>
+            <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$1">
               {project.name}
-            </h2>
-            <p className="text-text-secondary">
+            </H2>
+            <Text color="$color11">
               Compare bids from all subcontractors
-            </p>
-          </div>
+            </Text>
+          </YStack>
 
           {/* Filters and Sort */}
-          <div className="flex items-center space-x-3">
+          <XStack alignItems="center" gap="$3">
             <Select
               value={complianceFilter}
               onChange={(e) => setComplianceFilter(e.target.value)}
@@ -301,87 +302,113 @@ export default function BidComparisonView({
             >
               {sortOrder === 'asc' ? '↑ Ascending' : '↓ Descending'}
             </Button>
-          </div>
+          </XStack>
 
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-              <p className="text-text-secondary">Loading bids...</p>
-            </div>
+            <YStack alignItems="center" paddingVertical="$12">
+              <Spinner size="large" color="$blue10" marginBottom="$2" />
+              <Text color="$color11">Loading bids...</Text>
+            </YStack>
           ) : filteredAndSortedBids.length === 0 ? (
-            <div className="text-center py-12">
-              <Trophy className="mx-auto text-text-tertiary mb-4" size={48} />
-              <p className="text-text-primary font-medium mb-2">
+            <YStack alignItems="center" paddingVertical="$12">
+              <YStack alignItems="center" marginBottom="$4">
+                <Trophy color="$color10" size={48} />
+              </YStack>
+              <Text color="$color12" fontWeight="500" marginBottom="$2">
                 No bids found
-              </p>
-              <p className="text-text-secondary text-sm">
+              </Text>
+              <Text color="$color11" fontSize="$3">
                 No subcontractors have submitted bids yet
-              </p>
-            </div>
+              </Text>
+            </YStack>
           ) : (
-            <div className="space-y-4">
+            <YStack gap="$4">
               {filteredAndSortedBids.map((bid) => (
-                <div
+                <Card
                   key={bid.id}
-                  className="border border-border rounded-lg p-6 hover:border-primary-300 transition-colors"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  padding="$6"
+                  hoverStyle={{ borderColor: '$blue8' }}
                 >
-                  <div className="grid grid-cols-6 gap-4 mb-4">
-                    <div className="col-span-2">
-                      <p className="text-sm text-text-tertiary mb-1">
+                  <XStack flexWrap="wrap" gap="$4" marginBottom="$4">
+                    <YStack flex={2} minWidth="calc(33.333% - 11px)">
+                      <Text fontSize="$3" color="$color10" marginBottom="$1">
                         Subcontractor
-                      </p>
-                      <p className="font-semibold text-text-primary">
+                      </Text>
+                      <Text fontWeight="600" color="$color12">
                         {bid.subcontractorName}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-text-tertiary mb-1">
+                      </Text>
+                    </YStack>
+                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
+                      <Text fontSize="$3" color="$color10" marginBottom="$1">
                         Bid Amount
-                      </p>
-                      <p className="font-semibold text-text-primary">
+                      </Text>
+                      <Text fontWeight="600" color="$color12">
                         {formatCurrency(bid.bid_amount)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-text-tertiary mb-1">
+                      </Text>
+                    </YStack>
+                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
+                      <Text fontSize="$3" color="$color10" marginBottom="$1">
                         Compliance Score
-                      </p>
-                      <div
-                        className={`inline-flex items-center px-3 py-1 rounded-full border ${getScoreColor(bid.score.overallScore)}`}
+                      </Text>
+                      <XStack
+                        alignItems="center"
+                        paddingHorizontal="$3"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        borderWidth={1}
+                        {...getScoreColorProps(bid.score.overallScore)}
                       >
-                        <span className="font-bold text-lg">
+                        <Text fontWeight="700" fontSize="$7" color={getScoreColorProps(bid.score.overallScore).color}>
                           {bid.score.overallScore}
-                        </span>
-                        <span className="text-xs ml-1">/100</span>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-text-tertiary mb-1">
+                        </Text>
+                        <Text fontSize="$1" marginLeft="$1" color={getScoreColorProps(bid.score.overallScore).color}>
+                          /100
+                        </Text>
+                      </XStack>
+                    </YStack>
+                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
+                      <Text fontSize="$3" color="$color10" marginBottom="$1">
                         Response Time
-                      </p>
-                      <p className="font-medium text-text-primary">
+                      </Text>
+                      <Text fontWeight="500" color="$color12">
                         {bid.daysToRespond} days
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-text-tertiary mb-1">Status</p>
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded ${
+                      </Text>
+                    </YStack>
+                    <YStack flex={1} minWidth="calc(16.666% - 11px)">
+                      <Text fontSize="$3" color="$color10" marginBottom="$1">Status</Text>
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        fontSize="$1"
+                        fontWeight="500"
+                        borderRadius="$2"
+                        backgroundColor={
                           bid.status === 'awarded'
-                            ? 'bg-success-100 text-success-700'
+                            ? '$green2'
                             : bid.status === 'rejected'
-                              ? 'bg-error-100 text-error-700'
-                              : 'bg-primary-100 text-primary-700'
-                        }`}
+                              ? '$red2'
+                              : '$blue2'
+                        }
+                        color={
+                          bid.status === 'awarded'
+                            ? '$green10'
+                            : bid.status === 'rejected'
+                              ? '$red10'
+                              : '$blue10'
+                        }
+                        textTransform="uppercase"
                       >
-                        {bid.status.replace('_', ' ').toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
+                        {bid.status.replace('_', ' ')}
+                      </Text>
+                    </YStack>
+                  </XStack>
 
                   {/* AI Processing Indicator */}
                   {bid.aiProcessingState && (
-                    <div className="mb-4">
+                    <YStack marginBottom="$4">
                       <AIProcessingIndicator
                         state={bid.aiProcessingState}
                         message={
@@ -397,90 +424,91 @@ export default function BidComparisonView({
                             : undefined
                         }
                       />
-                    </div>
+                    </YStack>
                   )}
 
                   {/* Score Breakdown */}
                   {!bid.aiProcessingState && (
-                    <div className="bg-bg-secondary rounded-lg p-4 mb-4">
-                      <p className="text-xs font-medium text-text-secondary mb-3">
+                    <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$4" marginBottom="$4">
+                      <Text fontSize="$1" fontWeight="500" color="$color11" marginBottom="$3">
                         Score Breakdown
-                      </p>
-                      <div className="grid grid-cols-5 gap-3 text-xs">
-                        <div>
-                          <span className="text-text-tertiary">Coverage:</span>
-                          <p className="font-medium text-text-primary">
+                      </Text>
+                      <XStack flexWrap="wrap" gap="$3" fontSize="$1">
+                        <YStack>
+                          <Text color="$color10">Coverage:</Text>
+                          <Text fontWeight="500" color="$color12">
                             {bid.score.insuranceCoverage}/40
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-text-tertiary">Documents:</span>
-                          <p className="font-medium text-text-primary">
+                          </Text>
+                        </YStack>
+                        <YStack>
+                          <Text color="$color10">Documents:</Text>
+                          <Text fontWeight="500" color="$color12">
                             {bid.score.documentCompleteness}/20
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-text-tertiary">Carrier:</span>
-                          <p className="font-medium text-text-primary">
+                          </Text>
+                        </YStack>
+                        <YStack>
+                          <Text color="$color10">Carrier:</Text>
+                          <Text fontWeight="500" color="$color12">
                             {bid.score.carrierRatings}/15
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-text-tertiary">
+                          </Text>
+                        </YStack>
+                        <YStack>
+                          <Text color="$color10">
                             Performance:
-                          </span>
-                          <p className="font-medium text-text-primary">
+                          </Text>
+                          <Text fontWeight="500" color="$color12">
                             {bid.score.pastPerformance}/15
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-text-tertiary">
+                          </Text>
+                        </YStack>
+                        <YStack>
+                          <Text color="$color10">
                             Timeliness:
-                          </span>
-                          <p className="font-medium text-text-primary">
+                          </Text>
+                          <Text fontWeight="500" color="$color12">
                             {bid.score.responseTimeliness}/10
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                          </Text>
+                        </YStack>
+                      </XStack>
+                    </Card>
                   )}
 
                   {/* Coverage Gaps */}
                   {!bid.aiProcessingState &&
                     bid.score.coverageGaps.length > 0 && (
-                      <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 mb-4">
-                        <p className="text-xs font-medium text-warning-900 mb-2">
+                      <Card backgroundColor="$orange2" borderWidth={1} borderColor="$orange8" borderRadius="$4" padding="$3" marginBottom="$4">
+                        <Text fontSize="$1" fontWeight="500" color="$orange12" marginBottom="$2">
                           Coverage Gaps
-                        </p>
-                        <ul className="space-y-1">
+                        </Text>
+                        <YStack gap="$1">
                           {bid.score.coverageGaps.map((gap, index) => (
-                            <li
+                            <Text
                               key={index}
-                              className="text-xs text-warning-800"
+                              fontSize="$1"
+                              color="$orange11"
                             >
                               • {gap.type}: {formatCurrency(gap.actual)} /{' '}
                               {formatCurrency(gap.required)} required
-                            </li>
+                            </Text>
                           ))}
-                        </ul>
-                      </div>
+                        </YStack>
+                      </Card>
                     )}
 
                   {/* Risk Assessment */}
                   {!bid.aiProcessingState && (
-                    <div className="mb-4">
-                      <p className="text-xs font-medium text-text-secondary mb-1">
+                    <YStack marginBottom="$4">
+                      <Text fontSize="$1" fontWeight="500" color="$color11" marginBottom="$1">
                         Risk Assessment
-                      </p>
-                      <p className="text-sm text-text-primary">
+                      </Text>
+                      <Text fontSize="$3" color="$color12">
                         {bid.score.riskAssessment}
-                      </p>
-                    </div>
+                      </Text>
+                    </YStack>
                   )}
 
                   {/* Actions */}
                   {!bid.aiProcessingState && bid.status === 'submitted' && (
-                    <div className="flex items-center space-x-2 pt-4 border-t border-border">
+                    <XStack alignItems="center" gap="$2" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                       <Button
                         variant="success"
                         size="sm"
@@ -522,13 +550,13 @@ export default function BidComparisonView({
                       >
                         View AI Summary
                       </Button>
-                    </div>
+                    </XStack>
                   )}
-                </div>
+                </Card>
               ))}
-            </div>
+            </YStack>
           )}
-        </div>
+        </YStack>
       </Modal>
 
       {/* AI Summary Modal for Bids */}
@@ -587,12 +615,12 @@ export default function BidComparisonView({
         title="Award Bid"
         size="sm"
       >
-        <div className="space-y-4">
-          <p className="text-text-secondary">
+        <YStack gap="$4">
+          <Text color="$color11">
             Are you sure you want to award this bid? All other bids will be
             automatically rejected.
-          </p>
-          <div className="flex space-x-3">
+          </Text>
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => {
@@ -611,8 +639,8 @@ export default function BidComparisonView({
             >
               Award Bid
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* Reject Modal */}
@@ -626,7 +654,7 @@ export default function BidComparisonView({
         title="Reject Bid"
         size="sm"
       >
-        <div className="space-y-4">
+        <YStack gap="$4">
           <Textarea
             label="Reason for Rejection"
             value={rejectReason}
@@ -636,7 +664,7 @@ export default function BidComparisonView({
             fullWidth
             required
           />
-          <div className="flex space-x-3">
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => {
@@ -657,8 +685,8 @@ export default function BidComparisonView({
             >
               Reject Bid
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* Clarification Modal */}
@@ -672,7 +700,7 @@ export default function BidComparisonView({
         title="Request Clarification"
         size="sm"
       >
-        <div className="space-y-4">
+        <YStack gap="$4">
           <Textarea
             label="Questions or Clarifications Needed"
             value={clarificationQuestion}
@@ -682,7 +710,7 @@ export default function BidComparisonView({
             fullWidth
             required
           />
-          <div className="flex space-x-3">
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => {
@@ -703,8 +731,8 @@ export default function BidComparisonView({
             >
               Send Request
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
     </>
   );
