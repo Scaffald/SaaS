@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   XCircle,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Input } from 'tamagui';
 import ComplianceScore from '../Common/ComplianceScore';
 import StatusBadge from '../Common/StatusBadge';
 import Button from '../Common/Button';
@@ -34,207 +35,220 @@ export default function SubcontractorVetting() {
     : null;
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$8" fontWeight="bold" color="$color12">
             Subcontractors
-          </h1>
-          <p className="text-text-secondary">
+          </H1>
+          <Text color="$color11">
             Manage subcontractor compliance and documentation
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
+          </Text>
+        </YStack>
+        <XStack alignItems="center" gap="$3">
           <Button variant="ghost" leftIcon={Upload} iconSize={16}>
             Import
           </Button>
           <Button
-            onClick={() => setShowAddModal(true)}
+            onPress={() => setShowAddModal(true)}
             variant="primary"
             leftIcon={Plus}
             iconSize={16}
-            className="bg-blue-600 hover:bg-blue-700"
+            backgroundColor="$blue9"
+            hoverStyle={{ backgroundColor: "$blue10" }}
           >
             Add Subcontractor
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Search and Filters */}
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
+      <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor" padding="$4">
+        <XStack flexDirection="column" $gtSm={{ flexDirection: "row" }} gap="$4">
+          <XStack flex={1} position="relative">
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
+              position="absolute"
+              left="$3"
+              top="50%"
+              transform={[{ translateY: -10 }]}
+              color="$color10"
               size={20}
             />
-            <input
+            <Input
               type="text"
               placeholder="Search subcontractors or companies..."
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              width="100%"
+              paddingLeft="$10"
+              paddingRight="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
             />
-          </div>
+          </XStack>
           <Button variant="outline" leftIcon={Filter} iconSize={16}>
             Filter
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <XStack flexDirection="column" $gtLg={{ flexDirection: "row" }} gap="$6">
         {/* Subcontractor List */}
-        <div className="lg:col-span-1 bg-surface rounded-lg shadow-sm border border-border">
-          <div className="p-4 border-b border-border">
-            <h2 className="font-semibold text-text-primary">
+        <Card flex={1} $gtLg={{ flex: "0 0 33.333%" }} backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor">
+          <YStack padding="$4" borderBottomWidth={1} borderColor="$borderColor">
+            <Text fontWeight="600" color="$color12">
               Subcontractors ({filteredSubcontractors.length})
-            </h2>
-          </div>
-          <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+            </Text>
+          </YStack>
+          <YStack maxHeight={384} overflowY="auto">
             {filteredSubcontractors.map((subcontractor) => (
-              <button
+              <Button
                 key={subcontractor.id}
-                onClick={() => setSelectedSubcontractor(subcontractor.id)}
-                className={`w-full p-4 text-left hover:bg-bg-secondary transition-colors ${
-                  selectedSubcontractor === subcontractor.id
-                    ? 'bg-primary-50 border-r-2 border-blue-600'
-                    : ''
-                }`}
+                onPress={() => setSelectedSubcontractor(subcontractor.id)}
+                variant="ghost"
+                width="100%"
+                padding="$4"
+                justifyContent="flex-start"
+                backgroundColor={selectedSubcontractor === subcontractor.id ? "$blue3" : "transparent"}
+                borderRightWidth={selectedSubcontractor === subcontractor.id ? 2 : 0}
+                borderRightColor={selectedSubcontractor === subcontractor.id ? "$blue9" : "transparent"}
+                hoverStyle={{ backgroundColor: "$backgroundHover" }}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-text-primary">
-                    {subcontractor.name}
-                  </h3>
-                  <StatusBadge
-                    status={subcontractor.status}
-                    size="sm"
-                    showIcon={false}
-                  />
-                </div>
-                <p className="text-sm text-text-secondary mb-2">
-                  {subcontractor.company}
-                </p>
-                <div className="flex items-center justify-between">
-                  <ComplianceScore
-                    score={subcontractor.complianceScore}
-                    size="sm"
-                    showTrend={false}
-                  />
-                  <span className="text-xs text-text-secondary">
-                    {subcontractor.documents.length} docs
-                  </span>
-                </div>
-              </button>
+                <YStack width="100%">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                    <Text fontWeight="500" color="$color12">
+                      {subcontractor.name}
+                    </Text>
+                    <StatusBadge
+                      status={subcontractor.status}
+                      size="sm"
+                      showIcon={false}
+                    />
+                  </XStack>
+                  <Text fontSize="$3" color="$color11" marginBottom="$2">
+                    {subcontractor.company}
+                  </Text>
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <ComplianceScore
+                      score={subcontractor.complianceScore}
+                      size="sm"
+                      showTrend={false}
+                    />
+                    <Text fontSize="$1" color="$color11">
+                      {subcontractor.documents.length} docs
+                    </Text>
+                  </XStack>
+                </YStack>
+              </Button>
             ))}
-          </div>
-        </div>
+          </YStack>
+        </Card>
 
         {/* Subcontractor Details */}
-        <div className="lg:col-span-2">
+        <YStack flex={2} $gtLg={{ flex: "0 0 66.666%" }}>
           {selectedSubcontractorData ? (
-            <div className="space-y-6">
+            <YStack gap="$6">
               {/* Subcontractor Info */}
-              <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-xl font-bold text-text-primary">
+              <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor" padding="$6">
+                <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                  <YStack>
+                    <H2 fontSize="$7" fontWeight="bold" color="$color12">
                       {selectedSubcontractorData.name}
-                    </h2>
-                    <p className="text-text-secondary">
+                    </H2>
+                    <Text color="$color11">
                       {selectedSubcontractorData.company}
-                    </p>
-                  </div>
+                    </Text>
+                  </YStack>
                   <ComplianceScore
                     score={selectedSubcontractorData.complianceScore}
                     trend="up"
                   />
-                </div>
+                </XStack>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-text-secondary">Email:</span>
-                    <p className="font-medium">
+                <XStack gap="$4" flexWrap="wrap" fontSize="$3">
+                  <YStack flex={1} minWidth={200}>
+                    <Text color="$color11">Email:</Text>
+                    <Text fontWeight="500">
                       {selectedSubcontractorData.email}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-text-secondary">Phone:</span>
-                    <p className="font-medium">
+                    </Text>
+                  </YStack>
+                  <YStack flex={1} minWidth={200}>
+                    <Text color="$color11">Phone:</Text>
+                    <Text fontWeight="500">
                       {selectedSubcontractorData.phone}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-text-secondary">Status:</span>
-                    <div className="mt-1">
+                    </Text>
+                  </YStack>
+                  <YStack flex={1} minWidth={200}>
+                    <Text color="$color11">Status:</Text>
+                    <YStack marginTop="$1">
                       <StatusBadge status={selectedSubcontractorData.status} />
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-text-secondary">Last Updated:</span>
-                    <p className="font-medium">
+                    </YStack>
+                  </YStack>
+                  <YStack flex={1} minWidth={200}>
+                    <Text color="$color11">Last Updated:</Text>
+                    <Text fontWeight="500">
                       {selectedSubcontractorData.lastUpdated.toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                    </Text>
+                  </YStack>
+                </XStack>
+              </Card>
 
               {/* Documents */}
-              <div className="bg-surface rounded-lg shadow-sm border border-border">
-                <div className="p-4 border-b border-border flex items-center justify-between">
-                  <h3 className="font-semibold text-text-primary">Documents</h3>
+              <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor">
+                <XStack padding="$4" borderBottomWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="space-between">
+                  <Text fontWeight="600" color="$color12">Documents</Text>
                   <Button
                     variant="ghost"
                     leftIcon={Upload}
                     iconSize={16}
-                    className="text-primary-600 hover:text-blue-700"
+                    color="$blue9"
+                    hoverStyle={{ color: "$blue10" }}
                   >
                     Upload
                   </Button>
-                </div>
-                <div className="p-4">
+                </XStack>
+                <YStack padding="$4">
                   {selectedSubcontractorData.documents.length > 0 ? (
-                    <div className="space-y-3">
+                    <YStack gap="$3">
                       {selectedSubcontractorData.documents.map((doc) => (
-                        <div
+                        <XStack
                           key={doc.id}
-                          className="flex items-center justify-between p-3 border border-border rounded-lg"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          padding="$3"
+                          borderWidth={1}
+                          borderColor="$borderColor"
+                          borderRadius="$4"
                         >
-                          <div className="flex items-center space-x-3">
+                          <XStack alignItems="center" gap="$3">
                             {doc.status === 'verified' && (
-                              <CheckCircle
-                                className="text-success-600"
-                                size={16}
-                              />
+                              <CheckCircle color="$green9" size={16} />
                             )}
                             {doc.status === 'pending' && (
-                              <AlertTriangle
-                                className="text-warning-600"
-                                size={16}
-                              />
+                              <AlertTriangle color="$yellow9" size={16} />
                             )}
                             {doc.status === 'expired' && (
-                              <XCircle className="text-error-600" size={16} />
+                              <XCircle color="$red9" size={16} />
                             )}
-                            <div>
-                              <p className="font-medium text-text-primary">
+                            <YStack>
+                              <Text fontWeight="500" color="$color12">
                                 {doc.name}
-                              </p>
-                              <div className="flex items-center space-x-2 text-sm text-text-secondary">
-                                <span className="capitalize">{doc.type}</span>
+                              </Text>
+                              <XStack alignItems="center" gap="$2" fontSize="$3" color="$color11">
+                                <Text fontSize="$3" color="$color11" textTransform="capitalize">{doc.type}</Text>
                                 {doc.expiryDate && (
                                   <>
-                                    <span>•</span>
-                                    <span>
-                                      Expires:{' '}
-                                      {doc.expiryDate.toLocaleDateString()}
-                                    </span>
+                                    <Text>•</Text>
+                                    <Text fontSize="$3" color="$color11">
+                                      Expires: {doc.expiryDate.toLocaleDateString()}
+                                    </Text>
                                   </>
                                 )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
+                              </XStack>
+                            </YStack>
+                          </XStack>
+                          <XStack alignItems="center" gap="$2">
                             <StatusBadge status={doc.status} size="sm" />
                             <IconButton
                               icon={Eye}
@@ -248,168 +262,191 @@ export default function SubcontractorVetting() {
                               variant="ghost"
                               tooltip="Download document"
                             />
-                          </div>
-                        </div>
+                          </XStack>
+                        </XStack>
                       ))}
-                    </div>
+                    </YStack>
                   ) : (
-                    <div className="text-center py-8 text-text-secondary">
-                      <Upload
-                        size={48}
-                        className="mx-auto mb-3 text-gray-300"
-                      />
-                      <p>No documents uploaded</p>
-                      <p className="text-sm">
+                    <YStack alignItems="center" paddingVertical="$8">
+                      <Upload size={48} color="$gray8" marginBottom="$3" />
+                      <Text color="$color11">No documents uploaded</Text>
+                      <Text fontSize="$3" color="$color11">
                         Upload certificates and licenses to get started
-                      </p>
-                    </div>
+                      </Text>
+                    </YStack>
                   )}
-                </div>
-              </div>
+                </YStack>
+              </Card>
 
               {/* Insurance Policies */}
-              <div className="bg-surface rounded-lg shadow-sm border border-border">
-                <div className="p-4 border-b border-border">
-                  <h3 className="font-semibold text-text-primary">
+              <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor">
+                <YStack padding="$4" borderBottomWidth={1} borderColor="$borderColor">
+                  <Text fontWeight="600" color="$color12">
                     Insurance Policies
-                  </h3>
-                </div>
-                <div className="p-4">
+                  </Text>
+                </YStack>
+                <YStack padding="$4">
                   {selectedSubcontractorData.insurancePolicies.length > 0 ? (
-                    <div className="space-y-3">
+                    <YStack gap="$3">
                       {selectedSubcontractorData.insurancePolicies.map(
                         (policy) => (
-                          <div
+                          <Card
                             key={policy.id}
-                            className="p-4 border border-border rounded-lg"
+                            padding="$4"
+                            borderWidth={1}
+                            borderColor="$borderColor"
+                            borderRadius="$4"
                           >
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-medium text-text-primary">
+                            <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                              <Text fontWeight="500" color="$color12">
                                 {policy.type}
-                              </h4>
+                              </Text>
                               <StatusBadge status={policy.status} size="sm" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <span className="text-text-secondary">
-                                  Provider:
-                                </span>
-                                <p className="font-medium">{policy.provider}</p>
-                              </div>
-                              <div>
-                                <span className="text-text-secondary">
-                                  Policy #:
-                                </span>
-                                <p className="font-medium">
+                            </XStack>
+                            <XStack gap="$4" flexWrap="wrap" fontSize="$3">
+                              <YStack flex={1} minWidth={200}>
+                                <Text color="$color11">Provider:</Text>
+                                <Text fontWeight="500">{policy.provider}</Text>
+                              </YStack>
+                              <YStack flex={1} minWidth={200}>
+                                <Text color="$color11">Policy #:</Text>
+                                <Text fontWeight="500">
                                   {policy.policyNumber}
-                                </p>
-                              </div>
-                              <div>
-                                <span className="text-text-secondary">
-                                  Coverage:
-                                </span>
-                                <p className="font-medium">
+                                </Text>
+                              </YStack>
+                              <YStack flex={1} minWidth={200}>
+                                <Text color="$color11">Coverage:</Text>
+                                <Text fontWeight="500">
                                   ${policy.coverage.toLocaleString()}
-                                </p>
-                              </div>
-                              <div>
-                                <span className="text-text-secondary">
-                                  Expires:
-                                </span>
-                                <p className="font-medium">
+                                </Text>
+                              </YStack>
+                              <YStack flex={1} minWidth={200}>
+                                <Text color="$color11">Expires:</Text>
+                                <Text fontWeight="500">
                                   {policy.endDate.toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
+                                </Text>
+                              </YStack>
+                            </XStack>
+                          </Card>
                         )
                       )}
-                    </div>
+                    </YStack>
                   ) : (
-                    <div className="text-center py-8 text-text-secondary">
-                      <p>No insurance policies on file</p>
-                    </div>
+                    <YStack alignItems="center" paddingVertical="$8">
+                      <Text color="$color11">No insurance policies on file</Text>
+                    </YStack>
                   )}
-                </div>
-              </div>
-            </div>
+                </YStack>
+              </Card>
+            </YStack>
           ) : (
-            <div className="bg-surface rounded-lg shadow-sm border border-border p-12 text-center">
-              <div className="text-text-tertiary mb-4">
-                <Eye size={48} className="mx-auto" />
-              </div>
-              <h3 className="text-lg font-medium text-text-primary mb-2">
+            <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$1" borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
+              <YStack alignItems="center" marginBottom="$4">
+                <Eye size={48} color="$color10" />
+              </YStack>
+              <H3 fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
                 Select a Subcontractor
-              </h3>
-              <p className="text-text-secondary">
+              </H3>
+              <Text color="$color11" textAlign="center">
                 Choose a subcontractor from the list to view their details and
                 documents
-              </p>
-            </div>
+              </Text>
+            </Card>
           )}
-        </div>
-      </div>
+        </YStack>
+      </XStack>
 
       {/* Add Subcontractor Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-surface rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={50}
+        >
+          <Card backgroundColor="$background" borderRadius="$4" padding="$6" width="100%" maxWidth={448}>
+            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
               Add New Subcontractor
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-1">
+            </H3>
+            <YStack gap="$4">
+              <YStack>
+                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
                   Full Name
-                </label>
-                <input
+                </Text>
+                <Input
                   type="text"
-                  className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  width="100%"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-1">
+              </YStack>
+              <YStack>
+                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
                   Company
-                </label>
-                <input
+                </Text>
+                <Input
                   type="text"
-                  className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  width="100%"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-1">
+              </YStack>
+              <YStack>
+                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
                   Email
-                </label>
-                <input
+                </Text>
+                <Input
                   type="email"
-                  className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  width="100%"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-1">
+              </YStack>
+              <YStack>
+                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
                   Phone
-                </label>
-                <input
+                </Text>
+                <Input
                   type="tel"
-                  className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  width="100%"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
                 />
-              </div>
-            </div>
-            <div className="flex justify-end space-x-3 mt-6">
-              <Button onClick={() => setShowAddModal(false)} variant="ghost">
+              </YStack>
+            </YStack>
+            <XStack justifyContent="flex-end" gap="$3" marginTop="$6">
+              <Button onPress={() => setShowAddModal(false)} variant="ghost">
                 Cancel
               </Button>
               <Button
-                onClick={() => setShowAddModal(false)}
+                onPress={() => setShowAddModal(false)}
                 variant="primary"
-                className="bg-blue-600 hover:bg-blue-700"
+                backgroundColor="$blue9"
+                hoverStyle={{ backgroundColor: "$blue10" }}
               >
                 Add Subcontractor
               </Button>
-            </div>
-          </div>
-        </div>
+            </XStack>
+          </Card>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
