@@ -3,8 +3,8 @@
  * FlagList component displays multiple compliance flags grouped by level
  */
 
-import React from 'react';
 import { CheckCircle, AlertTriangle, AlertCircle, Info } from 'lucide-react';
+import { YStack, XStack, Text, H3, Card } from '@unicornlove/ui';
 import { FlagBadge, getEntityTypeLabel } from './FlagBadge';
 import { FlagComplianceIssue } from '../../lib/compliance/evaluator';
 import { FlaggableEntityType, FlagSeverity } from '../../types';
@@ -50,25 +50,25 @@ function groupFlagsBySeverity(
 function getSeverityIcon(severity: FlagSeverity) {
   switch (severity) {
     case 'critical':
-      return <AlertTriangle className="text-danger-600\" size={18} />;
+      return <AlertTriangle color="$red10" size={18} />;
     case 'warning':
-      return <AlertCircle className="text-warning-600" size={18} />;
+      return <AlertCircle color="$yellow10" size={18} />;
     case 'info':
-      return <Info className="text-info-600" size={18} />;
+      return <Info color="$blue10" size={18} />;
   }
 }
 
 /**
- * Get severity header classes
+ * Get severity header color
  */
-function getSeverityHeaderClasses(severity: FlagSeverity): string {
+function getSeverityHeaderColor(severity: FlagSeverity) {
   switch (severity) {
     case 'critical':
-      return 'text-danger-700';
+      return '$red11';
     case 'warning':
-      return 'text-warning-700';
+      return '$yellow11';
     case 'info':
-      return 'text-info-700';
+      return '$blue11';
   }
 }
 
@@ -76,24 +76,32 @@ function getSeverityHeaderClasses(severity: FlagSeverity): string {
  * FlagList component
  * Displays a list of compliance flags, optionally grouped by level or severity
  */
-export const FlagList: React.FC<FlagListProps> = ({
+export const FlagList = ({
   flags,
   groupByLevel = false,
   groupBySeverity = false,
   showDescription = true,
   emptyMessage = 'No compliance flags',
   compact = false,
-}) => {
+}: FlagListProps) => {
   // Show empty state if no flags
   if (flags.length === 0) {
     return (
-      <div className="bg-success-50 border border-success-200 rounded-lg p-6 text-center">
-        <CheckCircle className="mx-auto text-success-600 mb-2" size={32} />
-        <p className="text-success-800 font-medium">{emptyMessage}</p>
-        <p className="text-success-600 text-sm mt-1">
+      <Card
+        backgroundColor="$green2"
+        borderColor="$green6"
+        borderRadius="$4"
+        padding="$6"
+        alignItems="center"
+      >
+        <CheckCircle color="$green10" size={32} marginBottom="$2" />
+        <Text color="$green11" fontWeight="500" marginBottom="$1">
+          {emptyMessage}
+        </Text>
+        <Text color="$green10" fontSize="$2" marginTop="$1">
           All compliance requirements are met
-        </p>
-      </div>
+        </Text>
+      </Card>
     );
   }
 
@@ -102,7 +110,7 @@ export const FlagList: React.FC<FlagListProps> = ({
     const grouped = groupFlagsByLevel(flags);
 
     return (
-      <div className="space-y-6">
+      <YStack gap="$6">
         {/* Policy Flags */}
         {grouped.policy.length > 0 && (
           <FlagSection
@@ -132,7 +140,7 @@ export const FlagList: React.FC<FlagListProps> = ({
             compact={compact}
           />
         )}
-      </div>
+      </YStack>
     );
   }
 
@@ -141,17 +149,17 @@ export const FlagList: React.FC<FlagListProps> = ({
     const grouped = groupFlagsBySeverity(flags);
 
     return (
-      <div className="space-y-6">
+      <YStack gap="$6">
         {/* Critical Flags */}
         {grouped.critical.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
+          <YStack>
+            <XStack alignItems="center" gap="$2" marginBottom="$3">
               {getSeverityIcon('critical')}
-              <h3 className={`text-lg font-semibold ${getSeverityHeaderClasses('critical')}`}>
+              <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('critical')}>
                 Critical Issues ({grouped.critical.length})
-              </h3>
-            </div>
-            <div className="space-y-3">
+              </H3>
+            </XStack>
+            <YStack gap="$3">
               {grouped.critical.map((flag) => (
                 <FlagBadge
                   key={flag.flagId}
@@ -164,20 +172,20 @@ export const FlagList: React.FC<FlagListProps> = ({
                   compact={compact}
                 />
               ))}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
         )}
 
         {/* Warning Flags */}
         {grouped.warning.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
+          <YStack>
+            <XStack alignItems="center" gap="$2" marginBottom="$3">
               {getSeverityIcon('warning')}
-              <h3 className={`text-lg font-semibold ${getSeverityHeaderClasses('warning')}`}>
+              <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('warning')}>
                 Warnings ({grouped.warning.length})
-              </h3>
-            </div>
-            <div className="space-y-3">
+              </H3>
+            </XStack>
+            <YStack gap="$3">
               {grouped.warning.map((flag) => (
                 <FlagBadge
                   key={flag.flagId}
@@ -190,20 +198,20 @@ export const FlagList: React.FC<FlagListProps> = ({
                   compact={compact}
                 />
               ))}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
         )}
 
         {/* Info Flags */}
         {grouped.info.length > 0 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
+          <YStack>
+            <XStack alignItems="center" gap="$2" marginBottom="$3">
               {getSeverityIcon('info')}
-              <h3 className={`text-lg font-semibold ${getSeverityHeaderClasses('info')}`}>
+              <H3 fontSize="$6" fontWeight="600" color={getSeverityHeaderColor('info')}>
                 Information ({grouped.info.length})
-              </h3>
-            </div>
-            <div className="space-y-3">
+              </H3>
+            </XStack>
+            <YStack gap="$3">
               {grouped.info.map((flag) => (
                 <FlagBadge
                   key={flag.flagId}
@@ -216,16 +224,16 @@ export const FlagList: React.FC<FlagListProps> = ({
                   compact={compact}
                 />
               ))}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
         )}
-      </div>
+      </YStack>
     );
   }
 
   // Default: flat list
   return (
-    <div className="space-y-3">
+    <YStack gap="$3">
       {flags.map((flag) => (
         <FlagBadge
           key={flag.flagId}
@@ -238,7 +246,7 @@ export const FlagList: React.FC<FlagListProps> = ({
           compact={compact}
         />
       ))}
-    </div>
+    </YStack>
   );
 };
 
@@ -252,18 +260,18 @@ interface FlagSectionProps {
   compact?: boolean;
 }
 
-const FlagSection: React.FC<FlagSectionProps> = ({
+const FlagSection = ({
   title,
   flags,
   showDescription = true,
   compact = false,
-}) => {
+}: FlagSectionProps) => {
   return (
-    <div>
-      <h3 className="text-lg font-semibold text-text-primary mb-3">
+    <YStack>
+      <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$3">
         {title} ({flags.length})
-      </h3>
-      <div className="space-y-3">
+      </H3>
+      <YStack gap="$3">
         {flags.map((flag) => (
           <FlagBadge
             key={flag.flagId}
@@ -276,8 +284,8 @@ const FlagSection: React.FC<FlagSectionProps> = ({
             compact={compact}
           />
         ))}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 };
 
