@@ -35,6 +35,15 @@ import {
   X,
 } from 'lucide-react'
 import {
+  YStack,
+  XStack,
+  Text,
+  Input,
+  Button,
+  H2,
+  Card,
+} from '@unicornlove/ui'
+import {
   useComplianceRequirements,
   useArchiveComplianceRequirement,
   type ComplianceRequirement,
@@ -42,9 +51,6 @@ import {
   type RequirementStatus,
 } from '../../../hooks/useComplianceRequirements'
 import { Badge } from '../../Common/Badge'
-import { Button } from '../../Common/Button'
-import { Input } from '../../Common/Input'
-import { Select } from '../../Common/Select'
 import { LoadingSpinner } from '../../Common/LoadingSpinner'
 
 // =============================================================================
@@ -78,10 +84,10 @@ const STATUS_OPTIONS: { value: RequirementStatus; label: string }[] = [
   { value: 'archived', label: 'Archived' },
 ]
 
-const STATUS_COLORS: Record<RequirementStatus, string> = {
-  active: 'bg-green-100 text-green-800',
-  draft: 'bg-yellow-100 text-yellow-800',
-  archived: 'bg-gray-100 text-gray-800',
+const STATUS_COLORS: Record<RequirementStatus, { bg: string; color: string }> = {
+  active: { bg: '$green2', color: '$green10' },
+  draft: { bg: '$yellow2', color: '$yellow10' },
+  archived: { bg: '$gray2', color: '$gray10' },
 }
 
 const TYPE_LABELS: Record<CoverageType, string> = {
@@ -150,91 +156,125 @@ export function RequirementsList({
         accessorKey: 'code',
         header: 'Code',
         cell: ({ row }) => (
-          <span className="font-mono text-sm font-medium">{row.original.code}</span>
+          <Text fontFamily="$mono" fontSize="$3" fontWeight="600">
+            {row.original.code}
+          </Text>
         ),
       },
       {
         accessorKey: 'name',
         header: 'Name',
         cell: ({ row }) => (
-          <div>
-            <span className="font-medium">{row.original.name}</span>
+          <XStack alignItems="center" gap="$2">
+            <Text fontWeight="600">{row.original.name}</Text>
             {row.original.is_template && (
-              <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">
+              <Text
+                fontSize="$1"
+                backgroundColor="$purple2"
+                color="$purple10"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                borderRadius="$2"
+              >
                 Template
-              </span>
+              </Text>
             )}
-          </div>
+          </XStack>
         ),
       },
       {
         accessorKey: 'type',
         header: 'Type',
-        cell: ({ row }) => <span className="text-sm">{TYPE_LABELS[row.original.type]}</span>,
+        cell: ({ row }) => <Text fontSize="$3">{TYPE_LABELS[row.original.type]}</Text>,
       },
       {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => (
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[row.original.status]}`}
-          >
-            {row.original.status}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const statusColors = STATUS_COLORS[row.original.status]
+          return (
+            <Text
+              paddingHorizontal="$2"
+              paddingVertical="$1"
+              borderRadius={9999}
+              fontSize="$1"
+              fontWeight="600"
+              backgroundColor={statusColors.bg}
+              color={statusColors.color}
+            >
+              {row.original.status}
+            </Text>
+          )
+        },
       },
       {
         accessorKey: 'effective_date',
         header: 'Effective',
         cell: ({ row }) => (
-          <span className="text-sm text-gray-600">
+          <Text fontSize="$3" color="$gray11">
             {new Date(row.original.effective_date).toLocaleDateString()}
-          </span>
+          </Text>
         ),
       },
       {
         accessorKey: 'current_version',
         header: 'Version',
         cell: ({ row }) => (
-          <span className="text-sm text-gray-500">v{row.original.current_version}</span>
+          <Text fontSize="$3" color="$gray10">v{row.original.current_version}</Text>
         ),
       },
       {
         id: 'actions',
         header: '',
         cell: ({ row }) => (
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onEdit(row.original)}
-              className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded"
+          <XStack alignItems="center" gap="$1">
+            <Button
+              unstyled
+              padding="$1.5"
+              color="$gray11"
+              hoverStyle={{ color: '$blue10', backgroundColor: '$blue2' }}
+              borderRadius="$2"
+              onPress={() => onEdit(row.original)}
               title="Edit"
             >
               <Edit size={16} />
-            </button>
-            <button
-              onClick={() => onViewDependencies(row.original)}
-              className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded"
+            </Button>
+            <Button
+              unstyled
+              padding="$1.5"
+              color="$gray11"
+              hoverStyle={{ color: '$green10', backgroundColor: '$green2' }}
+              borderRadius="$2"
+              onPress={() => onViewDependencies(row.original)}
               title="View Dependencies"
             >
               <Eye size={16} />
-            </button>
-            <button
-              onClick={() => onViewVersions(row.original)}
-              className="p-1.5 text-gray-500 hover:text-purple-600 hover:bg-purple-50 rounded"
+            </Button>
+            <Button
+              unstyled
+              padding="$1.5"
+              color="$gray11"
+              hoverStyle={{ color: '$purple10', backgroundColor: '$purple2' }}
+              borderRadius="$2"
+              onPress={() => onViewVersions(row.original)}
               title="Version History"
             >
               <MoreVertical size={16} />
-            </button>
+            </Button>
             {row.original.status !== 'archived' && (
-              <button
-                onClick={() => handleArchive(row.original)}
-                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded"
+              <Button
+                unstyled
+                padding="$1.5"
+                color="$gray11"
+                hoverStyle={{ color: '$red10', backgroundColor: '$red2' }}
+                borderRadius="$2"
+                onPress={() => handleArchive(row.original)}
                 title="Archive"
               >
                 <Archive size={16} />
-              </button>
+              </Button>
             )}
-          </div>
+          </XStack>
         ),
       },
     ],
@@ -265,84 +305,128 @@ export function RequirementsList({
   }, [])
 
   return (
-    <div className="space-y-4">
+    <YStack gap="$4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">Compliance Requirements</h2>
+      <XStack alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$2">
+          <H2 fontWeight="600">Compliance Requirements</H2>
           {isFetching && <LoadingSpinner size="sm" />}
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => refetch()}
-            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
+        </XStack>
+        <XStack alignItems="center" gap="$2">
+          <Button
+            unstyled
+            padding="$2"
+            color="$gray11"
+            hoverStyle={{ color: '$gray12', backgroundColor: '$gray2' }}
+            borderRadius="$2"
+            onPress={() => refetch()}
             title="Refresh"
           >
             <RefreshCcw size={18} />
-          </button>
-          <Button onClick={onCreateNew}>
-            <Plus size={16} className="mr-1" />
-            New Requirement
           </Button>
-        </div>
-      </div>
+          <Button onPress={onCreateNew}>
+            <XStack alignItems="center" gap="$1">
+              <Plus size={16} />
+              <Text>New Requirement</Text>
+            </XStack>
+          </Button>
+        </XStack>
+      </XStack>
 
       {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
+      <XStack alignItems="center" gap="$4">
+        <XStack position="relative" flex={1} maxWidth="28rem">
+          <YStack
+            position="absolute"
+            left="$3"
+            top="50%"
+            zIndex={1}
+            pointerEvents="none"
+          >
+            <Search size={18} style={{ color: 'var(--color-gray-10)' }} />
+          </YStack>
+          <Input
+            flex={1}
+            paddingLeft="$10"
+            paddingRight="$4"
+            paddingVertical="$2"
+            borderWidth={1}
+            borderColor="$gray8"
+            borderRadius="$4"
             placeholder="Search by code, name, or description..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value)
               setPage(1)
             }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
+        </XStack>
 
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-3 py-2 border rounded-lg ${
-            hasFilters
-              ? 'border-blue-500 bg-blue-50 text-blue-700'
-              : 'border-gray-300 hover:bg-gray-50'
-          }`}
+        <Button
+          unstyled
+          flexDirection="row"
+          alignItems="center"
+          gap="$2"
+          paddingHorizontal="$3"
+          paddingVertical="$2"
+          borderWidth={1}
+          borderRadius="$4"
+          borderColor={hasFilters ? '$blue8' : '$gray8'}
+          backgroundColor={hasFilters ? '$blue2' : 'transparent'}
+          color={hasFilters ? '$blue11' : '$color12'}
+          hoverStyle={{ backgroundColor: '$gray2' }}
+          onPress={() => setShowFilters(!showFilters)}
         >
           <Filter size={18} />
-          Filters
+          <Text>Filters</Text>
           {hasFilters && (
-            <span className="bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+            <Text
+              backgroundColor="$blue10"
+              color="white"
+              fontSize="$1"
+              paddingHorizontal="$1.5"
+              paddingVertical="$1"
+              borderRadius={9999}
+            >
               {[typeFilter, statusFilter].filter(Boolean).length}
-            </span>
+            </Text>
           )}
-        </button>
+        </Button>
 
         {hasFilters && (
-          <button
-            onClick={clearFilters}
-            className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+          <Button
+            unstyled
+            flexDirection="row"
+            alignItems="center"
+            gap="$1"
+            fontSize="$3"
+            color="$gray11"
+            hoverStyle={{ color: '$gray12' }}
+            onPress={clearFilters}
           >
             <X size={14} />
-            Clear
-          </button>
+            <Text>Clear</Text>
+          </Button>
         )}
-      </div>
+      </XStack>
 
       {/* Filter Panel */}
       {showFilters && (
-        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Type:</label>
+        <XStack alignItems="center" gap="$4" padding="$4" backgroundColor="$gray2" borderRadius="$4">
+          <XStack alignItems="center" gap="$2">
+            <Text fontSize="$3" fontWeight="600" color="$color11">Type:</Text>
             <select
               value={typeFilter}
               onChange={(e) => {
                 setTypeFilter(e.target.value as CoverageType | '')
                 setPage(1)
               }}
-              className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{
+                padding: '6px 12px',
+                border: '1px solid var(--color-gray-8)',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
             >
               <option value="">All Types</option>
               {COVERAGE_TYPE_OPTIONS.map((opt) => (
@@ -351,17 +435,22 @@ export function RequirementsList({
                 </option>
               ))}
             </select>
-          </div>
+          </XStack>
 
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Status:</label>
+          <XStack alignItems="center" gap="$2">
+            <Text fontSize="$3" fontWeight="600" color="$color11">Status:</Text>
             <select
               value={statusFilter}
               onChange={(e) => {
                 setStatusFilter(e.target.value as RequirementStatus | '')
                 setPage(1)
               }}
-              className="px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              style={{
+                padding: '6px 12px',
+                border: '1px solid var(--color-gray-8)',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
             >
               <option value="">All Statuses</option>
               {STATUS_OPTIONS.map((opt) => (
@@ -370,37 +459,51 @@ export function RequirementsList({
                 </option>
               ))}
             </select>
-          </div>
-        </div>
+          </XStack>
+        </XStack>
       )}
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
+        <XStack alignItems="center" justifyContent="center" paddingVertical="$12">
           <LoadingSpinner />
-          <span className="ml-2 text-gray-500">Loading requirements...</span>
-        </div>
+          <Text marginLeft="$2" color="$gray11">Loading requirements...</Text>
+        </XStack>
       ) : (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+        <YStack borderWidth={1} borderColor="$gray6" borderRadius="$4" overflow="hidden">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead style={{ backgroundColor: 'var(--color-gray-2)', borderBottom: '1px solid var(--color-gray-6)' }}>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className={`px-4 py-3 text-left text-sm font-medium text-gray-700 ${
-                        header.column.getCanSort()
-                          ? 'cursor-pointer select-none hover:bg-gray-100'
-                          : ''
-                      }`}
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'left',
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: 'var(--color-gray-12)',
+                        cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                        userSelect: header.column.getCanSort() ? 'none' : 'auto',
+                      }}
                       onClick={header.column.getToggleSortingHandler()}
+                      onMouseEnter={(e) => {
+                        if (header.column.getCanSort()) {
+                          e.currentTarget.style.backgroundColor = 'var(--color-gray-3)'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (header.column.getCanSort()) {
+                          e.currentTarget.style.backgroundColor = 'var(--color-gray-2)'
+                        }
+                      }}
                     >
-                      <div className="flex items-center gap-1">
+                      <XStack alignItems="center" gap="$1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getIsSorted() === 'asc' && <ChevronUp size={14} />}
                         {header.column.getIsSorted() === 'desc' && <ChevronDown size={14} />}
-                      </div>
+                      </XStack>
                     </th>
                   ))}
                 </tr>
@@ -409,7 +512,7 @@ export function RequirementsList({
             <tbody>
               {table.getRowModel().rows.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="px-4 py-12 text-center text-gray-500">
+                  <td colSpan={columns.length} style={{ padding: '48px 16px', textAlign: 'center', color: 'var(--color-gray-11)' }}>
                     {hasFilters
                       ? 'No requirements match your filters'
                       : 'No compliance requirements yet'}
@@ -417,9 +520,20 @@ export function RequirementsList({
                 </tr>
               ) : (
                 table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr
+                    key={row.id}
+                    style={{
+                      borderBottom: '1px solid var(--color-gray-4)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-gray-2)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                  >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3">
+                      <td key={cell.id} style={{ padding: '12px 16px' }}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -428,38 +542,52 @@ export function RequirementsList({
               )}
             </tbody>
           </table>
-        </div>
+        </YStack>
       )}
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">
+        <XStack alignItems="center" justifyContent="space-between">
+          <Text fontSize="$3" color="$gray11">
             Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, pagination.total)} of{' '}
             {pagination.total} requirements
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+          </Text>
+          <XStack alignItems="center" gap="$2">
+            <Button
+              unstyled
+              padding="$2"
+              borderWidth={1}
+              borderColor="$gray8"
+              borderRadius="$2"
+              hoverStyle={{ backgroundColor: '$gray2' }}
+              opacity={page === 1 ? 0.5 : 1}
+              cursor={page === 1 ? 'not-allowed' : 'pointer'}
               disabled={page === 1}
-              className="p-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              onPress={() => setPage((p) => Math.max(1, p - 1))}
             >
               <ChevronLeft size={18} />
-            </button>
-            <span className="text-sm text-gray-600">
+            </Button>
+            <Text fontSize="$3" color="$gray11">
               Page {page} of {pagination.totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+            </Text>
+            <Button
+              unstyled
+              padding="$2"
+              borderWidth={1}
+              borderColor="$gray8"
+              borderRadius="$2"
+              hoverStyle={{ backgroundColor: '$gray2' }}
+              opacity={page === pagination.totalPages ? 0.5 : 1}
+              cursor={page === pagination.totalPages ? 'not-allowed' : 'pointer'}
               disabled={page === pagination.totalPages}
-              className="p-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              onPress={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
             >
               <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
+            </Button>
+          </XStack>
+        </XStack>
       )}
-    </div>
+    </YStack>
   )
 }
 
