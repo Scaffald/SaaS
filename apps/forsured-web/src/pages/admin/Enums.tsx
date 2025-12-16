@@ -7,11 +7,10 @@ import {
   ArrowUp,
   ArrowDown,
   RefreshCcw,
-  Loader2,
   X,
   RotateCcw,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label } from 'tamagui';
+import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label, Spinner } from 'tamagui';
 import { EmptyState } from '@unicornlove/ui';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEnumsAdmin, EnumValue, invalidateAllEnumCaches } from '../../hooks/useEnums';
@@ -214,7 +213,7 @@ function AdminEnums() {
     return (
       <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
         <XStack alignItems="center" gap="$2">
-          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Spinner size="large" color="$blue10" />
           <Text>Loading enum types...</Text>
         </XStack>
       </YStack>
@@ -256,7 +255,7 @@ function AdminEnums() {
           <Button
             onPress={handleRefresh}
             disabled={isLoadingValues}
-            icon={isLoadingValues ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+            icon={isLoadingValues ? <Spinner size="small" /> : <RefreshCcw size={16} />}
             paddingHorizontal="$4"
             paddingVertical="$2"
             borderWidth={1}
@@ -304,7 +303,7 @@ function AdminEnums() {
         {isLoadingValues ? (
           <YStack alignItems="center" justifyContent="center" paddingVertical="$8">
             <XStack alignItems="center" gap="$2">
-              <Loader2 size={24} className="animate-spin" color="$blue10" />
+              <Spinner size="small" color="$blue10" />
               <Text>Loading values...</Text>
             </XStack>
           </YStack>
@@ -384,7 +383,7 @@ function AdminEnums() {
                             opacity={actionInProgress === enumItem.id ? 0.5 : 1}
                           >
                             {actionInProgress === enumItem.id ? (
-                              <Loader2 size={16} className="animate-spin" color="$red10" />
+                              <Spinner size="small" color="$red10" />
                             ) : (
                               <Trash2 size={16} color="$red10" />
                             )}
@@ -420,7 +419,7 @@ function AdminEnums() {
                           opacity={actionInProgress === enumItem.id ? 0.5 : 1}
                         >
                           {actionInProgress === enumItem.id ? (
-                            <Loader2 size={16} className="animate-spin" color="$green10" />
+                            <Spinner size="small" color="$green10" />
                           ) : (
                             <RotateCcw size={16} color="$green10" />
                           )}
@@ -568,7 +567,7 @@ function AdminEnums() {
                     borderRadius="$4"
                     hoverStyle={{ backgroundColor: "$blue11" }}
                     opacity={isSubmitting ? 0.5 : 1}
-                    icon={isSubmitting ? <Loader2 size={16} className="animate-spin" /> : undefined}
+                    icon={isSubmitting ? <Spinner size="small" /> : undefined}
                   >
                     {modalMode === 'add' ? 'Add Value' : 'Save Changes'}
                   </Button>

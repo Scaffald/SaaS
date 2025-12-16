@@ -1,5 +1,5 @@
-import React from 'react';
 import { Users, UserPlus, Shield, Mail } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
 import { useUsers } from '../../hooks/useUsers';
 import { useClients } from '../../hooks/useClients';
 import Button from '../Common/Button';
@@ -18,172 +18,255 @@ export default function BrokerTeamPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">
+    <YStack gap="$6">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$8" fontWeight="bold" color="$color12">
             Team Management
-          </h1>
-          <p className="text-text-secondary">
+          </H1>
+          <Text color="$color11">
             Manage your broker team and client assignments
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <Button
           onClick={() => {
             /* TODO: Implement invite modal */
           }}
-          className="flex items-center space-x-2"
         >
           <UserPlus size={18} />
-          <span>Invite Team Member</span>
+          <Text marginLeft="$2">Invite Team Member</Text>
         </Button>
-      </div>
+      </XStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Total Team Members</p>
-              <p className="text-3xl font-bold text-text-primary mt-1">
+      <XStack
+        flexDirection="column"
+        $gtMd={{ flexDirection: 'row' }}
+        gap="$6"
+        flexWrap="wrap"
+      >
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="30%"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$3">Total Team Members</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
                 {brokerUsers.length}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <Users className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <Users color="$blue10" size={24} />
+            </YStack>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Administrators</p>
-              <p className="text-3xl font-bold text-secondary-600 mt-1">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="30%"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$3">Administrators</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$purple10" marginTop="$1">
                 {adminUsers.length}
-              </p>
-            </div>
-            <div className="bg-secondary-100 p-3 rounded-lg">
-              <Shield className="text-secondary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$purple3" padding="$3" borderRadius="$4">
+              <Shield color="$purple10" size={24} />
+            </YStack>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Workers</p>
-              <p className="text-3xl font-bold text-primary-600 mt-1">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="30%"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$3">Workers</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
                 {workerUsers.length}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <Users className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
-      </div>
+              </Text>
+            </YStack>
+            <YStack backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <Users color="$blue10" size={24} />
+            </YStack>
+          </XStack>
+        </Card>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border">
-        <div className="p-6 border-b border-border">
-          <h2 className="text-lg font-semibold text-text-primary">
+      <Card
+        backgroundColor="$background"
+        borderRadius="$4"
+        elevation={1}
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
+        <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+          <H2 fontSize="$6" fontWeight="600" color="$color12">
             Team Members
-          </h2>
-        </div>
+          </H2>
+        </YStack>
 
-        <div className="divide-y divide-border">
-          {brokerUsers.map((user) => (
-            <div
+        <YStack>
+          {brokerUsers.map((user, index) => (
+            <YStack
               key={user.id}
-              className="p-6 hover:bg-surface-hover transition-colors"
+              padding="$6"
+              hoverStyle={{ backgroundColor: '$gray2' }}
+              borderTopWidth={index > 0 ? 1 : 0}
+              borderColor="$borderColor"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                    <span className="text-lg font-semibold text-primary-600">
+              <XStack alignItems="center" justifyContent="space-between">
+                <XStack alignItems="center" gap="$4">
+                  <YStack
+                    width={48}
+                    height={48}
+                    backgroundColor="$blue3"
+                    borderRadius={9999}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Text fontSize="$6" fontWeight="600" color="$blue10">
                       {user.name
                         .split(' ')
                         .map((n) => n[0])
                         .join('')}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-text-primary">
+                    </Text>
+                  </YStack>
+                  <YStack>
+                    <Text fontSize="$4" fontWeight="600" color="$color12">
                       {user.name}
-                    </h3>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <div className="flex items-center text-text-secondary text-sm">
-                        <Mail size={14} className="mr-1" />
-                        {user.email}
-                      </div>
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                          user.broker_role === 'admin'
-                            ? 'bg-secondary-100 text-secondary-700 border border-secondary-300'
-                            : 'bg-primary-100 text-primary-700 border border-primary-300'
-                        }`}
+                    </Text>
+                    <XStack alignItems="center" gap="$4" marginTop="$1">
+                      <XStack alignItems="center" color="$color11" fontSize="$3">
+                        <Mail size={14} marginRight="$1" color="$color11" />
+                        <Text fontSize="$3" color="$color11">{user.email}</Text>
+                      </XStack>
+                      <XStack
+                        alignItems="center"
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        borderRadius="$2"
+                        fontSize="$1"
+                        fontWeight="500"
+                        borderWidth={1}
+                        backgroundColor={user.broker_role === 'admin' ? '$purple2' : '$blue2'}
+                        color={user.broker_role === 'admin' ? '$purple11' : '$blue11'}
+                        borderColor={user.broker_role === 'admin' ? '$purple6' : '$blue6'}
                       >
-                        {user.broker_role === 'admin'
-                          ? 'Administrator'
-                          : 'Worker'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                        <Text fontSize="$1" fontWeight="500" color={user.broker_role === 'admin' ? '$purple11' : '$blue11'}>
+                          {user.broker_role === 'admin'
+                            ? 'Administrator'
+                            : 'Worker'}
+                        </Text>
+                      </XStack>
+                    </XStack>
+                  </YStack>
+                </XStack>
 
-                <div className="flex items-center space-x-2">
+                <XStack alignItems="center" gap="$2">
                   <Button variant="ghost" size="sm">
                     Edit Access
                   </Button>
                   <Button variant="ghost" size="sm">
                     View Activity
                   </Button>
-                </div>
-              </div>
+                </XStack>
+              </XStack>
 
-              <div className="mt-4 pl-16">
-                <div className="bg-bg-secondary rounded-lg p-4">
-                  <p className="text-xs font-medium text-text-secondary mb-2">
+              <YStack marginTop="$4" paddingLeft={64}>
+                <YStack backgroundColor="$gray2" borderRadius="$4" padding="$4">
+                  <Text fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
                     CLIENT ASSIGNMENTS
-                  </p>
-                  <div className="flex flex-wrap gap-2">
+                  </Text>
+                  <XStack flexWrap="wrap" gap="$2">
                     {clients.slice(0, 3).map((client) => (
-                      <span
+                      <XStack
                         key={client.id}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-surface border border-border text-text-primary"
+                        alignItems="center"
+                        paddingHorizontal="$3"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontSize="$1"
+                        fontWeight="500"
+                        backgroundColor="$background"
+                        borderWidth={1}
+                        borderColor="$borderColor"
+                        color="$color12"
                       >
-                        {client.company_name}
-                      </span>
+                        <Text fontSize="$1" fontWeight="500" color="$color12">
+                          {client.company_name}
+                        </Text>
+                      </XStack>
                     ))}
                     {clients.length > 3 && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
-                        +{clients.length - 3} more
-                      </span>
+                      <XStack
+                        alignItems="center"
+                        paddingHorizontal="$3"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontSize="$1"
+                        fontWeight="500"
+                        backgroundColor="$blue2"
+                        color="$blue11"
+                      >
+                        <Text fontSize="$1" fontWeight="500" color="$blue11">
+                          +{clients.length - 3} more
+                        </Text>
+                      </XStack>
                     )}
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </XStack>
+                </YStack>
+              </YStack>
+            </YStack>
           ))}
-        </div>
-      </div>
+        </YStack>
+      </Card>
 
       {brokerUsers.length === 0 && (
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-12">
-          <div className="text-center">
-            <Users className="mx-auto text-text-tertiary mb-4" size={48} />
-            <p className="text-text-primary font-medium mb-2">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$12"
+        >
+          <YStack alignItems="center">
+            <Users color="$color10" size={48} marginBottom="$4" />
+            <Text color="$color12" fontWeight="500" marginBottom="$2">
               No team members yet
-            </p>
-            <p className="text-text-secondary text-sm mb-4">
+            </Text>
+            <Text fontSize="$3" color="$color11" marginBottom="$4">
               Invite team members to collaborate
-            </p>
+            </Text>
             <Button>
-              <UserPlus size={18} className="mr-2" />
+              <UserPlus size={18} marginRight="$2" />
               Invite Team Member
             </Button>
-          </div>
-        </div>
+          </YStack>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }

@@ -202,7 +202,9 @@ describe('TaskAssignment', () => {
           loading={true}
         />
       );
-      expect(screen.getByText(/loading/i)).toBeTruthy();
+      // Check for loading text (may appear multiple times, so use queryAllByText)
+      const loadingTexts = screen.queryAllByText(/loading/i);
+      expect(loadingTexts.length).toBeGreaterThan(0);
     });
 
     it('should disable button when loading', () => {

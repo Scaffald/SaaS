@@ -1,5 +1,6 @@
 // src/pages/broker/settings/AgencySettings.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -67,73 +68,64 @@ function BrokerAgencySettings() {
 
   if (isLoading) {
     return (
-      <div className="broker-agency-settings">
-        <h2 className="text-xl font-semibold mb-4">Agency Information</h2>
-        <div className="animate-pulse space-y-4">
+      <YStack gap="$4">
+        <H2>Agency Information</H2>
+        <YStack gap="$4">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-10 bg-gray-200 rounded"></div>
+            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
           ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="broker-agency-settings">
-      <h2 className="text-xl font-semibold mb-4">Agency Information</h2>
-      <p className="text-gray-600 mb-6">
+    <YStack gap="$4">
+      <H2>Agency Information</H2>
+      <Text color="$color10" marginBottom="$6">
         Manage your insurance agency's contact information.
-      </p>
+      </Text>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Agency Name</label>
-          <input
+        <YStack gap="$4">
+          <Input
+            label="Agency Name"
             type="text"
             value={agencyInfo.agencyName}
-            onChange={(e) => updateField('agencyName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('agencyName', value)}
             required
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-          <input
+          <Input
+            label="Address"
             type="text"
             value={agencyInfo.address}
-            onChange={(e) => updateField('address', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('address', value)}
             required
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-          <input
+          <Input
+            label="Phone"
             type="tel"
             value={agencyInfo.phone}
-            onChange={(e) => updateField('phone', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('phone', value)}
             required
           />
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
-          <input
+          <Input
+            label="Website"
             type="url"
             value={agencyInfo.website}
-            onChange={(e) => updateField('website', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('website', value)}
             placeholder="https://example.com"
           />
-        </div>
-        <button
-          type="submit"
-          disabled={!isDirty || isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+          <Button
+            type="submit"
+            disabled={!isDirty || isSaving}
+            variant="primary"
+            marginTop="$6"
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </YStack>
       </form>
-    </div>
+    </YStack>
   );
 }
 

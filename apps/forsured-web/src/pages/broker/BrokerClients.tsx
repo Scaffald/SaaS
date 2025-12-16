@@ -1,7 +1,7 @@
 // src/pages/broker/BrokerClients.tsx
-import React from 'react';
 import { Briefcase, Building2, CheckCircle, AlertCircle, UserPlus } from 'lucide-react';
-import EmptyState from '../../components/common/EmptyState';
+import { YStack, XStack, Text, Button, Card, H1 } from '@unicornlove/ui';
+import { EmptyState } from '@unicornlove/ui';
 
 // Mock clients for testing
 const mockClients = [
@@ -44,27 +44,27 @@ function BrokerClients() {
   const getComplianceIcon = (status: string) => {
     switch (status) {
       case 'compliant':
-        return <CheckCircle className="text-green-500" size={16} />;
+        return <CheckCircle color="$green10" size={16} />;
       case 'expiring_soon':
-        return <AlertCircle className="text-yellow-500" size={16} />;
+        return <AlertCircle color="$yellow10" size={16} />;
       default:
-        return <AlertCircle className="text-red-500" size={16} />;
+        return <AlertCircle color="$red10" size={16} />;
     }
   };
 
   return (
-    <div className="broker-clients-page">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">My Clients</h1>
-        <button
+    <YStack gap="$6">
+      <XStack justifyContent="space-between" alignItems="center" marginBottom="$6">
+        <H1>My Clients</H1>
+        <Button
           data-testid="invite-client-button"
-          onClick={handleAddClient}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          onPress={handleAddClient}
+          variant="primary"
+          icon={<UserPlus size={18} />}
         >
-          <UserPlus size={18} />
-          <span>Add Client</span>
-        </button>
-      </div>
+          Add Client
+        </Button>
+      </XStack>
       {!hasClients ? (
         <EmptyState
           icon={<Briefcase size={48} />}
@@ -76,70 +76,74 @@ function BrokerClients() {
           ]}
         />
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table data-testid="client-table" className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Company
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Policies
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Compliance
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {mockClients.map((client) => (
-                <tr key={client.id} className="hover:bg-gray-50 cursor-pointer">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 bg-gray-100 rounded-lg">
-                        <Building2 className="text-gray-600" size={20} />
-                      </div>
-                      <span className="font-medium">{client.companyName}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{client.contactName}</div>
-                      <div className="text-sm text-gray-500">{client.email}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      client.status === 'active' ? 'bg-green-100 text-green-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {client.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {client.policiesCount} policies
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
-                      {getComplianceIcon(client.complianceStatus)}
-                      <span className="text-sm capitalize">
-                        {client.complianceStatus.replace('_', ' ')}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Card padding={0} overflow="hidden" data-testid="client-table">
+          <YStack gap="$2">
+            {/* Table Header */}
+            <XStack paddingHorizontal="$6" paddingVertical="$3" backgroundColor="$color2">
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$color10" textTransform="uppercase" letterSpacing={0.5}>
+                Company
+              </Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$color10" textTransform="uppercase" letterSpacing={0.5}>
+                Contact
+              </Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$color10" textTransform="uppercase" letterSpacing={0.5}>
+                Status
+              </Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$color10" textTransform="uppercase" letterSpacing={0.5}>
+                Policies
+              </Text>
+              <Text flex={1} fontSize="$2" fontWeight="500" color="$color10" textTransform="uppercase" letterSpacing={0.5}>
+                Compliance
+              </Text>
+            </XStack>
+            {/* Table Rows */}
+            {mockClients.map((client) => (
+              <XStack
+                key={client.id}
+                paddingHorizontal="$6"
+                paddingVertical="$4"
+                borderBottomWidth={1}
+                borderBottomColor="$borderColor"
+                hoverStyle={{ backgroundColor: '$color2' }}
+                cursor="pointer"
+              >
+                <XStack flex={1} alignItems="center" gap="$3">
+                  <XStack padding="$2" backgroundColor="$color2" borderRadius="$4">
+                    <Building2 color="$color10" size={20} />
+                  </XStack>
+                  <Text fontWeight="500" fontSize="$4">{client.companyName}</Text>
+                </XStack>
+                <YStack flex={1}>
+                  <Text fontSize="$3" fontWeight="500" color="$color12">{client.contactName}</Text>
+                  <Text fontSize="$3" color="$color10">{client.email}</Text>
+                </YStack>
+                <XStack flex={1}>
+                  <Text
+                    fontSize="$2"
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius={9999}
+                    backgroundColor={client.status === 'active' ? '$green2' : '$yellow2'}
+                    color={client.status === 'active' ? '$green11' : '$yellow11'}
+                  >
+                    {client.status}
+                  </Text>
+                </XStack>
+                <Text flex={1} fontSize="$3" color="$color12">
+                  {client.policiesCount} policies
+                </Text>
+                <XStack flex={1} alignItems="center" gap="$2">
+                  {getComplianceIcon(client.complianceStatus)}
+                  <Text fontSize="$3" textTransform="capitalize">
+                    {client.complianceStatus.replace('_', ' ')}
+                  </Text>
+                </XStack>
+              </XStack>
+            ))}
+          </YStack>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }
 

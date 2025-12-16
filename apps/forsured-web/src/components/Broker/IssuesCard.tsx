@@ -1,5 +1,5 @@
-import React from 'react';
 import { XCircle, ChevronRight } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 
 interface IssuesCardProps {
   count: number;
@@ -8,29 +8,35 @@ interface IssuesCardProps {
 
 export default function IssuesCard({ count, onClick }: IssuesCardProps) {
   return (
-    <div
-      className="bg-surface rounded-lg border-2 border-error-200 bg-error-50 p-6 cursor-pointer hover:shadow-md transition-all duration-200"
+    <Card
+      backgroundColor="$red2"
+      borderRadius="$4"
+      borderWidth={2}
+      borderColor="$red6"
+      padding="$6"
+      cursor="pointer"
+      hoverStyle={{ elevation: 2 }}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-3 rounded-xl bg-error-100">
-            <XCircle className="text-error-600" size={24} />
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-text-secondary">
+      <XStack alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$3">
+          <YStack padding="$3" borderRadius="$4" backgroundColor="$red3">
+            <XCircle color="$red10" size={24} />
+          </YStack>
+          <YStack>
+            <Text fontSize="$3" fontWeight="500" color="$color11">
               Critical Issues
-            </h3>
-            <div className="flex items-center space-x-2 mt-1">
-              <span className="text-3xl font-bold text-error-600">{count}</span>
-            </div>
-          </div>
-        </div>
-        <ChevronRight className="text-text-tertiary" size={20} />
-      </div>
-      <div className="mt-4">
-        <p className="text-xs text-text-secondary">Policy issues to address</p>
-      </div>
-    </div>
+            </Text>
+            <XStack alignItems="center" gap="$2" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$red10">{count}</Text>
+            </XStack>
+          </YStack>
+        </XStack>
+        <ChevronRight color="$color10" size={20} />
+      </XStack>
+      <YStack marginTop="$4">
+        <Text fontSize="$1" color="$color11">Policy issues to address</Text>
+      </YStack>
+    </Card>
   );
 }

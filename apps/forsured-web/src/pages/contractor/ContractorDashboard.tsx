@@ -6,7 +6,7 @@ import { YStack, XStack, Text } from '@unicornlove/ui';
 import { Card } from '@unicornlove/ui';
 import { Chip as Badge } from '@unicornlove/ui';
 import { LayoutDashboard, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import EmptyState from '../../components/Common/EmptyState';
+import { EmptyState } from '@unicornlove/ui';
 
 // Mock tasks for testing
 const mockTasks = [

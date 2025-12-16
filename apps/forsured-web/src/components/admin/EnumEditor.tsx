@@ -1,6 +1,6 @@
 // src/components/admin/EnumEditor.tsx
 import React, { useState, useEffect } from 'react';
-// import { Button, Input as TextInput, Checkbox } from '@unicornlove/ui'; // Assuming these components exist
+import { YStack, XStack, Text, H3, Card, Button, Input, Label } from '@unicornlove/ui';
 
 interface EnumValue {
   id: string;
@@ -39,64 +39,57 @@ function EnumEditor({ enumValue, onSubmit, onCancel, isLoading = false }: EnumEd
   };
 
   return (
-    <div className="enum-editor p-4 border rounded-lg shadow-sm bg-white">
-      <h3 className="text-lg font-semibold mb-4">{enumValue ? 'Edit Enum Value' : 'Add New Enum Value'}</h3>
+    <Card padding="$4" borderWidth={1} borderRadius="$4" elevation={1} backgroundColor="$background">
+      <H3 fontSize="$6" fontWeight="600" marginBottom="$4">{enumValue ? 'Edit Enum Value' : 'Add New Enum Value'}</H3>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          {/* <TextInput
-            label="Value"
-            value={value}
-            onChange={setValue}
-            required
-            disabled={!!enumValue} // Disable editing value for existing enums
-          /> */}
-          <label>Value</label>
-          <input type="text" value={value} onChange={(e) => setValue(e.target.value)} required disabled={!!enumValue} />
-        </div>
-        <div className="mb-4">
-          {/* <TextInput
-            label="Display Name"
-            value={displayName}
-            onChange={setDisplayName}
-            required
-          /> */}
-          <label>Display Name</label>
-          <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} required />
-        </div>
-        <div className="mb-4">
-          {/* <TextInput
-            label="Sort Order"
-            value={sortOrder.toString()}
-            onChange={(val) => setSortOrder(parseInt(val))}
-            type="number"
-            required
-          /> */}
-          <label>Sort Order</label>
-          <input type="number" value={sortOrder} onChange={(e) => setSortOrder(parseInt(e.target.value))} required />
-        </div>
-        <div className="mb-4">
-          {/* <Checkbox
-            label="Is Active"
-            checked={isActive}
-            onChange={setIsActive}
-          /> */}
-          <label>
-            <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
-            Is Active
-          </label>
-        </div>
-        <div className="flex justify-end space-x-2">
-          {/* <Button variant="secondary" onClick={onCancel} disabled={isLoading}>
-            Cancel
-          </Button>
-          <Button type="submit" loading={isLoading}>
-            {enumValue ? 'Save Changes' : 'Add Value'}
-          </Button> */}
-          <button onClick={onCancel} disabled={isLoading}>Cancel</button>
-          <button type="submit" disabled={isLoading}>{enumValue ? 'Save Changes' : 'Add Value'}</button>
-        </div>
+        <YStack gap="$4">
+          <YStack gap="$2">
+            <Label>Value</Label>
+            <Input
+              type="text"
+              value={value}
+              onChangeText={setValue}
+              required
+              disabled={!!enumValue}
+            />
+          </YStack>
+          <YStack gap="$2">
+            <Label>Display Name</Label>
+            <Input
+              type="text"
+              value={displayName}
+              onChangeText={setDisplayName}
+              required
+            />
+          </YStack>
+          <YStack gap="$2">
+            <Label>Sort Order</Label>
+            <Input
+              type="number"
+              value={sortOrder.toString()}
+              onChangeText={(val) => setSortOrder(parseInt(val) || 0)}
+              required
+            />
+          </YStack>
+          <XStack alignItems="center" gap="$2">
+            <input
+              type="checkbox"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+            />
+            <Label>Is Active</Label>
+          </XStack>
+          <XStack justifyContent="flex-end" gap="$2">
+            <Button variant="outlined" onPress={onCancel} disabled={isLoading}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {enumValue ? 'Save Changes' : 'Add Value'}
+            </Button>
+          </XStack>
+        </YStack>
       </form>
-    </div>
+    </Card>
   );
 }
 

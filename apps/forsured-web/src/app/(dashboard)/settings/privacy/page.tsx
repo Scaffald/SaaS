@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { YStack, XStack, Text, H1, H2, H3, H4, Card, Button, Spinner } from '@unicornlove/ui';
 
 // Types for CCPA data
 interface DataCategory {
@@ -209,403 +210,512 @@ export default function PrivacySettingsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'failed': return 'bg-red-100 text-red-800';
-      case 'cancelled': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed': return { backgroundColor: '$green2', color: '$green11' };
+      case 'processing': return { backgroundColor: '$blue2', color: '$blue11' };
+      case 'pending': return { backgroundColor: '$yellow2', color: '$yellow11' };
+      case 'failed': return { backgroundColor: '$red2', color: '$red11' };
+      case 'cancelled': return { backgroundColor: '$gray2', color: '$gray11' };
+      default: return { backgroundColor: '$gray2', color: '$gray11' };
     }
   };
 
   if (loading) {
     return (
-      <div className="p-6 max-w-6xl mx-auto">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-2/3 mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <YStack padding="$6" maxWidth={1152} marginHorizontal="auto" gap="$4">
+        <YStack height={32} backgroundColor="$gray3" borderRadius="$4" width="33%" />
+        <YStack height={16} backgroundColor="$gray3" borderRadius="$4" width="66%" />
+        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
+          {[1, 2, 3, 4].map(i => (
+            <YStack key={i} height={128} backgroundColor="$gray3" borderRadius="$4" flex={1} minWidth="45%" />
+          ))}
+        </XStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <YStack padding="$6" maxWidth={1152} marginHorizontal="auto" gap="$8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Privacy Settings</h1>
-        <p className="text-gray-600">
+      <YStack gap="$2">
+        <H1 fontSize="$8" fontWeight="bold" color="$color12">Privacy Settings</H1>
+        <Text color="$color11">
           Manage your privacy preferences and exercise your rights under the California Consumer Privacy Act (CCPA).
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800">{error}</p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="mt-2 text-red-600 underline hover:text-red-800"
+        <Card padding="$4" backgroundColor="$red2" borderColor="$red6" borderRadius="$4" gap="$2">
+          <Text color="$red11">{error}</Text>
+          <Button
+            variant="outlined"
+            onPress={() => window.location.reload()}
+            marginTop="$2"
+            color="$red10"
+            hoverStyle={{ color: '$red11' }}
           >
             Try again
-          </button>
-        </div>
+          </Button>
+        </Card>
       )}
 
       {/* GPC Banner */}
       {hasGPC && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-          <span className="text-green-600 text-xl">✓</span>
-          <div>
-            <h3 className="font-semibold text-green-800">Global Privacy Control Detected</h3>
-            <p className="text-green-700 text-sm">
-              Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal
-              and have automatically opted you out of data sale and sharing.
-            </p>
-          </div>
-        </div>
+        <Card padding="$4" backgroundColor="$green2" borderColor="$green6" borderRadius="$4" marginBottom="$6">
+          <XStack alignItems="flex-start" gap="$3">
+            <Text fontSize="$6" color="$green10">✓</Text>
+            <YStack flex={1}>
+              <H3 fontSize="$5" fontWeight="600" color="$green11">Global Privacy Control Detected</H3>
+              <Text fontSize="$3" color="$green10" marginTop="$1">
+                Your browser has sent a Global Privacy Control (GPC) signal. We honor this signal
+                and have automatically opted you out of data sale and sharing.
+              </Text>
+            </YStack>
+          </XStack>
+        </Card>
       )}
 
       {/* Quick Actions */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button
-            type="button"
-            onClick={() => handleRequestClick('export')}
-            className="p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-left"
+      <YStack gap="$4" marginBottom="$8">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Quick Actions</H2>
+        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
+          <Card
+            padding="$4"
+            backgroundColor="$blue2"
+            borderColor="$blue6"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$blue3' }}
+            cursor="pointer"
+            onPress={() => handleRequestClick('export')}
+            flex={1}
+            minWidth="45%"
+            $gtMd={{ minWidth: '30%' }}
           >
-            <span className="text-2xl mb-2 block">📥</span>
-            <h3 className="font-semibold text-blue-900">Request My Data</h3>
-            <p className="text-sm text-blue-700">Download a copy of your personal data</p>
-          </button>
+            <YStack alignItems="flex-start" gap="$2">
+              <Text fontSize="$8" marginBottom="$2">📥</Text>
+              <H3 fontSize="$5" fontWeight="600" color="$blue11">Request My Data</H3>
+              <Text fontSize="$3" color="$blue10">Download a copy of your personal data</Text>
+            </YStack>
+          </Card>
 
-          <button
-            type="button"
-            onClick={() => handleRequestClick('deletion')}
-            className="p-4 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors text-left"
+          <Card
+            padding="$4"
+            backgroundColor="$red2"
+            borderColor="$red6"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$red3' }}
+            cursor="pointer"
+            onPress={() => handleRequestClick('deletion')}
+            flex={1}
+            minWidth="45%"
+            $gtMd={{ minWidth: '30%' }}
           >
-            <span className="text-2xl mb-2 block">🗑️</span>
-            <h3 className="font-semibold text-red-900">Delete My Data</h3>
-            <p className="text-sm text-red-700">Request deletion of your personal data</p>
-          </button>
+            <YStack alignItems="flex-start" gap="$2">
+              <Text fontSize="$8" marginBottom="$2">🗑️</Text>
+              <H3 fontSize="$5" fontWeight="600" color="$red11">Delete My Data</H3>
+              <Text fontSize="$3" color="$red10">Request deletion of your personal data</Text>
+            </YStack>
+          </Card>
 
-          <button
-            type="button"
-            onClick={handleOptOutClick}
-            className="p-4 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors text-left"
+          <Card
+            padding="$4"
+            backgroundColor="$purple2"
+            borderColor="$purple6"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$purple3' }}
+            cursor="pointer"
+            onPress={handleOptOutClick}
+            flex={1}
+            minWidth="45%"
+            $gtMd={{ minWidth: '30%' }}
           >
-            <span className="text-2xl mb-2 block">🛡️</span>
-            <h3 className="font-semibold text-purple-900">Manage Opt-Outs</h3>
-            <p className="text-sm text-purple-700">Control how your data is used and shared</p>
-          </button>
-        </div>
-      </div>
+            <YStack alignItems="flex-start" gap="$2">
+              <Text fontSize="$8" marginBottom="$2">🛡️</Text>
+              <H3 fontSize="$5" fontWeight="600" color="$purple11">Manage Opt-Outs</H3>
+              <Text fontSize="$3" color="$purple10">Control how your data is used and shared</Text>
+            </YStack>
+          </Card>
+        </XStack>
+      </YStack>
 
       {/* Data Categories */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Data Categories</h2>
-        <p className="text-gray-600 mb-4">
+      <YStack gap="$4" marginBottom="$8">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Your Data Categories</H2>
+        <Text color="$color11" marginBottom="$4">
           Below are the categories of personal information we collect about you.
-        </p>
-        <div className="bg-white border rounded-lg overflow-hidden">
-          <div className="p-4 bg-gray-50 border-b">
-            <p className="text-sm text-gray-600">
+        </Text>
+        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" overflow="hidden">
+          <YStack padding="$4" backgroundColor="$gray2" borderBottomWidth={1} borderBottomColor="$borderColor">
+            <Text fontSize="$3" color="$color11">
               We collect and process the following categories of personal information:
-            </p>
-          </div>
-          <div className="divide-y">
-            {categories.map(cat => {
+            </Text>
+          </YStack>
+          <YStack>
+            {categories.map((cat, idx) => {
               const info = CATEGORY_INFO[cat.category];
               return (
-                <div key={cat.category} className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{info?.icon || '📁'}</span>
-                    <div>
-                      <h3 className="font-medium text-gray-900">{info?.name || cat.category}</h3>
-                      <p className="text-sm text-gray-500">{info?.description}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-lg font-semibold text-gray-900">{cat.record_count}</span>
-                    <p className="text-sm text-gray-500">records</p>
-                  </div>
-                </div>
+                <XStack
+                  key={cat.category}
+                  padding="$4"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  borderTopWidth={idx > 0 ? 1 : 0}
+                  borderTopColor="$borderColor"
+                >
+                  <XStack alignItems="center" gap="$3">
+                    <Text fontSize="$8">{info?.icon || '📁'}</Text>
+                    <YStack>
+                      <H3 fontSize="$4" fontWeight="500" color="$color12">{info?.name || cat.category}</H3>
+                      <Text fontSize="$3" color="$color10">{info?.description}</Text>
+                    </YStack>
+                  </XStack>
+                  <YStack alignItems="flex-end">
+                    <Text fontSize="$6" fontWeight="600" color="$color12">{cat.record_count}</Text>
+                    <Text fontSize="$3" color="$color10">records</Text>
+                  </YStack>
+                </XStack>
               );
             })}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </Card>
+      </YStack>
 
       {/* Privacy Rights */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Privacy Rights</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <YStack gap="$4" marginBottom="$8">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Your Privacy Rights</H2>
+        <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
           {PRIVACY_RIGHTS.map((right, idx) => (
-            <div key={idx} className="p-4 bg-white border rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-1">{right.title}</h3>
-              <p className="text-sm text-gray-600 mb-3">{right.description}</p>
-              {right.action && right.type && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (right.type === 'opt-out') {
-                      handleOptOutClick();
-                    } else if (right.type) {
-                      handleRequestClick(right.type);
-                    }
-                  }}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  {right.action} →
-                </button>
-              )}
-            </div>
+            <Card key={idx} padding="$4" backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '47%' }}>
+              <YStack gap="$1">
+                <H3 fontSize="$5" fontWeight="600" color="$color12" marginBottom="$1">{right.title}</H3>
+                <Text fontSize="$3" color="$color11" marginBottom="$3">{right.description}</Text>
+                {right.action && right.type && (
+                  <Button
+                    variant="ghost"
+                    onPress={() => {
+                      if (right.type === 'opt-out') {
+                        handleOptOutClick();
+                      } else if (right.type) {
+                        handleRequestClick(right.type);
+                      }
+                    }}
+                    fontSize="$3"
+                    color="$blue10"
+                    hoverStyle={{ color: '$blue11' }}
+                    fontWeight="500"
+                  >
+                    {right.action} →
+                  </Button>
+                )}
+              </YStack>
+            </Card>
           ))}
-        </div>
-      </div>
+        </XStack>
+      </YStack>
 
       {/* Right to Opt-Out Section */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Right to Opt-Out</h2>
-        <div className="bg-white border rounded-lg p-4">
-          <p className="text-gray-600 mb-4">
+      <YStack gap="$4" marginBottom="$8">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Right to Opt-Out</H2>
+        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" padding="$4">
+          <Text color="$color11" marginBottom="$4">
             Under CCPA, you have the right to opt-out of the sale or sharing of your personal information.
-          </p>
-          <div className="space-y-3">
+          </Text>
+          <YStack gap="$3">
             {optOuts.map(opt => (
-              <div key={opt.category} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                <div>
-                  <h4 className="font-medium text-gray-900 capitalize">
+              <XStack key={opt.category} alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$gray2" borderRadius="$4">
+                <YStack>
+                  <H4 fontSize="$4" fontWeight="500" color="$color12" textTransform="capitalize">
                     {opt.category.replace(/_/g, ' ')}
-                  </h4>
-                  <p className="text-sm text-gray-500">
+                  </H4>
+                  <Text fontSize="$3" color="$color10">
                     {opt.opted_out ? 'You have opted out' : 'Currently opted in'}
-                  </p>
-                </div>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  opt.opted_out ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                }`}>
+                  </Text>
+                </YStack>
+                <Text
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderRadius={9999}
+                  fontSize="$3"
+                  backgroundColor={opt.opted_out ? '$green2' : '$gray2'}
+                  color={opt.opted_out ? '$green11' : '$gray11'}
+                >
                   {opt.opted_out ? 'Opted Out' : 'Opted In'}
-                </span>
-              </div>
+                </Text>
+              </XStack>
             ))}
-          </div>
-          <button
-            type="button"
-            onClick={handleOptOutClick}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          </YStack>
+          <Button
+            onPress={handleOptOutClick}
+            marginTop="$4"
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            backgroundColor="$blue9"
+            color="white"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$blue10' }}
           >
             Manage Opt-Out Preferences
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Card>
+      </YStack>
 
       {/* Request History */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Request History</h2>
-        <p className="text-gray-600 mb-4">
+      <YStack gap="$4" marginBottom="$8">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Request History</H2>
+        <Text color="$color11" marginBottom="$4">
           View your privacy request history below. Requests are processed within 45 days as required by CCPA.
-        </p>
-        <div className="bg-white border rounded-lg overflow-hidden">
+        </Text>
+        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" overflow="hidden">
           {requests.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-gray-500">No privacy requests yet</p>
-              <p className="text-sm text-gray-400 mt-1">
+            <YStack padding="$8" alignItems="center">
+              <Text color="$color10">No privacy requests yet</Text>
+              <Text fontSize="$3" color="$color9" marginTop="$1">
                 Your data export, deletion, and correction requests will appear here.
-              </p>
-            </div>
+              </Text>
+            </YStack>
           ) : (
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Type</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Status</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Submitted</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {requests.map(req => (
-                  <tr key={req.id}>
-                    <td className="px-4 py-3 capitalize">{req.type === 'export' ? 'Data Export' : req.type === 'deletion' ? 'Data Deletion' : 'Data Correction'}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded text-sm ${getStatusColor(req.status)}`}>
+            <YStack>
+              <XStack padding="$4" backgroundColor="$gray2" borderBottomWidth={1} borderBottomColor="$borderColor">
+                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Type</Text>
+                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Status</Text>
+                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Submitted</Text>
+                <Text flex={1} paddingHorizontal="$4" fontSize="$3" fontWeight="500" color="$color10">Actions</Text>
+              </XStack>
+              <YStack>
+                {requests.map((req, idx) => (
+                  <XStack
+                    key={req.id}
+                    padding="$3"
+                    borderTopWidth={idx > 0 ? 1 : 0}
+                    borderTopColor="$borderColor"
+                    alignItems="center"
+                  >
+                    <Text flex={1} paddingHorizontal="$4" textTransform="capitalize">
+                      {req.type === 'export' ? 'Data Export' : req.type === 'deletion' ? 'Data Deletion' : 'Data Correction'}
+                    </Text>
+                    <XStack flex={1} paddingHorizontal="$4">
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$2"
+                        fontSize="$3"
+                        {...getStatusColor(req.status)}
+                      >
                         {req.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">{formatDate(req.created_at)}</td>
-                    <td className="px-4 py-3">
+                      </Text>
+                    </XStack>
+                    <Text flex={1} paddingHorizontal="$4" color="$color11">{formatDate(req.created_at)}</Text>
+                    <XStack flex={1} paddingHorizontal="$4">
                       {req.status === 'completed' && req.download_url && (
-                        <button type="button" className="text-blue-600 hover:text-blue-800">
+                        <Button
+                          variant="ghost"
+                          fontSize="$3"
+                          color="$blue10"
+                          hoverStyle={{ color: '$blue11' }}
+                        >
                           Download
-                        </button>
+                        </Button>
                       )}
-                    </td>
-                  </tr>
+                    </XStack>
+                  </XStack>
                 ))}
-              </tbody>
-            </table>
+              </YStack>
+            </YStack>
           )}
-        </div>
-      </div>
+        </Card>
+      </YStack>
 
       {/* Connected Apps */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Connected Applications</h2>
-        <p className="text-gray-600 mb-4">
+      <YStack gap="$4" marginBottom="$8">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Connected Applications</H2>
+        <Text color="$color11" marginBottom="$4">
           Manage third-party applications that have access to your data.
-        </p>
-        <div className="bg-white border rounded-lg">
+        </Text>
+        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4">
           {connectedApps.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-gray-500">No connected applications</p>
-              <p className="text-sm text-gray-400 mt-1">
+            <YStack padding="$8" alignItems="center">
+              <Text color="$color10">No connected applications</Text>
+              <Text fontSize="$3" color="$color9" marginTop="$1">
                 Third-party apps with access to your data will appear here.
-              </p>
-            </div>
+              </Text>
+            </YStack>
           ) : (
-            <div className="divide-y">
-              {connectedApps.map(app => (
-                <div key={app.id} className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-gray-900">{app.app_name}</h3>
-                    <div className="flex gap-2">
-                      <button type="button" className="text-blue-600 hover:text-blue-800 text-sm">
+            <YStack>
+              {connectedApps.map((app, idx) => (
+                <YStack
+                  key={app.id}
+                  padding="$4"
+                  borderTopWidth={idx > 0 ? 1 : 0}
+                  borderTopColor="$borderColor"
+                >
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$2">
+                    <H3 fontSize="$4" fontWeight="500" color="$color12">{app.app_name}</H3>
+                    <XStack gap="$2">
+                      <Button variant="ghost" fontSize="$3" color="$blue10" hoverStyle={{ color: '$blue11' }}>
                         View Details
-                      </button>
-                      <button type="button" className="text-red-600 hover:text-red-800 text-sm">
+                      </Button>
+                      <Button variant="ghost" fontSize="$3" color="$red10" hoverStyle={{ color: '$red11' }}>
                         Revoke Access
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-500 mb-2">
+                      </Button>
+                    </XStack>
+                  </XStack>
+                  <Text fontSize="$3" color="$color10" marginBottom="$2">
                     Connected {formatDate(app.connected_at)}
-                  </p>
-                  <div className="mt-2">
-                    <h4 className="text-sm font-medium text-gray-700">Permissions</h4>
-                    <div className="flex flex-wrap gap-1 mt-1">
+                  </Text>
+                  <YStack marginTop="$2">
+                    <H4 fontSize="$3" fontWeight="500" color="$color11">Permissions</H4>
+                    <XStack flexWrap="wrap" gap="$1" marginTop="$1">
                       {app.permissions.map(perm => (
-                        <span key={perm} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+                        <Text
+                          key={perm}
+                          paddingHorizontal="$2"
+                          paddingVertical="$0.5"
+                          backgroundColor="$gray2"
+                          color="$color11"
+                          fontSize="$2"
+                          borderRadius="$2"
+                        >
                           {perm}
-                        </span>
+                        </Text>
                       ))}
-                    </div>
-                  </div>
-                  <div className="mt-2">
-                    <h4 className="text-sm font-medium text-gray-700">Data Categories Accessed</h4>
-                    <div className="flex flex-wrap gap-1 mt-1">
+                    </XStack>
+                  </YStack>
+                  <YStack marginTop="$2">
+                    <H4 fontSize="$3" fontWeight="500" color="$color11">Data Categories Accessed</H4>
+                    <XStack flexWrap="wrap" gap="$1" marginTop="$1">
                       {app.data_categories.map(cat => (
-                        <span key={cat} className="px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded capitalize">
+                        <Text
+                          key={cat}
+                          paddingHorizontal="$2"
+                          paddingVertical="$0.5"
+                          backgroundColor="$blue2"
+                          color="$blue10"
+                          fontSize="$2"
+                          borderRadius="$2"
+                          textTransform="capitalize"
+                        >
                           {cat}
-                        </span>
+                        </Text>
                       ))}
-                    </div>
-                  </div>
-                </div>
+                    </XStack>
+                  </YStack>
+                </YStack>
               ))}
-            </div>
+            </YStack>
           )}
-        </div>
-      </div>
+        </Card>
+      </YStack>
 
       {/* Non-Discrimination Notice */}
-      <div className="mb-8 p-4 bg-gray-50 border rounded-lg">
-        <h3 className="font-semibold text-gray-900 mb-2">Non-Discrimination Notice</h3>
-        <p className="text-sm text-gray-600">
+      <Card marginBottom="$8" padding="$4" backgroundColor="$gray2" borderColor="$borderColor" borderRadius="$4">
+        <H3 fontSize="$5" fontWeight="600" color="$color12" marginBottom="$2">Non-Discrimination Notice</H3>
+        <Text fontSize="$3" color="$color11">
           We will not discriminate against you for exercising any of your privacy rights.
           You will receive the same service and pricing regardless of your privacy choices.
-        </p>
-      </div>
+        </Text>
+      </Card>
 
       {/* Processing Time Info */}
-      <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <p className="text-sm text-blue-800 mb-2">
-          <strong>Processing Time:</strong> Under CCPA, we will respond to your request within 45 days.
+      <Card marginBottom="$8" padding="$4" backgroundColor="$blue2" borderColor="$blue6" borderRadius="$4">
+        <Text fontSize="$3" color="$blue11" marginBottom="$2">
+          <Text fontWeight="600">Processing Time:</Text> Under CCPA, we will respond to your request within 45 days.
           In some cases, we may extend this period by an additional 45 days if necessary.
-        </p>
-        <p className="text-sm text-blue-800">
-          <strong>Download Availability:</strong> Data exports will be available for download for 30 days after completion.
-        </p>
-      </div>
+        </Text>
+        <Text fontSize="$3" color="$blue11">
+          <Text fontWeight="600">Download Availability:</Text> Data exports will be available for download for 30 days after completion.
+        </Text>
+      </Card>
 
       {/* Additional Resources */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Additional Resources</h2>
-        <div className="bg-white border rounded-lg p-4">
-          <ul className="space-y-3">
-            <li>
-              <a href="/privacy-policy" className="text-blue-600 hover:text-blue-800 hover:underline">
+      <YStack gap="$4" marginBottom="$8">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">Additional Resources</H2>
+        <Card backgroundColor="$background" borderColor="$borderColor" borderRadius="$4" padding="$4">
+          <YStack gap="$3">
+            <YStack>
+              <Text as="a" href="/privacy-policy" color="$blue10" hoverStyle={{ color: '$blue11', textDecorationLine: 'underline' }}>
                 Privacy Policy
-              </a>
-              <p className="text-sm text-gray-500">Learn how we collect, use, and protect your information</p>
-            </li>
-            <li>
-              <a href="/terms" className="text-blue-600 hover:text-blue-800 hover:underline">
+              </Text>
+              <Text fontSize="$3" color="$color10">Learn how we collect, use, and protect your information</Text>
+            </YStack>
+            <YStack>
+              <Text as="a" href="/terms" color="$blue10" hoverStyle={{ color: '$blue11', textDecorationLine: 'underline' }}>
                 Terms of Service
-              </a>
-              <p className="text-sm text-gray-500">Review our terms and conditions</p>
-            </li>
-            <li>
-              <a href="https://oag.ca.gov/privacy/ccpa" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline">
+              </Text>
+              <Text fontSize="$3" color="$color10">Review our terms and conditions</Text>
+            </YStack>
+            <YStack>
+              <Text as="a" href="https://oag.ca.gov/privacy/ccpa" target="_blank" rel="noopener noreferrer" color="$blue10" hoverStyle={{ color: '$blue11', textDecorationLine: 'underline' }}>
                 Learn more about CCPA
-              </a>
-              <p className="text-sm text-gray-500">Official information from the California Attorney General</p>
-            </li>
-          </ul>
-          <div className="mt-4 pt-4 border-t">
-            <p className="text-sm text-gray-600">
+              </Text>
+              <Text fontSize="$3" color="$color10">Official information from the California Attorney General</Text>
+            </YStack>
+          </YStack>
+          <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+            <Text fontSize="$3" color="$color11">
               Have questions about your privacy rights? Contact our privacy team at{' '}
-              <a href="mailto:privacy@scaffald.com" className="text-blue-600 hover:text-blue-800">
+              <Text as="a" href="mailto:privacy@scaffald.com" color="$blue10" hoverStyle={{ color: '$blue11' }}>
                 privacy@scaffald.com
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
+              </Text>
+            </Text>
+          </YStack>
+        </Card>
+      </YStack>
 
       {/* Modals would go here - simplified for now */}
       {activeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-semibold mb-4">
-              {activeModal === 'opt-out' ? 'Manage Opt-Out Preferences' :
-               requestType === 'export' ? 'Request Data Export' :
-               requestType === 'deletion' ? 'Request Data Deletion' : 'Request Data Correction'}
-            </h2>
-            <p className="text-gray-600 mb-4">
-              {activeModal === 'opt-out'
-                ? 'Control how your personal information is used and shared.'
-                : 'Your request will be processed within 45 days as required by CCPA.'}
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                type="button"
-                onClick={() => setActiveModal(null)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  // In a real implementation, this would submit the request
-                  alert('Request submitted! You will receive an email confirmation.');
-                  setActiveModal(null);
-                }}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                {activeModal === 'opt-out' ? 'Save Preferences' : 'Submit Request'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={50}
+        >
+          <Card backgroundColor="$background" borderRadius="$4" padding="$6" maxWidth={448} width="100%" marginHorizontal="$4">
+            <YStack gap="$4">
+              <H2 fontSize="$7" fontWeight="600" marginBottom="$4">
+                {activeModal === 'opt-out' ? 'Manage Opt-Out Preferences' :
+                 requestType === 'export' ? 'Request Data Export' :
+                 requestType === 'deletion' ? 'Request Data Deletion' : 'Request Data Correction'}
+              </H2>
+              <Text color="$color11" marginBottom="$4">
+                {activeModal === 'opt-out'
+                  ? 'Control how your personal information is used and shared.'
+                  : 'Your request will be processed within 45 days as required by CCPA.'}
+              </Text>
+              <XStack gap="$3" justifyContent="flex-end">
+                <Button
+                  variant="ghost"
+                  onPress={() => setActiveModal(null)}
+                  paddingHorizontal="$4"
+                  paddingVertical="$2"
+                  color="$color11"
+                  hoverStyle={{ color: '$color12' }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onPress={() => {
+                    // In a real implementation, this would submit the request
+                    alert('Request submitted! You will receive an email confirmation.');
+                    setActiveModal(null);
+                  }}
+                  paddingHorizontal="$4"
+                  paddingVertical="$2"
+                  backgroundColor="$blue9"
+                  color="white"
+                  borderRadius="$4"
+                  hoverStyle={{ backgroundColor: '$blue10' }}
+                >
+                  {activeModal === 'opt-out' ? 'Save Preferences' : 'Submit Request'}
+                </Button>
+              </XStack>
+            </YStack>
+          </Card>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }

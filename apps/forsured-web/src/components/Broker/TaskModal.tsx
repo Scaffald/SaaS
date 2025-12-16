@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, Info } from 'lucide-react';
+import { YStack, XStack, Text, H2, Input, TextArea, Card, Label } from '@unicornlove/ui';
 import { Task, BrokerClient, PolicyData, Project, User, TaskType, TaskTypeCategory } from '../../types';
 import Button from '../Common/Button';
 import { getActiveTaskTypes } from '../../lib/tasks/taskTypeService';
@@ -206,67 +207,121 @@ export default function TaskModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-surface rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border p-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-text-primary">
+    <YStack
+      position="fixed"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      backgroundColor="rgba(0,0,0,0.5)"
+      alignItems="center"
+      justifyContent="center"
+      zIndex={50}
+      padding="$4"
+    >
+      <Card
+        backgroundColor="$background"
+        borderRadius="$4"
+        elevation={5}
+        maxWidth={672}
+        width="100%"
+        maxHeight="90vh"
+        overflowY="auto"
+      >
+        <XStack
+          position="sticky"
+          top={0}
+          backgroundColor="$background"
+          borderBottomWidth={1}
+          borderColor="$borderColor"
+          padding="$6"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <H2 fontSize="$7" fontWeight="600" color="$color12">
             {task ? 'Edit Task' : 'Create New Task'}
-          </h2>
-          <button
+          </H2>
+          <XStack
+            cursor="pointer"
+            color="$color11"
+            hoverStyle={{ color: '$color12' }}
             onClick={onClose}
-            className="text-text-secondary hover:text-text-primary transition-colors"
           >
             <X size={24} />
-          </button>
-        </div>
+          </XStack>
+        </XStack>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <YStack component="form" onSubmit={handleSubmit} padding="$6" gap="$6">
           {error && (
-            <div className="bg-error-50 border border-error-300 text-error-700 px-4 py-3 rounded">
-              {error}
-            </div>
+            <YStack
+              backgroundColor="$red2"
+              borderWidth={1}
+              borderColor="$red6"
+              color="$red11"
+              paddingHorizontal="$4"
+              paddingVertical="$3"
+              borderRadius="$2"
+            >
+              <Text color="$red11">{error}</Text>
+            </YStack>
           )}
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Task Title *
-            </label>
-            <input
+            </Label>
+            <Input
               type="text"
               value={formData.title}
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              width="100%"
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
               placeholder="Enter task title"
               required
             />
-          </div>
+          </YStack>
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Description
-            </label>
-            <textarea
+            </Label>
+            <TextArea
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              rows={3}
+              width="100%"
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              minHeight={80}
               placeholder="Provide additional details about the task"
             />
-          </div>
+          </YStack>
 
           {/* REQ-261: Task Type selection with descriptions */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-primary">
+          <YStack gap="$2">
+            <Label fontSize="$3" fontWeight="500" color="$color12">
               Task Type
-            </label>
+            </Label>
             <select
               value={selectedTaskType?.id || ''}
               onChange={(e) => handleTaskTypeChange(e.target.value)}
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                padding: '8px 16px',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '8px',
+                fontSize: '14px',
+              }}
               disabled={taskTypesLoading}
             >
               <option value="">
@@ -283,23 +338,31 @@ export default function TaskModal({
               ))}
             </select>
             {selectedTaskType?.description && (
-              <div className="flex items-start gap-2 p-3 bg-primary-50 border border-primary-100 rounded-lg text-sm">
-                <Info size={16} className="text-primary-600 mt-0.5 flex-shrink-0" />
-                <span className="text-primary-800">{selectedTaskType.description}</span>
-              </div>
+              <XStack
+                alignItems="flex-start"
+                gap="$2"
+                padding="$3"
+                backgroundColor="$blue2"
+                borderWidth={1}
+                borderColor="$blue4"
+                borderRadius="$4"
+              >
+                <Info size={16} color="$blue10" marginTop={2} flexShrink={0} />
+                <Text fontSize="$3" color="$blue12">{selectedTaskType.description}</Text>
+              </XStack>
             )}
             {selectedTaskType && (
-              <p className="text-xs text-text-tertiary">
+              <Text fontSize="$1" color="$color10">
                 Defaults applied: Priority = {selectedTaskType.default_priority}, Due in {selectedTaskType.default_due_date_offset} days
-              </p>
+              </Text>
             )}
-          </div>
+          </YStack>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
+          <XStack gap="$4" flexWrap="wrap">
+            <YStack flex={1} minWidth="45%">
+              <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                 Priority
-              </label>
+              </Label>
               <select
                 value={formData.priority}
                 onChange={(e) =>
@@ -308,21 +371,27 @@ export default function TaskModal({
                     priority: e.target.value as Task['priority'],
                   })
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 16px',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
               >
                 <option value="urgent">Urgent</option>
                 <option value="high">High</option>
                 <option value="normal">Normal</option>
                 <option value="low">Low</option>
               </select>
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
+          <XStack gap="$4" flexWrap="wrap">
+            <YStack flex={1} minWidth="45%">
+              <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                 Status
-              </label>
+              </Label>
               <select
                 value={formData.status}
                 onChange={(e) =>
@@ -331,7 +400,13 @@ export default function TaskModal({
                     status: e.target.value as Task['status'],
                   })
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 16px',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
               >
                 <option value="draft">Draft</option>
                 <option value="pending">Pending</option>
@@ -340,12 +415,12 @@ export default function TaskModal({
                 <option value="completed">Completed</option>
                 <option value="escalated">Escalated</option>
               </select>
-            </div>
+            </YStack>
 
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
+            <YStack flex={1} minWidth="45%">
+              <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                 Assign To *
-              </label>
+              </Label>
               <select
                 value={formData.assigned_to_user_id}
                 onChange={(e) =>
@@ -354,7 +429,13 @@ export default function TaskModal({
                     assigned_to_user_id: e.target.value,
                   })
                 }
-                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 16px',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                }}
                 required
               >
                 <option value="">Select user</option>
@@ -364,13 +445,13 @@ export default function TaskModal({
                   </option>
                 ))}
               </select>
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Client
-            </label>
+            </Label>
             <select
               value={formData.client_id}
               onChange={(e) =>
@@ -381,7 +462,13 @@ export default function TaskModal({
                   policy_id: '',
                 })
               }
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                padding: '8px 16px',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '8px',
+                fontSize: '14px',
+              }}
             >
               <option value="">Select client (optional)</option>
               {clients.map((client) => (
@@ -390,20 +477,26 @@ export default function TaskModal({
                 </option>
               ))}
             </select>
-          </div>
+          </YStack>
 
           {formData.client_id && (
             <>
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
+              <YStack>
+                <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                   Project
-                </label>
+                </Label>
                 <select
                   value={formData.project_id}
                   onChange={(e) =>
                     setFormData({ ...formData, project_id: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  style={{
+                    width: '100%',
+                    padding: '8px 16px',
+                    border: '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                  }}
                 >
                   <option value="">Select project (optional)</option>
                   {filteredProjects.map((project) => (
@@ -412,18 +505,24 @@ export default function TaskModal({
                     </option>
                   ))}
                 </select>
-              </div>
+              </YStack>
 
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
+              <YStack>
+                <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                   Related Policy
-                </label>
+                </Label>
                 <select
                   value={formData.policy_id}
                   onChange={(e) =>
                     setFormData({ ...formData, policy_id: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  style={{
+                    width: '100%',
+                    padding: '8px 16px',
+                    border: '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                  }}
                 >
                   <option value="">Select policy (optional)</option>
                   {filteredPolicies.map((policy) => (
@@ -433,40 +532,57 @@ export default function TaskModal({
                     </option>
                   ))}
                 </select>
-              </div>
+              </YStack>
             </>
           )}
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Due Date
-            </label>
-            <input
+            </Label>
+            <Input
               type="date"
               value={formData.due_date}
               onChange={(e) =>
                 setFormData({ ...formData, due_date: e.target.value })
               }
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              width="100%"
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
             />
-          </div>
+          </YStack>
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
+          <YStack>
+            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
               Document Link
-            </label>
-            <input
+            </Label>
+            <Input
               type="url"
               value={formData.document_link}
               onChange={(e) =>
                 setFormData({ ...formData, document_link: e.target.value })
               }
-              className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              width="100%"
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
               placeholder="https://example.com/document.pdf"
             />
-          </div>
+          </YStack>
 
-          <div className="flex items-center justify-end space-x-3 pt-6 border-t border-border">
+          <XStack
+            alignItems="center"
+            justifyContent="flex-end"
+            gap="$3"
+            paddingTop="$6"
+            borderTopWidth={1}
+            borderColor="$borderColor"
+          >
             <Button
               type="button"
               variant="ghost"
@@ -478,9 +594,9 @@ export default function TaskModal({
             <Button type="submit" disabled={isSaving}>
               {isSaving ? 'Saving...' : task ? 'Update Task' : 'Create Task'}
             </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </XStack>
+        </YStack>
+      </Card>
+    </YStack>
   );
 }

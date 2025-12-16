@@ -1,6 +1,8 @@
 // src/pages/gc/settings/IntegrationSettings.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckCircle, XCircle, RefreshCcw, X } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, H2, H3, Spinner, Dialog } from '@unicornlove/ui';
+import Checkbox from '../../../ui/Checkbox';
 import SyncStatus from '../../../components/scaffald/SyncStatus';
 import SyncHistory from '../../../components/scaffald/SyncHistory';
 
@@ -108,14 +110,14 @@ function GCIntegrationSettings() {
   };
 
   return (
-    <div className="gc-integration-settings">
-      <h2 className="text-xl font-semibold mb-4">Integrations</h2>
+    <YStack gap="$4">
+      <H2>Integrations</H2>
 
       {/* Sync Status Section - only show when Scaffald is connected */}
       {isScaffaldConnected && (
-        <div className="bg-white p-6 rounded-lg shadow mb-6">
-          <h3 className="text-lg font-semibold mb-3">Scaffald Sync Status</h3>
-          <div className="flex flex-col space-y-2 mb-4">
+        <Card padding="$6" marginBottom="$6">
+          <H3 marginBottom="$3">Scaffald Sync Status</H3>
+          <YStack gap="$2" marginBottom="$4">
             <SyncStatus
               entityType="Company"
               status={companySyncStatus === 'idle' ? 'synced' : companySyncStatus}
@@ -126,141 +128,166 @@ function GCIntegrationSettings() {
               status={projectSyncStatus === 'idle' ? 'synced' : projectSyncStatus}
               lastSyncedAt={lastSyncedAt || undefined}
             />
-          </div>
-          <div className="flex items-center space-x-4 mb-4">
-            <button
-              onClick={handleManualSync}
+          </YStack>
+          <XStack alignItems="center" gap="$4" marginBottom="$4">
+            <Button
+              onPress={handleManualSync}
               disabled={isSyncing}
-              className="flex items-center space-x-2 px-3 py-1.5 border rounded-lg text-sm text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+              variant="outlined"
+              size="$3"
+              icon={isSyncing ? <Spinner size="small" /> : <RefreshCcw size={14} />}
             >
-              <RefreshCcw size={14} className={isSyncing ? 'animate-spin' : ''} />
-              <span>Sync Now</span>
-            </button>
+              Sync Now
+            </Button>
             {lastSyncedAt && (
-              <span className="text-sm text-gray-500">
+              <Text fontSize="$3" color="$color10">
                 Synced at {new Date(lastSyncedAt).toLocaleString()}
-              </span>
+              </Text>
             )}
-          </div>
+          </XStack>
           <SyncHistory history={mockSyncHistory} isLoading={false} error={undefined} />
-        </div>
+        </Card>
       )}
 
       {/* Integrations Table */}
-      <div className="bg-white p-6 rounded-lg shadow mb-6">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b text-left">Name</th>
-              <th className="py-2 px-4 border-b text-left">Status</th>
-              <th className="py-2 px-4 border-b text-left">Sync Enabled</th>
-              <th className="py-2 px-4 border-b text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {integrations.map(integration => (
-              <tr key={integration.id}>
-                <td className="py-2 px-4 border-b">{integration.name}</td>
-                <td className="py-2 px-4 border-b">
-                  <span className={`flex items-center space-x-1 ${integration.status === 'connected' ? 'text-green-600' : 'text-red-600'}`}>
-                    {integration.status === 'connected' ? <CheckCircle size={16} /> : <XCircle size={16} />}
-                    <span>{integration.status}</span>
-                  </span>
-                </td>
-                <td className="py-2 px-4 border-b">
-                  <input
-                    type="checkbox"
-                    checked={integration.syncEnabled}
-                    onChange={() => handleToggleSync(integration.id, integration.syncEnabled)}
-                    disabled={integration.status !== 'connected'}
-                  />
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {integration.status === 'connected' ? (
-                    <button
-                      onClick={() => handleDisconnect(integration.id)}
-                      className="text-red-500 hover:underline"
-                    >
-                      Disconnect
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleConnect(integration.id)}
-                      className="text-blue-500 hover:underline"
-                    >
-                      Connect
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Card padding="$6" marginBottom="$6">
+        <YStack gap="$2">
+          {/* Table Header */}
+          <XStack paddingVertical="$2" paddingHorizontal="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
+            <Text flex={1} fontWeight="600" fontSize="$4">Name</Text>
+            <Text flex={1} fontWeight="600" fontSize="$4">Status</Text>
+            <Text flex={1} fontWeight="600" fontSize="$4">Sync Enabled</Text>
+            <Text flex={1} fontWeight="600" fontSize="$4">Actions</Text>
+          </XStack>
+          {/* Table Rows */}
+          {integrations.map(integration => (
+            <XStack
+              key={integration.id}
+              paddingVertical="$2"
+              paddingHorizontal="$4"
+              borderBottomWidth={1}
+              borderBottomColor="$borderColor"
+              alignItems="center"
+            >
+              <Text flex={1} fontSize="$4">{integration.name}</Text>
+              <XStack flex={1} alignItems="center" gap="$1">
+                {integration.status === 'connected' ? (
+                  <CheckCircle size={16} color="$green10" />
+                ) : (
+                  <XCircle size={16} color="$red10" />
+                )}
+                <Text
+                  fontSize="$4"
+                  color={integration.status === 'connected' ? '$green10' : '$red10'}
+                >
+                  {integration.status}
+                </Text>
+              </XStack>
+              <XStack flex={1}>
+                <Checkbox
+                  checked={integration.syncEnabled}
+                  onChange={(e) => {
+                    if (e.target.checked !== undefined) {
+                      handleToggleSync(integration.id, integration.syncEnabled);
+                    }
+                  }}
+                  disabled={integration.status !== 'connected'}
+                />
+              </XStack>
+              <XStack flex={1}>
+                {integration.status === 'connected' ? (
+                  <Button
+                    variant="ghost"
+                    size="$3"
+                    onPress={() => handleDisconnect(integration.id)}
+                    color="$red10"
+                  >
+                    Disconnect
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="$3"
+                    onPress={() => handleConnect(integration.id)}
+                    color="$blue10"
+                  >
+                    Connect
+                  </Button>
+                )}
+              </XStack>
+            </XStack>
+          ))}
+        </YStack>
+      </Card>
 
       {/* Connection Dialog */}
-      {showConnectionDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold">Connect Your Scaffald Company</h2>
-              <button
-                onClick={() => setShowConnectionDialog(false)}
-                className="text-gray-500 hover:text-gray-700"
+      <Dialog modal open={showConnectionDialog} onOpenChange={setShowConnectionDialog}>
+        <Dialog.Portal>
+          <Dialog.Overlay key="overlay" />
+          <Dialog.Content key="content" maxWidth={600} width="90vw">
+            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderBottomColor="$borderColor">
+              <H3>Connect Your Scaffald Company</H3>
+              <Button
+                variant="ghost"
+                size="$2"
+                onPress={() => setShowConnectionDialog(false)}
+                circular
               >
                 <X size={20} />
-              </button>
-            </div>
-            <div className="p-6">
-              <p className="text-gray-600 mb-4">
+              </Button>
+            </XStack>
+            <YStack padding="$6">
+              <Text color="$color10" marginBottom="$4">
                 We found a company associated with your Scaffald account:
-              </p>
-              <div className="bg-gray-50 rounded-lg p-4 mb-4 border">
-                <div className="flex items-start space-x-3">
-                  <div className="text-2xl">&#127970;</div>
-                  <div>
-                    <h3 className="font-semibold">Acme Construction LLC</h3>
-                    <p className="text-sm text-gray-600">123 Main Street, Austin, TX 78701</p>
-                    <p className="text-sm text-gray-500">Member since: January 2024</p>
-                  </div>
-                </div>
-              </div>
-              <div className="mb-6">
-                <p className="text-sm text-gray-600 mb-2">Connecting this company will:</p>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li className="flex items-center space-x-2">
-                    <CheckCircle size={14} className="text-green-500" />
-                    <span>Import your existing projects</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <CheckCircle size={14} className="text-green-500" />
-                    <span>Sync contractor relationships</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <CheckCircle size={14} className="text-green-500" />
-                    <span>Share compliance data</span>
-                  </li>
-                </ul>
-              </div>
-              <div className="flex space-x-3">
-                <button
-                  onClick={handleConfirmConnection}
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700"
+              </Text>
+              <Card backgroundColor="$color2" borderRadius="$4" padding="$4" marginBottom="$4" borderWidth={1} borderColor="$borderColor">
+                <XStack alignItems="flex-start" gap="$3">
+                  <Text fontSize="$8">🏢</Text>
+                  <YStack flex={1}>
+                    <Text fontWeight="600" fontSize="$5">Acme Construction LLC</Text>
+                    <Text fontSize="$3" color="$color10">123 Main Street, Austin, TX 78701</Text>
+                    <Text fontSize="$3" color="$color9">Member since: January 2024</Text>
+                  </YStack>
+                </XStack>
+              </Card>
+              <YStack marginBottom="$6">
+                <Text fontSize="$3" color="$color10" marginBottom="$2">Connecting this company will:</Text>
+                <YStack gap="$1">
+                  <XStack alignItems="center" gap="$2">
+                    <CheckCircle size={14} color="$green10" />
+                    <Text fontSize="$3" color="$color10">Import your existing projects</Text>
+                  </XStack>
+                  <XStack alignItems="center" gap="$2">
+                    <CheckCircle size={14} color="$green10" />
+                    <Text fontSize="$3" color="$color10">Sync contractor relationships</Text>
+                  </XStack>
+                  <XStack alignItems="center" gap="$2">
+                    <CheckCircle size={14} color="$green10" />
+                    <Text fontSize="$3" color="$color10">Share compliance data</Text>
+                  </XStack>
+                </YStack>
+              </YStack>
+              <XStack gap="$3">
+                <Button
+                  flex={1}
+                  variant="primary"
+                  onPress={handleConfirmConnection}
                 >
                   Connect This Company
-                </button>
-                <button
-                  onClick={() => setShowConnectionDialog(false)}
-                  className="flex-1 border border-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50"
+                </Button>
+                <Button
+                  flex={1}
+                  variant="outlined"
+                  onPress={() => setShowConnectionDialog(false)}
                 >
                   Create New Company Instead
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+                </Button>
+              </XStack>
+            </YStack>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+    </YStack>
   );
 }
 

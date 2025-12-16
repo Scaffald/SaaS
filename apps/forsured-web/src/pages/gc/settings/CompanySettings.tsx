@@ -1,5 +1,6 @@
 // src/pages/gc/settings/CompanySettings.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { YStack, XStack, Text, Button, H2, Input, Card } from '@unicornlove/ui';
 import { useAuth } from '../../../contexts/AuthContext';
 import { scaffaldClient } from '../../../lib/scaffald/client';
 import { toast } from 'sonner';
@@ -109,113 +110,101 @@ function GCCompanySettings() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="gc-company-settings">
-        <h2 className="text-xl font-semibold mb-4">Company Profile</h2>
-        <div className="animate-pulse space-y-4">
+      <YStack gap="$4">
+        <H2>Company Profile</H2>
+        <YStack gap="$4">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="h-10 bg-gray-200 rounded"></div>
+            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
           ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
     );
   }
 
   if (!companyId) {
     return (
-      <div className="gc-company-settings">
-        <h2 className="text-xl font-semibold mb-4">Company Profile</h2>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-800">
+      <YStack gap="$4">
+        <H2>Company Profile</H2>
+        <Card backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4" padding="$4">
+          <Text color="$yellow11">
             No company is linked to your account. Please complete onboarding to connect your company.
-          </p>
-        </div>
-      </div>
+          </Text>
+        </Card>
+      </YStack>
     );
   }
 
   return (
-    <div className="gc-company-settings">
-      <h2 className="text-xl font-semibold mb-4">Company Profile</h2>
-      <p className="text-gray-600 mb-6">
+    <YStack gap="$4">
+      <H2>Company Profile</H2>
+      <Text color="$color10" marginBottom="$6">
         Manage your company information. This data is synced with Scaffald.
-      </p>
+      </Text>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
-          <input
+        <YStack gap="$4">
+          <Input
+            label="Company Name"
             type="text"
             value={companyInfo.name}
-            onChange={(e) => updateField('name', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('name', value)}
             required
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
-          <input
+          <Input
+            label="Street Address"
             type="text"
             value={companyInfo.address.street}
-            onChange={(e) => updateAddress('street', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateAddress('street', value)}
           />
-        </div>
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-            <input
-              type="text"
-              value={companyInfo.address.city}
-              onChange={(e) => updateAddress('city', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-            <input
-              type="text"
-              value={companyInfo.address.state}
-              onChange={(e) => updateAddress('state', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-            <input
-              type="text"
-              value={companyInfo.address.zip}
-              onChange={(e) => updateAddress('zip', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-          <input
+          <XStack gap="$4">
+            <XStack flex={1}>
+              <Input
+                label="City"
+                type="text"
+                value={companyInfo.address.city}
+                onChangeText={(value) => updateAddress('city', value)}
+              />
+            </XStack>
+            <XStack flex={1}>
+              <Input
+                label="State"
+                type="text"
+                value={companyInfo.address.state}
+                onChangeText={(value) => updateAddress('state', value)}
+              />
+            </XStack>
+            <XStack flex={1}>
+              <Input
+                label="ZIP Code"
+                type="text"
+                value={companyInfo.address.zip}
+                onChangeText={(value) => updateAddress('zip', value)}
+              />
+            </XStack>
+          </XStack>
+          <Input
+            label="Phone"
             type="tel"
             value={companyInfo.phone}
-            onChange={(e) => updateField('phone', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('phone', value)}
           />
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
-          <input
+          <Input
+            label="Website"
             type="url"
             value={companyInfo.website}
-            onChange={(e) => updateField('website', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('website', value)}
             placeholder="https://example.com"
           />
-        </div>
-        <button
-          type="submit"
-          disabled={!isDirty || isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+          <Button
+            type="submit"
+            disabled={!isDirty || isSaving}
+            variant="primary"
+            marginTop="$6"
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </YStack>
       </form>
-    </div>
+    </YStack>
   );
 }
 

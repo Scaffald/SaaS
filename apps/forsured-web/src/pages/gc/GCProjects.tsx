@@ -1,7 +1,6 @@
 // src/pages/gc/GCProjects.tsx
-import React from 'react';
 import { Archive } from 'lucide-react';
-import EmptyState from '../../components/common/EmptyState';
+import { YStack, H1, EmptyState } from '@unicornlove/ui';
 // import { useScaffaldSync } from '../../hooks/useScaffaldSync';
 // import { useAuth } from '../../contexts/AuthContext';
 // import SyncStatus from '../../components/scaffald/SyncStatus';
@@ -20,16 +19,16 @@ function GCProjects() {
   const hasProjects = false;
 
   return (
-    <div className="gc-projects-page">
-      <h1 className="text-2xl font-bold mb-6">Projects</h1>
-      {/* <div className="mb-4">
+    <YStack gap="$6">
+      <H1>Projects</H1>
+      {/* <YStack marginBottom="$4">
         <SyncStatus
           entityType="Projects"
           status={projectSyncStatus}
           lastSyncedAt={lastProjectSync}
           errorMessage={projectSyncError || undefined}
         />
-      </div> */}
+      </YStack> */}
       {!hasProjects ? (
         <EmptyState
           icon={<Archive size={48} />}
@@ -42,9 +41,9 @@ function GCProjects() {
         />
       ) : (
         // Render projects list here
-        <div>Projects List</div>
+        <YStack>Projects List</YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 

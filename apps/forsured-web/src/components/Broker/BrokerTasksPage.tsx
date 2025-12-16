@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Search,
@@ -13,6 +13,7 @@ import {
   Send,
   List,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H3, Card, Input, Label, Button as TamaguiButton } from '@unicornlove/ui';
 import { useTasks } from '../../hooks/useTasks';
 import { useProjects } from '../../hooks/useProjects';
 import { useClients } from '../../hooks/useClients';
@@ -356,21 +357,21 @@ export default function BrokerTasksPage() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'critical':
-        return 'text-error-600 bg-error-50 border-error-200';
+        return { color: '$red10', backgroundColor: '$red2', borderColor: '$red6' };
       case 'high':
-        return 'text-warning-600 bg-warning-50 border-warning-200';
+        return { color: '$yellow10', backgroundColor: '$yellow2', borderColor: '$yellow6' };
       case 'medium':
-        return 'text-primary-600 bg-primary-50 border-primary-200';
+        return { color: '$blue10', backgroundColor: '$blue2', borderColor: '$blue6' };
       case 'low':
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray6' };
       default:
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray6' };
     }
   };
 
 
   const formatDueDate = (dueAt: string | undefined) => {
-    if (!dueAt) return { text: 'No due date', color: 'text-text-secondary' };
+    if (!dueAt) return { text: 'No due date', color: '$color11' };
     const date = new Date(dueAt);
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
@@ -379,14 +380,14 @@ export default function BrokerTasksPage() {
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)}d overdue`,
-        color: 'text-error-600',
+        color: '$red10',
       };
-    if (diffDays === 0) return { text: 'Due today', color: 'text-warning-600' };
+    if (diffDays === 0) return { text: 'Due today', color: '$yellow10' };
     if (diffDays === 1)
-      return { text: 'Due tomorrow', color: 'text-warning-600' };
+      return { text: 'Due tomorrow', color: '$yellow10' };
     if (diffDays <= 3)
-      return { text: `Due in ${diffDays}d`, color: 'text-warning-600' };
-    return { text: date.toLocaleDateString(), color: 'text-text-secondary' };
+      return { text: `Due in ${diffDays}d`, color: '$yellow10' };
+    return { text: date.toLocaleDateString(), color: '$color11' };
   };
 
   const clearFilters = () => {
@@ -485,356 +486,546 @@ export default function BrokerTasksPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-text-primary">
+    <YStack gap="$6">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$9" fontWeight="bold" color="$color12">
             Tasks
-          </h1>
-          <p className="text-text-secondary text-lg mt-1">
+          </H1>
+          <Text color="$color11" fontSize="$6" marginTop="$1">
             Manage compliance tasks across {allProjects.length} active projects
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <Button variant="primary" onClick={handleCreateTask}>
           Create Task
         </Button>
-      </div>
+      </XStack>
 
       {/* REQ-260: View navigation tabs */}
-      <div className="flex items-center border-b border-border">
-        <button
-          onClick={() => setSelectedView('inbox')}
-          className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-            selectedView === 'inbox'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-text-secondary hover:text-text-primary hover:border-border'
-          }`}
+      <XStack alignItems="center" borderBottomWidth={1} borderColor="$borderColor">
+        <TamaguiButton
+          onPress={() => setSelectedView('inbox')}
+          alignItems="center"
+          gap="$2"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
+          fontSize="$3"
+          fontWeight="500"
+          borderBottomWidth={2}
+          borderColor={selectedView === 'inbox' ? '$blue9' : 'transparent'}
+          color={selectedView === 'inbox' ? '$blue10' : '$color11'}
+          hoverStyle={{
+            color: selectedView === 'inbox' ? '$blue10' : '$color12',
+            borderColor: selectedView === 'inbox' ? '$blue9' : '$borderColor',
+          }}
+          backgroundColor="transparent"
         >
           <Inbox size={18} />
-          <span>Inbox</span>
-          <span className={`ml-1 px-2 py-0.5 text-xs rounded-full ${
-            selectedView === 'inbox'
-              ? 'bg-primary-100 text-primary-700'
-              : 'bg-gray-100 text-text-secondary'
-          }`}>
-            {viewCounts.inbox}
-          </span>
-        </button>
-        <button
-          onClick={() => setSelectedView('assigned_by_me')}
-          className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-            selectedView === 'assigned_by_me'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-text-secondary hover:text-text-primary hover:border-border'
-          }`}
+          <Text>Inbox</Text>
+          <XStack
+            marginLeft="$1"
+            paddingHorizontal="$2"
+            paddingVertical="$0.5"
+            fontSize="$1"
+            borderRadius={9999}
+            backgroundColor={selectedView === 'inbox' ? '$blue2' : '$gray2'}
+            color={selectedView === 'inbox' ? '$blue11' : '$color11'}
+          >
+            <Text fontSize="$1" color={selectedView === 'inbox' ? '$blue11' : '$color11'}>
+              {viewCounts.inbox}
+            </Text>
+          </XStack>
+        </TamaguiButton>
+        <TamaguiButton
+          onPress={() => setSelectedView('assigned_by_me')}
+          alignItems="center"
+          gap="$2"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
+          fontSize="$3"
+          fontWeight="500"
+          borderBottomWidth={2}
+          borderColor={selectedView === 'assigned_by_me' ? '$blue9' : 'transparent'}
+          color={selectedView === 'assigned_by_me' ? '$blue10' : '$color11'}
+          hoverStyle={{
+            color: selectedView === 'assigned_by_me' ? '$blue10' : '$color12',
+            borderColor: selectedView === 'assigned_by_me' ? '$blue9' : '$borderColor',
+          }}
+          backgroundColor="transparent"
         >
           <Send size={18} />
-          <span>Assigned by Me</span>
-          <span className={`ml-1 px-2 py-0.5 text-xs rounded-full ${
-            selectedView === 'assigned_by_me'
-              ? 'bg-primary-100 text-primary-700'
-              : 'bg-gray-100 text-text-secondary'
-          }`}>
-            {viewCounts.assigned_by_me}
-          </span>
-        </button>
-        <button
-          onClick={() => setSelectedView('all')}
-          className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-            selectedView === 'all'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-text-secondary hover:text-text-primary hover:border-border'
-          }`}
+          <Text>Assigned by Me</Text>
+          <XStack
+            marginLeft="$1"
+            paddingHorizontal="$2"
+            paddingVertical="$0.5"
+            fontSize="$1"
+            borderRadius={9999}
+            backgroundColor={selectedView === 'assigned_by_me' ? '$blue2' : '$gray2'}
+            color={selectedView === 'assigned_by_me' ? '$blue11' : '$color11'}
+          >
+            <Text fontSize="$1" color={selectedView === 'assigned_by_me' ? '$blue11' : '$color11'}>
+              {viewCounts.assigned_by_me}
+            </Text>
+          </XStack>
+        </TamaguiButton>
+        <TamaguiButton
+          onPress={() => setSelectedView('all')}
+          alignItems="center"
+          gap="$2"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
+          fontSize="$3"
+          fontWeight="500"
+          borderBottomWidth={2}
+          borderColor={selectedView === 'all' ? '$blue9' : 'transparent'}
+          color={selectedView === 'all' ? '$blue10' : '$color11'}
+          hoverStyle={{
+            color: selectedView === 'all' ? '$blue10' : '$color12',
+            borderColor: selectedView === 'all' ? '$blue9' : '$borderColor',
+          }}
+          backgroundColor="transparent"
         >
           <List size={18} />
-          <span>All Tasks</span>
-          <span className={`ml-1 px-2 py-0.5 text-xs rounded-full ${
-            selectedView === 'all'
-              ? 'bg-primary-100 text-primary-700'
-              : 'bg-gray-100 text-text-secondary'
-          }`}>
-            {viewCounts.all}
-          </span>
-        </button>
-      </div>
-
-      <div className="flex items-center space-x-4 text-sm">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-primary-500"></div>
-          <span className="font-semibold text-text-primary">
-            {statusCounts.pending}
-          </span>
-          <span className="text-text-secondary">Pending</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-          <span className="font-semibold text-text-primary">
-            {statusCounts.in_progress}
-          </span>
-          <span className="text-text-secondary">In Progress</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-error-500"></div>
-          <span className="font-semibold text-text-primary">
-            {statusCounts.overdue}
-          </span>
-          <span className="text-text-secondary">Overdue</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-success-500"></div>
-          <span className="font-semibold text-text-primary">
-            {statusCounts.completed}
-          </span>
-          <span className="text-text-secondary">Completed</span>
-        </div>
-      </div>
-
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4 space-y-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1 relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
-              size={20}
-            />
-            <input
-              type="text"
-              placeholder="Search tasks by title or description..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center space-x-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
-              showFilters
-                ? 'bg-primary-50 border-primary-500 text-primary-700'
-                : 'bg-surface border-border text-text-secondary hover:bg-bg-secondary'
-            }`}
+          <Text>All Tasks</Text>
+          <XStack
+            marginLeft="$1"
+            paddingHorizontal="$2"
+            paddingVertical="$0.5"
+            fontSize="$1"
+            borderRadius={9999}
+            backgroundColor={selectedView === 'all' ? '$blue2' : '$gray2'}
+            color={selectedView === 'all' ? '$blue11' : '$color11'}
           >
-            <Filter size={18} />
-            <span>Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-primary-500 text-white text-xs rounded-full">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-        </div>
+            <Text fontSize="$1" color={selectedView === 'all' ? '$blue11' : '$color11'}>
+              {viewCounts.all}
+            </Text>
+          </XStack>
+        </TamaguiButton>
+      </XStack>
 
-        {showFilters && (
-          <div className="border-t border-border pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
-                  Priority
-                </label>
-                <select
-                  value={selectedPriority}
-                  onChange={(e) =>
-                    setSelectedPriority(e.target.value as TaskPriority | 'all')
-                  }
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="all">All Priorities ({tasks.length})</option>
-                  <option value="critical">Critical ({filterCounts.priority.critical})</option>
-                  <option value="high">High ({filterCounts.priority.high})</option>
-                  <option value="medium">Medium ({filterCounts.priority.medium})</option>
-                  <option value="low">Low ({filterCounts.priority.low})</option>
-                </select>
-              </div>
+      <XStack alignItems="center" gap="$4" fontSize="$3">
+        <XStack alignItems="center" gap="$2">
+          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$blue9" />
+          <Text fontWeight="600" color="$color12">
+            {statusCounts.pending}
+          </Text>
+          <Text color="$color11">Pending</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$blue9" />
+          <Text fontWeight="600" color="$color12">
+            {statusCounts.in_progress}
+          </Text>
+          <Text color="$color11">In Progress</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$red9" />
+          <Text fontWeight="600" color="$color12">
+            {statusCounts.overdue}
+          </Text>
+          <Text color="$color11">Overdue</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <YStack width={12} height={12} borderRadius={9999} backgroundColor="$green9" />
+          <Text fontWeight="600" color="$color12">
+            {statusCounts.completed}
+          </Text>
+          <Text color="$color11">Completed</Text>
+        </XStack>
+      </XStack>
 
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
-                  Status
-                </label>
-                <select
-                  value={selectedStatus}
-                  onChange={(e) =>
-                    setSelectedStatus(e.target.value as TaskStatus | 'all')
-                  }
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="all">All Statuses ({tasks.length})</option>
-                  <option value="pending">Pending ({filterCounts.status.pending})</option>
-                  <option value="in_progress">In Progress ({filterCounts.status.in_progress})</option>
-                  <option value="overdue">Overdue ({filterCounts.status.overdue})</option>
-                  <option value="completed">Completed ({filterCounts.status.completed})</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
-                  Client
-                </label>
-                <select
-                  value={selectedClient}
-                  onChange={(e) => setSelectedClient(e.target.value)}
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="all">All Clients ({tasks.length})</option>
-                  {filterCounts.clientOptions.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.name} ({client.count})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
-                  Project
-                </label>
-                <select
-                  value={selectedProject}
-                  onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="all">All Projects</option>
-                  {allProjects.map((project) => (
-                    <option key={project.id} value={project.id}>
-                      {project.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {activeFilterCount > 0 && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center space-x-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
+      <Card
+        backgroundColor="$background"
+        borderRadius="$4"
+        elevation={1}
+        borderWidth={1}
+        borderColor="$borderColor"
+        padding="$4"
+      >
+        <YStack gap="$4">
+          <XStack alignItems="center" gap="$3">
+            <YStack flex={1} position="relative">
+              <YStack
+                position="absolute"
+                left="$3"
+                top="50%"
+                transform="translateY(-50%)"
+                zIndex={1}
               >
-                <X size={16} />
-                <span>Clear all filters</span>
-              </button>
-            )}
-          </div>
-        )}
-
-        <div className="flex items-center justify-between border-t border-border pt-4">
-          <div className="text-sm text-text-secondary">
-            Showing{' '}
-            <span className="font-semibold text-text-primary">
-              {filteredAndSortedTasks.length}
-            </span>{' '}
-            of {tasks.length} tasks
-          </div>
-          <div className="flex items-center space-x-3">
-            <span className="text-xs text-text-secondary">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) =>
-                setSortBy(e.target.value as 'due_date' | 'priority' | 'status')
-              }
-              className="px-3 py-1.5 bg-bg-primary border border-border rounded text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="due_date">Due Date</option>
-              <option value="priority">Priority</option>
-              <option value="status">Status</option>
-            </select>
-            <button
-              onClick={() =>
-                setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
-              }
-              className="p-1.5 border border-border rounded hover:bg-bg-secondary transition-colors"
-            >
-              <ChevronDown
-                size={16}
-                className={`text-text-secondary transform transition-transform ${
-                  sortOrder === 'desc' ? 'rotate-180' : ''
-                }`}
+                <Search color="$color10" size={20} />
+              </YStack>
+              <Input
+                type="text"
+                placeholder="Search tasks by title or description..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                width="100%"
+                paddingLeft="$10"
+                paddingRight="$4"
+                paddingVertical="$2.5"
+                backgroundColor="$background"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                fontSize="$3"
+                color="$color12"
               />
-            </button>
-          </div>
-        </div>
-      </div>
+            </YStack>
+            <TamaguiButton
+              onPress={() => setShowFilters(!showFilters)}
+              alignItems="center"
+              gap="$2"
+              paddingHorizontal="$4"
+              paddingVertical="$2.5"
+              borderWidth={1}
+              borderRadius="$4"
+              fontSize="$3"
+              fontWeight="500"
+              backgroundColor={showFilters ? '$blue2' : '$background'}
+              borderColor={showFilters ? '$blue9' : '$borderColor'}
+              color={showFilters ? '$blue11' : '$color11'}
+              hoverStyle={{
+                backgroundColor: showFilters ? '$blue2' : '$gray2',
+              }}
+            >
+              <Filter size={18} />
+              <Text>Filters</Text>
+              {activeFilterCount > 0 && (
+                <XStack
+                  marginLeft="$1"
+                  paddingHorizontal="$2"
+                  paddingVertical="$0.5"
+                  backgroundColor="$blue9"
+                  color="white"
+                  fontSize="$1"
+                  borderRadius={9999}
+                >
+                  <Text fontSize="$1" color="white">
+                    {activeFilterCount}
+                  </Text>
+                </XStack>
+              )}
+            </TamaguiButton>
+          </XStack>
 
-      <div className="space-y-3">
+          {showFilters && (
+            <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" gap="$4">
+              <XStack
+                flexDirection="column"
+                $gtMd={{ flexDirection: 'row' }}
+                $gtLg={{ flexDirection: 'row' }}
+                gap="$4"
+                flexWrap="wrap"
+              >
+                <YStack flex={1} minWidth="20%">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                    Priority
+                  </Label>
+                  <select
+                    value={selectedPriority}
+                    onChange={(e) =>
+                      setSelectedPriority(e.target.value as TaskPriority | 'all')
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                    }}
+                  >
+                    <option value="all">All Priorities ({tasks.length})</option>
+                    <option value="critical">Critical ({filterCounts.priority.critical})</option>
+                    <option value="high">High ({filterCounts.priority.high})</option>
+                    <option value="medium">Medium ({filterCounts.priority.medium})</option>
+                    <option value="low">Low ({filterCounts.priority.low})</option>
+                  </select>
+                </YStack>
+
+                <YStack flex={1} minWidth="20%">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                    Status
+                  </Label>
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) =>
+                      setSelectedStatus(e.target.value as TaskStatus | 'all')
+                    }
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                    }}
+                  >
+                    <option value="all">All Statuses ({tasks.length})</option>
+                    <option value="pending">Pending ({filterCounts.status.pending})</option>
+                    <option value="in_progress">In Progress ({filterCounts.status.in_progress})</option>
+                    <option value="overdue">Overdue ({filterCounts.status.overdue})</option>
+                    <option value="completed">Completed ({filterCounts.status.completed})</option>
+                  </select>
+                </YStack>
+
+                <YStack flex={1} minWidth="20%">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                    Client
+                  </Label>
+                  <select
+                    value={selectedClient}
+                    onChange={(e) => setSelectedClient(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                    }}
+                  >
+                    <option value="all">All Clients ({tasks.length})</option>
+                    {filterCounts.clientOptions.map((client) => (
+                      <option key={client.id} value={client.id}>
+                        {client.name} ({client.count})
+                      </option>
+                    ))}
+                  </select>
+                </YStack>
+
+                <YStack flex={1} minWidth="20%">
+                  <Label fontSize="$1" fontWeight="500" color="$color11" marginBottom="$2">
+                    Project
+                  </Label>
+                  <select
+                    value={selectedProject}
+                    onChange={(e) => setSelectedProject(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      color: 'var(--color12)',
+                    }}
+                  >
+                    <option value="all">All Projects</option>
+                    {allProjects.map((project) => (
+                      <option key={project.id} value={project.id}>
+                        {project.name}
+                      </option>
+                    ))}
+                  </select>
+                </YStack>
+              </XStack>
+
+              {activeFilterCount > 0 && (
+                <XStack
+                  as="button"
+                  alignItems="center"
+                  gap="$2"
+                  fontSize="$3"
+                  color="$color11"
+                  hoverStyle={{ color: '$color12' }}
+                  onClick={clearFilters}
+                >
+                  <X size={16} color="$color11" />
+                  <Text fontSize="$3" color="$color11">Clear all filters</Text>
+                </XStack>
+              )}
+            </YStack>
+          )}
+
+          <XStack
+            alignItems="center"
+            justifyContent="space-between"
+            borderTopWidth={1}
+            borderColor="$borderColor"
+            paddingTop="$4"
+          >
+            <Text fontSize="$3" color="$color11">
+              Showing{' '}
+              <Text fontSize="$3" fontWeight="600" color="$color12">
+                {filteredAndSortedTasks.length}
+              </Text>{' '}
+              of {tasks.length} tasks
+            </Text>
+            <XStack alignItems="center" gap="$3">
+              <Text fontSize="$1" color="$color11">Sort by:</Text>
+              <select
+                value={sortBy}
+                onChange={(e) =>
+                  setSortBy(e.target.value as 'due_date' | 'priority' | 'status')
+                }
+                style={{
+                  padding: '6px 12px',
+                  backgroundColor: 'var(--background)',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  color: 'var(--color12)',
+                }}
+              >
+                <option value="due_date">Due Date</option>
+                <option value="priority">Priority</option>
+                <option value="status">Status</option>
+              </select>
+              <XStack
+                as="button"
+                padding="$1.5"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$2"
+                hoverStyle={{ backgroundColor: '$gray2' }}
+                onClick={() =>
+                  setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+                }
+              >
+                <ChevronDown
+                  size={16}
+                  color="$color11"
+                  style={{
+                    transform: sortOrder === 'desc' ? 'rotate(180deg)' : 'none',
+                    transition: 'transform 0.2s',
+                  }}
+                />
+              </XStack>
+            </XStack>
+          </XStack>
+        </YStack>
+      </Card>
+
+      <YStack gap="$3">
         {filteredAndSortedTasks.map((task) => {
           const dueDate = formatDueDate(task.due_date);
           const projectName =
             projects.find((p) => p.id === task.project_id)?.name ?? 'Unknown';
           const clientName = getClientName(task.client_id);
+          const priorityColors = getPriorityColor(task.priority);
           return (
-            <div
+            <Card
               key={task.id}
-              className="bg-surface rounded-lg shadow-sm border border-border hover:border-primary-300 transition-all cursor-pointer group"
+              backgroundColor="$background"
+              borderRadius="$4"
+              elevation={1}
+              borderWidth={1}
+              borderColor="$borderColor"
+              hoverStyle={{ borderColor: '$blue8' }}
+              cursor="pointer"
               onClick={() => handleTaskClick(task)}
             >
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-base font-semibold text-text-primary group-hover:text-primary-600 transition-colors">
-                        {task.title}
-                      </h3>
-                      <span
-                        className={`px-2 py-0.5 text-xs font-medium rounded border ${getPriorityColor(task.priority)}`}
+              <YStack padding="$5">
+                <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                  <YStack flex={1}>
+                    <XStack alignItems="center" gap="$3" marginBottom="$2">
+                      <Text
+                        fontSize="$4"
+                        fontWeight="600"
+                        color="$color12"
+                        hoverStyle={{ color: '$blue10' }}
                       >
-                        {task.priority?.toUpperCase()}
-                      </span>
+                        {task.title}
+                      </Text>
+                      <XStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        fontSize="$1"
+                        fontWeight="500"
+                        borderRadius="$2"
+                        borderWidth={1}
+                        {...priorityColors}
+                      >
+                        <Text fontSize="$1" fontWeight="500" color={priorityColors.color}>
+                          {task.priority?.toUpperCase()}
+                        </Text>
+                      </XStack>
                       {/* REQ-282: Use TaskStatusBadge with tooltip and rejection reason */}
                       <TaskStatusBadge
                         status={task.status}
                         rejectionReason={task.rejection_reason}
                         size="xs"
                       />
-                    </div>
-                    <p className="text-sm text-text-secondary mb-3">
+                    </XStack>
+                    <Text fontSize="$3" color="$color11" marginBottom="$3">
                       {task.description}
-                    </p>
-                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-xs text-text-tertiary">
-                      <span className="flex items-center space-x-1">
-                        <Calendar size={14} />
-                        <span className={dueDate.color}>{dueDate.text}</span>
-                      </span>
-                      <span>•</span>
-                      <span>{projectName}</span>
+                    </Text>
+                    <XStack
+                      alignItems="center"
+                      flexWrap="wrap"
+                      gapHorizontal="$4"
+                      gapVertical="$1"
+                      fontSize="$1"
+                      color="$color10"
+                    >
+                      <XStack alignItems="center" gap="$1">
+                        <Calendar size={14} color="$color10" />
+                        <Text fontSize="$1" color={dueDate.color}>
+                          {dueDate.text}
+                        </Text>
+                      </XStack>
+                      <Text fontSize="$1" color="$color10">•</Text>
+                      <Text fontSize="$1" color="$color10">{projectName}</Text>
                       {clientName && task.client_id && (
                         <>
-                          <span>•</span>
-                          <button
+                          <Text fontSize="$1" color="$color10">•</Text>
+                          <XStack
+                            as="button"
+                            alignItems="center"
+                            gap="$1"
+                            color="$blue10"
+                            hoverStyle={{ color: '$blue11', textDecoration: 'underline' }}
                             onClick={(e) => handleClientClick(e, task.client_id!)}
-                            className="flex items-center space-x-1 text-primary-600 hover:text-primary-700 hover:underline transition-colors"
                           >
-                            <Building2 size={14} />
-                            <span>{clientName}</span>
-                          </button>
+                            <Building2 size={14} color="$blue10" />
+                            <Text fontSize="$1" color="$blue10">{clientName}</Text>
+                          </XStack>
                         </>
                       )}
                       {/* REQ-282 TASK-4: Display sub company context */}
                       {task.sub_company_name && (
                         <>
-                          <span>•</span>
-                          <span className="flex items-center space-x-1 text-secondary-600">
-                            <HardHat size={14} />
-                            <span>{task.sub_company_name}</span>
-                          </span>
+                          <Text fontSize="$1" color="$color10">•</Text>
+                          <XStack alignItems="center" gap="$1" color="$purple10">
+                            <HardHat size={14} color="$purple10" />
+                            <Text fontSize="$1" color="$purple10">{task.sub_company_name}</Text>
+                          </XStack>
                         </>
                       )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    </XStack>
+                  </YStack>
+                </XStack>
+              </YStack>
+            </Card>
           );
         })}
-      </div>
+      </YStack>
 
       {filteredAndSortedTasks.length === 0 && (
-        <div className="text-center py-16 bg-surface rounded-lg border border-border">
-          <CheckCircle className="mx-auto text-text-tertiary mb-4" size={64} />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+        <Card
+          alignItems="center"
+          paddingVertical="$12"
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+        >
+          <CheckCircle color="$color10" size={64} marginBottom="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             No tasks found
-          </h3>
-          <p className="text-text-secondary">
+          </H3>
+          <Text color="$color11">
             Try adjusting your filters or search criteria
-          </p>
-        </div>
+          </Text>
+        </Card>
       )}
 
       <TaskModal
@@ -847,6 +1038,6 @@ export default function BrokerTasksPage() {
         onSave={handleSaveTask}
         projects={projects}
       />
-    </div>
+    </YStack>
   );
 }

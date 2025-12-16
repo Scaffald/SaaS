@@ -131,7 +131,8 @@ export function AddTeamMemberForm({
   };
 
   return (
-    <YStack as="form" onSubmit={handleSubmit} gap="$4">
+    <form onSubmit={handleSubmit}>
+      <YStack gap="$4">
       {/* General Error */}
       {errors.general && (
         <YStack
@@ -149,9 +150,11 @@ export function AddTeamMemberForm({
 
       {/* Name Field */}
       <YStack gap="$1">
-        <SizableText htmlFor="member-name" fontSize="$3" fontWeight="500" color="$color11">
-          Full Name <Text color="$red10">*</Text>
-        </SizableText>
+        <label htmlFor="member-name">
+          <SizableText fontSize="$3" fontWeight="500" color="$color11">
+            Full Name <Text color="$red10">*</Text>
+          </SizableText>
+        </label>
         <Input
           id="member-name"
           type="text"
@@ -178,9 +181,11 @@ export function AddTeamMemberForm({
 
       {/* Email Field */}
       <YStack gap="$1">
-        <SizableText htmlFor="member-email" fontSize="$3" fontWeight="500" color="$color11">
-          Email Address <Text color="$red10">*</Text>
-        </SizableText>
+        <label htmlFor="member-email">
+          <SizableText fontSize="$3" fontWeight="500" color="$color11">
+            Email Address <Text color="$red10">*</Text>
+          </SizableText>
+        </label>
         <Input
           id="member-email"
           type="email"
@@ -246,7 +251,8 @@ export function AddTeamMemberForm({
       <SizableText fontSize="$1" color="$color10" textAlign="center">
         An invitation email will be sent to the provided email address.
       </SizableText>
-    </YStack>
+      </YStack>
+    </form>
   );
 }
 

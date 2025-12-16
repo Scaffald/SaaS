@@ -1,5 +1,6 @@
-import React, { useMemo } from 'react';
-import { TrendingUp, Calendar, AlertTriangle } from 'lucide-react';
+import { useMemo } from 'react';
+import { Calendar, AlertTriangle } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
 import { PolicyData } from '../../types';
 
 interface RenewalForecastWidgetProps {
@@ -74,136 +75,163 @@ export default function RenewalForecastWidget({
 
   const getPolicyTypeColor = (index: number) => {
     const colors = [
-      'bg-primary-500',
-      'bg-secondary-500',
-      'bg-success-500',
-      'bg-warning-500',
-      'bg-error-500',
-      'bg-tertiary-500',
+      '$blue9',
+      '$purple9',
+      '$green9',
+      '$yellow9',
+      '$red9',
+      '$gray9',
     ];
     return colors[index % colors.length];
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-lg font-semibold text-text-primary">
+    <Card
+      backgroundColor="$background"
+      borderRadius="$4"
+      elevation={1}
+      borderWidth={1}
+      borderColor="$borderColor"
+      padding="$6"
+    >
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <YStack>
+          <H2 fontSize="$6" fontWeight="600" color="$color12">
             Renewal Forecast
-          </h2>
-          <p className="text-sm text-text-secondary">
+          </H2>
+          <Text fontSize="$3" color="$color11">
             Policy expirations over next 6 months
-          </p>
-        </div>
-        <div className="flex items-center space-x-2 text-sm">
-          <AlertTriangle className="text-warning-600" size={18} />
-          <span className="text-text-secondary">
+          </Text>
+        </YStack>
+        <XStack alignItems="center" gap="$2">
+          <AlertTriangle color="$yellow10" size={18} />
+          <Text fontSize="$3" color="$color11">
             {expiringThisMonth} expiring this month
-          </span>
-        </div>
-      </div>
+          </Text>
+        </XStack>
+      </XStack>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <h3 className="text-sm font-medium text-text-primary mb-4">
+      <XStack
+        flexDirection="column"
+        $gtLg={{ flexDirection: 'row' }}
+        gap="$6"
+      >
+        <YStack flex={1}>
+          <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$4">
             Monthly Expirations
-          </h3>
-          <div className="space-y-3">
+          </H3>
+          <YStack gap="$3">
             {forecastData.map((data, index) => (
-              <div key={data.month} className="flex items-center space-x-3">
-                <div className="w-16 text-sm font-medium text-text-secondary">
+              <XStack key={data.month} alignItems="center" gap="$3">
+                <Text width={64} fontSize="$3" fontWeight="500" color="$color11">
                   {data.month}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex-1 bg-neutral-200 rounded-full h-6 relative overflow-hidden">
-                      <div
-                        className={`h-6 rounded-full transition-all ${
+                </Text>
+                <YStack flex={1}>
+                  <XStack alignItems="center" gap="$2">
+                    <YStack
+                      flex={1}
+                      backgroundColor="$gray6"
+                      borderRadius={9999}
+                      height={24}
+                      position="relative"
+                      overflow="hidden"
+                    >
+                      <YStack
+                        height={24}
+                        borderRadius={9999}
+                        backgroundColor={
                           index === 0
-                            ? 'bg-error-500'
+                            ? '$red9'
                             : index === 1
-                              ? 'bg-warning-500'
-                              : 'bg-primary-500'
-                        }`}
-                        style={{ width: `${(data.count / maxCount) * 100}%` }}
+                              ? '$yellow9'
+                              : '$blue9'
+                        }
+                        width={`${(data.count / maxCount) * 100}%`}
+                        alignItems="center"
+                        justifyContent="center"
                       >
-                        <div className="flex items-center justify-center h-full">
-                          {data.count > 0 && (
-                            <span className="text-xs font-medium text-white px-2">
-                              {data.count}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-sm text-text-secondary w-20 text-right">
+                        {data.count > 0 && (
+                          <Text fontSize="$1" fontWeight="500" color="white" paddingHorizontal="$2">
+                            {data.count}
+                          </Text>
+                        )}
+                      </YStack>
+                    </YStack>
+                    <Text fontSize="$3" color="$color11" width={80} textAlign="right">
                       ${(data.value / 1000).toFixed(0)}K
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </Text>
+                  </XStack>
+                </YStack>
+              </XStack>
             ))}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
 
-        <div>
-          <h3 className="text-sm font-medium text-text-primary mb-4">
+        <YStack flex={1}>
+          <H3 fontSize="$3" fontWeight="500" color="$color12" marginBottom="$4">
             Next 30 Days by Type
-          </h3>
+          </H3>
           {policyTypeBreakdown.length > 0 ? (
-            <div className="space-y-4">
+            <YStack gap="$4">
               {policyTypeBreakdown.map((item, index) => (
-                <div key={item.type}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm capitalize text-text-primary">
+                <YStack key={item.type}>
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+                    <Text fontSize="$3" textTransform="capitalize" color="$color12">
                       {item.type}
-                    </span>
-                    <span className="text-sm font-medium text-text-secondary">
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color11">
                       {item.count} ({item.percentage.toFixed(0)}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-neutral-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all ${getPolicyTypeColor(index)}`}
-                      style={{ width: `${item.percentage}%` }}
+                    </Text>
+                  </XStack>
+                  <YStack width="100%" backgroundColor="$gray6" borderRadius={9999} height={8}>
+                    <YStack
+                      height={8}
+                      borderRadius={9999}
+                      backgroundColor={getPolicyTypeColor(index)}
+                      width={`${item.percentage}%`}
                     />
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
               ))}
-            </div>
+            </YStack>
           ) : (
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Calendar className="text-text-tertiary mb-3" size={48} />
-              <p className="text-text-secondary text-sm">
+            <YStack
+              alignItems="center"
+              justifyContent="center"
+              paddingVertical="$8"
+              alignItems="center"
+            >
+              <Calendar color="$color10" size={48} marginBottom="$3" />
+              <Text fontSize="$3" color="$color11">
                 No policies expiring in next 30 days
-              </p>
-            </div>
+              </Text>
+            </YStack>
           )}
-        </div>
-      </div>
+        </YStack>
+      </XStack>
 
-      <div className="mt-6 pt-6 border-t border-border">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-text-primary">
+      <YStack marginTop="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
+        <XStack gap="$4" flexWrap="wrap">
+          <YStack flex={1} minWidth="30%" alignItems="center">
+            <Text fontSize="$8" fontWeight="bold" color="$color12">
               {expiringThisMonth}
-            </p>
-            <p className="text-sm text-text-secondary">This Month</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-text-primary">
+            </Text>
+            <Text fontSize="$3" color="$color11">This Month</Text>
+          </YStack>
+          <YStack flex={1} minWidth="30%" alignItems="center">
+            <Text fontSize="$8" fontWeight="bold" color="$color12">
               {expiringNextMonth}
-            </p>
-            <p className="text-sm text-text-secondary">Next Month</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-text-primary">
+            </Text>
+            <Text fontSize="$3" color="$color11">Next Month</Text>
+          </YStack>
+          <YStack flex={1} minWidth="30%" alignItems="center">
+            <Text fontSize="$8" fontWeight="bold" color="$color12">
               {forecastData.reduce((sum, d) => sum + d.count, 0)}
-            </p>
-            <p className="text-sm text-text-secondary">6 Months Total</p>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Text>
+            <Text fontSize="$3" color="$color11">6 Months Total</Text>
+          </YStack>
+        </XStack>
+      </YStack>
+    </Card>
   );
 }

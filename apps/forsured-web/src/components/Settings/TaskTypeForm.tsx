@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { YStack, XStack, Text, H3, Label } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
 import Select from '../Common/Select';
@@ -172,12 +173,13 @@ export default function TaskTypeForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Basic Information */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
-          Basic Information
-        </h3>
+    <form onSubmit={handleSubmit}>
+      <YStack gap="$6">
+        {/* Basic Information */}
+        <YStack gap="$4">
+          <H3 fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase" letterSpacing={1}>
+            Basic Information
+          </H3>
 
         <Input
           label="Name"
@@ -208,15 +210,15 @@ export default function TaskTypeForm({
           required
           fullWidth
         />
-      </div>
+        </YStack>
 
-      {/* Default Settings */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
-          Default Settings
-        </h3>
+        {/* Default Settings */}
+        <YStack gap="$4">
+          <H3 fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase" letterSpacing={1}>
+            Default Settings
+          </H3>
 
-        <div className="grid grid-cols-2 gap-4">
+          <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
           <Select
             label="Default Priority"
             options={PRIORITY_OPTIONS}
@@ -238,84 +240,88 @@ export default function TaskTypeForm({
             error={touched.default_due_date_offset ? errors.default_due_date_offset : undefined}
             fullWidth
             helperText="Days from task creation"
+            flex={1}
+            minWidth="45%"
           />
-        </div>
+          </XStack>
 
-        <Select
-          label="Default Assignee Role"
-          options={ASSIGNEE_ROLE_OPTIONS}
-          value={formData.default_assignee_role}
-          onChange={(e) =>
-            handleChange(
-              'default_assignee_role',
-              e.target.value as 'broker' | 'gc' | 'subcontractor' | ''
-            )
-          }
-          fullWidth
-          helperText="Tasks of this type will be assigned to users with this role by default"
-        />
-      </div>
+          <Select
+            label="Default Assignee Role"
+            options={ASSIGNEE_ROLE_OPTIONS}
+            value={formData.default_assignee_role}
+            onChange={(e) =>
+              handleChange(
+                'default_assignee_role',
+                e.target.value as 'broker' | 'gc' | 'subcontractor' | ''
+              )
+            }
+            fullWidth
+            helperText="Tasks of this type will be assigned to users with this role by default"
+          />
+        </YStack>
 
-      {/* Visual Customization */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
-          Visual Customization
-        </h3>
+        {/* Visual Customization */}
+        <YStack gap="$4">
+          <H3 fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase" letterSpacing={1}>
+            Visual Customization
+          </H3>
 
-        <div className="grid grid-cols-2 gap-4">
+          <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexDirection: 'row' }}>
           <Select
             label="Icon"
             options={ICON_OPTIONS}
             value={formData.icon}
             onChange={(e) => handleChange('icon', e.target.value)}
             fullWidth
+            flex={1}
+            minWidth="45%"
           />
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-1.5">
+          <YStack flex={1} minWidth="45%">
+            <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1.5" display="block">
               Color
-            </label>
-            <div className="flex items-center gap-3">
+            </Label>
+            <XStack alignItems="center" gap="$3">
               <input
                 type="color"
                 value={formData.color || '#3B82F6'}
                 onChange={(e) => handleChange('color', e.target.value)}
-                className="h-10 w-14 rounded border border-border cursor-pointer"
+                style={{ height: 40, width: 56, borderRadius: 4, border: '1px solid', cursor: 'pointer' }}
               />
               <Input
                 value={formData.color}
                 onChange={(e) => handleChange('color', e.target.value)}
                 placeholder="#3B82F6"
                 error={touched.color ? errors.color : undefined}
-                className="flex-1"
+                flex={1}
               />
-            </div>
-          </div>
-        </div>
-      </div>
+            </XStack>
+          </YStack>
+          </XStack>
+        </YStack>
 
-      {/* Status */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
-          Status
-        </h3>
+        {/* Status */}
+        <YStack gap="$4">
+          <H3 fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase" letterSpacing={1}>
+            Status
+          </H3>
 
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={formData.is_active}
-            onChange={(e) => handleChange('is_active', e.target.checked)}
-            className="w-4 h-4 text-primary-600 border-border rounded focus:ring-primary-500"
-          />
-          <span className="text-text-primary">Active</span>
-          <span className="text-text-tertiary text-sm">
-            (Inactive task types won't appear in task creation)
-          </span>
-        </label>
-      </div>
+          <XStack alignItems="center" gap="$3" cursor="pointer">
+            <input
+              type="checkbox"
+              checked={formData.is_active}
+              onChange={(e) => handleChange('is_active', e.target.checked)}
+              style={{ width: 16, height: 16 }}
+            />
+            <Text color="$color12">Active</Text>
+            <Text color="$color10" fontSize="$3">
+              (Inactive task types won't appear in task creation)
+            </Text>
+          </XStack>
+        </YStack>
 
-      {/* Form Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-border">
+        {/* Form Actions */}
+        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
         <Button variant="ghost" onClick={onCancel} disabled={isSubmitting}>
           Cancel
         </Button>
@@ -328,7 +334,8 @@ export default function TaskTypeForm({
               ? 'Save Changes'
               : 'Create Task Type'}
         </Button>
-      </div>
+        </XStack>
+      </YStack>
     </form>
   );
 }

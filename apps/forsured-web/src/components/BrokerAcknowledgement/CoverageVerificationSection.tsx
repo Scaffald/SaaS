@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
 import { Info } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import {
   AcknowledgementCoverageItem,
   CoverageVerificationStatus,
@@ -100,133 +100,185 @@ export default function CoverageVerificationSection({
   };
 
   return (
-    <div className="bg-surface rounded-lg border border-border p-6 space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
-        {description && (
-          <p className="text-sm text-text-secondary mt-1">{description}</p>
+    <Card borderWidth={1} borderColor="$borderColor" padding="$6">
+      <YStack gap="$4">
+        <YStack>
+          <Text fontSize="$6" fontWeight="600" color="$color12">
+            {title}
+          </Text>
+          {description && (
+            <Text fontSize="$2" color="$color11" marginTop="$1">
+              {description}
+            </Text>
+          )}
+          {minLimits && (
+            <Text fontSize="$2" fontWeight="500" color="$blue10" marginTop="$2">
+              Minimum Limits: {minLimits}
+            </Text>
+          )}
+        </YStack>
+
+        {infoNote && (
+          <Card
+            backgroundColor="$blue3"
+            borderWidth={1}
+            borderColor="$blue6"
+            borderRadius="$4"
+            padding="$3"
+          >
+            <XStack alignItems="flex-start" gap="$2">
+              <Info size={16} color="$blue10" marginTop="$0.5" flexShrink={0} />
+              <Text fontSize="$2" color="$blue11">
+                {infoNote}
+              </Text>
+            </XStack>
+          </Card>
         )}
-        {minLimits && (
-          <p className="text-sm font-medium text-primary-600 mt-2">
-            Minimum Limits: {minLimits}
-          </p>
-        )}
-      </div>
 
-      {infoNote && (
-        <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 flex items-start space-x-2">
-          <Info size={16} className="text-primary-600 mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-primary-900">{infoNote}</p>
-        </div>
-      )}
+        <YStack overflowX="auto">
+          <table width="100%">
+            <thead>
+              <tr>
+                <th>
+                  <XStack paddingVertical="$3" paddingHorizontal="$2">
+                    <Text textAlign="left" fontSize="$2" fontWeight="500" color="$color11">
+                      Specification
+                    </Text>
+                  </XStack>
+                </th>
+                <th>
+                  <XStack paddingVertical="$3" paddingHorizontal="$2" width={96} justifyContent="center">
+                    <Text textAlign="center" fontSize="$2" fontWeight="500" color="$color11">
+                      Included
+                    </Text>
+                  </XStack>
+                </th>
+                <th>
+                  <XStack paddingVertical="$3" paddingHorizontal="$2" width={96} justifyContent="center">
+                    <Text textAlign="center" fontSize="$2" fontWeight="500" color="$color11">
+                      Excluded
+                    </Text>
+                  </XStack>
+                </th>
+                <th>
+                  <XStack paddingVertical="$3" paddingHorizontal="$2" width={128} justifyContent="center">
+                    <Text textAlign="center" fontSize="$2" fontWeight="500" color="$color11">
+                      Quote to Add
+                    </Text>
+                  </XStack>
+                </th>
+                <th>
+                  <XStack paddingVertical="$3" paddingHorizontal="$2">
+                    <Text textAlign="left" fontSize="$2" fontWeight="500" color="$color11">
+                      Notes
+                    </Text>
+                  </XStack>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {requirements.map((req, index) => {
+                const item = getItemForRequirement(req.name);
+                const status = item?.verification_status || 'not_applicable';
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="text-left py-3 px-2 text-sm font-medium text-text-secondary">
-                Specification
-              </th>
-              <th className="text-center py-3 px-2 text-sm font-medium text-text-secondary w-24">
-                Included
-              </th>
-              <th className="text-center py-3 px-2 text-sm font-medium text-text-secondary w-24">
-                Excluded
-              </th>
-              <th className="text-center py-3 px-2 text-sm font-medium text-text-secondary w-32">
-                Quote to Add
-              </th>
-              <th className="text-left py-3 px-2 text-sm font-medium text-text-secondary">
-                Notes
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {requirements.map((req, index) => {
-              const item = getItemForRequirement(req.name);
-              const status = item?.verification_status || 'not_applicable';
-
-              return (
-                <tr
-                  key={index}
-                  className="border-b border-border last:border-0"
-                >
-                  <td className="py-4 px-2">
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">
-                        {req.name}
-                      </p>
-                      {req.description && (
-                        <p className="text-xs text-text-secondary mt-1">
-                          {req.description}
-                        </p>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-4 px-2 text-center">
-                    <input
-                      type="radio"
-                      name={`${coverageCategory}-${index}`}
-                      checked={status === 'included'}
-                      onChange={() => handleStatusChange(req.name, 'included')}
-                      disabled={disabled}
-                      className="w-4 h-4 text-success-600 focus:ring-success-500"
-                    />
-                  </td>
-                  <td className="py-4 px-2 text-center">
-                    <input
-                      type="radio"
-                      name={`${coverageCategory}-${index}`}
-                      checked={status === 'excluded'}
-                      onChange={() => handleStatusChange(req.name, 'excluded')}
-                      disabled={disabled}
-                      className="w-4 h-4 text-error-600 focus:ring-error-500"
-                    />
-                  </td>
-                  <td className="py-4 px-2 text-center">
-                    <input
-                      type="radio"
-                      name={`${coverageCategory}-${index}`}
-                      checked={status === 'quote_to_add'}
-                      onChange={() =>
-                        handleStatusChange(req.name, 'quote_to_add')
-                      }
-                      disabled={disabled}
-                      className="w-4 h-4 text-warning-600 focus:ring-warning-500"
-                    />
-                  </td>
-                  <td className="py-4 px-2">
-                    {status === 'excluded' && (
-                      <textarea
-                        rows={2}
-                        placeholder="Explain deficiency..."
-                        value={item?.notes || ''}
-                        onChange={(e) =>
-                          handleNotesChange(req.name, e.target.value)
-                        }
-                        disabled={disabled}
-                        className="w-full text-sm border border-border rounded px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                      />
-                    )}
-                    {status === 'quote_to_add' && (
-                      <textarea
-                        rows={2}
-                        placeholder="Quote details..."
-                        value={item?.quote_details || ''}
-                        onChange={(e) =>
-                          handleQuoteChange(req.name, e.target.value)
-                        }
-                        disabled={disabled}
-                        className="w-full text-sm border border-border rounded px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                      />
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                return (
+                  <tr key={index}>
+                    <td>
+                      <YStack paddingVertical="$4" paddingHorizontal="$2">
+                        <Text fontSize="$2" fontWeight="500" color="$color12">
+                          {req.name}
+                        </Text>
+                        {req.description && (
+                          <Text fontSize="$1" color="$color11" marginTop="$1">
+                            {req.description}
+                          </Text>
+                        )}
+                      </YStack>
+                    </td>
+                    <td>
+                      <XStack paddingVertical="$4" paddingHorizontal="$2" justifyContent="center">
+                        <input
+                          type="radio"
+                          name={`${coverageCategory}-${index}`}
+                          checked={status === 'included'}
+                          onChange={() => handleStatusChange(req.name, 'included')}
+                          disabled={disabled}
+                        />
+                      </XStack>
+                    </td>
+                    <td>
+                      <XStack paddingVertical="$4" paddingHorizontal="$2" justifyContent="center">
+                        <input
+                          type="radio"
+                          name={`${coverageCategory}-${index}`}
+                          checked={status === 'excluded'}
+                          onChange={() => handleStatusChange(req.name, 'excluded')}
+                          disabled={disabled}
+                        />
+                      </XStack>
+                    </td>
+                    <td>
+                      <XStack paddingVertical="$4" paddingHorizontal="$2" justifyContent="center">
+                        <input
+                          type="radio"
+                          name={`${coverageCategory}-${index}`}
+                          checked={status === 'quote_to_add'}
+                          onChange={() =>
+                            handleStatusChange(req.name, 'quote_to_add')
+                          }
+                          disabled={disabled}
+                        />
+                      </XStack>
+                    </td>
+                    <td>
+                      <XStack paddingVertical="$4" paddingHorizontal="$2">
+                        {status === 'excluded' && (
+                          <textarea
+                            rows={2}
+                            placeholder="Explain deficiency..."
+                            value={item?.notes || ''}
+                            onChange={(e) =>
+                              handleNotesChange(req.name, e.target.value)
+                            }
+                            disabled={disabled}
+                            style={{
+                              width: '100%',
+                              fontSize: 'var(--font-size-2)',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: 'var(--radius-2)',
+                              padding: 'var(--space-1) var(--space-2)',
+                              resize: 'none',
+                            }}
+                          />
+                        )}
+                        {status === 'quote_to_add' && (
+                          <textarea
+                            rows={2}
+                            placeholder="Quote details..."
+                            value={item?.quote_details || ''}
+                            onChange={(e) =>
+                              handleQuoteChange(req.name, e.target.value)
+                            }
+                            disabled={disabled}
+                            style={{
+                              width: '100%',
+                              fontSize: 'var(--font-size-2)',
+                              border: '1px solid var(--color-border)',
+                              borderRadius: 'var(--radius-2)',
+                              padding: 'var(--space-1) var(--space-2)',
+                              resize: 'none',
+                            }}
+                          />
+                        )}
+                      </XStack>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </YStack>
+      </YStack>
+    </Card>
   );
 }

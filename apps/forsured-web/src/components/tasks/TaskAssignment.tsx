@@ -3,8 +3,10 @@
  * TaskAssignment component for user picker with search and filtering
  */
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { User, UserRole } from '../../types';
+import { Search, User as UserIcon, ChevronDown, Check } from 'lucide-react';
+import { YStack, XStack, Text, Input, Button, Card, SizableText, Spinner } from '@unicornlove/ui';
 
 interface TaskAssignmentProps {
   users: User[];
@@ -88,101 +90,165 @@ export const TaskAssignment: React.FC<TaskAssignmentProps> = ({
   };
 
   return (
-    <div ref={dropdownRef} className={`relative ${className}`}>
-      <button
+    <YStack ref={dropdownRef} position="relative" className={className}>
+      <Button
         type="button"
-        onClick={handleToggle}
+        onPress={handleToggle}
         onKeyDown={handleKeyDown}
         disabled={loading}
+        variant="outlined"
+        size="$3"
+        paddingHorizontal="$4"
+        paddingVertical="$2"
+        backgroundColor="$background"
+        borderWidth={1}
+        borderColor="$borderColor"
+        borderRadius="$4"
+        opacity={loading ? 0.5 : 1}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        {loading ? (
-          <>
-            <svg className="animate-spin h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span className="text-sm text-gray-600">Loading...</span>
-          </>
-        ) : assignedUser ? (
-          <>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-medium">
-                {assignedUser.name.charAt(0)}
-              </div>
-              <div className="text-left">
-                <div className="text-sm font-medium text-gray-900">{assignedUser.name}</div>
-                <div className="text-xs text-gray-500">{assignedUser.role}</div>
-              </div>
-            </div>
-            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-            <span className="sr-only">Reassign task</span>
-          </>
-        ) : (
-          <>
-            <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <span className="text-sm text-gray-600">Unassigned</span>
-            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-            <span className="sr-only">Assign task</span>
-          </>
-        )}
-      </button>
+        <XStack alignItems="center" gap="$2" width="100%">
+          {loading ? (
+            <>
+              <Spinner size="small" />
+              <SizableText fontSize="$3" color="$color10">
+                Loading...
+              </SizableText>
+            </>
+          ) : assignedUser ? (
+            <>
+              <XStack alignItems="center" gap="$2" flex={1}>
+                <YStack
+                  width={32}
+                  height={32}
+                  borderRadius={9999}
+                  backgroundColor="$blue10"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <SizableText fontSize="$3" fontWeight="500" color="white">
+                    {assignedUser.name.charAt(0)}
+                  </SizableText>
+                </YStack>
+                <YStack alignItems="flex-start">
+                  <SizableText fontSize="$3" fontWeight="500" color="$color12">
+                    {assignedUser.name}
+                  </SizableText>
+                  <SizableText fontSize="$1" color="$color10">
+                    {assignedUser.role}
+                  </SizableText>
+                </YStack>
+              </XStack>
+              <ChevronDown size={16} color="var(--color10)" />
+              <Text position="absolute" opacity={0} width={0} height={0}>
+                Reassign task
+              </Text>
+            </>
+          ) : (
+            <>
+              <UserIcon size={20} color="var(--color10)" />
+              <SizableText fontSize="$3" color="$color10">
+                Unassigned
+              </SizableText>
+              <ChevronDown size={16} color="var(--color10)" />
+              <Text position="absolute" opacity={0} width={0} height={0}>
+                Assign task
+              </Text>
+            </>
+          )}
+        </XStack>
+      </Button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg">
-          <div className="p-2 border-b border-gray-200">
-            <input
+        <Card
+          position="absolute"
+          zIndex={10}
+          marginTop="$2"
+          width={320}
+          backgroundColor="$background"
+          borderWidth={1}
+          borderColor="$borderColor"
+          borderRadius="$4"
+          elevation={4}
+        >
+          <YStack padding="$2" borderBottomWidth={1} borderColor="$borderColor">
+            <Input
               type="text"
               placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              width="100%"
+              padding="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$2"
+              fontSize="$3"
               autoFocus
             />
-          </div>
+          </YStack>
 
-          <div className="max-h-64 overflow-y-auto" role="listbox">
+          <YStack maxHeight={256} overflow="scroll" role="listbox">
             {users.length === 0 ? (
-              <div className="p-4 text-center text-sm text-gray-500">No users available</div>
+              <YStack padding="$4" alignItems="center">
+                <SizableText fontSize="$3" color="$color10">
+                  No users available
+                </SizableText>
+              </YStack>
             ) : filteredUsers.length === 0 ? (
-              <div className="p-4 text-center text-sm text-gray-500">No users found</div>
+              <YStack padding="$4" alignItems="center">
+                <SizableText fontSize="$3" color="$color10">
+                  No users found
+                </SizableText>
+              </YStack>
             ) : (
               filteredUsers.map((user) => (
-                <button
+                <Button
                   key={user.id}
                   type="button"
-                  onClick={() => handleUserSelect(user.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left transition-colors"
+                  onPress={() => handleUserSelect(user.id)}
+                  variant="outlined"
+                  width="100%"
+                  justifyContent="flex-start"
+                  paddingHorizontal="$4"
+                  paddingVertical="$3"
                   role="option"
                   aria-selected={user.id === assignedUserId}
                 >
-                  <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">
-                    {user.name.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900 truncate">{user.name}</div>
-                    <div className="text-xs text-gray-500 truncate">{user.email}</div>
-                    <div className="text-xs text-gray-400 capitalize">{user.role}</div>
-                  </div>
-                  {user.id === assignedUserId && (
-                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
+                  <XStack alignItems="center" gap="$3" width="100%">
+                    <YStack
+                      width={40}
+                      height={40}
+                      borderRadius={9999}
+                      backgroundColor="$blue10"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <SizableText fontSize="$3" fontWeight="500" color="white">
+                        {user.name.charAt(0)}
+                      </SizableText>
+                    </YStack>
+                    <YStack flex={1} minWidth={0}>
+                      <SizableText fontSize="$3" fontWeight="500" color="$color12" numberOfLines={1}>
+                        {user.name}
+                      </SizableText>
+                      <SizableText fontSize="$1" color="$color10" numberOfLines={1}>
+                        {user.email}
+                      </SizableText>
+                      <SizableText fontSize="$1" color="$color10" textTransform="capitalize">
+                        {user.role}
+                      </SizableText>
+                    </YStack>
+                    {user.id === assignedUserId && (
+                      <Check size={20} color="var(--blue10)" />
+                    )}
+                  </XStack>
+                </Button>
               ))
             )}
-          </div>
-        </div>
+          </YStack>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 };

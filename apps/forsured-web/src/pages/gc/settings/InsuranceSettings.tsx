@@ -1,5 +1,7 @@
 // src/pages/gc/settings/InsuranceSettings.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { YStack, Text, Button, H2, H3, Input } from '@unicornlove/ui';
+import Checkbox from '../../../ui/Checkbox';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -92,114 +94,77 @@ function GCInsuranceSettings() {
 
   if (isLoading) {
     return (
-      <div className="gc-insurance-settings">
-        <h2 className="text-xl font-semibold mb-4">Default Insurance Requirements</h2>
-        <div className="animate-pulse space-y-4">
+      <YStack gap="$4">
+        <H2>Default Insurance Requirements</H2>
+        <YStack gap="$4">
           {[1, 2, 3, 4, 5, 6, 7].map(i => (
-            <div key={i} className="h-10 bg-gray-200 rounded"></div>
+            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
           ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="gc-insurance-settings">
-      <h2 className="text-xl font-semibold mb-4">Default Insurance Requirements</h2>
-      <p className="text-gray-600 mb-6">
+    <YStack gap="$4">
+      <H2>Default Insurance Requirements</H2>
+      <Text color="$color10" marginBottom="$6">
         Set the default insurance requirements for subcontractors on your projects.
-      </p>
+      </Text>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            General Liability Per Occurrence Limit ($)
-          </label>
-          <input
+        <YStack gap="$4">
+          <Input
+            label="General Liability Per Occurrence Limit ($)"
             type="number"
             value={requirements.glPerOccurrence}
-            onChange={(e) => updateRequirement('glPerOccurrence', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateRequirement('glPerOccurrence', value)}
             required
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            General Liability Aggregate Limit ($)
-          </label>
-          <input
+          <Input
+            label="General Liability Aggregate Limit ($)"
             type="number"
             value={requirements.glAggregate}
-            onChange={(e) => updateRequirement('glAggregate', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateRequirement('glAggregate', value)}
             required
           />
-        </div>
-        <div className="mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={requirements.wcRequired}
-              onChange={(e) => updateRequirement('wcRequired', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Workers Compensation Required</span>
-          </label>
-        </div>
-        <div className="mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={requirements.autoRequired}
-              onChange={(e) => updateRequirement('autoRequired', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Commercial Auto Required</span>
-          </label>
-        </div>
-        <div className="mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={requirements.umbrellaRequired}
-              onChange={(e) => updateRequirement('umbrellaRequired', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Umbrella/Excess Liability Required</span>
-          </label>
-        </div>
-        <hr className="my-6" />
-        <h3 className="text-lg font-medium mb-4">Endorsement Requirements</h3>
-        <div className="mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={additionalInsured}
-              onChange={(e) => setAdditionalInsured(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Require Additional Insured Endorsement</span>
-          </label>
-        </div>
-        <div className="mb-6">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={waiverOfSubrogation}
-              onChange={(e) => setWaiverOfSubrogation(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Require Waiver of Subrogation</span>
-          </label>
-        </div>
-        <button
-          type="submit"
-          disabled={!isDirty || isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+          <Checkbox
+            checked={requirements.wcRequired}
+            onChange={(e) => updateRequirement('wcRequired', e.target.checked)}
+            label="Workers Compensation Required"
+          />
+          <Checkbox
+            checked={requirements.autoRequired}
+            onChange={(e) => updateRequirement('autoRequired', e.target.checked)}
+            label="Commercial Auto Required"
+          />
+          <Checkbox
+            checked={requirements.umbrellaRequired}
+            onChange={(e) => updateRequirement('umbrellaRequired', e.target.checked)}
+            label="Umbrella/Excess Liability Required"
+          />
+          <YStack borderTopWidth={1} borderTopColor="$borderColor" marginVertical="$6" />
+          <H3 marginBottom="$4">Endorsement Requirements</H3>
+          <Checkbox
+            checked={additionalInsured}
+            onChange={(e) => setAdditionalInsured(e.target.checked)}
+            label="Require Additional Insured Endorsement"
+          />
+          <Checkbox
+            checked={waiverOfSubrogation}
+            onChange={(e) => setWaiverOfSubrogation(e.target.checked)}
+            label="Require Waiver of Subrogation"
+          />
+          <Button
+            type="submit"
+            disabled={!isDirty || isSaving}
+            variant="primary"
+            marginTop="$6"
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </YStack>
       </form>
-    </div>
+    </YStack>
   );
 }
 

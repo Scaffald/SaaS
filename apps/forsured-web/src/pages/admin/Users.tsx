@@ -1,7 +1,7 @@
 // src/pages/admin/Users.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, RefreshCcw, Loader2 } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input } from 'tamagui';
+import { Search, RefreshCcw } from 'lucide-react';
+import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Spinner } from 'tamagui';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getUsers,
@@ -96,7 +96,7 @@ function AdminUsers() {
     return (
       <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
         <XStack alignItems="center" gap="$2">
-          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Spinner size="large" color="$blue10" />
           <Text>Loading users...</Text>
         </XStack>
       </YStack>
@@ -122,7 +122,7 @@ function AdminUsers() {
           <Button
             onPress={handleRefresh}
             disabled={isLoading}
-            icon={isLoading ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+            icon={isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
             paddingHorizontal="$4"
             paddingVertical="$2"
             borderWidth={1}
@@ -245,7 +245,7 @@ function AdminUsers() {
                         <option value="admin">Admin</option>
                       </select>
                       {updatingUserId === u.id && (
-                        <Loader2 size={16} className="animate-spin" color="$blue10" />
+                        <Spinner size="small" color="$blue10" />
                       )}
                     </XStack>
                   </td>
@@ -296,7 +296,7 @@ function AdminUsers() {
             </XStack>
             {activityLoading ? (
               <YStack alignItems="center" justifyContent="center" paddingVertical="$4">
-                <Loader2 size={20} className="animate-spin" color="$blue10" />
+                <Spinner size="small" color="$blue10" />
               </YStack>
             ) : userActivity.length === 0 ? (
               <Text color="$color11" fontSize="$3">No activity recorded</Text>

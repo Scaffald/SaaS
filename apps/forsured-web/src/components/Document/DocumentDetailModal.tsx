@@ -838,8 +838,6 @@ export default function DocumentDetailModal({
             </Card>
           )}
         </YStack>
-      </YStack>
-
 
       {/* AI Summary Modal */}
       {showAISummary && currentExtraction && (

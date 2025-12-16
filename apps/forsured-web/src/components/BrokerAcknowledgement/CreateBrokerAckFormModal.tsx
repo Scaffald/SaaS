@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, AlertCircle } from 'lucide-react';
+import { YStack, XStack, Text, Card, Button as TamaguiButton } from '@unicornlove/ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import { useProjects } from '../../hooks/useProjects';
 import Button from '../Common/Button';
@@ -89,230 +90,322 @@ export default function CreateBrokerAckFormModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-surface rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-surface border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-text-primary">
+    <YStack
+      position="fixed"
+      inset={0}
+      backgroundColor="rgba(0,0,0,0.5)"
+      alignItems="center"
+      justifyContent="center"
+      zIndex={50}
+      padding="$4"
+    >
+      <Card
+        maxWidth={672}
+        width="100%"
+        maxHeight="90vh"
+        overflowY="auto"
+        elevation={24}
+      >
+        <XStack
+          position="sticky"
+          top={0}
+          borderBottomWidth={1}
+          borderBottomColor="$borderColor"
+          paddingHorizontal="$6"
+          paddingVertical="$4"
+          alignItems="center"
+          justifyContent="space-between"
+          backgroundColor="$background"
+        >
+          <Text fontSize="$7" fontWeight="bold" color="$color12">
             Create Broker Acknowledgement Form
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-text-secondary hover:text-text-primary transition-colors"
+          </Text>
+          <TamaguiButton
+            onPress={onClose}
+            padding="$1"
+            backgroundColor="transparent"
+            color="$color11"
+            hoverStyle={{
+              color: '$color12',
+            }}
           >
             <X size={24} />
-          </button>
-        </div>
+          </TamaguiButton>
+        </XStack>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {error && (
-            <div className="bg-error-50 border border-error-200 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle
-                size={20}
-                className="text-error-600 flex-shrink-0 mt-0.5"
-              />
-              <div>
-                <p className="font-medium text-error-900">Error</p>
-                <p className="text-sm text-error-700 mt-1">{error}</p>
-              </div>
-            </div>
-          )}
+        <form onSubmit={handleSubmit}>
+          <YStack padding="$6" gap="$6">
+            {error && (
+              <Card
+                backgroundColor="$red3"
+                borderWidth={1}
+                borderColor="$red6"
+                borderRadius="$4"
+                padding="$4"
+              >
+                <XStack alignItems="flex-start" gap="$3">
+                  <AlertCircle
+                    size={20}
+                    color="$red10"
+                    flexShrink={0}
+                    marginTop="$0.5"
+                  />
+                  <YStack>
+                    <Text fontWeight="500" color="$red11">Error</Text>
+                    <Text fontSize="$2" color="$red10" marginTop="$1">{error}</Text>
+                  </YStack>
+                </XStack>
+              </Card>
+            )}
 
-          <div>
-            <label className="block text-sm font-medium text-text-primary mb-2">
-              Project <span className="text-error-600">*</span>
-            </label>
-            <select
-              value={formData.project_id}
-              onChange={(e) =>
-                setFormData({ ...formData, project_id: e.target.value })
-              }
-              className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-              required
-            >
-              <option value="">Select a project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-          </div>
+            <YStack>
+              <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                Project <Text color="$red10">*</Text>
+              </Text>
+              <select
+                value={formData.project_id}
+                onChange={(e) =>
+                  setFormData({ ...formData, project_id: e.target.value })
+                }
+                required
+                style={{
+                  width: '100%',
+                  paddingHorizontal: 'var(--space-4)',
+                  paddingVertical: 'var(--space-2)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-4)',
+                }}
+              >
+                <option value="">Select a project</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </YStack>
 
-          <div className="border-t border-border pt-6">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">
-              Subcontractor Information
-            </h3>
+            <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
+              <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+                Subcontractor Information
+              </Text>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Company Name <span className="text-error-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.subcontractor_company_name}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      subcontractor_company_name: e.target.value,
-                    })
-                  }
-                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-border pt-6">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">
-              Broker Information
-            </h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Agency Name <span className="text-error-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.broker_agency_name}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      broker_agency_name: e.target.value,
-                    })
-                  }
-                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Contact Name <span className="text-error-600">*</span>
-                  </label>
+              <YStack gap="$4">
+                <YStack>
+                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                    Company Name <Text color="$red10">*</Text>
+                  </Text>
                   <input
                     type="text"
-                    value={formData.broker_contact_name}
+                    value={formData.subcontractor_company_name}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        broker_contact_name: e.target.value,
+                        subcontractor_company_name: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     required
+                    style={{
+                      width: '100%',
+                      paddingHorizontal: 'var(--space-4)',
+                      paddingVertical: 'var(--space-2)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-4)',
+                    }}
                   />
-                </div>
+                </YStack>
+              </YStack>
+            </YStack>
 
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Phone
-                  </label>
+            <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
+              <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+                Broker Information
+              </Text>
+
+              <YStack gap="$4">
+                <YStack>
+                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                    Agency Name <Text color="$red10">*</Text>
+                  </Text>
                   <input
-                    type="tel"
-                    value={formData.broker_phone}
+                    type="text"
+                    value={formData.broker_agency_name}
                     onChange={(e) =>
-                      setFormData({ ...formData, broker_phone: e.target.value })
+                      setFormData({
+                        ...formData,
+                        broker_agency_name: e.target.value,
+                      })
                     }
-                    className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    required
+                    style={{
+                      width: '100%',
+                      paddingHorizontal: 'var(--space-4)',
+                      paddingVertical: 'var(--space-2)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-4)',
+                    }}
                   />
-                </div>
-              </div>
+                </YStack>
 
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Email <span className="text-error-600">*</span>
-                </label>
-                <input
-                  type="email"
-                  value={formData.broker_email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, broker_email: e.target.value })
-                  }
-                  className="w-full px-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  required
-                />
-              </div>
-            </div>
-          </div>
+                <XStack
+                  flexWrap="wrap"
+                  gap="$4"
+                  $gtMd={{
+                    flexWrap: 'nowrap',
+                  }}
+                >
+                  <YStack flex={1} minWidth="200px">
+                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                      Contact Name <Text color="$red10">*</Text>
+                    </Text>
+                    <input
+                      type="text"
+                      value={formData.broker_contact_name}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          broker_contact_name: e.target.value,
+                        })
+                      }
+                      required
+                      style={{
+                        width: '100%',
+                        paddingHorizontal: 'var(--space-4)',
+                        paddingVertical: 'var(--space-2)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-4)',
+                      }}
+                    />
+                  </YStack>
 
-          <div className="border-t border-border pt-6">
-            <h3 className="text-lg font-semibold text-text-primary mb-4">
-              Coverage Requirements
-            </h3>
+                  <YStack flex={1} minWidth="200px">
+                    <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                      Phone
+                    </Text>
+                    <input
+                      type="tel"
+                      value={formData.broker_phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, broker_phone: e.target.value })
+                      }
+                      style={{
+                        width: '100%',
+                        paddingHorizontal: 'var(--space-4)',
+                        paddingVertical: 'var(--space-2)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-4)',
+                      }}
+                    />
+                  </YStack>
+                </XStack>
 
-            <div className="space-y-3">
-              <label className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  checked={formData.requires_pollution_liability}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      requires_pollution_liability: e.target.checked,
-                    })
-                  }
-                  className="rounded border-border text-primary-600 focus:ring-primary-500"
-                />
-                <span className="text-sm text-text-primary">
-                  Requires Pollution Liability
-                </span>
-              </label>
+                <YStack>
+                  <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+                    Email <Text color="$red10">*</Text>
+                  </Text>
+                  <input
+                    type="email"
+                    value={formData.broker_email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, broker_email: e.target.value })
+                    }
+                    required
+                    style={{
+                      width: '100%',
+                      paddingHorizontal: 'var(--space-4)',
+                      paddingVertical: 'var(--space-2)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-4)',
+                    }}
+                  />
+                </YStack>
+              </YStack>
+            </YStack>
 
-              <label className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  checked={formData.requires_professional_liability}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      requires_professional_liability: e.target.checked,
-                    })
-                  }
-                  className="rounded border-border text-primary-600 focus:ring-primary-500"
-                />
-                <span className="text-sm text-text-primary">
-                  Requires Professional Liability
-                </span>
-              </label>
+            <YStack paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
+              <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
+                Coverage Requirements
+              </Text>
 
-              <label className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  checked={formData.involves_residential_work}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      involves_residential_work: e.target.checked,
-                    })
-                  }
-                  className="rounded border-border text-primary-600 focus:ring-primary-500"
-                />
-                <span className="text-sm text-text-primary">
-                  Involves Residential Construction
-                </span>
-              </label>
-            </div>
-          </div>
+              <YStack gap="$3">
+                <XStack
+                  as="label"
+                  alignItems="center"
+                  gap="$3"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.requires_pollution_liability}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        requires_pollution_liability: e.target.checked,
+                      })
+                    }
+                  />
+                  <Text fontSize="$2" color="$color12">
+                    Requires Pollution Liability
+                  </Text>
+                </XStack>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-border">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              type="button"
-              disabled={loading}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Form'}
-            </Button>
-          </div>
+                <XStack
+                  as="label"
+                  alignItems="center"
+                  gap="$3"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.requires_professional_liability}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        requires_professional_liability: e.target.checked,
+                      })
+                    }
+                  />
+                  <Text fontSize="$2" color="$color12">
+                    Requires Professional Liability
+                  </Text>
+                </XStack>
+
+                <XStack
+                  as="label"
+                  alignItems="center"
+                  gap="$3"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.involves_residential_work}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        involves_residential_work: e.target.checked,
+                      })
+                    }
+                  />
+                  <Text fontSize="$2" color="$color12">
+                    Involves Residential Construction
+                  </Text>
+                </XStack>
+              </YStack>
+            </YStack>
+
+            <XStack justifyContent="flex-end" gap="$3" paddingTop="$6" borderTopWidth={1} borderTopColor="$borderColor">
+              <Button
+                variant="outline"
+                onClick={onClose}
+                type="button"
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Creating...' : 'Create Form'}
+              </Button>
+            </XStack>
+          </YStack>
         </form>
-      </div>
-    </div>
+      </Card>
+    </YStack>
   );
 }

@@ -1,9 +1,8 @@
 // src/components/onboarding/steps/broker/AgencyStep.tsx
 // REQ-126: Broker Onboarding - Agency Setup Step
-import React, { useState } from 'react';
-import { Input as TextInput } from '@unicornlove/ui';
-import { Button } from '@unicornlove/ui';
-import { Heading2, BodyText } from '@unicornlove/ui';
+import { useState } from 'react';
+import { Input as TextInput, Button, Heading2, BodyText } from '@unicornlove/ui';
+import { YStack } from 'tamagui';
 
 interface AgencyStepProps {
   onComplete: (data: any) => Promise<void>;
@@ -46,56 +45,58 @@ function AgencyStep({ onComplete, initialData = {}, isLoading = false }: AgencyS
   };
 
   return (
-    <div className="agency-step">
-      <Heading2 className="mb-2">Agency Information</Heading2>
-      <BodyText className="mb-6 text-gray-600">
+    <YStack>
+      <Heading2 marginBottom="$2">Agency Information</Heading2>
+      <BodyText marginBottom="$6" color="$color10">
         Tell us about your insurance agency
       </BodyText>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <TextInput
-          label="Agency Name"
-          value={agencyName}
-          onChangeText={setAgencyName}
-          error={errors.agencyName}
-          placeholder="Enter your agency name"
-          required
-        />
-        <TextInput
-          label="Address"
-          value={address}
-          onChangeText={setAddress}
-          error={errors.address}
-          placeholder="Enter your agency address"
-          required
-        />
-        <TextInput
-          label="Phone"
-          value={phone}
-          onChangeText={setPhone}
-          error={errors.phone}
-          placeholder="Enter your phone number"
-          keyboardType="phone-pad"
-          required
-        />
-        <TextInput
-          label="Website (Optional)"
-          value={website}
-          onChangeText={setWebsite}
-          error={errors.website}
-          placeholder="https://example.com"
-          keyboardType="url"
-        />
-        <div className="mt-6">
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Saving...' : 'Continue'}
-          </Button>
-        </div>
-      </form>
-    </div>
+      <YStack asChild gap="$4">
+        <form onSubmit={handleSubmit}>
+          <TextInput
+            label="Agency Name"
+            value={agencyName}
+            onChangeText={setAgencyName}
+            error={errors.agencyName}
+            placeholder="Enter your agency name"
+            required
+          />
+          <TextInput
+            label="Address"
+            value={address}
+            onChangeText={setAddress}
+            error={errors.address}
+            placeholder="Enter your agency address"
+            required
+          />
+          <TextInput
+            label="Phone"
+            value={phone}
+            onChangeText={setPhone}
+            error={errors.phone}
+            placeholder="Enter your phone number"
+            keyboardType="phone-pad"
+            required
+          />
+          <TextInput
+            label="Website (Optional)"
+            value={website}
+            onChangeText={setWebsite}
+            error={errors.website}
+            placeholder="https://example.com"
+            keyboardType="url"
+          />
+          <YStack marginTop="$6">
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Continue'}
+            </Button>
+          </YStack>
+        </form>
+      </YStack>
+    </YStack>
   );
 }
 

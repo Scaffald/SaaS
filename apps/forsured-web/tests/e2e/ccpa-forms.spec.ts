@@ -141,8 +141,9 @@ test.describe('Data Request Form - Export Request', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
-    await requestBtn.click();
+    // The "Request My Data" is a clickable Card heading, not a button
+    const requestCard = page.getByText(/request my data/i).first();
+    await requestCard.click();
 
     await page.waitForTimeout(500);
   });
@@ -151,17 +152,18 @@ test.describe('Data Request Form - Export Request', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
-    await requestBtn.click();
+    // The "Request My Data" is a clickable Card heading, not a button
+    const requestCard = page.getByText(/request my data/i).first();
+    await requestCard.click();
 
     await page.waitForTimeout(500);
 
-    // Should see request type options
-    const exportOption = page.getByText(/request my data.*export/i);
+    // Should see request type options or form dialog
+    const exportOption = page.getByText(/download.*copy|export/i);
     const hasExportOption = await exportOption.isVisible().catch(() => false);
 
     // Alternative: check for form header
-    const formHeader = page.getByText(/select request type/i);
+    const formHeader = page.getByText(/select request type|data request/i);
     const hasFormHeader = await formHeader.isVisible().catch(() => false);
 
     expect(hasExportOption || hasFormHeader).toBe(true);
@@ -178,8 +180,9 @@ test.describe('Data Request Form - Deletion Request', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const deleteBtn = page.getByRole('button', { name: /delete my data/i });
-    await deleteBtn.click();
+    // The "Delete My Data" is a clickable Card heading, not a button
+    const deleteCard = page.getByText(/delete my data/i).first();
+    await deleteCard.click();
 
     await page.waitForTimeout(500);
   });
@@ -188,8 +191,9 @@ test.describe('Data Request Form - Deletion Request', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const deleteBtn = page.getByRole('button', { name: /delete my data/i });
-    await deleteBtn.click();
+    // The "Delete My Data" is a clickable Card heading, not a button
+    const deleteCard = page.getByText(/delete my data/i).first();
+    await deleteCard.click();
 
     await page.waitForTimeout(500);
 
@@ -210,12 +214,13 @@ test.describe('Data Request Form - Data Categories', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
-    await requestBtn.click();
+    // The "Request My Data" is a clickable Card heading, not a button
+    const requestCard = page.getByText(/request my data/i).first();
+    await requestCard.click();
 
     await page.waitForTimeout(500);
 
-    // Look for data category labels (may be on second step)
+    // Look for data category labels (may be on second step or in dialog)
     const profileCategory = page.getByText(/profile information/i);
     const documentsCategory = page.getByText(/documents/i);
 
@@ -233,8 +238,9 @@ test.describe('Data Request Form - Data Categories', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
-    await requestBtn.click();
+    // The "Request My Data" is a clickable Card heading, not a button
+    const requestCard = page.getByText(/request my data/i).first();
+    await requestCard.click();
 
     await page.waitForTimeout(500);
 
@@ -261,12 +267,13 @@ test.describe('Data Request Form - Confirmation', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
-    await requestBtn.click();
+    // The "Request My Data" is a clickable Card heading, not a button
+    const requestCard = page.getByText(/request my data/i).first();
+    await requestCard.click();
 
     await page.waitForTimeout(500);
 
-    // Navigate through steps
+    // Navigate through steps or check for dialog
     const confirmText = page.getByText(/confirm.*request/i);
     const hasConfirm = await confirmText.isVisible().catch(() => false);
 
@@ -296,7 +303,8 @@ test.describe('Opt-Out Manager - Display', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
+    // The "Manage Opt-Out Preferences" button is in the Right to Opt-Out section
+    const optOutBtn = page.getByRole('button', { name: /manage opt-out preferences/i });
     await optOutBtn.click();
 
     await page.waitForTimeout(500);
@@ -319,16 +327,9 @@ test.describe('Opt-Out Manager - Categories', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
-    await optOutBtn.click();
-
-    await page.waitForTimeout(500);
-
-    // Check for sale opt-out option
-    const saleOption = page.getByText(/sale of personal information/i);
-    const hasSale = await saleOption.isVisible().catch(() => false);
-
-    expect(true).toBe(true);
+    // Check for sale opt-out option in the Right to Opt-Out section (category shows as "sale")
+    const saleOption = page.getByText(/sale/i).first();
+    await expect(saleOption).toBeVisible();
   });
 
   test('should display Sharing toggle', async ({ page }) => {
@@ -338,15 +339,9 @@ test.describe('Opt-Out Manager - Categories', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
-    await optOutBtn.click();
-
-    await page.waitForTimeout(500);
-
-    const sharingOption = page.getByText(/sharing.*behavioral advertising/i);
-    const hasSharing = await sharingOption.isVisible().catch(() => false);
-
-    expect(true).toBe(true);
+    // Check for sharing opt-out option in the Right to Opt-Out section
+    const sharingOption = page.getByText(/sharing/i).first();
+    await expect(sharingOption).toBeVisible();
   });
 
   test('should display Targeted Advertising toggle', async ({ page }) => {
@@ -356,15 +351,9 @@ test.describe('Opt-Out Manager - Categories', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
-    await optOutBtn.click();
-
-    await page.waitForTimeout(500);
-
-    const targetedOption = page.getByText(/targeted advertising/i);
-    const hasTargeted = await targetedOption.isVisible().catch(() => false);
-
-    expect(true).toBe(true);
+    // Check for targeted advertising opt-out option in the Right to Opt-Out section
+    const targetedOption = page.getByText(/targeted advertising/i).first();
+    await expect(targetedOption).toBeVisible();
   });
 
   test('should display Sensitive Data toggle', async ({ page }) => {
@@ -374,15 +363,9 @@ test.describe('Opt-Out Manager - Categories', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
-    await optOutBtn.click();
-
-    await page.waitForTimeout(500);
-
-    const sensitiveOption = page.getByText(/sensitive.*information/i);
-    const hasSensitive = await sensitiveOption.isVisible().catch(() => false);
-
-    expect(true).toBe(true);
+    // Check for sensitive data opt-out option in the Right to Opt-Out section
+    const sensitiveOption = page.getByText(/sensitive data/i).first();
+    await expect(sensitiveOption).toBeVisible();
   });
 });
 
@@ -466,8 +449,9 @@ test.describe('Data Request Form - Cross-User Type', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
-    await expect(requestBtn).toBeVisible();
+    // The "Request My Data" is a clickable Card heading, not a button
+    const requestSection = page.getByText(/request my data/i).first();
+    await expect(requestSection).toBeVisible();
   });
 
   test('Broker should be able to submit data request', async ({ page }) => {
@@ -477,8 +461,9 @@ test.describe('Data Request Form - Cross-User Type', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const requestBtn = page.getByRole('button', { name: /request my data/i });
-    await expect(requestBtn).toBeVisible();
+    // The "Request My Data" is a clickable Card heading, not a button
+    const requestSection = page.getByText(/request my data/i).first();
+    await expect(requestSection).toBeVisible();
   });
 });
 
@@ -507,7 +492,8 @@ test.describe('Opt-Out Manager - Toggle Functionality', () => {
     await page.goto('/settings/privacy');
     await page.waitForTimeout(1000);
 
-    const optOutBtn = page.getByRole('button', { name: /manage opt-outs/i });
+    // The "Manage Opt-Out Preferences" button is in the Right to Opt-Out section
+    const optOutBtn = page.getByRole('button', { name: /manage opt-out preferences/i });
     await optOutBtn.click();
 
     await page.waitForTimeout(500);

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { AcknowledgementSignature } from '../../types';
 import Button from '../Common/Button';
 
@@ -58,109 +59,140 @@ export function BrokerCertification({
   const isSigned = !!existingSignature?.digital_signature;
 
   return (
-    <div className="bg-surface rounded-lg border border-border p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-text-primary">
-          Broker Certification
-        </h3>
-        {isSigned && (
-          <div className="flex items-center space-x-2 text-success-600">
-            <CheckCircle size={20} />
-            <span className="text-sm font-medium">Signed</span>
-          </div>
+    <Card borderWidth={1} borderColor="$borderColor" padding="$6">
+      <YStack gap="$4">
+        <XStack alignItems="center" justifyContent="space-between">
+          <Text fontSize="$6" fontWeight="600" color="$color12">
+            Broker Certification
+          </Text>
+          {isSigned && (
+            <XStack alignItems="center" gap="$2" color="$green10">
+              <CheckCircle size={20} />
+              <Text fontSize="$2" fontWeight="500">Signed</Text>
+            </XStack>
+          )}
+        </XStack>
+
+        <XStack
+          flexWrap="wrap"
+          gap="$4"
+          $gtMd={{
+            flexWrap: 'nowrap',
+          }}
+        >
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Agency Name <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={agencyName}
+              onChange={(e) => setAgencyName(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Insurance brokerage name"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Broker Full Name / Title <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={brokerFullName}
+              onChange={(e) => setBrokerFullName(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Full name"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Title <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={brokerTitle}
+              onChange={(e) => setBrokerTitle(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Job title"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Digital Signature <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={digitalSignature}
+              onChange={(e) => setDigitalSignature(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Type your full name to sign"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-3) var(--space-4)',
+                fontFamily: 'cursive',
+                fontSize: 'var(--font-size-6)',
+              }}
+            />
+            <Text fontSize="$1" color="$color11" marginTop="$1">
+              By typing your name, you are providing a legal digital signature
+            </Text>
+          </YStack>
+
+          {existingSignature && (
+            <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
+              <Card backgroundColor="$green3" borderWidth={1} borderColor="$green6" borderRadius="$4" padding="$3">
+                <Text fontSize="$2" color="$green11">
+                  Signed on{' '}
+                  {new Date(existingSignature.signature_date).toLocaleDateString()}{' '}
+                  at{' '}
+                  {new Date(existingSignature.signature_date).toLocaleTimeString()}
+                </Text>
+              </Card>
+            </YStack>
+          )}
+        </XStack>
+
+        {!isSigned && !disabled && (
+          <XStack justifyContent="flex-end" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+            <Button
+              onClick={handleSave}
+              disabled={
+                saving ||
+                !agencyName ||
+                !brokerFullName ||
+                !brokerTitle ||
+                !digitalSignature
+              }
+            >
+              {saving ? 'Saving...' : 'Save Broker Certification'}
+            </Button>
+          </XStack>
         )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Agency Name <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={agencyName}
-            onChange={(e) => setAgencyName(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Insurance brokerage name"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Broker Full Name / Title <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={brokerFullName}
-            onChange={(e) => setBrokerFullName(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Full name"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Title <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={brokerTitle}
-            onChange={(e) => setBrokerTitle(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Job title"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Digital Signature <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={digitalSignature}
-            onChange={(e) => setDigitalSignature(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Type your full name to sign"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent font-signature text-lg disabled:bg-bg-secondary disabled:text-text-tertiary"
-            style={{ fontFamily: 'cursive' }}
-          />
-          <p className="text-xs text-text-secondary mt-1">
-            By typing your name, you are providing a legal digital signature
-          </p>
-        </div>
-
-        {existingSignature && (
-          <div className="md:col-span-2 bg-success-50 border border-success-200 rounded-lg p-3">
-            <p className="text-sm text-success-900">
-              Signed on{' '}
-              {new Date(existingSignature.signature_date).toLocaleDateString()}{' '}
-              at{' '}
-              {new Date(existingSignature.signature_date).toLocaleTimeString()}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {!isSigned && !disabled && (
-        <div className="flex justify-end pt-4 border-t border-border">
-          <Button
-            onClick={handleSave}
-            disabled={
-              saving ||
-              !agencyName ||
-              !brokerFullName ||
-              !brokerTitle ||
-              !digitalSignature
-            }
-          >
-            {saving ? 'Saving...' : 'Save Broker Certification'}
-          </Button>
-        </div>
-      )}
-    </div>
+      </YStack>
+    </Card>
   );
 }
 
@@ -238,139 +270,180 @@ export function SubcontractorCertification({
   const isSigned = !!existingSignature?.digital_signature;
 
   return (
-    <div className="bg-surface rounded-lg border border-border p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-text-primary">
-          Subcontractor Certification
-        </h3>
-        {isSigned && (
-          <div className="flex items-center space-x-2 text-success-600">
-            <CheckCircle size={20} />
-            <span className="text-sm font-medium">Signed</span>
-          </div>
+    <Card borderWidth={1} borderColor="$borderColor" padding="$6">
+      <YStack gap="$4">
+        <XStack alignItems="center" justifyContent="space-between">
+          <Text fontSize="$6" fontWeight="600" color="$color12">
+            Subcontractor Certification
+          </Text>
+          {isSigned && (
+            <XStack alignItems="center" gap="$2" color="$green10">
+              <CheckCircle size={20} />
+              <Text fontSize="$2" fontWeight="500">Signed</Text>
+            </XStack>
+          )}
+        </XStack>
+
+        <XStack
+          flexWrap="wrap"
+          gap="$4"
+          $gtMd={{
+            flexWrap: 'nowrap',
+          }}
+        >
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Subcontractor Company Name <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Must match CSLB license name"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Authorized Representative Name{' '}
+              <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={repName}
+              onChange={(e) => setRepName(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Full name"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Title <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={repTitle}
+              onChange={(e) => setRepTitle(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Job title"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Contractor License Number <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={licenseNumber}
+              onChange={(e) => setLicenseNumber(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="As per CSLB"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '50%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Scope of Work / Trade <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={scopeOfWork}
+              onChange={(e) => setScopeOfWork(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Trade discipline"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-2) var(--space-4)',
+              }}
+            />
+          </YStack>
+
+          <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
+            <Text fontSize="$2" fontWeight="500" color="$color12" display="block" marginBottom="$2">
+              Digital Signature <Text color="$red10">*</Text>
+            </Text>
+            <input
+              type="text"
+              value={digitalSignature}
+              onChange={(e) => setDigitalSignature(e.target.value)}
+              disabled={disabled || isSigned}
+              placeholder="Type your full name to sign"
+              style={{
+                width: '100%',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-4)',
+                padding: 'var(--space-3) var(--space-4)',
+                fontFamily: 'cursive',
+                fontSize: 'var(--font-size-6)',
+              }}
+            />
+            <Text fontSize="$1" color="$color11" marginTop="$1">
+              By typing your name, you are providing a legal digital signature
+            </Text>
+          </YStack>
+
+          {existingSignature && (
+            <YStack flex={1} minWidth="100%" $gtMd={{ minWidth: '100%' }}>
+              <Card backgroundColor="$green3" borderWidth={1} borderColor="$green6" borderRadius="$4" padding="$3">
+                <Text fontSize="$2" color="$green11">
+                  Signed on{' '}
+                  {new Date(existingSignature.signature_date).toLocaleDateString()}{' '}
+                  at{' '}
+                  {new Date(existingSignature.signature_date).toLocaleTimeString()}
+                </Text>
+              </Card>
+            </YStack>
+          )}
+        </XStack>
+
+        {!isSigned && !disabled && (
+          <XStack justifyContent="flex-end" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+            <Button
+              onClick={handleSave}
+              disabled={
+                saving ||
+                !companyName ||
+                !repName ||
+                !repTitle ||
+                !licenseNumber ||
+                !scopeOfWork ||
+                !digitalSignature
+              }
+            >
+              {saving ? 'Saving...' : 'Save Subcontractor Certification'}
+            </Button>
+          </XStack>
         )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Subcontractor Company Name <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Must match CSLB license name"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Authorized Representative Name{' '}
-            <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={repName}
-            onChange={(e) => setRepName(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Full name"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Title <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={repTitle}
-            onChange={(e) => setRepTitle(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Job title"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Contractor License Number <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={licenseNumber}
-            onChange={(e) => setLicenseNumber(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="As per CSLB"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Scope of Work / Trade <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={scopeOfWork}
-            onChange={(e) => setScopeOfWork(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Trade discipline"
-            className="w-full border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-        </div>
-
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-text-primary mb-2">
-            Digital Signature <span className="text-error-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={digitalSignature}
-            onChange={(e) => setDigitalSignature(e.target.value)}
-            disabled={disabled || isSigned}
-            placeholder="Type your full name to sign"
-            className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent font-signature text-lg disabled:bg-bg-secondary disabled:text-text-tertiary"
-            style={{ fontFamily: 'cursive' }}
-          />
-          <p className="text-xs text-text-secondary mt-1">
-            By typing your name, you are providing a legal digital signature
-          </p>
-        </div>
-
-        {existingSignature && (
-          <div className="md:col-span-2 bg-success-50 border border-success-200 rounded-lg p-3">
-            <p className="text-sm text-success-900">
-              Signed on{' '}
-              {new Date(existingSignature.signature_date).toLocaleDateString()}{' '}
-              at{' '}
-              {new Date(existingSignature.signature_date).toLocaleTimeString()}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {!isSigned && !disabled && (
-        <div className="flex justify-end pt-4 border-t border-border">
-          <Button
-            onClick={handleSave}
-            disabled={
-              saving ||
-              !companyName ||
-              !repName ||
-              !repTitle ||
-              !licenseNumber ||
-              !scopeOfWork ||
-              !digitalSignature
-            }
-          >
-            {saving ? 'Saving...' : 'Save Subcontractor Certification'}
-          </Button>
-        </div>
-      )}
-    </div>
+      </YStack>
+    </Card>
   );
 }

@@ -19,8 +19,9 @@ import {
   Settings,
   Filter,
 } from 'lucide-react';
-import Button from '../Common/Button';
-import Card from '../Common/Card';
+import { YStack, XStack, Text, H1, Card, Button } from '@unicornlove/ui';
+import ButtonCommon from '../Common/Button';
+import CardCommon from '../Common/Card';
 import Select from '../Common/Select';
 import Modal from '../Common/Modal';
 import TaskTypeForm, { TaskTypeFormData } from './TaskTypeForm';
@@ -49,11 +50,11 @@ const CATEGORY_CONFIG: Record<
 };
 
 // Priority display config
-const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
-  low: { label: 'Low', color: 'bg-slate-100 text-slate-700' },
-  medium: { label: 'Medium', color: 'bg-blue-100 text-blue-700' },
-  high: { label: 'High', color: 'bg-orange-100 text-orange-700' },
-  urgent: { label: 'Urgent', color: 'bg-red-100 text-red-700' },
+const PRIORITY_CONFIG: Record<string, { label: string; backgroundColor: string; color: string }> = {
+  low: { label: 'Low', backgroundColor: '$gray2', color: '$gray11' },
+  medium: { label: 'Medium', backgroundColor: '$blue2', color: '$blue11' },
+  high: { label: 'High', backgroundColor: '$orange2', color: '$orange11' },
+  urgent: { label: 'Urgent', backgroundColor: '$red2', color: '$red11' },
 };
 
 // Toast notification type
@@ -214,190 +215,198 @@ export default function TaskTypeSettingsPage({
   };
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Toast notifications */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+      <YStack position="fixed" top="$4" right="$4" zIndex={50} gap="$2">
         {toasts.map((toast) => (
-          <div
+          <Card
             key={toast.id}
-            className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium ${
-              toast.type === 'success'
-                ? 'bg-success-100 text-success-800 border border-success-200'
-                : 'bg-error-100 text-error-800 border border-error-200'
-            }`}
+            padding="$4"
+            paddingVertical="$3"
+            borderRadius="$4"
+            elevation={4}
+            fontSize="$3"
+            fontWeight="500"
+            backgroundColor={toast.type === 'success' ? '$green2' : '$red2'}
+            color={toast.type === 'success' ? '$green11' : '$red11'}
+            borderColor={toast.type === 'success' ? '$green6' : '$red6'}
+            borderWidth={1}
           >
             {toast.message}
-          </div>
+          </Card>
         ))}
-      </div>
+      </YStack>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-text-primary">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$9" fontWeight="bold" color="$color12">
             Task Type Settings
-          </h1>
-          <p className="text-text-secondary text-lg mt-1">
+          </H1>
+          <Text color="$color11" fontSize="$6" marginTop="$1">
             Manage task types and their default configurations
-          </p>
-        </div>
-        <Button variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
+          </Text>
+        </YStack>
+        <ButtonCommon variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
           Create Task Type
-        </Button>
-      </div>
+        </ButtonCommon>
+      </XStack>
 
       {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary"
-              size={20}
-            />
+      <CardCommon padding="$4">
+        <XStack flexDirection="column" gap="$4" $gtSm={{ flexDirection: 'row' }}>
+          <XStack flex={1} position="relative">
+            <YStack position="absolute" left="$3" top="50%" style={{ transform: 'translateY(-50%)' }} zIndex={1} pointerEvents="none">
+              <Search size={20} color="$color10" />
+            </YStack>
             <input
               type="text"
               placeholder="Search task types..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-bg-primary border border-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                paddingLeft: 40,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: 8,
+                color: 'var(--color12)',
+                flex: 1,
+              }}
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter size={20} className="text-text-tertiary" />
+          </XStack>
+          <XStack alignItems="center" gap="$2">
+            <Filter size={20} color="$color10" />
             <Select
               options={categoryOptions}
               value={selectedCategory}
               onChange={(e) =>
                 setSelectedCategory(e.target.value as TaskTypeCategory | 'all')
               }
-              className="w-48"
+              style={{ width: 192 }}
             />
-          </div>
-        </div>
-      </Card>
+          </XStack>
+        </XStack>
+      </CardCommon>
 
       {/* Task Types Table */}
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Name
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Category
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Description
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Default Priority
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Due Date Offset
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Status
-                </th>
-                <th className="text-right px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+      <CardCommon>
+        <YStack overflowX="auto">
+          <YStack>
+            <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Category</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Description</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Default Priority</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Due Date Offset</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
+              <Text flex={1} textAlign="right" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
+            </XStack>
+            <YStack>
               {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-text-tertiary">
-                    Loading task types...
-                  </td>
-                </tr>
+                <XStack padding="$4" paddingVertical="$8" justifyContent="center" alignItems="center">
+                  <Text color="$color10">Loading task types...</Text>
+                </XStack>
               ) : filteredTaskTypes.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-text-tertiary">
+                <XStack padding="$4" paddingVertical="$8" justifyContent="center" alignItems="center">
+                  <Text color="$color10">
                     {searchQuery
                       ? 'No task types match your search'
                       : 'No task types found. Create your first one!'}
-                  </td>
-                </tr>
+                  </Text>
+                </XStack>
               ) : (
-                filteredTaskTypes.map((taskType) => (
-                  <tr
+                filteredTaskTypes.map((taskType, idx) => (
+                  <XStack
                     key={taskType.id}
-                    className="border-b border-border hover:bg-bg-secondary/50 transition-colors"
+                    borderBottomWidth={1}
+                    borderBottomColor="$borderColor"
+                    hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                    padding="$3"
+                    alignItems="center"
                   >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        {taskType.color && (
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: taskType.color }}
-                          />
-                        )}
-                        <span className="font-medium text-text-primary">
-                          {taskType.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 text-text-secondary">
-                        {getCategoryIcon(taskType.category)}
-                        <span>{CATEGORY_CONFIG[taskType.category].label}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-text-secondary max-w-xs truncate">
+                    <XStack flex={1} paddingHorizontal="$4" alignItems="center" gap="$3">
+                      {taskType.color && (
+                        <YStack
+                          width={12}
+                          height={12}
+                          borderRadius={9999}
+                          style={{ backgroundColor: taskType.color }}
+                        />
+                      )}
+                      <Text fontWeight="500" color="$color12">
+                        {taskType.name}
+                      </Text>
+                    </XStack>
+                    <XStack flex={1} paddingHorizontal="$4" alignItems="center" gap="$2">
+                      {getCategoryIcon(taskType.category)}
+                      <Text color="$color11">{CATEGORY_CONFIG[taskType.category].label}</Text>
+                    </XStack>
+                    <Text flex={1} paddingHorizontal="$4" color="$color11" maxWidth={320} numberOfLines={1}>
                       {taskType.description || '-'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          PRIORITY_CONFIG[taskType.default_priority]?.color ||
-                          'bg-slate-100 text-slate-700'
-                        }`}
+                    </Text>
+                    <XStack flex={1} paddingHorizontal="$4">
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontSize="$2"
+                        fontWeight="500"
+                        backgroundColor={PRIORITY_CONFIG[taskType.default_priority]?.backgroundColor || '$gray2'}
+                        color={PRIORITY_CONFIG[taskType.default_priority]?.color || '$gray11'}
                       >
                         {PRIORITY_CONFIG[taskType.default_priority]?.label ||
                           taskType.default_priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-text-secondary">
+                      </Text>
+                    </XStack>
+                    <Text flex={1} paddingHorizontal="$4" color="$color11">
                       {taskType.default_due_date_offset} days
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          taskType.is_active
-                            ? 'bg-success-100 text-success-700'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}
+                    </Text>
+                    <XStack flex={1} paddingHorizontal="$4">
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontSize="$2"
+                        fontWeight="500"
+                        backgroundColor={taskType.is_active ? '$green2' : '$gray2'}
+                        color={taskType.is_active ? '$green11' : '$gray11'}
                       >
                         {taskType.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setEditingTaskType(taskType)}
-                          className="p-2 text-text-tertiary hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(taskType)}
-                          className="p-2 text-text-tertiary hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                      </Text>
+                    </XStack>
+                    <XStack flex={1} paddingHorizontal="$4" alignItems="center" justifyContent="flex-end" gap="$2">
+                      <Button
+                        variant="ghost"
+                        onPress={() => setEditingTaskType(taskType)}
+                        padding="$2"
+                        color="$color10"
+                        hoverStyle={{ color: '$blue10', backgroundColor: '$blue2' }}
+                        borderRadius="$4"
+                      >
+                        <Edit2 size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onPress={() => setDeleteConfirm(taskType)}
+                        padding="$2"
+                        color="$color10"
+                        hoverStyle={{ color: '$red10', backgroundColor: '$red2' }}
+                        borderRadius="$4"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </XStack>
+                  </XStack>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+            </YStack>
+          </YStack>
+        </YStack>
+      </CardCommon>
 
       {/* Create Modal */}
       <Modal
@@ -437,32 +446,32 @@ export default function TaskTypeSettingsPage({
         title="Delete Task Type"
         size="sm"
       >
-        <div className="space-y-4">
-          <p className="text-text-secondary">
+        <YStack gap="$4">
+          <Text color="$color11">
             Are you sure you want to delete{' '}
-            <span className="font-semibold text-text-primary">
+            <Text fontWeight="600" color="$color12">
               {deleteConfirm?.name}
-            </span>
+            </Text>
             ? This action cannot be undone.
-          </p>
-          <div className="flex justify-end gap-3">
-            <Button
+          </Text>
+          <XStack justifyContent="flex-end" gap="$3">
+            <ButtonCommon
               variant="ghost"
               onClick={() => setDeleteConfirm(null)}
               disabled={isSubmitting}
             >
               Cancel
-            </Button>
-            <Button
+            </ButtonCommon>
+            <ButtonCommon
               variant="danger"
               onClick={handleDelete}
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Deleting...' : 'Delete'}
-            </Button>
-          </div>
-        </div>
+            </ButtonCommon>
+          </XStack>
+        </YStack>
       </Modal>
-    </div>
+    </YStack>
   );
 }

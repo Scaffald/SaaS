@@ -972,6 +972,6 @@ export default function IntegrationsMarketplace() {
           }}
         />
       )}
-    </div>
+    </YStack>
   );
 }

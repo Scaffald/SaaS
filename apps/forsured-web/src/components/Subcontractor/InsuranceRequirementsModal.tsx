@@ -1,5 +1,5 @@
-import React from 'react';
 import { Shield, FileText, Users, AlertCircle } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import Modal from '../Common/Modal';
 import { Project, Task } from '../../types';
 import { useProjects } from '../../hooks/useProjects';
@@ -111,160 +111,198 @@ export default function InsuranceRequirementsModal({
       title="Insurance Requirements"
       size="lg"
     >
-      <div className="space-y-6">
+      <YStack gap="$6">
         {/* Project Header */}
-        <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
-          <h3 className="font-semibold text-text-primary mb-1">
+        <Card backgroundColor="$blue3" borderRadius="$4" padding="$4" borderWidth={1} borderColor="$blue6">
+          <Text fontWeight="600" color="$color12" marginBottom="$1">
             {project.name}
-          </h3>
-          <p className="text-sm text-text-secondary">
+          </Text>
+          <Text fontSize="$2" color="$color11">
             {task.gc_company_name || 'General Contractor'}
-          </p>
+          </Text>
           {project.location && (
-            <p className="text-xs text-text-secondary mt-1">
+            <Text fontSize="$1" color="$color11" marginTop="$1">
               {project.location}
-            </p>
+            </Text>
           )}
-        </div>
+        </Card>
 
         {/* Coverage Requirements */}
-        <div>
-          <div className="flex items-center space-x-2 mb-4">
-            <Shield className="text-primary-600" size={20} />
-            <h3 className="text-lg font-semibold text-text-primary">
+        <YStack>
+          <XStack alignItems="center" gap="$2" marginBottom="$4">
+            <Shield color="$blue10" size={20} />
+            <Text fontSize="$6" fontWeight="600" color="$color12">
               Required Coverage Limits
-            </h3>
-          </div>
-          <div className="space-y-3">
+            </Text>
+          </XStack>
+          <YStack gap="$3">
             {coverageRequirements.map((req, index) => (
-              <div
+              <Card
                 key={index}
-                className="flex items-start justify-between p-3 bg-neutral-50 rounded-lg border border-border"
+                backgroundColor="$gray3"
+                borderRadius="$4"
+                padding="$3"
+                borderWidth={1}
+                borderColor="$borderColor"
               >
-                <div className="flex-1">
-                  <div className="font-medium text-text-primary">
-                    {req.label}
-                  </div>
-                  <div className="text-sm text-text-secondary">
-                    {req.description}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-semibold text-primary-600">
-                    {formatCurrency(req.limit)}
-                  </div>
-                </div>
-              </div>
+                <XStack alignItems="flex-start" justifyContent="space-between">
+                  <YStack flex={1}>
+                    <Text fontWeight="500" color="$color12">
+                      {req.label}
+                    </Text>
+                    <Text fontSize="$2" color="$color11">
+                      {req.description}
+                    </Text>
+                  </YStack>
+                  <YStack alignItems="flex-end">
+                    <Text fontWeight="600" color="$blue10">
+                      {formatCurrency(req.limit)}
+                    </Text>
+                  </YStack>
+                </XStack>
+              </Card>
             ))}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
 
         {/* Required Endorsements */}
-        <div>
-          <div className="flex items-center space-x-2 mb-4">
-            <FileText className="text-primary-600" size={20} />
-            <h3 className="text-lg font-semibold text-text-primary">
+        <YStack>
+          <XStack alignItems="center" gap="$2" marginBottom="$4">
+            <FileText color="$blue10" size={20} />
+            <Text fontSize="$6" fontWeight="600" color="$color12">
               Required Endorsements
-            </h3>
-          </div>
-          <div className="space-y-3">
+            </Text>
+          </XStack>
+          <YStack gap="$3">
             {requiredEndorsements.map((endorsement, index) => (
-              <div
+              <Card
                 key={index}
-                className="p-3 bg-neutral-50 rounded-lg border border-border"
+                padding="$3"
+                backgroundColor="$gray3"
+                borderRadius="$4"
+                borderWidth={1}
+                borderColor="$borderColor"
               >
-                <div className="font-medium text-text-primary mb-1">
+                <Text fontWeight="500" color="$color12" marginBottom="$1">
                   {endorsement.form} - {endorsement.name}
-                </div>
-                <div className="text-sm text-text-secondary">
+                </Text>
+                <Text fontSize="$2" color="$color11">
                   {endorsement.description}
-                </div>
-              </div>
+                </Text>
+              </Card>
             ))}
             {requiredEndorsements.length === 0 && (
-              <div className="text-sm text-text-secondary p-3 bg-neutral-50 rounded-lg border border-border">
-                No specific endorsements required beyond standard Additional
-                Insured coverage.
-              </div>
+              <Card
+                padding="$3"
+                backgroundColor="$gray3"
+                borderRadius="$4"
+                borderWidth={1}
+                borderColor="$borderColor"
+              >
+                <Text fontSize="$2" color="$color11">
+                  No specific endorsements required beyond standard Additional
+                  Insured coverage.
+                </Text>
+              </Card>
             )}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
 
         {/* Additional Insureds */}
         {project.additional_insureds &&
           project.additional_insureds.length > 0 && (
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Users className="text-primary-600" size={20} />
-                <h3 className="text-lg font-semibold text-text-primary">
+            <YStack>
+              <XStack alignItems="center" gap="$2" marginBottom="$4">
+                <Users color="$blue10" size={20} />
+                <Text fontSize="$6" fontWeight="600" color="$color12">
                   Additional Insureds
-                </h3>
-              </div>
-              <div className="space-y-2">
+                </Text>
+              </XStack>
+              <YStack gap="$2">
                 {project.additional_insureds.map((insured, index) => (
-                  <div
+                  <Card
                     key={index}
-                    className="p-3 bg-neutral-50 rounded-lg border border-border"
+                    padding="$3"
+                    backgroundColor="$gray3"
+                    borderRadius="$4"
+                    borderWidth={1}
+                    borderColor="$borderColor"
                   >
-                    <div className="text-text-primary">{insured}</div>
-                  </div>
+                    <Text color="$color12">{insured}</Text>
+                  </Card>
                 ))}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           )}
 
         {/* Certificate Holder */}
         {project.certificate_holder && (
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <FileText className="text-primary-600" size={20} />
-              <h3 className="text-lg font-semibold text-text-primary">
+          <YStack>
+            <XStack alignItems="center" gap="$2" marginBottom="$4">
+              <FileText color="$blue10" size={20} />
+              <Text fontSize="$6" fontWeight="600" color="$color12">
                 Certificate Holder
-              </h3>
-            </div>
-            <div className="p-3 bg-neutral-50 rounded-lg border border-border">
-              <div className="text-text-primary">
+              </Text>
+            </XStack>
+            <Card
+              padding="$3"
+              backgroundColor="$gray3"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$borderColor"
+            >
+              <Text color="$color12">
                 {project.certificate_holder}
-              </div>
-            </div>
-          </div>
+              </Text>
+            </Card>
+          </YStack>
         )}
 
         {/* Special Provisions */}
         {project.special_provisions && (
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <AlertCircle className="text-warning-600" size={20} />
-              <h3 className="text-lg font-semibold text-text-primary">
+          <YStack>
+            <XStack alignItems="center" gap="$2" marginBottom="$4">
+              <AlertCircle color="$orange10" size={20} />
+              <Text fontSize="$6" fontWeight="600" color="$color12">
                 Special Provisions
-              </h3>
-            </div>
-            <div className="p-4 bg-warning-50 rounded-lg border border-warning-200">
-              <p className="text-sm text-text-primary whitespace-pre-wrap">
+              </Text>
+            </XStack>
+            <Card
+              padding="$4"
+              backgroundColor="$orange3"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$orange6"
+            >
+              <Text fontSize="$2" color="$color12" whiteSpace="pre-wrap">
                 {project.special_provisions}
-              </p>
-            </div>
-          </div>
+              </Text>
+            </Card>
+          </YStack>
         )}
 
         {/* Additional Requirements */}
-        <div className="pt-4 border-t border-border">
-          <div className="space-y-2 text-sm text-text-secondary">
+        <YStack paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <YStack gap="$2">
             {project.waiver_of_subrogation_required && (
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-primary-600 rounded-full"></div>
-                <span>Waiver of Subrogation required</span>
-              </div>
+              <XStack alignItems="center" gap="$2">
+                <YStack width={8} height={8} backgroundColor="$blue9" borderRadius={9999} />
+                <Text fontSize="$2" color="$color11">
+                  Waiver of Subrogation required
+                </Text>
+              </XStack>
             )}
             {project.primary_non_contributory_required && (
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-primary-600 rounded-full"></div>
-                <span>Primary and Non-Contributory endorsement required</span>
-              </div>
+              <XStack alignItems="center" gap="$2">
+                <YStack width={8} height={8} backgroundColor="$blue9" borderRadius={9999} />
+                <Text fontSize="$2" color="$color11">
+                  Primary and Non-Contributory endorsement required
+                </Text>
+              </XStack>
             )}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </YStack>
+      </YStack>
     </Modal>
   );
 }

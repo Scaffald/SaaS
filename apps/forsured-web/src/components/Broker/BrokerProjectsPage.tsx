@@ -273,40 +273,65 @@ export default function BrokerProjectsPage() {
         </XStack>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <XStack
+        flexDirection="column"
+        $gtLg={{ flexDirection: 'row' }}
+        gap="$6"
+        flexWrap="wrap"
+      >
         {filteredProjects.map((project) => (
-          <div key={project.id} className="relative">
-            <div className="absolute top-4 left-4 z-10">
-              <div className="bg-surface px-3 py-1 rounded-full border border-border shadow-sm">
-                <p className="text-xs font-medium text-text-secondary">
+          <YStack key={project.id} position="relative" flex={1} minWidth="45%">
+            <YStack
+              position="absolute"
+              top="$4"
+              left="$4"
+              zIndex={10}
+            >
+              <YStack
+                backgroundColor="$background"
+                paddingHorizontal="$3"
+                paddingVertical="$1"
+                borderRadius={9999}
+                borderWidth={1}
+                borderColor="$borderColor"
+                elevation={1}
+              >
+                <Text fontSize="$1" fontWeight="500" color="$color11">
                   {getClientName(project.client_id)}
-                </p>
-              </div>
-            </div>
-            <div className="pt-8">
+                </Text>
+              </YStack>
+            </YStack>
+            <YStack paddingTop="$8">
               <ProjectCard
                 project={project}
                 userRole="broker"
                 showActions={false}
                 onClick={() => navigate(`/broker/projects/${project.id}`)}
               />
-            </div>
-          </div>
+            </YStack>
+          </YStack>
         ))}
-      </div>
+      </XStack>
 
       {filteredProjects.length === 0 && (
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-12">
-          <div className="text-center">
-            <Building className="mx-auto text-text-tertiary mb-4" size={48} />
-            <p className="text-text-primary font-medium mb-2">
+        <Card
+          backgroundColor="$background"
+          borderRadius="$4"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          padding="$12"
+        >
+          <YStack alignItems="center">
+            <Building color="$color10" size={48} marginBottom="$4" />
+            <Text color="$color12" fontWeight="500" marginBottom="$2">
               No projects found
-            </p>
-            <p className="text-text-secondary text-sm">
+            </Text>
+            <Text fontSize="$3" color="$color11">
               Try adjusting your filters
-            </p>
-          </div>
-        </div>
+            </Text>
+          </YStack>
+        </Card>
       )}
     </YStack>
   );

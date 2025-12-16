@@ -1,23 +1,24 @@
 // src/pages/admin/Companies.tsx
 import React from 'react';
 import { Building } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, Card } from '@unicornlove/ui';
 
 function AdminCompanies() {
   return (
-    <div className="admin-companies-page">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Company Management</h1>
-      </div>
+    <YStack>
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <H1 fontSize="$8" fontWeight="bold">Company Management</H1>
+      </XStack>
 
-      <div className="bg-white p-8 rounded-lg shadow text-center">
-        <Building size={48} className="mx-auto text-gray-400 mb-4" />
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">Company Management</h2>
-        <p className="text-gray-500">
+      <Card padding="$8" borderRadius="$4" elevation={1} textAlign="center" backgroundColor="$background">
+        <Building size={48} color="$color10" marginBottom="$4" />
+        <H2 fontSize="$6" fontWeight="600" color="$color11" marginBottom="$2">Company Management</H2>
+        <Text color="$color10">
           Company management features are coming soon. This page will allow administrators to
           view, edit, and manage all registered companies in the system.
-        </p>
-      </div>
-    </div>
+        </Text>
+      </Card>
+    </YStack>
   );
 }
 

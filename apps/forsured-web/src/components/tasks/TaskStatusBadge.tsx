@@ -3,9 +3,9 @@
  * REQ-166: Task Management Workflow & UI
  */
 import React from 'react';
-import { XStack, Text } from '@unicornlove/ui';
+import { XStack, Text, Spinner } from '@unicornlove/ui';
 import { Chip as Badge } from '@unicornlove/ui';
-import { Clock, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Clock, CheckCircle, XCircle } from 'lucide-react';
 import { TaskStatus } from '../../types';
 
 interface TaskStatusBadgeProps {
@@ -28,7 +28,7 @@ const statusConfig: Record<TaskStatus | 'unknown', {
   in_progress: {
     label: 'In Progress',
     variant: 'info',
-    icon: <Loader2 size={16} className="animate-spin" data-testid="status-icon-in_progress" />,
+    icon: <Spinner size="small" color="$blue10" />,
   },
   completed: {
     label: 'Completed',

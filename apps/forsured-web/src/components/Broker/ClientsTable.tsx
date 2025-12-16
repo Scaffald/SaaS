@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Search, Calendar, MessageSquare, Users } from 'lucide-react';
+import { YStack, XStack, Text, H2, Card, Input } from '@unicornlove/ui';
 import { BrokerClient, PolicyData, ComplianceData } from '../../types';
 import { formatDistanceToNow } from '../../utils/dateHelpers';
 
@@ -168,17 +169,17 @@ export default function ClientsTable({
 
   const getRiskBadge = (risk: string) => {
     const styles = {
-      low: 'bg-success-100 text-success-700 border-success-300',
-      medium: 'bg-warning-100 text-warning-700 border-warning-300',
-      high: 'bg-error-100 text-error-700 border-error-300',
+      low: { backgroundColor: '$green2', color: '$green11', borderColor: '$green6' },
+      medium: { backgroundColor: '$yellow2', color: '$yellow11', borderColor: '$yellow6' },
+      high: { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' },
     };
     return styles[risk as keyof typeof styles] || styles.medium;
   };
 
   const getComplianceColor = (score: number) => {
-    if (score >= 90) return 'bg-success-600';
-    if (score >= 70) return 'bg-warning-600';
-    return 'bg-error-600';
+    if (score >= 90) return '$green10';
+    if (score >= 70) return '$yellow10';
+    return '$red10';
   };
 
   const getOpenItemsCount = (clientId: string) => {
@@ -205,25 +206,36 @@ export default function ClientsTable({
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-sm border border-border">
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <h2 className="text-lg font-semibold text-text-primary">
+    <Card
+      backgroundColor="$background"
+      borderRadius="$4"
+      elevation={1}
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
+      <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+        <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+          <XStack alignItems="center" gap="$3">
+            <H2 fontSize="$6" fontWeight="600" color="$color12">
               {gcOnly ? 'Key Clients (General Contractors)' : 'Key Clients'}
-            </h2>
+            </H2>
             {gcOnly && (
-              <span className="text-sm text-text-secondary">
+              <Text fontSize="$3" color="$color11">
                 {filteredClients.length} GC{filteredClients.length !== 1 ? 's' : ''}
-              </span>
+              </Text>
             )}
-          </div>
-          <div className="flex items-center space-x-3">
+          </XStack>
+          <XStack alignItems="center" gap="$3">
             {gcOnly && (
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value as SortOption)}
-                className="px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '14px',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '8px',
+                }}
               >
                 <option value="default">Sort by: Default</option>
                 <option value="most-subs">Most Subcontractors</option>
@@ -231,31 +243,61 @@ export default function ClientsTable({
                 <option value="recent-activity">Recent Activity</option>
               </select>
             )}
-            <button className="px-4 py-2 text-sm font-medium text-primary-600 hover:text-primary-700">
-              View all Clients
-            </button>
-          </div>
-        </div>
+            <XStack
+              as="button"
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              fontSize="$3"
+              fontWeight="500"
+              color="$blue10"
+              hoverStyle={{ color: '$blue11' }}
+            >
+              <Text fontSize="$3" fontWeight="500" color="$blue10">View all Clients</Text>
+            </XStack>
+          </XStack>
+        </XStack>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div className="relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
-              size={18}
-            />
-            <input
+        <XStack
+          flexDirection="column"
+          $gtMd={{ flexDirection: 'row' }}
+          $gtLg={{ flexDirection: 'row' }}
+          gap="$4"
+          flexWrap="wrap"
+        >
+          <YStack position="relative" flex={1} minWidth="18%">
+            <YStack
+              position="absolute"
+              left="$3"
+              top="50%"
+              transform="translateY(-50%)"
+              zIndex={1}
+            >
+              <Search color="$color10" size={18} />
+            </YStack>
+            <Input
               type="text"
               placeholder="Search clients..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              width="100%"
+              paddingLeft="$10"
+              paddingRight="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
             />
-          </div>
+          </YStack>
 
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            style={{
+              padding: '8px 16px',
+              border: '1px solid var(--borderColor)',
+              borderRadius: '8px',
+              fontSize: '14px',
+            }}
           >
             <option value="all">All Risk Levels</option>
             <option value="low">Low Risk</option>
@@ -266,7 +308,12 @@ export default function ClientsTable({
           <select
             value={complianceFilter}
             onChange={(e) => setComplianceFilter(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            style={{
+              padding: '8px 16px',
+              border: '1px solid var(--borderColor)',
+              borderRadius: '8px',
+              fontSize: '14px',
+            }}
           >
             <option value="all">All Compliance</option>
             <option value="compliant">Compliant (90%+)</option>
@@ -277,7 +324,12 @@ export default function ClientsTable({
           <select
             value={expiringFilter}
             onChange={(e) => setExpiringFilter(e.target.value)}
-            className="px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            style={{
+              padding: '8px 16px',
+              border: '1px solid var(--borderColor)',
+              borderRadius: '8px',
+              fontSize: '14px',
+            }}
           >
             <option value="all">All Policies</option>
             <option value="30">Expiring in 30 days</option>
@@ -285,184 +337,250 @@ export default function ClientsTable({
             <option value="90">Expiring in 90 days</option>
           </select>
 
-          <button
+          <XStack
+            as="button"
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$3"
+            fontWeight="500"
+            color="$color11"
+            hoverStyle={{ color: '$color12' }}
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
             onClick={() => {
               setSearchTerm('');
               setRiskFilter('all');
               setComplianceFilter('all');
               setExpiringFilter('all');
             }}
-            className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary border border-border rounded-lg"
           >
-            Clear Filters
-          </button>
-        </div>
-      </div>
+            <Text fontSize="$3" fontWeight="500" color="$color11">Clear Filters</Text>
+          </XStack>
+        </XStack>
+      </YStack>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-bg-tertiary">
+      <YStack overflowX="auto">
+        <table style={{ width: '100%' }}>
+          <thead style={{ backgroundColor: 'var(--gray3)' }}>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Client
               </th>
               {gcOnly && (
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Subs Compliant
                 </th>
               )}
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Risk Score
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Open Items
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Next Renewal
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Compliance
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Last Activity
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Notes
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: 500, color: 'var(--color11)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-surface divide-y divide-border">
-            {filteredClients.map((client) => (
-              <tr
-                key={client.id}
-                className="hover:bg-surface-hover cursor-pointer transition-colors"
-                onClick={() => onClientClick?.(client)}
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10 bg-primary-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-primary-600">
-                        {(client.company_name || '')
-                          .split(' ')
-                          .map((n) => n[0] || '')
-                          .join('')
-                          .substring(0, 2) || '??'}
-                      </span>
-                    </div>
-                    <div className="ml-4">
-                      <Link
-                        to={client.client_type === 'general_contractor'
-                          ? `/broker/gcs/${client.id}`
-                          : `/broker/clients/${client.id}`}
-                        className="text-sm font-medium text-primary-600 hover:text-primary-800 hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                        data-testid="client-name-link"
+          <tbody style={{ backgroundColor: 'var(--background)' }}>
+            {filteredClients.map((client, index) => {
+              const riskBadge = getRiskBadge(client.risk_level);
+              return (
+                <tr
+                  key={client.id}
+                  style={{
+                    borderTop: index > 0 ? '1px solid var(--borderColor)' : 'none',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--gray2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                  onClick={() => onClientClick?.(client)}
+                >
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <XStack alignItems="center">
+                      <YStack
+                        flexShrink={0}
+                        width={40}
+                        height={40}
+                        backgroundColor="$blue3"
+                        borderRadius={9999}
+                        alignItems="center"
+                        justifyContent="center"
                       >
-                        {client.company_name}
-                      </Link>
-                      <div className="text-sm text-text-secondary">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                            client.client_type === 'subcontractor'
-                              ? 'bg-primary-100 text-primary-700'
-                              : 'bg-secondary-100 text-secondary-700'
-                          }`}
+                        <Text fontSize="$3" fontWeight="500" color="$blue10">
+                          {(client.company_name || '')
+                            .split(' ')
+                            .map((n) => n[0] || '')
+                            .join('')
+                            .substring(0, 2) || '??'}
+                        </Text>
+                      </YStack>
+                      <YStack marginLeft="$4">
+                        <Link
+                          to={client.client_type === 'general_contractor'
+                            ? `/broker/gcs/${client.id}`
+                            : `/broker/clients/${client.id}`}
+                          style={{
+                            fontSize: '14px',
+                            fontWeight: 500,
+                            color: 'var(--blue10)',
+                            textDecoration: 'none',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = 'var(--blue11)';
+                            e.currentTarget.style.textDecoration = 'underline';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = 'var(--blue10)';
+                            e.currentTarget.style.textDecoration = 'none';
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          data-testid="client-name-link"
                         >
-                          {client.client_type === 'subcontractor'
-                            ? 'Sub'
-                            : 'GC'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                {gcOnly && (
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {(() => {
-                      const stats = gcSubStats.get(client.id);
-                      if (!stats || stats.totalSubs === 0) {
-                        return <span className="text-sm text-text-tertiary">No subs</span>;
-                      }
-                      const colorClass = stats.compliancePercent >= 80
-                        ? 'text-success-600'
-                        : stats.compliancePercent >= 50
-                        ? 'text-warning-600'
-                        : 'text-error-600';
-                      return (
-                        <div className="flex items-center space-x-2">
-                          <Users size={16} className="text-text-tertiary" />
-                          <span className={`text-sm font-medium ${colorClass}`}>
-                            {stats.compliantSubs}/{stats.totalSubs} ({stats.compliancePercent}%)
-                          </span>
-                        </div>
-                      );
-                    })()}
+                          {client.company_name}
+                        </Link>
+                        <YStack marginTop="$1">
+                          <XStack
+                            alignItems="center"
+                            paddingHorizontal="$2"
+                            paddingVertical="$0.5"
+                            borderRadius="$2"
+                            fontSize="$1"
+                            fontWeight="500"
+                            backgroundColor={client.client_type === 'subcontractor' ? '$blue2' : '$purple2'}
+                            color={client.client_type === 'subcontractor' ? '$blue11' : '$purple11'}
+                          >
+                            <Text fontSize="$1" fontWeight="500" color={client.client_type === 'subcontractor' ? '$blue11' : '$purple11'}>
+                              {client.client_type === 'subcontractor'
+                                ? 'Sub'
+                                : 'GC'}
+                            </Text>
+                          </XStack>
+                        </YStack>
+                      </YStack>
+                    </XStack>
                   </td>
-                )}
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getRiskBadge(client.risk_level)}`}
-                  >
-                    {client.risk_level}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-text-primary font-medium">
-                    {getOpenItemsCount(client.id)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center text-sm text-text-secondary">
-                    <Calendar size={14} className="mr-1" />
-                    {getNextRenewal(client.id)}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-16 bg-neutral-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full transition-all ${getComplianceColor(client.compliance_score)}`}
-                        style={{ width: `${client.compliance_score}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium text-text-primary">
-                      {client.compliance_score}%
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                  <div className="flex items-center">
-                    <MessageSquare size={14} className="mr-1" />
-                    {client.last_activity_at ? formatDistanceToNow(client.last_activity_at) : 'No activity'}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                  <div className="flex items-center">
-                    <MessageSquare size={14} className="mr-1" />
-                    {client.notes ? '2 comments' : 'No notes'}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button className="text-primary-600 hover:text-primary-900">
-                    <ChevronRight size={20} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  {gcOnly && (
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                      {(() => {
+                        const stats = gcSubStats.get(client.id);
+                        if (!stats || stats.totalSubs === 0) {
+                          return <Text fontSize="$3" color="$color10">No subs</Text>;
+                        }
+                        const color = stats.compliancePercent >= 80
+                          ? '$green10'
+                          : stats.compliancePercent >= 50
+                          ? '$yellow10'
+                          : '$red10';
+                        return (
+                          <XStack alignItems="center" gap="$2">
+                            <Users size={16} color="$color10" />
+                            <Text fontSize="$3" fontWeight="500" color={color}>
+                              {stats.compliantSubs}/{stats.totalSubs} ({stats.compliancePercent}%)
+                            </Text>
+                          </XStack>
+                        );
+                      })()}
+                    </td>
+                  )}
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <XStack
+                      alignItems="center"
+                      paddingHorizontal="$3"
+                      paddingVertical="$1"
+                      borderRadius={9999}
+                      fontSize="$1"
+                      fontWeight="500"
+                      borderWidth={1}
+                      {...riskBadge}
+                    >
+                      <Text fontSize="$1" fontWeight="500" color={riskBadge.color}>
+                        {client.risk_level}
+                      </Text>
+                    </XStack>
+                  </td>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <Text fontSize="$3" color="$color12" fontWeight="500">
+                      {getOpenItemsCount(client.id)}
+                    </Text>
+                  </td>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <XStack alignItems="center" fontSize="$3" color="$color11">
+                      <Calendar size={14} marginRight="$1" color="$color11" />
+                      <Text fontSize="$3" color="$color11">{getNextRenewal(client.id)}</Text>
+                    </XStack>
+                  </td>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <XStack alignItems="center" gap="$2">
+                      <YStack width={64} backgroundColor="$gray6" borderRadius={9999} height={8}>
+                        <YStack
+                          height={8}
+                          borderRadius={9999}
+                          backgroundColor={getComplianceColor(client.compliance_score)}
+                          width={`${client.compliance_score}%`}
+                        />
+                      </YStack>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
+                        {client.compliance_score}%
+                      </Text>
+                    </XStack>
+                  </td>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color11)' }}>
+                    <XStack alignItems="center">
+                      <MessageSquare size={14} marginRight="$1" color="$color11" />
+                      <Text fontSize="$3" color="$color11">
+                        {client.last_activity_at ? formatDistanceToNow(client.last_activity_at) : 'No activity'}
+                      </Text>
+                    </XStack>
+                  </td>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', fontSize: '14px', color: 'var(--color11)' }}>
+                    <XStack alignItems="center">
+                      <MessageSquare size={14} marginRight="$1" color="$color11" />
+                      <Text fontSize="$3" color="$color11">
+                        {client.notes ? '2 comments' : 'No notes'}
+                      </Text>
+                    </XStack>
+                  </td>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right', fontSize: '14px', fontWeight: 500 }}>
+                    <XStack
+                      as="button"
+                      color="$blue10"
+                      hoverStyle={{ color: '$blue12' }}
+                    >
+                      <ChevronRight size={20} color="$blue10" />
+                    </XStack>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
         {filteredClients.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-text-secondary">
+          <YStack alignItems="center" paddingVertical="$12">
+            <Text color="$color11">
               No clients found matching your filters
-            </p>
-          </div>
+            </Text>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </Card>
   );
 }

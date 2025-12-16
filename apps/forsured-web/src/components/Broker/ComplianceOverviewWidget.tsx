@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp,
@@ -10,6 +9,7 @@ import {
   Briefcase,
   ClipboardList,
 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
 import { BrokerClient, PolicyData, Project, Task } from '../../types';
 
 interface ComplianceOverviewWidgetProps {
@@ -92,10 +92,10 @@ export default function ComplianceOverviewWidget({
 
   const getTrendIcon = () => {
     if (overallScore >= 90)
-      return <TrendingUp className="text-success-600" size={20} />;
+      return <TrendingUp color="$green10" size={20} />;
     if (overallScore >= 70)
-      return <Minus className="text-warning-600" size={20} />;
-    return <TrendingDown className="text-error-600" size={20} />;
+      return <Minus color="$yellow10" size={20} />;
+    return <TrendingDown color="$red10" size={20} />;
   };
 
   const getTrendText = () => {
@@ -105,178 +105,248 @@ export default function ComplianceOverviewWidget({
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-sm border border-border">
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-text-primary">
+    <Card
+      backgroundColor="$background"
+      borderRadius="$4"
+      elevation={1}
+      borderWidth={1}
+      borderColor="$borderColor"
+    >
+      <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+        <XStack alignItems="center" justifyContent="space-between">
+          <YStack>
+            <H2 fontSize="$6" fontWeight="600" color="$color12">
               Compliance Overview
-            </h2>
-            <p className="text-sm text-text-secondary">
+            </H2>
+            <Text fontSize="$3" color="$color11">
               Real-time snapshot of your portfolio
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
+            </Text>
+          </YStack>
+          <XStack alignItems="center" gap="$2">
             {getTrendIcon()}
-            <span className="text-sm font-medium text-text-primary">
+            <Text fontSize="$3" fontWeight="500" color="$color12">
               {getTrendText()}
-            </span>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </XStack>
+        </XStack>
+      </YStack>
 
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-4 border border-primary-200">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-                <CheckCircle className="text-white" size={20} />
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-primary-700">
+      <YStack padding="$6">
+        <XStack
+          flexDirection="column"
+          $gtMd={{ flexDirection: 'row' }}
+          gap="$6"
+          flexWrap="wrap"
+        >
+          <Card
+            backgroundColor="$blue2"
+            borderRadius="$4"
+            padding="$4"
+            borderWidth={1}
+            borderColor="$blue6"
+            flex={1}
+            minWidth="20%"
+          >
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+              <YStack width={40} height={40} backgroundColor="$blue9" borderRadius="$4" alignItems="center" justifyContent="center">
+                <CheckCircle color="white" size={20} />
+              </YStack>
+              <YStack alignItems="flex-end">
+                <Text fontSize="$9" fontWeight="bold" color="$blue11">
                   {percentCompliant}%
-                </p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-primary-900">
+                </Text>
+              </YStack>
+            </XStack>
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$blue12">
                 Compliant Clients
-              </p>
-              <p className="text-xs text-primary-700 mt-1">
+              </Text>
+              <Text fontSize="$1" color="$blue11" marginTop="$1">
                 {compliantClients} of {totalClients} clients at 90%+
-              </p>
-            </div>
-          </div>
+              </Text>
+            </YStack>
+          </Card>
 
-          <div className="bg-gradient-to-br from-warning-50 to-warning-100 rounded-lg p-4 border border-warning-200">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-warning-500 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="text-white" size={20} />
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-warning-700">
+          <Card
+            backgroundColor="$yellow2"
+            borderRadius="$4"
+            padding="$4"
+            borderWidth={1}
+            borderColor="$yellow6"
+            flex={1}
+            minWidth="20%"
+          >
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+              <YStack width={40} height={40} backgroundColor="$yellow9" borderRadius="$4" alignItems="center" justifyContent="center">
+                <AlertTriangle color="white" size={20} />
+              </YStack>
+              <YStack alignItems="flex-end">
+                <Text fontSize="$9" fontWeight="bold" color="$yellow11">
                   {expiringThisMonth}
-                </p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-warning-900">
+                </Text>
+              </YStack>
+            </XStack>
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$yellow12">
                 Expiring This Month
-              </p>
-              <p className="text-xs text-warning-700 mt-1">
+              </Text>
+              <Text fontSize="$1" color="$yellow11" marginTop="$1">
                 Policies requiring renewal
-              </p>
-            </div>
-          </div>
+              </Text>
+            </YStack>
+          </Card>
 
-          <div className="bg-gradient-to-br from-success-50 to-success-100 rounded-lg p-4 border border-success-200">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-success-500 rounded-lg flex items-center justify-center">
-                <Briefcase className="text-white" size={20} />
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-success-700">
+          <Card
+            backgroundColor="$green2"
+            borderRadius="$4"
+            padding="$4"
+            borderWidth={1}
+            borderColor="$green6"
+            flex={1}
+            minWidth="20%"
+          >
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+              <YStack width={40} height={40} backgroundColor="$green9" borderRadius="$4" alignItems="center" justifyContent="center">
+                <Briefcase color="white" size={20} />
+              </YStack>
+              <YStack alignItems="flex-end">
+                <Text fontSize="$9" fontWeight="bold" color="$green11">
                   {activeProjects}
-                </p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-success-900">
+                </Text>
+              </YStack>
+            </XStack>
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$green12">
                 Active Projects
-              </p>
-              <p className="text-xs text-success-700 mt-1">
+              </Text>
+              <Text fontSize="$1" color="$green11" marginTop="$1">
                 Currently in progress
-              </p>
-            </div>
-          </div>
+              </Text>
+            </YStack>
+          </Card>
 
-          <div className="bg-gradient-to-br from-secondary-50 to-secondary-100 rounded-lg p-4 border border-secondary-200">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 bg-secondary-500 rounded-lg flex items-center justify-center">
-                <AlertCircle className="text-white" size={20} />
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-secondary-700">
+          <Card
+            backgroundColor="$purple2"
+            borderRadius="$4"
+            padding="$4"
+            borderWidth={1}
+            borderColor="$purple6"
+            flex={1}
+            minWidth="20%"
+          >
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+              <YStack width={40} height={40} backgroundColor="$purple9" borderRadius="$4" alignItems="center" justifyContent="center">
+                <AlertCircle color="white" size={20} />
+              </YStack>
+              <YStack alignItems="flex-end">
+                <Text fontSize="$9" fontWeight="bold" color="$purple11">
                   {overallScore}
-                </p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-secondary-900">
+                </Text>
+              </YStack>
+            </XStack>
+            <YStack>
+              <Text fontSize="$3" fontWeight="500" color="$purple12">
                 Overall Score
-              </p>
-              <p className="text-xs text-secondary-700 mt-1">
+              </Text>
+              <Text fontSize="$1" color="$purple11" marginTop="$1">
                 Portfolio average
-              </p>
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+          </Card>
+        </XStack>
 
-        <div className="mt-6 pt-6 border-t border-border">
-          <h3 className="text-sm font-semibold text-text-primary mb-4">
+        <YStack marginTop="$6" paddingTop="$6" borderTopWidth={1} borderColor="$borderColor">
+          <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
             Risk Distribution
-          </h3>
-          <div className="grid grid-cols-3 gap-4">
-            <button
-              onClick={() => handleRiskCategoryClick(compliantClientsList)}
-              className="text-center p-4 bg-success-50 rounded-lg border border-success-200 hover:border-success-400 hover:shadow-md transition-all cursor-pointer group"
+          </H3>
+          <XStack gap="$4" flexWrap="wrap">
+            <Card
+              as="button"
+              alignItems="center"
+              padding="$4"
+              backgroundColor="$green2"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$green6"
+              hoverStyle={{ borderColor: '$green8', elevation: 2 }}
+              cursor="pointer"
               disabled={compliantClients === 0}
+              opacity={compliantClients === 0 ? 0.5 : 1}
+              onClick={() => handleRiskCategoryClick(compliantClientsList)}
             >
-              <p className="text-2xl font-bold text-success-700">
+              <Text fontSize="$8" fontWeight="bold" color="$green11">
                 {compliantClients}
-              </p>
-              <p className="text-xs text-success-600 mt-1">Compliant</p>
-              <p className="text-xs text-text-secondary">&ge; 90%</p>
+              </Text>
+              <Text fontSize="$1" color="$green10" marginTop="$1">Compliant</Text>
+              <Text fontSize="$1" color="$color11">&ge; 90%</Text>
               {tasks.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-success-200 flex items-center justify-center space-x-1">
-                  <ClipboardList size={12} className="text-success-600" />
-                  <span className="text-xs font-medium text-success-700">
+                <XStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderColor="$green6" alignItems="center" justifyContent="center" gap="$1">
+                  <ClipboardList size={12} color="$green10" />
+                  <Text fontSize="$1" fontWeight="500" color="$green11">
                     {compliantTasks} tasks
-                  </span>
-                </div>
+                  </Text>
+                </XStack>
               )}
-            </button>
-            <button
-              onClick={() => handleRiskCategoryClick(warningClientsList)}
-              className="text-center p-4 bg-warning-50 rounded-lg border border-warning-200 hover:border-warning-400 hover:shadow-md transition-all cursor-pointer group"
+            </Card>
+            <Card
+              as="button"
+              alignItems="center"
+              padding="$4"
+              backgroundColor="$yellow2"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$yellow6"
+              hoverStyle={{ borderColor: '$yellow8', elevation: 2 }}
+              cursor="pointer"
               disabled={warningClients === 0}
+              opacity={warningClients === 0 ? 0.5 : 1}
+              onClick={() => handleRiskCategoryClick(warningClientsList)}
             >
-              <p className="text-2xl font-bold text-warning-700">
+              <Text fontSize="$8" fontWeight="bold" color="$yellow11">
                 {warningClients}
-              </p>
-              <p className="text-xs text-warning-600 mt-1">Warning</p>
-              <p className="text-xs text-text-secondary">70-89%</p>
+              </Text>
+              <Text fontSize="$1" color="$yellow10" marginTop="$1">Warning</Text>
+              <Text fontSize="$1" color="$color11">70-89%</Text>
               {tasks.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-warning-200 flex items-center justify-center space-x-1">
-                  <ClipboardList size={12} className="text-warning-600" />
-                  <span className="text-xs font-medium text-warning-700">
+                <XStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderColor="$yellow6" alignItems="center" justifyContent="center" gap="$1">
+                  <ClipboardList size={12} color="$yellow10" />
+                  <Text fontSize="$1" fontWeight="500" color="$yellow11">
                     {warningTasks} tasks
-                  </span>
-                </div>
+                  </Text>
+                </XStack>
               )}
-            </button>
-            <button
-              onClick={() => handleRiskCategoryClick(criticalClientsList)}
-              className="text-center p-4 bg-error-50 rounded-lg border border-error-200 hover:border-error-400 hover:shadow-md transition-all cursor-pointer group"
+            </Card>
+            <Card
+              as="button"
+              alignItems="center"
+              padding="$4"
+              backgroundColor="$red2"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$red6"
+              hoverStyle={{ borderColor: '$red8', elevation: 2 }}
+              cursor="pointer"
               disabled={criticalClients === 0}
+              opacity={criticalClients === 0 ? 0.5 : 1}
+              onClick={() => handleRiskCategoryClick(criticalClientsList)}
             >
-              <p className="text-2xl font-bold text-error-700">
+              <Text fontSize="$8" fontWeight="bold" color="$red11">
                 {criticalClients}
-              </p>
-              <p className="text-xs text-error-600 mt-1">Critical</p>
-              <p className="text-xs text-text-secondary">&lt; 70%</p>
+              </Text>
+              <Text fontSize="$1" color="$red10" marginTop="$1">Critical</Text>
+              <Text fontSize="$1" color="$color11">&lt; 70%</Text>
               {tasks.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-error-200 flex items-center justify-center space-x-1">
-                  <ClipboardList size={12} className="text-error-600" />
-                  <span className="text-xs font-medium text-error-700">
+                <XStack marginTop="$2" paddingTop="$2" borderTopWidth={1} borderColor="$red6" alignItems="center" justifyContent="center" gap="$1">
+                  <ClipboardList size={12} color="$red10" />
+                  <Text fontSize="$1" fontWeight="500" color="$red11">
                     {criticalTasks} tasks
-                  </span>
-                </div>
+                  </Text>
+                </XStack>
               )}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </Card>
+          </XStack>
+        </YStack>
+      </YStack>
+    </Card>
   );
 }

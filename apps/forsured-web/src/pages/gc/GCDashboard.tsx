@@ -7,7 +7,7 @@ import { Card } from '@unicornlove/ui';
 import { Button as CoreButton } from '@unicornlove/ui';
 import { Chip as Badge } from '@unicornlove/ui';
 import { Archive, Building2, Users, CheckCircle } from 'lucide-react';
-import EmptyState from '../../components/Common/EmptyState';
+import { EmptyState } from '@unicornlove/ui';
 import { useLexicon } from '../../contexts/LexiconContext';
 
 // Mock projects for testing

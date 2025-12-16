@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -9,6 +9,7 @@ import {
   CheckCircle,
   Info,
 } from 'lucide-react';
+import { YStack, XStack, Text, Card, Spinner } from '@unicornlove/ui';
 import { useBrokerAcknowledgements } from '../../hooks/useBrokerAcknowledgements';
 import { AcknowledgementCoverageItem } from '../../types';
 import CoverageVerificationSection from './CoverageVerificationSection';
@@ -207,30 +208,36 @@ export default function BrokerAcknowledgementFormPage() {
 
   if (!formId) {
     return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <AlertCircle size={48} className="text-error-600 mb-4" />
-        <h2 className="text-xl font-semibold text-text-primary mb-2">
+      <YStack alignItems="center" justifyContent="center" height={256}>
+        <AlertCircle size={48} color="$red10" marginBottom="$4" />
+        <Text fontSize="$7" fontWeight="600" color="$color12" marginBottom="$2">
           No Form Selected
-        </h2>
-        <p className="text-text-secondary mb-6">
+        </Text>
+        <Text color="$color11" marginBottom="$6">
           Please select a form to view or edit.
-        </p>
-        <button
-          onClick={() => navigate('/broker/acknowledgements')}
-          className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 transition-colors"
+        </Text>
+        <XStack
+          as="button"
+          onPress={() => navigate('/broker/acknowledgements')}
+          alignItems="center"
+          gap="$2"
+          color="$blue10"
+          hoverStyle={{
+            color: '$blue12',
+          }}
         >
           <ArrowLeft size={20} />
-          <span>Back to Forms List</span>
-        </button>
-      </div>
+          <Text>Back to Forms List</Text>
+        </XStack>
+      </YStack>
     );
   }
 
   if (loading || !currentForm) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
+      <YStack alignItems="center" justifyContent="center" height={256}>
+        <Spinner size="large" color="$blue10" />
+      </YStack>
     );
   }
 
@@ -249,35 +256,39 @@ export default function BrokerAcknowledgementFormPage() {
   );
 
   return (
-    <div className="space-y-6 pb-12">
-      <div className="flex items-center justify-between">
-        <div>
-          <button
-            onClick={() => navigate('/broker/acknowledgements')}
-            className="flex items-center space-x-2 text-text-secondary hover:text-text-primary mb-4 transition-colors"
+    <YStack gap="$6" paddingBottom="$12">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <XStack
+            as="button"
+            onPress={() => navigate('/broker/acknowledgements')}
+            alignItems="center"
+            gap="$2"
+            color="$color11"
+            hoverStyle={{
+              color: '$color12',
+            }}
+            marginBottom="$4"
           >
             <ArrowLeft size={20} />
-            <span>Back</span>
-          </button>
-          <h1 className="text-2xl font-bold text-text-primary">
+            <Text>Back</Text>
+          </XStack>
+          <Text fontSize="$8" fontWeight="bold" color="$color12">
             Broker Acknowledgement Form - Tier 1
-          </h1>
-          <p className="text-text-secondary mt-1">
+          </Text>
+          <Text color="$color11" marginTop="$1">
             {currentForm.gc_project_name}
-          </p>
-        </div>
+          </Text>
+        </YStack>
 
-        <div className="flex items-center space-x-3">
+        <XStack alignItems="center" gap="$3">
           {saveMessage && (
-            <span
-              className={`text-sm ${
-                saveMessage.includes('Error')
-                  ? 'text-error-600'
-                  : 'text-success-600'
-              }`}
+            <Text
+              fontSize="$2"
+              color={saveMessage.includes('Error') ? '$red10' : '$green10'}
             >
               {saveMessage}
-            </span>
+            </Text>
           )}
           {!isReadOnly && (
             <>
@@ -286,118 +297,136 @@ export default function BrokerAcknowledgementFormPage() {
                 onClick={() => handleSave()}
                 disabled={isSaving}
               >
-                <Save size={16} className="mr-2" />
-                {isSaving ? 'Saving...' : 'Save Draft'}
+                <XStack alignItems="center" gap="$2">
+                  <Save size={16} />
+                  <Text>{isSaving ? 'Saving...' : 'Save Draft'}</Text>
+                </XStack>
               </Button>
               <Button onClick={handleSubmit}>
-                <Send size={16} className="mr-2" />
-                Submit Form
+                <XStack alignItems="center" gap="$2">
+                  <Send size={16} />
+                  <Text>Submit Form</Text>
+                </XStack>
               </Button>
             </>
           )}
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {isReadOnly && (
-        <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 flex items-start space-x-3">
-          <Info size={20} className="text-primary-600 mt-0.5 flex-shrink-0" />
-          <div>
-            <p className="font-medium text-primary-900">
+        <Card
+          backgroundColor="$blue3"
+          borderWidth={1}
+          borderColor="$blue6"
+          borderRadius="$4"
+          padding="$4"
+        >
+          <XStack alignItems="flex-start" gap="$3">
+            <Info size={20} color="$blue10" marginTop="$0.5" flexShrink={0} />
+            <YStack>
+              <Text fontWeight="500" color="$blue11">
               Form Status: {currentForm.status}
-            </p>
-            <p className="text-sm text-primary-700 mt-1">
+              </Text>
+              <Text fontSize="$2" color="$blue10" marginTop="$1">
               This form has been submitted and is locked for editing.
-            </p>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+          </XStack>
+        </Card>
       )}
 
-      <div className="bg-surface rounded-lg border border-border p-6">
-        <h2 className="text-lg font-semibold text-text-primary mb-4">
+      <Card borderWidth={1} borderColor="$borderColor" padding="$6">
+        <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
           General Information
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary">
+        </Text>
+        <XStack
+          flexWrap="wrap"
+          gap="$4"
+          $gtMd={{
+            flexWrap: 'nowrap',
+          }}
+        >
+          <YStack flex={1} minWidth="200px">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
               Subcontractor Company
-            </label>
-            <p className="text-text-primary font-medium">
+            </Text>
+            <Text color="$color12" fontWeight="500">
               {currentForm.subcontractor_company_name}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary">
+            </Text>
+          </YStack>
+          <YStack flex={1} minWidth="200px">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
               Broker / Agency
-            </label>
-            <p className="text-text-primary font-medium">
+            </Text>
+            <Text color="$color12" fontWeight="500">
               {currentForm.broker_agency_name}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary">
+            </Text>
+          </YStack>
+          <YStack flex={1} minWidth="200px">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
               Broker Contact
-            </label>
-            <p className="text-text-primary font-medium">
+            </Text>
+            <Text color="$color12" fontWeight="500">
               {currentForm.broker_contact_name}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary">
+            </Text>
+          </YStack>
+          <YStack flex={1} minWidth="200px">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
               Broker Email
-            </label>
-            <p className="text-text-primary font-medium">
+            </Text>
+            <Text color="$color12" fontWeight="500">
               {currentForm.broker_email}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary">
+            </Text>
+          </YStack>
+          <YStack flex={1} minWidth="200px">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
               Date Issued
-            </label>
-            <p className="text-text-primary font-medium">
+            </Text>
+            <Text color="$color12" fontWeight="500">
               {new Date(currentForm.date_issued).toLocaleDateString()}
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-secondary">
+            </Text>
+          </YStack>
+          <YStack flex={1} minWidth="200px">
+            <Text fontSize="$2" fontWeight="500" color="$color11" display="block" marginBottom="$1">
               Due Date
-            </label>
-            <p className="text-text-primary font-medium">
+            </Text>
+            <Text color="$color12" fontWeight="500">
               {new Date(currentForm.date_due).toLocaleDateString()}
-            </p>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </YStack>
+        </XStack>
+      </Card>
 
-      <div className="bg-warning-50 border border-warning-200 rounded-lg p-4 flex items-start space-x-3">
+      <Card
+        backgroundColor="$orange3"
+        borderWidth={1}
+        borderColor="$orange6"
+        borderRadius="$4"
+        padding="$4"
+      >
+        <XStack alignItems="flex-start" gap="$3">
         <AlertCircle
           size={20}
-          className="text-warning-600 mt-0.5 flex-shrink-0"
-        />
-        <div className="text-sm text-warning-900">
-          <p className="font-medium mb-1">Important Notes:</p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>
-              No new insurance should be purchased until the project contract is
-              executed
-            </li>
-            <li>
-              All endorsement forms must include corresponding policy numbers
-            </li>
-            <li>
-              Endorsements must match the insured name and W-9 provided in Phase
-              1
-            </li>
-            <li>
-              Incomplete forms or missing endorsements will delay onboarding
-            </li>
-          </ul>
-        </div>
-      </div>
+            color="$orange10"
+            marginTop="$0.5"
+            flexShrink={0}
+          />
+          <YStack fontSize="$2" color="$orange11">
+            <Text fontWeight="500" marginBottom="$1">Important Notes:</Text>
+            <YStack gap="$1" paddingLeft="$4">
+              <Text>• No new insurance should be purchased until the project contract is executed</Text>
+              <Text>• All endorsement forms must include corresponding policy numbers</Text>
+              <Text>• Endorsements must match the insured name and W-9 provided in Phase 1</Text>
+              <Text>• Incomplete forms or missing endorsements will delay onboarding</Text>
+            </YStack>
+          </YStack>
+        </XStack>
+      </Card>
 
-      <div className="space-y-6">
-        <h2 className="text-xl font-bold text-text-primary">
+      <YStack gap="$6">
+        <Text fontSize="$7" fontWeight="bold" color="$color12">
           Insurance Coverage Verification
-        </h2>
+        </Text>
 
         <CoverageVerificationSection
           title="(1) General Liability"
@@ -457,28 +486,31 @@ export default function BrokerAcknowledgementFormPage() {
           />
         )}
 
-        <div className="bg-surface rounded-lg border border-border p-6">
-          <h3 className="text-lg font-semibold text-text-primary mb-4">
+        <Card borderWidth={1} borderColor="$borderColor" padding="$6">
+          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
             (6) Hazardous Materials Work
-          </h3>
-          <p className="text-sm text-text-secondary mb-4">
+          </Text>
+          <Text fontSize="$2" color="$color11" marginBottom="$4">
             If the subcontractor's scope involves creating, hauling, or
             disposing of hazardous waste, pollution coverage must include the
             appropriate endorsements.
-          </p>
-          <label className="flex items-center space-x-3">
+          </Text>
+          <XStack
+            as="label"
+            alignItems="center"
+            gap="$3"
+          >
             <input
               type="checkbox"
               checked={hasHazardousMaterials}
               onChange={(e) => setHasHazardousMaterials(e.target.checked)}
               disabled={isReadOnly}
-              className="rounded border-border text-primary-600"
             />
-            <span className="text-sm text-text-primary">
+            <Text fontSize="$2" color="$color12">
               Yes, hazardous materials work is included in scope
-            </span>
-          </label>
-        </div>
+            </Text>
+          </XStack>
+        </Card>
 
         {currentForm.requires_professional_liability && (
           <CoverageVerificationSection
@@ -507,27 +539,30 @@ export default function BrokerAcknowledgementFormPage() {
           />
         )}
 
-        <div className="bg-surface rounded-lg border border-border p-6">
-          <h3 className="text-lg font-semibold text-text-primary mb-4">
+        <Card borderWidth={1} borderColor="$borderColor" padding="$6">
+          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
             (9) Trenching or Excavation Work
-          </h3>
-          <p className="text-sm text-text-secondary mb-4">
+          </Text>
+          <Text fontSize="$2" color="$color11" marginBottom="$4">
             If trenching, excavation, or underground work is part of scope, the
             following must be confirmed.
-          </p>
-          <label className="flex items-center space-x-3">
+          </Text>
+          <XStack
+            as="label"
+            alignItems="center"
+            gap="$3"
+          >
             <input
               type="checkbox"
               checked={hasTrenching}
               onChange={(e) => setHasTrenching(e.target.checked)}
               disabled={isReadOnly}
-              className="rounded border-border text-primary-600"
             />
-            <span className="text-sm text-text-primary">
+            <Text fontSize="$2" color="$color12">
               Yes, trenching / digging work is included in scope
-            </span>
-          </label>
-        </div>
+            </Text>
+          </XStack>
+        </Card>
 
         {hasTrenching && (
           <>
@@ -552,10 +587,10 @@ export default function BrokerAcknowledgementFormPage() {
             />
           </>
         )}
-      </div>
+      </YStack>
 
-      <div className="space-y-6">
-        <h2 className="text-xl font-bold text-text-primary">Certifications</h2>
+      <YStack gap="$6">
+        <Text fontSize="$7" fontWeight="bold" color="$color12">Certifications</Text>
 
         <BrokerCertification
           formId={formId!}
@@ -571,64 +606,101 @@ export default function BrokerAcknowledgementFormPage() {
           disabled={isReadOnly}
           defaultCompanyName={currentForm.subcontractor_company_name}
         />
-      </div>
+      </YStack>
 
       {currentForm.compliance_score > 0 && (
-        <div className="bg-surface rounded-lg border border-border p-6">
-          <h3 className="text-lg font-semibold text-text-primary mb-4">
+        <Card borderWidth={1} borderColor="$borderColor" padding="$6">
+          <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
             Compliance Summary
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-primary-50 rounded-lg">
-              <p className="text-3xl font-bold text-primary-600">
+          </Text>
+          <XStack
+            flexWrap="wrap"
+            gap="$4"
+            $gtMd={{
+              flexWrap: 'nowrap',
+            }}
+          >
+            <Card
+              alignItems="center"
+              padding="$4"
+              backgroundColor="$blue3"
+              borderRadius="$4"
+              flex={1}
+              minWidth="200px"
+            >
+              <Text fontSize="$9" fontWeight="bold" color="$blue10">
                 {currentForm.compliance_score}%
-              </p>
-              <p className="text-sm text-text-secondary mt-1">
+              </Text>
+              <Text fontSize="$2" color="$color11" marginTop="$1">
                 Compliance Score
-              </p>
-            </div>
-            <div className="text-center p-4 bg-success-50 rounded-lg">
+              </Text>
+            </Card>
+            <Card
+              alignItems="center"
+              padding="$4"
+              backgroundColor="$green3"
+              borderRadius="$4"
+              flex={1}
+              minWidth="200px"
+            >
               <CheckCircle
-                className="mx-auto text-success-600 mb-2"
+                color="$green10"
                 size={24}
+                marginBottom="$2"
               />
-              <p className="text-sm font-medium text-text-primary">
+              <Text fontSize="$2" fontWeight="500" color="$color12">
                 {
                   coverageItems.filter(
                     (i) => i.verification_status === 'included'
                   ).length
                 }{' '}
                 Included
-              </p>
-            </div>
-            <div className="text-center p-4 bg-error-50 rounded-lg">
-              <AlertCircle className="mx-auto text-error-600 mb-2" size={24} />
-              <p className="text-sm font-medium text-text-primary">
+              </Text>
+            </Card>
+            <Card
+              alignItems="center"
+              padding="$4"
+              backgroundColor="$red3"
+              borderRadius="$4"
+              flex={1}
+              minWidth="200px"
+            >
+              <AlertCircle color="$red10" size={24} marginBottom="$2" />
+              <Text fontSize="$2" fontWeight="500" color="$color12">
                 {
                   coverageItems.filter(
                     (i) => i.verification_status === 'excluded'
                   ).length
                 }{' '}
                 Missing
-              </p>
-            </div>
-          </div>
+              </Text>
+            </Card>
+          </XStack>
 
           {currentForm.missing_endorsements &&
             currentForm.missing_endorsements.length > 0 && (
-              <div className="mt-4 bg-warning-50 border border-warning-200 rounded-lg p-4">
-                <p className="font-medium text-warning-900 mb-2">
+              <Card
+                marginTop="$4"
+                backgroundColor="$orange3"
+                borderWidth={1}
+                borderColor="$orange6"
+                borderRadius="$4"
+                padding="$4"
+              >
+                <Text fontWeight="500" color="$orange11" marginBottom="$2">
                   Missing Endorsements:
-                </p>
-                <ul className="list-disc list-inside text-sm text-warning-800 space-y-1">
+                </Text>
+                <YStack gap="$1" paddingLeft="$4">
                   {currentForm.missing_endorsements.map((item, index) => (
-                    <li key={index}>{item}</li>
+                    <Text key={index} fontSize="$2" color="$orange10">
+                      • {item}
+                    </Text>
                   ))}
-                </ul>
-              </div>
+                </YStack>
+              </Card>
             )}
-        </div>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }

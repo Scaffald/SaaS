@@ -23,6 +23,7 @@ import { userSetTypesRouter } from './routers/userSetTypes'; // REQ-4
 import { complianceRequirementsRouter } from './routers/complianceRequirements'; // REQ-2
 import { complianceDependenciesRouter } from './routers/complianceDependencies'; // REQ-2
 import { bulkOperationsRouter } from './routers/bulkOperations'; // REQ-2, TASK-12
+import { ccpaAdminRouter } from './routers/ccpaAdmin'; // REQ-6: CCPA Admin UI
 
 /**
  * Root tRPC router
@@ -46,6 +47,7 @@ export const appRouter = createTRPCRouter({
   complianceRequirements: complianceRequirementsRouter, // REQ-2: Compliance requirements CRUD
   complianceDependencies: complianceDependenciesRouter, // REQ-2: Compliance dependencies management
   bulkOperations: bulkOperationsRouter, // REQ-2, TASK-12: Bulk import/export operations
+  ccpaAdmin: ccpaAdminRouter, // REQ-6: CCPA Admin UI
 });
 
 /**

@@ -13,14 +13,14 @@ import IconButton from '../../../components/Common/IconButton';
 import Checkbox from '../../../ui/Checkbox';
 import Radio from '../../../ui/Radio';
 import Switch from '../../../ui/Switch';
-import Alert from '../../../ui/Alert';
+import { Alert } from '@unicornlove/ui';
 import Tooltip from '../../../ui/Tooltip';
 import Progress, { CircularProgress } from '../../../ui/Progress';
 import Avatar, { AvatarGroup } from '../../../ui/Avatar';
-import Tabs from '../../../ui/Tabs';
+import { TabsCustom, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
 import Accordion from '../../../ui/Accordion';
 import Divider from '../../../ui/Divider';
-import EmptyState from '../../../ui/EmptyState';
+import { EmptyState } from '@unicornlove/ui';
 import Breadcrumbs from '../../../ui/Breadcrumbs';
 import Pagination from '../../../ui/Pagination';
 import {

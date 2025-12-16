@@ -7,6 +7,7 @@
  */
 
 import { trpc } from '../../lib/trpc';
+import { YStack, XStack, Text, Card } from 'tamagui';
 
 interface OrganizationExampleProps {
   organizationId: string;
@@ -40,51 +41,51 @@ export function OrganizationExample({ organizationId }: OrganizationExampleProps
   });
 
   if (isLoading) {
-    return <div>Loading organization...</div>;
+    return <Text>Loading organization...</Text>;
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return <Text>Error: {error.message}</Text>;
   }
 
   if (!organization) {
-    return <div>Organization not found</div>;
+    return <Text>Organization not found</Text>;
   }
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold">{organization.name}</h2>
-        <p className="text-sm text-gray-600">ID: {organization.id}</p>
-      </div>
+    <YStack gap="$4">
+      <YStack>
+        <Text fontSize="$6" fontWeight="bold">{organization.name}</Text>
+        <Text fontSize="$2" color="$color10">ID: {organization.id}</Text>
+      </YStack>
 
       {stats && (
-        <div className="grid grid-cols-2 gap-4">
-          <div className="border rounded p-4">
-            <div className="text-2xl font-bold">{stats.projectCount}</div>
-            <div className="text-sm text-gray-600">Projects</div>
-          </div>
-          <div className="border rounded p-4">
-            <div className="text-2xl font-bold">{stats.taskCount}</div>
-            <div className="text-sm text-gray-600">Tasks</div>
-          </div>
-        </div>
+        <XStack gap="$4" flexWrap="wrap">
+          <Card padding="$4" borderWidth={1} borderRadius="$4" flex={1} minWidth="45%">
+            <Text fontSize="$8" fontWeight="bold">{stats.projectCount}</Text>
+            <Text fontSize="$2" color="$color10">Projects</Text>
+          </Card>
+          <Card padding="$4" borderWidth={1} borderRadius="$4" flex={1} minWidth="45%">
+            <Text fontSize="$8" fontWeight="bold">{stats.taskCount}</Text>
+            <Text fontSize="$2" color="$color10">Tasks</Text>
+          </Card>
+        </XStack>
       )}
 
       {projects && (
-        <div>
-          <h3 className="font-semibold mb-2">Projects ({projects.total})</h3>
-          <ul className="space-y-2">
+        <YStack>
+          <Text fontSize="$5" fontWeight="600" marginBottom="$2">Projects ({projects.total})</Text>
+          <YStack gap="$2">
             {projects.projects.map((project) => (
-              <li key={project.id} className="border rounded p-2">
-                <div className="font-medium">{project.name}</div>
-                <div className="text-sm text-gray-600">{project.status}</div>
-              </li>
+              <Card key={project.id} padding="$2" borderWidth={1} borderRadius="$4">
+                <Text fontWeight="500">{project.name}</Text>
+                <Text fontSize="$2" color="$color10">{project.status}</Text>
+              </Card>
             ))}
-          </ul>
-        </div>
+          </YStack>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 

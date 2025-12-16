@@ -326,7 +326,7 @@ export default function ConnectionWizard({
                     </SizableText>
                   </YStack>
                 </XStack>
-              </Button>
+              </TamaguiButton>
             </YStack>
 
             {/* API Key Input */}

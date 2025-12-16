@@ -1,5 +1,7 @@
 // src/pages/gc/settings/NotificationSettings.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { YStack, Text, Button, H2, Select } from '@unicornlove/ui';
+import Checkbox from '../../../ui/Checkbox';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -73,78 +75,58 @@ function GCNotificationSettings() {
 
   if (isLoading) {
     return (
-      <div className="gc-notification-settings">
-        <h2 className="text-xl font-semibold mb-4">Notification Settings</h2>
-        <div className="animate-pulse space-y-4">
+      <YStack gap="$4">
+        <H2>Notification Settings</H2>
+        <YStack gap="$4">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-10 bg-gray-200 rounded"></div>
+            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
           ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="gc-notification-settings">
-      <h2 className="text-xl font-semibold mb-4">Notification Settings</h2>
-      <p className="text-gray-600 mb-6">
+    <YStack gap="$4">
+      <H2>Notification Settings</H2>
+      <Text color="$color10" marginBottom="$6">
         Configure how and when you receive notifications about your projects and subcontractors.
-      </p>
+      </Text>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={preferences.emailOnNewDocument}
-              onChange={(e) => updatePreference('emailOnNewDocument', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        <YStack gap="$4">
+          <Checkbox
+            checked={preferences.emailOnNewDocument}
+            onChange={(e) => updatePreference('emailOnNewDocument', e.target.checked)}
+            label="Email me on new document uploads"
+          />
+          <Checkbox
+            checked={preferences.emailOnExpiringCOI}
+            onChange={(e) => updatePreference('emailOnExpiringCOI', e.target.checked)}
+            label="Email me on expiring COIs"
+          />
+          <Checkbox
+            checked={preferences.emailOnComplianceChange}
+            onChange={(e) => updatePreference('emailOnComplianceChange', e.target.checked)}
+            label="Email me on compliance status changes"
+          />
+          <YStack gap="$1" marginBottom="$6">
+            <Select
+              label="Email Digest Frequency"
+              value={preferences.emailDigestFrequency}
+              onValueChange={(value) => updatePreference('emailDigestFrequency', value)}
+              options={frequencyOptions}
             />
-            <span className="text-sm text-gray-700">Email me on new document uploads</span>
-          </label>
-        </div>
-        <div className="mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={preferences.emailOnExpiringCOI}
-              onChange={(e) => updatePreference('emailOnExpiringCOI', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Email me on expiring COIs</span>
-          </label>
-        </div>
-        <div className="mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={preferences.emailOnComplianceChange}
-              onChange={(e) => updatePreference('emailOnComplianceChange', e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">Email me on compliance status changes</span>
-          </label>
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email Digest Frequency</label>
-          <select
-            value={preferences.emailDigestFrequency}
-            onChange={(e) => updatePreference('emailDigestFrequency', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          </YStack>
+          <Button
+            type="submit"
+            disabled={!isDirty || isSaving}
+            variant="primary"
           >
-            {frequencyOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </div>
-        <button
-          type="submit"
-          disabled={!isDirty || isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </YStack>
       </form>
-    </div>
+    </YStack>
   );
 }
 

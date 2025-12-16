@@ -15,7 +15,6 @@ import {
   Edit,
   Trash2,
   RefreshCcw,
-  Loader2,
   X,
   RotateCcw,
   Book,
@@ -23,7 +22,7 @@ import {
   AlertTriangle,
   Search,
 } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label } from 'tamagui';
+import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label, Spinner } from 'tamagui';
 import { EmptyState } from '@unicornlove/ui';
 import { trpc } from '../../lib/trpc';
 import { DEFAULT_LEXICON } from '../../contexts/LexiconContext';
@@ -234,7 +233,7 @@ function AdminLexiconEditor() {
     return (
       <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
         <XStack alignItems="center" gap="$2">
-          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Spinner size="large" color="$blue10" />
           <Text>Loading...</Text>
         </XStack>
       </YStack>
@@ -274,7 +273,7 @@ function AdminLexiconEditor() {
           <Button
             onPress={handleRefresh}
             disabled={isLoadingLexicon || !selectedTypeId}
-            icon={isLoadingLexicon ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+            icon={isLoadingLexicon ? <Spinner size="small" /> : <RefreshCcw size={16} />}
             paddingHorizontal="$4"
             paddingVertical="$2"
             borderWidth={1}
@@ -371,7 +370,7 @@ function AdminLexiconEditor() {
           {isLoadingLexicon ? (
             <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
               <XStack alignItems="center" gap="$2">
-                <Loader2 size={24} className="animate-spin" color="$blue10" />
+                <Spinner size="small" color="$blue10" />
                 <Text>Loading lexicon...</Text>
               </XStack>
             </YStack>
@@ -481,7 +480,7 @@ function AdminLexiconEditor() {
                                   opacity={actionInProgress === entry.key ? 0.5 : 1}
                                 >
                                   {actionInProgress === entry.key ? (
-                                    <Loader2 size={16} className="animate-spin" color="$orange10" />
+                                    <Spinner size="small" color="$orange10" />
                                   ) : (
                                     <RotateCcw size={16} color="$orange10" />
                                   )}
@@ -497,7 +496,7 @@ function AdminLexiconEditor() {
                                   opacity={actionInProgress === entry.key ? 0.5 : 1}
                                 >
                                   {actionInProgress === entry.key ? (
-                                    <Loader2 size={16} className="animate-spin" color="$red10" />
+                                    <Spinner size="small" color="$red10" />
                                   ) : (
                                     <Trash2 size={16} color="$red10" />
                                   )}
@@ -636,7 +635,7 @@ function AdminLexiconEditor() {
                     borderRadius="$4"
                     hoverStyle={{ backgroundColor: "$blue11" }}
                     opacity={isSubmitting ? 0.5 : 1}
-                    icon={isSubmitting ? <Loader2 size={16} className="animate-spin" /> : undefined}
+                    icon={isSubmitting ? <Spinner size="small" /> : undefined}
                   >
                     {modalMode === 'add' ? 'Add Entry' : 'Save Changes'}
                   </Button>

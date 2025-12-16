@@ -1,5 +1,5 @@
-import React from 'react';
 import { Shield, TrendingUp, TrendingDown, ChevronRight } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 
 interface ComplianceHealthCardProps {
   score: number;
@@ -15,77 +15,97 @@ export default function ComplianceHealthCard({
   onClick,
 }: ComplianceHealthCardProps) {
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-success-600 bg-success-50 border-success-200';
-    if (score >= 70) return 'text-warning-600 bg-warning-50 border-warning-200';
-    return 'text-error-600 bg-error-50 border-error-200';
+    if (score >= 90) {
+      return {
+        backgroundColor: '$green2',
+        color: '$green11',
+        borderColor: '$green6',
+        iconBg: '$green3',
+        iconColor: '$green10',
+        textColor: '$green11',
+        progressColor: '$green10',
+      };
+    }
+    if (score >= 70) {
+      return {
+        backgroundColor: '$yellow2',
+        color: '$yellow11',
+        borderColor: '$yellow6',
+        iconBg: '$yellow3',
+        iconColor: '$yellow10',
+        textColor: '$yellow11',
+        progressColor: '$yellow10',
+      };
+    }
+    return {
+      backgroundColor: '$red2',
+      color: '$red11',
+      borderColor: '$red6',
+      iconBg: '$red3',
+      iconColor: '$red10',
+      textColor: '$red11',
+      progressColor: '$red10',
+    };
   };
 
-  const getProgressColor = (score: number) => {
-    if (score >= 90) return 'bg-success-600';
-    if (score >= 70) return 'bg-warning-600';
-    return 'bg-error-600';
-  };
+  const colors = getScoreColor(score);
 
   return (
-    <div
-      className={`bg-surface rounded-lg border-2 ${getScoreColor(score)} p-6 cursor-pointer hover:shadow-md transition-all duration-200`}
+    <Card
+      backgroundColor={colors.backgroundColor}
+      borderRadius="$4"
+      borderWidth={2}
+      borderColor={colors.borderColor}
+      padding="$6"
+      cursor="pointer"
+      hoverStyle={{ elevation: 2 }}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <div
-            className={`p-3 rounded-xl ${score >= 90 ? 'bg-success-100' : score >= 70 ? 'bg-warning-100' : 'bg-error-100'}`}
-          >
-            <Shield
-              className={
-                score >= 90
-                  ? 'text-success-600'
-                  : score >= 70
-                    ? 'text-warning-600'
-                    : 'text-error-600'
-              }
-              size={24}
-            />
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-text-secondary">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <XStack alignItems="center" gap="$3">
+          <YStack padding="$3" borderRadius="$4" backgroundColor={colors.iconBg}>
+            <Shield color={colors.iconColor} size={24} />
+          </YStack>
+          <YStack>
+            <Text fontSize="$3" fontWeight="500" color="$color11">
               Overall Compliance
-            </h3>
-            <div className="flex items-center space-x-2 mt-1">
-              <span
-                className={`text-3xl font-bold ${score >= 90 ? 'text-success-600' : score >= 70 ? 'text-warning-600' : 'text-error-600'}`}
-              >
+            </Text>
+            <XStack alignItems="center" gap="$2" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color={colors.textColor}>
                 {score}%
-              </span>
+              </Text>
               {trend !== 'stable' && (
-                <div
-                  className={`flex items-center ${trend === 'up' ? 'text-success-600' : 'text-error-600'}`}
+                <YStack
+                  alignItems="center"
+                  color={trend === 'up' ? '$green10' : '$red10'}
                 >
                   {trend === 'up' ? (
-                    <TrendingUp size={16} />
+                    <TrendingUp size={16} color="$green10" />
                   ) : (
-                    <TrendingDown size={16} />
+                    <TrendingDown size={16} color="$red10" />
                   )}
-                </div>
+                </YStack>
               )}
-            </div>
-          </div>
-        </div>
-        <ChevronRight className="text-text-tertiary" size={20} />
-      </div>
+            </XStack>
+          </YStack>
+        </XStack>
+        <ChevronRight color="$color10" size={20} />
+      </XStack>
 
-      <div className="space-y-2">
-        <div className="flex justify-between text-xs text-text-secondary">
-          <span>Across all clients and policies</span>
-          {lastUpdated && <span>Updated {lastUpdated}</span>}
-        </div>
-        <div className="w-full bg-neutral-200 rounded-full h-2">
-          <div
-            className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(score)}`}
-            style={{ width: `${score}%` }}
+      <YStack gap="$2">
+        <XStack justifyContent="space-between">
+          <Text fontSize="$1" color="$color11">Across all clients and policies</Text>
+          {lastUpdated && <Text fontSize="$1" color="$color11">Updated {lastUpdated}</Text>}
+        </XStack>
+        <YStack width="100%" backgroundColor="$gray6" borderRadius={9999} height={8}>
+          <YStack
+            height={8}
+            borderRadius={9999}
+            backgroundColor={colors.progressColor}
+            width={`${score}%`}
           />
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </YStack>
+    </Card>
   );
 }

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building, Briefcase, CheckCircle, Clock } from 'lucide-react';
+import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
 import ProjectCard from '../Shared/ProjectCard';
 
 export default function SubcontractorProjectsPage() {
@@ -98,132 +99,190 @@ export default function SubcontractorProjectsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">My Projects</h1>
-        <p className="text-text-secondary">
+    <YStack gap="$6">
+      <YStack>
+        <Text fontSize="$8" fontWeight="bold" color="$color12">
+          My Projects
+        </Text>
+        <Text color="$color11">
           Track your active and completed projects
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Total Projects</p>
-              <p className="text-3xl font-bold text-text-primary mt-1">
+      <XStack
+        flexWrap="wrap"
+        gap="$6"
+        $gtMd={{
+          flexWrap: 'nowrap',
+        }}
+      >
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Total Projects</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
                 {stats.total}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <Building className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <Building color="$blue10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Active Projects</p>
-              <p className="text-3xl font-bold text-primary-600 mt-1">
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Active Projects</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
                 {stats.active}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <Clock className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <Clock color="$blue10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Completed</p>
-              <p className="text-3xl font-bold text-success-600 mt-1">
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Completed</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$green10" marginTop="$1">
                 {stats.completed}
-              </p>
-            </div>
-            <div className="bg-success-100 p-3 rounded-lg">
-              <CheckCircle className="text-success-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$green3" padding="$3" borderRadius="$4">
+              <CheckCircle color="$green10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Active Value</p>
-              <p className="text-2xl font-bold text-text-primary mt-1">
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Active Value</Text>
+              <Text fontSize="$8" fontWeight="bold" color="$color12" marginTop="$1">
                 {formatCurrency(stats.totalValue)}
-              </p>
-            </div>
-            <div className="bg-secondary-100 p-3 rounded-lg">
-              <Briefcase className="text-secondary-600" size={24} />
-            </div>
-          </div>
-        </div>
-      </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$gray3" padding="$3" borderRadius="$4">
+              <Briefcase color="$gray10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              filter === 'all'
-                ? 'bg-primary-500 text-white'
-                : 'bg-neutral-100 text-text-secondary hover:bg-neutral-200'
-            }`}
+      <Card elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
+        <XStack alignItems="center" gap="$2">
+          <Button
+            onPress={() => setFilter('all')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={filter === 'all' ? '$blue9' : '$gray3'}
+            color={filter === 'all' ? 'white' : '$color11'}
+            hoverStyle={{
+              backgroundColor: filter === 'all' ? '$blue9' : '$gray4',
+            }}
           >
             All ({mockProjects.length})
-          </button>
-          <button
-            onClick={() => setFilter('active')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              filter === 'active'
-                ? 'bg-primary-500 text-white'
-                : 'bg-neutral-100 text-text-secondary hover:bg-neutral-200'
-            }`}
+          </Button>
+          <Button
+            onPress={() => setFilter('active')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={filter === 'active' ? '$blue9' : '$gray3'}
+            color={filter === 'active' ? 'white' : '$color11'}
+            hoverStyle={{
+              backgroundColor: filter === 'active' ? '$blue9' : '$gray4',
+            }}
           >
             Active ({stats.active})
-          </button>
-          <button
-            onClick={() => setFilter('completed')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              filter === 'completed'
-                ? 'bg-primary-500 text-white'
-                : 'bg-neutral-100 text-text-secondary hover:bg-neutral-200'
-            }`}
+          </Button>
+          <Button
+            onPress={() => setFilter('completed')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={filter === 'completed' ? '$blue9' : '$gray3'}
+            color={filter === 'completed' ? 'white' : '$color11'}
+            hoverStyle={{
+              backgroundColor: filter === 'completed' ? '$blue9' : '$gray4',
+            }}
           >
             Completed ({stats.completed})
-          </button>
-        </div>
-      </div>
+          </Button>
+        </XStack>
+      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <XStack
+        flexWrap="wrap"
+        gap="$6"
+        $gtLg={{
+          flexWrap: 'nowrap',
+        }}
+      >
         {filteredProjects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            userRole="subcontractor"
-            showActions={false}
-            onClick={() => navigate(`/subcontractor/projects/${project.id}`)}
-          />
+          <YStack key={project.id} flex={1} minWidth="300px">
+            <ProjectCard
+              project={project}
+              userRole="subcontractor"
+              showActions={false}
+              onClick={() => navigate(`/subcontractor/projects/${project.id}`)}
+            />
+          </YStack>
         ))}
-      </div>
+      </XStack>
 
       {filteredProjects.length === 0 && (
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-12">
-          <div className="text-center">
-            <Building className="mx-auto text-text-tertiary mb-4" size={48} />
-            <p className="text-text-primary font-medium mb-2">
+        <Card elevation={1} borderWidth={1} borderColor="$borderColor" padding="$12">
+          <YStack alignItems="center">
+            <Building color="$color10" size={48} marginBottom="$4" />
+            <Text color="$color12" fontWeight="500" marginBottom="$2">
               No projects found
-            </p>
-            <p className="text-text-secondary text-sm">
+            </Text>
+            <Text color="$color11" fontSize="$2">
               Adjust your filters or wait for project invitations
-            </p>
-          </div>
-        </div>
+            </Text>
+          </YStack>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }

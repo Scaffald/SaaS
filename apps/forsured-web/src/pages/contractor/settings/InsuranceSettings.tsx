@@ -1,5 +1,6 @@
 // src/pages/contractor/settings/InsuranceSettings.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -67,70 +68,61 @@ function ContractorInsuranceSettings() {
 
   if (isLoading) {
     return (
-      <div className="contractor-insurance-settings">
-        <h2 className="text-xl font-semibold mb-4">Insurance Agent Information</h2>
-        <div className="animate-pulse space-y-4">
+      <YStack gap="$4">
+        <H2>Insurance Agent Information</H2>
+        <YStack gap="$4">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-10 bg-gray-200 rounded"></div>
+            <YStack key={i} height={40} backgroundColor="$color3" borderRadius="$4" />
           ))}
-        </div>
-      </div>
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="contractor-insurance-settings">
-      <h2 className="text-xl font-semibold mb-4">Insurance Agent Information</h2>
-      <p className="text-gray-600 mb-6">
+    <YStack gap="$4">
+      <H2>Insurance Agent Information</H2>
+      <Text color="$color10" marginBottom="$6">
         Keep your insurance agent's contact information up to date for easy communication.
-      </p>
+      </Text>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Insurance Carrier</label>
-          <input
+        <YStack gap="$4">
+          <Input
+            label="Insurance Carrier"
             type="text"
             value={agentInfo.carrier}
-            onChange={(e) => updateField('carrier', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('carrier', value)}
             required
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Agent Name</label>
-          <input
+          <Input
+            label="Agent Name"
             type="text"
             value={agentInfo.agentName}
-            onChange={(e) => updateField('agentName', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('agentName', value)}
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Agent Email</label>
-          <input
+          <Input
+            label="Agent Email"
             type="email"
             value={agentInfo.agentEmail}
-            onChange={(e) => updateField('agentEmail', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('agentEmail', value)}
           />
-        </div>
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Agent Phone</label>
-          <input
+          <Input
+            label="Agent Phone"
             type="tel"
             value={agentInfo.agentPhone}
-            onChange={(e) => updateField('agentPhone', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={(value) => updateField('agentPhone', value)}
           />
-        </div>
-        <button
-          type="submit"
-          disabled={!isDirty || isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+          <Button
+            type="submit"
+            disabled={!isDirty || isSaving}
+            variant="primary"
+            marginTop="$6"
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </YStack>
       </form>
-    </div>
+    </YStack>
   );
 }
 

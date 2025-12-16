@@ -1,5 +1,7 @@
 // src/pages/broker/settings/ClientSettings.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { YStack, Text, Button, H2 } from '@unicornlove/ui';
+import Checkbox from '../../../ui/Checkbox';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
 
@@ -40,47 +42,38 @@ function BrokerClientSettings() {
 
   if (isLoading) {
     return (
-      <div className="broker-client-settings">
-        <h2 className="text-xl font-semibold mb-4">Client Management Settings</h2>
-        <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-      </div>
+      <YStack gap="$4">
+        <H2>Client Management Settings</H2>
+        <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
+      </YStack>
     );
   }
 
   return (
-    <div className="broker-client-settings">
-      <h2 className="text-xl font-semibold mb-4">Client Management Settings</h2>
-      <p className="text-gray-600 mb-6">
+    <YStack gap="$4">
+      <H2>Client Management Settings</H2>
+      <Text color="$color10" marginBottom="$6">
         Configure how new clients are assigned to you.
-      </p>
+      </Text>
       <form onSubmit={handleSubmit}>
-        <div className="mb-6">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={autoAssignClients}
-              onChange={(e) => setAutoAssignClients(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="text-sm text-gray-700">
-              Automatically assign new clients to me
-            </span>
-          </label>
-          <p className="text-xs text-gray-500 mt-2 ml-6">
-            When enabled, new clients in your agency's territory will automatically be assigned to you.
-          </p>
-        </div>
-        <button
-          type="submit"
-          disabled={!isDirty || isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+        <YStack gap="$4">
+          <Checkbox
+            checked={autoAssignClients}
+            onChange={(e) => setAutoAssignClients(e.target.checked)}
+            label="Automatically assign new clients to me"
+            helperText="When enabled, new clients in your agency's territory will automatically be assigned to you."
+          />
+          <Button
+            type="submit"
+            disabled={!isDirty || isSaving}
+            variant="primary"
+            marginTop="$6"
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </YStack>
       </form>
-    </div>
+    </YStack>
   );
 }
 

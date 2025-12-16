@@ -1,7 +1,7 @@
 // src/pages/admin/Brokers.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Trash2, Mail, RefreshCcw, Loader2 } from 'lucide-react';
-import { YStack, XStack, Text, Button, H1, H3, Card } from 'tamagui';
+import { Trash2, Mail, RefreshCcw } from 'lucide-react';
+import { YStack, XStack, Text, Button, H1, H3, Card, Spinner } from 'tamagui';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAdminAction, AUDIT_ACTIONS } from '../../services/auditLogService';
 import InvitationForm from '../../components/admin/InvitationForm';
@@ -159,7 +159,7 @@ function AdminBrokers() {
     return (
       <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
         <XStack alignItems="center" gap="$2">
-          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Spinner size="large" color="$blue10" />
           <Text>Loading invitations...</Text>
         </XStack>
       </YStack>
@@ -185,7 +185,7 @@ function AdminBrokers() {
           <Button
             onPress={fetchInvitations}
             disabled={isLoading}
-            icon={isLoading ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+            icon={isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
             paddingHorizontal="$4"
             paddingVertical="$2"
             borderWidth={1}
@@ -296,7 +296,7 @@ function AdminBrokers() {
                             opacity={actionInProgress === inv.id ? 0.5 : 1}
                           >
                             {actionInProgress === inv.id ? (
-                              <Loader2 size={16} className="animate-spin" color="$blue10" />
+                              <Spinner size="small" color="$blue10" />
                             ) : (
                               <Mail size={16} color="$blue10" />
                             )}
@@ -311,7 +311,7 @@ function AdminBrokers() {
                           opacity={actionInProgress === inv.id ? 0.5 : 1}
                         >
                           {actionInProgress === inv.id ? (
-                            <Loader2 size={16} className="animate-spin" color="$red10" />
+                            <Spinner size="small" color="$red10" />
                           ) : (
                             <Trash2 size={16} color="$red10" />
                           )}

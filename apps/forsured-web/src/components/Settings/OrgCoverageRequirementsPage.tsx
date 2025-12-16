@@ -17,8 +17,9 @@ import {
   DollarSign,
   AlertCircle,
 } from 'lucide-react';
-import Button from '../Common/Button';
-import Card from '../Common/Card';
+import { YStack, XStack, Text, H1, Card, Button } from '@unicornlove/ui';
+import ButtonCommon from '../Common/Button';
+import CardCommon from '../Common/Card';
 import Modal from '../Common/Modal';
 import Select from '../Common/Select';
 import CoverageRequirementForm, { CoverageRequirementFormData } from './CoverageRequirementForm';
@@ -220,230 +221,261 @@ export default function OrgCoverageRequirementsPage({
   // Non-admin warning
   if (!isAdmin) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center">
-        <AlertCircle size={48} className="text-warning-500 mb-4" />
-        <h2 className="text-xl font-semibold text-text-primary mb-2">Admin Access Required</h2>
-        <p className="text-text-secondary">
+      <YStack alignItems="center" justifyContent="center" padding="$8" textAlign="center">
+        <AlertCircle size={48} color="$yellow10" marginBottom="$4" />
+        <Text fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">Admin Access Required</Text>
+        <Text color="$color11">
           Only administrators can manage organization-level coverage requirements.
-        </p>
-      </div>
+        </Text>
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Toast notifications */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+      <YStack position="fixed" top="$4" right="$4" zIndex={50} gap="$2">
         {toasts.map((toast) => (
-          <div
+          <Card
             key={toast.id}
-            className={`px-4 py-3 rounded-lg shadow-lg text-sm font-medium ${
-              toast.type === 'success'
-                ? 'bg-success-100 text-success-800 border border-success-200'
-                : 'bg-error-100 text-error-800 border border-error-200'
-            }`}
+            padding="$4"
+            paddingVertical="$3"
+            borderRadius="$4"
+            elevation={4}
+            fontSize="$3"
+            fontWeight="500"
+            backgroundColor={toast.type === 'success' ? '$green2' : '$red2'}
+            color={toast.type === 'success' ? '$green11' : '$red11'}
+            borderColor={toast.type === 'success' ? '$green6' : '$red6'}
+            borderWidth={1}
           >
             {toast.message}
-          </div>
+          </Card>
         ))}
-      </div>
+      </YStack>
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="font-display text-3xl font-bold text-text-primary">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <XStack alignItems="center" gap="$3">
+            <H1 fontSize="$9" fontWeight="bold" color="$color12">
               Coverage Requirements
-            </h1>
-            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-primary-100 text-primary-700 flex items-center gap-1">
+            </H1>
+            <XStack
+              paddingHorizontal="$3"
+              paddingVertical="$1"
+              borderRadius={9999}
+              fontSize="$3"
+              fontWeight="600"
+              backgroundColor="$blue2"
+              color="$blue11"
+              alignItems="center"
+              gap="$1"
+            >
               <Building2 size={14} />
-              ORG LEVEL
-            </span>
-          </div>
-          <p className="text-text-secondary text-lg mt-1">
+              <Text>ORG LEVEL</Text>
+            </XStack>
+          </XStack>
+          <Text color="$color11" fontSize="$6" marginTop="$1">
             Set organization-wide minimum coverage requirements for all subcontractors
-          </p>
-        </div>
-        <Button variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
+          </Text>
+        </YStack>
+        <ButtonCommon variant="primary" leftIcon={Plus} onClick={() => setShowForm(true)}>
           Add Requirement
-        </Button>
-      </div>
+        </ButtonCommon>
+      </XStack>
 
       {/* Info Banner */}
-      <Card className="p-4 bg-primary-50 border-primary-200">
-        <div className="flex items-start gap-3">
-          <Shield className="text-primary-600 mt-0.5" size={20} />
-          <div>
-            <p className="text-primary-800 font-medium">Organization-Level Requirements</p>
-            <p className="text-primary-700 text-sm mt-1">
+      <CardCommon padding="$4" backgroundColor="$blue2" borderColor="$blue6">
+        <XStack alignItems="flex-start" gap="$3">
+          <Shield color="$blue10" marginTop="$0.5" size={20} />
+          <YStack>
+            <Text color="$blue11" fontWeight="500">Organization-Level Requirements</Text>
+            <Text color="$blue10" fontSize="$3" marginTop="$1">
               These requirements apply to all projects in your organization. Subcontractors must
               meet both org-level and any project-specific requirements for full compliance.
-            </p>
-          </div>
-        </div>
-      </Card>
+            </Text>
+          </YStack>
+        </XStack>
+      </CardCommon>
 
       {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary"
-              size={20}
-            />
+      <CardCommon padding="$4">
+        <XStack flexDirection="column" gap="$4" $gtSm={{ flexDirection: 'row' }}>
+          <XStack flex={1} position="relative">
+            <YStack position="absolute" left="$3" top="50%" style={{ transform: 'translateY(-50%)' }} zIndex={1} pointerEvents="none">
+              <Search size={20} color="$color10" />
+            </YStack>
             <input
               type="text"
               placeholder="Search requirements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-bg-primary border border-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                paddingLeft: 40,
+                paddingRight: 16,
+                paddingTop: 8,
+                paddingBottom: 8,
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: 8,
+                color: 'var(--color12)',
+                flex: 1,
+              }}
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <DollarSign size={20} className="text-text-tertiary" />
+          </XStack>
+          <XStack alignItems="center" gap="$2">
+            <DollarSign size={20} color="$color10" />
             <Select
               options={coverageTypeOptions}
               value={selectedCoverageType}
               onChange={(e) =>
                 setSelectedCoverageType(e.target.value as CoverageLimitType | 'all')
               }
-              className="w-56"
+              style={{ width: 224 }}
             />
-          </div>
-        </div>
-      </Card>
+          </XStack>
+        </XStack>
+      </CardCommon>
 
       {/* Requirements Table */}
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Name
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Coverage Type
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Minimum Limit
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Level
-                </th>
-                <th className="text-left px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Status
-                </th>
-                <th className="text-right px-4 py-3 text-sm font-semibold text-text-secondary">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+      <CardCommon>
+        <YStack overflowX="auto">
+          <YStack>
+            <XStack padding="$4" paddingVertical="$3" borderBottomWidth={1} borderBottomColor="$borderColor">
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Name</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Coverage Type</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Minimum Limit</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Level</Text>
+              <Text flex={1} textAlign="left" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Status</Text>
+              <Text flex={1} textAlign="right" paddingHorizontal="$4" fontSize="$3" fontWeight="600" color="$color11">Actions</Text>
+            </XStack>
+            <YStack>
               {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-text-tertiary">
-                    Loading coverage requirements...
-                  </td>
-                </tr>
+                <XStack padding="$4" paddingVertical="$8" justifyContent="center" alignItems="center">
+                  <Text color="$color10">Loading coverage requirements...</Text>
+                </XStack>
               ) : filteredRequirements.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-text-tertiary">
+                <XStack padding="$4" paddingVertical="$8" justifyContent="center" alignItems="center">
+                  <Text color="$color10">
                     {searchQuery
                       ? 'No requirements match your search'
                       : 'No coverage requirements found. Create your first one!'}
-                  </td>
-                </tr>
+                  </Text>
+                </XStack>
               ) : (
-                filteredRequirements.map((requirement) => (
-                  <tr
+                filteredRequirements.map((requirement, idx) => (
+                  <XStack
                     key={requirement.id}
-                    className="border-b border-border hover:bg-bg-secondary/50 transition-colors"
+                    borderBottomWidth={1}
+                    borderBottomColor="$borderColor"
+                    hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                    padding="$3"
+                    alignItems="center"
                   >
-                    <td className="px-4 py-3">
-                      <span className="font-medium text-text-primary">{requirement.name}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 rounded bg-slate-100 text-slate-700 text-xs font-medium">
-                          {COVERAGE_TYPE_CONFIG[requirement.coverage_type].shortLabel}
-                        </span>
-                        <span className="text-text-secondary">
-                          {COVERAGE_TYPE_CONFIG[requirement.coverage_type].label}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-text-primary">
-                        {formatCurrency(requirement.minimum_limit)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700">
+                    <Text flex={1} paddingHorizontal="$4" fontWeight="500" color="$color12">{requirement.name}</Text>
+                    <XStack flex={1} paddingHorizontal="$4" alignItems="center" gap="$2">
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$2"
+                        backgroundColor="$gray2"
+                        color="$gray11"
+                        fontSize="$2"
+                        fontWeight="500"
+                      >
+                        {COVERAGE_TYPE_CONFIG[requirement.coverage_type].shortLabel}
+                      </Text>
+                      <Text color="$color11">
+                        {COVERAGE_TYPE_CONFIG[requirement.coverage_type].label}
+                      </Text>
+                    </XStack>
+                    <Text flex={1} paddingHorizontal="$4" fontFamily="$mono" color="$color12">
+                      {formatCurrency(requirement.minimum_limit)}
+                    </Text>
+                    <XStack flex={1} paddingHorizontal="$4">
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontSize="$2"
+                        fontWeight="600"
+                        backgroundColor="$blue2"
+                        color="$blue11"
+                      >
                         ORG
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          requirement.required
-                            ? 'bg-success-100 text-success-700'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}
+                      </Text>
+                    </XStack>
+                    <XStack flex={1} paddingHorizontal="$4">
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontSize="$2"
+                        fontWeight="500"
+                        backgroundColor={requirement.required ? '$green2' : '$gray2'}
+                        color={requirement.required ? '$green11' : '$gray11'}
                       >
                         {requirement.required ? 'Required' : 'Optional'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setEditingRequirement(requirement)}
-                          className="p-2 text-text-tertiary hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(requirement)}
-                          className="p-2 text-text-tertiary hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                      </Text>
+                    </XStack>
+                    <XStack flex={1} paddingHorizontal="$4" alignItems="center" justifyContent="flex-end" gap="$2">
+                      <Button
+                        variant="ghost"
+                        onPress={() => setEditingRequirement(requirement)}
+                        padding="$2"
+                        color="$color10"
+                        hoverStyle={{ color: '$blue10', backgroundColor: '$blue2' }}
+                        borderRadius="$4"
+                        title="Edit"
+                      >
+                        <Edit2 size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onPress={() => setDeleteConfirm(requirement)}
+                        padding="$2"
+                        color="$color10"
+                        hoverStyle={{ color: '$red10', backgroundColor: '$red2' }}
+                        borderRadius="$4"
+                        title="Delete"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </XStack>
+                  </XStack>
                 ))
               )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+            </YStack>
+          </YStack>
+        </YStack>
+      </CardCommon>
 
       {/* Summary Card */}
       {filteredRequirements.length > 0 && (
-        <Card className="p-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-text-secondary">
+        <CardCommon padding="$4">
+          <XStack alignItems="center" justifyContent="space-between" fontSize="$3">
+            <Text color="$color11">
               Showing {filteredRequirements.length} org-level requirement
               {filteredRequirements.length !== 1 ? 's' : ''}
-            </span>
-            <div className="flex items-center gap-4">
-              <span className="text-text-secondary">
+            </Text>
+            <XStack alignItems="center" gap="$4">
+              <Text color="$color11">
                 Required:{' '}
-                <span className="font-semibold text-text-primary">
+                <Text fontWeight="600" color="$color12">
                   {filteredRequirements.filter((r) => r.required).length}
-                </span>
-              </span>
-              <span className="text-text-secondary">
+                </Text>
+              </Text>
+              <Text color="$color11">
                 Optional:{' '}
-                <span className="font-semibold text-text-primary">
+                <Text fontWeight="600" color="$color12">
                   {filteredRequirements.filter((r) => !r.required).length}
-                </span>
-              </span>
-            </div>
-          </div>
-        </Card>
+                </Text>
+              </Text>
+            </XStack>
+          </XStack>
+        </CardCommon>
       )}
 
       {/* Create Modal */}
@@ -486,26 +518,26 @@ export default function OrgCoverageRequirementsPage({
         title="Delete Coverage Requirement"
         size="sm"
       >
-        <div className="space-y-4">
-          <p className="text-text-secondary">
+        <YStack gap="$4">
+          <Text color="$color11">
             Are you sure you want to delete{' '}
-            <span className="font-semibold text-text-primary">{deleteConfirm?.name}</span>? This
+            <Text fontWeight="600" color="$color12">{deleteConfirm?.name}</Text>? This
             action cannot be undone and may affect compliance calculations for all projects.
-          </p>
-          <div className="flex justify-end gap-3">
-            <Button
+          </Text>
+          <XStack justifyContent="flex-end" gap="$3">
+            <ButtonCommon
               variant="ghost"
               onClick={() => setDeleteConfirm(null)}
               disabled={isSubmitting}
             >
               Cancel
-            </Button>
-            <Button variant="danger" onClick={handleDelete} disabled={isSubmitting}>
+            </ButtonCommon>
+            <ButtonCommon variant="danger" onClick={handleDelete} disabled={isSubmitting}>
               {isSubmitting ? 'Deleting...' : 'Delete'}
-            </Button>
-          </div>
-        </div>
+            </ButtonCommon>
+          </XStack>
+        </YStack>
       </Modal>
-    </div>
+    </YStack>
   );
 }

@@ -4,7 +4,7 @@
 import React from 'react';
 import { YStack, Text } from '@unicornlove/ui';
 import { LayoutDashboard } from 'lucide-react';
-import EmptyState from '../../components/Common/EmptyState';
+import { EmptyState } from '@unicornlove/ui';
 
 function BrokerDashboard() {
   const handleInviteClient = () => {

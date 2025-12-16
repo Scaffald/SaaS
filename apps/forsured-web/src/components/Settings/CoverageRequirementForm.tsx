@@ -6,7 +6,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import Button from '../Common/Button';
+import { YStack, XStack, Text, H3, Button } from '@unicornlove/ui';
+import ButtonCommon from '../Common/Button';
 import Input from '../Common/Input';
 import Select from '../Common/Select';
 import {
@@ -141,26 +142,29 @@ export default function CoverageRequirementForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Level Badge */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm text-text-secondary">Requirement Level:</span>
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-            level === 'org'
-              ? 'bg-primary-100 text-primary-700'
-              : 'bg-purple-100 text-purple-700'
-          }`}
-        >
-          {level === 'org' ? 'ORGANIZATION' : 'PROJECT'}
-        </span>
-      </div>
+    <form onSubmit={handleSubmit}>
+      <YStack gap="$6">
+        {/* Level Badge */}
+        <XStack alignItems="center" gap="$2">
+          <Text fontSize="$3" color="$color11">Requirement Level:</Text>
+          <Text
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius={9999}
+            fontSize="$2"
+            fontWeight="600"
+            backgroundColor={level === 'org' ? '$blue2' : '$purple2'}
+            color={level === 'org' ? '$blue11' : '$purple11'}
+          >
+            {level === 'org' ? 'ORGANIZATION' : 'PROJECT'}
+          </Text>
+        </XStack>
 
-      {/* Basic Information */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
-          Requirement Details
-        </h3>
+        {/* Basic Information */}
+        <YStack gap="$4">
+          <H3 fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase" letterSpacing={1}>
+            Requirement Details
+          </H3>
 
         <Input
           label="Name"
@@ -184,86 +188,91 @@ export default function CoverageRequirementForm({
           required
           fullWidth
         />
-      </div>
+        </YStack>
 
-      {/* Limit Settings */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
-          Limit Requirements
-        </h3>
+        {/* Limit Settings */}
+        <YStack gap="$4">
+          <H3 fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase" letterSpacing={1}>
+            Limit Requirements
+          </H3>
 
-        <div>
-          <Input
-            label="Minimum Limit"
-            type="number"
-            min={0}
-            step={100000}
-            value={formData.minimum_limit}
-            onChange={(e) =>
-              handleChange('minimum_limit', parseFloat(e.target.value) || 0)
-            }
-            error={touched.minimum_limit ? errors.minimum_limit : undefined}
-            required
-            fullWidth
-            helperText={`Current value: ${formatCurrency(formData.minimum_limit)}`}
-          />
-        </div>
+          <YStack>
+            <Input
+              label="Minimum Limit"
+              type="number"
+              min={0}
+              step={100000}
+              value={formData.minimum_limit}
+              onChange={(e) =>
+                handleChange('minimum_limit', parseFloat(e.target.value) || 0)
+              }
+              error={touched.minimum_limit ? errors.minimum_limit : undefined}
+              required
+              fullWidth
+              helperText={`Current value: ${formatCurrency(formData.minimum_limit)}`}
+            />
+          </YStack>
 
-        {/* Common limit quick-select buttons */}
-        <div className="flex flex-wrap gap-2">
-          <span className="text-sm text-text-tertiary mr-2">Quick select:</span>
-          {[500000, 1000000, 2000000, 5000000].map((amount) => (
-            <button
-              key={amount}
-              type="button"
-              onClick={() => handleChange('minimum_limit', amount)}
-              className={`px-3 py-1 text-sm rounded-lg border transition-colors ${
-                formData.minimum_limit === amount
-                  ? 'bg-primary-100 border-primary-300 text-primary-700'
-                  : 'bg-bg-secondary border-border text-text-secondary hover:bg-bg-tertiary'
-              }`}
-            >
-              {formatCurrency(amount)}
-            </button>
-          ))}
-        </div>
-      </div>
+          {/* Common limit quick-select buttons */}
+          <XStack flexWrap="wrap" gap="$2" alignItems="center">
+            <Text fontSize="$3" color="$color10" marginRight="$2">Quick select:</Text>
+            {[500000, 1000000, 2000000, 5000000].map((amount) => (
+              <Button
+                key={amount}
+                type="button"
+                onPress={() => handleChange('minimum_limit', amount)}
+                paddingHorizontal="$3"
+                paddingVertical="$1"
+                fontSize="$3"
+                borderRadius="$4"
+                borderWidth={1}
+                backgroundColor={formData.minimum_limit === amount ? '$blue2' : '$backgroundHover'}
+                borderColor={formData.minimum_limit === amount ? '$blue6' : '$borderColor'}
+                color={formData.minimum_limit === amount ? '$blue11' : '$color11'}
+                hoverStyle={{ backgroundColor: formData.minimum_limit === amount ? '$blue2' : '$background' }}
+              >
+                {formatCurrency(amount)}
+              </Button>
+            ))}
+          </XStack>
+        </YStack>
 
-      {/* Status */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">
-          Enforcement
-        </h3>
+        {/* Status */}
+        <YStack gap="$4">
+          <H3 fontSize="$3" fontWeight="600" color="$color11" textTransform="uppercase" letterSpacing={1}>
+            Enforcement
+          </H3>
 
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={formData.required}
-            onChange={(e) => handleChange('required', e.target.checked)}
-            className="w-4 h-4 text-primary-600 border-border rounded focus:ring-primary-500"
-          />
-          <span className="text-text-primary">Required</span>
-          <span className="text-text-tertiary text-sm">
-            (Subcontractors must meet this requirement for compliance)
-          </span>
-        </label>
-      </div>
+          <XStack alignItems="center" gap="$3" cursor="pointer">
+            <input
+              type="checkbox"
+              checked={formData.required}
+              onChange={(e) => handleChange('required', e.target.checked)}
+              style={{ width: 16, height: 16 }}
+            />
+            <Text color="$color12">Required</Text>
+            <Text color="$color10" fontSize="$3">
+              (Subcontractors must meet this requirement for compliance)
+            </Text>
+          </XStack>
+        </YStack>
 
-      {/* Form Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-border">
-        <Button variant="ghost" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
-        </Button>
-        <Button variant="primary" type="submit" disabled={isSubmitting}>
-          {isSubmitting
-            ? initialData
-              ? 'Saving...'
-              : 'Creating...'
-            : initialData
-              ? 'Save Changes'
-              : 'Create Requirement'}
-        </Button>
-      </div>
+        {/* Form Actions */}
+        <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderTopColor="$borderColor">
+          <ButtonCommon variant="ghost" onClick={onCancel} disabled={isSubmitting}>
+            Cancel
+          </ButtonCommon>
+          <ButtonCommon variant="primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting
+              ? initialData
+                ? 'Saving...'
+                : 'Creating...'
+              : initialData
+                ? 'Save Changes'
+                : 'Create Requirement'}
+          </ButtonCommon>
+        </XStack>
+      </YStack>
     </form>
   );
 }

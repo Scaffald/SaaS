@@ -5,7 +5,7 @@ import Select from '../../Common/Select';
 import Textarea from '../../Common/Textarea';
 import Button from '../../Common/Button';
 import Checkbox from '../../../ui/Checkbox';
-import Alert from '../../../ui/Alert';
+import { Alert } from '@unicornlove/ui';
 import { LayoutGrid } from 'lucide-react';
 
 export default function PatternsSection() {

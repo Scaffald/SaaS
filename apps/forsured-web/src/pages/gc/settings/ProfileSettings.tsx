@@ -1,5 +1,6 @@
 // src/pages/gc/settings/ProfileSettings.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { YStack, Text, Button, H2, Input } from '@unicornlove/ui';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSettings } from '../../../hooks/useSettings';
 import { toast } from 'sonner';
@@ -45,69 +46,59 @@ function GCProfileSettings() {
 
   if (isLoading) {
     return (
-      <div className="gc-profile-settings">
-        <h2 className="text-xl font-semibold mb-4">Profile Settings</h2>
-        <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-gray-200 rounded"></div>
-          <div className="h-10 bg-gray-200 rounded"></div>
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-      </div>
+      <YStack gap="$4">
+        <H2>Profile Settings</H2>
+        <YStack gap="$4">
+          <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
+          <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
+          <YStack height={40} backgroundColor="$color3" borderRadius="$4" />
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="gc-profile-settings">
-      <h2 className="text-xl font-semibold mb-4">Profile Settings</h2>
+    <YStack gap="$4">
+      <H2>Profile Settings</H2>
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-          <input
+        <YStack gap="$4">
+          <Input
+            label="Name"
             type="text"
             value={user?.name || ''}
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500"
+            helperText="Name is managed in Scaffald"
           />
-          <p className="text-xs text-gray-500 mt-1">Name is managed in Scaffald</p>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input
+          <Input
+            label="Email"
             type="email"
             value={user?.email || ''}
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500"
+            helperText="Email is managed in Scaffald"
           />
-          <p className="text-xs text-gray-500 mt-1">Email is managed in Scaffald</p>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-          <input
+          <Input
+            label="Phone"
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChangeText={setPhone}
             placeholder="Enter phone number"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">User Type</label>
-          <input
+          <Input
+            label="User Type"
             type="text"
             value={profile?.user_type === 'gc' ? 'General Contractor' : profile?.user_type || ''}
             disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500"
           />
-        </div>
-        <button
-          type="submit"
-          disabled={!isDirty || isSaving}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </button>
+          <Button
+            type="submit"
+            disabled={!isDirty || isSaving}
+            variant="primary"
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </YStack>
       </form>
-    </div>
+    </YStack>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   FileText,
   Upload,
@@ -8,7 +8,8 @@ import {
   Calendar,
   Eye,
 } from 'lucide-react';
-import Button from '../Common/Button';
+import { YStack, XStack, Text, Card, Button } from '@unicornlove/ui';
+import CommonButton from '../Common/Button';
 import DocumentDetailModal from '../Document/DocumentDetailModal';
 
 interface DocumentItem {
@@ -131,12 +132,12 @@ export default function DocumentsPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'verified':
-        return <CheckCircle className="text-success-600" size={20} />;
+        return <CheckCircle color="$green10" size={20} />;
       case 'expiring':
       case 'expired':
-        return <AlertTriangle className="text-warning-600" size={20} />;
+        return <AlertTriangle color="$orange10" size={20} />;
       case 'pending':
-        return <Calendar className="text-primary-600" size={20} />;
+        return <Calendar color="$blue10" size={20} />;
       default:
         return null;
     }
@@ -151,240 +152,361 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Documents</h1>
-          <p className="text-text-secondary">
+    <YStack gap="$6">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <Text fontSize="$8" fontWeight="bold" color="$color12">
+            Documents
+          </Text>
+          <Text color="$color11">
             Manage your certificates, licenses, and compliance documents
-          </p>
-        </div>
-        <Button className="flex items-center space-x-2">
-          <Upload size={18} />
-          <span>Upload Document</span>
-        </Button>
-      </div>
+          </Text>
+        </YStack>
+        <CommonButton>
+          <XStack alignItems="center" gap="$2">
+            <Upload size={18} />
+            <Text>Upload Document</Text>
+          </XStack>
+        </CommonButton>
+      </XStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Total Documents</p>
-              <p className="text-3xl font-bold text-text-primary mt-1">
+      <XStack
+        flexWrap="wrap"
+        gap="$6"
+        $gtMd={{
+          flexWrap: 'nowrap',
+        }}
+      >
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Total Documents</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$color12" marginTop="$1">
                 {stats.total}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <FileText className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <FileText color="$blue10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Verified</p>
-              <p className="text-3xl font-bold text-success-600 mt-1">
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Verified</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$green10" marginTop="$1">
                 {stats.verified}
-              </p>
-            </div>
-            <div className="bg-success-100 p-3 rounded-lg">
-              <CheckCircle className="text-success-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$green3" padding="$3" borderRadius="$4">
+              <CheckCircle color="$green10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Pending Review</p>
-              <p className="text-3xl font-bold text-primary-600 mt-1">
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Pending Review</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$blue10" marginTop="$1">
                 {stats.pending}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <Calendar className="text-primary-600" size={24} />
-            </div>
-          </div>
-        </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$blue3" padding="$3" borderRadius="$4">
+              <Calendar color="$blue10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Expiring Soon</p>
-              <p className="text-3xl font-bold text-warning-600 mt-1">
+        <Card
+          padding="$6"
+          elevation={1}
+          borderWidth={1}
+          borderColor="$borderColor"
+          flex={1}
+          minWidth="200px"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text color="$color11" fontSize="$2">Expiring Soon</Text>
+              <Text fontSize="$9" fontWeight="bold" color="$orange10" marginTop="$1">
                 {stats.expiring}
-              </p>
-            </div>
-            <div className="bg-warning-100 p-3 rounded-lg">
-              <AlertTriangle className="text-warning-600" size={24} />
-            </div>
-          </div>
-        </div>
-      </div>
+              </Text>
+            </YStack>
+            <Card backgroundColor="$orange3" padding="$3" borderRadius="$4">
+              <AlertTriangle color="$orange10" size={24} />
+            </Card>
+          </XStack>
+        </Card>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              filter === 'all'
-                ? 'bg-primary-500 text-white'
-                : 'bg-neutral-100 text-text-secondary hover:bg-neutral-200'
-            }`}
+      <Card
+        elevation={1}
+        borderWidth={1}
+        borderColor="$borderColor"
+        padding="$6"
+      >
+        <XStack alignItems="center" gap="$2">
+          <Button
+            onPress={() => setFilter('all')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={filter === 'all' ? '$blue9' : '$gray3'}
+            color={filter === 'all' ? 'white' : '$color11'}
+            hoverStyle={{
+              backgroundColor: filter === 'all' ? '$blue9' : '$gray4',
+            }}
           >
             All ({mockDocuments.length})
-          </button>
-          <button
-            onClick={() => setFilter('verified')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              filter === 'verified'
-                ? 'bg-primary-500 text-white'
-                : 'bg-neutral-100 text-text-secondary hover:bg-neutral-200'
-            }`}
+          </Button>
+          <Button
+            onPress={() => setFilter('verified')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={filter === 'verified' ? '$blue9' : '$gray3'}
+            color={filter === 'verified' ? 'white' : '$color11'}
+            hoverStyle={{
+              backgroundColor: filter === 'verified' ? '$blue9' : '$gray4',
+            }}
           >
             Verified ({stats.verified})
-          </button>
-          <button
-            onClick={() => setFilter('pending')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              filter === 'pending'
-                ? 'bg-primary-500 text-white'
-                : 'bg-neutral-100 text-text-secondary hover:bg-neutral-200'
-            }`}
+          </Button>
+          <Button
+            onPress={() => setFilter('pending')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={filter === 'pending' ? '$blue9' : '$gray3'}
+            color={filter === 'pending' ? 'white' : '$color11'}
+            hoverStyle={{
+              backgroundColor: filter === 'pending' ? '$blue9' : '$gray4',
+            }}
           >
             Pending ({stats.pending})
-          </button>
-          <button
-            onClick={() => setFilter('expiring')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg ${
-              filter === 'expiring'
-                ? 'bg-primary-500 text-white'
-                : 'bg-neutral-100 text-text-secondary hover:bg-neutral-200'
-            }`}
+          </Button>
+          <Button
+            onPress={() => setFilter('expiring')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$2"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={filter === 'expiring' ? '$blue9' : '$gray3'}
+            color={filter === 'expiring' ? 'white' : '$color11'}
+            hoverStyle={{
+              backgroundColor: filter === 'expiring' ? '$blue9' : '$gray4',
+            }}
           >
             Expiring ({stats.expiring})
-          </button>
-        </div>
-      </div>
+          </Button>
+        </XStack>
+      </Card>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-bg-tertiary">
+      <Card elevation={1} borderWidth={1} borderColor="$borderColor">
+        <YStack overflowX="auto">
+          <table width="100%">
+            <thead>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Document
+                <th>
+                  <XStack paddingHorizontal="$6" paddingVertical="$3">
+                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                      Document
+                    </Text>
+                  </XStack>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Type
+                <th>
+                  <XStack paddingHorizontal="$6" paddingVertical="$3">
+                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                      Type
+                    </Text>
+                  </XStack>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Status
+                <th>
+                  <XStack paddingHorizontal="$6" paddingVertical="$3">
+                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                      Status
+                    </Text>
+                  </XStack>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Upload Date
+                <th>
+                  <XStack paddingHorizontal="$6" paddingVertical="$3">
+                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                      Upload Date
+                    </Text>
+                  </XStack>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Expiry
+                <th>
+                  <XStack paddingHorizontal="$6" paddingVertical="$3">
+                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                      Expiry
+                    </Text>
+                  </XStack>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Size
+                <th>
+                  <XStack paddingHorizontal="$6" paddingVertical="$3">
+                    <Text textAlign="left" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                      Size
+                    </Text>
+                  </XStack>
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">
-                  Actions
+                <th>
+                  <XStack paddingHorizontal="$6" paddingVertical="$3" justifyContent="flex-end">
+                    <Text textAlign="right" fontSize="$1" fontWeight="500" color="$color11" textTransform="uppercase" letterSpacing={0.05}>
+                      Actions
+                    </Text>
+                  </XStack>
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-surface divide-y divide-border">
+            <tbody>
               {filteredDocuments.map((doc) => {
                 const daysUntilExpiry = getDaysUntilExpiry(doc.expiryDate);
                 return (
-                  <tr
-                    key={doc.id}
-                    className="hover:bg-surface-hover transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <FileText className="text-primary-600 mr-3" size={20} />
-                        <div>
-                          <div className="text-sm font-medium text-text-primary">
+                  <tr key={doc.id}>
+                    <td>
+                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center">
+                        <FileText color="$blue10" size={20} marginRight="$3" />
+                        <YStack>
+                          <Text fontSize="$2" fontWeight="500" color="$color12">
                             {doc.name}
-                          </div>
-                          <div className="text-xs text-text-secondary">
+                          </Text>
+                          <Text fontSize="$1" color="$color11">
                             Uploaded by {doc.uploadedBy}
-                          </div>
-                        </div>
-                      </div>
+                          </Text>
+                        </YStack>
+                      </XStack>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-primary-100 text-primary-700">
-                        {getTypeLabel(doc.type)}
-                      </span>
+                    <td>
+                      <XStack paddingHorizontal="$6" paddingVertical="$4">
+                        <XStack
+                          display="inline-flex"
+                          alignItems="center"
+                          paddingHorizontal="$2"
+                          paddingVertical="$1"
+                          borderRadius="$2"
+                          backgroundColor="$blue3"
+                        >
+                          <Text fontSize="$1" fontWeight="500" color="$blue11">
+                            {getTypeLabel(doc.type)}
+                          </Text>
+                        </XStack>
+                      </XStack>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-2">
+                    <td>
+                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center" gap="$2">
                         {getStatusIcon(doc.status)}
-                        <span className="text-sm text-text-primary capitalize">
+                        <Text fontSize="$2" color="$color12" textTransform="capitalize">
                           {doc.status}
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                      {new Date(doc.uploadDate).toLocaleDateString()}
+                    <td>
+                      <XStack paddingHorizontal="$6" paddingVertical="$4">
+                        <Text fontSize="$2" color="$color11">
+                          {new Date(doc.uploadDate).toLocaleDateString()}
+                        </Text>
+                      </XStack>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {doc.expiryDate ? (
-                        <div>
-                          <div className="text-sm text-text-primary">
-                            {new Date(doc.expiryDate).toLocaleDateString()}
-                          </div>
-                          {daysUntilExpiry !== null &&
-                            daysUntilExpiry <= 30 && (
-                              <div className="text-xs text-warning-600">
-                                {daysUntilExpiry} days left
-                              </div>
-                            )}
-                        </div>
-                      ) : (
-                        <span className="text-sm text-text-secondary">N/A</span>
-                      )}
+                    <td>
+                      <XStack paddingHorizontal="$6" paddingVertical="$4">
+                        {doc.expiryDate ? (
+                          <YStack>
+                            <Text fontSize="$2" color="$color12">
+                              {new Date(doc.expiryDate).toLocaleDateString()}
+                            </Text>
+                            {daysUntilExpiry !== null &&
+                              daysUntilExpiry <= 30 && (
+                                <Text fontSize="$1" color="$orange10">
+                                  {daysUntilExpiry} days left
+                                </Text>
+                              )}
+                          </YStack>
+                        ) : (
+                          <Text fontSize="$2" color="$color11">N/A</Text>
+                        )}
+                      </XStack>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
-                      {doc.fileSize}
+                    <td>
+                      <XStack paddingHorizontal="$6" paddingVertical="$4">
+                        <Text fontSize="$2" color="$color11">
+                          {doc.fileSize}
+                        </Text>
+                      </XStack>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button
-                          onClick={() => setSelectedDocument(doc)}
-                          className="text-primary-600 hover:text-primary-900 p-1"
+                    <td>
+                      <XStack paddingHorizontal="$6" paddingVertical="$4" alignItems="center" justifyContent="flex-end" gap="$2">
+                        <Button
+                          onPress={() => setSelectedDocument(doc)}
+                          padding="$1"
+                          backgroundColor="transparent"
+                          color="$blue10"
+                          hoverStyle={{
+                            color: '$blue12',
+                          }}
                         >
                           <Eye size={16} />
-                        </button>
-                        <button className="text-primary-600 hover:text-primary-900 p-1">
+                        </Button>
+                        <Button
+                          padding="$1"
+                          backgroundColor="transparent"
+                          color="$blue10"
+                          hoverStyle={{
+                            color: '$blue12',
+                          }}
+                        >
                           <Download size={16} />
-                        </button>
-                      </div>
+                        </Button>
+                      </XStack>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </div>
+        </YStack>
 
         {filteredDocuments.length === 0 && (
-          <div className="text-center py-12">
-            <FileText className="mx-auto text-text-tertiary mb-4" size={48} />
-            <p className="text-text-primary font-medium mb-2">
+          <YStack alignItems="center" paddingVertical="$12">
+            <FileText color="$color10" size={48} marginBottom="$4" />
+            <Text color="$color12" fontWeight="500" marginBottom="$2">
               No documents found
-            </p>
-            <p className="text-text-secondary text-sm">
+            </Text>
+            <Text color="$color11" fontSize="$2">
               Upload documents to get started
-            </p>
-          </div>
+            </Text>
+          </YStack>
         )}
-      </div>
+      </Card>
 
       {/* Document Detail Modal */}
       {selectedDocument && (
@@ -401,6 +523,6 @@ export default function DocumentsPage() {
           onClose={() => setSelectedDocument(null)}
         />
       )}
-    </div>
+    </YStack>
   );
 }

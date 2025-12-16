@@ -1,7 +1,6 @@
 // src/pages/contractor/ContractorTasks.tsx
-import React from 'react';
 import { CheckCircle } from 'lucide-react';
-import EmptyState from '../../components/common/EmptyState';
+import { YStack, H1, EmptyState } from '@unicornlove/ui';
 
 function ContractorTasks() {
   const handleRefreshTasks = () => {
@@ -12,8 +11,8 @@ function ContractorTasks() {
   const hasPendingTasks = false;
 
   return (
-    <div className="contractor-tasks-page">
-      <h1 className="text-2xl font-bold mb-6">My Tasks</h1>
+    <YStack gap="$6">
+      <H1>My Tasks</H1>
       {!hasPendingTasks ? (
         <EmptyState
           icon={<CheckCircle size={48} />}
@@ -26,9 +25,9 @@ function ContractorTasks() {
         />
       ) : (
         // Render tasks list here
-        <div>Contractor Tasks List</div>
+        <YStack>Contractor Tasks List</YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 

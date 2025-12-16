@@ -1,6 +1,6 @@
 // src/components/settings/SettingsForm.tsx
 import React from 'react';
-// import { Button } from '@unicornlove/ui'; // Assuming Button component exists
+import { YStack, XStack, Button } from '@unicornlove/ui';
 
 interface SettingsFormProps {
   children: React.ReactNode;
@@ -16,14 +16,15 @@ function SettingsForm({ children, onSubmit, isLoading = false, isDirty = false }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {children}
-      <div className="flex justify-end">
-        {/* <Button type="submit" disabled={isLoading || !isDirty}>
-          Save Changes
-        </Button> */}
-        <button type="submit" disabled={isLoading || !isDirty}>Save Changes</button>
-      </div>
+    <form onSubmit={handleSubmit}>
+      <YStack gap="$6">
+        {children}
+        <XStack justifyContent="flex-end">
+          <Button type="submit" disabled={isLoading || !isDirty}>
+            Save Changes
+          </Button>
+        </XStack>
+      </YStack>
     </form>
   );
 }

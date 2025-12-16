@@ -1,7 +1,6 @@
 // src/pages/gc/GCContractors.tsx
-import React from 'react';
 import { Users } from 'lucide-react';
-import EmptyState from '../../components/common/EmptyState';
+import { YStack, H1, EmptyState } from '@unicornlove/ui';
 import { useLexicon } from '../../contexts/LexiconContext';
 
 function GCContractors() {
@@ -16,8 +15,8 @@ function GCContractors() {
   const hasContractors = false;
 
   return (
-    <div className="gc-contractors-page">
-      <h1 className="text-2xl font-bold mb-6">{getContractorLabel(true)}</h1>
+    <YStack gap="$6">
+      <H1>{getContractorLabel(true)}</H1>
       {!hasContractors ? (
         <EmptyState
           icon={<Users size={48} />}
@@ -30,9 +29,9 @@ function GCContractors() {
         />
       ) : (
         // Render contractors list here
-        <div>{getContractorLabel(true)} List</div>
+        <YStack>{getContractorLabel(true)} List</YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 

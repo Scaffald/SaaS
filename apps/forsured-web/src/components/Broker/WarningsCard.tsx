@@ -1,5 +1,5 @@
-import React from 'react';
 import { AlertTriangle, ChevronRight } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 
 interface WarningsCardProps {
   count: number;
@@ -8,31 +8,37 @@ interface WarningsCardProps {
 
 export default function WarningsCard({ count, onClick }: WarningsCardProps) {
   return (
-    <div
-      className="bg-surface rounded-lg border-2 border-warning-200 bg-warning-50 p-6 cursor-pointer hover:shadow-md transition-all duration-200"
+    <Card
+      backgroundColor="$yellow2"
+      borderRadius="$4"
+      borderWidth={2}
+      borderColor="$yellow6"
+      padding="$6"
+      cursor="pointer"
+      hoverStyle={{ elevation: 2 }}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="p-3 rounded-xl bg-warning-100">
-            <AlertTriangle className="text-warning-600" size={24} />
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-text-secondary">
+      <XStack alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$3">
+          <YStack padding="$3" borderRadius="$4" backgroundColor="$yellow3">
+            <AlertTriangle color="$yellow10" size={24} />
+          </YStack>
+          <YStack>
+            <Text fontSize="$3" fontWeight="500" color="$color11">
               Warnings
-            </h3>
-            <div className="flex items-center space-x-2 mt-1">
-              <span className="text-3xl font-bold text-warning-600">
+            </Text>
+            <XStack alignItems="center" gap="$2" marginTop="$1">
+              <Text fontSize="$9" fontWeight="bold" color="$yellow10">
                 {count}
-              </span>
-            </div>
-          </div>
-        </div>
-        <ChevronRight className="text-text-tertiary" size={20} />
-      </div>
-      <div className="mt-4">
-        <p className="text-xs text-text-secondary">Suggestions and warnings</p>
-      </div>
-    </div>
+              </Text>
+            </XStack>
+          </YStack>
+        </XStack>
+        <ChevronRight color="$color10" size={20} />
+      </XStack>
+      <YStack marginTop="$4">
+        <Text fontSize="$1" color="$color11">Suggestions and warnings</Text>
+      </YStack>
+    </Card>
   );
 }
