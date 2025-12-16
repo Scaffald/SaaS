@@ -3,8 +3,8 @@
  * EndorsementItem component displays a single policy endorsement with indentation
  */
 
-import React from 'react';
 import { FileCheck, DollarSign, Calendar } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { PolicyEndorsement } from '../../types';
 
 export interface EndorsementItemProps {
@@ -36,52 +36,74 @@ export default function EndorsementItem({ endorsement }: EndorsementItemProps) {
   };
 
   return (
-    <div className="flex items-start gap-3 p-3 bg-white rounded-md border border-border ml-8">
+    <Card
+      flexDirection="row"
+      alignItems="flex-start"
+      gap="$3"
+      padding="$3"
+      backgroundColor="white"
+      borderRadius="$2"
+      borderWidth={1}
+      borderColor="$borderColor"
+      marginLeft="$8"
+    >
       {/* Icon */}
-      <FileCheck size={16} className="text-success-500 mt-0.5 flex-shrink-0" />
+      <FileCheck size={16} color="$green10" marginTop="$0.5" flexShrink={0} />
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-text-primary">
+      <YStack flex={1} minWidth={0}>
+        <XStack alignItems="center" gap="$2">
+          <Text fontSize="$2" fontWeight="500" color="$color12">
             {endorsement.endorsement_type}
-          </p>
+          </Text>
           {endorsement.endorsement_code && (
-            <span className="px-2 py-0.5 text-xs font-mono bg-bg-tertiary text-text-secondary rounded">
+            <Text
+              paddingHorizontal="$2"
+              paddingVertical="$0.5"
+              fontSize="$1"
+              fontFamily="$mono"
+              backgroundColor="$backgroundHover"
+              color="$color10"
+              borderRadius="$1"
+            >
               {endorsement.endorsement_code}
-            </span>
+            </Text>
           )}
-        </div>
+        </XStack>
 
         {endorsement.description && (
-          <p className="text-xs text-text-secondary mt-1">
+          <Text fontSize="$1" color="$color10" marginTop="$1">
             {endorsement.description}
-          </p>
+          </Text>
         )}
 
         {/* Metadata */}
-        <div className="flex flex-wrap items-center gap-4 mt-2">
+        <XStack flexWrap="wrap" alignItems="center" gap="$4" marginTop="$2">
           {endorsement.limit_amount && (
-            <div className="flex items-center gap-1.5 text-xs">
-              <DollarSign size={12} className="text-text-secondary" />
-              <span className="text-text-secondary">Limit:</span>
-              <span className="font-medium text-text-primary">
+            <XStack alignItems="center" gap="$1.5">
+              <DollarSign size={12} color="$color10" />
+              <Text fontSize="$1" color="$color10">
+                Limit:
+              </Text>
+              <Text fontSize="$1" fontWeight="500" color="$color12">
                 {formatCurrency(endorsement.limit_amount)}
-              </span>
-            </div>
+              </Text>
+            </XStack>
           )}
 
           {endorsement.effective_date && (
-            <div className="flex items-center gap-1.5 text-xs">
-              <Calendar size={12} className="text-text-secondary" />
-              <span className="text-text-secondary">Effective:</span>
-              <span className="font-medium text-text-primary">
+            <XStack alignItems="center" gap="$1.5">
+              <Calendar size={12} color="$color10" />
+              <Text fontSize="$1" color="$color10">
+                Effective:
+              </Text>
+              <Text fontSize="$1" fontWeight="500" color="$color12">
                 {formatDate(endorsement.effective_date)}
-              </span>
-            </div>
+              </Text>
+            </XStack>
           )}
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </YStack>
+    </Card>
   );
 }
