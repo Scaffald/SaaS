@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   X,
   Mail,
@@ -19,6 +19,7 @@ import {
   Filter,
   Loader2,
 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Spinner, Card } from '@unicornlove/ui';
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 import StatusBadge from '../Common/StatusBadge';
@@ -187,12 +188,12 @@ export default function SubcontractorDetailModal({
   if (loadingData) {
     return (
       <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-            <p className="text-text-secondary">Loading subcontractor details...</p>
-          </div>
-        </div>
+        <YStack alignItems="center" justifyContent="center" minHeight={400}>
+          <YStack alignItems="center" gap="$4">
+            <Spinner size="large" color="$blue10" />
+            <Text color="$color11" fontSize="$4">Loading subcontractor details...</Text>
+          </YStack>
+        </YStack>
       </Modal>
     );
   }
@@ -200,15 +201,17 @@ export default function SubcontractorDetailModal({
   if (!subcontractor) {
     return (
       <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <AlertTriangle className="mx-auto text-error-500 mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
+        <YStack alignItems="center" justifyContent="center" minHeight={400}>
+          <YStack alignItems="center">
+            <YStack alignItems="center" marginBottom="$4">
+              <AlertTriangle color="$red10" size={48} />
+            </YStack>
+            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
               Subcontractor not found
-            </h3>
-            <p className="text-text-secondary">The requested subcontractor could not be loaded.</p>
-          </div>
-        </div>
+            </H3>
+            <Text color="$color11">The requested subcontractor could not be loaded.</Text>
+          </YStack>
+        </YStack>
       </Modal>
     );
   }
@@ -269,206 +272,285 @@ export default function SubcontractorDetailModal({
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="" size="xl">
-        <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-2xl font-bold text-text-primary">
+        <YStack gap="$6">
+          <XStack alignItems="flex-start" justifyContent="space-between">
+            <YStack flex={1}>
+              <XStack alignItems="center" gap="$3" marginBottom="$2">
+                <H2 fontSize="$9" fontWeight="700" color="$color12">
                   {subcontractor.company_name}
-                </h2>
+                </H2>
                 {hasActiveCoverage ? (
-                  <span className="px-2.5 py-1 text-xs font-medium rounded bg-success-100 text-success-700">
+                  <Text
+                    paddingHorizontal="$2.5"
+                    paddingVertical="$1"
+                    fontSize="$1"
+                    fontWeight="500"
+                    borderRadius="$2"
+                    backgroundColor="$green2"
+                    color="$green10"
+                  >
                     Active Coverage
-                  </span>
+                  </Text>
                 ) : (
-                  <span className="px-2.5 py-1 text-xs font-medium rounded bg-error-100 text-error-700">
+                  <Text
+                    paddingHorizontal="$2.5"
+                    paddingVertical="$1"
+                    fontSize="$1"
+                    fontWeight="500"
+                    borderRadius="$2"
+                    backgroundColor="$red2"
+                    color="$red10"
+                  >
                     No Coverage
-                  </span>
+                  </Text>
                 )}
-              </div>
-              <p className="text-text-secondary">
+              </XStack>
+              <Text color="$color11" fontSize="$4">
                 {subcontractor.trade_type} · {subcontractor.status}
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-text-primary">
+              </Text>
+            </YStack>
+            <YStack alignItems="flex-end">
+              <Text fontSize="$10" fontWeight="700" color="$color12">
                 {complianceScore}%
-              </div>
-              <div className="text-xs text-text-tertiary">Compliance Score</div>
-            </div>
-          </div>
+              </Text>
+              <Text fontSize="$1" color="$color10">Compliance Score</Text>
+            </YStack>
+          </XStack>
 
-          <div className="flex border-b border-border">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                activeTab === 'overview'
-                  ? 'text-primary-600 border-b-2 border-primary-600'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
+          <XStack borderBottomWidth={1} borderColor="$borderColor">
+            <XStack
+              onPress={() => setActiveTab('overview')}
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              cursor="pointer"
+              borderBottomWidth={activeTab === 'overview' ? 2 : 0}
+              borderBottomColor={activeTab === 'overview' ? '$blue10' : 'transparent'}
+              hoverStyle={{ opacity: 0.8 }}
             >
-              Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('policies')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                activeTab === 'policies'
-                  ? 'text-primary-600 border-b-2 border-primary-600'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
+              <Text
+                fontSize="$3"
+                fontWeight="500"
+                color={activeTab === 'overview' ? '$blue10' : '$color11'}
+              >
+                Overview
+              </Text>
+            </XStack>
+            <XStack
+              onPress={() => setActiveTab('policies')}
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              cursor="pointer"
+              borderBottomWidth={activeTab === 'policies' ? 2 : 0}
+              borderBottomColor={activeTab === 'policies' ? '$blue10' : 'transparent'}
+              hoverStyle={{ opacity: 0.8 }}
             >
-              Policies ({activePolicies.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('documents')}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                activeTab === 'documents'
-                  ? 'text-primary-600 border-b-2 border-primary-600'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
+              <Text
+                fontSize="$3"
+                fontWeight="500"
+                color={activeTab === 'policies' ? '$blue10' : '$color11'}
+              >
+                Policies ({activePolicies.length})
+              </Text>
+            </XStack>
+            <XStack
+              onPress={() => setActiveTab('documents')}
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              cursor="pointer"
+              borderBottomWidth={activeTab === 'documents' ? 2 : 0}
+              borderBottomColor={activeTab === 'documents' ? '$blue10' : 'transparent'}
+              hoverStyle={{ opacity: 0.8 }}
             >
-              Documents ({documents.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('issues')}
-              className={`px-4 py-2 text-sm font-medium transition-colors relative ${
-                activeTab === 'issues'
-                  ? 'text-primary-600 border-b-2 border-primary-600'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
+              <Text
+                fontSize="$3"
+                fontWeight="500"
+                color={activeTab === 'documents' ? '$blue10' : '$color11'}
+              >
+                Documents ({documents.length})
+              </Text>
+            </XStack>
+            <XStack
+              onPress={() => setActiveTab('issues')}
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              cursor="pointer"
+              borderBottomWidth={activeTab === 'issues' ? 2 : 0}
+              borderBottomColor={activeTab === 'issues' ? '$blue10' : 'transparent'}
+              hoverStyle={{ opacity: 0.8 }}
+              position="relative"
             >
-              Issues
+              <Text
+                fontSize="$3"
+                fontWeight="500"
+                color={activeTab === 'issues' ? '$blue10' : '$color11'}
+              >
+                Issues
+              </Text>
               {allIssues.length > 0 && (
-                <span className="ml-2 px-1.5 py-0.5 bg-error-500 text-white text-xs rounded-full">
+                <Text
+                  marginLeft="$2"
+                  paddingHorizontal="$1.5"
+                  paddingVertical="$0.5"
+                  backgroundColor="$red10"
+                  color="white"
+                  fontSize="$1"
+                  borderRadius={9999}
+                >
                   {allIssues.length}
-                </span>
+                </Text>
               )}
-            </button>
-          </div>
+            </XStack>
+          </XStack>
 
           {activeTab === 'overview' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-bg-secondary rounded-lg">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Building className="text-text-tertiary" size={20} />
-                    <span className="text-sm text-text-tertiary">
+            <YStack gap="$6">
+              <XStack flexWrap="wrap" gap="$4">
+                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                    <Building color="$color10" size={20} />
+                    <Text fontSize="$3" color="$color10">
                       Trade Type
-                    </span>
-                  </div>
-                  <p className="text-base font-medium text-text-primary">
+                    </Text>
+                  </XStack>
+                  <Text fontSize="$5" fontWeight="500" color="$color12">
                     {subcontractor.trade_type}
-                  </p>
-                </div>
+                  </Text>
+                </Card>
 
-                <div className="p-4 bg-bg-secondary rounded-lg">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <Shield className="text-text-tertiary" size={20} />
-                    <span className="text-sm text-text-tertiary">
+                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                    <Shield color="$color10" size={20} />
+                    <Text fontSize="$3" color="$color10">
                       Active Policies
-                    </span>
-                  </div>
-                  <p className="text-base font-medium text-text-primary">
+                    </Text>
+                  </XStack>
+                  <Text fontSize="$5" fontWeight="500" color="$color12">
                     {activePolicies.length}
-                  </p>
-                </div>
+                  </Text>
+                </Card>
 
-                <div className="p-4 bg-bg-secondary rounded-lg">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <AlertTriangle className="text-text-tertiary" size={20} />
-                    <span className="text-sm text-text-tertiary">
+                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                    <AlertTriangle color="$color10" size={20} />
+                    <Text fontSize="$3" color="$color10">
                       Open Issues
-                    </span>
-                  </div>
-                  <p className="text-base font-medium text-text-primary">
+                    </Text>
+                  </XStack>
+                  <Text fontSize="$5" fontWeight="500" color="$color12">
                     {issues.length}
-                  </p>
-                </div>
+                  </Text>
+                </Card>
 
-                <div className="p-4 bg-bg-secondary rounded-lg">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <FileText className="text-text-tertiary" size={20} />
-                    <span className="text-sm text-text-tertiary">Risk Level</span>
-                  </div>
-                  <p className="text-base font-medium text-text-primary capitalize">
+                <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="calc(50% - 8px)">
+                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                    <FileText color="$color10" size={20} />
+                    <Text fontSize="$3" color="$color10">Risk Level</Text>
+                  </XStack>
+                  <Text fontSize="$5" fontWeight="500" color="$color12" textTransform="capitalize">
                     {subcontractor.risk_level}
-                  </p>
-                </div>
-              </div>
+                  </Text>
+                </Card>
+              </XStack>
 
               {people.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-text-primary mb-3">
+                <YStack>
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
                     Team Members
-                  </h3>
-                  <div className="space-y-2">
+                  </H3>
+                  <YStack gap="$2">
                     {people.map((person) => (
-                      <div
+                      <XStack
                         key={person.id}
-                        className="flex items-center justify-between p-3 bg-bg-secondary rounded-lg"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        padding="$3"
+                        backgroundColor="$backgroundHover"
+                        borderRadius="$4"
                       >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-semibold text-white">
+                        <XStack alignItems="center" gap="$3">
+                          <YStack
+                            width={40}
+                            height={40}
+                            backgroundColor="$blue10"
+                            borderRadius={9999}
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <Text fontSize="$3" fontWeight="600" color="white">
                               {person.name
                                 .split(' ')
                                 .map((n) => n[0])
                                 .join('')}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-text-primary">
+                            </Text>
+                          </YStack>
+                          <YStack>
+                            <Text fontSize="$3" fontWeight="500" color="$color12">
                               {person.name}
-                            </p>
-                            <p className="text-xs text-text-tertiary">
+                            </Text>
+                            <Text fontSize="$1" color="$color10">
                               {person.email}
-                            </p>
-                          </div>
-                        </div>
-                        <button className="text-xs text-primary-600 hover:text-primary-700 font-medium">
-                          Contact
-                        </button>
-                      </div>
+                            </Text>
+                          </YStack>
+                        </XStack>
+                        <XStack
+                          onPress={() => {}}
+                          cursor="pointer"
+                          hoverStyle={{ opacity: 0.8 }}
+                        >
+                          <Text
+                            fontSize="$1"
+                            color="$blue10"
+                            fontWeight="500"
+                          >
+                            Contact
+                          </Text>
+                        </XStack>
+                      </XStack>
                     ))}
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
               )}
 
               {projects.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-text-primary mb-3">
+                <YStack>
+                  <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
                     Projects
-                  </h3>
-                  <div className="space-y-2">
+                  </H3>
+                  <YStack gap="$2">
                     {projects.slice(0, 5).map((project) => (
-                      <div
+                      <XStack
                         key={project.id}
-                        className="flex items-center justify-between p-3 border border-border rounded-lg"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        padding="$3"
+                        borderWidth={1}
+                        borderColor="$borderColor"
+                        borderRadius="$4"
                       >
-                        <div>
-                          <p className="text-sm font-medium text-text-primary">
+                        <YStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
                             {project.name}
-                          </p>
-                          <p className="text-xs text-text-tertiary capitalize">
+                          </Text>
+                          <Text fontSize="$1" color="$color10" textTransform="capitalize">
                             Status: {project.compliance_status}
-                          </p>
-                        </div>
+                          </Text>
+                        </YStack>
                         <StatusBadge
                           status={
                             project.compliance_status === 'compliant' ? 'compliant' : 'warning'
                           }
                           size="sm"
                         />
-                      </div>
+                      </XStack>
                     ))}
-                  </div>
-                </div>
+                  </YStack>
+                </YStack>
               )}
-            </div>
+            </YStack>
           )}
 
           {activeTab === 'policies' && (
-            <div className="space-y-3">
+            <YStack gap="$3">
               {activePolicies.length > 0 ? (
                 activePolicies.map((policy) => {
                   const expiryDate = new Date(policy.expiration_date);
@@ -477,103 +559,125 @@ export default function SubcontractorDetailModal({
                     30 * 24 * 60 * 60 * 1000;
 
                   return (
-                    <div
+                    <Card
                       key={policy.id}
-                      className="p-4 border border-border rounded-lg space-y-3"
+                      padding="$4"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      borderRadius="$4"
+                      gap="$3"
                     >
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-text-primary capitalize">
+                      <XStack alignItems="center" justifyContent="space-between">
+                        <Text fontSize="$4" fontWeight="600" color="$color12" textTransform="capitalize">
                           {policy.policy_type.replace(/_/g, ' ')}
-                        </h4>
+                        </Text>
                         {isExpiringSoon ? (
-                          <span className="px-2 py-1 text-xs font-medium rounded bg-warning-100 text-warning-700">
+                          <Text
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            fontSize="$1"
+                            fontWeight="500"
+                            borderRadius="$2"
+                            backgroundColor="$orange2"
+                            color="$orange10"
+                          >
                             Expiring Soon
-                          </span>
+                          </Text>
                         ) : (
-                          <span className="px-2 py-1 text-xs font-medium rounded bg-success-100 text-success-700">
+                          <Text
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            fontSize="$1"
+                            fontWeight="500"
+                            borderRadius="$2"
+                            backgroundColor="$green2"
+                            color="$green10"
+                          >
                             Active
-                          </span>
+                          </Text>
                         )}
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-text-tertiary">Carrier</span>
-                          <p className="font-medium text-text-primary">
+                      </XStack>
+                      <XStack flexWrap="wrap" gap="$4">
+                        <YStack flex={1} minWidth="calc(50% - 8px)">
+                          <Text fontSize="$3" color="$color10">Carrier</Text>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
                             {policy.carrier}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-text-tertiary">
+                          </Text>
+                        </YStack>
+                        <YStack flex={1} minWidth="calc(50% - 8px)">
+                          <Text fontSize="$3" color="$color10">
                             Policy Number
-                          </span>
-                          <p className="font-medium text-text-primary">
+                          </Text>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
                             {policy.policy_number}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-text-tertiary">
+                          </Text>
+                        </YStack>
+                        <YStack flex={1} minWidth="calc(50% - 8px)">
+                          <Text fontSize="$3" color="$color10">
                             Effective Date
-                          </span>
-                          <p className="font-medium text-text-primary">
+                          </Text>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
                             {new Date(policy.effective_date).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div>
-                          <span className="text-text-tertiary">
+                          </Text>
+                        </YStack>
+                        <YStack flex={1} minWidth="calc(50% - 8px)">
+                          <Text fontSize="$3" color="$color10">
                             Expiry Date
-                          </span>
-                          <p
-                            className={`font-medium ${isExpiringSoon ? 'text-warning-600' : 'text-text-primary'}`}
+                          </Text>
+                          <Text
+                            fontSize="$3"
+                            fontWeight="500"
+                            color={isExpiringSoon ? '$orange10' : '$color12'}
                           >
                             {expiryDate.toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
+                          </Text>
+                        </YStack>
+                      </XStack>
                       {policy.limits && Object.keys(policy.limits).length > 0 && (
-                        <div>
-                          <span className="text-text-tertiary text-sm">
+                        <YStack>
+                          <Text fontSize="$3" color="$color10" marginBottom="$1">
                             Coverage Limits
-                          </span>
-                          <div className="mt-1 space-y-1">
+                          </Text>
+                          <YStack gap="$1">
                             {Object.entries(policy.limits).map(
                               ([key, value]) => (
-                                <div
+                                <XStack
                                   key={key}
-                                  className="flex justify-between text-sm"
+                                  justifyContent="space-between"
+                                  fontSize="$3"
                                 >
-                                  <span className="text-text-secondary capitalize">
+                                  <Text fontSize="$3" color="$color11" textTransform="capitalize">
                                     {key.replace(/_/g, ' ')}
-                                  </span>
-                                  <span className="font-medium text-text-primary">
+                                  </Text>
+                                  <Text fontSize="$3" fontWeight="500" color="$color12">
                                     ${(value as number).toLocaleString()}
-                                  </span>
-                                </div>
+                                  </Text>
+                                </XStack>
                               )
                             )}
-                          </div>
-                        </div>
+                          </YStack>
+                        </YStack>
                       )}
-                    </div>
+                    </Card>
                   );
                 })
               ) : (
-                <div className="text-center py-12">
-                  <Shield
-                    className="mx-auto text-text-tertiary mb-3"
-                    size={48}
-                  />
-                  <p className="text-text-secondary">
+                <YStack alignItems="center" paddingVertical="$12">
+                  <YStack alignItems="center" marginBottom="$3">
+                    <Shield color="$color10" size={48} />
+                  </YStack>
+                  <Text color="$color11">
                     No active insurance policies
-                  </p>
-                </div>
+                  </Text>
+                </YStack>
               )}
-            </div>
+            </YStack>
           )}
 
           {activeTab === 'documents' && (
-            <div className="space-y-4">
+            <YStack gap="$4">
               {/* Filters */}
-              <div className="flex items-center space-x-3">
+              <XStack alignItems="center" gap="$3">
                 <Select
                   value={documentFilter}
                   onChange={(e) => setDocumentFilter(e.target.value)}
@@ -595,105 +699,136 @@ export default function SubcontractorDetailModal({
                     { value: 'expired', label: 'Expired' },
                   ]}
                 />
-              </div>
+              </XStack>
 
               {documentsLoading ? (
-                <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-                  <p className="text-text-secondary">Loading documents...</p>
-                </div>
+                <YStack alignItems="center" paddingVertical="$12">
+                  <Spinner size="large" color="$blue10" marginBottom="$2" />
+                  <Text color="$color11">Loading documents...</Text>
+                </YStack>
               ) : filteredDocuments.length === 0 ? (
-                <div className="text-center py-12">
-                  <FileText
-                    className="mx-auto text-text-tertiary mb-3"
-                    size={48}
-                  />
-                  <p className="text-text-secondary mb-4">
+                <YStack alignItems="center" paddingVertical="$12">
+                  <YStack alignItems="center" marginBottom="$3">
+                    <FileText color="$color10" size={48} />
+                  </YStack>
+                  <Text color="$color11" marginBottom="$4">
                     No documents uploaded yet
-                  </p>
+                  </Text>
                   <Button variant="primary" leftIcon={Upload}>
                     Request Document Upload
                   </Button>
-                </div>
+                </YStack>
               ) : (
-                <div className="space-y-3">
+                <YStack gap="$3">
                   {filteredDocuments.map((doc) => {
                     const status = getDocumentStatus(doc);
                     const daysUntilExpiry = getDaysUntilExpiry(doc.expiry_date);
-                    const statusColors = {
-                      verified: 'border-success-200 bg-success-50',
-                      pending: 'border-warning-200 bg-warning-50',
-                      expiring: 'border-warning-200 bg-warning-50',
-                      expired: 'border-error-200 bg-error-50',
+                    const statusBorderColors = {
+                      verified: '$green8',
+                      pending: '$orange8',
+                      expiring: '$orange8',
+                      expired: '$red8',
+                    };
+                    const statusBgColors = {
+                      verified: '$green2',
+                      pending: '$orange2',
+                      expiring: '$orange2',
+                      expired: '$red2',
+                    };
+                    const statusTextColors = {
+                      verified: '$green10',
+                      pending: '$orange10',
+                      expiring: '$orange10',
+                      expired: '$red10',
                     };
 
                     return (
-                      <div
+                      <Card
                         key={doc.id}
-                        className={`p-4 border-l-4 rounded-lg ${statusColors[status] || 'border-border bg-bg-secondary'}`}
+                        padding="$4"
+                        borderLeftWidth={4}
+                        borderLeftColor={statusBorderColors[status] || '$borderColor'}
+                        borderRadius="$4"
+                        backgroundColor={statusBgColors[status] || '$backgroundHover'}
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
+                        <XStack alignItems="flex-start" justifyContent="space-between">
+                          <YStack flex={1}>
+                            <XStack alignItems="center" gap="$3" marginBottom="$2">
                               <FileText
-                                className="text-primary-600"
+                                color="$blue10"
                                 size={20}
                               />
-                              <h4 className="font-semibold text-text-primary">
+                              <Text fontSize="$4" fontWeight="600" color="$color12">
                                 {doc.file_name}
-                              </h4>
-                              <span
-                                className={`px-2 py-0.5 text-xs font-medium rounded ${
+                              </Text>
+                              <Text
+                                paddingHorizontal="$2"
+                                paddingVertical="$0.5"
+                                fontSize="$1"
+                                fontWeight="500"
+                                borderRadius="$2"
+                                backgroundColor={
                                   status === 'verified'
-                                    ? 'bg-success-100 text-success-700'
+                                    ? '$green2'
                                     : status === 'pending'
-                                      ? 'bg-warning-100 text-warning-700'
+                                      ? '$orange2'
                                       : status === 'expiring'
-                                        ? 'bg-warning-100 text-warning-700'
-                                        : 'bg-error-100 text-error-700'
-                                }`}
+                                        ? '$orange2'
+                                        : '$red2'
+                                }
+                                color={
+                                  status === 'verified'
+                                    ? '$green10'
+                                    : status === 'pending'
+                                      ? '$orange10'
+                                      : status === 'expiring'
+                                        ? '$orange10'
+                                        : '$red10'
+                                }
                               >
                                 {status.charAt(0).toUpperCase() +
                                   status.slice(1)}
-                              </span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm ml-8">
-                              <div>
-                                <span className="text-text-tertiary">
+                              </Text>
+                            </XStack>
+                            <XStack flexWrap="wrap" gap="$4" marginLeft="$8">
+                              <YStack flex={1} minWidth="calc(50% - 8px)">
+                                <Text fontSize="$3" color="$color10">
                                   Uploaded:
-                                </span>
-                                <p className="font-medium text-text-primary">
+                                </Text>
+                                <Text fontSize="$3" fontWeight="500" color="$color12">
                                   {formatDate(doc.created_at)}
-                                </p>
-                              </div>
-                              <div>
-                                <span className="text-text-tertiary">
+                                </Text>
+                              </YStack>
+                              <YStack flex={1} minWidth="calc(50% - 8px)">
+                                <Text fontSize="$3" color="$color10">
                                   Size:
-                                </span>
-                                <p className="font-medium text-text-primary">
+                                </Text>
+                                <Text fontSize="$3" fontWeight="500" color="$color12">
                                   {doc.file_size
                                     ? `${(doc.file_size / 1024 / 1024).toFixed(2)} MB`
                                     : 'N/A'}
-                                </p>
-                              </div>
+                                </Text>
+                              </YStack>
                               {doc.expiry_date && (
-                                <div>
-                                  <span className="text-text-tertiary">
+                                <YStack flex={1} minWidth="calc(50% - 8px)">
+                                  <Text fontSize="$3" color="$color10">
                                     Expiry:
-                                  </span>
-                                  <p
-                                    className={`font-medium ${daysUntilExpiry !== null && daysUntilExpiry <= 30 ? 'text-warning-600' : 'text-text-primary'}`}
+                                  </Text>
+                                  <Text
+                                    fontSize="$3"
+                                    fontWeight="500"
+                                    color={daysUntilExpiry !== null && daysUntilExpiry <= 30 ? '$orange10' : '$color12'}
                                   >
                                     {formatDate(doc.expiry_date)}
                                     {daysUntilExpiry !== null &&
                                       daysUntilExpiry <= 30 &&
                                       ` (${daysUntilExpiry} days)`}
-                                  </p>
-                                </div>
+                                  </Text>
+                                </YStack>
                               )}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
+                            </XStack>
+                          </YStack>
+                          <XStack alignItems="center" gap="$2">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -727,20 +862,20 @@ export default function SubcontractorDetailModal({
                                 Download
                               </Button>
                             )}
-                          </div>
-                        </div>
-                      </div>
+                          </XStack>
+                        </XStack>
+                      </Card>
                     );
                   })}
-                </div>
+                </YStack>
               )}
-            </div>
+            </YStack>
           )}
 
           {activeTab === 'issues' && (
-            <div className="space-y-4">
+            <YStack gap="$4">
               {/* Filters */}
-              <div className="flex items-center space-x-3">
+              <XStack alignItems="center" gap="$3">
                 <Select
                   value={issueStatusFilter}
                   onChange={(e) => setIssueStatusFilter(e.target.value)}
@@ -762,34 +897,39 @@ export default function SubcontractorDetailModal({
                     { value: 'low', label: 'Low' },
                   ]}
                 />
-              </div>
+              </XStack>
 
               {issuesLoading ? (
-                <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-                  <p className="text-text-secondary">Loading issues...</p>
-                </div>
+                <YStack alignItems="center" paddingVertical="$12">
+                  <Spinner size="large" color="$blue10" marginBottom="$2" />
+                  <Text color="$color11">Loading issues...</Text>
+                </YStack>
               ) : filteredIssues.length === 0 ? (
-                <div className="text-center py-12">
-                  <CheckCircle
-                    className="mx-auto text-success-600 mb-3"
-                    size={48}
-                  />
-                  <p className="text-success-700 font-medium">
+                <YStack alignItems="center" paddingVertical="$12">
+                  <YStack alignItems="center" marginBottom="$3">
+                    <CheckCircle color="$green10" size={48} />
+                  </YStack>
+                  <Text color="$green10" fontWeight="500">
                     No compliance issues
-                  </p>
-                  <p className="text-text-secondary text-sm">
+                  </Text>
+                  <Text color="$color11" fontSize="$3">
                     This subcontractor is fully compliant
-                  </p>
-                </div>
+                  </Text>
+                </YStack>
               ) : (
-                <div className="space-y-3">
+                <YStack gap="$3">
                   {filteredIssues.map((issue) => {
-                    const severityColors = {
-                      critical: 'border-error-500 bg-error-50',
-                      high: 'border-error-400 bg-error-50',
-                      medium: 'border-warning-500 bg-warning-50',
-                      low: 'border-warning-300 bg-warning-50',
+                    const severityBorderColors = {
+                      critical: '$red10',
+                      high: '$red9',
+                      medium: '$orange10',
+                      low: '$orange8',
+                    };
+                    const severityBgColors = {
+                      critical: '$red2',
+                      high: '$red2',
+                      medium: '$orange2',
+                      low: '$orange2',
                     };
 
                     const severityLabels = {
@@ -800,65 +940,91 @@ export default function SubcontractorDetailModal({
                     };
 
                     return (
-                      <div
+                      <Card
                         key={issue.id}
-                        className={`p-4 border-l-4 rounded-lg ${severityColors[issue.severity] || 'border-border bg-bg-secondary'}`}
+                        padding="$4"
+                        borderLeftWidth={4}
+                        borderLeftColor={severityBorderColors[issue.severity] || '$borderColor'}
+                        borderRadius="$4"
+                        backgroundColor={severityBgColors[issue.severity] || '$backgroundHover'}
                       >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex items-center space-x-2">
+                        <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                          <XStack alignItems="center" gap="$2">
                             <AlertTriangle
-                              className={`${
+                              color={
                                 issue.severity === 'critical' ||
                                 issue.severity === 'high'
-                                  ? 'text-error-600'
-                                  : 'text-warning-600'
-                              }`}
+                                  ? '$red10'
+                                  : '$orange10'
+                              }
                               size={18}
                             />
-                            <h4 className="font-semibold text-text-primary">
+                            <Text fontSize="$4" fontWeight="600" color="$color12">
                               {issue.title}
-                            </h4>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span
-                              className={`px-2 py-1 text-xs font-medium rounded ${
-                                issue.severity === 'critical'
-                                  ? 'bg-error-200 text-error-900'
-                                  : issue.severity === 'high'
-                                    ? 'bg-error-200 text-error-900'
-                                    : issue.severity === 'medium'
-                                      ? 'bg-warning-200 text-warning-900'
-                                      : 'bg-warning-100 text-warning-800'
-                              }`}
+                            </Text>
+                          </XStack>
+                          <XStack alignItems="center" gap="$2">
+                            <Text
+                              paddingHorizontal="$2"
+                              paddingVertical="$1"
+                              fontSize="$1"
+                              fontWeight="500"
+                              borderRadius="$2"
+                              backgroundColor={
+                                issue.severity === 'critical' || issue.severity === 'high'
+                                  ? '$red3'
+                                  : issue.severity === 'medium'
+                                    ? '$orange3'
+                                    : '$orange2'
+                              }
+                              color={
+                                issue.severity === 'critical' || issue.severity === 'high'
+                                  ? '$red12'
+                                  : issue.severity === 'medium'
+                                    ? '$orange12'
+                                    : '$orange11'
+                              }
                             >
                               {severityLabels[issue.severity]}
-                            </span>
-                            <span
-                              className={`px-2 py-1 text-xs font-medium rounded ${
+                            </Text>
+                            <Text
+                              paddingHorizontal="$2"
+                              paddingVertical="$1"
+                              fontSize="$1"
+                              fontWeight="500"
+                              borderRadius="$2"
+                              backgroundColor={
                                 issue.status === 'open'
-                                  ? 'bg-primary-100 text-primary-700'
+                                  ? '$blue2'
                                   : issue.status === 'in_progress'
-                                    ? 'bg-warning-100 text-warning-700'
-                                    : 'bg-success-100 text-success-700'
-                              }`}
+                                    ? '$orange2'
+                                    : '$green2'
+                              }
+                              color={
+                                issue.status === 'open'
+                                  ? '$blue10'
+                                  : issue.status === 'in_progress'
+                                    ? '$orange10'
+                                    : '$green10'
+                              }
                             >
                               {issue.status.charAt(0).toUpperCase() +
                                 issue.status.slice(1).replace('_', ' ')}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-text-secondary mb-3 ml-6">
+                            </Text>
+                          </XStack>
+                        </XStack>
+                        <Text fontSize="$3" color="$color11" marginBottom="$3" marginLeft="$6">
                           {issue.description}
-                        </p>
-                        <div className="flex items-center justify-between ml-6">
-                          <div className="text-xs text-text-tertiary">
-                            <span>
+                        </Text>
+                        <XStack alignItems="center" justifyContent="space-between" marginLeft="$6">
+                          <XStack gap="$3" fontSize="$1" color="$color10">
+                            <Text fontSize="$1" color="$color10">
                               Type: {issue.issue_type.replace('_', ' ')}
-                            </span>
-                            <span className="ml-3">
+                            </Text>
+                            <Text fontSize="$1" color="$color10">
                               Created: {formatDate(issue.created_at)}
-                            </span>
-                          </div>
+                            </Text>
+                          </XStack>
                           {issue.status === 'open' && (
                             <Button
                               variant="outline"
@@ -868,38 +1034,38 @@ export default function SubcontractorDetailModal({
                               Mark Resolved
                             </Button>
                           )}
-                        </div>
-                      </div>
+                        </XStack>
+                      </Card>
                     );
                   })}
-                </div>
+                </YStack>
               )}
-            </div>
+            </YStack>
           )}
 
-          <div className="flex space-x-3 pt-4 border-t border-border">
+          <XStack gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
             <Button
               variant="secondary"
               onClick={() => setShowMessageModal(true)}
               leftIcon={MessageSquare}
-              className="flex-1"
+              flex={1}
             >
               Send Message
             </Button>
-            <Button variant="secondary" leftIcon={FileText} className="flex-1">
+            <Button variant="secondary" leftIcon={FileText} flex={1}>
               View Full Profile
             </Button>
             {allIssues.length > 0 ? (
-              <Button variant="danger" leftIcon={UserX} className="flex-1">
+              <Button variant="danger" leftIcon={UserX} flex={1}>
                 Restrict Access
               </Button>
             ) : (
-              <Button variant="success" leftIcon={UserCheck} className="flex-1">
+              <Button variant="success" leftIcon={UserCheck} flex={1}>
                 Approve
               </Button>
             )}
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* Document Detail Modal */}
@@ -925,36 +1091,52 @@ export default function SubcontractorDetailModal({
         title="Send Message"
         size="sm"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-text-secondary mb-2">
+        <YStack gap="$4">
+          <YStack>
+            <Text
+              as="label"
+              display="block"
+              fontSize="$3"
+              fontWeight="500"
+              color="$color11"
+              marginBottom="$2"
+            >
               Message to {subcontractor.company_name}
-            </label>
+            </Text>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
               placeholder="Type your message here..."
-              className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color12)',
+                fontFamily: 'inherit',
+              }}
             />
-          </div>
-          <div className="flex space-x-3">
+          </YStack>
+          <XStack gap="$3">
             <Button
               variant="secondary"
               onClick={() => setShowMessageModal(false)}
-              className="flex-1"
+              flex={1}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               onClick={handleSendMessage}
-              className="flex-1"
+              flex={1}
             >
               Send Message
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
     </>
   );
