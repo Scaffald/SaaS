@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Clock, CheckCircle } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card, Circle } from '@unicornlove/ui';
 import { Task } from '../../types';
 import { formatDate, isOverdue } from '../../utils/dateHelpers';
 import TaskDetailModal from './TaskDetailModal';
@@ -47,14 +48,14 @@ export default function ManagerTasksPanel({
     }
   };
 
-  const getPriorityBadge = (priority: string) => {
+  const getPriorityBadgeProps = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return 'bg-error-100 text-error-700';
+        return { backgroundColor: '$red2', color: '$red10' };
       case 'high':
-        return 'bg-warning-100 text-warning-700';
+        return { backgroundColor: '$orange2', color: '$orange10' };
       default:
-        return 'bg-primary-100 text-primary-700';
+        return { backgroundColor: '$blue2', color: '$blue10' };
     }
   };
 
@@ -75,160 +76,263 @@ export default function ManagerTasksPanel({
   };
 
   return (
-    <div className="bg-surface rounded-lg shadow-sm border border-border">
-      <div className="p-6 border-b border-border">
-        <h2 className="text-lg font-semibold text-text-primary mb-4">
+    <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" elevation={1}>
+      <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+        <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
           Task Management
-        </h2>
+        </H2>
 
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setActiveView('action_required')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              activeView === 'action_required'
-                ? 'bg-primary-500 text-white'
-                : 'text-text-secondary hover:bg-surface-hover'
-            }`}
+        <XStack gap="$2">
+          <XStack
+            onPress={() => setActiveView('action_required')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$3"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={activeView === 'action_required' ? '$blue10' : 'transparent'}
+            color={activeView === 'action_required' ? 'white' : '$color11'}
+            hoverStyle={{ backgroundColor: activeView === 'action_required' ? '$blue11' : '$backgroundHover' }}
+            cursor="pointer"
           >
-            Action Required ({actionRequiredTasks.length})
-          </button>
-          <button
-            onClick={() => setActiveView('delegated')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              activeView === 'delegated'
-                ? 'bg-primary-500 text-white'
-                : 'text-text-secondary hover:bg-surface-hover'
-            }`}
+            <Text fontSize="$3" fontWeight="500" color={activeView === 'action_required' ? 'white' : '$color11'}>
+              Action Required ({actionRequiredTasks.length})
+            </Text>
+          </XStack>
+          <XStack
+            onPress={() => setActiveView('delegated')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$3"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={activeView === 'delegated' ? '$blue10' : 'transparent'}
+            color={activeView === 'delegated' ? 'white' : '$color11'}
+            hoverStyle={{ backgroundColor: activeView === 'delegated' ? '$blue11' : '$backgroundHover' }}
+            cursor="pointer"
           >
-            Delegated ({delegatedTasks.length})
-          </button>
-          <button
-            onClick={() => setActiveView('completed')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              activeView === 'completed'
-                ? 'bg-primary-500 text-white'
-                : 'text-text-secondary hover:bg-surface-hover'
-            }`}
+            <Text fontSize="$3" fontWeight="500" color={activeView === 'delegated' ? 'white' : '$color11'}>
+              Delegated ({delegatedTasks.length})
+            </Text>
+          </XStack>
+          <XStack
+            onPress={() => setActiveView('completed')}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            fontSize="$3"
+            fontWeight="500"
+            borderRadius="$4"
+            backgroundColor={activeView === 'completed' ? '$blue10' : 'transparent'}
+            color={activeView === 'completed' ? 'white' : '$color11'}
+            hoverStyle={{ backgroundColor: activeView === 'completed' ? '$blue11' : '$backgroundHover' }}
+            cursor="pointer"
           >
-            Completed ({completedTasks.length})
-          </button>
-        </div>
-      </div>
+            <Text fontSize="$3" fontWeight="500" color={activeView === 'completed' ? 'white' : '$color11'}>
+              Completed ({completedTasks.length})
+            </Text>
+          </XStack>
+        </XStack>
+      </YStack>
 
-      <div className="overflow-x-auto">
+      <YStack overflowX="auto">
         {displayTasks.length > 0 ? (
-          <table className="w-full">
-            <thead className="bg-bg-secondary border-b border-border">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead style={{ backgroundColor: 'var(--background-hover)', borderBottom: '1px solid var(--border-color)' }}>
               <tr>
-                <th className="text-left py-3 px-4 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                <th style={{
+                  textAlign: 'left',
+                  padding: '12px 16px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: 'var(--color-11)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}>
                   Task
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                <th style={{
+                  textAlign: 'left',
+                  padding: '12px 16px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: 'var(--color-11)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}>
                   Priority
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                <th style={{
+                  textAlign: 'left',
+                  padding: '12px 16px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: 'var(--color-11)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}>
                   Type
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                <th style={{
+                  textAlign: 'left',
+                  padding: '12px 16px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: 'var(--color-11)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}>
                   Assigned To
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                <th style={{
+                  textAlign: 'left',
+                  padding: '12px 16px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: 'var(--color-11)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}>
                   Due Date
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-medium text-text-secondary uppercase tracking-wider">
+                <th style={{
+                  textAlign: 'left',
+                  padding: '12px 16px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: 'var(--color-11)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                }}>
                   Status
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody style={{ borderTop: '1px solid var(--border-color)' }}>
               {displayTasks.map((task) => (
                 <tr
                   key={task.id}
                   onClick={() => handleTaskClick(task)}
-                  className="hover:bg-bg-secondary cursor-pointer transition-colors"
+                  style={{
+                    cursor: 'pointer',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--background-hover)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--background)';
+                  }}
                 >
-                  <td className="py-3 px-4">
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">
+                  <td style={{ padding: '12px 16px', borderTop: '1px solid var(--border-color)' }}>
+                    <YStack>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
                         {task.title}
-                      </p>
+                      </Text>
                       {task.description && (
-                        <p className="text-xs text-text-secondary line-clamp-1 mt-0.5">
+                        <Text fontSize="$1" color="$color11" numberOfLines={1} marginTop="$0.5">
                           {task.description}
-                        </p>
+                        </Text>
                       )}
-                    </div>
+                    </YStack>
                   </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getPriorityBadge(task.priority)}`}
+                  <td style={{ padding: '12px 16px', borderTop: '1px solid var(--border-color)' }}>
+                    <Text
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$2"
+                      fontSize="$1"
+                      fontWeight="500"
+                      {...getPriorityBadgeProps(task.priority)}
                     >
                       {task.priority}
-                    </span>
+                    </Text>
                   </td>
-                  <td className="py-3 px-4">
-                    <span className="text-sm text-text-primary capitalize">
+                  <td style={{ padding: '12px 16px', borderTop: '1px solid var(--border-color)' }}>
+                    <Text fontSize="$3" color="$color12" textTransform="capitalize">
                       {task.task_type || 'General'}
-                    </span>
+                    </Text>
                   </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-7 h-7 bg-primary-500 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-semibold text-white">
+                  <td style={{ padding: '12px 16px', borderTop: '1px solid var(--border-color)' }}>
+                    <XStack alignItems="center" gap="$2">
+                      <Circle
+                        size={28}
+                        backgroundColor="$blue10"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <Text fontSize="$1" fontWeight="600" color="white">
                           {task.assigned_to
                             ? task.assigned_to.name
                                 .split(' ')
                                 .map((n) => n[0])
                                 .join('')
                             : 'UN'}
-                        </span>
-                      </div>
-                      <span className="text-sm text-text-primary">
+                        </Text>
+                      </Circle>
+                      <Text fontSize="$3" color="$color12">
                         {task.assigned_to
                           ? task.assigned_to.name
                           : 'Unassigned'}
-                      </span>
-                    </div>
+                      </Text>
+                    </XStack>
                   </td>
-                  <td className="py-3 px-4">
+                  <td style={{ padding: '12px 16px', borderTop: '1px solid var(--border-color)' }}>
                     {task.due_date && (
-                      <div
-                        className={`flex items-center text-sm ${isOverdue(task.due_date) ? 'text-error-600 font-medium' : 'text-text-primary'}`}
+                      <XStack
+                        alignItems="center"
+                        fontSize="$3"
+                        color={isOverdue(task.due_date) ? '$red10' : '$color12'}
+                        fontWeight={isOverdue(task.due_date) ? '500' : 'normal'}
                       >
-                        <Clock size={14} className="mr-1.5" />
-                        {formatDate(task.due_date)}
-                      </div>
+                        <Clock size={14} marginRight="$1.5" />
+                        <Text fontSize="$3" color={isOverdue(task.due_date) ? '$red10' : '$color12'} fontWeight={isOverdue(task.due_date) ? '500' : 'normal'}>
+                          {formatDate(task.due_date)}
+                        </Text>
+                      </XStack>
                     )}
                   </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                  <td style={{ padding: '12px 16px', borderTop: '1px solid var(--border-color)' }}>
+                    <Text
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      borderRadius="$2"
+                      fontSize="$1"
+                      fontWeight="500"
+                      backgroundColor={
                         task.status === 'completed'
-                          ? 'bg-success-100 text-success-700'
+                          ? '$green2'
                           : task.status === 'in_progress'
-                            ? 'bg-primary-100 text-primary-700'
-                            : 'bg-gray-100 text-gray-700'
-                      }`}
+                            ? '$blue2'
+                            : '$gray2'
+                      }
+                      color={
+                        task.status === 'completed'
+                          ? '$green10'
+                          : task.status === 'in_progress'
+                            ? '$blue10'
+                            : '$gray10'
+                      }
                     >
                       {task.status.replace('_', ' ')}
-                    </span>
+                    </Text>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <div className="text-center py-12">
+          <YStack alignItems="center" paddingVertical="$12">
             <CheckCircle
-              className="mx-auto text-text-tertiary mb-3"
+              color="$color10"
               size={48}
+              marginBottom="$3"
             />
-            <p className="text-text-secondary">
+            <Text color="$color11">
               No {activeView.replace('_', ' ')} tasks
-            </p>
-          </div>
+            </Text>
+          </YStack>
         )}
-      </div>
+      </YStack>
 
       <TaskDetailModal
         task={selectedTask}
@@ -242,6 +346,6 @@ export default function ManagerTasksPanel({
           { id: 'user-sub-3', name: 'Troy Sprague', role: 'Subcontractor' },
         ]}
       />
-    </div>
+    </Card>
   );
 }
