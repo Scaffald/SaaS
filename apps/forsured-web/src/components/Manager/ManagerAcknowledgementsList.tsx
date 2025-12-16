@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Search,
   Filter,
@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   X,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card } from '@unicornlove/ui';
 import {
   useManagerAcknowledgements,
   PacketStatus,
@@ -57,38 +58,38 @@ export default function ManagerAcknowledgementsList() {
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusColor = (status: PacketStatus) => {
+  const getStatusColorProps = (status: PacketStatus) => {
     switch (status) {
       case 'DRAFT':
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return { backgroundColor: '$gray2', color: '$gray10', borderColor: '$gray8' };
       case 'SENT':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return { backgroundColor: '$blue2', color: '$blue10', borderColor: '$blue8' };
       case 'VIEWED':
-        return 'bg-primary-100 text-primary-700 border-primary-200';
+        return { backgroundColor: '$blue2', color: '$blue10', borderColor: '$blue8' };
       case 'SIGNED':
-        return 'bg-success-100 text-success-700 border-success-200';
+        return { backgroundColor: '$green2', color: '$green10', borderColor: '$green8' };
       case 'DECLINED':
-        return 'bg-error-100 text-error-700 border-error-200';
+        return { backgroundColor: '$red2', color: '$red10', borderColor: '$red8' };
       case 'EXPIRED':
-        return 'bg-warning-100 text-warning-700 border-warning-200';
+        return { backgroundColor: '$orange2', color: '$orange10', borderColor: '$orange8' };
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return { backgroundColor: '$gray2', color: '$gray10', borderColor: '$gray8' };
     }
   };
 
   const getSignerStatusIcon = (status: string) => {
     switch (status) {
       case 'SIGNED':
-        return <CheckCircle size={16} className="text-success-600" />;
+        return <CheckCircle size={16} color="$green10" />;
       case 'DECLINED':
-        return <X size={16} className="text-error-600" />;
+        return <X size={16} color="$red10" />;
       case 'VIEWED':
-        return <Clock size={16} className="text-primary-600" />;
+        return <Clock size={16} color="$blue10" />;
       case 'SENT':
-        return <Clock size={16} className="text-blue-600" />;
+        return <Clock size={16} color="$blue10" />;
       case 'PENDING':
       default:
-        return <Clock size={16} className="text-gray-400" />;
+        return <Clock size={16} color="$gray10" />;
     }
   };
 
@@ -112,112 +113,132 @@ export default function ManagerAcknowledgementsList() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="h-8 bg-surface-secondary rounded animate-pulse"></div>
-        <div className="h-32 bg-surface-secondary rounded animate-pulse"></div>
-        <div className="h-32 bg-surface-secondary rounded animate-pulse"></div>
-      </div>
+      <YStack gap="$4">
+        <YStack height={32} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
+        <YStack height={128} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
+        <YStack height={128} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-text-primary">
+    <YStack gap="$6">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Broker Acknowledgements
-          </h1>
-          <p className="text-text-secondary text-lg mt-1">
+          </H1>
+          <Text color="$color11" fontSize="$6" marginTop="$1">
             Review and manage broker acknowledgement packets for compliance
             verification
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <Button variant="primary" onClick={() => setShowCreateModal(true)}>
           Create Packet
         </Button>
-      </div>
+      </XStack>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <FileText className="text-blue-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">
+      <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
+        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack width={40} height={40} backgroundColor="$blue2" borderRadius="$4" alignItems="center" justifyContent="center">
+              <FileText color="$blue10" size={20} />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$color12">
               {packets.length}
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">
             Total Packets
-          </h3>
-        </div>
+          </H3>
+        </Card>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="text-success-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">
+        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack width={40} height={40} backgroundColor="$green2" borderRadius="$4" alignItems="center" justifyContent="center">
+              <CheckCircle color="$green10" size={20} />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$color12">
               {packets.filter((p) => p.status === 'SIGNED').length}
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">Signed</h3>
-        </div>
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">Signed</H3>
+        </Card>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Clock className="text-blue-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">
+        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack width={40} height={40} backgroundColor="$blue2" borderRadius="$4" alignItems="center" justifyContent="center">
+              <Clock color="$blue10" size={20} />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$color12">
               {
                 packets.filter(
                   (p) => p.status === 'SENT' || p.status === 'VIEWED'
                 ).length
               }
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">Pending</h3>
-        </div>
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">Pending</H3>
+        </Card>
 
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-10 h-10 bg-warning-100 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="text-warning-600" size={20} />
-            </div>
-            <span className="text-2xl font-bold text-text-primary">
+        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$5" elevation={1} flex={1} minWidth="calc(25% - 12px)" $gtMd={{ minWidth: 'calc(25% - 12px)' }}>
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <YStack width={40} height={40} backgroundColor="$orange2" borderRadius="$4" alignItems="center" justifyContent="center">
+              <AlertTriangle color="$orange10" size={20} />
+            </YStack>
+            <Text fontSize="$9" fontWeight="700" color="$color12">
               {packets.filter((p) => isExpiringSoon(p)).length}
-            </span>
-          </div>
-          <h3 className="text-sm font-medium text-text-secondary">
+            </Text>
+          </XStack>
+          <H3 fontSize="$3" fontWeight="500" color="$color11">
             Expiring Soon
-          </h3>
-        </div>
-      </div>
+          </H3>
+        </Card>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search
-              size={20}
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-secondary"
-            />
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$4" elevation={1}>
+        <XStack flexDirection="column" $gtMd={{ flexDirection: 'row' }} gap="$4">
+          <YStack flex={1} position="relative">
+            <YStack position="absolute" left="$3" top="50%" transform="translateY(-50%)" zIndex={1}>
+              <Search
+                size={20}
+                color="$color11"
+              />
+            </YStack>
             <input
               type="text"
               placeholder="Search by project, broker, GC, or jurisdiction..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              style={{
+                width: '100%',
+                paddingLeft: '40px',
+                paddingRight: '16px',
+                paddingTop: '10px',
+                paddingBottom: '10px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color-12)',
+              }}
             />
-          </div>
-          <div className="flex items-center gap-2">
-            <Filter size={20} className="text-text-secondary" />
+          </YStack>
+          <XStack alignItems="center" gap="$2">
+            <Filter size={20} color="$color11" />
             <select
               value={statusFilter}
               onChange={(e) =>
                 setStatusFilter(e.target.value as PacketStatus | 'ALL')
               }
-              className="px-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                padding: '10px 16px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color-12)',
+              }}
             >
               <option value="ALL">All Status</option>
               <option value="DRAFT">Draft</option>
@@ -227,149 +248,180 @@ export default function ManagerAcknowledgementsList() {
               <option value="DECLINED">Declined</option>
               <option value="EXPIRED">Expired</option>
             </select>
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </XStack>
+      </Card>
 
       {filteredPackets.length === 0 ? (
-        <div className="bg-surface rounded-lg border border-border p-12 text-center">
-          <FileText size={48} className="mx-auto text-text-secondary mb-4" />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+        <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
+          <FileText size={48} color="$color11" marginBottom="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             {searchTerm || statusFilter !== 'ALL'
               ? 'No packets found'
               : 'No acknowledgement packets yet'}
-          </h3>
-          <p className="text-text-secondary mb-6">
+          </H3>
+          <Text color="$color11" marginBottom="$6">
             {searchTerm || statusFilter !== 'ALL'
               ? 'Try adjusting your search or filter criteria'
               : 'Create your first broker acknowledgement packet to get started'}
-          </p>
-        </div>
+          </Text>
+        </Card>
       ) : (
-        <div className="space-y-4">
+        <YStack gap="$4">
           {filteredPackets.map((packet) => {
             const attestationCount = getAttestationCount(packet.attestations);
             const completionPct = getCompletionPercentage(packet);
             const expiringSoon = isExpiringSoon(packet);
 
             return (
-              <div
+              <Card
                 key={packet.id}
-                className="bg-surface rounded-lg border border-border hover:border-primary-300 transition-all cursor-pointer group"
-                onClick={() => setSelectedPacketId(packet.id)}
+                backgroundColor="$background"
+                borderRadius="$4"
+                borderWidth={1}
+                borderColor="$borderColor"
+                hoverStyle={{ borderColor: '$blue8' }}
+                cursor="pointer"
+                onPress={() => setSelectedPacketId(packet.id)}
               >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-text-primary group-hover:text-primary-600 transition-colors">
+                <YStack padding="$6">
+                  <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+                    <YStack flex={1}>
+                      <XStack alignItems="center" gap="$3" marginBottom="$2">
+                        <H3 fontSize="$6" fontWeight="600" color="$color12">
                           {getProjectName(packet.project_id)}
-                        </h3>
-                        <span
-                          className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(packet.status)}`}
+                        </H3>
+                        <Text
+                          paddingHorizontal="$3"
+                          paddingVertical="$1"
+                          fontSize="$1"
+                          fontWeight="500"
+                          borderRadius={9999}
+                          borderWidth={1}
+                          {...getStatusColorProps(packet.status)}
                         >
                           {packet.status}
-                        </span>
+                        </Text>
                         {expiringSoon && (
-                          <span className="px-2 py-1 text-xs font-medium rounded bg-warning-100 text-warning-700 flex items-center gap-1">
+                          <XStack
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            fontSize="$1"
+                            fontWeight="500"
+                            borderRadius="$2"
+                            backgroundColor="$orange2"
+                            color="$orange10"
+                            alignItems="center"
+                            gap="$1"
+                          >
                             <AlertTriangle size={12} />
-                            Expiring Soon
-                          </span>
+                            <Text fontSize="$1" color="$orange10">Expiring Soon</Text>
+                          </XStack>
                         )}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-text-secondary">
-                        <span className="flex items-center gap-1">
+                      </XStack>
+                      <XStack alignItems="center" gap="$4" fontSize="$3" color="$color11">
+                        <XStack alignItems="center" gap="$1">
                           <Shield size={14} />
-                          {getBrokerName(packet.broker_company_id)}
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
+                          <Text fontSize="$3" color="$color11">
+                            {getBrokerName(packet.broker_company_id)}
+                          </Text>
+                        </XStack>
+                        <Text fontSize="$3" color="$color11">•</Text>
+                        <XStack alignItems="center" gap="$1">
                           <Users size={14} />
-                          {getGCName(packet.gc_company_id)}
-                        </span>
-                        <span>•</span>
-                        <span>{packet.jurisdiction}</span>
-                      </div>
-                    </div>
-                  </div>
+                          <Text fontSize="$3" color="$color11">
+                            {getGCName(packet.gc_company_id)}
+                          </Text>
+                        </XStack>
+                        <Text fontSize="$3" color="$color11">•</Text>
+                        <Text fontSize="$3" color="$color11">{packet.jurisdiction}</Text>
+                      </XStack>
+                    </YStack>
+                  </XStack>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="bg-bg-secondary rounded-lg p-3">
-                      <p className="text-xs text-text-secondary mb-1">
+                  <XStack flexWrap="wrap" gap="$4" marginBottom="$4" $gtMd={{ flexWrap: 'wrap' }}>
+                    <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$3" flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
+                      <Text fontSize="$1" color="$color11" marginBottom="$1">
                         Effective Date
-                      </p>
-                      <p className="text-sm font-medium text-text-primary flex items-center gap-1">
+                      </Text>
+                      <XStack alignItems="center" gap="$1">
                         <Calendar size={14} />
-                        {formatDate(packet.effective_at)}
-                      </p>
-                    </div>
+                        <Text fontSize="$3" fontWeight="500" color="$color12">
+                          {formatDate(packet.effective_at)}
+                        </Text>
+                      </XStack>
+                    </Card>
 
-                    <div className="bg-bg-secondary rounded-lg p-3">
-                      <p className="text-xs text-text-secondary mb-1">
+                    <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$3" flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
+                      <Text fontSize="$1" color="$color11" marginBottom="$1">
                         E&O Coverage
-                      </p>
-                      <p className="text-sm font-medium text-text-primary">
+                      </Text>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
                         {formatCurrency(packet.eo_policy.limits_each_claim)} /{' '}
                         {formatCurrency(packet.eo_policy.limits_aggregate)}
-                      </p>
-                    </div>
+                      </Text>
+                    </Card>
 
-                    <div className="bg-bg-secondary rounded-lg p-3">
-                      <p className="text-xs text-text-secondary mb-1">
+                    <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$3" flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
+                      <Text fontSize="$1" color="$color11" marginBottom="$1">
                         Licensed States
-                      </p>
-                      <p className="text-sm font-medium text-text-primary">
+                      </Text>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
                         {packet.licensing.states.join(', ')}
-                      </p>
-                    </div>
-                  </div>
+                      </Text>
+                    </Card>
+                  </XStack>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <div className="text-xs text-text-secondary">
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <XStack alignItems="center" gap="$4">
+                      <XStack alignItems="center" gap="$2">
+                        <Text fontSize="$1" color="$color11">
                           Attestations:
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle size={14} className="text-success-600" />
-                          <span className="text-xs font-medium text-text-primary">
+                        </Text>
+                        <XStack alignItems="center" gap="$1">
+                          <CheckCircle size={14} color="$green10" />
+                          <Text fontSize="$1" fontWeight="500" color="$color12">
                             {attestationCount.confirmed}/
                             {attestationCount.total}
-                          </span>
-                        </div>
-                      </div>
+                          </Text>
+                        </XStack>
+                      </XStack>
 
-                      <div className="flex items-center gap-2">
+                      <XStack alignItems="center" gap="$2">
                         {packet.signers.map((signer, idx) => (
-                          <div
+                          <XStack
                             key={idx}
-                            className="flex items-center gap-1.5 px-2 py-1 bg-bg-primary rounded border border-border"
+                            alignItems="center"
+                            gap="$1.5"
+                            paddingHorizontal="$2"
+                            paddingVertical="$1"
+                            backgroundColor="$background"
+                            borderRadius="$2"
+                            borderWidth={1}
+                            borderColor="$borderColor"
                           >
                             {getSignerStatusIcon(signer.status)}
-                            <span className="text-xs font-medium text-text-secondary">
+                            <Text fontSize="$1" fontWeight="500" color="$color11">
                               {signer.role}
-                            </span>
-                          </div>
+                            </Text>
+                          </XStack>
                         ))}
-                      </div>
-                    </div>
+                      </XStack>
+                    </XStack>
 
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-24 h-2 bg-bg-secondary rounded-full overflow-hidden">
-                          <div
-                            className={`h-full transition-all ${
-                              completionPct === 100
-                                ? 'bg-success-500'
-                                : 'bg-primary-500'
-                            }`}
-                            style={{ width: `${completionPct}%` }}
+                    <XStack alignItems="center" gap="$3">
+                      <XStack alignItems="center" gap="$2">
+                        <YStack width={96} height={8} backgroundColor="$backgroundHover" borderRadius={9999} overflow="hidden">
+                          <YStack
+                            height="100%"
+                            backgroundColor={completionPct === 100 ? '$green10' : '$blue10'}
+                            width={`${completionPct}%`}
                           />
-                        </div>
-                        <span className="text-xs font-medium text-text-secondary">
+                        </YStack>
+                        <Text fontSize="$1" fontWeight="500" color="$color11">
                           {completionPct}%
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
 
                       <Button
                         variant="outline"
@@ -381,13 +433,13 @@ export default function ManagerAcknowledgementsList() {
                       >
                         View Details
                       </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </XStack>
+                  </XStack>
+                </YStack>
+              </Card>
             );
           })}
-        </div>
+        </YStack>
       )}
 
       {selectedPacketId && (
@@ -408,13 +460,22 @@ export default function ManagerAcknowledgementsList() {
       )}
 
       {createdFormId && (
-        <div className="fixed inset-0 bg-bg-primary z-50 overflow-auto">
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="$background"
+          zIndex={50}
+          overflow="auto"
+        >
           <BrokerAcknowledgementFormPage
             formId={createdFormId}
             onBack={() => setCreatedFormId(undefined)}
           />
-        </div>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
