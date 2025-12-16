@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Search,
   Filter,
@@ -10,6 +10,7 @@ import {
   X,
   Loader2,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import EnhancedTaskDetailModal from './EnhancedTaskDetailModal';
 import { useMockDatabase } from '../../contexts/DatabaseContext';
@@ -178,49 +179,49 @@ export default function ManagerTasksPage() {
     taskStatuses,   // Added dependency
   ]);
 
-  const getPriorityColor = (priority: string) => { // Changed type to string
+  const getPriorityColorProps = (priority: string) => {
     const priorityEnum = taskPriorities?.find(p => p.value === priority);
-    if (!priorityEnum) return 'text-text-tertiary bg-gray-50 border-gray-200';
+    if (!priorityEnum) return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
 
     switch (priorityEnum.value) {
       case 'urgent':
-        return 'text-error-600 bg-error-50 border-error-200';
+        return { color: '$red10', backgroundColor: '$red2', borderColor: '$red8' };
       case 'high':
-        return 'text-warning-600 bg-warning-50 border-warning-200';
+        return { color: '$orange10', backgroundColor: '$orange2', borderColor: '$orange8' };
       case 'medium':
-        return 'text-primary-600 bg-primary-50 border-primary-200';
+        return { color: '$blue10', backgroundColor: '$blue2', borderColor: '$blue8' };
       case 'low':
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
       default:
-        return 'text-text-tertiary bg-gray-50 border-gray-200';
+        return { color: '$color10', backgroundColor: '$gray2', borderColor: '$gray8' };
     }
   };
 
-  const getStatusColor = (status: string) => { // Changed type to string
+  const getStatusColorProps = (status: string) => {
     const statusEnum = taskStatuses?.find(s => s.value === status);
-    if (!statusEnum) return 'text-text-secondary bg-gray-50';
+    if (!statusEnum) return { color: '$color11', backgroundColor: '$gray2' };
 
     switch (statusEnum.value) {
       case 'pending':
-        return 'text-primary-600 bg-primary-50';
+        return { color: '$blue10', backgroundColor: '$blue2' };
       case 'in_progress':
-        return 'text-blue-600 bg-blue-50';
+        return { color: '$blue10', backgroundColor: '$blue2' };
       case 'submitted':
-        return 'text-blue-500 bg-blue-50';
+        return { color: '$blue9', backgroundColor: '$blue2' };
       case 'in_review':
-        return 'text-purple-600 bg-purple-50';
+        return { color: '$purple10', backgroundColor: '$purple2' };
       case 'approved':
-        return 'text-success-600 bg-success-50';
+        return { color: '$green10', backgroundColor: '$green2' };
       case 'rejected':
-        return 'text-error-600 bg-error-50';
+        return { color: '$red10', backgroundColor: '$red2' };
       case 'needs_info':
-        return 'text-warning-600 bg-warning-50';
+        return { color: '$orange10', backgroundColor: '$orange2' };
       case 'completed':
-        return 'text-success-600 bg-success-50';
+        return { color: '$green10', backgroundColor: '$green2' };
       case 'cancelled':
-        return 'text-text-tertiary bg-gray-50';
+        return { color: '$color10', backgroundColor: '$gray2' };
       default:
-        return 'text-text-secondary bg-gray-50';
+        return { color: '$color11', backgroundColor: '$gray2' };
     }
   };
 
@@ -233,14 +234,14 @@ export default function ManagerTasksPage() {
     if (diffDays < 0)
       return {
         text: `${Math.abs(diffDays)}d overdue`,
-        color: 'text-error-600',
+        color: '$red10',
       };
-    if (diffDays === 0) return { text: 'Due today', color: 'text-warning-600' };
+    if (diffDays === 0) return { text: 'Due today', color: '$orange10' };
     if (diffDays === 1)
-      return { text: 'Due tomorrow', color: 'text-warning-600' };
+      return { text: 'Due tomorrow', color: '$orange10' };
     if (diffDays <= 3)
-      return { text: `Due in ${diffDays}d`, color: 'text-warning-600' };
-    return { text: date.toLocaleDateString(), color: 'text-text-secondary' };
+      return { text: `Due in ${diffDays}d`, color: '$orange10' };
+    return { text: date.toLocaleDateString(), color: '$color11' };
   };
 
   const toggle = (tag: string) => {
@@ -277,124 +278,174 @@ export default function ManagerTasksPage() {
   // Show loading state
   if (loading || loadingStatuses || loadingPriorities) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-          <p className="text-text-secondary">Loading tasks and filters...</p>
-        </div>
-      </div>
+      <YStack alignItems="center" justifyContent="center" minHeight={400}>
+        <YStack alignItems="center" gap="$4">
+          <Spinner size="large" color="$blue10" />
+          <Text color="$color11">Loading tasks and filters...</Text>
+        </YStack>
+      </YStack>
     );
   }
 
   // Show error state
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <AlertCircle className="mx-auto text-error-500 mb-4" size={48} />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+      <YStack alignItems="center" justifyContent="center" minHeight={400}>
+        <YStack alignItems="center">
+          <YStack alignItems="center" marginBottom="$4">
+            <AlertCircle color="$red10" size={48} />
+          </YStack>
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             Failed to load tasks
-          </h3>
-          <p className="text-text-secondary">{error.message}</p>
-        </div>
-      </div>
+          </H3>
+          <Text color="$color11">{error.message}</Text>
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-bold text-text-primary">
+    <YStack gap="$6">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$10" fontWeight="700" color="$color12" fontFamily="$heading">
             Tasks
-          </h1>
-          <p className="text-text-secondary text-lg mt-1">
+          </H1>
+          <Text color="$color11" fontSize="$6" marginTop="$1">
             Manage compliance tasks across {allProjects.length} active projects
-          </p>
-        </div>
+          </Text>
+        </YStack>
         <Button variant="primary">Create Task</Button>
-      </div>
+      </XStack>
 
-      <div className="flex items-center space-x-4 text-sm">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-primary-500"></div>
-          <span className="font-semibold text-text-primary">
+      <XStack alignItems="center" gap="$4" fontSize="$3">
+        <XStack alignItems="center" gap="$2">
+          <Circle size={12} backgroundColor="$blue10" />
+          <Text fontWeight="600" color="$color12">
             {statusCounts.pending}
-          </span>
-          <span className="text-text-secondary">Pending</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-          <span className="font-semibold text-text-primary">
+          </Text>
+          <Text color="$color11">Pending</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <Circle size={12} backgroundColor="$blue10" />
+          <Text fontWeight="600" color="$color12">
             {statusCounts.in_progress}
-          </span>
-          <span className="text-text-secondary">In Progress</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-error-500"></div>
-          <span className="font-semibold text-text-primary">
+          </Text>
+          <Text color="$color11">In Progress</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <Circle size={12} backgroundColor="$red10" />
+          <Text fontWeight="600" color="$color12">
             {statusCounts.needs_attention}
-          </span>
-          <span className="text-text-secondary">Needs Attention</span>
-        </div>
-        <div className="h-4 w-px bg-border"></div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 rounded-full bg-success-500"></div>
-          <span className="font-semibold text-text-primary">
+          </Text>
+          <Text color="$color11">Needs Attention</Text>
+        </XStack>
+        <YStack height={16} width={1} backgroundColor="$borderColor" />
+        <XStack alignItems="center" gap="$2">
+          <Circle size={12} backgroundColor="$green10" />
+          <Text fontWeight="600" color="$color12">
             {statusCounts.completed}
-          </span>
-          <span className="text-text-secondary">Completed</span>
-        </div>
-      </div>
+          </Text>
+          <Text color="$color11">Completed</Text>
+        </XStack>
+      </XStack>
 
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4 space-y-4">
-        <div className="flex items-center space-x-3">
-          <div className="flex-1 relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
-              size={20}
-            />
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$4" elevation={1} gap="$4">
+        <XStack alignItems="center" gap="$3">
+          <YStack flex={1} position="relative">
+            <YStack position="absolute" left="$3" top="50%" transform="translateY(-50%)" zIndex={1}>
+              <Search
+                color="$color10"
+                size={20}
+              />
+            </YStack>
             <input
               type="text"
               placeholder="Search tasks by title, description, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              style={{
+                width: '100%',
+                paddingLeft: '40px',
+                paddingRight: '16px',
+                paddingTop: '10px',
+                paddingBottom: '10px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '8px',
+                fontSize: '14px',
+                color: 'var(--color12)',
+                fontFamily: 'inherit',
+              }}
             />
-          </div>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center space-x-2 px-4 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
-              showFilters
-                ? 'bg-primary-50 border-primary-500 text-primary-700'
-                : 'bg-surface border-border text-text-secondary hover:bg-bg-secondary'
-            }`}
+          </YStack>
+          <XStack
+            onPress={() => setShowFilters(!showFilters)}
+            alignItems="center"
+            gap="$2"
+            paddingHorizontal="$4"
+            paddingVertical="$2.5"
+            borderWidth={1}
+            borderRadius="$4"
+            fontSize="$3"
+            fontWeight="500"
+            backgroundColor={showFilters ? '$blue2' : '$background'}
+            borderColor={showFilters ? '$blue10' : '$borderColor'}
+            color={showFilters ? '$blue10' : '$color11'}
+            hoverStyle={{ backgroundColor: '$backgroundHover' }}
+            cursor="pointer"
           >
             <Filter size={18} />
-            <span>Filters</span>
+            <Text fontSize="$3" fontWeight="500" color={showFilters ? '$blue10' : '$color11'}>
+              Filters
+            </Text>
             {activeFilterCount > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-primary-500 text-white text-xs rounded-full">
+              <Text
+                marginLeft="$1"
+                paddingHorizontal="$2"
+                paddingVertical="$0.5"
+                backgroundColor="$blue10"
+                color="white"
+                fontSize="$1"
+                borderRadius={9999}
+              >
                 {activeFilterCount}
-              </span>
+              </Text>
             )}
-          </button>
-        </div>
+          </XStack>
+        </XStack>
 
         {showFilters && (
-          <div className="border-t border-border pt-4 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
+          <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4" gap="$4">
+            <XStack flexWrap="wrap" gap="$4" $gtMd={{ flexWrap: 'wrap' }}>
+              <YStack flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
+                <Text
+                  as="label"
+                  display="block"
+                  fontSize="$1"
+                  fontWeight="500"
+                  color="$color11"
+                  marginBottom="$2"
+                >
                   Status
-                </label>
+                </Text>
                 <select
                   value={selectedStatus}
                   onChange={(e) =>
                     setSelectedStatus(e.target.value as string)
                   }
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color12)',
+                    fontFamily: 'inherit',
+                  }}
                 >
                   <option value="ALL">All Statuses</option>
                   {taskStatuses?.map((status) => (
@@ -403,18 +454,34 @@ export default function ManagerTasksPage() {
                     </option>
                   ))}
                 </select>
-              </div>
+              </YStack>
 
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
+              <YStack flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
+                <Text
+                  as="label"
+                  display="block"
+                  fontSize="$1"
+                  fontWeight="500"
+                  color="$color11"
+                  marginBottom="$2"
+                >
                   Priority
-                </label>
+                </Text>
                 <select
                   value={selectedPriority}
                   onChange={(e) =>
                     setSelectedPriority(e.target.value as string)
                   }
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color12)',
+                    fontFamily: 'inherit',
+                  }}
                 >
                   <option value="ALL">All Priorities</option>
                   {taskPriorities?.map((priority) => (
@@ -423,16 +490,32 @@ export default function ManagerTasksPage() {
                     </option>
                   ))}
                 </select>
-              </div>
+              </YStack>
 
-              <div>
-                <label className="block text-xs font-medium text-text-secondary mb-2">
+              <YStack flex={1} minWidth="calc(33.333% - 11px)" $gtMd={{ minWidth: 'calc(33.333% - 11px)' }}>
+                <Text
+                  as="label"
+                  display="block"
+                  fontSize="$1"
+                  fontWeight="500"
+                  color="$color11"
+                  marginBottom="$2"
+                >
                   Project
-                </label>
+                </Text>
                 <select
                   value={selectedProject}
                   onChange={(e) => setSelectedProject(e.target.value)}
-                  className="w-full px-3 py-2 bg-bg-primary border border-border rounded-lg text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    backgroundColor: 'var(--background)',
+                    border: '1px solid var(--borderColor)',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    color: 'var(--color12)',
+                    fontFamily: 'inherit',
+                  }}
                 >
                   <option value="ALL">All Projects</option>
                   {allProjects.map((project) => (
@@ -441,81 +524,116 @@ export default function ManagerTasksPage() {
                     </option>
                   ))}
                 </select>
-              </div>
-            </div>
+              </YStack>
+            </XStack>
 
-            <div>
-              <label className="block text-xs font-medium text-text-secondary mb-2">
-                s
-              </label>
-              <div className="flex flex-wrap gap-2">
+            <YStack>
+              <Text
+                as="label"
+                display="block"
+                fontSize="$1"
+                fontWeight="500"
+                color="$color11"
+                marginBottom="$2"
+              >
+                Tags
+              </Text>
+              <XStack flexWrap="wrap" gap="$2">
                 {alls.map((tag) => (
-                  <button
+                  <XStack
                     key={tag}
-                    onClick={() => toggle(tag)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
-                      selecteds.includes(tag)
-                        ? 'bg-primary-500 border-primary-500 text-white'
-                        : 'bg-surface border-border text-text-secondary hover:bg-bg-secondary'
-                    }`}
+                    onPress={() => toggle(tag)}
+                    paddingHorizontal="$3"
+                    paddingVertical="$1.5"
+                    fontSize="$1"
+                    fontWeight="500"
+                    borderRadius={9999}
+                    borderWidth={1}
+                    backgroundColor={selecteds.includes(tag) ? '$blue10' : '$background'}
+                    borderColor={selecteds.includes(tag) ? '$blue10' : '$borderColor'}
+                    color={selecteds.includes(tag) ? 'white' : '$color11'}
+                    hoverStyle={{ backgroundColor: selecteds.includes(tag) ? '$blue11' : '$backgroundHover' }}
+                    cursor="pointer"
                   >
-                    {tag}
-                  </button>
+                    <Text fontSize="$1" fontWeight="500" color={selecteds.includes(tag) ? 'white' : '$color11'}>
+                      {tag}
+                    </Text>
+                  </XStack>
                 ))}
-              </div>
-            </div>
+              </XStack>
+            </YStack>
 
             {activeFilterCount > 0 && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center space-x-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
+              <XStack
+                onPress={clearFilters}
+                alignItems="center"
+                gap="$2"
+                fontSize="$3"
+                color="$color11"
+                hoverStyle={{ color: '$color12' }}
+                cursor="pointer"
               >
                 <X size={16} />
-                <span>Clear all filters</span>
-              </button>
+                <Text fontSize="$3" color="$color11">Clear all filters</Text>
+              </XStack>
             )}
-          </div>
+          </YStack>
         )}
 
-        <div className="flex items-center justify-between border-t border-border pt-4">
-          <div className="text-sm text-text-secondary">
+        <XStack alignItems="center" justifyContent="space-between" borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+          <Text fontSize="$3" color="$color11">
             Showing{' '}
-            <span className="font-semibold text-text-primary">
+            <Text fontWeight="600" color="$color12">
               {filteredAndSortedTasks.length}
-            </span>{' '}
+            </Text>{' '}
             of {tasks.length} tasks
-          </div>
-          <div className="flex items-center space-x-3">
-            <span className="text-xs text-text-secondary">Sort by:</span>
+          </Text>
+          <XStack alignItems="center" gap="$3">
+            <Text fontSize="$1" color="$color11">Sort by:</Text>
             <select
               value={sortBy}
               onChange={(e) =>
                 setSortBy(e.target.value as 'due_date' | 'priority' | 'status')
               }
-              className="px-3 py-1.5 bg-bg-primary border border-border rounded text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+              style={{
+                padding: '6px 12px',
+                backgroundColor: 'var(--background)',
+                border: '1px solid var(--borderColor)',
+                borderRadius: '4px',
+                fontSize: '14px',
+                color: 'var(--color12)',
+                fontFamily: 'inherit',
+              }}
             >
               <option value="due_date">Due Date</option>
               <option value="priority">Priority</option>
               <option value="status">Status</option>
             </select>
-            <button
-              onClick={() =>
+            <XStack
+              onPress={() =>
                 setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))
               }
-              className="p-1.5 border border-border rounded hover:bg-bg-secondary transition-colors"
+              padding="$1.5"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$2"
+              hoverStyle={{ backgroundColor: '$backgroundHover' }}
+              cursor="pointer"
             >
               <ChevronDown
                 size={16}
-                className={`text-text-secondary transform transition-transform ${
-                  sortOrder === 'desc' ? 'rotate-180' : ''
-                }`}
+                color="$color11"
+                style={{
+                  transform: sortOrder === 'desc' ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 0.2s',
+                }}
               />
-            </button>
-          </div>
-        </div>
-      </div>
+            </XStack>
+          </XStack>
+        </XStack>
+      </Card>
 
-      <div className="space-y-3">
+      <YStack gap="$3">
         {filteredAndSortedTasks.map((task) => {
           const dueDate = formatDueDate(task.due_date);
           const taskTags = task.metadata?.tags || [];
@@ -533,96 +651,135 @@ export default function ManagerTasksPage() {
           };
 
           return (
-            <div
+            <Card
               key={task.id}
-              className="bg-surface rounded-lg shadow-sm border border-border hover:border-primary-300 transition-all cursor-pointer group"
-              onClick={() => setSelectedTask(task)}
+              backgroundColor="$background"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$borderColor"
+              hoverStyle={{ borderColor: '$blue8' }}
+              cursor="pointer"
+              onPress={() => setSelectedTask(task)}
+              elevation={1}
             >
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-base font-semibold text-text-primary group-hover:text-primary-600 transition-colors">
+              <YStack padding="$5">
+                <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                  <YStack flex={1}>
+                    <XStack alignItems="center" gap="$3" marginBottom="$2">
+                      <H3 fontSize="$5" fontWeight="600" color="$color12">
                         {task.title}
-                      </h3>
-                      <span
-                        className={`px-2 py-0.5 text-xs font-medium rounded border ${getPriorityColor(task.priority)}`}
+                      </H3>
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        fontSize="$1"
+                        fontWeight="500"
+                        borderRadius="$2"
+                        borderWidth={1}
+                        {...getPriorityColorProps(task.priority)}
                       >
                         {formatLabel(task.priority)}
-                      </span>
-                      <span
-                        className={`px-2 py-0.5 text-xs font-medium rounded ${getStatusColor(task.status)}`}
+                      </Text>
+                      <Text
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        fontSize="$1"
+                        fontWeight="500"
+                        borderRadius="$2"
+                        {...getStatusColorProps(task.status)}
                       >
                         {formatLabel(task.status)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-text-secondary mb-3">
+                      </Text>
+                    </XStack>
+                    <Text fontSize="$3" color="$color11" marginBottom="$3">
                       {task.description}
-                    </p>
-                    <div className="flex items-center space-x-4 text-xs text-text-tertiary">
-                      <span className="flex items-center space-x-1">
+                    </Text>
+                    <XStack alignItems="center" gap="$4" fontSize="$1" color="$color10">
+                      <XStack alignItems="center" gap="$1">
                         <Calendar size={14} />
-                        <span className={dueDate.color}>{dueDate.text}</span>
-                      </span>
-                      <span>•</span>
-                      <span>{projectName}</span>
+                        <Text fontSize="$1" color={dueDate.color}>
+                          {dueDate.text}
+                        </Text>
+                      </XStack>
+                      <Text fontSize="$1" color="$color10">•</Text>
+                      <Text fontSize="$1" color="$color10">{projectName}</Text>
                       {taskBlockers.length > 0 && (
                         <>
-                          <span>•</span>
-                          <span className="flex items-center space-x-1 text-error-600">
+                          <Text fontSize="$1" color="$color10">•</Text>
+                          <XStack alignItems="center" gap="$1" fontSize="$1" color="$red10">
                             <AlertCircle size={14} />
-                            <span>
+                            <Text fontSize="$1" color="$red10">
                               {taskBlockers.length} blocker
                               {taskBlockers.length > 1 ? 's' : ''}
-                            </span>
-                          </span>
+                            </Text>
+                          </XStack>
                         </>
                       )}
-                    </div>
-                  </div>
-                </div>
+                    </XStack>
+                  </YStack>
+                </XStack>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-1.5">
+                <XStack alignItems="center" justifyContent="space-between">
+                  <XStack flexWrap="wrap" gap="$1.5">
                     {taskTags.map((tag) => (
-                      <span
+                      <Text
                         key={tag}
-                        className="px-2 py-1 bg-bg-secondary text-text-tertiary text-xs rounded border border-border"
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        backgroundColor="$backgroundHover"
+                        color="$color10"
+                        fontSize="$1"
+                        borderRadius="$2"
+                        borderWidth={1}
+                        borderColor="$borderColor"
                       >
                         {tag}
-                      </span>
+                      </Text>
                     ))}
-                  </div>
-                  <div className="flex items-center space-x-2">
+                  </XStack>
+                  <XStack alignItems="center" gap="$2">
                     {taskQuickActions.slice(0, 3).map((action) => (
-                      <button
+                      <XStack
                         key={action}
-                        onClick={(e) => {
+                        onPress={(e) => {
                           e.stopPropagation();
                         }}
-                        className="px-3 py-1.5 text-xs font-medium text-primary-600 border border-primary-600 rounded hover:bg-primary-50 transition-colors"
+                        paddingHorizontal="$3"
+                        paddingVertical="$1.5"
+                        fontSize="$1"
+                        fontWeight="500"
+                        color="$blue10"
+                        borderWidth={1}
+                        borderColor="$blue10"
+                        borderRadius="$2"
+                        hoverStyle={{ backgroundColor: '$blue2' }}
+                        cursor="pointer"
                       >
-                        {action.replace('_', ' ')}
-                      </button>
+                        <Text fontSize="$1" fontWeight="500" color="$blue10">
+                          {action.replace('_', ' ')}
+                        </Text>
+                      </XStack>
                     ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </XStack>
+                </XStack>
+              </YStack>
+            </Card>
           );
         })}
-      </div>
+      </YStack>
 
       {filteredAndSortedTasks.length === 0 && (
-        <div className="text-center py-16 bg-surface rounded-lg border border-border">
-          <CheckCircle className="mx-auto text-text-tertiary mb-4" size={64} />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+        <Card alignItems="center" paddingVertical="$16" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
+          <YStack alignItems="center" marginBottom="$4">
+            <CheckCircle color="$color10" size={64} />
+          </YStack>
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             No tasks found
-          </h3>
-          <p className="text-text-secondary">
+          </H3>
+          <Text color="$color11">
             Try adjusting your filters or search criteria
-          </p>
-        </div>
+          </Text>
+        </Card>
       )}
 
       <EnhancedTaskDetailModal
@@ -634,6 +791,6 @@ export default function ManagerTasksPage() {
           setSelectedTask(null);
         }}
       />
-    </div>
+    </YStack>
   );
 }
