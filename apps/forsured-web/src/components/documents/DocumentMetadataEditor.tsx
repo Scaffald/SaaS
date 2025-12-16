@@ -3,7 +3,8 @@
  * Main component for reviewing and correcting OCR extraction results
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { YStack, XStack, Text, H1, Card, Button, Spinner, Checkbox } from '@unicornlove/ui';
 import { OCRFieldDisplay } from './OCRFieldDisplay';
 import { ValidationFeedback } from './ValidationFeedback';
 import { DocumentPreview } from './DocumentPreview';
@@ -122,7 +123,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
       : (Object.keys(fields) as Array<keyof FieldValidators>);
 
     return (
-      <div className="space-y-6">
+      <YStack gap="$6">
         {fieldsToRender.map((fieldName) => {
           const field = fields[fieldName];
           if (fieldName === 'coverageLimits') return null; // Handle separately
@@ -132,7 +133,7 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
           );
 
           return (
-            <div key={fieldName}>
+            <YStack key={fieldName}>
               <OCRFieldDisplay
                 label={fieldName.replace(/([A-Z])/g, ' $1').trim()}
                 field={field as OCRField<string>}
@@ -142,117 +143,176 @@ export const DocumentMetadataEditor: React.FC<DocumentMetadataEditorProps> = ({
                 type={fieldName.includes('Date') ? 'date' : 'text'}
               />
               {field.reviewRequired && !field.reviewed && (
-                <button
+                <Text
+                  as="button"
+                  marginTop="$2"
+                  fontSize="$3"
+                  color="$teal9"
+                  hoverStyle={{ color: '$teal11' }}
+                  textDecorationLine="underline"
                   onClick={() => handleMarkAsReviewed(fieldName)}
-                  className="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
+                  cursor="pointer"
                 >
                   Mark as Reviewed
-                </button>
+                </Text>
               )}
-            </div>
+            </YStack>
           );
         })}
-      </div>
+      </YStack>
     );
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <YStack height="100vh" flexDirection="column" backgroundColor="$gray2">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-gray-900">Document Metadata Editor</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Extracted: {new Date(document.extractionResult?.extractedAt || '').toLocaleString()}
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
+      <YStack
+        backgroundColor="$background"
+        borderBottomWidth={1}
+        borderBottomColor="$borderColor"
+        paddingHorizontal="$6"
+        paddingVertical="$4"
+      >
+        <XStack alignItems="center" justifyContent="space-between">
+          <YStack>
+            <H1 fontSize="$7" fontWeight="600" color="$color12">
+              Document Metadata Editor
+            </H1>
+            <Text fontSize="$3" color="$color10" marginTop="$1">
+              Extracted:{' '}
+              {new Date(document.extractionResult?.extractedAt || '').toLocaleString()}
+            </Text>
+          </YStack>
+          <XStack alignItems="center" gap="$4">
             {unreviewedFieldsCount > 0 && (
-              <div className="flex items-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-                <AlertCircle className="h-4 w-4 mr-1" />
+              <XStack
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$1"
+                backgroundColor="$red2"
+                color="$red11"
+                borderRadius={9999}
+                fontSize="$3"
+              >
+                <AlertCircle size={16} marginRight="$1" />
                 {unreviewedFieldsCount} field{unreviewedFieldsCount !== 1 ? 's' : ''} need review
-              </div>
+              </XStack>
             )}
             {isEvaluating && (
-              <div className="flex items-center text-blue-600">
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                <span className="text-sm">Evaluating compliance...</span>
-              </div>
+              <XStack alignItems="center" color="$teal9" gap="$2">
+                <Spinner size="small" color="$teal9" />
+                <Text fontSize="$3">Evaluating compliance...</Text>
+              </XStack>
             )}
             {document.complianceStatus && !isEvaluating && (
-              <div className="flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                <CheckCircle className="h-4 w-4 mr-1" />
+              <XStack
+                alignItems="center"
+                paddingHorizontal="$3"
+                paddingVertical="$1"
+                backgroundColor="$green2"
+                color="$green11"
+                borderRadius={9999}
+                fontSize="$3"
+              >
+                <CheckCircle size={16} marginRight="$1" />
                 {document.complianceStatus.status}
-              </div>
+              </XStack>
             )}
-            <button
+            <Button
               onClick={handleSave}
               disabled={!validationResult.isValid || isSaving}
-              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium ${
-                validationResult.isValid && !isSaving
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+              paddingHorizontal="$4"
+              paddingVertical="$2"
+              borderRadius="$4"
+              fontSize="$3"
+              fontWeight="500"
+              backgroundColor={
+                validationResult.isValid && !isSaving ? '$teal9' : '$gray6'
+              }
+              color={validationResult.isValid && !isSaving ? 'white' : '$color10'}
+              hoverStyle={{
+                backgroundColor:
+                  validationResult.isValid && !isSaving ? '$teal10' : '$gray6',
+              }}
+              disabledStyle={{
+                cursor: 'not-allowed',
+              }}
+              gap="$2"
             >
               {isSaving ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving...
+                  <Spinner size="small" color="white" />
+                  <Text>Saving...</Text>
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
-                  Save & Re-evaluate
+                  <Save size={16} />
+                  <Text>Save & Re-evaluate</Text>
                 </>
               )}
-            </button>
-          </div>
-        </div>
-      </div>
+            </Button>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+      <YStack flex={1} overflow="hidden">
+        <XStack
+          height="100%"
+          flexWrap="wrap"
+          $lg={{ flexWrap: 'nowrap' }}
+          gap="$6"
+          padding="$6"
+        >
           {/* Left Panel: Document Preview */}
-          <div className="h-full overflow-auto">
+          <YStack flex={1} height="100%" overflow="auto" $lg={{ minWidth: '50%' }}>
             <DocumentPreview
               documentUrl={document.fileUrl}
               fileName={document.fileName}
               fileType={document.fileType}
             />
-          </div>
+          </YStack>
 
           {/* Right Panel: Fields and Validation */}
-          <div className="h-full overflow-auto space-y-6">
+          <YStack flex={1} height="100%" overflow="auto" gap="$6" $lg={{ minWidth: '50%' }}>
             {/* Filter Controls */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
+            <Card
+              backgroundColor="$background"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$borderColor"
+              padding="$4"
+            >
+              <XStack alignItems="center" cursor="pointer">
+                <Checkbox
                   checked={showOnlyFlagged}
-                  onChange={(e) => setShowOnlyFlagged(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  onCheckedChange={(checked) => setShowOnlyFlagged(checked === true)}
                 />
-                <span className="ml-2 text-sm text-gray-700">
+                <Text marginLeft="$2" fontSize="$3" color="$color11">
                   Show only flagged fields ({flaggedFields.length})
-                </span>
-              </label>
-            </div>
+                </Text>
+              </XStack>
+            </Card>
 
             {/* Validation Feedback */}
             <ValidationFeedback validationResult={validationResult} />
 
             {/* Fields */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <Card
+              backgroundColor="$background"
+              borderRadius="$4"
+              borderWidth={1}
+              borderColor="$borderColor"
+              padding="$6"
+            >
               {renderFieldSection()}
-            </div>
+            </Card>
 
             {/* Audit History */}
             <AuditHistoryPanel auditHistory={document.auditHistory} />
-          </div>
-        </div>
-      </div>
-    </div>
+          </YStack>
+        </XStack>
+      </YStack>
+    </YStack>
   );
 };
