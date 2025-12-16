@@ -14,6 +14,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Briefcase, ArrowRight, X, User, Building2, Phone, Mail, MapPin, FileText, Lock, Eye, EyeOff, Shield, Users, Plus, Trash2 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Input, Button as TamaguiButton } from 'tamagui';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -254,213 +255,240 @@ export default function BrokerOnboarding() {
     formData.administrator.confirmPassword;
 
   return (
-    <div className="min-h-screen bg-bg-secondary flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
-        <button
-          onClick={handleSkip}
+    <YStack minHeight="100vh" backgroundColor="$backgroundHover" alignItems="center" justifyContent="center" padding="$4">
+      <YStack width="100%" maxWidth={600} position="relative">
+        <TamaguiButton
+          onPress={handleSkip}
           disabled={isSubmitting}
-          className="absolute top-6 right-6 text-text-secondary hover:text-text-primary transition-colors flex items-center space-x-2 text-sm disabled:opacity-50"
+          position="absolute"
+          top="$6"
+          right="$6"
+          variant="ghost"
+          color="$color11"
+          hoverStyle={{ color: "$color12" }}
+          alignItems="center"
+          gap="$2"
+          fontSize="$3"
+          opacity={isSubmitting ? 0.5 : 1}
         >
-          <span>Skip for now</span>
+          <Text>Skip for now</Text>
           <X size={18} />
-        </button>
+        </TamaguiButton>
 
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
+        <YStack alignItems="center" marginBottom="$8">
+          <XStack justifyContent="center" marginBottom="$6">
             <ForsuredLogo className="h-8" />
-          </div>
-          <h1 className="text-2xl font-bold text-text-primary mb-2">
+          </XStack>
+          <H1 fontSize="$8" fontWeight="bold" color="$color12" marginBottom="$2">
             Welcome, Insurance Broker
-          </h1>
-          <p className="text-text-secondary">Set up your brokerage profile</p>
-        </div>
+          </H1>
+          <Text color="$color11">Set up your brokerage profile</Text>
+        </YStack>
 
-        <div className="bg-surface rounded-lg shadow-lg border border-border p-8">
-          <div className="flex items-center justify-center w-16 h-16 bg-success-100 rounded-full mx-auto mb-6">
-            <Briefcase className="text-success-600" size={32} />
-          </div>
+        <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowRadius="$4" borderWidth={1} borderColor="$borderColor" padding="$8">
+          <XStack alignItems="center" justifyContent="center" width={64} height={64} backgroundColor="$green3" borderRadius={9999} marginX="auto" marginBottom="$6">
+            <Briefcase color="$green9" size={32} />
+          </XStack>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <YStack as="form" onSubmit={handleSubmit} gap="$8">
             {/* Brokerage Details Section */}
-            <div>
-              <div className="flex items-center mb-4">
-                <Building2 className="h-5 w-5 text-primary-500 mr-2" />
-                <h2 className="text-lg font-semibold text-text-primary">
+            <YStack>
+              <XStack alignItems="center" marginBottom="$4">
+                <Building2 size={20} color="$blue9" marginRight="$2" />
+                <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Brokerage Details
-                </h2>
-              </div>
+                </H2>
+              </XStack>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Brokerage Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
+              <YStack gap="$4">
+                <YStack>
+                  <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                    Brokerage Name <Text color="$red9">*</Text>
+                  </Text>
+                  <Input
                     type="text"
                     required
-                    className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.brokerageName ? 'border-red-500' : 'border-border'
-                    }`}
+                    width="100%"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderColor={errors.brokerageName ? "$red9" : "$borderColor"}
                     placeholder="Enter your brokerage name"
                     value={formData.brokerageName}
-                    onChange={(e) =>
+                    onChangeText={(value) =>
                       setFormData((prev) => ({
                         ...prev,
-                        brokerageName: e.target.value,
+                        brokerageName: value,
                       }))
                     }
                   />
                   {errors.brokerageName && (
-                    <p className="text-red-500 text-sm mt-1">{errors.brokerageName}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.brokerageName}</Text>
                   )}
-                </div>
+                </YStack>
 
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <FileText className="h-4 w-4 mr-1" />
-                      License Number <span className="text-red-500">*</span>
-                    </div>
-                  </label>
-                  <input
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <FileText size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      License Number <Text color="$red9">*</Text>
+                    </Text>
+                  </XStack>
+                  <Input
                     type="text"
                     required
-                    className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.licenseNumber ? 'border-red-500' : 'border-border'
-                    }`}
+                    width="100%"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderColor={errors.licenseNumber ? "$red9" : "$borderColor"}
                     placeholder="Enter license number"
                     value={formData.licenseNumber}
-                    onChange={(e) =>
+                    onChangeText={(value) =>
                       setFormData((prev) => ({
                         ...prev,
-                        licenseNumber: e.target.value,
+                        licenseNumber: value,
                       }))
                     }
                   />
                   {errors.licenseNumber && (
-                    <p className="text-red-500 text-sm mt-1">{errors.licenseNumber}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.licenseNumber}</Text>
                   )}
-                </div>
+                </YStack>
 
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      Location <span className="text-red-500">*</span>
-                    </div>
-                  </label>
-                  <input
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <MapPin size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      Location <Text color="$red9">*</Text>
+                    </Text>
+                  </XStack>
+                  <Input
                     type="text"
                     required
-                    className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.location ? 'border-red-500' : 'border-border'
-                    }`}
+                    width="100%"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderColor={errors.location ? "$red9" : "$borderColor"}
                     placeholder="City, State"
                     value={formData.location}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, location: e.target.value }))
+                    onChangeText={(value) =>
+                      setFormData((prev) => ({ ...prev, location: value }))
                     }
                   />
                   {errors.location && (
-                    <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.location}</Text>
                   )}
-                </div>
-              </div>
-            </div>
+                </YStack>
+              </YStack>
+            </YStack>
 
             {/* Administrator Account Section */}
-            <div>
-              <div className="flex items-center mb-4">
-                <Shield className="h-5 w-5 text-primary-500 mr-2" />
-                <h2 className="text-lg font-semibold text-text-primary">
+            <YStack>
+              <XStack alignItems="center" marginBottom="$4">
+                <Shield size={20} color="$blue9" marginRight="$2" />
+                <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Administrator Account
-                </h2>
-              </div>
-              <p className="text-sm text-text-secondary mb-4">
+                </H2>
+              </XStack>
+              <Text fontSize="$3" color="$color11" marginBottom="$4">
                 You will be the administrator and main contact for this brokerage.
-              </p>
+              </Text>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1" />
-                      Full Name <span className="text-red-500">*</span>
-                    </div>
-                  </label>
-                  <input
+              <YStack gap="$4">
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <User size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      Full Name <Text color="$red9">*</Text>
+                    </Text>
+                  </XStack>
+                  <Input
                     type="text"
                     required
-                    className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.adminName ? 'border-red-500' : 'border-border'
-                    }`}
+                    width="100%"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderColor={errors.adminName ? "$red9" : "$borderColor"}
                     placeholder="Enter your full name"
                     value={formData.administrator.name}
-                    onChange={(e) =>
+                    onChangeText={(value) =>
                       setFormData((prev) => ({
                         ...prev,
-                        administrator: { ...prev.administrator, name: e.target.value },
+                        administrator: { ...prev.administrator, name: value },
                       }))
                     }
                   />
                   {errors.adminName && (
-                    <p className="text-red-500 text-sm mt-1">{errors.adminName}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminName}</Text>
                   )}
-                </div>
+                </YStack>
 
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <Mail className="h-4 w-4 mr-1" />
-                      Email Address <span className="text-red-500">*</span>
-                    </div>
-                  </label>
-                  <input
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <Mail size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      Email Address <Text color="$red9">*</Text>
+                    </Text>
+                  </XStack>
+                  <Input
                     type="email"
                     required
-                    className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.adminEmail ? 'border-red-500' : 'border-border'
-                    }`}
+                    width="100%"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderColor={errors.adminEmail ? "$red9" : "$borderColor"}
                     placeholder="Enter your email address"
                     value={formData.administrator.email}
-                    onChange={(e) =>
+                    onChangeText={(value) =>
                       setFormData((prev) => ({
                         ...prev,
-                        administrator: { ...prev.administrator, email: e.target.value },
+                        administrator: { ...prev.administrator, email: value },
                       }))
                     }
                   />
                   {errors.adminEmail && (
-                    <p className="text-red-500 text-sm mt-1">{errors.adminEmail}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminEmail}</Text>
                   )}
-                </div>
+                </YStack>
 
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <Phone className="h-4 w-4 mr-1" />
-                      Phone Number <span className="text-red-500">*</span>
-                    </div>
-                  </label>
-                  <input
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <Phone size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      Phone Number <Text color="$red9">*</Text>
+                    </Text>
+                  </XStack>
+                  <Input
                     type="tel"
                     required
-                    className={`w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                      errors.adminPhone ? 'border-red-500' : 'border-border'
-                    }`}
+                    width="100%"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderColor={errors.adminPhone ? "$red9" : "$borderColor"}
                     placeholder="(555) 123-4567"
                     value={formData.administrator.phone}
-                    onChange={(e) =>
+                    onChangeText={(value) =>
                       setFormData((prev) => ({
                         ...prev,
-                        administrator: { ...prev.administrator, phone: e.target.value },
+                        administrator: { ...prev.administrator, phone: value },
                       }))
                     }
                   />
                   {errors.adminPhone && (
-                    <p className="text-red-500 text-sm mt-1">{errors.adminPhone}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminPhone}</Text>
                   )}
-                </div>
+                </YStack>
 
                 <div>
                   <label className="block text-sm font-medium text-text-primary mb-2">
