@@ -3,7 +3,8 @@
  * Template selector for quick requirement creation
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { YStack, XStack, Text, Button, Card, H2, Spinner } from '@unicornlove/ui';
 import { ComplianceRequirement, CoverageType } from '../../lib/compliance/types';
 import { listRequirements } from '../../lib/compliance/requirementService';
 
@@ -93,127 +94,167 @@ export default function TemplateSelector({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading templates...</div>
-      </div>
+      <YStack alignItems="center" justifyContent="center" height={256}>
+        <Spinner size="large" />
+        <Text color="$color10" marginTop="$4">Loading templates...</Text>
+      </YStack>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-800">Error: {error}</p>
-        <button
-          onClick={() => loadTemplates()}
-          className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+      <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$4" padding="$4">
+        <Text color="$red11" marginBottom="$2">Error: {error}</Text>
+        <Button
+          onPress={() => loadTemplates()}
+          fontSize="$3"
+          color="$red10"
+          hoverStyle={{ color: '$red11' }}
+          backgroundColor="transparent"
+          borderWidth={0}
+          textDecorationLine="underline"
         >
           Retry
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Select a Template</h2>
+    <YStack gap="$4">
+      <XStack alignItems="center" justifyContent="space-between">
+        <H2 fontSize="$7" fontWeight="700" color="$color12">Select a Template</H2>
         {onCancel && (
-          <button
-            onClick={onCancel}
-            className="text-gray-600 hover:text-gray-800"
+          <Button
+            onPress={onCancel}
+            color="$color10"
+            hoverStyle={{ color: '$color11' }}
+            backgroundColor="transparent"
+            borderWidth={0}
           >
             Cancel
-          </button>
+          </Button>
         )}
-      </div>
+      </XStack>
 
       {/* Type Filter */}
-      <div className="flex space-x-2">
-        <button
-          onClick={() => setSelectedType('all')}
-          className={`px-4 py-2 rounded-md text-sm font-medium ${
-            selectedType === 'all'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
+      <XStack gap="$2" flexWrap="wrap">
+        <Button
+          onPress={() => setSelectedType('all')}
+          paddingHorizontal="$4"
+          paddingVertical="$2"
+          borderRadius="$4"
+          fontSize="$3"
+          fontWeight="500"
+          backgroundColor={selectedType === 'all' ? '$blue9' : '$gray5'}
+          color={selectedType === 'all' ? 'white' : '$color11'}
+          hoverStyle={{ backgroundColor: selectedType === 'all' ? '$blue10' : '$gray6' }}
         >
           All Types
-        </button>
+        </Button>
         {Object.values(CoverageType).map((type) => (
-          <button
+          <Button
             key={type}
-            onClick={() => setSelectedType(type)}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
-              selectedType === type
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
+            onPress={() => setSelectedType(type)}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            borderRadius="$4"
+            fontSize="$3"
+            fontWeight="500"
+            backgroundColor={selectedType === type ? '$blue9' : '$gray5'}
+            color={selectedType === type ? 'white' : '$color11'}
+            hoverStyle={{ backgroundColor: selectedType === type ? '$blue10' : '$gray6' }}
           >
             {getTypeIcon(type)} {getTypeLabel(type)}
-          </button>
+          </Button>
         ))}
-      </div>
+      </XStack>
 
       {/* Template Grid */}
       {filteredTemplates.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-gray-500">No templates found for this type.</p>
-        </div>
+        <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowOpacity={0.1} shadowRadius={2} padding="$8">
+          <Text color="$color10" textAlign="center">No templates found for this type.</Text>
+        </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <XStack flexWrap="wrap" gap="$4">
           {filteredTemplates.map((template) => (
-            <button
+            <Card
               key={template.id}
-              onClick={() => onSelectTemplate(template)}
-              className="bg-white rounded-lg shadow p-6 text-left hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+              as="button"
+              onPress={() => onSelectTemplate(template)}
+              backgroundColor="$background"
+              borderRadius="$4"
+              shadowColor="$shadowColor"
+              shadowOpacity={0.1}
+              shadowRadius={2}
+              padding="$6"
+              hoverStyle={{ shadowOpacity: 0.2, shadowRadius: 4 }}
+              focusStyle={{ borderWidth: 2, borderColor: '$blue9' }}
+              borderWidth={0}
+              width="100%"
+              maxWidth={{ $gtMd: 'calc(50% - 8px)', $gtLg: 'calc(33.333% - 11px)' }}
             >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-3xl">{getTypeIcon(template.type)}</span>
-                <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
+              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$3">
+                <Text fontSize="$9">{getTypeIcon(template.type)}</Text>
+                <Text fontSize="$1" fontWeight="500" color="$blue10" backgroundColor="$blue2" paddingHorizontal="$2" paddingVertical="$1" borderRadius="$2">
                   v{template.version}
-                </span>
-              </div>
+                </Text>
+              </XStack>
 
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{template.name}</h3>
+              <Text fontSize="$5" fontWeight="600" color="$color12" marginBottom="$2">{template.name}</Text>
 
-              <p className="text-sm text-gray-600 mb-3">{formatCoverage(template)}</p>
+              <Text fontSize="$3" color="$color10" marginBottom="$3">{formatCoverage(template)}</Text>
 
               {template.description && (
-                <p className="text-xs text-gray-500 line-clamp-2">{template.description}</p>
+                <Text fontSize="$2" color="$color9" marginBottom="$3" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {template.description}
+                </Text>
               )}
 
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="text-xs text-gray-500 space-y-1">
-                  <div>
+              <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                <YStack gap="$1">
+                  <Text fontSize="$2" color="$color9">
                     {template.requirement_definition.required_endorsements.length} endorsements
-                  </div>
-                  <div>
+                  </Text>
+                  <Text fontSize="$2" color="$color9">
                     {template.requirement_definition.documentation_requirements.filter(d => d.is_required).length} required documents
-                  </div>
-                </div>
-              </div>
+                  </Text>
+                </YStack>
+              </YStack>
 
-              <div className="mt-4">
-                <span className="text-sm font-medium text-blue-600">Use Template →</span>
-              </div>
-            </button>
+              <XStack marginTop="$4">
+                <Text fontSize="$3" fontWeight="500" color="$blue10">Use Template →</Text>
+              </XStack>
+            </Card>
           ))}
-        </div>
+        </XStack>
       )}
 
       {/* Custom Option */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg shadow p-6 border-2 border-dashed border-purple-300">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <Card
+        borderRadius="$4"
+        shadowColor="$shadowColor"
+        shadowOpacity={0.1}
+        shadowRadius={2}
+        padding="$6"
+        borderWidth={2}
+        borderStyle="dashed"
+        borderColor="$purple7"
+        style={{
+          background: 'linear-gradient(to right, var(--purple2), var(--blue2))',
+        }}
+      >
+        <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
+          <YStack flex={1} minWidth="200px">
+            <Text fontSize="$5" fontWeight="600" color="$color12" marginBottom="$2">
               Create Custom Requirement
-            </h3>
-            <p className="text-sm text-gray-600">
+            </Text>
+            <Text fontSize="$3" color="$color10">
               Build a requirement from scratch with your own specifications
-            </p>
-          </div>
-          <button
-            onClick={() => onSelectTemplate({
+            </Text>
+          </YStack>
+          <Button
+            onPress={() => onSelectTemplate({
               id: '',
               name: '',
               type: CoverageType.CUSTOM,
@@ -235,12 +276,18 @@ export default function TemplateSelector({
               updated_at: new Date().toISOString(),
               archived_at: null
             })}
-            className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            paddingHorizontal="$6"
+            paddingVertical="$3"
+            backgroundColor="$purple9"
+            color="white"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$purple10' }}
+            focusStyle={{ borderWidth: 2, borderColor: '$purple9' }}
           >
             Create Custom
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </XStack>
+      </Card>
+    </YStack>
   );
 }
