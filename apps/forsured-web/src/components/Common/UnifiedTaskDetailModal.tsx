@@ -17,6 +17,7 @@ import {
   Paperclip,
   Block,
 } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Card } from 'tamagui';
 import {
   Task,
   User as UserType,
@@ -357,121 +358,150 @@ export default function UnifiedTaskDetailModal({
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} title="" size="lg">
-        <div className="space-y-6">
+        <YStack gap="$6">
           {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-2xl font-bold text-text-primary">
+          <XStack alignItems="flex-start" justifyContent="space-between">
+            <YStack flex={1}>
+              <XStack alignItems="center" gap="$3" marginBottom="$2">
+                <H2 fontSize="$8" fontWeight="bold" color="$color12">
                   {task.title}
-                </h2>
-                <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded border ${getPriorityColor(task.priority)}`}
+                </H2>
+                <Text
+                  paddingHorizontal="$2.5"
+                  paddingVertical="$1"
+                  fontSize="$1"
+                  fontWeight="500"
+                  borderRadius="$2"
+                  borderWidth={1}
+                  className={getPriorityColor(task.priority)}
                 >
                   {task.priority.toUpperCase()}
-                </span>
-                <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded ${getStatusColor(task.status)}`}
+                </Text>
+                <Text
+                  paddingHorizontal="$2.5"
+                  paddingVertical="$1"
+                  fontSize="$1"
+                  fontWeight="500"
+                  borderRadius="$2"
+                  className={getStatusColor(task.status)}
                 >
                   {task.status.replace('_', ' ').toUpperCase()}
-                </span>
-              </div>
+                </Text>
+              </XStack>
               {task.description && (
-                <p className="text-text-secondary">{task.description}</p>
+                <Text color="$color11">{task.description}</Text>
               )}
-            </div>
-          </div>
+            </YStack>
+          </XStack>
 
           {/* Task Info */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center space-x-3 p-3 bg-bg-secondary rounded-lg">
-              <Calendar className="text-text-tertiary" size={20} />
-              <div>
-                <p className="text-xs text-text-tertiary">Due Date</p>
-                <p className={`text-sm font-medium ${dueDate.color}`}>
-                  {dueDate.text}
-                  {dueDate.isOverdue && <span className="ml-2">⚠️</span>}
-                </p>
-              </div>
-            </div>
+          <XStack gap="$4" flexWrap="wrap">
+            <XStack alignItems="center" gap="$3" padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth={200}>
+              <Calendar color="$color10" size={20} />
+              <YStack>
+                <Text fontSize="$1" color="$color10">Due Date</Text>
+                <XStack alignItems="center" gap="$2">
+                  <Text fontSize="$3" fontWeight="500" className={dueDate.color}>
+                    {dueDate.text}
+                  </Text>
+                  {dueDate.isOverdue && <Text marginLeft="$2">⚠️</Text>}
+                </XStack>
+              </YStack>
+            </XStack>
             {task.project_id && (
-              <div className="flex items-center space-x-3 p-3 bg-bg-secondary rounded-lg">
-                <Building className="text-text-tertiary" size={20} />
-                <div>
-                  <p className="text-xs text-text-tertiary">Project</p>
-                  <p className="text-sm font-medium text-text-primary">
+              <XStack alignItems="center" gap="$3" padding="$3" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth={200}>
+                <Building color="$color10" size={20} />
+                <YStack>
+                  <Text fontSize="$1" color="$color10">Project</Text>
+                  <Text fontSize="$3" fontWeight="500" color="$color12">
                     {task.project_name || 'Project'}
-                  </p>
-                </div>
-              </div>
+                  </Text>
+                </YStack>
+              </XStack>
             )}
-          </div>
+          </XStack>
 
           {/* Assigned To */}
           {task.assigned_to_user_id && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-text-primary">
+            <YStack gap="$3">
+              <XStack alignItems="center" justifyContent="space-between">
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   Assigned To
-                </h3>
-                <button
-                  onClick={() => setShowReassignModal(true)}
-                  className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                </Text>
+                <Button
+                  onPress={() => setShowReassignModal(true)}
+                  variant="ghost"
+                  size="$2"
+                  fontSize="$1"
+                  color="$blue9"
                 >
                   Reassign
-                </button>
-              </div>
-              <div className="flex items-center space-x-3 p-3 bg-bg-secondary rounded-lg">
-                <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-semibold text-white">
+                </Button>
+              </XStack>
+              <XStack alignItems="center" gap="$3" padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
+                <XStack
+                  width={40}
+                  height={40}
+                  backgroundColor="$blue9"
+                  borderRadius={9999}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Text fontSize="$3" fontWeight="600" color="white">
                     {getUserName(task.assigned_to_user_id)
                       .split(' ')
                       .map((n) => n[0])
                       .join('')}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-text-primary">
+                  </Text>
+                </XStack>
+                <YStack>
+                  <Text fontSize="$3" fontWeight="500" color="$color12">
                     {getUserName(task.assigned_to_user_id)}
-                  </p>
-                  <p className="text-xs text-text-tertiary">
+                  </Text>
+                  <Text fontSize="$1" color="$color10">
                     {allUsers.find((u) => u.id === task.assigned_to_user_id)
                       ?.email || ''}
-                  </p>
-                </div>
-              </div>
-            </div>
+                  </Text>
+                </YStack>
+              </XStack>
+            </YStack>
           )}
 
           {/* Tabs */}
-          <div className="border-b border-border">
-            <div className="flex space-x-6">
+          <YStack borderBottomWidth={1} borderColor="$borderColor">
+            <XStack gap="$6">
               {['details', 'comments', 'attachments', 'history'].map((tab) => (
-                <button
+                <Button
                   key={tab}
-                  onClick={() => setActiveTab(tab as any)}
-                  className={`pb-3 px-1 text-sm font-medium border-b-2 transition-colors ${
-                    activeTab === tab
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-text-tertiary hover:text-text-primary'
-                  }`}
+                  onPress={() => setActiveTab(tab as any)}
+                  variant="ghost"
+                  paddingBottom="$3"
+                  paddingHorizontal="$1"
+                  fontSize="$3"
+                  fontWeight="500"
+                  borderBottomWidth={2}
+                  borderBottomColor={activeTab === tab ? "$blue9" : "transparent"}
+                  color={activeTab === tab ? "$blue9" : "$color10"}
+                  hoverStyle={{
+                    color: "$color12"
+                  }}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
+                </Button>
               ))}
-            </div>
-          </div>
+            </XStack>
+          </YStack>
 
           {/* Tab Content */}
-          <div className="min-h-[300px]">
+          <YStack minHeight={300}>
             {activeTab === 'details' && (
-              <div className="space-y-4">
+              <YStack gap="$4">
                 {/* Quick Actions */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-text-primary">
+                <YStack gap="$3">
+                  <Text fontSize="$3" fontWeight="600" color="$color12">
                     Quick Actions
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  </Text>
+                  <XStack gap="$2" flexWrap="wrap">
                     {task.status === 'pending' && (
                       <Button
                         variant="primary"
@@ -511,15 +541,15 @@ export default function UnifiedTaskDetailModal({
                     >
                       Edit Details
                     </Button>
-                  </div>
+                  </XStack>
 
                   {/* Quick Actions from task */}
                   {task.quick_actions && task.quick_actions.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-border">
-                      <h3 className="text-sm font-semibold text-text-primary mb-3">
+                    <YStack marginTop="$4" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                      <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$3">
                         Additional Actions
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
+                      </Text>
+                      <XStack flexWrap="wrap" gap="$2">
                         {task.quick_actions.map((action) => {
                           if (
                             action === 'open_coi' ||
@@ -529,7 +559,7 @@ export default function UnifiedTaskDetailModal({
                               <Button
                                 key={action}
                                 variant="outline"
-                                onClick={() => setShowCOIComparison(true)}
+                                onPress={() => setShowCOIComparison(true)}
                                 leftIcon={FileText}
                               >
                                 {action === 'open_coi'
@@ -540,79 +570,92 @@ export default function UnifiedTaskDetailModal({
                           }
                           return null;
                         })}
-                      </div>
-                    </div>
+                      </XStack>
+                    </YStack>
                   )}
-                </div>
-              </div>
+                </YStack>
+              </YStack>
             )}
 
             {activeTab === 'comments' && (
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-text-primary">
+              <YStack gap="$4">
+                <YStack gap="$3">
+                  <Text fontSize="$3" fontWeight="600" color="$color12">
                     Comments
-                  </h3>
+                  </Text>
                   {commentsLoading ? (
-                    <div className="text-center py-8 text-text-tertiary">
-                      Loading comments...
-                    </div>
+                    <YStack alignItems="center" paddingVertical="$8">
+                      <Text color="$color10">Loading comments...</Text>
+                    </YStack>
                   ) : comments.length === 0 ? (
-                    <div className="text-center py-8 text-text-tertiary">
-                      No comments yet
-                    </div>
+                    <YStack alignItems="center" paddingVertical="$8">
+                      <Text color="$color10">No comments yet</Text>
+                    </YStack>
                   ) : (
-                    <div className="space-y-4">
+                    <YStack gap="$4">
                       {comments.map((comment) => (
-                        <div key={comment.id} className="flex space-x-3">
-                          <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs font-semibold text-white">
+                        <XStack key={comment.id} gap="$3">
+                          <XStack
+                            width={32}
+                            height={32}
+                            backgroundColor="$blue9"
+                            borderRadius={9999}
+                            alignItems="center"
+                            justifyContent="center"
+                            flexShrink={0}
+                          >
+                            <Text fontSize="$1" fontWeight="600" color="white">
                               {getUserName(comment.user_id)
                                 .split(' ')
                                 .map((n) => n[0])
                                 .join('')}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-sm font-medium text-text-primary">
+                            </Text>
+                          </XStack>
+                          <YStack flex={1}>
+                            <XStack alignItems="center" gap="$2" marginBottom="$1">
+                              <Text fontSize="$3" fontWeight="500" color="$color12">
                                 {getUserName(comment.user_id)}
-                              </span>
-                              <span className="text-xs text-text-tertiary">
+                              </Text>
+                              <Text fontSize="$1" color="$color10">
                                 {formatDate(comment.created_at)}
-                              </span>
+                              </Text>
                               {comment.edited_at && (
-                                <span className="text-xs text-text-tertiary">
+                                <Text fontSize="$1" color="$color10">
                                   (edited)
-                                </span>
+                                </Text>
                               )}
-                            </div>
-                            <p className="text-sm text-text-secondary whitespace-pre-wrap">
+                            </XStack>
+                            <Text fontSize="$3" color="$color11" whiteSpace="pre-wrap">
                               {comment.content}
-                            </p>
+                            </Text>
                             {comment.mentions &&
                               comment.mentions.length > 0 && (
-                                <div className="mt-2 flex flex-wrap gap-1">
+                                <XStack marginTop="$2" flexWrap="wrap" gap="$1">
                                   {comment.mentions.map((userId) => (
-                                    <span
+                                    <Text
                                       key={userId}
-                                      className="text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded"
+                                      fontSize="$1"
+                                      paddingHorizontal="$2"
+                                      paddingVertical="$0.5"
+                                      backgroundColor="$blue3"
+                                      color="$blue10"
+                                      borderRadius="$2"
                                     >
                                       @{getUserName(userId)}
-                                    </span>
+                                    </Text>
                                   ))}
-                                </div>
+                                </XStack>
                               )}
-                          </div>
-                        </div>
+                          </YStack>
+                        </XStack>
                       ))}
-                    </div>
+                    </YStack>
                   )}
-                </div>
+                </YStack>
 
                 {/* Add Comment */}
-                <div className="border-t border-border pt-4">
-                  <div className="relative">
+                <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                  <YStack position="relative">
                     <Textarea
                       label="Add a comment"
                       value={commentText}
@@ -622,182 +665,232 @@ export default function UnifiedTaskDetailModal({
                       fullWidth
                     />
                     {showMentions && (
-                      <div className="absolute z-10 w-full mt-1 bg-bg-primary border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      <YStack
+                        position="absolute"
+                        zIndex={10}
+                        width="100%"
+                        marginTop="$1"
+                        backgroundColor="$background"
+                        borderWidth={1}
+                        borderColor="$borderColor"
+                        borderRadius="$4"
+                        shadowColor="$shadowColor"
+                        shadowRadius="$4"
+                        maxHeight={192}
+                        overflow="hidden"
+                      >
                         {filteredUsers.map((user) => (
-                          <button
+                          <Button
                             key={user.id}
-                            onClick={() => insertMention(user)}
-                            className="w-full px-4 py-2 text-left hover:bg-bg-secondary flex items-center space-x-2"
+                            onPress={() => insertMention(user)}
+                            variant="ghost"
+                            width="100%"
+                            paddingHorizontal="$4"
+                            paddingVertical="$2"
+                            justifyContent="flex-start"
+                            alignItems="center"
+                            gap="$2"
+                            hoverStyle={{ backgroundColor: "$backgroundHover" }}
                           >
-                            <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                              <span className="text-xs font-semibold text-white">
+                            <XStack
+                              width={32}
+                              height={32}
+                              backgroundColor="$blue9"
+                              borderRadius={9999}
+                              alignItems="center"
+                              justifyContent="center"
+                            >
+                              <Text fontSize="$1" fontWeight="600" color="white">
                                 {user.name
                                   .split(' ')
                                   .map((n) => n[0])
                                   .join('')}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-text-primary">
+                              </Text>
+                            </XStack>
+                            <YStack>
+                              <Text fontSize="$3" fontWeight="500" color="$color12">
                                 {user.name}
-                              </p>
-                              <p className="text-xs text-text-tertiary">
+                              </Text>
+                              <Text fontSize="$1" color="$color10">
                                 {user.email}
-                              </p>
-                            </div>
-                          </button>
+                              </Text>
+                            </YStack>
+                          </Button>
                         ))}
-                      </div>
+                      </YStack>
                     )}
-                  </div>
-                  <div className="mt-3 flex justify-end">
+                  </YStack>
+                  <XStack marginTop="$3" justifyContent="flex-end">
                     <Button
-                      onClick={handleAddComment}
+                      onPress={handleAddComment}
                       disabled={!commentText.trim()}
                     >
                       Add Comment
                     </Button>
-                  </div>
-                </div>
-              </div>
+                  </XStack>
+                </YStack>
+              </YStack>
             )}
 
             {activeTab === 'attachments' && (
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-text-primary">
+              <YStack gap="$4">
+                <YStack gap="$3">
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <Text fontSize="$3" fontWeight="600" color="$color12">
                       Attachments
-                    </h3>
-                    <label className="cursor-pointer">
+                    </Text>
+                    <label style={{ cursor: 'pointer' }}>
                       <input
                         type="file"
-                        className="hidden"
+                        style={{ display: 'none' }}
                         onChange={handleFileUpload}
                       />
                       <Button variant="secondary" leftIcon={Upload} size="sm">
                         Upload File
                       </Button>
                     </label>
-                  </div>
+                  </XStack>
                   {attachmentsLoading ? (
-                    <div className="text-center py-8 text-text-tertiary">
-                      Loading attachments...
-                    </div>
+                    <YStack alignItems="center" paddingVertical="$8">
+                      <Text color="$color10">Loading attachments...</Text>
+                    </YStack>
                   ) : attachments.length === 0 ? (
-                    <div className="text-center py-8 text-text-tertiary">
-                      No attachments yet
-                    </div>
+                    <YStack alignItems="center" paddingVertical="$8">
+                      <Text color="$color10">No attachments yet</Text>
+                    </YStack>
                   ) : (
-                    <div className="space-y-2">
+                    <YStack gap="$2">
                       {attachments.map((attachment) => (
-                        <div
+                        <XStack
                           key={attachment.id}
-                          className="flex items-center justify-between p-3 bg-bg-secondary rounded-lg"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          padding="$3"
+                          backgroundColor="$backgroundHover"
+                          borderRadius="$4"
                         >
-                          <div className="flex items-center space-x-3 flex-1">
-                            <FileText
-                              className="text-text-tertiary"
-                              size={20}
-                            />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium text-text-primary">
+                          <XStack alignItems="center" gap="$3" flex={1}>
+                            <FileText color="$color10" size={20} />
+                            <YStack flex={1}>
+                              <Text fontSize="$3" fontWeight="500" color="$color12">
                                 {attachment.file_name}
-                              </p>
-                              <p className="text-xs text-text-tertiary">
+                              </Text>
+                              <Text fontSize="$1" color="$color10">
                                 {formatFileSize(attachment.file_size)} •{' '}
                                 {formatDate(attachment.created_at)}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
+                              </Text>
+                            </YStack>
+                          </XStack>
+                          <XStack alignItems="center" gap="$2">
                             {attachment.file_url && (
-                              <a
-                                href={attachment.file_url}
-                                download={attachment.file_name}
-                                className="p-2 text-primary-600 hover:bg-primary-50 rounded"
+                              <Button
+                                asChild
+                                size="$2"
+                                variant="ghost"
+                                color="$blue9"
+                                padding="$2"
+                                hoverStyle={{ backgroundColor: "$blue3" }}
                               >
-                                <Download size={16} />
-                              </a>
+                                <a
+                                  href={attachment.file_url}
+                                  download={attachment.file_name}
+                                >
+                                  <Download size={16} />
+                                </a>
+                              </Button>
                             )}
-                            <button
-                              onClick={() =>
+                            <Button
+                              onPress={() =>
                                 handleDeleteAttachment(attachment.id)
                               }
-                              className="p-2 text-error-600 hover:bg-error-50 rounded"
+                              size="$2"
+                              variant="ghost"
+                              color="$red9"
+                              padding="$2"
+                              hoverStyle={{ backgroundColor: "$red3" }}
                             >
                               <X size={16} />
-                            </button>
-                          </div>
-                        </div>
+                            </Button>
+                          </XStack>
+                        </XStack>
                       ))}
-                    </div>
+                    </YStack>
                   )}
-                </div>
-              </div>
+                </YStack>
+              </YStack>
             )}
 
             {activeTab === 'history' && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-text-primary">
+              <YStack gap="$4">
+                <Text fontSize="$3" fontWeight="600" color="$color12">
                   Status History
-                </h3>
+                </Text>
                 {historyLoading ? (
-                  <div className="text-center py-8 text-text-tertiary">
-                    Loading history...
-                  </div>
+                  <YStack alignItems="center" paddingVertical="$8">
+                    <Text color="$color10">Loading history...</Text>
+                  </YStack>
                 ) : history.length === 0 ? (
-                  <div className="text-center py-8 text-text-tertiary">
-                    No history yet
-                  </div>
+                  <YStack alignItems="center" paddingVertical="$8">
+                    <Text color="$color10">No history yet</Text>
+                  </YStack>
                 ) : (
-                  <div className="space-y-3">
+                  <YStack gap="$3">
                     {history.map((entry) => (
-                      <div
+                      <XStack
                         key={entry.id}
-                        className="flex space-x-3 p-3 bg-bg-secondary rounded-lg"
+                        gap="$3"
+                        padding="$3"
+                        backgroundColor="$backgroundHover"
+                        borderRadius="$4"
                       >
-                        <History
-                          className="text-text-tertiary mt-0.5"
-                          size={16}
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <span className="text-sm font-medium text-text-primary">
+                        <History color="$color10" size={16} marginTop={2} />
+                        <YStack flex={1}>
+                          <XStack alignItems="center" gap="$2" marginBottom="$1">
+                            <Text fontSize="$3" fontWeight="500" color="$color12">
                               {getUserName(entry.changed_by)}
-                            </span>
-                            <span className="text-xs text-text-tertiary">
+                            </Text>
+                            <Text fontSize="$1" color="$color10">
                               changed status
-                            </span>
-                            <span className="text-xs px-2 py-0.5 bg-bg-tertiary rounded">
+                            </Text>
+                            <Text
+                              fontSize="$1"
+                              paddingHorizontal="$2"
+                              paddingVertical="$0.5"
+                              backgroundColor="$gray3"
+                              borderRadius="$2"
+                            >
                               {entry.old_status}
-                            </span>
-                            <span className="text-xs text-text-tertiary">
+                            </Text>
+                            <Text fontSize="$1" color="$color10">
                               →
-                            </span>
-                            <span
-                              className={`text-xs px-2 py-0.5 rounded ${getStatusColor(entry.new_status)}`}
+                            </Text>
+                            <Text
+                              fontSize="$1"
+                              paddingHorizontal="$2"
+                              paddingVertical="$0.5"
+                              borderRadius="$2"
+                              className={getStatusColor(entry.new_status)}
                             >
                               {entry.new_status}
-                            </span>
-                          </div>
+                            </Text>
+                          </XStack>
                           {entry.reason && (
-                            <p className="text-xs text-text-secondary mt-1">
+                            <Text fontSize="$1" color="$color11" marginTop="$1">
                               Reason: {entry.reason}
-                            </p>
+                            </Text>
                           )}
-                          <p className="text-xs text-text-tertiary mt-1">
+                          <Text fontSize="$1" color="$color10" marginTop="$1">
                             {formatDate(entry.created_at)}
-                          </p>
-                        </div>
-                      </div>
+                          </Text>
+                        </YStack>
+                      </XStack>
                     ))}
-                  </div>
+                  </YStack>
                 )}
-              </div>
+              </YStack>
             )}
-          </div>
-        </div>
+          </YStack>
+        </YStack>
       </Modal>
 
       {/* Reassign Modal */}
@@ -807,7 +900,7 @@ export default function UnifiedTaskDetailModal({
         title="Reassign Task"
         size="sm"
       >
-        <div className="space-y-4">
+        <YStack gap="$4">
           <Select
             label="Select Assignee"
             value={selectedAssignee}
@@ -818,19 +911,19 @@ export default function UnifiedTaskDetailModal({
             }))}
             fullWidth
           />
-          <div className="flex space-x-3">
+          <XStack gap="$3">
             <Button
               variant="secondary"
-              onClick={() => setShowReassignModal(false)}
+              onPress={() => setShowReassignModal(false)}
               fullWidth
             >
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleReassign} fullWidth>
+            <Button variant="primary" onPress={handleReassign} fullWidth>
               Reassign
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* Block Modal */}
@@ -843,7 +936,7 @@ export default function UnifiedTaskDetailModal({
         title="Block Task"
         size="sm"
       >
-        <div className="space-y-4">
+        <YStack gap="$4">
           <Textarea
             label="Reason for blocking"
             value={blockReason}
@@ -853,10 +946,10 @@ export default function UnifiedTaskDetailModal({
             fullWidth
             required
           />
-          <div className="flex space-x-3">
+          <XStack gap="$3">
             <Button
               variant="secondary"
-              onClick={() => {
+              onPress={() => {
                 setShowBlockModal(false);
                 setBlockReason('');
               }}
@@ -866,14 +959,14 @@ export default function UnifiedTaskDetailModal({
             </Button>
             <Button
               variant="danger"
-              onClick={() => handleStatusChange('blocked', blockReason)}
+              onPress={() => handleStatusChange('blocked', blockReason)}
               disabled={!blockReason.trim()}
               fullWidth
             >
               Block Task
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* Edit Modal */}
@@ -883,7 +976,7 @@ export default function UnifiedTaskDetailModal({
         title="Edit Task Details"
         size="sm"
       >
-        <div className="space-y-4">
+        <YStack gap="$4">
           <Input
             label="Due Date"
             type="datetime-local"
@@ -908,19 +1001,19 @@ export default function UnifiedTaskDetailModal({
             ]}
             fullWidth
           />
-          <div className="flex space-x-3">
+          <XStack gap="$3">
             <Button
               variant="secondary"
-              onClick={() => setShowEditModal(false)}
+              onPress={() => setShowEditModal(false)}
               fullWidth
             >
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleEditTask} fullWidth>
+            <Button variant="primary" onPress={handleEditTask} fullWidth>
               Save Changes
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       </Modal>
 
       {/* COI Comparison Viewer */}
