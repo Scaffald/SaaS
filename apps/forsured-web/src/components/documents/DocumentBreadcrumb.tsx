@@ -18,7 +18,7 @@ export interface DocumentBreadcrumbProps {
 
 function Separator() {
   return (
-    <ChevronRight size={16} color="currentColor" aria-hidden="true" className="lucide-chevron-right" />
+    <ChevronRight size={16} color="currentColor" aria-hidden="true" />
   );
 }
 
