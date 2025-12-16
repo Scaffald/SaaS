@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Shield,
@@ -15,6 +14,7 @@ import {
   BarChart3,
   Handshake,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Button as TamaguiButton } from '@unicornlove/ui';
 import ForsuredLogo from '../Common/ForsuredLogo';
 import Button from '../Common/Button';
 import { useUser } from '../../contexts/UserContext';
@@ -99,31 +99,47 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-bg-secondary">
+    <YStack minHeight="100vh" backgroundColor="$backgroundHover">
       {/* Header */}
-      <header className="bg-surface border-b border-border shadow-sm backdrop-blur-sm bg-opacity-90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+      <YStack
+        as="header"
+        backgroundColor="$background"
+        borderBottomWidth={1}
+        borderColor="$borderColor"
+        elevation={1}
+        opacity={0.9}
+      >
+        <XStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+          <XStack alignItems="center" justifyContent="space-between" height={80}>
             <ForsuredLogo className="h-7" />
-            <nav className="hidden md:flex items-center space-x-8">
-              <a
+            <XStack as="nav" display="none" $gtMd={{ display: 'flex' }} alignItems="center" gap="$8">
+              <TamaguiButton
+                unstyled
                 href="#features"
-                className="text-text-secondary hover:text-primary-500 transition-colors font-medium"
+                color="$color11"
+                hoverStyle={{ color: '$blue10' }}
+                fontWeight="500"
               >
                 Features
-              </a>
-              <a
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
                 href="#pricing"
-                className="text-text-secondary hover:text-primary-500 transition-colors font-medium"
+                color="$color11"
+                hoverStyle={{ color: '$blue10' }}
+                fontWeight="500"
               >
                 Pricing
-              </a>
-              <a
+              </TamaguiButton>
+              <TamaguiButton
+                unstyled
                 href="#about"
-                className="text-text-secondary hover:text-primary-500 transition-colors font-medium"
+                color="$color11"
+                hoverStyle={{ color: '$blue10' }}
+                fontWeight="500"
               >
                 About
-              </a>
+              </TamaguiButton>
               <Button
                 onClick={() => navigate('/colors')}
                 variant="ghost"
@@ -131,19 +147,19 @@ export default function HomePage() {
               >
                 Design System
               </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+            </XStack>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* Quick Testing Links - Development Helper */}
-      <div className="bg-warning-50 dark:bg-warning-900/20 earth:bg-orange-100 border-b border-warning-200 dark:border-warning-800 earth:border-orange-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <span className="text-sm font-medium text-warning-800 dark:text-warning-300 earth:text-orange-800">
+      <YStack backgroundColor="$yellow2" borderBottomWidth={1} borderColor="$yellow6">
+        <XStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} paddingVertical="$3">
+          <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$2">
+            <Text fontSize="$3" fontWeight="500" color="$yellow12">
               Quick Links:
-            </span>
-            <div className="flex flex-wrap gap-2">
+            </Text>
+            <XStack flexWrap="wrap" gap="$2">
               <Button
                 size="sm"
                 variant="ghost"
@@ -200,32 +216,37 @@ export default function HomePage() {
               >
                 Colors/UI Kit
               </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+            </XStack>
+          </XStack>
+        </XStack>
+      </YStack>
 
       {/* Hero Section - Dynamic theme-aware backgrounds */}
-      <section className="relative py-24 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 earth:from-orange-900 earth:via-orange-800 earth:to-orange-700">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary-400 blur-3xl dark:bg-blue-500 earth:bg-orange-400"></div>
-          <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-primary-600 blur-3xl dark:bg-blue-600 earth:bg-yellow-500"></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center">
-            <h1 className="font-display text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
+      <YStack
+        as="section"
+        position="relative"
+        paddingVertical="$12"
+        backgroundColor="$blue12"
+      >
+        <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
+          <YStack position="absolute" top={0} right={0} width="33%" height="33%" backgroundColor="$blue9" opacity={0.5} />
+          <YStack position="absolute" bottom={0} left={0} width="33%" height="33%" backgroundColor="$blue10" opacity={0.5} />
+        </YStack>
+        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} position="relative">
+          <YStack alignItems="center">
+            <H1 fontSize="$10" $gtMd={{ fontSize: '$12' }} fontWeight="700" color="white" marginBottom="$6" letterSpacing="-0.02em">
               Construction Compliance
-              <span className="block text-primary-300 dark:text-primary-400 earth:text-orange-300">
+              <Text display="block" color="$blue4">
                 Built for the Field
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-white/90 dark:text-slate-200 earth:text-orange-50 mb-12 max-w-3xl mx-auto leading-relaxed">
+              </Text>
+            </H1>
+            <Text fontSize="$6" $gtMd={{ fontSize: '$8' }} color="rgba(255,255,255,0.9)" marginBottom="$12" maxWidth={768} marginHorizontal="auto" lineHeight={1.6}>
               AI-powered contractor vetting, real-time risk monitoring, and
               instant insurance coverage. From the job site to the back office.
-            </p>
+            </Text>
 
             {/* Primary CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <XStack flexDirection="column" $gtSm={{ flexDirection: 'row' }} gap="$4" justifyContent="center" alignItems="center" marginBottom="$10">
               <Button
                 onClick={() => handleGetStarted('manager')}
                 variant="primary"
@@ -258,179 +279,176 @@ export default function HomePage() {
               >
                 For Brokers
               </Button>
-            </div>
+            </XStack>
 
             {/* Value Props */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <div className="bg-surface p-8 rounded-xl shadow-md border border-border hover:shadow-xl hover:border-primary-300 dark:hover:border-blue-500 earth:hover:border-orange-400 transition-all duration-300 hover:-translate-y-1">
-                <Shield
-                  className="text-primary-500 dark:text-blue-500 earth:text-orange-500 mb-4 mx-auto"
-                  size={40}
-                />
-                <h3 className="font-display font-semibold text-text-primary mb-2 text-lg">
+            <XStack flexWrap="wrap" gap="$6" maxWidth={1024} marginHorizontal="auto">
+              <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={2} borderWidth={1} borderColor="$borderColor" hoverStyle={{ elevation: 4, borderColor: '$blue6' }} flex={1} minWidth="45%" $gtMd={{ minWidth: '30%' }}>
+                <Shield size={40} color="$blue10" marginBottom="$4" />
+                <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
                   Automated Verification
-                </h3>
-                <p className="text-text-secondary">
+                </H3>
+                <Text color="$color11">
                   AI-powered document verification with 99.8% accuracy
-                </p>
-              </div>
-              <div className="bg-surface p-8 rounded-xl shadow-md border border-border hover:shadow-xl hover:border-secondary-300 dark:hover:border-teal-500 earth:hover:border-yellow-500 transition-all duration-300 hover:-translate-y-1">
-                <Clock
-                  className="text-secondary-500 dark:text-teal-500 earth:text-yellow-600 mb-4 mx-auto"
-                  size={40}
-                />
-                <h3 className="font-display font-semibold text-text-primary mb-2 text-lg">
+                </Text>
+              </Card>
+              <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={2} borderWidth={1} borderColor="$borderColor" hoverStyle={{ elevation: 4, borderColor: '$gray6' }} flex={1} minWidth="45%" $gtMd={{ minWidth: '30%' }}>
+                <Clock size={40} color="$gray10" marginBottom="$4" />
+                <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
                   Save 60% Time
-                </h3>
-                <p className="text-text-secondary">
+                </H3>
+                <Text color="$color11">
                   Reduce compliance management from hours to minutes
-                </p>
-              </div>
-              <div className="bg-surface p-8 rounded-xl shadow-md border border-border hover:shadow-xl hover:border-warning-300 dark:hover:border-yellow-500 earth:hover:border-orange-300 transition-all duration-300 hover:-translate-y-1">
-                <DollarSign
-                  className="text-warning-500 dark:text-yellow-500 earth:text-orange-400 mb-4 mx-auto"
-                  size={40}
-                />
-                <h3 className="font-display font-semibold text-text-primary mb-2 text-lg">
+                </Text>
+              </Card>
+              <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={2} borderWidth={1} borderColor="$borderColor" hoverStyle={{ elevation: 4, borderColor: '$yellow6' }} flex={1} minWidth="45%" $gtMd={{ minWidth: '30%' }}>
+                <DollarSign size={40} color="$yellow10" marginBottom="$4" />
+                <H3 fontWeight="600" color="$color12" marginBottom="$2" fontSize="$6">
                   Instant Coverage
-                </h3>
-                <p className="text-text-secondary">
+                </H3>
+                <Text color="$color11">
                   Purchase insurance and get COIs issued immediately
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+                </Text>
+              </Card>
+            </XStack>
+          </YStack>
+        </YStack>
+      </YStack>
 
       {/* Stats Section - Theme-aware dark backgrounds */}
-      <section className="py-20 bg-gray-900 dark:bg-gray-950 earth:bg-orange-950 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500 dark:bg-blue-500 earth:bg-orange-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary-500 dark:bg-teal-500 earth:bg-yellow-500 rounded-full blur-3xl"></div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-4">
+      <YStack
+        as="section"
+        paddingVertical="$10"
+        backgroundColor="$gray12"
+        color="white"
+        position="relative"
+        overflow="hidden"
+      >
+        <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
+          <YStack position="absolute" top={0} left="25%" width={384} height={384} backgroundColor="$blue10" borderRadius={9999} opacity={0.5} />
+          <YStack position="absolute" bottom={0} right="25%" width={384} height={384} backgroundColor="$gray10" borderRadius={9999} opacity={0.5} />
+        </YStack>
+        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} position="relative">
+          <YStack alignItems="center" marginBottom="$10">
+            <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" marginBottom="$4">
               Trusted by Construction Leaders
-            </h2>
-            <p className="text-gray-300 dark:text-gray-400 earth:text-orange-200 text-xl">
+            </H2>
+            <Text fontSize="$6" color="rgba(255,255,255,0.7)">
               Join thousands of construction professionals building with
               confidence
-            </p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            </Text>
+          </YStack>
+          <XStack flexWrap="wrap" gap="$8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="font-display text-5xl md:text-6xl font-bold text-primary-400 dark:text-blue-400 earth:text-orange-400 mb-2">
+              <YStack key={index} alignItems="center" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+                <Text fontSize="$10" $gtMd={{ fontSize: '$11' }} fontWeight="700" color="$blue9" marginBottom="$2">
                   {stat.value}
-                </div>
-                <div className="text-gray-400 dark:text-gray-500 earth:text-orange-300 text-lg">
+                </Text>
+                <Text fontSize="$6" color="rgba(255,255,255,0.6)">
                   {stat.label}
-                </div>
-              </div>
+                </Text>
+              </YStack>
             ))}
-          </div>
-        </div>
-      </section>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-text-primary mb-6">
+      <YStack as="section" id="features" paddingVertical="$12" backgroundColor="$background">
+        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+          <YStack alignItems="center" marginBottom="$10">
+            <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" color="$color12" marginBottom="$6">
               Built for Construction
-            </h2>
-            <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
+            </H2>
+            <Text fontSize="$6" color="$color11" maxWidth={768} marginHorizontal="auto" lineHeight={1.6}>
               From automated document verification to predictive risk
               monitoring, Forsured delivers comprehensive compliance management
               designed for the field.
-            </p>
-          </div>
+            </Text>
+          </YStack>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <XStack flexWrap="wrap" gap="$8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div
+                <Card
                   key={index}
-                  className="bg-surface p-8 rounded-xl border-2 border-border hover:border-primary-500 dark:hover:border-blue-500 earth:hover:border-orange-500 hover:shadow-xl transition-all duration-300 group"
+                  backgroundColor="$background"
+                  padding="$8"
+                  borderRadius="$4"
+                  borderWidth={2}
+                  borderColor="$borderColor"
+                  hoverStyle={{ borderColor: '$blue10', elevation: 4 }}
+                  flex={1}
+                  minWidth="45%"
+                  $gtMd={{ minWidth: '30%' }}
                 >
-                  <div className="bg-primary-100 dark:bg-blue-100 earth:bg-orange-100 w-14 h-14 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary-500 dark:group-hover:bg-blue-500 earth:group-hover:bg-orange-500 transition-colors">
-                    <Icon
-                      className="text-primary-600 dark:text-blue-600 earth:text-orange-600 group-hover:text-white transition-colors"
-                      size={28}
-                    />
-                  </div>
-                  <h3 className="font-display text-xl font-semibold text-text-primary mb-3">
+                  <XStack
+                    backgroundColor="$blue2"
+                    width={56}
+                    height={56}
+                    borderRadius="$4"
+                    alignItems="center"
+                    justifyContent="center"
+                    marginBottom="$5"
+                    hoverStyle={{ backgroundColor: '$blue10' }}
+                  >
+                    <Icon size={28} color="$blue11" />
+                  </XStack>
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$3">
                     {feature.title}
-                  </h3>
-                  <p className="text-text-secondary leading-relaxed">
+                  </H3>
+                  <Text color="$color11" lineHeight={1.6}>
                     {feature.description}
-                  </p>
-                </div>
+                  </Text>
+                </Card>
               );
             })}
-          </div>
-        </div>
-      </section>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* Use Cases Section */}
-      <section className="py-24 bg-bg-secondary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <YStack as="section" paddingVertical="$12" backgroundColor="$backgroundHover">
+        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+          <XStack flexWrap="wrap" gap="$8">
             {/* Construction Managers */}
-            <div className="bg-surface p-8 rounded-xl shadow-lg border-2 border-border hover:border-primary-500 dark:hover:border-blue-500 earth:hover:border-orange-500 transition-all duration-300">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="bg-primary-100 dark:bg-blue-100 earth:bg-orange-100 p-3 rounded-xl">
-                  <Users
-                    className="text-primary-600 dark:text-blue-600 earth:text-orange-600"
-                    size={28}
-                  />
-                </div>
-                <h3 className="font-display text-2xl font-bold text-text-primary">
+            <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={3} borderWidth={2} borderColor="$borderColor" hoverStyle={{ borderColor: '$blue10' }} flex={1} minWidth="45%" $gtLg={{ minWidth: '30%' }}>
+              <XStack alignItems="center" gap="$3" marginBottom="$6">
+                <XStack backgroundColor="$blue2" padding="$3" borderRadius="$4">
+                  <Users size={28} color="$blue11" />
+                </XStack>
+                <H3 fontSize="$8" fontWeight="700" color="$color12">
                   For Managers
-                </h3>
-              </div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-primary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                </H3>
+              </XStack>
+              <YStack gap="$4" marginBottom="$8">
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Automatically verify subcontractor compliance across all
                     projects
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-primary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Real-time risk monitoring with predictive alerts
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-primary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Generate compliance reports for audits and stakeholders
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-primary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$blue10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Integrate with existing construction management tools
-                  </span>
-                </li>
-              </ul>
+                  </Text>
+                </XStack>
+              </YStack>
               <Button
                 onClick={() => handleGetStarted('manager')}
                 variant="primary"
@@ -440,59 +458,44 @@ export default function HomePage() {
               >
                 Get Started
               </Button>
-            </div>
+            </Card>
 
             {/* Subcontractors */}
-            <div className="bg-surface p-8 rounded-xl shadow-lg border-2 border-border hover:border-secondary-500 dark:hover:border-teal-500 earth:hover:border-yellow-500 transition-all duration-300">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="bg-secondary-100 dark:bg-teal-100 earth:bg-yellow-100 p-3 rounded-xl">
-                  <Award
-                    className="text-secondary-600 dark:text-teal-600 earth:text-yellow-700"
-                    size={28}
-                  />
-                </div>
-                <h3 className="font-display text-2xl font-bold text-text-primary">
+            <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={3} borderWidth={2} borderColor="$borderColor" hoverStyle={{ borderColor: '$gray10' }} flex={1} minWidth="45%" $gtLg={{ minWidth: '30%' }}>
+              <XStack alignItems="center" gap="$3" marginBottom="$6">
+                <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
+                  <Award size={28} color="$gray11" />
+                </XStack>
+                <H3 fontSize="$8" fontWeight="700" color="$color12">
                   For Subcontractors
-                </h3>
-              </div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-secondary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                </H3>
+              </XStack>
+              <YStack gap="$4" marginBottom="$8">
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Upload documents and get instant compliance scoring
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-secondary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Receive personalized insurance recommendations
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-secondary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Purchase coverage and get COIs issued instantly
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-secondary-500 mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$gray10" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Track renewal dates and maintain compliance status
-                  </span>
-                </li>
-              </ul>
+                  </Text>
+                </XStack>
+              </YStack>
               <Button
                 onClick={() => handleGetStarted('subcontractor')}
                 variant="secondary"
@@ -502,59 +505,44 @@ export default function HomePage() {
               >
                 Get Started
               </Button>
-            </div>
+            </Card>
 
             {/* Insurance Brokers */}
-            <div className="bg-surface p-8 rounded-xl shadow-lg border-2 border-border hover:border-gray-600 dark:hover:border-gray-400 earth:hover:border-orange-600 transition-all duration-300">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="bg-gray-100 dark:bg-gray-700 earth:bg-orange-100 p-3 rounded-xl">
-                  <Handshake
-                    className="text-gray-700 dark:text-gray-300 earth:text-orange-700"
-                    size={28}
-                  />
-                </div>
-                <h3 className="font-display text-2xl font-bold text-text-primary">
+            <Card backgroundColor="$background" padding="$8" borderRadius="$4" elevation={3} borderWidth={2} borderColor="$borderColor" hoverStyle={{ borderColor: '$gray11' }} flex={1} minWidth="45%" $gtLg={{ minWidth: '30%' }}>
+              <XStack alignItems="center" gap="$3" marginBottom="$6">
+                <XStack backgroundColor="$gray2" padding="$3" borderRadius="$4">
+                  <Handshake size={28} color="$gray11" />
+                </XStack>
+                <H3 fontSize="$8" fontWeight="700" color="$color12">
                   For Brokers
-                </h3>
-              </div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-text-secondary mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                </H3>
+              </XStack>
+              <YStack gap="$4" marginBottom="$8">
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Access qualified construction leads with verified needs
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-text-secondary mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Streamline quote generation and policy management
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-text-secondary mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Automated COI generation and compliance tracking
-                  </span>
-                </li>
-                <li className="flex items-start space-x-3">
-                  <CheckCircle
-                    className="text-text-secondary mt-1 flex-shrink-0"
-                    size={20}
-                  />
-                  <span className="text-text-secondary">
+                  </Text>
+                </XStack>
+                <XStack alignItems="flex-start" gap="$3">
+                  <CheckCircle size={20} color="$color11" marginTop="$1" flexShrink={0} />
+                  <Text color="$color11">
                     Expand your construction industry client base
-                  </span>
-                </li>
-              </ul>
+                  </Text>
+                </XStack>
+              </YStack>
               <Button
                 onClick={() => handleGetStarted('broker')}
                 rightIcon={ArrowRight}
@@ -564,162 +552,115 @@ export default function HomePage() {
               >
                 Get Started
               </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+            </Card>
+          </XStack>
+        </YStack>
+      </YStack>
 
       {/* CTA Section - Theme-aware vibrant gradients */}
-      <section className="py-24 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 dark:from-blue-700 dark:via-blue-800 dark:to-gray-900 earth:from-orange-600 earth:via-orange-700 earth:to-orange-900 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-secondary-500 dark:bg-teal-500 earth:bg-yellow-500 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-warning-500 dark:bg-blue-400 earth:bg-orange-400 rounded-full blur-3xl"></div>
-        </div>
-        <div className="max-w-5xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">
+      <YStack
+        as="section"
+        paddingVertical="$12"
+        backgroundColor="$blue11"
+        position="relative"
+        overflow="hidden"
+      >
+        <YStack position="absolute" top={0} left={0} right={0} bottom={0} opacity={0.1}>
+          <YStack position="absolute" top={0} right={0} width={384} height={384} backgroundColor="$gray10" borderRadius={9999} opacity={0.5} />
+          <YStack position="absolute" bottom={0} left={0} width={384} height={384} backgroundColor="$yellow10" borderRadius={9999} opacity={0.5} />
+        </YStack>
+        <YStack maxWidth={896} marginHorizontal="auto" alignItems="center" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }} position="relative">
+          <H2 fontSize="$9" $gtMd={{ fontSize: '$10' }} fontWeight="700" color="white" marginBottom="$6">
             Ready to Build with Confidence?
-          </h2>
-          <p className="text-xl md:text-2xl text-primary-100 dark:text-blue-100 earth:text-orange-100 mb-12 leading-relaxed">
+          </H2>
+          <Text fontSize="$6" $gtMd={{ fontSize: '$8' }} color="rgba(255,255,255,0.9)" marginBottom="$12" lineHeight={1.6}>
             Join thousands of construction professionals managing compliance the
             modern way.
-          </p>
-        </div>
-      </section>
+          </Text>
+        </YStack>
+      </YStack>
 
       {/* Footer - Theme-aware dark backgrounds */}
-      <footer className="bg-gray-900 dark:bg-gray-950 earth:bg-orange-950 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div>
+      <YStack
+        as="footer"
+        backgroundColor="$gray12"
+        color="white"
+        paddingVertical="$8"
+      >
+        <YStack maxWidth={1280} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
+          <XStack flexWrap="wrap" gap="$12">
+            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
               <ForsuredLogo className="h-8 mb-6" color="white" />
-              <p className="text-gray-400 dark:text-gray-500 earth:text-orange-300 leading-relaxed">
+              <Text color="rgba(255,255,255,0.6)" lineHeight={1.6}>
                 AI-powered compliance and insurance management for the
                 construction industry.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-display font-semibold mb-4 text-white">
+              </Text>
+            </YStack>
+            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+              <H3 fontWeight="600" marginBottom="$4" color="white">
                 Product
-              </h4>
-              <ul className="space-y-3 text-gray-400 dark:text-gray-500 earth:text-orange-300">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+              </H3>
+              <YStack gap="$3">
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Features
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Pricing
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Integrations
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
-                    API
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-display font-semibold mb-4 text-white">
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
+                  API
+                </TamaguiButton>
+              </YStack>
+            </YStack>
+            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+              <H3 fontWeight="600" marginBottom="$4" color="white">
                 Company
-              </h4>
-              <ul className="space-y-3 text-gray-400 dark:text-gray-500 earth:text-orange-300">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+              </H3>
+              <YStack gap="$3">
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     About
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Careers
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Contact
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
-                    Blog
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-display font-semibold mb-4 text-white">
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
+                  Blog
+                </TamaguiButton>
+              </YStack>
+            </YStack>
+            <YStack flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+              <H3 fontWeight="600" marginBottom="$4" color="white">
                 Support
-              </h4>
-              <ul className="space-y-3 text-gray-400 dark:text-gray-500 earth:text-orange-300">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+              </H3>
+              <YStack gap="$3">
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Help Center
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Documentation
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Status
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-400 dark:hover:text-blue-400 earth:hover:text-orange-400 transition-colors"
-                  >
+                </TamaguiButton>
+                <TamaguiButton unstyled href="#" color="rgba(255,255,255,0.6)" hoverStyle={{ color: '$blue9' }}>
                     Security
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 dark:border-gray-900 earth:border-orange-900 mt-12 pt-8 text-center text-gray-400 dark:text-gray-500 earth:text-orange-300">
-            <p>&copy; 2024 Forsured. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+                </TamaguiButton>
+              </YStack>
+            </YStack>
+          </XStack>
+          <YStack borderTopWidth={1} borderColor="$gray11" marginTop="$12" paddingTop="$8" alignItems="center">
+            <Text color="rgba(255,255,255,0.6)">
+              &copy; 2024 Forsured. All rights reserved.
+            </Text>
+          </YStack>
+        </YStack>
+      </YStack>
+    </YStack>
   );
 }
