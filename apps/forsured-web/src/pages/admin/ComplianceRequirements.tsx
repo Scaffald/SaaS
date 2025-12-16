@@ -10,6 +10,7 @@
  */
 
 import { useState, useCallback } from 'react'
+import { YStack, XStack, Text, Button, H1, H2, H3, Card } from 'tamagui'
 import { useUser } from '../../contexts/UserContext'
 import { RequirementsList } from '../../components/Admin/Compliance/RequirementsList'
 import { RequirementEditor } from '../../components/Admin/Compliance/RequirementEditor'
@@ -103,72 +104,93 @@ export function ComplianceRequirements() {
   // No organization check
   if (!organizationId) {
     return (
-      <div className="p-8">
-        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700">
-          <AlertCircle size={20} />
-          <div>
-            <p className="font-medium">Organization Required</p>
-            <p className="text-sm">
+      <YStack padding="$8">
+        <XStack alignItems="center" gap="$3" padding="$4" backgroundColor="$yellow4" borderWidth={1} borderColor="$yellow8" borderRadius="$4">
+          <AlertCircle size={20} color="$yellow11" />
+          <YStack>
+            <Text fontWeight="600" color="$yellow11">Organization Required</Text>
+            <Text fontSize="$3" color="$yellow11">
               Please select an organization to manage compliance requirements.
-            </p>
-          </div>
-        </div>
-      </div>
+            </Text>
+          </YStack>
+        </XStack>
+      </YStack>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <YStack minHeight="100vh" backgroundColor="$backgroundHover">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Compliance Requirements</h1>
-              <p className="text-sm text-gray-500 mt-1">
+      <XStack backgroundColor="$background" borderBottomWidth={1} borderColor="$borderColor">
+        <YStack maxWidth={1280} width="100%" marginHorizontal="auto" paddingHorizontal="$6" paddingVertical="$4">
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <H1 fontSize="$8" fontWeight="700" color="$color12">Compliance Requirements</H1>
+              <Text fontSize="$3" color="$color11" marginTop="$1">
                 Manage insurance coverage requirements and dependencies
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleBulkImport}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+              </Text>
+            </YStack>
+            <XStack alignItems="center" gap="$2">
+              <Button
+                onPress={handleBulkImport}
+                icon={<Upload size={16} />}
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                fontSize="$3"
+                color="$color12"
+                backgroundColor="transparent"
+                hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                borderRadius="$4"
               >
-                <Upload size={16} />
                 Import
-              </button>
-              <button
-                onClick={handleBulkExport}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+              </Button>
+              <Button
+                onPress={handleBulkExport}
+                icon={<Download size={16} />}
+                paddingHorizontal="$3"
+                paddingVertical="$2"
+                fontSize="$3"
+                color="$color12"
+                backgroundColor="transparent"
+                hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                borderRadius="$4"
               >
-                <Download size={16} />
                 Export
-              </button>
-            </div>
-          </div>
+              </Button>
+            </XStack>
+          </XStack>
 
           {/* Tabs */}
-          <div className="flex items-center gap-1 mt-4 -mb-px">
+          <XStack alignItems="center" gap="$1" marginTop="$4" marginBottom={-1}>
             {TABS.map((tab) => (
-              <button
+              <Button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                onPress={() => setActiveTab(tab.id)}
+                icon={tab.icon}
+                paddingHorizontal="$4"
+                paddingVertical="$2.5"
+                fontSize="$3"
+                fontWeight="600"
+                backgroundColor="transparent"
+                borderBottomWidth={2}
+                borderBottomColor={activeTab === tab.id ? '$blue10' : 'transparent'}
+                color={activeTab === tab.id ? '$blue11' : '$color11'}
+                hoverStyle={{
+                  backgroundColor: 'transparent',
+                  color: activeTab === tab.id ? '$blue11' : '$color12',
+                  borderBottomColor: activeTab === tab.id ? '$blue10' : '$borderColor',
+                }}
+                borderRadius={0}
               >
-                {tab.icon}
                 {tab.label}
-              </button>
+              </Button>
             ))}
-          </div>
-        </div>
-      </div>
+          </XStack>
+        </YStack>
+      </XStack>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <YStack maxWidth={1280} width="100%" marginHorizontal="auto" paddingHorizontal="$6" paddingVertical="$6">
         {activeTab === 'list' && (
           <RequirementsList
             organizationId={organizationId}
@@ -196,33 +218,51 @@ export function ComplianceRequirements() {
         )}
 
         {activeTab === 'bulk' && (
-          <div className="bg-white rounded-lg border p-6">
-            <h2 className="text-lg font-semibold mb-4">Bulk Operations</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <div
-                className="p-6 border rounded-lg hover:border-blue-500 cursor-pointer"
-                onClick={handleBulkImport}
+          <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} padding="$6">
+            <H2 fontSize="$6" fontWeight="600" marginBottom="$4">Bulk Operations</H2>
+            <XStack flexWrap="wrap" gap="$6">
+              <Card
+                padding="$6"
+                borderWidth={1}
+                borderRadius="$4"
+                backgroundColor="$background"
+                hoverStyle={{ borderColor: "$blue10" }}
+                cursor="pointer"
+                onPress={handleBulkImport}
+                flex={1}
+                minWidth={300}
               >
-                <Upload size={32} className="text-blue-500 mb-3" />
-                <h3 className="font-medium">Import Requirements</h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  Upload CSV or JSON file to bulk import compliance requirements
-                </p>
-              </div>
-              <div
-                className="p-6 border rounded-lg hover:border-green-500 cursor-pointer"
-                onClick={handleBulkExport}
+                <YStack alignItems="flex-start" gap="$3">
+                  <Upload size={32} color="$blue10" />
+                  <H3 fontWeight="600">Import Requirements</H3>
+                  <Text fontSize="$3" color="$color11">
+                    Upload CSV or JSON file to bulk import compliance requirements
+                  </Text>
+                </YStack>
+              </Card>
+              <Card
+                padding="$6"
+                borderWidth={1}
+                borderRadius="$4"
+                backgroundColor="$background"
+                hoverStyle={{ borderColor: "$green10" }}
+                cursor="pointer"
+                onPress={handleBulkExport}
+                flex={1}
+                minWidth={300}
               >
-                <Download size={32} className="text-green-500 mb-3" />
-                <h3 className="font-medium">Export Requirements</h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  Download requirements as CSV, JSON, or Excel file
-                </p>
-              </div>
-            </div>
-          </div>
+                <YStack alignItems="flex-start" gap="$3">
+                  <Download size={32} color="$green10" />
+                  <H3 fontWeight="600">Export Requirements</H3>
+                  <Text fontSize="$3" color="$color11">
+                    Download requirements as CSV, JSON, or Excel file
+                  </Text>
+                </YStack>
+              </Card>
+            </XStack>
+          </Card>
         )}
-      </div>
+      </YStack>
 
       {/* Modals */}
       <RequirementEditor
