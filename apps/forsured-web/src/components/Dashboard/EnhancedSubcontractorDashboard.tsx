@@ -172,21 +172,21 @@ export default function EnhancedSubcontractorDashboard() {
 
         <XStack flexWrap="wrap" gap="$4">
           <YStack flex={1} minWidth={200} alignItems="center" padding="$4" backgroundColor="$green2" borderRadius="$4">
-            <CheckCircle className="text-success-600" style={{ margin: '0 auto 8px' }} size={24} />
+            <CheckCircle color="var(--green10)" style={{ margin: '0 auto 8px' }} size={24} />
             <Text fontSize="$3" fontWeight="500" color="$color12">All Current</Text>
             <Text fontSize="$2" color="$green11">
               Insurance policies active
             </Text>
           </YStack>
           <YStack flex={1} minWidth={200} alignItems="center" padding="$4" backgroundColor="$yellow2" borderRadius="$4">
-            <Clock className="text-warning-600" style={{ margin: '0 auto 8px' }} size={24} />
+            <Clock color="var(--yellow10)" style={{ margin: '0 auto 8px' }} size={24} />
             <Text fontSize="$3" fontWeight="500" color="$color12">
               2 Expiring Soon
             </Text>
             <Text fontSize="$2" color="$yellow11">Renew within 30 days</Text>
           </YStack>
           <YStack flex={1} minWidth={200} alignItems="center" padding="$4" backgroundColor="$blue2" borderRadius="$4">
-            <Shield className="text-primary-600" style={{ margin: '0 auto 8px' }} size={24} />
+            <Shield color="var(--blue10)" style={{ margin: '0 auto 8px' }} size={24} />
             <Text fontSize="$3" fontWeight="500" color="$color12">
               Fully Compliant
             </Text>
@@ -205,7 +205,7 @@ export default function EnhancedSubcontractorDashboard() {
               </Text>
             </YStack>
             <XStack backgroundColor="$blue3" padding="$3" borderRadius="$12">
-              <FileText className="text-primary-600" size={24} />
+              <FileText color="var(--blue10)" size={24} />
             </XStack>
           </XStack>
           <Text marginTop="$3" fontSize="$3" color="$green11">All verified</Text>
@@ -220,7 +220,7 @@ export default function EnhancedSubcontractorDashboard() {
               </Text>
             </YStack>
             <XStack backgroundColor="$green3" padding="$3" borderRadius="$12">
-              <Shield className="text-success-600" size={24} />
+              <Shield color="var(--green10)" size={24} />
             </XStack>
           </XStack>
           <Text marginTop="$3" fontSize="$3" color="$color11">
@@ -237,7 +237,7 @@ export default function EnhancedSubcontractorDashboard() {
               </Text>
             </YStack>
             <XStack backgroundColor="$orange3" padding="$3" borderRadius="$12">
-              <AlertTriangle className="text-secondary-600" size={24} />
+              <AlertTriangle color="var(--orange10)" size={24} />
             </XStack>
           </XStack>
           <Text marginTop="$3" fontSize="$3" color="$orange11">Action required</Text>
@@ -250,7 +250,7 @@ export default function EnhancedSubcontractorDashboard() {
               <Text fontSize="$10" fontWeight="700" color="$color12">$18.5K</Text>
             </YStack>
             <XStack backgroundColor="$orange3" padding="$3" borderRadius="$12">
-              <DollarSign className="text-secondary-500" size={24} />
+              <DollarSign color="var(--orange9)" size={24} />
             </XStack>
           </XStack>
           <Text marginTop="$3" fontSize="$3" color="$green11">
@@ -277,10 +277,14 @@ export default function EnhancedSubcontractorDashboard() {
             <Button
               variant="ghost"
               fullWidth
-              className="justify-between p-3 bg-primary-50 hover:bg-primary-100 h-auto"
+              justifyContent="space-between"
+              padding="$3"
+              backgroundColor="$blue2"
+              hoverStyle={{ backgroundColor: '$blue3' }}
+              height="auto"
             >
               <XStack alignItems="center" gap="$3">
-                <FileText className="text-primary-600" size={20} />
+                <FileText color="var(--blue10)" size={20} />
                 <Text color="$color12" fontWeight="500">
                   Upload Documents
                 </Text>
@@ -291,10 +295,14 @@ export default function EnhancedSubcontractorDashboard() {
             <Button
               variant="ghost"
               fullWidth
-              className="justify-between p-3 bg-success-50 hover:bg-success-100 h-auto"
+              justifyContent="space-between"
+              padding="$3"
+              backgroundColor="$green2"
+              hoverStyle={{ backgroundColor: '$green3' }}
+              height="auto"
             >
               <XStack alignItems="center" gap="$3">
-                <DollarSign className="text-success-600" size={20} />
+                <DollarSign color="var(--green10)" size={20} />
                 <Text color="$color12" fontWeight="500">
                   Shop Insurance
                 </Text>
@@ -305,10 +313,14 @@ export default function EnhancedSubcontractorDashboard() {
             <Button
               variant="ghost"
               fullWidth
-              className="justify-between p-3 bg-secondary-50 hover:bg-secondary-100 h-auto"
+              justifyContent="space-between"
+              padding="$3"
+              backgroundColor="$orange2"
+              hoverStyle={{ backgroundColor: '$orange3' }}
+              height="auto"
             >
               <XStack alignItems="center" gap="$3">
-                <Calendar className="text-secondary-500" size={20} />
+                <Calendar color="var(--orange9)" size={20} />
                 <Text color="$color12" fontWeight="500">
                   Schedule Renewal
                 </Text>
@@ -480,7 +492,7 @@ export default function EnhancedSubcontractorDashboard() {
                   alignItems="center"
                   gap="$2"
                 >
-                  <Upload className="text-primary-600" size={32} />
+                  <Upload color="var(--blue10)" size={32} />
                   <Text fontSize="$3" color="$color12">
                     {uploadedFile
                       ? uploadedFile.name
@@ -496,7 +508,7 @@ export default function EnhancedSubcontractorDashboard() {
             {uploadedFile && (
               <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$green2" borderRadius="$4" borderWidth={1} borderColor="$green6">
                 <XStack alignItems="center" gap="$2">
-                  <FileText className="text-success-600" size={16} />
+                  <FileText color="var(--green10)" size={16} />
                   <Text fontSize="$3" color="$color12">
                     {uploadedFile.name}
                   </Text>
