@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Building,
   Users,
@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   Info,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Button as TamaguiButton, Input, Label } from '@unicornlove/ui';
 
 interface CompanyInfo {
   companyName: string;
@@ -230,107 +231,123 @@ export default function GCOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-secondary py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <YStack minHeight="100vh" backgroundColor="$backgroundHover" paddingVertical="$8">
+      <YStack maxWidth={896} marginHorizontal="auto" paddingHorizontal="$4" $gtSm={{ paddingHorizontal: '$6' }} $gtLg={{ paddingHorizontal: '$8' }}>
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">
+        <YStack alignItems="center" marginBottom="$8">
+          <H1 fontSize="$9" fontWeight="700" color="$color12" marginBottom="$2">
             Welcome to Simple Insurance
-          </h1>
-          <p className="text-lg text-text-secondary">
+          </H1>
+          <Text fontSize="$6" color="$color11">
             Let's set up your construction compliance management
-          </p>
-        </div>
+          </Text>
+        </YStack>
 
         {/* Progress Indicator */}
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-6 mb-8">
-          <div className="flex items-center justify-between">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" marginBottom="$8">
+          <XStack alignItems="center" justifyContent="space-between">
             {steps.map((step, index) => {
               const Icon = step.icon;
               const isActive = currentStep === step.id;
               const isCompleted = currentStep > step.id;
 
               return (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex items-center">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-medium transition-colors ${
+                <XStack key={step.id} alignItems="center">
+                  <XStack alignItems="center">
+                    <XStack
+                      width={48}
+                      height={48}
+                      borderRadius={9999}
+                      alignItems="center"
+                      justifyContent="center"
+                      fontWeight="500"
+                      backgroundColor={
                         isCompleted
-                          ? 'bg-green-600 text-white'
+                          ? '$green10'
                           : isActive
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-bg-tertiary text-text-secondary'
-                      }`}
+                            ? '$blue10'
+                            : '$backgroundHover'
+                      }
+                      color={
+                        isCompleted || isActive
+                          ? 'white'
+                          : '$color11'
+                      }
                     >
                       {isCompleted ? (
-                        <CheckCircle size={20} />
+                        <CheckCircle size={20} color="white" />
                       ) : (
-                        <Icon size={20} />
+                        <Icon size={20} color={isActive ? 'white' : '$color11'} />
                       )}
-                    </div>
-                    <div className="ml-4">
-                      <p
-                        className={`font-medium ${isActive ? 'text-text-primary' : 'text-text-secondary'}`}
+                    </XStack>
+                    <YStack marginLeft="$4">
+                      <Text
+                        fontWeight="500"
+                        color={isActive ? '$color12' : '$color11'}
                       >
                         {step.title}
-                      </p>
-                      <p className="text-sm text-text-secondary">
+                      </Text>
+                      <Text fontSize="$3" color="$color11">
                         {step.description}
-                      </p>
-                    </div>
-                  </div>
+                      </Text>
+                    </YStack>
+                  </XStack>
                   {index < steps.length - 1 && (
-                    <ArrowRight className="mx-8 text-gray-300" size={20} />
+                    <ArrowRight size={20} color="$gray8" marginHorizontal="$8" />
                   )}
-                </div>
+                </XStack>
               );
             })}
-          </div>
-        </div>
+          </XStack>
+        </Card>
 
         {/* Step Content */}
-        <div className="bg-surface rounded-lg shadow-sm border border-border">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
           {/* Step 1: Company Information */}
           {currentStep === 1 && (
-            <div className="p-8">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-text-primary mb-2">
+            <YStack padding="$8">
+              <YStack marginBottom="$6">
+                <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
                   Company Information
-                </h2>
-                <p className="text-text-secondary">
+                </H2>
+                <Text color="$color11">
                   Help us understand your construction business
-                </p>
-              </div>
+                </Text>
+              </YStack>
 
-              <div className="space-y-6">
+              <YStack gap="$6">
                 {/* Company Name */}
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Company Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <YStack>
+                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                    Company Name <Text color="$red10">*</Text>
+                  </Label>
+                  <Input
                     type="text"
                     required
-                    className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    width="100%"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
                     placeholder="Enter your company name"
                     value={companyInfo.companyName}
-                    onChange={(e) =>
+                    onChangeText={(value) =>
                       setCompanyInfo((prev) => ({
                         ...prev,
-                        companyName: e.target.value,
+                        companyName: value,
                       }))
                     }
                   />
-                </div>
+                </YStack>
 
                 {/* Company Size */}
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Company Size <span className="text-red-500">*</span>
-                  </label>
+                <YStack>
+                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                    Company Size <Text color="$red10">*</Text>
+                  </Label>
                   <select
                     required
-                    className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     value={companyInfo.companySize}
                     onChange={(e) =>
                       setCompanyInfo((prev) => ({
@@ -338,6 +355,13 @@ export default function GCOnboarding() {
                         companySize: e.target.value,
                       }))
                     }
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                    }}
                   >
                     <option value="">Select company size</option>
                     {companySizeOptions.map((option) => (
@@ -346,16 +370,15 @@ export default function GCOnboarding() {
                       </option>
                     ))}
                   </select>
-                </div>
+                </YStack>
 
                 {/* Industry */}
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Primary Industry <span className="text-red-500">*</span>
-                  </label>
+                <YStack>
+                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                    Primary Industry <Text color="$red10">*</Text>
+                  </Label>
                   <select
                     required
-                    className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     value={companyInfo.industry}
                     onChange={(e) =>
                       setCompanyInfo((prev) => ({
@@ -363,6 +386,13 @@ export default function GCOnboarding() {
                         industry: e.target.value,
                       }))
                     }
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '1px solid var(--borderColor)',
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                    }}
                   >
                     {industryOptions.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -370,102 +400,125 @@ export default function GCOnboarding() {
                       </option>
                     ))}
                   </select>
-                </div>
+                </YStack>
 
                 {/* Annual Revenue */}
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Annual Revenue (USD) <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
+                <YStack>
+                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                    Annual Revenue (USD) <Text color="$red10">*</Text>
+                  </Label>
+                  <XStack position="relative" width="100%">
                     <DollarSign
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
+                      position="absolute"
+                      left={12}
+                      top="50%"
+                      style={{ transform: 'translateY(-50%)' }}
                       size={20}
+                      color="$color10"
+                      zIndex={1}
                     />
-                    <input
+                    <Input
                       type="number"
                       required
-                      className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      width="100%"
+                      paddingLeft="$10"
+                      paddingRight="$4"
+                      paddingVertical="$3"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      borderRadius="$4"
                       placeholder="Enter annual revenue"
                       value={companyInfo.annualRevenue}
-                      onChange={(e) =>
+                      onChangeText={(value) =>
                         setCompanyInfo((prev) => ({
                           ...prev,
-                          annualRevenue: e.target.value,
+                          annualRevenue: value,
                         }))
                       }
                     />
-                  </div>
-                  <p className="text-sm text-text-secondary mt-1">
+                  </XStack>
+                  <Text fontSize="$3" color="$color11" marginTop="$1">
                     This helps us recommend appropriate coverage levels
-                  </p>
-                </div>
+                  </Text>
+                </YStack>
 
                 {/* Location */}
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    Primary Location <span className="text-red-500">*</span>
-                  </label>
-                  <input
+                <YStack>
+                  <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
+                    Primary Location <Text color="$red10">*</Text>
+                  </Label>
+                  <Input
                     type="text"
                     required
-                    className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    width="100%"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
                     placeholder="City, State"
                     value={companyInfo.location}
-                    onChange={(e) =>
+                    onChangeText={(value) =>
                       setCompanyInfo((prev) => ({
                         ...prev,
-                        location: e.target.value,
+                        location: value,
                       }))
                     }
                   />
-                </div>
-              </div>
-            </div>
+                </YStack>
+              </YStack>
+            </YStack>
           )}
 
           {/* Step 2: Compliance Settings */}
           {currentStep === 2 && (
-            <div className="p-8">
-              <div className="mb-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold text-text-primary mb-2">
+            <YStack padding="$8">
+              <YStack marginBottom="$6">
+                <XStack alignItems="center" justifyContent="space-between">
+                  <YStack>
+                    <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
                       Default Compliance Settings
-                    </h2>
-                    <p className="text-text-secondary">
+                    </H2>
+                    <Text color="$color11">
                       Review and customize your default insurance requirements
                       for contractors
-                    </p>
-                  </div>
+                    </Text>
+                  </YStack>
                   {getRecommendedSettings() && (
-                    <button
-                      onClick={applyRecommendedSettings}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                    <TamaguiButton
+                      onPress={applyRecommendedSettings}
+                      backgroundColor="$blue10"
+                      color="white"
+                      paddingHorizontal="$4"
+                      paddingVertical="$2"
+                      borderRadius="$4"
+                      hoverStyle={{ backgroundColor: '$blue11' }}
                     >
-                      <Settings size={16} />
-                      <span>Apply Recommended</span>
-                    </button>
+                      <XStack alignItems="center" gap="$2">
+                        <Settings size={16} />
+                        <Text>Apply Recommended</Text>
+                      </XStack>
+                    </TamaguiButton>
                   )}
-                </div>
-              </div>
+                </XStack>
+              </YStack>
 
-              <div className="space-y-6">
+              <YStack gap="$6">
                 {/* General Liability */}
-                <div className="border border-border rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <Shield className="text-primary-600" size={24} />
-                      <div>
-                        <h3 className="text-lg font-semibold text-text-primary">
+                <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="center" gap="$3">
+                      <Shield size={24} color="$blue11" />
+                      <YStack>
+                        <H3 fontSize="$6" fontWeight="600" color="$color12">
                           General Liability
-                        </h3>
-                        <p className="text-sm text-text-secondary">
+                        </H3>
+                        <Text fontSize="$3" color="$color11">
                           Bodily injury and property damage coverage
-                        </p>
-                      </div>
-                    </div>
-                    <label className="flex items-center">
+                        </Text>
+                      </YStack>
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
                       <input
                         type="checkbox"
                         checked={complianceSettings.generalLiability.required}
@@ -476,21 +529,20 @@ export default function GCOnboarding() {
                             e.target.checked
                           )
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
+                        style={{ borderRadius: '4px' }}
                       />
-                      <span className="ml-2 text-sm text-text-primary">
+                      <Text fontSize="$3" color="$color12" marginLeft="$2">
                         Required
-                      </span>
-                    </label>
-                  </div>
+                      </Text>
+                    </XStack>
+                  </XStack>
                   {complianceSettings.generalLiability.required && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-text-primary mb-2">
+                    <XStack flexWrap="wrap" gap="$4">
+                      <YStack flex={1} minWidth="45%">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                           Minimum Coverage
-                        </label>
+                        </Label>
                         <select
-                          className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           value={
                             complianceSettings.generalLiability.minimumCoverage
                           }
@@ -501,32 +553,39 @@ export default function GCOnboarding() {
                               parseInt(e.target.value)
                             )
                           }
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid var(--borderColor)',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                          }}
                         >
                           <option value={1000000}>$1,000,000</option>
                           <option value={2000000}>$2,000,000</option>
                           <option value={3000000}>$3,000,000</option>
                           <option value={5000000}>$5,000,000</option>
                         </select>
-                      </div>
-                    </div>
+                      </YStack>
+                    </XStack>
                   )}
-                </div>
+                </Card>
 
                 {/* Workers Compensation */}
-                <div className="border border-border rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <Users className="text-success-600" size={24} />
-                      <div>
-                        <h3 className="text-lg font-semibold text-text-primary">
+                <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="center" gap="$3">
+                      <Users size={24} color="$green11" />
+                      <YStack>
+                        <H3 fontSize="$6" fontWeight="600" color="$color12">
                           Workers Compensation
-                        </h3>
-                        <p className="text-sm text-text-secondary">
+                        </H3>
+                        <Text fontSize="$3" color="$color11">
                           Employee injury and illness coverage
-                        </p>
-                      </div>
-                    </div>
-                    <label className="flex items-center">
+                        </Text>
+                      </YStack>
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
                       <input
                         type="checkbox"
                         checked={
@@ -539,21 +598,20 @@ export default function GCOnboarding() {
                             e.target.checked
                           )
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
+                        style={{ borderRadius: '4px' }}
                       />
-                      <span className="ml-2 text-sm text-text-primary">
+                      <Text fontSize="$3" color="$color12" marginLeft="$2">
                         Required
-                      </span>
-                    </label>
-                  </div>
+                      </Text>
+                    </XStack>
+                  </XStack>
                   {complianceSettings.workersCompensation.required && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-text-primary mb-2">
+                    <XStack flexWrap="wrap" gap="$4">
+                      <YStack flex={1} minWidth="45%">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                           Minimum Coverage
-                        </label>
+                        </Label>
                         <select
-                          className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           value={
                             complianceSettings.workersCompensation
                               .minimumCoverage
@@ -565,15 +623,22 @@ export default function GCOnboarding() {
                               parseInt(e.target.value)
                             )
                           }
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid var(--borderColor)',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                          }}
                         >
                           <option value={500000}>$500,000</option>
                           <option value={1000000}>$1,000,000</option>
                           <option value={1500000}>$1,500,000</option>
                           <option value={2000000}>$2,000,000</option>
                         </select>
-                      </div>
-                      <div className="flex items-center">
-                        <label className="flex items-center">
+                      </YStack>
+                      <XStack alignItems="center" flex={1} minWidth="45%">
+                        <XStack alignItems="center" gap="$2">
                           <input
                             type="checkbox"
                             checked={
@@ -587,32 +652,32 @@ export default function GCOnboarding() {
                                 e.target.checked
                               )
                             }
-                            className="rounded border-border text-primary-600 focus:ring-blue-500"
+                            style={{ borderRadius: '4px' }}
                           />
-                          <span className="ml-2 text-sm text-text-primary">
+                          <Text fontSize="$3" color="$color12" marginLeft="$2">
                             Require Experience Mod
-                          </span>
-                        </label>
-                      </div>
-                    </div>
+                          </Text>
+                        </XStack>
+                      </XStack>
+                    </XStack>
                   )}
-                </div>
+                </Card>
 
                 {/* Professional Liability */}
-                <div className="border border-border rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <FileText className="text-secondary-500" size={24} />
-                      <div>
-                        <h3 className="text-lg font-semibold text-text-primary">
+                <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="center" gap="$3">
+                      <FileText size={24} color="$gray10" />
+                      <YStack>
+                        <H3 fontSize="$6" fontWeight="600" color="$color12">
                           Professional Liability
-                        </h3>
-                        <p className="text-sm text-text-secondary">
+                        </H3>
+                        <Text fontSize="$3" color="$color11">
                           Errors and omissions coverage
-                        </p>
-                      </div>
-                    </div>
-                    <label className="flex items-center">
+                        </Text>
+                      </YStack>
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
                       <input
                         type="checkbox"
                         checked={
@@ -625,21 +690,20 @@ export default function GCOnboarding() {
                             e.target.checked
                           )
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
+                        style={{ borderRadius: '4px' }}
                       />
-                      <span className="ml-2 text-sm text-text-primary">
+                      <Text fontSize="$3" color="$color12" marginLeft="$2">
                         Required
-                      </span>
-                    </label>
-                  </div>
+                      </Text>
+                    </XStack>
+                  </XStack>
                   {complianceSettings.professionalLiability.required && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-text-primary mb-2">
+                    <XStack flexWrap="wrap" gap="$4">
+                      <YStack flex={1} minWidth="45%">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                           Minimum Coverage
-                        </label>
+                        </Label>
                         <select
-                          className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           value={
                             complianceSettings.professionalLiability
                               .minimumCoverage
@@ -651,32 +715,39 @@ export default function GCOnboarding() {
                               parseInt(e.target.value)
                             )
                           }
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid var(--borderColor)',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                          }}
                         >
                           <option value={500000}>$500,000</option>
                           <option value={1000000}>$1,000,000</option>
                           <option value={2000000}>$2,000,000</option>
                           <option value={5000000}>$5,000,000</option>
                         </select>
-                      </div>
-                    </div>
+                      </YStack>
+                    </XStack>
                   )}
-                </div>
+                </Card>
 
                 {/* Commercial Auto */}
-                <div className="border border-border rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <DollarSign className="text-secondary-600" size={24} />
-                      <div>
-                        <h3 className="text-lg font-semibold text-text-primary">
+                <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="center" gap="$3">
+                      <DollarSign size={24} color="$gray11" />
+                      <YStack>
+                        <H3 fontSize="$6" fontWeight="600" color="$color12">
                           Commercial Auto
-                        </h3>
-                        <p className="text-sm text-text-secondary">
+                        </H3>
+                        <Text fontSize="$3" color="$color11">
                           Business vehicle coverage
-                        </p>
-                      </div>
-                    </div>
-                    <label className="flex items-center">
+                        </Text>
+                      </YStack>
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
                       <input
                         type="checkbox"
                         checked={complianceSettings.commercialAuto.required}
@@ -687,21 +758,20 @@ export default function GCOnboarding() {
                             e.target.checked
                           )
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
+                        style={{ borderRadius: '4px' }}
                       />
-                      <span className="ml-2 text-sm text-text-primary">
+                      <Text fontSize="$3" color="$color12" marginLeft="$2">
                         Required
-                      </span>
-                    </label>
-                  </div>
+                      </Text>
+                    </XStack>
+                  </XStack>
                   {complianceSettings.commercialAuto.required && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-text-primary mb-2">
+                    <XStack flexWrap="wrap" gap="$4">
+                      <YStack flex={1} minWidth="45%">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                           Minimum Coverage
-                        </label>
+                        </Label>
                         <select
-                          className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           value={
                             complianceSettings.commercialAuto.minimumCoverage
                           }
@@ -712,32 +782,39 @@ export default function GCOnboarding() {
                               parseInt(e.target.value)
                             )
                           }
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid var(--borderColor)',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                          }}
                         >
                           <option value={500000}>$500,000</option>
                           <option value={1000000}>$1,000,000</option>
                           <option value={1500000}>$1,500,000</option>
                           <option value={2000000}>$2,000,000</option>
                         </select>
-                      </div>
-                    </div>
+                      </YStack>
+                    </XStack>
                   )}
-                </div>
+                </Card>
 
                 {/* Umbrella Policy */}
-                <div className="border border-border rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <AlertTriangle className="text-error-600" size={24} />
-                      <div>
-                        <h3 className="text-lg font-semibold text-text-primary">
+                <Card borderWidth={1} borderColor="$borderColor" borderRadius="$4" padding="$6">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+                    <XStack alignItems="center" gap="$3">
+                      <AlertTriangle size={24} color="$red11" />
+                      <YStack>
+                        <H3 fontSize="$6" fontWeight="600" color="$color12">
                           Umbrella Policy
-                        </h3>
-                        <p className="text-sm text-text-secondary">
+                        </H3>
+                        <Text fontSize="$3" color="$color11">
                           Additional liability protection
-                        </p>
-                      </div>
-                    </div>
-                    <label className="flex items-center">
+                        </Text>
+                      </YStack>
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
                       <input
                         type="checkbox"
                         checked={complianceSettings.umbrella.required}
@@ -748,21 +825,20 @@ export default function GCOnboarding() {
                             e.target.checked
                           )
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
+                        style={{ borderRadius: '4px' }}
                       />
-                      <span className="ml-2 text-sm text-text-primary">
+                      <Text fontSize="$3" color="$color12" marginLeft="$2">
                         Required
-                      </span>
-                    </label>
-                  </div>
+                      </Text>
+                    </XStack>
+                  </XStack>
                   {complianceSettings.umbrella.required && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-text-primary mb-2">
+                    <XStack flexWrap="wrap" gap="$4">
+                      <YStack flex={1} minWidth="45%">
+                        <Label fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                           Minimum Coverage
-                        </label>
+                        </Label>
                         <select
-                          className="w-full border border-border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           value={complianceSettings.umbrella.minimumCoverage}
                           onChange={(e) =>
                             updateComplianceSetting(
@@ -771,96 +847,103 @@ export default function GCOnboarding() {
                               parseInt(e.target.value)
                             )
                           }
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            border: '1px solid var(--borderColor)',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                          }}
                         >
                           <option value={1000000}>$1,000,000</option>
                           <option value={5000000}>$5,000,000</option>
                           <option value={10000000}>$10,000,000</option>
                           <option value={25000000}>$25,000,000</option>
                         </select>
-                      </div>
-                    </div>
+                      </YStack>
+                    </XStack>
                   )}
-                </div>
-              </div>
+                </Card>
+              </YStack>
 
-              <div className="mt-6 p-4 bg-primary-50 border border-blue-200 rounded-lg">
-                <div className="flex items-start space-x-2">
-                  <Info className="text-primary-600 mt-0.5" size={16} />
-                  <div>
-                    <p className="text-sm text-blue-900 font-medium">
+              <Card marginTop="$6" padding="$4" backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4">
+                <XStack alignItems="flex-start" gap="$2">
+                  <Info size={16} color="$blue11" marginTop="$0.5" />
+                  <YStack>
+                    <Text fontSize="$3" color="$blue12" fontWeight="500">
                       Default Settings
-                    </p>
-                    <p className="text-sm text-blue-700">
+                    </Text>
+                    <Text fontSize="$3" color="$blue11">
                       These settings will apply to all new contractors by
                       default. You can override them for specific projects or
                       contractors later.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    </Text>
+                  </YStack>
+                </XStack>
+              </Card>
+            </YStack>
           )}
 
           {/* Step 3: Confirmation */}
           {currentStep === 3 && (
-            <div className="p-8">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-text-primary mb-2">
+            <YStack padding="$8">
+              <YStack marginBottom="$6">
+                <H2 fontSize="$8" fontWeight="700" color="$color12" marginBottom="$2">
                   Confirmation & Setup Complete
-                </h2>
-                <p className="text-text-secondary">
+                </H2>
+                <Text color="$color11">
                   Review your settings and complete the onboarding process
-                </p>
-              </div>
+                </Text>
+              </YStack>
 
-              <div className="space-y-6">
+              <YStack gap="$6">
                 {/* Company Summary */}
-                <div className="bg-bg-secondary rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-text-primary mb-4">
+                <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$6">
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
                     Company Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-text-secondary">Company Name:</span>
-                      <p className="font-medium">{companyInfo.companyName}</p>
-                    </div>
-                    <div>
-                      <span className="text-text-secondary">Company Size:</span>
-                      <p className="font-medium">
+                  </H3>
+                  <XStack flexWrap="wrap" gap="$4">
+                    <YStack flex={1} minWidth="45%">
+                      <Text fontSize="$3" color="$color11">Company Name:</Text>
+                      <Text fontSize="$3" fontWeight="500">{companyInfo.companyName}</Text>
+                    </YStack>
+                    <YStack flex={1} minWidth="45%">
+                      <Text fontSize="$3" color="$color11">Company Size:</Text>
+                      <Text fontSize="$3" fontWeight="500">
                         {
                           companySizeOptions.find(
                             (opt) => opt.value === companyInfo.companySize
                           )?.label
                         }
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-text-secondary">Industry:</span>
-                      <p className="font-medium">
+                      </Text>
+                    </YStack>
+                    <YStack flex={1} minWidth="45%">
+                      <Text fontSize="$3" color="$color11">Industry:</Text>
+                      <Text fontSize="$3" fontWeight="500">
                         {
                           industryOptions.find(
                             (opt) => opt.value === companyInfo.industry
                           )?.label
                         }
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-text-secondary">
+                      </Text>
+                    </YStack>
+                    <YStack flex={1} minWidth="45%">
+                      <Text fontSize="$3" color="$color11">
                         Annual Revenue:
-                      </span>
-                      <p className="font-medium">
+                      </Text>
+                      <Text fontSize="$3" fontWeight="500">
                         ${parseInt(companyInfo.annualRevenue).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                      </Text>
+                    </YStack>
+                  </XStack>
+                </Card>
 
                 {/* Compliance Summary */}
-                <div className="bg-bg-secondary rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-text-primary mb-4">
+                <Card backgroundColor="$backgroundHover" borderRadius="$4" padding="$6">
+                  <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$4">
                     Default Compliance Requirements
-                  </h3>
-                  <div className="space-y-3">
+                  </H3>
+                  <YStack gap="$3">
                     {Object.entries(complianceSettings).map(
                       ([key, setting]) => {
                         if (!setting.required) return null;
@@ -872,84 +955,93 @@ export default function GCOnboarding() {
                           umbrella: 'Umbrella Policy',
                         };
                         return (
-                          <div
+                          <XStack
                             key={key}
-                            className="flex items-center justify-between p-3 bg-surface rounded-lg"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            padding="$3"
+                            backgroundColor="$background"
+                            borderRadius="$4"
                           >
-                            <span className="font-medium">
+                            <Text fontWeight="500">
                               {titles[key as keyof typeof titles]}
-                            </span>
-                            <span className="text-success-600 font-medium">
+                            </Text>
+                            <Text color="$green11" fontWeight="500">
                               ${setting.minimumCoverage.toLocaleString()}{' '}
                               minimum
-                            </span>
-                          </div>
+                            </Text>
+                          </XStack>
                         );
                       }
                     )}
-                  </div>
-                </div>
+                  </YStack>
+                </Card>
 
                 {/* Project-Specific Overrides */}
-                <div className="bg-primary-50 border border-blue-200 rounded-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-text-primary mb-2">
+                <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$6">
+                  <XStack alignItems="center" justifyContent="space-between">
+                    <YStack>
+                      <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
                         Project-Specific Overrides
-                      </h3>
-                      <p className="text-sm text-text-secondary">
+                      </H3>
+                      <Text fontSize="$3" color="$color11">
                         Allow different insurance requirements for specific
                         projects when needed
-                      </p>
-                    </div>
-                    <label className="flex items-center">
+                      </Text>
+                    </YStack>
+                    <XStack alignItems="center" gap="$2">
                       <input
                         type="checkbox"
                         checked={projectSpecificOverrides}
                         onChange={(e) =>
                           setProjectSpecificOverrides(e.target.checked)
                         }
-                        className="rounded border-border text-primary-600 focus:ring-blue-500"
+                        style={{ borderRadius: '4px' }}
                       />
-                      <span className="ml-2 text-sm font-medium text-text-primary">
+                      <Text fontSize="$3" fontWeight="500" color="$color12" marginLeft="$2">
                         Enable
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
+                      </Text>
+                    </XStack>
+                  </XStack>
+                </Card>
+              </YStack>
+            </YStack>
           )}
 
           {/* Navigation */}
-          <div className="px-8 py-6 bg-bg-secondary border-t border-border flex items-center justify-between">
-            <button
-              onClick={handlePrevious}
+          <XStack paddingHorizontal="$8" paddingVertical="$6" backgroundColor="$backgroundHover" borderTopWidth={1} borderColor="$borderColor" alignItems="center" justifyContent="space-between">
+            <TamaguiButton
+              onPress={handlePrevious}
               disabled={currentStep === 1}
-              className={`flex items-center space-x-2 px-6 py-2 rounded-lg transition-colors ${
-                currentStep === 1
-                  ? 'text-text-tertiary cursor-not-allowed'
-                  : 'text-text-primary hover:bg-bg-tertiary'
-              }`}
+              opacity={currentStep === 1 ? 0.5 : 1}
+              cursor={currentStep === 1 ? 'not-allowed' : 'pointer'}
+              paddingHorizontal="$6"
+              paddingVertical="$2"
+              borderRadius="$4"
+              backgroundColor="transparent"
+              hoverStyle={currentStep === 1 ? undefined : { backgroundColor: '$background' }}
             >
-              <ArrowLeft size={16} />
-              <span>Previous</span>
-            </button>
+              <XStack alignItems="center" gap="$2">
+                <ArrowLeft size={16} />
+                <Text>Previous</Text>
+              </XStack>
+            </TamaguiButton>
 
-            <div className="flex items-center space-x-2">
+            <XStack alignItems="center" gap="$2">
               {steps.map((step) => (
-                <div
+                <YStack
                   key={step.id}
-                  className={`w-2 h-2 rounded-full ${
-                    currentStep >= step.id ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
+                  width={8}
+                  height={8}
+                  borderRadius={9999}
+                  backgroundColor={currentStep >= step.id ? '$blue10' : '$gray8'}
                 />
               ))}
-            </div>
+            </XStack>
 
             {currentStep < 3 ? (
-              <button
-                onClick={handleNext}
+              <TamaguiButton
+                onPress={handleNext}
                 disabled={
                   currentStep === 1 &&
                   (!companyInfo.companyName ||
@@ -957,58 +1049,110 @@ export default function GCOnboarding() {
                     !companyInfo.annualRevenue ||
                     !companyInfo.location)
                 }
-                className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                paddingHorizontal="$6"
+                paddingVertical="$2"
+                backgroundColor="$blue10"
+                color="white"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$blue11' }}
+                opacity={
+                  currentStep === 1 &&
+                  (!companyInfo.companyName ||
+                    !companyInfo.companySize ||
+                    !companyInfo.annualRevenue ||
+                    !companyInfo.location)
+                    ? 0.5
+                    : 1
+                }
+                cursor={
+                  currentStep === 1 &&
+                  (!companyInfo.companyName ||
+                    !companyInfo.companySize ||
+                    !companyInfo.annualRevenue ||
+                    !companyInfo.location)
+                    ? 'not-allowed'
+                    : 'pointer'
+                }
               >
-                <span>Next</span>
-                <ArrowRight size={16} />
-              </button>
+                <XStack alignItems="center" gap="$2">
+                  <Text>Next</Text>
+                  <ArrowRight size={16} />
+                </XStack>
+              </TamaguiButton>
             ) : (
-              <button
-                onClick={handleFinish}
-                className="flex items-center space-x-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              <TamaguiButton
+                onPress={handleFinish}
+                paddingHorizontal="$6"
+                paddingVertical="$2"
+                backgroundColor="$green10"
+                color="white"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$green11' }}
               >
-                <CheckCircle size={16} />
-                <span>Complete Setup</span>
-              </button>
+                <XStack alignItems="center" gap="$2">
+                  <CheckCircle size={16} />
+                  <Text>Complete Setup</Text>
+                </XStack>
+              </TamaguiButton>
             )}
-          </div>
-        </div>
+          </XStack>
+        </Card>
 
         {/* Confirmation Modal */}
         {showConfirmationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-surface rounded-lg p-6 w-full max-w-md">
-              <div className="text-center">
-                <CheckCircle
-                  className="mx-auto mb-4 text-success-600"
-                  size={48}
-                />
-                <h3 className="text-lg font-semibold text-text-primary mb-2">
+          <YStack
+            position="fixed"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            backgroundColor="rgba(0,0,0,0.5)"
+            alignItems="center"
+            justifyContent="center"
+            zIndex={50}
+          >
+            <Card backgroundColor="$background" borderRadius="$4" padding="$6" width="100%" maxWidth={448}>
+              <YStack alignItems="center">
+                <CheckCircle size={48} color="$green11" marginBottom="$4" />
+                <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
                   Confirm Setup
-                </h3>
-                <p className="text-text-secondary mb-6">
+                </H3>
+                <Text color="$color11" marginBottom="$6">
                   I confirm these settings will apply by default to all
                   contractors and projects. I can modify them later as needed.
-                </p>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => setShowConfirmationModal(false)}
-                    className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-bg-secondary transition-colors"
+                </Text>
+                <XStack gap="$3" width="100%">
+                  <TamaguiButton
+                    onPress={() => setShowConfirmationModal(false)}
+                    flex={1}
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    backgroundColor="transparent"
+                    hoverStyle={{ backgroundColor: '$backgroundHover' }}
                   >
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleConfirmFinish}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  </TamaguiButton>
+                  <TamaguiButton
+                    onPress={handleConfirmFinish}
+                    flex={1}
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    backgroundColor="$green10"
+                    color="white"
+                    borderRadius="$4"
+                    hoverStyle={{ backgroundColor: '$green11' }}
                   >
                     Confirm & Finish
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </TamaguiButton>
+                </XStack>
+              </YStack>
+            </Card>
+          </YStack>
         )}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
