@@ -1,5 +1,5 @@
-import React from 'react';
 import { FileText, DollarSign, Calendar, Award, Building } from 'lucide-react';
+import { XStack, YStack, Text, SizableText, Card } from 'tamagui';
 import Button from '../Common/Button';
 import { PublicRFP } from '../../types';
 
@@ -61,153 +61,218 @@ export default function RFPCard({
   };
 
   return (
-    <div className="bg-surface rounded-lg border border-border shadow-sm hover:shadow-md transition-all duration-200">
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-start space-x-3 flex-1">
-            <div className="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              <FileText className="text-warning-600" size={24} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-text-primary">
+    <Card
+      backgroundColor="$background"
+      borderRadius="$4"
+      borderWidth={1}
+      borderColor="$borderColor"
+      elevation={1}
+      hoverStyle={{
+        elevation: 2,
+      }}
+    >
+      <YStack padding="$6">
+        <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+          <XStack alignItems="flex-start" gap="$3" flex={1} minWidth={0}>
+            <XStack
+              width={48}
+              height={48}
+              backgroundColor="$orange2"
+              borderRadius="$4"
+              alignItems="center"
+              justifyContent="center"
+              flexShrink={0}
+            >
+              <FileText color="$orange9" size={24} />
+            </XStack>
+            <YStack flex={1} minWidth={0}>
+              <Text fontSize="$6" fontWeight="600" color="$color12">
                 {rfp.title}
-              </h3>
+              </Text>
               {rfp.trade_required && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-100 text-secondary-700 border border-secondary-300 mt-1">
-                  {rfp.trade_required}
-                </span>
+                <XStack
+                  alignItems="center"
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  borderRadius="$2"
+                  backgroundColor="$color3"
+                  borderWidth={1}
+                  borderColor="$color5"
+                  marginTop="$1"
+                >
+                  <SizableText size="$1" fontWeight="500" color="$color11">
+                    {rfp.trade_required}
+                  </SizableText>
+                </XStack>
               )}
-            </div>
-          </div>
-          <span
-            className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getStatusBadgeColor()}`}
+            </YStack>
+          </XStack>
+          <XStack
+            alignItems="center"
+            paddingHorizontal="$2"
+            paddingVertical="$1"
+            borderRadius="$2"
+            borderWidth={1}
+            borderColor={
+              rfp.status === 'published'
+                ? '$green5'
+                : rfp.status === 'closed'
+                  ? '$color5'
+                  : rfp.status === 'awarded'
+                    ? '$blue5'
+                    : '$orange5'
+            }
+            backgroundColor={
+              rfp.status === 'published'
+                ? '$green2'
+                : rfp.status === 'closed'
+                  ? '$color2'
+                  : rfp.status === 'awarded'
+                    ? '$blue2'
+                    : '$orange2'
+            }
           >
-            {rfp.status}
-          </span>
-        </div>
+            <SizableText
+              size="$1"
+              fontWeight="500"
+              color={
+                rfp.status === 'published'
+                  ? '$green11'
+                  : rfp.status === 'closed'
+                    ? '$color11'
+                    : rfp.status === 'awarded'
+                      ? '$blue11'
+                      : '$orange11'
+              }
+            >
+              {rfp.status}
+            </SizableText>
+          </XStack>
+        </XStack>
 
         {rfp.description && (
-          <p className="text-sm text-text-secondary line-clamp-3 mb-4">
+          <SizableText size="$3" color="$color11" numberOfLines={3} marginBottom="$4">
             {rfp.description}
-          </p>
+          </SizableText>
         )}
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="flex items-center space-x-2">
-            <DollarSign size={14} className="text-text-secondary" />
-            <div>
-              <p className="text-xs text-text-secondary">Budget Range</p>
-              <p className="text-sm font-medium text-text-primary">
+        <XStack flexWrap="wrap" gap="$4" marginBottom="$4">
+          <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
+            <DollarSign size={14} color="$color11" />
+            <YStack>
+              <SizableText size="$1" color="$color11">Budget Range</SizableText>
+              <SizableText size="$3" fontWeight="500" color="$color12">
                 {formatCurrency(rfp.budget_range_min)} -{' '}
                 {formatCurrency(rfp.budget_range_max)}
-              </p>
-            </div>
-          </div>
+              </SizableText>
+            </YStack>
+          </XStack>
 
           {rfp.deadline && (
-            <div className="flex items-center space-x-2">
-              <Calendar size={14} className="text-text-secondary" />
-              <div>
-                <p className="text-xs text-text-secondary">Deadline</p>
-                <p className="text-sm font-medium text-text-primary">
+            <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
+              <Calendar size={14} color="$color11" />
+              <YStack>
+                <SizableText size="$1" color="$color11">Deadline</SizableText>
+                <SizableText size="$3" fontWeight="500" color="$color12">
                   {formatDate(rfp.deadline)}
-                </p>
+                </SizableText>
                 {daysLeft !== null && daysLeft > 0 && (
-                  <p
-                    className={`text-xs ${daysLeft <= 7 ? 'text-error-600' : 'text-text-secondary'}`}
+                  <SizableText
+                    size="$1"
+                    color={daysLeft <= 7 ? '$red9' : '$color11'}
                   >
                     {daysLeft} {daysLeft === 1 ? 'day' : 'days'} left
-                  </p>
+                  </SizableText>
                 )}
-              </div>
-            </div>
+              </YStack>
+            </XStack>
           )}
 
           {rfp.published_at && (
-            <div className="flex items-center space-x-2">
-              <Building size={14} className="text-text-secondary" />
-              <div>
-                <p className="text-xs text-text-secondary">Published</p>
-                <p className="text-sm font-medium text-text-primary">
+            <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
+              <Building size={14} color="$color11" />
+              <YStack>
+                <SizableText size="$1" color="$color11">Published</SizableText>
+                <SizableText size="$3" fontWeight="500" color="$color12">
                   {formatDate(rfp.published_at)}
-                </p>
-              </div>
-            </div>
+                </SizableText>
+              </YStack>
+            </XStack>
           )}
 
-          <div className="flex items-center space-x-2">
-            <Award size={14} className="text-text-secondary" />
-            <div>
-              <p className="text-xs text-text-secondary">Responses</p>
-              <p className="text-sm font-medium text-text-primary">
+          <XStack alignItems="center" gap="$2" flex={1} minWidth="150px">
+            <Award size={14} color="$color11" />
+            <YStack>
+              <SizableText size="$1" color="$color11">Responses</SizableText>
+              <SizableText size="$3" fontWeight="500" color="$color12">
                 {rfp.response_count}
-              </p>
-            </div>
-          </div>
-        </div>
+              </SizableText>
+            </YStack>
+          </XStack>
+        </XStack>
 
         {rfp.requirements && Object.keys(rfp.requirements).length > 0 && (
-          <div className="mb-4 p-3 bg-bg-tertiary rounded-lg">
-            <p className="text-xs font-medium text-text-primary mb-2">
+          <YStack marginBottom="$4" padding="$3" backgroundColor="$color4" borderRadius="$4">
+            <SizableText size="$1" fontWeight="500" color="$color12" marginBottom="$2">
               Requirements
-            </p>
-            <div className="space-y-1">
+            </SizableText>
+            <YStack gap="$1">
               {rfp.requirements.insurance && (
-                <p className="text-xs text-text-secondary">
+                <SizableText size="$1" color="$color11">
                   Insurance:{' '}
                   {Array.isArray(rfp.requirements.insurance)
                     ? rfp.requirements.insurance.join(', ')
                     : rfp.requirements.insurance}
-                </p>
+                </SizableText>
               )}
               {rfp.requirements.certifications && (
-                <p className="text-xs text-text-secondary">
+                <SizableText size="$1" color="$color11">
                   Certifications:{' '}
                   {Array.isArray(rfp.requirements.certifications)
                     ? rfp.requirements.certifications.join(', ')
                     : rfp.requirements.certifications}
-                </p>
+                </SizableText>
               )}
               {rfp.requirements.minimum_coverage && (
-                <p className="text-xs text-text-secondary">
+                <SizableText size="$1" color="$color11">
                   Min Coverage:{' '}
                   {formatCurrency(rfp.requirements.minimum_coverage)}
-                </p>
+                </SizableText>
               )}
-            </div>
-          </div>
+            </YStack>
+          </YStack>
         )}
 
-        <div className="flex items-center space-x-3 pt-4 border-t border-border">
+        <XStack alignItems="center" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
           {userRole === 'subcontractor' && rfp.status === 'published' && (
             <>
               <Button
                 variant="primary"
-                fullWidth
-                onClick={onRespond}
+                flex={1}
+                onPress={onRespond}
                 disabled={hasResponded}
               >
                 {hasResponded ? 'Response Submitted' : 'Submit Proposal'}
               </Button>
-              <Button variant="ghost" onClick={onView}>
+              <Button variant="ghost" onPress={onView}>
                 View Details
               </Button>
             </>
           )}
 
           {userRole === 'manager' && (
-            <Button variant="ghost" fullWidth onClick={onView}>
+            <Button variant="ghost" flex={1} onPress={onView}>
               View Responses ({rfp.response_count})
             </Button>
           )}
 
           {!userRole && (
-            <Button variant="ghost" fullWidth onClick={onView}>
+            <Button variant="ghost" flex={1} onPress={onView}>
               View Details
             </Button>
           )}
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </YStack>
+    </Card>
   );
 }
