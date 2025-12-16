@@ -490,176 +490,229 @@ export default function BrokerOnboarding() {
                   )}
                 </YStack>
 
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <Lock className="h-4 w-4 mr-1" />
-                      Password <span className="text-red-500">*</span>
-                    </div>
-                  </label>
-                  <div className="relative">
-                    <input
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <Lock size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      Password <Text color="$red9">*</Text>
+                    </Text>
+                  </XStack>
+                  <XStack position="relative" width="100%">
+                    <Input
                       type={showPassword ? 'text' : 'password'}
                       required
-                      className={`w-full border rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                        errors.adminPassword ? 'border-red-500' : 'border-border'
-                      }`}
+                      width="100%"
+                      borderWidth={1}
+                      borderRadius="$4"
+                      paddingHorizontal="$4"
+                      paddingVertical="$3"
+                      paddingRight="$12"
+                      borderColor={errors.adminPassword ? "$red9" : "$borderColor"}
                       placeholder="Create a password"
                       value={formData.administrator.password}
-                      onChange={(e) =>
+                      onChangeText={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          administrator: { ...prev.administrator, password: e.target.value },
+                          administrator: { ...prev.administrator, password: value },
                         }))
                       }
                     />
-                    <button
+                    <TamaguiButton
                       type="button"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary"
-                      onClick={() => setShowPassword(!showPassword)}
+                      position="absolute"
+                      right="$3"
+                      top="50%"
+                      transform={[{ translateY: -10 }]}
+                      variant="ghost"
+                      color="$color11"
+                      hoverStyle={{ color: "$color12" }}
+                      onPress={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  <p className="text-xs text-text-secondary mt-1">
+                    </TamaguiButton>
+                  </XStack>
+                  <Text fontSize="$1" color="$color11" marginTop="$1">
                     Must be at least 8 characters with a number and special character
-                  </p>
+                  </Text>
                   {errors.adminPassword && (
-                    <p className="text-red-500 text-sm mt-1">{errors.adminPassword}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminPassword}</Text>
                   )}
-                </div>
+                </YStack>
 
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <Lock className="h-4 w-4 mr-1" />
-                      Confirm Password <span className="text-red-500">*</span>
-                    </div>
-                  </label>
-                  <div className="relative">
-                    <input
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <Lock size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
+                      Confirm Password <Text color="$red9">*</Text>
+                    </Text>
+                  </XStack>
+                  <XStack position="relative" width="100%">
+                    <Input
                       type={showConfirmPassword ? 'text' : 'password'}
                       required
-                      className={`w-full border rounded-lg px-4 py-3 pr-12 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                        errors.adminConfirmPassword ? 'border-red-500' : 'border-border'
-                      }`}
+                      width="100%"
+                      borderWidth={1}
+                      borderRadius="$4"
+                      paddingHorizontal="$4"
+                      paddingVertical="$3"
+                      paddingRight="$12"
+                      borderColor={errors.adminConfirmPassword ? "$red9" : "$borderColor"}
                       placeholder="Confirm your password"
                       value={formData.administrator.confirmPassword}
-                      onChange={(e) =>
+                      onChangeText={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          administrator: { ...prev.administrator, confirmPassword: e.target.value },
+                          administrator: { ...prev.administrator, confirmPassword: value },
                         }))
                       }
                     />
-                    <button
+                    <TamaguiButton
                       type="button"
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text-primary"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      position="absolute"
+                      right="$3"
+                      top="50%"
+                      transform={[{ translateY: -10 }]}
+                      variant="ghost"
+                      color="$color11"
+                      hoverStyle={{ color: "$color12" }}
+                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
                       {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
+                    </TamaguiButton>
+                  </XStack>
                   {errors.adminConfirmPassword && (
-                    <p className="text-red-500 text-sm mt-1">{errors.adminConfirmPassword}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{errors.adminConfirmPassword}</Text>
                   )}
-                </div>
-              </div>
-            </div>
+                </YStack>
+              </YStack>
+            </YStack>
 
             {/* Team Members Invitation Section */}
-            <div>
-              <div className="flex items-center mb-4">
-                <Users className="h-5 w-5 text-primary-500 mr-2" />
-                <h2 className="text-lg font-semibold text-text-primary">
+            <YStack>
+              <XStack alignItems="center" marginBottom="$4">
+                <Users size={20} color="$blue9" marginRight="$2" />
+                <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Invite Team Members
-                </h2>
-                <span className="ml-2 text-xs text-text-secondary">(Optional)</span>
-              </div>
-              <p className="text-sm text-text-secondary mb-4">
+                </H2>
+                <Text marginLeft="$2" fontSize="$1" color="$color11">(Optional)</Text>
+              </XStack>
+              <Text fontSize="$3" color="$color11" marginBottom="$4">
                 Invite colleagues to join your brokerage. They will receive an email with a signup link.
-              </p>
+              </Text>
 
-              <div className="space-y-4">
+              <YStack gap="$4">
                 {/* Input for adding new team member email */}
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-2">
-                    <div className="flex items-center">
-                      <Mail className="h-4 w-4 mr-1" />
+                <YStack>
+                  <XStack alignItems="center" marginBottom="$2">
+                    <Mail size={16} marginRight="$1" />
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       Team Member Email
-                    </div>
-                  </label>
-                  <div className="flex space-x-2">
-                    <input
+                    </Text>
+                  </XStack>
+                  <XStack gap="$2">
+                    <Input
                       type="email"
-                      className={`flex-1 border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-                        teamEmailError ? 'border-red-500' : 'border-border'
-                      }`}
+                      flex={1}
+                      borderWidth={1}
+                      borderRadius="$4"
+                      paddingHorizontal="$4"
+                      paddingVertical="$3"
+                      borderColor={teamEmailError ? "$red9" : "$borderColor"}
                       placeholder="colleague@example.com"
                       value={newTeamEmail}
-                      onChange={(e) => {
-                        setNewTeamEmail(e.target.value);
+                      onChangeText={(value) => {
+                        setNewTeamEmail(value);
                         setTeamEmailError(null);
                       }}
                       onKeyPress={handleTeamEmailKeyPress}
                     />
-                    <button
+                    <TamaguiButton
                       type="button"
-                      onClick={handleAddTeamEmail}
-                      className="flex items-center justify-center px-4 py-3 bg-primary-100 text-primary-600 rounded-lg hover:bg-primary-200 transition-colors"
-                      aria-label="Add team member"
+                      onPress={handleAddTeamEmail}
+                      alignItems="center"
+                      justifyContent="center"
+                      paddingHorizontal="$4"
+                      paddingVertical="$3"
+                      backgroundColor="$blue3"
+                      color="$blue9"
+                      borderRadius="$4"
+                      hoverStyle={{ backgroundColor: "$blue4" }}
                     >
                       <Plus size={20} />
-                    </button>
-                  </div>
+                    </TamaguiButton>
+                  </XStack>
                   {teamEmailError && (
-                    <p className="text-red-500 text-sm mt-1">{teamEmailError}</p>
+                    <Text color="$red9" fontSize="$3" marginTop="$1">{teamEmailError}</Text>
                   )}
-                </div>
+                </YStack>
 
                 {/* List of added team members */}
                 {teamEmails.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-text-primary">
+                  <YStack gap="$2">
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       Pending Invitations ({teamEmails.length})
-                    </p>
-                    <div className="space-y-2">
+                    </Text>
+                    <YStack gap="$2">
                       {teamEmails.map((email) => (
-                        <div
+                        <XStack
                           key={email}
-                          className="flex items-center justify-between bg-neutral-50 border border-border rounded-lg px-4 py-2"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          backgroundColor="$gray2"
+                          borderWidth={1}
+                          borderColor="$borderColor"
+                          borderRadius="$4"
+                          paddingHorizontal="$4"
+                          paddingVertical="$2"
                         >
-                          <div className="flex items-center space-x-2">
-                            <Mail className="h-4 w-4 text-text-secondary" />
-                            <span className="text-sm text-text-primary">{email}</span>
-                          </div>
-                          <button
+                          <XStack alignItems="center" gap="$2">
+                            <Mail size={16} color="$color11" />
+                            <Text fontSize="$3" color="$color12">{email}</Text>
+                          </XStack>
+                          <TamaguiButton
                             type="button"
-                            onClick={() => handleRemoveTeamEmail(email)}
-                            className="text-red-500 hover:text-red-700 transition-colors"
-                            aria-label={`Remove ${email}`}
+                            onPress={() => handleRemoveTeamEmail(email)}
+                            variant="ghost"
+                            color="$red9"
+                            hoverStyle={{ color: "$red10" }}
                           >
                             <Trash2 size={18} />
-                          </button>
-                        </div>
+                          </TamaguiButton>
+                        </XStack>
                       ))}
-                    </div>
-                  </div>
+                    </YStack>
+                  </YStack>
                 )}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
 
-            <button
+            <TamaguiButton
               type="submit"
               disabled={!isValid || isSubmitting}
-              className="w-full flex items-center justify-center space-x-2 bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors disabled:bg-neutral-300 disabled:cursor-not-allowed font-medium"
+              width="100%"
+              alignItems="center"
+              justifyContent="center"
+              gap="$2"
+              backgroundColor="$blue9"
+              color="white"
+              paddingHorizontal="$6"
+              paddingVertical="$3"
+              borderRadius="$4"
+              hoverStyle={{ backgroundColor: "$blue10" }}
+              opacity={!isValid || isSubmitting ? 0.5 : 1}
+              cursor={!isValid || isSubmitting ? "not-allowed" : "pointer"}
+              fontWeight="500"
+              onPress={(e) => {
+                e?.preventDefault?.();
+                handleSubmit(e as any);
+              }}
             >
-              <span>Continue to Dashboard</span>
+              <Text>Continue to Dashboard</Text>
               <ArrowRight size={18} />
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+            </TamaguiButton>
+          </YStack>
+        </Card>
+      </YStack>
+    </YStack>
   );
 }
