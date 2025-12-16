@@ -22,13 +22,21 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import {
+  YStack,
+  XStack,
+  Text,
+  Input,
+  Button,
+  H3,
+  H4,
+} from '@unicornlove/ui'
+import {
   useComplianceRequirements,
   useRequirementVersionHistory,
   type ComplianceRequirement,
 } from '../../../hooks/useComplianceRequirements'
 import { trpc } from '../../../lib/trpc'
 import { LoadingSpinner } from '../../Common/LoadingSpinner'
-import { Button } from '../../Common/Button'
 
 // =============================================================================
 // Types
@@ -125,65 +133,98 @@ function VersionItem({
   onSetCompareTo,
 }: VersionItemProps) {
   return (
-    <div
-      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+    <YStack
+      padding="$3"
+      borderWidth={1}
+      borderRadius="$4"
+      cursor="pointer"
+      borderColor={
         isSelected
-          ? 'border-blue-500 bg-blue-50'
+          ? '$blue8'
           : isCompareFrom || isCompareTo
-            ? 'border-purple-500 bg-purple-50'
-            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-      }`}
-      onClick={onSelect}
+            ? '$purple8'
+            : '$gray6'
+      }
+      backgroundColor={
+        isSelected
+          ? '$blue2'
+          : isCompareFrom || isCompareTo
+            ? '$purple2'
+            : 'transparent'
+      }
+      hoverStyle={{
+        borderColor: isSelected ? '$blue8' : '$gray8',
+        backgroundColor: isSelected ? '$blue2' : '$gray2',
+      }}
+      onPress={onSelect}
     >
-      <div className="flex items-center justify-between mb-1">
-        <span className="font-semibold text-sm">Version {version.version_number}</span>
-        <span className="text-xs text-gray-500">{formatDate(version.created_at)}</span>
-      </div>
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$1">
+        <Text fontWeight="600" fontSize="$3">Version {version.version_number}</Text>
+        <Text fontSize="$1" color="$gray11">{formatDate(version.created_at)}</Text>
+      </XStack>
 
       {version.change_summary && (
-        <p className="text-sm text-gray-600 mb-2">{version.change_summary}</p>
+        <Text fontSize="$3" color="$gray11" marginBottom="$2">{version.change_summary}</Text>
       )}
 
       {version.changed_fields && version.changed_fields.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-2">
+        <XStack flexWrap="wrap" gap="$1" marginBottom="$2">
           {version.changed_fields.slice(0, 3).map((field) => (
-            <span key={field} className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded">
+            <Text
+              key={field}
+              fontSize="$1"
+              paddingHorizontal="$1.5"
+              paddingVertical="$1"
+              backgroundColor="$gray3"
+              color="$gray11"
+              borderRadius="$2"
+            >
               {field}
-            </span>
+            </Text>
           ))}
           {version.changed_fields.length > 3 && (
-            <span className="text-xs text-gray-500">+{version.changed_fields.length - 3} more</span>
+            <Text fontSize="$1" color="$gray11">
+              +{version.changed_fields.length - 3} more
+            </Text>
           )}
-        </div>
+        </XStack>
       )}
 
-      <div className="flex items-center gap-2 mt-2">
-        <button
-          onClick={(e) => {
+      <XStack alignItems="center" gap="$2" marginTop="$2">
+        <Button
+          unstyled
+          fontSize="$1"
+          paddingHorizontal="$2"
+          paddingVertical="$1"
+          borderRadius="$2"
+          backgroundColor={isCompareFrom ? '$purple10' : '$gray3'}
+          color={isCompareFrom ? 'white' : '$gray11'}
+          hoverStyle={{ backgroundColor: isCompareFrom ? '$purple10' : '$gray4' }}
+          onPress={(e) => {
             e.stopPropagation()
             onSetCompareFrom()
           }}
-          className={`text-xs px-2 py-1 rounded ${
-            isCompareFrom
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
         >
-          From
-        </button>
-        <button
-          onClick={(e) => {
+          <Text>From</Text>
+        </Button>
+        <Button
+          unstyled
+          fontSize="$1"
+          paddingHorizontal="$2"
+          paddingVertical="$1"
+          borderRadius="$2"
+          backgroundColor={isCompareTo ? '$purple10' : '$gray3'}
+          color={isCompareTo ? 'white' : '$gray11'}
+          hoverStyle={{ backgroundColor: isCompareTo ? '$purple10' : '$gray4' }}
+          onPress={(e) => {
             e.stopPropagation()
             onSetCompareTo()
           }}
-          className={`text-xs px-2 py-1 rounded ${
-            isCompareTo ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
         >
-          To
-        </button>
-      </div>
-    </div>
+          <Text>To</Text>
+        </Button>
+      </XStack>
+    </YStack>
   )
 }
 
@@ -268,67 +309,95 @@ export function VersionHistory({
   const versions = (versionsQuery.data?.versions ?? []) as Version[]
 
   return (
-    <div className="bg-white rounded-lg border">
-      <div className="grid grid-cols-4 divide-x h-[600px]">
+    <YStack backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
+      <XStack height={600}>
         {/* Requirement Selector */}
-        <div className="p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-3">Select Requirement</h3>
+        <YStack padding="$4" overflow="scroll" flex={1} borderRightWidth={1} borderColor="$borderColor">
+          <H3 fontWeight="600" color="$color12" marginBottom="$3">Select Requirement</H3>
 
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-            <input
-              type="text"
+          <XStack position="relative" marginBottom="$3">
+            <YStack
+              position="absolute"
+              left="$3"
+              top="50%"
+              zIndex={1}
+              pointerEvents="none"
+            >
+              <Search size={16} style={{ color: 'var(--color-gray-10)' }} />
+            </YStack>
+            <Input
+              flex={1}
+              paddingLeft="$9"
+              paddingRight="$3"
+              paddingVertical="$2"
+              fontSize="$3"
+              borderWidth={1}
+              borderColor="$gray8"
+              borderRadius="$4"
               placeholder="Search requirements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
+          </XStack>
 
           {isLoadingRequirements ? (
-            <div className="flex items-center justify-center py-8">
+            <YStack alignItems="center" justifyContent="center" paddingVertical="$8">
               <LoadingSpinner size="sm" />
-            </div>
+            </YStack>
           ) : (
-            <div className="space-y-1">
+            <YStack gap="$1">
               {filteredRequirements.map((req) => (
-                <button
+                <Button
                   key={req.id}
-                  onClick={() => {
+                  unstyled
+                  width="100%"
+                  textAlign="left"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  borderRadius="$4"
+                  backgroundColor={selectedRequirement?.id === req.id ? '$blue3' : 'transparent'}
+                  hoverStyle={{ backgroundColor: '$gray2' }}
+                  onPress={() => {
                     onSelectRequirement(req)
                     setSelectedVersion(null)
                     setCompareFrom(null)
                     setCompareTo(null)
                   }}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
-                    selectedRequirement?.id === req.id
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'hover:bg-gray-50'
-                  }`}
                 >
-                  <div className="font-medium">{req.name}</div>
-                  <div className="text-xs text-gray-500">{req.code}</div>
-                </button>
+                  <YStack>
+                    <Text fontWeight="600" fontSize="$3" color={selectedRequirement?.id === req.id ? '$blue11' : '$color12'}>
+                      {req.name}
+                    </Text>
+                    <Text fontSize="$1" color="$gray11">{req.code}</Text>
+                  </YStack>
+                </Button>
               ))}
-            </div>
+            </YStack>
           )}
-        </div>
+        </YStack>
 
         {/* Version Timeline */}
-        <div className="p-4 overflow-y-auto">
-          <h3 className="font-semibold text-gray-900 mb-3">Version History</h3>
+        <YStack padding="$4" overflow="scroll" flex={1} borderRightWidth={1} borderColor="$borderColor">
+          <H3 fontWeight="600" color="$color12" marginBottom="$3">Version History</H3>
 
           {!selectedRequirement ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-              <History size={48} className="mb-4 text-gray-300" />
-              <p className="text-sm">Select a requirement</p>
-            </div>
+            <YStack
+              flex={1}
+              alignItems="center"
+              justifyContent="center"
+              color="$gray11"
+            >
+              <YStack marginBottom="$4">
+                <History size={48} style={{ color: 'var(--color-gray-8)' }} />
+              </YStack>
+              <Text fontSize="$3">Select a requirement</Text>
+            </YStack>
           ) : versionsQuery.isLoading ? (
-            <div className="flex items-center justify-center h-full">
+            <YStack flex={1} alignItems="center" justifyContent="center">
               <LoadingSpinner size="sm" />
-            </div>
+            </YStack>
           ) : (
-            <div className="space-y-2">
+            <YStack gap="$2">
               {versions.map((version) => (
                 <VersionItem
                   key={version.id}
@@ -342,124 +411,198 @@ export function VersionHistory({
                 />
               ))}
               {versions.length === 0 && (
-                <p className="text-sm text-gray-500 text-center py-4">No version history</p>
+                <Text fontSize="$3" color="$gray11" textAlign="center" paddingVertical="$4">
+                  No version history
+                </Text>
               )}
-            </div>
+            </YStack>
           )}
-        </div>
+        </YStack>
 
         {/* Diff View */}
-        <div className="col-span-2 p-4 overflow-y-auto">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">
+        <YStack flex={2} padding="$4" overflow="scroll">
+          <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+            <H3 fontWeight="600" color="$color12">
               {compareFrom && compareTo ? 'Version Comparison' : 'Version Details'}
-            </h3>
+            </H3>
             {selectedVersion && !compareFrom && !compareTo && (
               <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => handleRestore(selectedVersion)}
+                size="$3"
+                variant="outlined"
+                onPress={() => handleRestore(selectedVersion)}
                 disabled={
                   restoreMutation.isPending ||
                   selectedVersion.version_number === versions[0]?.version_number
                 }
               >
-                <RotateCcw size={14} className="mr-1" />
-                Restore
+                <XStack alignItems="center" gap="$1">
+                  <RotateCcw size={14} />
+                  <Text>Restore</Text>
+                </XStack>
               </Button>
             )}
-          </div>
+          </XStack>
 
           {compareFrom && compareTo ? (
             /* Comparison View */
-            <div>
-              <div className="flex items-center gap-2 mb-4 text-sm text-gray-600">
-                <span className="px-2 py-1 bg-purple-100 rounded">
+            <YStack>
+              <XStack alignItems="center" gap="$2" marginBottom="$4" fontSize="$3" color="$gray11">
+                <Text
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  backgroundColor="$purple2"
+                  borderRadius="$2"
+                >
                   v{compareFrom.version_number}
-                </span>
+                </Text>
                 <ArrowRight size={16} />
-                <span className="px-2 py-1 bg-purple-100 rounded">v{compareTo.version_number}</span>
-              </div>
+                <Text
+                  paddingHorizontal="$2"
+                  paddingVertical="$1"
+                  backgroundColor="$purple2"
+                  borderRadius="$2"
+                >
+                  v{compareTo.version_number}
+                </Text>
+              </XStack>
 
               {versionDiff && versionDiff.length > 0 ? (
-                <div className="space-y-3">
-                  {versionDiff.map((diff) => (
-                    <div
-                      key={diff.field}
-                      className={`p-3 rounded-lg border ${
-                        diff.changeType === 'added'
-                          ? 'bg-green-50 border-green-200'
-                          : diff.changeType === 'removed'
-                            ? 'bg-red-50 border-red-200'
-                            : 'bg-yellow-50 border-yellow-200'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="font-medium text-sm">{diff.field}</span>
-                        <span
-                          className={`text-xs px-1.5 py-0.5 rounded ${
-                            diff.changeType === 'added'
-                              ? 'bg-green-200 text-green-800'
-                              : diff.changeType === 'removed'
-                                ? 'bg-red-200 text-red-800'
-                                : 'bg-yellow-200 text-yellow-800'
-                          }`}
-                        >
-                          {diff.changeType}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                        <div>
-                          <span className="text-gray-500">Old:</span>
-                          <pre className="mt-1 p-2 bg-white rounded border overflow-x-auto">
-                            {formatValue(diff.oldValue)}
-                          </pre>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">New:</span>
-                          <pre className="mt-1 p-2 bg-white rounded border overflow-x-auto">
-                            {formatValue(diff.newValue)}
-                          </pre>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <YStack gap="$3">
+                  {versionDiff.map((diff) => {
+                    const bgColor =
+                      diff.changeType === 'added'
+                        ? '$green2'
+                        : diff.changeType === 'removed'
+                          ? '$red2'
+                          : '$yellow2'
+                    const borderColor =
+                      diff.changeType === 'added'
+                        ? '$green6'
+                        : diff.changeType === 'removed'
+                          ? '$red6'
+                          : '$yellow6'
+                    const badgeBg =
+                      diff.changeType === 'added'
+                        ? '$green4'
+                        : diff.changeType === 'removed'
+                          ? '$red4'
+                          : '$yellow4'
+                    const badgeColor =
+                      diff.changeType === 'added'
+                        ? '$green11'
+                        : diff.changeType === 'removed'
+                          ? '$red11'
+                          : '$yellow11'
+
+                    return (
+                      <YStack
+                        key={diff.field}
+                        padding="$3"
+                        borderRadius="$4"
+                        borderWidth={1}
+                        backgroundColor={bgColor}
+                        borderColor={borderColor}
+                      >
+                        <XStack alignItems="center" gap="$2" marginBottom="$2">
+                          <Text fontWeight="600" fontSize="$3">{diff.field}</Text>
+                          <Text
+                            fontSize="$1"
+                            paddingHorizontal="$1.5"
+                            paddingVertical="$1"
+                            borderRadius="$2"
+                            backgroundColor={badgeBg}
+                            color={badgeColor}
+                          >
+                            {diff.changeType}
+                          </Text>
+                        </XStack>
+                        <XStack gap="$2" flexWrap="wrap">
+                          <YStack flex={1} minWidth="200px">
+                            <Text fontSize="$1" color="$gray11">Old:</Text>
+                            <YStack
+                              marginTop="$1"
+                              padding="$2"
+                              backgroundColor="$background"
+                              borderRadius="$2"
+                              borderWidth={1}
+                              borderColor="$borderColor"
+                              overflow="scroll"
+                            >
+                              <Text fontFamily="$mono" fontSize="$1">
+                                {formatValue(diff.oldValue)}
+                              </Text>
+                            </YStack>
+                          </YStack>
+                          <YStack flex={1} minWidth="200px">
+                            <Text fontSize="$1" color="$gray11">New:</Text>
+                            <YStack
+                              marginTop="$1"
+                              padding="$2"
+                              backgroundColor="$background"
+                              borderRadius="$2"
+                              borderWidth={1}
+                              borderColor="$borderColor"
+                              overflow="scroll"
+                            >
+                              <Text fontFamily="$mono" fontSize="$1">
+                                {formatValue(diff.newValue)}
+                              </Text>
+                            </YStack>
+                          </YStack>
+                        </XStack>
+                      </YStack>
+                    )
+                  })}
+                </YStack>
               ) : (
-                <p className="text-sm text-gray-500">No differences found</p>
+                <Text fontSize="$3" color="$gray11">No differences found</Text>
               )}
-            </div>
+            </YStack>
           ) : selectedVersion ? (
             /* Single Version View */
-            <div>
-              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                <div className="text-sm text-gray-600">
-                  <strong>Version:</strong> {selectedVersion.version_number}
-                </div>
-                <div className="text-sm text-gray-600">
-                  <strong>Created:</strong> {formatDate(selectedVersion.created_at)}
-                </div>
+            <YStack>
+              <YStack marginBottom="$4" padding="$3" backgroundColor="$gray2" borderRadius="$4">
+                <Text fontSize="$3" color="$gray11">
+                  <Text fontWeight="600">Version:</Text> {selectedVersion.version_number}
+                </Text>
+                <Text fontSize="$3" color="$gray11">
+                  <Text fontWeight="600">Created:</Text> {formatDate(selectedVersion.created_at)}
+                </Text>
                 {selectedVersion.change_summary && (
-                  <div className="text-sm text-gray-600 mt-2">
-                    <strong>Summary:</strong> {selectedVersion.change_summary}
-                  </div>
+                  <Text fontSize="$3" color="$gray11" marginTop="$2">
+                    <Text fontWeight="600">Summary:</Text> {selectedVersion.change_summary}
+                  </Text>
                 )}
-              </div>
+              </YStack>
 
-              <h4 className="font-medium text-sm text-gray-700 mb-2">Snapshot</h4>
-              <pre className="p-3 bg-gray-50 rounded-lg text-xs font-mono overflow-x-auto">
-                {JSON.stringify(selectedVersion.snapshot, null, 2)}
-              </pre>
-            </div>
+              <H4 fontWeight="600" fontSize="$3" color="$color11" marginBottom="$2">Snapshot</H4>
+              <YStack
+                padding="$3"
+                backgroundColor="$gray2"
+                borderRadius="$4"
+                overflow="scroll"
+              >
+                <Text fontFamily="$mono" fontSize="$1">
+                  {JSON.stringify(selectedVersion.snapshot, null, 2)}
+                </Text>
+              </YStack>
+            </YStack>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-              <Info size={48} className="mb-4 text-gray-300" />
-              <p className="text-sm">Select a version or choose two versions to compare</p>
-            </div>
+            <YStack
+              flex={1}
+              alignItems="center"
+              justifyContent="center"
+              color="$gray11"
+            >
+              <YStack marginBottom="$4">
+                <Info size={48} style={{ color: 'var(--color-gray-8)' }} />
+              </YStack>
+              <Text fontSize="$3">Select a version or choose two versions to compare</Text>
+            </YStack>
           )}
-        </div>
-      </div>
-    </div>
+        </YStack>
+      </XStack>
+    </YStack>
   )
 }
 
