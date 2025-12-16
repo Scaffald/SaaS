@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Building,
@@ -17,7 +17,8 @@ import {
   MessageSquare,
   List,
 } from 'lucide-react';
-import Tabs from '../../ui/Tabs';
+import { YStack, XStack, Text, H1, H2, H3, Card, Spinner, Button as TamaguiButton } from '@unicornlove/ui';
+import { TabsCustom, TabsList, TabsTrigger, TabsContent } from '@unicornlove/ui';
 import Tooltip from '../../ui/Tooltip';
 import Button from '../Common/Button';
 import { useProjectDetail } from '../../hooks/useProjectDetail';
@@ -97,71 +98,69 @@ export default function ProjectDetailPage() {
   const getComplianceStatusColor = (status: string) => {
     switch (status) {
       case 'compliant':
-        return 'bg-success-100 text-success-700 border-success-300';
+        return { backgroundColor: '$green2', color: '$green11', borderColor: '$green6' };
       case 'warning':
-        return 'bg-warning-100 text-warning-700 border-warning-300';
+        return { backgroundColor: '$yellow2', color: '$yellow11', borderColor: '$yellow6' };
       case 'critical':
-        return 'bg-error-100 text-error-700 border-error-300';
+        return { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' };
       case 'non_compliant':
-        return 'bg-error-100 text-error-700 border-error-300';
+        return { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' };
       default:
-        return 'bg-neutral-100 text-neutral-700 border-neutral-300';
+        return { backgroundColor: '$gray2', color: '$gray11', borderColor: '$gray6' };
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return 'bg-error-100 text-error-700 border-error-300';
+        return { backgroundColor: '$red2', color: '$red11', borderColor: '$red6' };
       case 'high':
-        return 'bg-warning-100 text-warning-700 border-warning-300';
+        return { backgroundColor: '$yellow2', color: '$yellow11', borderColor: '$yellow6' };
       case 'medium':
-        return 'bg-primary-100 text-primary-700 border-primary-300';
+        return { backgroundColor: '$blue2', color: '$blue11', borderColor: '$blue6' };
       case 'low':
-        return 'bg-neutral-100 text-neutral-700 border-neutral-300';
+        return { backgroundColor: '$gray2', color: '$gray11', borderColor: '$gray6' };
       default:
-        return 'bg-neutral-100 text-neutral-700 border-neutral-300';
+        return { backgroundColor: '$gray2', color: '$gray11', borderColor: '$gray6' };
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-success-100 text-success-700';
+        return { backgroundColor: '$green2', color: '$green11' };
       case 'in_progress':
-        return 'bg-primary-100 text-primary-700';
+        return { backgroundColor: '$blue2', color: '$blue11' };
       case 'pending':
-        return 'bg-warning-100 text-warning-700';
+        return { backgroundColor: '$yellow2', color: '$yellow11' };
       case 'blocked':
-        return 'bg-error-100 text-error-700';
+        return { backgroundColor: '$red2', color: '$red11' };
       default:
-        return 'bg-neutral-100 text-neutral-700';
+        return { backgroundColor: '$gray2', color: '$gray11' };
     }
   };
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="h-8 bg-surface-secondary rounded animate-pulse"></div>
-        <div className="h-64 bg-surface-secondary rounded animate-pulse"></div>
-      </div>
+      <YStack gap="$6">
+        <YStack height={32} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
+        <YStack height={256} backgroundColor="$backgroundHover" borderRadius="$4" opacity={0.5} />
+      </YStack>
     );
   }
 
   if (error || !project) {
     return (
-      <div className="text-center py-16">
-        <AlertCircle className="mx-auto text-error-500 mb-4" size={48} />
-        <h3 className="text-lg font-semibold text-text-primary mb-2">
-          Project not found
-        </h3>
-        <p className="text-text-secondary mb-4">
+      <YStack alignItems="center" paddingVertical="$12">
+        <AlertCircle size={48} color="$red10" marginBottom="$4" />
+        <H3 marginBottom="$2">Project not found</H3>
+        <Text color="$color11" marginBottom="$4">
           {error?.message || 'The project you are looking for does not exist.'}
-        </p>
+        </Text>
         <Button onClick={() => navigate(-1)} leftIcon={ArrowLeft}>
           Go Back
         </Button>
-      </div>
+      </YStack>
     );
   }
 
@@ -220,92 +219,99 @@ export default function ProjectDetailPage() {
       label: 'Overview',
       icon: Building,
       content: (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 bg-bg-secondary rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <Calendar className="text-text-tertiary" size={18} />
-                <span className="text-sm font-medium text-text-secondary">
+        <YStack gap="$6">
+          <XStack flexWrap="wrap" gap="$4">
+            <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
+              <XStack alignItems="center" gap="$2" marginBottom="$2">
+                <Calendar size={18} color="$color10" />
+                <Text fontSize="$3" fontWeight="500" color="$color11">
                   Start Date
-                </span>
-              </div>
-              <p className="text-base font-semibold text-text-primary">
+                </Text>
+              </XStack>
+              <Text fontSize="$4" fontWeight="600" color="$color12">
                 {formatDate(project.start_date)}
-              </p>
-            </div>
-            <div className="p-4 bg-bg-secondary rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <Calendar className="text-text-tertiary" size={18} />
-                <span className="text-sm font-medium text-text-secondary">
+              </Text>
+            </Card>
+            <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
+              <XStack alignItems="center" gap="$2" marginBottom="$2">
+                <Calendar size={18} color="$color10" />
+                <Text fontSize="$3" fontWeight="500" color="$color11">
                   End Date
-                </span>
-              </div>
-              <p className="text-base font-semibold text-text-primary">
+                </Text>
+              </XStack>
+              <Text fontSize="$4" fontWeight="600" color="$color12">
                 {formatDate(project.end_date)}
-              </p>
-            </div>
+              </Text>
+            </Card>
             {project.location && (
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  <MapPin className="text-text-tertiary" size={18} />
-                  <span className="text-sm font-medium text-text-secondary">
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
+                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                  <MapPin size={18} color="$color10" />
+                  <Text fontSize="$3" fontWeight="500" color="$color11">
                     Location
-                  </span>
-                </div>
-                <p className="text-base font-semibold text-text-primary">
+                  </Text>
+                </XStack>
+                <Text fontSize="$4" fontWeight="600" color="$color12">
                   {project.location}
-                </p>
-              </div>
+                </Text>
+              </Card>
             )}
             {project.contract_value && (
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Building className="text-text-tertiary" size={18} />
-                  <span className="text-sm font-medium text-text-secondary">
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
+                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                  <Building size={18} color="$color10" />
+                  <Text fontSize="$3" fontWeight="500" color="$color11">
                     Contract Value
-                  </span>
-                </div>
-                <p className="text-base font-semibold text-text-primary">
+                  </Text>
+                </XStack>
+                <Text fontSize="$4" fontWeight="600" color="$color12">
                   {formatCurrency(project.contract_value)}
-                </p>
-              </div>
+                </Text>
+              </Card>
             )}
             {project.project_manager && (
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Users className="text-text-tertiary" size={18} />
-                  <span className="text-sm font-medium text-text-secondary">
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
+                <XStack alignItems="center" gap="$2" marginBottom="$2">
+                  <Users size={18} color="$color10" />
+                  <Text fontSize="$3" fontWeight="500" color="$color11">
                     Project Manager
-                  </span>
-                </div>
-                <p className="text-base font-semibold text-text-primary">
+                  </Text>
+                </XStack>
+                <Text fontSize="$4" fontWeight="600" color="$color12">
                   {project.project_manager}
-                </p>
-              </div>
+                </Text>
+              </Card>
             )}
-            <div className="p-4 bg-bg-secondary rounded-lg">
-              <div className="flex items-center space-x-2 mb-2">
-                <Shield className="text-text-tertiary" size={18} />
-                <span className="text-sm font-medium text-text-secondary">
+            <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="45%">
+              <XStack alignItems="center" gap="$2" marginBottom="$2">
+                <Shield size={18} color="$color10" />
+                <Text fontSize="$3" fontWeight="500" color="$color11">
                   Compliance Status
-                </span>
-              </div>
-              <span
-                className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getComplianceStatusColor(project.compliance_status)}`}
+                </Text>
+              </XStack>
+              <XStack
+                alignItems="center"
+                paddingHorizontal="$2"
+                paddingVertical="$1"
+                borderRadius="$2"
+                borderWidth={1}
+                {...getComplianceStatusColor(project.compliance_status)}
               >
+                <Text fontSize="$2" fontWeight="500">
                 {project.compliance_status}
-              </span>
-            </div>
-          </div>
+                </Text>
+              </XStack>
+            </Card>
+          </XStack>
           {project.description && (
-            <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-2">
+            <YStack>
+              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
                 Description
-              </h3>
-              <p className="text-text-secondary">{project.description}</p>
-            </div>
+              </H3>
+              <Text color="$color11">{project.description}</Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
       ),
     },
     {
@@ -313,107 +319,112 @@ export default function ProjectDetailPage() {
       label: 'Requirements',
       icon: Shield,
       content: (
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-sm font-semibold text-text-primary mb-4">
+        <YStack gap="$6">
+          <YStack>
+            <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
               Insurance Requirements
-            </h3>
+            </H3>
             {requiredCoverages.length > 0 ? (
-              <div className="space-y-3">
+              <YStack gap="$3">
                 {requiredCoverages.map((coverage, index) => (
-                  <div
+                  <XStack
                     key={index}
-                    className="flex items-center justify-between p-4 bg-bg-secondary rounded-lg"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding="$4"
+                    backgroundColor="$backgroundHover"
+                    borderRadius="$4"
                   >
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">
+                    <YStack>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
                         {coverage.name}
-                      </p>
-                      <p className="text-xs text-text-tertiary mt-1">
+                      </Text>
+                      <Text fontSize="$2" color="$color10" marginTop="$1">
                         Type: {coverage.type}
-                      </p>
-                    </div>
-                    <p className="text-sm font-semibold text-text-primary">
+                      </Text>
+                    </YStack>
+                    <Text fontSize="$3" fontWeight="600" color="$color12">
                       {formatCurrency(coverage.amount)}
-                    </p>
-                  </div>
+                    </Text>
+                  </XStack>
                 ))}
-              </div>
+              </YStack>
             ) : (
-              <p className="text-text-secondary">
+              <Text color="$color11">
                 No insurance requirements specified
-              </p>
+              </Text>
             )}
-          </div>
+          </YStack>
 
           {(project.waiver_of_subrogation_required ||
             project.primary_non_contributory_required ||
             project.additional_insureds?.length ||
             project.certificate_holder) && (
-            <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-4">
+            <YStack>
+              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
                 Additional Requirements
-              </h3>
-              <div className="space-y-3">
+              </H3>
+              <YStack gap="$3">
                 {project.waiver_of_subrogation_required && (
-                  <div className="flex items-center space-x-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
-                    <CheckCircle className="text-warning-600" size={16} />
-                    <span className="text-sm text-warning-900">
+                  <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4">
+                    <CheckCircle size={16} color="$yellow11" />
+                    <Text fontSize="$3" color="$yellow12">
                       Waiver of Subrogation Required
-                    </span>
-                  </div>
+                    </Text>
+                  </XStack>
                 )}
                 {project.primary_non_contributory_required && (
-                  <div className="flex items-center space-x-2 p-3 bg-warning-50 border border-warning-200 rounded-lg">
-                    <CheckCircle className="text-warning-600" size={16} />
-                    <span className="text-sm text-warning-900">
+                  <XStack alignItems="center" gap="$2" padding="$3" backgroundColor="$yellow2" borderWidth={1} borderColor="$yellow6" borderRadius="$4">
+                    <CheckCircle size={16} color="$yellow11" />
+                    <Text fontSize="$3" color="$yellow12">
                       Primary & Non-Contributory Required
-                    </span>
-                  </div>
+                    </Text>
+                  </XStack>
                 )}
                 {project.additional_insureds &&
                   project.additional_insureds.length > 0 && (
-                    <div className="p-3 bg-bg-secondary rounded-lg">
-                      <p className="text-sm font-medium text-text-primary mb-2">
+                    <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
+                      <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                         Additional Insureds:
-                      </p>
-                      <ul className="list-disc list-inside space-y-1">
+                      </Text>
+                      <YStack gap="$1">
                         {project.additional_insureds.map((insured, index) => (
-                          <li
+                          <Text
                             key={index}
-                            className="text-sm text-text-secondary"
+                            fontSize="$3"
+                            color="$color11"
                           >
-                            {insured}
-                          </li>
+                            • {insured}
+                          </Text>
                         ))}
-                      </ul>
-                    </div>
+                      </YStack>
+                    </Card>
                   )}
                 {project.certificate_holder && (
-                  <div className="p-3 bg-bg-secondary rounded-lg">
-                    <p className="text-sm font-medium text-text-primary mb-1">
+                  <Card padding="$3" backgroundColor="$backgroundHover" borderRadius="$4">
+                    <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$1">
                       Certificate Holder:
-                    </p>
-                    <p className="text-sm text-text-secondary">
+                    </Text>
+                    <Text fontSize="$3" color="$color11">
                       {project.certificate_holder}
-                    </p>
-                  </div>
+                    </Text>
+                  </Card>
                 )}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           )}
 
           {project.special_provisions && (
-            <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-2">
+            <YStack>
+              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
                 Special Provisions
-              </h3>
-              <p className="text-text-secondary whitespace-pre-wrap">
+              </H3>
+              <Text color="$color11" whiteSpace="pre-wrap">
                 {project.special_provisions}
-              </p>
-            </div>
+              </Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
       ),
     },
     {
@@ -422,45 +433,61 @@ export default function ProjectDetailPage() {
       icon: Users,
       badge: participants.length,
       content: (
-        <div className="space-y-4">
+        <YStack gap="$4">
           {participants.length > 0 ? (
-            <div className="space-y-3">
+            <YStack gap="$3">
               {participants.map((participant) => (
-                <div
+                <XStack
                   key={participant.id}
-                  className="flex items-center justify-between p-4 bg-bg-secondary rounded-lg"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$4"
+                  backgroundColor="$backgroundHover"
+                  borderRadius="$4"
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-semibold text-white">
+                  <XStack alignItems="center" gap="$3">
+                    <XStack
+                      width={40}
+                      height={40}
+                      backgroundColor="$blue10"
+                      borderRadius={9999}
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Text fontSize="$3" fontWeight="600" color="white">
                         {participant.role.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">
+                      </Text>
+                    </XStack>
+                    <YStack>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
                         {participant.role}
-                      </p>
-                      <p className="text-xs text-text-tertiary">
+                      </Text>
+                      <Text fontSize="$2" color="$color10">
                         {participant.status} • Invited{' '}
                         {formatDate(participant.invited_at)}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`px-2 py-1 text-xs font-medium rounded ${participant.status === 'accepted' ? 'bg-success-100 text-success-700' : 'bg-warning-100 text-warning-700'}`}
+                      </Text>
+                    </YStack>
+                  </XStack>
+                  <XStack
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$2"
+                    backgroundColor={participant.status === 'accepted' ? '$green2' : '$yellow2'}
                   >
+                    <Text fontSize="$2" fontWeight="500" color={participant.status === 'accepted' ? '$green11' : '$yellow11'}>
                     {participant.status}
-                  </span>
-                </div>
+                    </Text>
+                  </XStack>
+                </XStack>
               ))}
-            </div>
+            </YStack>
           ) : (
-            <div className="text-center py-8 text-text-tertiary">
-              <Users className="mx-auto mb-2 text-text-tertiary" size={32} />
-              <p>No participants yet</p>
-            </div>
+            <YStack alignItems="center" paddingVertical="$8" color="$color10">
+              <Users size={32} color="$color10" marginBottom="$2" />
+              <Text>No participants yet</Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
       ),
     },
     {
@@ -470,89 +497,112 @@ export default function ProjectDetailPage() {
       icon: Shield,
       badge: userIssuesCount,
       content: (
-        <div className="space-y-6">
+        <YStack gap="$6">
           {compliance && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <p className="text-sm font-medium text-text-secondary mb-1">
+            <XStack flexWrap="wrap" gap="$4">
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
+                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                   Overall Score
-                </p>
-                <p className="text-2xl font-bold text-text-primary">
+                </Text>
+                <Text fontSize="$8" fontWeight="700" color="$color12">
                   {compliance.overall_score}%
-                </p>
-              </div>
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <p className="text-sm font-medium text-text-secondary mb-1">
+                </Text>
+              </Card>
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
+                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                   My Issues
-                </p>
-                <p className="text-2xl font-bold text-error-600">
+                </Text>
+                <Text fontSize="$8" fontWeight="700" color="$red10">
                   {userIssuesCount}
-                </p>
-              </div>
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <p className="text-sm font-medium text-text-secondary mb-1">
+                </Text>
+              </Card>
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
+                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                   Total Issues
-                </p>
-                <p className="text-2xl font-bold text-warning-600">
+                </Text>
+                <Text fontSize="$8" fontWeight="700" color="$yellow10">
                   {totalIssuesCount}
-                </p>
-              </div>
-            </div>
+                </Text>
+              </Card>
+            </XStack>
           )}
 
-          <div className="p-3 bg-primary-50 border border-primary-200 rounded-lg text-sm text-primary-800">
-            Showing issues assigned to you. View <button onClick={() => handleTabChange('all-issues')} className="font-medium underline hover:no-underline">All Issues</button> to see the complete list.
-          </div>
+          <Card padding="$3" backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4">
+            <Text fontSize="$3" color="$blue12">
+              Showing issues assigned to you. View{' '}
+              <TamaguiButton
+                unstyled
+                onPress={() => handleTabChange('all-issues')}
+                style={{ textDecorationLine: 'underline' }}
+              >
+                <Text fontSize="$3" fontWeight="500" color="$blue12" textDecorationLine="underline">
+                  All Issues
+                </Text>
+              </TamaguiButton>{' '}
+              to see the complete list.
+            </Text>
+          </Card>
 
           {userIssues.length > 0 ? (
-            <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-4">
+            <YStack>
+              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
                 Your Open Issues
-              </h3>
-              <div className="space-y-3">
+              </H3>
+              <YStack gap="$3">
                 {userIssues.map((issue) => (
-                    <div key={issue.id} className="p-4 border rounded-lg">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <span
-                              className={`px-2 py-0.5 text-xs font-medium rounded border ${getSeverityColor(issue.severity)}`}
-                            >
+                  <Card key={issue.id} padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4">
+                    <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                      <YStack flex={1}>
+                        <XStack alignItems="center" gap="$2" marginBottom="$1">
+                          <XStack
+                            paddingHorizontal="$2"
+                            paddingVertical="$0.5"
+                            borderRadius="$2"
+                            borderWidth={1}
+                            {...getSeverityColor(issue.severity)}
+                          >
+                            <Text fontSize="$2" fontWeight="500">
                               {issue.severity.toUpperCase()}
-                            </span>
-                            <span className="text-sm font-medium text-text-primary">
+                            </Text>
+                          </XStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
                               {issue.title}
-                            </span>
-                          </div>
-                          <p className="text-sm text-text-secondary">
+                          </Text>
+                        </XStack>
+                        <Text fontSize="$3" color="$color11">
                             {issue.description}
-                          </p>
-                        </div>
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded ${issue.status === 'open' ? 'bg-primary-100 text-primary-700' : 'bg-warning-100 text-warning-700'}`}
-                        >
+                        </Text>
+                      </YStack>
+                      <XStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$2"
+                        backgroundColor={issue.status === 'open' ? '$blue2' : '$yellow2'}
+                      >
+                        <Text fontSize="$2" fontWeight="500" color={issue.status === 'open' ? '$blue11' : '$yellow11'}>
                           {issue.status}
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
+                    </XStack>
                       {issue.due_date && (
-                        <p className="text-xs text-text-tertiary mt-2">
+                      <Text fontSize="$2" color="$color10" marginTop="$2">
                           Due: {formatDate(issue.due_date)}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            </div>
+                      </Text>
+                    )}
+                  </Card>
+                ))}
+              </YStack>
+            </YStack>
           ) : (
-            <div className="text-center py-8 text-text-tertiary">
-              <CheckCircle className="mx-auto mb-2 text-success-500" size={32} />
-              <p className="text-success-600 font-medium">No issues assigned to you</p>
-              <p className="text-xs mt-1">
+            <YStack alignItems="center" paddingVertical="$8" color="$color10">
+              <CheckCircle size={32} color="$green10" marginBottom="$2" />
+              <Text color="$green11" fontWeight="500">No issues assigned to you</Text>
+              <Text fontSize="$2" marginTop="$1">
                 You have no compliance issues to address in this project.
-              </p>
-            </div>
+              </Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
       ),
     },
     {
@@ -562,94 +612,117 @@ export default function ProjectDetailPage() {
       icon: List,
       badge: totalIssuesCount,
       content: (
-        <div className="space-y-6">
+        <YStack gap="$6">
           {compliance && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <p className="text-sm font-medium text-text-secondary mb-1">
+            <XStack flexWrap="wrap" gap="$4">
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
+                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                   Overall Score
-                </p>
-                <p className="text-2xl font-bold text-text-primary">
+                </Text>
+                <Text fontSize="$8" fontWeight="700" color="$color12">
                   {compliance.overall_score}%
-                </p>
-              </div>
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <p className="text-sm font-medium text-text-secondary mb-1">
+                </Text>
+              </Card>
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
+                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                   Total Issues
-                </p>
-                <p className="text-2xl font-bold text-error-600">
+                </Text>
+                <Text fontSize="$8" fontWeight="700" color="$red10">
                   {totalIssuesCount}
-                </p>
-              </div>
-              <div className="p-4 bg-bg-secondary rounded-lg">
-                <p className="text-sm font-medium text-text-secondary mb-1">
+                </Text>
+              </Card>
+              <Card padding="$4" backgroundColor="$backgroundHover" borderRadius="$4" flex={1} minWidth="30%">
+                <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                   Your Issues
-                </p>
-                <p className="text-2xl font-bold text-warning-600">
+                </Text>
+                <Text fontSize="$8" fontWeight="700" color="$yellow10">
                   {userIssuesCount}
-                </p>
-              </div>
-            </div>
+                </Text>
+              </Card>
+            </XStack>
           )}
 
-          <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-lg text-sm text-neutral-700">
+          <Card padding="$3" backgroundColor="$gray2" borderWidth={1} borderColor="$gray6" borderRadius="$4">
+            <Text fontSize="$3" color="$gray11">
             Showing all {totalIssuesCount} issue{totalIssuesCount !== 1 ? 's' : ''} across all assignees. {userIssuesCount} assigned to you.
-          </div>
+            </Text>
+          </Card>
 
           {allOpenIssues.length > 0 ? (
-            <div>
-              <h3 className="text-sm font-semibold text-text-primary mb-4">
+            <YStack>
+              <H3 fontSize="$3" fontWeight="600" color="$color12" marginBottom="$4">
                 All Open Issues ({allOpenIssues.length})
-              </h3>
-              <div className="space-y-3">
+              </H3>
+              <YStack gap="$3">
                 {allOpenIssues.map((issue) => (
-                    <div key={issue.id} className={`p-4 border rounded-lg ${issue.assigned_to === currentUser?.id ? 'border-primary-300 bg-primary-50/30' : ''}`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <span
-                              className={`px-2 py-0.5 text-xs font-medium rounded border ${getSeverityColor(issue.severity)}`}
-                            >
+                  <Card
+                    key={issue.id}
+                    padding="$4"
+                    borderWidth={1}
+                    borderColor={issue.assigned_to === currentUser?.id ? '$blue6' : '$borderColor'}
+                    backgroundColor={issue.assigned_to === currentUser?.id ? '$blue2' : undefined}
+                    borderRadius="$4"
+                    opacity={issue.assigned_to === currentUser?.id ? 0.3 : 1}
+                  >
+                    <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$2">
+                      <YStack flex={1}>
+                        <XStack alignItems="center" gap="$2" marginBottom="$1">
+                          <XStack
+                            paddingHorizontal="$2"
+                            paddingVertical="$0.5"
+                            borderRadius="$2"
+                            borderWidth={1}
+                            {...getSeverityColor(issue.severity)}
+                          >
+                            <Text fontSize="$2" fontWeight="500">
                               {issue.severity.toUpperCase()}
-                            </span>
-                            <span className="text-sm font-medium text-text-primary">
+                            </Text>
+                          </XStack>
+                          <Text fontSize="$3" fontWeight="500" color="$color12">
                               {issue.title}
-                            </span>
+                          </Text>
                             {issue.assigned_to === currentUser?.id && (
-                              <span className="px-1.5 py-0.5 text-xs font-medium rounded bg-primary-100 text-primary-700">
+                            <XStack paddingHorizontal="$1.5" paddingVertical="$0.5" borderRadius="$2" backgroundColor="$blue2">
+                              <Text fontSize="$2" fontWeight="500" color="$blue11">
                                 Yours
-                              </span>
+                              </Text>
+                            </XStack>
                             )}
-                          </div>
-                          <p className="text-sm text-text-secondary">
+                        </XStack>
+                        <Text fontSize="$3" color="$color11">
                             {issue.description}
-                          </p>
-                        </div>
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded ${issue.status === 'open' ? 'bg-primary-100 text-primary-700' : 'bg-warning-100 text-warning-700'}`}
-                        >
+                        </Text>
+                      </YStack>
+                      <XStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius="$2"
+                        backgroundColor={issue.status === 'open' ? '$blue2' : '$yellow2'}
+                      >
+                        <Text fontSize="$2" fontWeight="500" color={issue.status === 'open' ? '$blue11' : '$yellow11'}>
                           {issue.status}
-                        </span>
-                      </div>
+                        </Text>
+                      </XStack>
+                    </XStack>
                       {issue.due_date && (
-                        <p className="text-xs text-text-tertiary mt-2">
+                      <Text fontSize="$2" color="$color10" marginTop="$2">
                           Due: {formatDate(issue.due_date)}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            </div>
+                      </Text>
+                    )}
+                  </Card>
+                ))}
+              </YStack>
+            </YStack>
           ) : (
-            <div className="text-center py-8 text-text-tertiary">
-              <CheckCircle className="mx-auto mb-2 text-success-500" size={32} />
-              <p className="text-success-600 font-medium">No compliance issues</p>
-              <p className="text-xs mt-1">
+            <YStack alignItems="center" paddingVertical="$8" color="$color10">
+              <CheckCircle size={32} color="$green10" marginBottom="$2" />
+              <Text color="$green11" fontWeight="500">No compliance issues</Text>
+              <Text fontSize="$2" marginTop="$1">
                 This project has no open compliance issues.
-              </p>
-            </div>
+              </Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
       ),
     },
     {
@@ -657,16 +730,16 @@ export default function ProjectDetailPage() {
       label: 'Documents',
       icon: FileText,
       content: (
-        <div className="space-y-4">
-          <div className="text-center py-8 text-text-tertiary">
-            <FileText className="mx-auto mb-2 text-text-tertiary" size={32} />
-            <p>Document management coming soon</p>
-            <p className="text-xs mt-1">
+        <YStack gap="$4">
+          <YStack alignItems="center" paddingVertical="$8" color="$color10">
+            <FileText size={32} color="$color10" marginBottom="$2" />
+            <Text>Document management coming soon</Text>
+            <Text fontSize="$2" marginTop="$1">
               This will show all project-related documents (COIs, endorsements,
               contracts)
-            </p>
-          </div>
-        </div>
+            </Text>
+          </YStack>
+        </YStack>
       ),
     },
     {
@@ -675,49 +748,55 @@ export default function ProjectDetailPage() {
       icon: CheckCircle,
       badge: tasks.length,
       content: (
-        <div className="space-y-4">
+        <YStack gap="$4">
           {tasks.length > 0 ? (
-            <div className="space-y-3">
+            <YStack gap="$3">
               {tasks.map((task) => (
-                <div
+                <XStack
                   key={task.id}
-                  className="flex items-center justify-between p-4 bg-bg-secondary rounded-lg"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$4"
+                  backgroundColor="$backgroundHover"
+                  borderRadius="$4"
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <p className="text-sm font-medium text-text-primary">
+                  <YStack flex={1}>
+                    <XStack alignItems="center" gap="$2" marginBottom="$1">
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
                         {task.title}
-                      </p>
-                      <span
-                        className={`px-2 py-0.5 text-xs font-medium rounded ${getStatusColor(task.status)}`}
+                      </Text>
+                      <XStack
+                        paddingHorizontal="$2"
+                        paddingVertical="$0.5"
+                        borderRadius="$2"
+                        {...getStatusColor(task.status)}
                       >
+                        <Text fontSize="$2" fontWeight="500">
                         {task.status.replace('_', ' ')}
-                      </span>
-                    </div>
+                        </Text>
+                      </XStack>
+                    </XStack>
                     {task.description && (
-                      <p className="text-sm text-text-secondary">
+                      <Text fontSize="$3" color="$color11">
                         {task.description}
-                      </p>
+                      </Text>
                     )}
                     {task.due_date && (
-                      <p className="text-xs text-text-tertiary mt-1">
+                      <Text fontSize="$2" color="$color10" marginTop="$1">
                         Due: {formatDate(task.due_date)}
-                      </p>
+                      </Text>
                     )}
-                  </div>
-                </div>
+                  </YStack>
+                </XStack>
               ))}
-            </div>
+            </YStack>
           ) : (
-            <div className="text-center py-8 text-text-tertiary">
-              <CheckCircle
-                className="mx-auto mb-2 text-text-tertiary"
-                size={32}
-              />
-              <p>No tasks yet</p>
-            </div>
+            <YStack alignItems="center" paddingVertical="$8" color="$color10">
+              <CheckCircle size={32} color="$color10" marginBottom="$2" />
+              <Text>No tasks yet</Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
       ),
     },
     {
@@ -725,18 +804,15 @@ export default function ProjectDetailPage() {
       label: 'History',
       icon: HistoryIcon,
       content: (
-        <div className="space-y-4">
-          <div className="text-center py-8 text-text-tertiary">
-            <HistoryIcon
-              className="mx-auto mb-2 text-text-tertiary"
-              size={32}
-            />
-            <p>Activity log coming soon</p>
-            <p className="text-xs mt-1">
+        <YStack gap="$4">
+          <YStack alignItems="center" paddingVertical="$8" color="$color10">
+            <HistoryIcon size={32} color="$color10" marginBottom="$2" />
+            <Text>Activity log coming soon</Text>
+            <Text fontSize="$2" marginTop="$1">
               This will show project activity with timestamps and user actions
-            </p>
-          </div>
-        </div>
+            </Text>
+          </YStack>
+        </YStack>
       ),
     },
     {
@@ -745,54 +821,60 @@ export default function ProjectDetailPage() {
       icon: MessageSquare,
       badge: projectComments.length,
       content: (
-        <div className="space-y-4">
+        <YStack gap="$4">
           {projectComments.length > 0 ? (
-            <div className="space-y-3">
+            <YStack gap="$3">
               {projectComments.map((comment) => (
-                <div
+                <Card
                   key={comment.id}
-                  className="p-4 bg-bg-secondary rounded-lg"
+                  padding="$4"
+                  backgroundColor="$backgroundHover"
+                  borderRadius="$4"
                 >
-                  <div className="flex items-center space-x-2 mb-2">
-                    <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-semibold text-white">
+                  <XStack alignItems="center" gap="$2" marginBottom="$2">
+                    <XStack
+                      width={32}
+                      height={32}
+                      backgroundColor="$blue10"
+                      borderRadius={9999}
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Text fontSize="$2" fontWeight="600" color="white">
                         {comment.user_id.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-text-primary">
+                      </Text>
+                    </XStack>
+                    <YStack flex={1}>
+                      <Text fontSize="$3" fontWeight="500" color="$color12">
                         User {comment.user_id.substring(0, 8)}
-                      </p>
-                      <p className="text-xs text-text-tertiary">
+                      </Text>
+                      <Text fontSize="$2" color="$color10">
                         {formatDate(comment.created_at)}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-text-secondary whitespace-pre-wrap">
+                      </Text>
+                    </YStack>
+                  </XStack>
+                  <Text fontSize="$3" color="$color11" whiteSpace="pre-wrap">
                     {comment.content}
-                  </p>
-                </div>
+                  </Text>
+                </Card>
               ))}
-            </div>
+            </YStack>
           ) : (
-            <div className="text-center py-8 text-text-tertiary">
-              <MessageSquare
-                className="mx-auto mb-2 text-text-tertiary"
-                size={32}
-              />
-              <p>No notes yet</p>
-            </div>
+            <YStack alignItems="center" paddingVertical="$8" color="$color10">
+              <MessageSquare size={32} color="$color10" marginBottom="$2" />
+              <Text>No notes yet</Text>
+            </YStack>
           )}
-        </div>
+        </YStack>
       ),
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <XStack alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$4">
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
@@ -801,44 +883,63 @@ export default function ProjectDetailPage() {
           >
             Back
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-text-primary">
+          <YStack>
+            <H1 fontSize="$8" fontWeight="700" color="$color12">
               {project.name}
-            </h1>
-            <div className="flex items-center space-x-4 mt-1">
-              <span
-                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${getComplianceStatusColor(project.compliance_status)}`}
+            </H1>
+            <XStack alignItems="center" gap="$4" marginTop="$1">
+              <XStack
+                alignItems="center"
+                paddingHorizontal="$2"
+                paddingVertical="$0.5"
+                borderRadius="$2"
+                borderWidth={1}
+                {...getComplianceStatusColor(project.compliance_status)}
               >
+                <Text fontSize="$2" fontWeight="500">
                 {project.compliance_status}
-              </span>
+                </Text>
+              </XStack>
               {/* REQ-279: Warning badge with tooltip showing issue breakdown */}
               {totalIssuesCount > 0 && (
                 <Tooltip
                   content={`${totalIssuesCount} total ${totalIssuesCount === 1 ? 'issue' : 'issues'} (${userIssuesCount} yours, ${othersIssuesCount} assigned to others)`}
                   position="bottom"
                 >
-                  <span
-                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-warning-100 text-warning-700 border border-warning-300 cursor-help"
+                  <XStack
+                    alignItems="center"
+                    gap="$1"
+                    paddingHorizontal="$2"
+                    paddingVertical="$0.5"
+                    borderRadius="$2"
+                    backgroundColor="$yellow2"
+                    borderWidth={1}
+                    borderColor="$yellow6"
+                    cursor="help"
                     data-testid="warning-badge"
                   >
-                    <AlertTriangle size={12} className="mr-1" />
+                    <AlertTriangle size={12} />
+                    <Text fontSize="$2" fontWeight="500" color="$yellow11">
                     {totalIssuesCount} {totalIssuesCount === 1 ? 'Issue' : 'Issues'}
-                  </span>
+                    </Text>
+                  </XStack>
                 </Tooltip>
               )}
               {project.location && (
-                <span className="text-sm text-text-secondary flex items-center space-x-1">
+                <XStack alignItems="center" gap="$1">
                   <MapPin size={14} />
-                  <span>{project.location}</span>
-                </span>
+                  <Text fontSize="$3" color="$color11">
+                    {project.location}
+                  </Text>
+                </XStack>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+            </XStack>
+          </YStack>
+        </XStack>
+      </XStack>
 
       {/* Tabs */}
-      <Tabs tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
-    </div>
+      <TabsCustom tabs={tabs} variant="enclosed" activeTab={activeTab} onChange={handleTabChange} />
+    </YStack>
   );
 }
