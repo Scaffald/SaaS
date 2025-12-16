@@ -3,8 +3,9 @@
  * CoverageRequestList component displays all coverage requests for an organization
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FileQuestion } from 'lucide-react';
+import { YStack, XStack, Text, H2, H3, Button, Card, Spinner } from '@unicornlove/ui';
 import { CoverageRequest } from '../../types';
 import { getAllCoverageRequests } from '../../lib/api/coverageRequestService';
 import CoverageRequestCard from './CoverageRequestCard';
@@ -49,61 +50,88 @@ export default function CoverageRequestList({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-sm text-text-secondary">Loading coverage requests...</p>
-        </div>
-      </div>
+      <YStack alignItems="center" justifyContent="center" padding="$8">
+        <YStack alignItems="center">
+          <Spinner size="large" color="$blue10" marginBottom="$4" />
+          <Text fontSize="$2" color="$color10">
+            Loading coverage requests...
+          </Text>
+        </YStack>
+      </YStack>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6 bg-danger-50 border border-danger-200 rounded-lg">
-        <div className="flex items-center gap-2 mb-2">
-          <FileQuestion className="text-danger-600" size={20} />
-          <h3 className="text-sm font-semibold text-danger-900">Error Loading Requests</h3>
-        </div>
-        <p className="text-sm text-danger-700">{error}</p>
-        <button
-          onClick={loadRequests}
-          className="mt-3 px-4 py-2 text-sm font-medium text-white bg-danger-600 hover:bg-danger-700 rounded-md transition-colors"
+      <Card
+        padding="$6"
+        backgroundColor="$red2"
+        borderColor="$red6"
+        borderRadius="$4"
+      >
+        <XStack alignItems="center" gap="$2" marginBottom="$2">
+          <FileQuestion color="$red10" size={20} />
+          <H3 fontSize="$2" fontWeight="600" color="$red11">
+            Error Loading Requests
+          </H3>
+        </XStack>
+        <Text fontSize="$2" color="$red11" marginBottom="$3">
+          {error}
+        </Text>
+        <Button
+          onPress={loadRequests}
+          marginTop="$3"
+          paddingHorizontal="$4"
+          paddingVertical="$2"
+          fontSize="$2"
+          fontWeight="500"
+          color="white"
+          backgroundColor="$red10"
+          hoverStyle={{ backgroundColor: '$red11' }}
+          borderRadius="$2"
         >
           Retry
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   if (requests.length === 0) {
     return (
-      <div className="text-center p-12 bg-bg-secondary rounded-lg border-2 border-dashed border-border">
-        <FileQuestion className="mx-auto text-text-tertiary mb-4" size={48} />
-        <h3 className="text-lg font-semibold text-text-primary mb-2">
+      <Card
+        alignItems="center"
+        padding="$12"
+        backgroundColor="$background"
+        borderRadius="$4"
+        borderWidth={2}
+        borderStyle="dashed"
+        borderColor="$borderColor"
+      >
+        <FileQuestion color="$color9" size={48} marginBottom="$4" />
+        <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
           No Coverage Requests
-        </h3>
-        <p className="text-sm text-text-secondary">
+        </H3>
+        <Text fontSize="$2" color="$color10">
           {userRole === 'subcontractor'
             ? 'Request coverage from your broker to get started'
             : 'No coverage requests have been submitted yet'}
-        </p>
-      </div>
+        </Text>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-text-primary">
+    <YStack gap="$4">
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+        <H2 fontSize="$7" fontWeight="600" color="$color12">
           Coverage Requests
-          <span className="ml-2 text-sm font-normal text-text-secondary">
+          <Text fontSize="$2" fontWeight="400" color="$color10" marginLeft="$2">
             ({requests.length} {requests.length === 1 ? 'request' : 'requests'})
-          </span>
-        </h2>
-      </div>
+          </Text>
+        </H2>
+      </XStack>
 
-      <div className="space-y-4">
+      <YStack gap="$4">
         {requests.map((request) => (
           <CoverageRequestCard
             key={request.id}
@@ -115,7 +143,7 @@ export default function CoverageRequestList({
             onCancel={onCancel}
           />
         ))}
-      </div>
-    </div>
+      </YStack>
+    </YStack>
   );
 }
