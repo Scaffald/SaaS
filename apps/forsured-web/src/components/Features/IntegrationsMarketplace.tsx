@@ -874,63 +874,88 @@ export default function IntegrationsMarketplace() {
 
       {/* Connection Status Panel */}
       {connectedCount > 0 && (
-        <div className="bg-surface rounded-lg shadow-sm border border-border">
-          <div className="p-6 border-b border-border">
-            <h2 className="text-lg font-semibold text-text-primary">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
+          <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+            <H2 fontSize="$6" fontWeight="600" color="$color12">
               Connected Integrations
-            </h2>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
+            </H2>
+          </YStack>
+          <YStack padding="$6">
+            <YStack gap="$4">
               {mockIntegrations
                 .filter((i) => i.connected)
                 .map((integration) => (
-                  <div
+                  <XStack
                     key={integration.name}
-                    className="flex items-center justify-between p-4 border border-border rounded-lg"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding="$4"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
                   >
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={`w-3 h-3 rounded-full ${
+                    <XStack alignItems="center" gap="$3">
+                      <YStack
+                        width={12}
+                        height={12}
+                        borderRadius={9999}
+                        backgroundColor={
                           integration.status === 'active'
-                            ? 'bg-success-500'
+                            ? '$green10'
                             : integration.status === 'error'
-                              ? 'bg-error-500'
-                              : 'bg-warning-500'
-                        }`}
-                      ></div>
-                      <div>
-                        <p className="font-medium text-text-primary">
+                              ? '$red10'
+                              : '$yellow10'
+                        }
+                      />
+                      <YStack>
+                        <Text fontWeight="500" color="$color12">
                           {integration.name}
-                        </p>
-                        <p className="text-sm text-text-secondary">
+                        </Text>
+                        <Text fontSize="$3" color="$color11">
                           {integration.lastSync
                             ? `Last sync: ${integration.lastSync.toLocaleString()}`
                             : 'Never synced'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        </Text>
+                      </YStack>
+                    </XStack>
+                    <XStack alignItems="center" gap="$2">
+                      <Text
+                        fontSize="$2"
+                        paddingHorizontal="$2"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontWeight="500"
+                        backgroundColor={
                           integration.status === 'active'
-                            ? 'bg-success-100 text-green-800'
+                            ? '$green2'
                             : integration.status === 'error'
-                              ? 'bg-error-400/20 text-red-800'
-                              : 'bg-warning-100 text-yellow-800'
-                        }`}
+                              ? '$red2'
+                              : '$yellow2'
+                        }
+                        color={
+                          integration.status === 'active'
+                            ? '$green12'
+                            : integration.status === 'error'
+                              ? '$red12'
+                              : '$yellow12'
+                        }
                       >
                         {integration.status}
-                      </span>
-                      <button className="p-1 text-text-tertiary hover:text-text-secondary">
+                      </Text>
+                      <TamaguiButton
+                        unstyled
+                        padding="$1"
+                        color="$color10"
+                        hoverStyle={{ color: '$color11' }}
+                      >
                         <Settings size={16} />
-                      </button>
-                    </div>
-                  </div>
+                      </TamaguiButton>
+                    </XStack>
+                  </XStack>
                 ))}
-            </div>
-          </div>
-        </div>
+            </YStack>
+          </YStack>
+        </Card>
       )}
 
       {/* Connection Wizard */}
