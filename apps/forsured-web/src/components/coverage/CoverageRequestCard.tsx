@@ -3,8 +3,8 @@
  * CoverageRequestCard component displays a single coverage request with actions
  */
 
-import React from 'react';
 import { FileQuestion, DollarSign, Calendar, User } from 'lucide-react';
+import { YStack, XStack, Text, Button } from '@unicornlove/ui';
 import { CoverageRequest } from '../../types';
 import Card from '../Common/Card';
 import StatusBadge from '../Common/StatusBadge';
@@ -72,129 +72,162 @@ export default function CoverageRequestCard({
 
   return (
     <Card padding="none">
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-4">
+      <YStack padding="$4">
+        <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
           {/* Left: Request Info */}
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <FileQuestion className="text-primary-600" size={24} />
-              <div>
-                <h3 className="text-lg font-semibold text-text-primary">
+          <YStack flex={1}>
+            <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <FileQuestion color="$blue10" size={24} />
+              <YStack>
+                <Text fontSize="$6" fontWeight="600" color="$color12">
                   {request.coverage_type} Coverage Request
-                </h3>
-                <p className="text-sm text-text-secondary">
+                </Text>
+                <Text fontSize="$3" color="$color11">
                   Request #{request.id.substring(0, 8)}
-                </p>
-              </div>
-            </div>
+                </Text>
+              </YStack>
+            </XStack>
 
             {/* Request Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <XStack
+              flexWrap="wrap"
+              gap="$4"
+              marginTop="$3"
+              $gtMd={{ flexDirection: 'row' }}
+            >
               {/* Quote Amount (if quoted) */}
               {request.quote_amount && (
-                <div className="flex items-center gap-2">
-                  <DollarSign size={16} className="text-text-secondary" />
-                  <div>
-                    <p className="text-xs text-text-secondary">Quote Amount</p>
-                    <p className="text-sm font-medium text-text-primary">
+                <XStack alignItems="center" gap="$2">
+                  <DollarSign size={16} color="$color11" />
+                  <YStack>
+                    <Text fontSize="$1" color="$color11">
+                      Quote Amount
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {formatCurrency(request.quote_amount)}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </YStack>
+                </XStack>
               )}
 
               {/* Created Date */}
-              <div className="flex items-center gap-2">
-                <Calendar size={16} className="text-text-secondary" />
-                <div>
-                  <p className="text-xs text-text-secondary">Requested On</p>
-                  <p className="text-sm font-medium text-text-primary">
+              <XStack alignItems="center" gap="$2">
+                <Calendar size={16} color="$color11" />
+                <YStack>
+                  <Text fontSize="$1" color="$color11">
+                    Requested On
+                  </Text>
+                  <Text fontSize="$3" fontWeight="500" color="$color12">
                     {formatDate(request.created_at)}
-                  </p>
-                </div>
-              </div>
+                  </Text>
+                </YStack>
+              </XStack>
 
               {/* Broker (if assigned) */}
               {request.broker_id && (
-                <div className="flex items-center gap-2">
-                  <User size={16} className="text-text-secondary" />
-                  <div>
-                    <p className="text-xs text-text-secondary">Assigned Broker</p>
-                    <p className="text-sm font-medium text-text-primary">
+                <XStack alignItems="center" gap="$2">
+                  <User size={16} color="$color11" />
+                  <YStack>
+                    <Text fontSize="$1" color="$color11">
+                      Assigned Broker
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       Broker #{request.broker_id.substring(0, 8)}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </YStack>
+                </XStack>
               )}
-            </div>
+            </XStack>
 
             {/* Quote Details (if available) */}
             {request.quote_details && (
-              <div className="mt-3 p-3 bg-bg-secondary rounded-md">
-                <p className="text-xs font-semibold text-text-primary mb-1">
+              <YStack
+                marginTop="$3"
+                padding="$3"
+                backgroundColor="$color2"
+                borderRadius="$2"
+              >
+                <Text fontSize="$1" fontWeight="600" color="$color12" marginBottom="$1">
                   Quote Details:
-                </p>
-                <pre className="text-xs text-text-secondary font-mono overflow-x-auto">
+                </Text>
+                <Text
+                  fontSize="$1"
+                  color="$color11"
+                  fontFamily="$mono"
+                  overflowX="auto"
+                >
                   {JSON.stringify(request.quote_details, null, 2)}
-                </pre>
-              </div>
+                </Text>
+              </YStack>
             )}
-          </div>
+          </YStack>
 
           {/* Right: Status and Actions */}
-          <div className="flex flex-col items-end gap-2">
+          <YStack alignItems="flex-end" gap="$2">
             <StatusBadge
               status={request.status}
               variant={getStatusColor(request.status)}
             />
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-2 mt-2">
+            <YStack gap="$2" marginTop="$2">
               {/* Broker: Provide Quote */}
               {canBrokerProvideQuote && onProvideQuote && (
-                <button
-                  onClick={() => onProvideQuote(request.id)}
-                  className="px-3 py-1.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors"
+                <Button
+                  size="$3"
+                  backgroundColor="$blue10"
+                  color="white"
+                  hoverStyle={{ backgroundColor: '$blue11' }}
+                  onPress={() => onProvideQuote(request.id)}
                 >
                   Provide Quote
-                </button>
+                </Button>
               )}
 
               {/* Sub: Approve/Reject Quote */}
               {canSubApproveReject && (
                 <>
                   {onApprove && (
-                    <button
-                      onClick={() => onApprove(request.id)}
-                      className="px-3 py-1.5 text-sm font-medium text-white bg-success-600 hover:bg-success-700 rounded-md transition-colors"
+                    <Button
+                      size="$3"
+                      backgroundColor="$green10"
+                      color="white"
+                      hoverStyle={{ backgroundColor: '$green11' }}
+                      onPress={() => onApprove(request.id)}
                     >
                       Approve Quote
-                    </button>
+                    </Button>
                   )}
                   {onReject && (
-                    <button
-                      onClick={() => onReject(request.id)}
-                      className="px-3 py-1.5 text-sm font-medium text-white bg-danger-600 hover:bg-danger-700 rounded-md transition-colors"
+                    <Button
+                      size="$3"
+                      backgroundColor="$red10"
+                      color="white"
+                      hoverStyle={{ backgroundColor: '$red11' }}
+                      onPress={() => onReject(request.id)}
                     >
                       Reject Quote
-                    </button>
+                    </Button>
                   )}
                 </>
               )}
 
               {/* Cancel Request */}
               {canCancel && onCancel && (
-                <button
-                  onClick={() => onCancel(request.id)}
-                  className="px-3 py-1.5 text-sm font-medium text-text-secondary hover:text-text-primary border border-border hover:border-border-dark rounded-md transition-colors"
+                <Button
+                  size="$3"
+                  variant="outlined"
+                  color="$color11"
+                  hoverStyle={{ color: '$color12', borderColor: '$borderColor' }}
+                  onPress={() => onCancel(request.id)}
                 >
                   Cancel Request
-                </button>
+                </Button>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+            </YStack>
+          </YStack>
+        </XStack>
+      </YStack>
     </Card>
   );
 }
