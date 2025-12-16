@@ -3,8 +3,8 @@
  * PolicyCard component displays a single insurance policy with expand/collapse for children
  */
 
-import React from 'react';
 import { ChevronDown, ChevronRight, Shield, Calendar, DollarSign, Layers } from 'lucide-react';
+import { YStack, XStack, Text, Button } from '@unicornlove/ui';
 import { InsurancePolicy } from '../../types';
 import Card from '../Common/Card';
 import StatusBadge from '../Common/StatusBadge';
@@ -77,162 +77,201 @@ export default function PolicyCard({
   return (
     <Card padding="none">
       {/* Main Policy Header */}
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-4">
+      <YStack padding="$4">
+        <XStack alignItems="flex-start" justifyContent="space-between" gap="$4">
           {/* Left: Policy Info */}
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <Shield className="text-primary-600" size={24} />
-              <div>
-                <h3 className="text-lg font-semibold text-text-primary">
+          <YStack flex={1}>
+            <XStack alignItems="center" gap="$3" marginBottom="$2">
+              <Shield color="$blue10" size={24} />
+              <YStack>
+                <Text fontSize="$6" fontWeight="600" color="$color12">
                   {getPolicyTypeLabel(policy.policy_type)}
-                </h3>
+                </Text>
                 {policy.policy_number && (
-                  <p className="text-sm text-text-secondary">
+                  <Text fontSize="$3" color="$color11">
                     Policy #{policy.policy_number}
-                  </p>
+                  </Text>
                 )}
-              </div>
-            </div>
+              </YStack>
+            </XStack>
 
             {/* Policy Details Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+            <XStack
+              flexWrap="wrap"
+              gap="$4"
+              marginTop="$3"
+              $gtMd={{ flexDirection: 'row' }}
+            >
               {/* Aggregate Limit */}
               {policy.aggregate_limit && (
-                <div className="flex items-center gap-2">
-                  <DollarSign size={16} className="text-text-secondary" />
-                  <div>
-                    <p className="text-xs text-text-secondary">Aggregate Limit</p>
-                    <p className="text-sm font-medium text-text-primary">
+                <XStack alignItems="center" gap="$2">
+                  <DollarSign size={16} color="$color11" />
+                  <YStack>
+                    <Text fontSize="$1" color="$color11">
+                      Aggregate Limit
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {formatCurrency(policy.aggregate_limit)}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </YStack>
+                </XStack>
               )}
 
               {/* Each Occurrence Limit */}
               {policy.each_occurrence_limit && (
-                <div className="flex items-center gap-2">
-                  <DollarSign size={16} className="text-text-secondary" />
-                  <div>
-                    <p className="text-xs text-text-secondary">Per Occurrence</p>
-                    <p className="text-sm font-medium text-text-primary">
+                <XStack alignItems="center" gap="$2">
+                  <DollarSign size={16} color="$color11" />
+                  <YStack>
+                    <Text fontSize="$1" color="$color11">
+                      Per Occurrence
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {formatCurrency(policy.each_occurrence_limit)}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </YStack>
+                </XStack>
               )}
 
               {/* Deductible */}
               {policy.deductible && (
-                <div className="flex items-center gap-2">
-                  <DollarSign size={16} className="text-text-secondary" />
-                  <div>
-                    <p className="text-xs text-text-secondary">Deductible</p>
-                    <p className="text-sm font-medium text-text-primary">
+                <XStack alignItems="center" gap="$2">
+                  <DollarSign size={16} color="$color11" />
+                  <YStack>
+                    <Text fontSize="$1" color="$color11">
+                      Deductible
+                    </Text>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">
                       {formatCurrency(policy.deductible)}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </YStack>
+                </XStack>
               )}
-            </div>
+            </XStack>
 
             {/* Dates and Carrier */}
-            <div className="flex flex-wrap items-center gap-4 mt-3">
+            <XStack flexWrap="wrap" alignItems="center" gap="$4" marginTop="$3">
               {policy.carrier_name && (
-                <div className="text-sm text-text-secondary">
-                  <span className="font-medium">Carrier:</span>{' '}
-                  {policy.carrier_name}
-                </div>
+                <Text fontSize="$3" color="$color11">
+                  <Text fontWeight="500">Carrier:</Text> {policy.carrier_name}
+                </Text>
               )}
               {(policy.effective_date || policy.expiration_date) && (
-                <div className="flex items-center gap-2 text-sm text-text-secondary">
-                  <Calendar size={14} />
-                  <span>
+                <XStack alignItems="center" gap="$2">
+                  <Calendar size={14} color="$color11" />
+                  <Text fontSize="$3" color="$color11">
                     {formatDate(policy.effective_date)} -{' '}
                     {formatDate(policy.expiration_date)}
-                  </span>
-                </div>
+                  </Text>
+                </XStack>
               )}
-            </div>
+            </XStack>
 
             {/* REQ-270: Umbrella Coverage Display */}
             {policy.policy_type === 'Umbrella' &&
               policy.underlying_coverages &&
               policy.underlying_coverages.length > 0 && (
-                <div className="mt-3 flex items-center gap-2 px-3 py-2 bg-primary-50 border border-primary-200 rounded-md">
-                  <Layers size={16} className="text-primary-600" />
-                  <span className="text-sm text-primary-800">
-                    <span className="font-medium">Umbrella covers:</span>{' '}
+                <XStack
+                  marginTop="$3"
+                  alignItems="center"
+                  gap="$2"
+                  paddingHorizontal="$3"
+                  paddingVertical="$2"
+                  backgroundColor="$blue2"
+                  borderWidth={1}
+                  borderColor="$blue6"
+                  borderRadius="$2"
+                >
+                  <Layers size={16} color="$blue10" />
+                  <Text fontSize="$3" color="$blue11">
+                    <Text fontWeight="500">Umbrella covers:</Text>{' '}
                     {formatUnderlyingCoverages(policy.underlying_coverages)}
-                  </span>
-                </div>
+                  </Text>
+                </XStack>
               )}
-          </div>
+          </YStack>
 
           {/* Right: Status and Expand Button */}
-          <div className="flex flex-col items-end gap-2">
+          <YStack alignItems="flex-end" gap="$2">
             <StatusBadge
               status={policy.status}
               variant={getStatusColor(policy.status)}
             />
 
             {hasChildren && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
+              <XStack
+                alignItems="center"
+                gap="$1"
+                paddingHorizontal="$3"
+                paddingVertical="$1.5"
+                fontSize="$3"
+                fontWeight="500"
+                color="$blue10"
+                hoverStyle={{ backgroundColor: '$blue2' }}
+                borderRadius="$2"
+                cursor="pointer"
+                onPress={(e) => {
+                  e?.stopPropagation?.();
                   onToggleExpand();
                 }}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
               >
                 {isExpanded ? (
                   <>
                     <ChevronDown size={16} />
-                    Hide Details
+                    <Text fontSize="$3" fontWeight="500" color="$blue10">
+                      Hide Details
+                    </Text>
                   </>
                 ) : (
                   <>
                     <ChevronRight size={16} />
-                    Show Details
+                    <Text fontSize="$3" fontWeight="500" color="$blue10">
+                      Show Details
+                    </Text>
                   </>
                 )}
-              </button>
+              </XStack>
             )}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </XStack>
+      </YStack>
 
       {/* Expanded: Provisions and Endorsements */}
       {isExpanded && hasChildren && (
-        <div className="border-t border-border bg-bg-secondary px-4 py-3">
+        <YStack
+          borderTopWidth={1}
+          borderColor="$borderColor"
+          backgroundColor="$color2"
+          paddingHorizontal="$4"
+          paddingVertical="$3"
+        >
           {/* Provisions */}
           {policy.provisions && policy.provisions.length > 0 && (
-            <div className="mb-4">
-              <h4 className="text-sm font-semibold text-text-primary mb-2">
+            <YStack marginBottom="$4">
+              <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
                 Coverage Provisions
-              </h4>
-              <div className="space-y-2">
+              </Text>
+              <YStack gap="$2">
                 {policy.provisions.map((provision) => (
                   <ProvisionItem key={provision.id} provision={provision} />
                 ))}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           )}
 
           {/* Endorsements */}
           {policy.endorsements && policy.endorsements.length > 0 && (
-            <div>
-              <h4 className="text-sm font-semibold text-text-primary mb-2">
+            <YStack>
+              <Text fontSize="$3" fontWeight="600" color="$color12" marginBottom="$2">
                 Policy Endorsements
-              </h4>
-              <div className="space-y-2">
+              </Text>
+              <YStack gap="$2">
                 {policy.endorsements.map((endorsement) => (
                   <EndorsementItem key={endorsement.id} endorsement={endorsement} />
                 ))}
-              </div>
-            </div>
+              </YStack>
+            </YStack>
           )}
-        </div>
+        </YStack>
       )}
     </Card>
   );
