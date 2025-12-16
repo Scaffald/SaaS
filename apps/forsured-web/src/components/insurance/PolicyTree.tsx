@@ -3,12 +3,12 @@
  * PolicyTree component displays insurance policies with expandable hierarchical structure
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
+import { YStack, XStack, Text, Card } from '@unicornlove/ui';
 import { InsurancePolicy } from '../../types';
 import { getAllPolicies } from '../../lib/api/insurancePolicyService';
 import PolicyCard from './PolicyCard';
-import Card from '../Common/Card';
 import SkeletonLoader from '../Common/SkeletonLoader';
 
 export interface PolicyTreeProps {
@@ -61,41 +61,47 @@ export default function PolicyTree({
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <YStack gap="$4">
         <SkeletonLoader count={3} height={120} />
-      </div>
+      </YStack>
     );
   }
 
   if (error) {
     return (
-      <Card padding="lg">
-        <div className="flex items-center gap-3 text-error-600">
-          <AlertCircle size={24} />
-          <div>
-            <p className="font-medium">Error loading policies</p>
-            <p className="text-sm text-text-secondary">{error}</p>
-          </div>
-        </div>
+      <Card padding="$6">
+        <XStack alignItems="center" gap="$3">
+          <AlertCircle size={24} color="$red10" />
+          <YStack>
+            <Text fontWeight="500" color="$red10">
+              Error loading policies
+            </Text>
+            <Text fontSize="$2" color="$color10">
+              {error}
+            </Text>
+          </YStack>
+        </XStack>
       </Card>
     );
   }
 
   if (policies.length === 0) {
     return (
-      <Card padding="lg">
-        <div className="text-center text-text-secondary">
-          <p className="font-medium">No insurance policies found</p>
-          <p className="text-sm mt-1">
+      <Card padding="$6">
+        <YStack alignItems="center">
+          <Text fontWeight="500" color="$color10">
+            No insurance policies found
+          </Text>
+          <Text fontSize="$2" color="$color10" marginTop="$1">
             Create your first insurance policy to get started
-          </p>
-        </div>
+          </Text>
+        </YStack>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <YStack gap="$4">
       {policies.map((policy) => (
         <PolicyCard
           key={policy.id}
@@ -105,6 +111,6 @@ export default function PolicyTree({
           onClick={() => onPolicyClick?.(policy)}
         />
       ))}
-    </div>
+    </YStack>
   );
 }
