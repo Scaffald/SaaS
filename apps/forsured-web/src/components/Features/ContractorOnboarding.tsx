@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Upload,
   FileText,
@@ -15,6 +15,7 @@ import {
   Eye,
   Download,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Button as TamaguiButton, Card, Spinner } from '@unicornlove/ui';
 import StatusBadge from '../Common/StatusBadge';
 
 interface UploadedDocument {
@@ -156,13 +157,13 @@ export default function ContractorOnboarding() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'excellent':
-        return 'text-success-600 bg-success-100';
+        return { color: '$green11', backgroundColor: '$green2' };
       case 'adequate':
-        return 'text-primary-600 bg-primary-100';
+        return { color: '$blue11', backgroundColor: '$blue2' };
       case 'below-recommended':
-        return 'text-secondary-600 bg-secondary-100';
+        return { color: '$gray11', backgroundColor: '$gray2' };
       default:
-        return 'text-text-secondary bg-bg-secondary';
+        return { color: '$color11', backgroundColor: '$backgroundHover' };
     }
   };
 
@@ -175,586 +176,670 @@ export default function ContractorOnboarding() {
   };
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-text-primary">
+      <YStack>
+        <H1 fontSize="$8" fontWeight="700" color="$color12">
           Contractor Onboarding
-        </h1>
-        <p className="text-text-secondary">
+        </H1>
+        <Text color="$color11">
           Upload your insurance documents and get a comprehensive coverage
           assessment
-        </p>
-      </div>
+        </Text>
+      </YStack>
 
       {/* Progress Steps */}
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-        <div className="flex items-center justify-between">
+      <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
+        <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <div className="flex items-center">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-medium ${
-                    currentStep >= step.id
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-bg-tertiary text-text-secondary'
-                  }`}
+            <XStack key={step.id} alignItems="center" flex={1} minWidth={200}>
+              <XStack alignItems="center">
+                <YStack
+                  width={40}
+                  height={40}
+                  borderRadius={9999}
+                  alignItems="center"
+                  justifyContent="center"
+                  backgroundColor={currentStep >= step.id ? "$blue10" : "$backgroundHover"}
                 >
-                  {currentStep > step.id ? <CheckCircle size={20} /> : step.id}
-                </div>
-                <div className="ml-3">
-                  <p
-                    className={`font-medium ${currentStep >= step.id ? 'text-text-primary' : 'text-text-secondary'}`}
+                  {currentStep > step.id ? (
+                    <CheckCircle size={20} color="white" />
+                  ) : (
+                    <Text
+                      fontWeight="500"
+                      color={currentStep >= step.id ? "white" : "$color11"}
+                    >
+                      {step.id}
+                    </Text>
+                  )}
+                </YStack>
+                <YStack marginLeft="$3">
+                  <Text
+                    fontWeight="500"
+                    color={currentStep >= step.id ? "$color12" : "$color11"}
                   >
                     {step.title}
-                  </p>
-                  <p className="text-sm text-text-secondary">
+                  </Text>
+                  <Text fontSize="$3" color="$color11">
                     {step.description}
-                  </p>
-                </div>
-              </div>
+                  </Text>
+                </YStack>
+              </XStack>
               {index < steps.length - 1 && (
-                <ArrowRight className="mx-6 text-gray-300" size={20} />
+                <ArrowRight size={20} color="$gray8" marginHorizontal="$6" />
               )}
-            </div>
+            </XStack>
           ))}
-        </div>
-      </div>
+        </XStack>
+      </Card>
 
       {/* Step 1: Document Upload */}
       {currentStep === 1 && (
-        <div className="space-y-6">
-          <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-text-primary">
+        <YStack gap="$6">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+              <H2 fontSize="$6" fontWeight="600" color="$color12">
                 Upload Your Insurance Documents
-              </h2>
-              <button
-                onClick={() => setShowUploadModal(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+              </H2>
+              <TamaguiButton
+                onPress={() => setShowUploadModal(true)}
+                backgroundColor="$blue10"
+                color="white"
+                paddingHorizontal="$4"
+                paddingVertical="$2"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$blue11' }}
               >
+                <XStack alignItems="center" gap="$2">
                 <Upload size={16} />
-                <span>Upload Documents</span>
-              </button>
-            </div>
+                  <Text>Upload Documents</Text>
+                </XStack>
+              </TamaguiButton>
+            </XStack>
 
             {/* Document Types Guide */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="p-4 border border-border rounded-lg">
-                <FileText className="text-primary-600 mb-2" size={24} />
-                <h3 className="font-medium text-text-primary mb-1">
+            <XStack flexWrap="wrap" gap="$4" marginBottom="$6">
+              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+                <FileText size={24} color="$blue10" marginBottom="$2" />
+                <H3 fontWeight="500" color="$color12" marginBottom="$1">
                   Certificate of Insurance
-                </h3>
-                <p className="text-sm text-text-secondary">
+                </H3>
+                <Text fontSize="$3" color="$color11">
                   COI documents showing current coverage
-                </p>
-              </div>
-              <div className="p-4 border border-border rounded-lg">
-                <Shield className="text-success-600 mb-2" size={24} />
-                <h3 className="font-medium text-text-primary mb-1">
+                </Text>
+              </Card>
+              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+                <Shield size={24} color="$green10" marginBottom="$2" />
+                <H3 fontWeight="500" color="$color12" marginBottom="$1">
                   Insurance Policies
-                </h3>
-                <p className="text-sm text-text-secondary">
+                </H3>
+                <Text fontSize="$3" color="$color11">
                   Full policy documents with terms
-                </p>
-              </div>
-              <div className="p-4 border border-border rounded-lg">
-                <Award className="text-secondary-500 mb-2" size={24} />
-                <h3 className="font-medium text-text-primary mb-1">Licenses</h3>
-                <p className="text-sm text-text-secondary">
+                </Text>
+              </Card>
+              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+                <Award size={24} color="$gray10" marginBottom="$2" />
+                <H3 fontWeight="500" color="$color12" marginBottom="$1">Licenses</H3>
+                <Text fontSize="$3" color="$color11">
                   Professional and trade licenses
-                </p>
-              </div>
-              <div className="p-4 border border-border rounded-lg">
-                <DollarSign className="text-secondary-600 mb-2" size={24} />
-                <h3 className="font-medium text-text-primary mb-1">Bonds</h3>
-                <p className="text-sm text-text-secondary">
+                </Text>
+              </Card>
+              <Card padding="$4" borderWidth={1} borderColor="$borderColor" borderRadius="$4" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+                <DollarSign size={24} color="$gray11" marginBottom="$2" />
+                <H3 fontWeight="500" color="$color12" marginBottom="$1">Bonds</H3>
+                <Text fontSize="$3" color="$color11">
                   Surety bonds and guarantees
-                </p>
-              </div>
-            </div>
+                </Text>
+              </Card>
+            </XStack>
 
             {/* Uploaded Documents */}
-            <div className="space-y-3">
-              <h3 className="font-medium text-text-primary">
+            <YStack gap="$3">
+              <H3 fontWeight="500" color="$color12">
                 Uploaded Documents ({uploadedDocs.length})
-              </h3>
+              </H3>
               {uploadedDocs.map((doc) => (
-                <div
+                <XStack
                   key={doc.id}
-                  className="flex items-center justify-between p-4 border border-border rounded-lg"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  padding="$4"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
                 >
-                  <div className="flex items-center space-x-3">
-                    <FileText className="text-text-tertiary" size={20} />
-                    <div>
-                      <p className="font-medium text-text-primary">
+                  <XStack alignItems="center" gap="$3">
+                    <FileText size={20} color="$color10" />
+                    <YStack>
+                      <Text fontWeight="500" color="$color12">
                         {doc.name}
-                      </p>
-                      <div className="flex items-center space-x-2 text-sm text-text-secondary">
-                        <span className="capitalize">{doc.type}</span>
+                      </Text>
+                      <XStack alignItems="center" gap="$2">
+                        <Text fontSize="$3" color="$color11" textTransform="capitalize">
+                          {doc.type}
+                        </Text>
                         {doc.provider && (
                           <>
-                            <span>•</span>
-                            <span>{doc.provider}</span>
+                            <Text fontSize="$3" color="$color11">•</Text>
+                            <Text fontSize="$3" color="$color11">{doc.provider}</Text>
                           </>
                         )}
                         {doc.expiryDate && (
                           <>
-                            <span>•</span>
-                            <span>
+                            <Text fontSize="$3" color="$color11">•</Text>
+                            <Text fontSize="$3" color="$color11">
                               Expires: {doc.expiryDate.toLocaleDateString()}
-                            </span>
+                            </Text>
                           </>
                         )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
+                      </XStack>
+                    </YStack>
+                  </XStack>
+                  <XStack alignItems="center" gap="$3">
                     <StatusBadge status={doc.status} size="sm" />
-                    <button className="p-1 text-text-tertiary hover:text-text-secondary">
+                    <TamaguiButton unstyled padding="$1" color="$color10" hoverStyle={{ color: '$color11' }}>
                       <Eye size={16} />
-                    </button>
-                    <button className="p-1 text-text-tertiary hover:text-text-secondary">
+                    </TamaguiButton>
+                    <TamaguiButton unstyled padding="$1" color="$color10" hoverStyle={{ color: '$color11' }}>
                       <Download size={16} />
-                    </button>
-                  </div>
-                </div>
+                    </TamaguiButton>
+                  </XStack>
+                </XStack>
               ))}
-            </div>
+            </YStack>
 
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setCurrentStep(2)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            <XStack marginTop="$6" justifyContent="flex-end">
+              <TamaguiButton
+                onPress={() => setCurrentStep(2)}
+                backgroundColor="$blue10"
+                color="white"
+                paddingHorizontal="$6"
+                paddingVertical="$2"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$blue11' }}
               >
                 Continue to Review
-              </button>
-            </div>
-          </div>
-        </div>
+              </TamaguiButton>
+            </XStack>
+          </Card>
+        </YStack>
       )}
 
       {/* Step 2: Document Review */}
       {currentStep === 2 && (
-        <div className="space-y-6">
-          <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-            <h2 className="text-lg font-semibold text-text-primary mb-6">
+        <YStack gap="$6">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$6">
               Document Verification Status
-            </h2>
+            </H2>
 
-            <div className="space-y-4">
+            <YStack gap="$4">
               {uploadedDocs.map((doc) => (
-                <div
+                <Card
                   key={doc.id}
-                  className="p-4 border border-border rounded-lg"
+                  padding="$4"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-text-primary">
+                  <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                    <H3 fontWeight="500" color="$color12">
                       {doc.name}
-                    </h3>
+                    </H3>
                     <StatusBadge status={doc.status} />
-                  </div>
+                  </XStack>
 
                   {doc.status === 'verified' && (
-                    <div className="bg-success-50 p-3 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <CheckCircle className="text-success-600" size={16} />
-                        <span className="text-sm font-medium text-green-900">
+                    <Card backgroundColor="$green2" padding="$3" borderRadius="$4">
+                      <XStack alignItems="center" gap="$2" marginBottom="$2">
+                        <CheckCircle size={16} color="$green11" />
+                        <Text fontSize="$3" fontWeight="500" color="$green12">
                           Verification Complete
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        </Text>
+                      </XStack>
+                      <XStack flexWrap="wrap" gap="$4">
                         {doc.coverage && (
-                          <div>
-                            <span className="text-text-secondary">
+                          <YStack>
+                            <Text fontSize="$3" color="$color11">
                               Coverage:
-                            </span>
-                            <p className="font-medium">
+                            </Text>
+                            <Text fontSize="$3" fontWeight="500">
                               ${doc.coverage.toLocaleString()}
-                            </p>
-                          </div>
+                            </Text>
+                          </YStack>
                         )}
                         {doc.premium && (
-                          <div>
-                            <span className="text-text-secondary">
+                          <YStack>
+                            <Text fontSize="$3" color="$color11">
                               Annual Premium:
-                            </span>
-                            <p className="font-medium">
+                            </Text>
+                            <Text fontSize="$3" fontWeight="500">
                               ${doc.premium.toLocaleString()}
-                            </p>
-                          </div>
+                            </Text>
+                          </YStack>
                         )}
                         {doc.policyNumber && (
-                          <div>
-                            <span className="text-text-secondary">
+                          <YStack>
+                            <Text fontSize="$3" color="$color11">
                               Policy Number:
-                            </span>
-                            <p className="font-medium">{doc.policyNumber}</p>
-                          </div>
+                            </Text>
+                            <Text fontSize="$3" fontWeight="500">{doc.policyNumber}</Text>
+                          </YStack>
                         )}
                         {doc.expiryDate && (
-                          <div>
-                            <span className="text-text-secondary">
+                          <YStack>
+                            <Text fontSize="$3" color="$color11">
                               Expires:
-                            </span>
-                            <p className="font-medium">
+                            </Text>
+                            <Text fontSize="$3" fontWeight="500">
                               {doc.expiryDate.toLocaleDateString()}
-                            </p>
-                          </div>
+                            </Text>
+                          </YStack>
                         )}
-                      </div>
-                    </div>
+                      </XStack>
+                    </Card>
                   )}
 
                   {doc.status === 'processing' && (
-                    <div className="bg-primary-50 p-3 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                        <span className="text-sm text-blue-900">
+                    <Card backgroundColor="$blue2" padding="$3" borderRadius="$4">
+                      <XStack alignItems="center" gap="$2">
+                        <Spinner size="small" color="$blue10" />
+                        <Text fontSize="$3" color="$blue12">
                           Processing document with AI verification...
-                        </span>
-                      </div>
-                    </div>
+                        </Text>
+                      </XStack>
+                    </Card>
                   )}
-                </div>
+                </Card>
               ))}
-            </div>
+            </YStack>
 
-            <div className="mt-6 flex justify-between">
-              <button
-                onClick={() => setCurrentStep(1)}
-                className="px-6 py-2 border border-border rounded-lg hover:bg-bg-secondary transition-colors"
+            <XStack marginTop="$6" justifyContent="space-between">
+              <TamaguiButton
+                onPress={() => setCurrentStep(1)}
+                paddingHorizontal="$6"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                backgroundColor="transparent"
+                hoverStyle={{ backgroundColor: '$backgroundHover' }}
               >
                 Back
-              </button>
-              <button
-                onClick={() => setCurrentStep(3)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              </TamaguiButton>
+              <TamaguiButton
+                onPress={() => setCurrentStep(3)}
+                backgroundColor="$blue10"
+                color="white"
+                paddingHorizontal="$6"
+                paddingVertical="$2"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$blue11' }}
               >
                 View Coverage Assessment
-              </button>
-            </div>
-          </div>
-        </div>
+              </TamaguiButton>
+            </XStack>
+          </Card>
+        </YStack>
       )}
 
       {/* Step 3: Coverage Assessment */}
       {currentStep === 3 && (
-        <div className="space-y-6">
+        <YStack gap="$6">
           {/* Overall Score */}
-          <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-lg font-semibold text-text-primary">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+              <YStack>
+                <H2 fontSize="$6" fontWeight="600" color="$color12">
                   Coverage Assessment
-                </h2>
-                <p className="text-text-secondary">
+                </H2>
+                <Text color="$color11">
                   How your insurance coverage compares to industry standards
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mb-2">
-                  <span className="text-2xl font-bold text-primary-600">
+                </Text>
+              </YStack>
+              <YStack alignItems="center">
+                <XStack
+                  width={80}
+                  height={80}
+                  backgroundColor="$blue2"
+                  borderRadius={9999}
+                  alignItems="center"
+                  justifyContent="center"
+                  marginBottom="$2"
+                >
+                  <Text fontSize="$8" fontWeight="700" color="$blue11">
                     {getCompletionPercentage()}%
-                  </span>
-                </div>
-                <p className="text-sm text-text-secondary">Coverage Score</p>
-              </div>
-            </div>
+                  </Text>
+                </XStack>
+                <Text fontSize="$3" color="$color11">Coverage Score</Text>
+              </YStack>
+            </XStack>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-success-50 rounded-lg">
-                <TrendingUp
-                  className="text-success-600 mx-auto mb-2"
-                  size={24}
-                />
-                <p className="font-medium text-green-900">Above Average</p>
-                <p className="text-sm text-success-600">1 coverage type</p>
-              </div>
-              <div className="text-center p-4 bg-accent-400/10 rounded-lg">
-                <AlertTriangle
-                  className="text-secondary-600 mx-auto mb-2"
-                  size={24}
-                />
-                <p className="font-medium text-orange-900">Needs Improvement</p>
-                <p className="text-sm text-secondary-600">3 coverage types</p>
-              </div>
-              <div className="text-center p-4 bg-primary-50 rounded-lg">
-                <Shield className="text-primary-600 mx-auto mb-2" size={24} />
-                <p className="font-medium text-blue-900">Total Coverage</p>
-                <p className="text-sm text-primary-600">$3M current</p>
-              </div>
-            </div>
-          </div>
+            <XStack flexWrap="wrap" gap="$6">
+              <Card alignItems="center" padding="$4" backgroundColor="$green2" borderRadius="$4" flex={1} minWidth="30%">
+                <TrendingUp size={24} color="$green11" marginBottom="$2" />
+                <Text fontWeight="500" color="$green12">Above Average</Text>
+                <Text fontSize="$3" color="$green11">1 coverage type</Text>
+              </Card>
+              <Card alignItems="center" padding="$4" backgroundColor="$orange2" borderRadius="$4" flex={1} minWidth="30%">
+                <AlertTriangle size={24} color="$orange11" marginBottom="$2" />
+                <Text fontWeight="500" color="$orange12">Needs Improvement</Text>
+                <Text fontSize="$3" color="$orange11">3 coverage types</Text>
+              </Card>
+              <Card alignItems="center" padding="$4" backgroundColor="$blue2" borderRadius="$4" flex={1} minWidth="30%">
+                <Shield size={24} color="$blue11" marginBottom="$2" />
+                <Text fontWeight="500" color="$blue12">Total Coverage</Text>
+                <Text fontSize="$3" color="$blue11">$3M current</Text>
+              </Card>
+            </XStack>
+          </Card>
 
           {/* Detailed Assessment */}
-          <div className="bg-surface rounded-lg shadow-sm border border-border">
-            <div className="p-6 border-b border-border">
-              <h3 className="text-lg font-semibold text-text-primary">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor">
+            <YStack padding="$6" borderBottomWidth={1} borderColor="$borderColor">
+              <H3 fontSize="$6" fontWeight="600" color="$color12">
                 Coverage Breakdown
-              </h3>
-            </div>
-            <div className="p-6">
-              <div className="space-y-6">
+              </H3>
+            </YStack>
+            <YStack padding="$6">
+              <YStack gap="$6">
                 {coverageAssessments.map((assessment, index) => (
-                  <div
+                  <Card
                     key={index}
-                    className="border border-border rounded-lg p-4"
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$4"
+                    padding="$4"
                   >
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium text-text-primary">
+                    <XStack alignItems="center" justifyContent="space-between" marginBottom="$3">
+                      <H3 fontWeight="500" color="$color12">
                         {assessment.type}
-                      </h4>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(assessment.status)}`}
+                      </H3>
+                      <XStack
+                        paddingHorizontal="$3"
+                        paddingVertical="$1"
+                        borderRadius={9999}
+                        fontSize="$3"
+                        fontWeight="500"
+                        {...getStatusColor(assessment.status)}
                       >
+                        <Text>
                         {assessment.status
                           .replace('-', ' ')
                           .replace(/\b\w/g, (l) => l.toUpperCase())}
-                      </span>
-                    </div>
+                        </Text>
+                      </XStack>
+                    </XStack>
 
-                    <div className="grid grid-cols-3 gap-4 mb-4">
-                      <div className="text-center">
-                        <p className="text-sm text-text-secondary">
+                    <XStack gap="$4" marginBottom="$4">
+                      <YStack alignItems="center" flex={1}>
+                        <Text fontSize="$3" color="$color11">
                           Your Coverage
-                        </p>
-                        <p className="text-lg font-bold text-text-primary">
+                        </Text>
+                        <Text fontSize="$6" fontWeight="700" color="$color12">
                           {assessment.current > 0
                             ? `$${(assessment.current / 1000000).toFixed(1)}M`
                             : 'None'}
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-sm text-text-secondary">
+                        </Text>
+                      </YStack>
+                      <YStack alignItems="center" flex={1}>
+                        <Text fontSize="$3" color="$color11">
                           Recommended
-                        </p>
-                        <p className="text-lg font-bold text-primary-600">
+                        </Text>
+                        <Text fontSize="$6" fontWeight="700" color="$blue11">
                           ${(assessment.recommended / 1000000).toFixed(1)}M
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-sm text-text-secondary">
+                        </Text>
+                      </YStack>
+                      <YStack alignItems="center" flex={1}>
+                        <Text fontSize="$3" color="$color11">
                           Industry Average
-                        </p>
-                        <p className="text-lg font-bold text-text-secondary">
+                        </Text>
+                        <Text fontSize="$6" fontWeight="700" color="$color11">
                           ${(assessment.industryAverage / 1000000).toFixed(1)}M
-                        </p>
-                      </div>
-                    </div>
+                        </Text>
+                      </YStack>
+                    </XStack>
 
-                    <div className="bg-bg-secondary p-3 rounded-lg">
-                      <div className="flex items-start space-x-2">
-                        <Info className="text-primary-600 mt-0.5" size={16} />
-                        <p className="text-sm text-text-primary">
+                    <Card backgroundColor="$backgroundHover" padding="$3" borderRadius="$4">
+                      <XStack alignItems="flex-start" gap="$2">
+                        <Info size={16} color="$blue11" marginTop="$0.5" />
+                        <Text fontSize="$3" color="$color12">
                           {assessment.reasoning}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                        </Text>
+                      </XStack>
+                    </Card>
+                  </Card>
                 ))}
-              </div>
-            </div>
-          </div>
+              </YStack>
+            </YStack>
+          </Card>
 
-          <div className="flex justify-between">
-            <button
-              onClick={() => setCurrentStep(2)}
-              className="px-6 py-2 border border-border rounded-lg hover:bg-bg-secondary transition-colors"
+          <XStack justifyContent="space-between">
+            <TamaguiButton
+              onPress={() => setCurrentStep(2)}
+              paddingHorizontal="$6"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              backgroundColor="transparent"
+              hoverStyle={{ backgroundColor: '$backgroundHover' }}
             >
               Back
-            </button>
-            <button
-              onClick={() => setCurrentStep(4)}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            </TamaguiButton>
+            <TamaguiButton
+              onPress={() => setCurrentStep(4)}
+              backgroundColor="$blue10"
+              color="white"
+              paddingHorizontal="$6"
+              paddingVertical="$2"
+              borderRadius="$4"
+              hoverStyle={{ backgroundColor: '$blue11' }}
             >
               Get Recommendations
-            </button>
-          </div>
-        </div>
+            </TamaguiButton>
+          </XStack>
+        </YStack>
       )}
 
       {/* Step 4: Recommendations */}
       {currentStep === 4 && (
-        <div className="space-y-6">
-          <div className="bg-surface rounded-lg shadow-sm border border-border p-6">
-            <h2 className="text-lg font-semibold text-text-primary mb-6">
+        <YStack gap="$6">
+          <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6">
+            <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$6">
               Personalized Coverage Recommendations
-            </h2>
+            </H2>
 
-            <div className="space-y-6">
+            <YStack gap="$6">
               {/* Priority Recommendations */}
-              <div className="bg-accent-400/10 border border-orange-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-3">
-                  <AlertTriangle className="text-secondary-600" size={20} />
-                  <h3 className="font-medium text-orange-900">
+              <Card backgroundColor="$orange2" borderWidth={1} borderColor="$orange6" borderRadius="$4" padding="$4">
+                <XStack alignItems="center" gap="$2" marginBottom="$3">
+                  <AlertTriangle size={20} color="$orange11" />
+                  <H3 fontWeight="500" color="$orange12">
                     Priority Actions
-                  </h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
-                    <div>
-                      <p className="font-medium text-text-primary">
+                  </H3>
+                </XStack>
+                <YStack gap="$3">
+                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
+                    <YStack>
+                      <Text fontWeight="500" color="$color12">
                         Increase Workers Compensation
-                      </p>
-                      <p className="text-sm text-text-secondary">
+                      </Text>
+                      <Text fontSize="$3" color="$color11">
                         From $1M to $1.5M coverage
-                      </p>
-                    </div>
-                    <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                      </Text>
+                    </YStack>
+                    <TamaguiButton backgroundColor="$orange10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$orange11' }}>
                       Get Quote
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
-                    <div>
-                      <p className="font-medium text-text-primary">
+                    </TamaguiButton>
+                  </XStack>
+                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
+                    <YStack>
+                      <Text fontWeight="500" color="$color12">
                         Add Professional Liability
-                      </p>
-                      <p className="text-sm text-text-secondary">
+                      </Text>
+                      <Text fontSize="$3" color="$color11">
                         $1M coverage recommended
-                      </p>
-                    </div>
-                    <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                      </Text>
+                    </YStack>
+                    <TamaguiButton backgroundColor="$orange10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$orange11' }}>
                       Get Quote
-                    </button>
-                  </div>
-                </div>
-              </div>
+                    </TamaguiButton>
+                  </XStack>
+                </YStack>
+              </Card>
 
               {/* Additional Recommendations */}
-              <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-3">
-                  <Info className="text-primary-600" size={20} />
-                  <h3 className="font-medium text-blue-900">
+              <Card backgroundColor="$blue2" borderWidth={1} borderColor="$blue6" borderRadius="$4" padding="$4">
+                <XStack alignItems="center" gap="$2" marginBottom="$3">
+                  <Info size={20} color="$blue11" />
+                  <H3 fontWeight="500" color="$blue12">
                     Additional Recommendations
-                  </h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
-                    <div>
-                      <p className="font-medium text-text-primary">
+                  </H3>
+                </XStack>
+                <YStack gap="$3">
+                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
+                    <YStack>
+                      <Text fontWeight="500" color="$color12">
                         Commercial Auto Insurance
-                      </p>
-                      <p className="text-sm text-text-secondary">
+                      </Text>
+                      <Text fontSize="$3" color="$color11">
                         $1M coverage for business vehicles
-                      </p>
-                    </div>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      </Text>
+                    </YStack>
+                    <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
                       Get Quote
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-surface rounded-lg">
-                    <div>
-                      <p className="font-medium text-text-primary">
+                    </TamaguiButton>
+                  </XStack>
+                  <XStack alignItems="center" justifyContent="space-between" padding="$3" backgroundColor="$background" borderRadius="$4">
+                    <YStack>
+                      <Text fontWeight="500" color="$color12">
                         Umbrella Policy
-                      </p>
-                      <p className="text-sm text-text-secondary">
+                      </Text>
+                      <Text fontSize="$3" color="$color11">
                         $5M additional liability protection
-                      </p>
-                    </div>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      </Text>
+                    </YStack>
+                    <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
                       Get Quote
-                    </button>
-                  </div>
-                </div>
-              </div>
+                    </TamaguiButton>
+                  </XStack>
+                </YStack>
+              </Card>
 
               {/* Cost Estimate */}
-              <div className="bg-success-50 border border-green-200 rounded-lg p-4">
-                <h3 className="font-medium text-green-900 mb-3">
+              <Card backgroundColor="$green2" borderWidth={1} borderColor="$green6" borderRadius="$4" padding="$4">
+                <H3 fontWeight="500" color="$green12" marginBottom="$3">
                   Estimated Annual Cost
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-text-secondary">
+                </H3>
+                <XStack gap="$4">
+                  <YStack flex={1}>
+                    <Text fontSize="$3" color="$color11">
                       Current Annual Premium
-                    </p>
-                    <p className="text-2xl font-bold text-text-primary">
+                    </Text>
+                    <Text fontSize="$8" fontWeight="700" color="$color12">
                       $5,600
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-text-secondary">
+                    </Text>
+                  </YStack>
+                  <YStack flex={1}>
+                    <Text fontSize="$3" color="$color11">
                       With Recommendations
-                    </p>
-                    <p className="text-2xl font-bold text-success-600">
+                    </Text>
+                    <Text fontSize="$8" fontWeight="700" color="$green11">
                       $8,400
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm text-success-700 mt-2">
+                    </Text>
+                  </YStack>
+                </XStack>
+                <Text fontSize="$3" color="$green12" marginTop="$2">
                   Additional $2,800/year for comprehensive coverage that meets
                   industry standards
-                </p>
-              </div>
-            </div>
+                </Text>
+              </Card>
+            </YStack>
 
-            <div className="mt-6 flex justify-between">
-              <button
-                onClick={() => setCurrentStep(3)}
-                className="px-6 py-2 border border-border rounded-lg hover:bg-bg-secondary transition-colors"
+            <XStack marginTop="$6" justifyContent="space-between">
+              <TamaguiButton
+                onPress={() => setCurrentStep(3)}
+                paddingHorizontal="$6"
+                paddingVertical="$2"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                backgroundColor="transparent"
+                hoverStyle={{ backgroundColor: '$backgroundHover' }}
               >
                 Back
-              </button>
-              <div className="space-x-3">
-                <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+              </TamaguiButton>
+              <XStack gap="$3">
+                <TamaguiButton backgroundColor="$green10" color="white" paddingHorizontal="$6" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$green11' }}>
                   Shop Insurance
-                </button>
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                </TamaguiButton>
+                <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$6" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
                   Complete Onboarding
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+                </TamaguiButton>
+              </XStack>
+            </XStack>
+          </Card>
+        </YStack>
       )}
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-surface rounded-lg p-6 w-full max-w-lg">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-text-primary">
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={50}
+        >
+          <Card backgroundColor="$background" borderRadius="$4" padding="$6" width="100%" maxWidth={600}>
+            <XStack alignItems="center" justifyContent="space-between" marginBottom="$4">
+              <H3 fontSize="$6" fontWeight="600" color="$color12">
                 Upload Documents
-              </h3>
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="text-text-tertiary hover:text-text-secondary"
-              >
+              </H3>
+              <TamaguiButton unstyled onPress={() => setShowUploadModal(false)} color="$color10" hoverStyle={{ color: '$color11' }}>
                 <X size={20} />
-              </button>
-            </div>
+              </TamaguiButton>
+            </XStack>
 
-            <div
-              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                dragActive ? 'border-blue-500 bg-primary-50' : 'border-border'
-              }`}
+            <YStack
+              borderWidth={2}
+              borderStyle="dashed"
+              borderRadius="$4"
+              padding="$8"
+              alignItems="center"
+              borderColor={dragActive ? '$blue10' : '$borderColor'}
+              backgroundColor={dragActive ? '$blue2' : 'transparent'}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              <Upload className="mx-auto mb-4 text-text-tertiary" size={48} />
-              <p className="text-lg font-medium text-text-primary mb-2">
+              <Upload size={48} color="$color10" marginBottom="$4" />
+              <Text fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
                 Drop files here or click to upload
-              </p>
-              <p className="text-sm text-text-secondary mb-4">
+              </Text>
+              <Text fontSize="$3" color="$color11" marginBottom="$4">
                 Supported formats: PDF, JPG, PNG (max 10MB)
-              </p>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              </Text>
+              <TamaguiButton backgroundColor="$blue10" color="white" paddingHorizontal="$4" paddingVertical="$2" borderRadius="$4" hoverStyle={{ backgroundColor: '$blue11' }}>
                 Choose Files
-              </button>
-            </div>
+              </TamaguiButton>
+            </YStack>
 
-            <div className="mt-4 text-xs text-text-secondary">
-              <p>• Certificates of Insurance (COI)</p>
-              <p>• Full insurance policies</p>
-              <p>• Professional licenses</p>
-              <p>• Surety bonds</p>
-            </div>
-          </div>
-        </div>
+            <YStack marginTop="$4">
+              <Text fontSize="$2" color="$color11">• Certificates of Insurance (COI)</Text>
+              <Text fontSize="$2" color="$color11">• Full insurance policies</Text>
+              <Text fontSize="$2" color="$color11">• Professional licenses</Text>
+              <Text fontSize="$2" color="$color11">• Surety bonds</Text>
+            </YStack>
+          </Card>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
