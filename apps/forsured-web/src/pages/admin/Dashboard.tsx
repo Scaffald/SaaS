@@ -1,38 +1,90 @@
 // src/pages/admin/Dashboard.tsx
-import React from 'react';
+import { YStack, XStack, Text, H1, H2, Card, styled } from '@unicornlove/ui';
+
+const StatCard = styled(Card, {
+  name: 'StatCard',
+  backgroundColor: '$background',
+  padding: '$6',
+  borderRadius: '$4',
+  elevation: 1,
+});
+
+const ActivityList = styled(YStack, {
+  name: 'ActivityList',
+  backgroundColor: '$background',
+  padding: '$6',
+  borderRadius: '$4',
+  elevation: 1,
+});
+
+const ActivityItem = styled(XStack, {
+  name: 'ActivityItem',
+  paddingVertical: '$2',
+  borderBottomWidth: 1,
+  borderBottomColor: '$borderColor',
+  variants: {
+    last: {
+      true: {
+        borderBottomWidth: 0,
+      },
+    },
+  },
+});
 
 function AdminDashboard() {
   return (
-    <div className="admin-dashboard">
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">Total Users</h2>
-          <p className="text-3xl font-bold">142</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">Active Brokers</h2>
-          <p className="text-3xl font-bold">23</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">Projects</h2>
-          <p className="text-3xl font-bold">89</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">Tasks Created</h2>
-          <p className="text-3xl font-bold">1,234</p>
-        </div>
-      </div>
+    <YStack>
+      <H1 fontSize="$8" fontWeight="bold" marginBottom="$6">Admin Dashboard</H1>
+      <XStack flexWrap="wrap" gap="$6">
+        <StatCard
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 12px)' }}
+          $gtLg={{ width: 'calc(25% - 18px)' }}
+        >
+          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Total Users</H2>
+          <Text fontSize="$9" fontWeight="bold">142</Text>
+        </StatCard>
+        <StatCard
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 12px)' }}
+          $gtLg={{ width: 'calc(25% - 18px)' }}
+        >
+          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Active Brokers</H2>
+          <Text fontSize="$9" fontWeight="bold">23</Text>
+        </StatCard>
+        <StatCard
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 12px)' }}
+          $gtLg={{ width: 'calc(25% - 18px)' }}
+        >
+          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Projects</H2>
+          <Text fontSize="$9" fontWeight="bold">89</Text>
+        </StatCard>
+        <StatCard
+          width="100%"
+          $gtMd={{ width: 'calc(50% - 12px)' }}
+          $gtLg={{ width: 'calc(25% - 18px)' }}
+        >
+          <H2 fontSize="$5" fontWeight="600" marginBottom="$2">Tasks Created</H2>
+          <Text fontSize="$9" fontWeight="bold">1,234</Text>
+        </StatCard>
+      </XStack>
 
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-        <ul className="bg-white p-6 rounded-lg shadow">
-          <li className="py-2 border-b last:border-b-0">New GC signup: Acme Construction</li>
-          <li className="py-2 border-b last:border-b-0">Broker invitation sent to jane@insurance.com</li>
-          <li className="py-2">New project created: Downtown Tower</li>
-        </ul>
-      </div>
-    </div>
+      <YStack marginTop="$8">
+        <H2 fontSize="$7" fontWeight="600" marginBottom="$4">Recent Activity</H2>
+        <ActivityList>
+          <ActivityItem>
+            <Text>New GC signup: Acme Construction</Text>
+          </ActivityItem>
+          <ActivityItem>
+            <Text>Broker invitation sent to jane@insurance.com</Text>
+          </ActivityItem>
+          <ActivityItem last>
+            <Text>New project created: Downtown Tower</Text>
+          </ActivityItem>
+        </ActivityList>
+      </YStack>
+    </YStack>
   );
 }
 

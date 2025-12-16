@@ -12,6 +12,7 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { ZoomIn, ZoomOut, Maximize, AlertTriangle, Info } from 'lucide-react';
+import { YStack, XStack, Text } from '@unicornlove/ui';
 import type { DependencyNode } from '../../lib/compliance/dependency-resolver';
 import type { CoverageType } from '../../lib/compliance/dependency-types';
 import { DependencyType } from '../../lib/compliance/dependency-types';
@@ -178,7 +179,6 @@ function GraphNode({ node, position, isSelected, onClick }: GraphNodeProps) {
         fill={colors.bg}
         stroke={isSelected ? '#2563EB' : colors.border}
         strokeWidth={isSelected ? 3 : 2}
-        className="transition-all duration-200 hover:stroke-[3]"
       />
 
       {/* Node name */}
@@ -447,53 +447,113 @@ export function DependencyVisualizer({
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96 bg-bg-secondary rounded-lg border border-border">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
-      </div>
+      <YStack
+        alignItems="center"
+        justifyContent="center"
+        height={384}
+        backgroundColor="$color2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
+        <YStack
+          width={32}
+          height={32}
+          borderRadius={9999}
+          borderWidth={2}
+          borderColor="$blue10"
+          borderTopColor="transparent"
+          animation="spin"
+        />
+      </YStack>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-error-50 rounded-lg border border-error-200">
-        <AlertTriangle className="text-error-500 mb-2" size={32} />
-        <p className="text-error-700 font-medium">Failed to load dependency tree</p>
-        <p className="text-error-600 text-sm mt-1">{error.message}</p>
-      </div>
+      <YStack
+        alignItems="center"
+        justifyContent="center"
+        height={384}
+        backgroundColor="$red2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$red6"
+      >
+        <AlertTriangle color="$red10" size={32} marginBottom="$2" />
+        <Text color="$red11" fontWeight="500">
+          Failed to load dependency tree
+        </Text>
+        <Text color="$red10" fontSize="$3" marginTop="$1">
+          {error.message}
+        </Text>
+      </YStack>
     );
   }
 
   // Empty state
   if (!tree) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-bg-secondary rounded-lg border border-border">
-        <Info className="text-text-tertiary mb-2" size={32} />
-        <p className="text-text-secondary">No dependency data available</p>
-      </div>
+      <YStack
+        alignItems="center"
+        justifyContent="center"
+        height={384}
+        backgroundColor="$color2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
+        <Info color="$color10" size={32} marginBottom="$2" />
+        <Text color="$color11">No dependency data available</Text>
+      </YStack>
     );
   }
 
   // No dependencies state
   if (tree.children.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-bg-secondary rounded-lg border border-border">
-        <div className="p-4 bg-surface rounded-lg border border-border text-center">
-          <Info className="text-text-tertiary mx-auto mb-2" size={32} />
-          <p className="text-text-secondary font-medium">No dependencies</p>
-          <p className="text-text-tertiary text-sm mt-1">
+      <YStack
+        alignItems="center"
+        justifyContent="center"
+        height={384}
+        backgroundColor="$color2"
+        borderRadius="$4"
+        borderWidth={1}
+        borderColor="$borderColor"
+      >
+        <YStack
+          padding="$4"
+          backgroundColor="$background"
+          borderRadius="$4"
+          borderWidth={1}
+          borderColor="$borderColor"
+          alignItems="center"
+        >
+          <Info color="$color10" size={32} marginBottom="$2" />
+          <Text color="$color11" fontWeight="500">
+            No dependencies
+          </Text>
+          <Text color="$color10" fontSize="$3" marginTop="$1">
             This requirement has no dependencies defined
-          </p>
-        </div>
-      </div>
+          </Text>
+        </YStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <YStack flex={1} height="100%">
       {/* Controls */}
-      <div className="flex items-center justify-between p-3 bg-bg-secondary border-b border-border">
-        <div className="flex items-center gap-2">
+      <XStack
+        alignItems="center"
+        justifyContent="space-between"
+        padding="$3"
+        backgroundColor="$color2"
+        borderBottomWidth={1}
+        borderColor="$borderColor"
+      >
+        <XStack alignItems="center" gap="$2">
           <Button variant="secondary" size="sm" onClick={handleZoomIn} title="Zoom In">
             <ZoomIn size={16} />
           </Button>
@@ -503,21 +563,24 @@ export function DependencyVisualizer({
           <Button variant="secondary" size="sm" onClick={handleResetView} title="Reset View">
             <Maximize size={16} />
           </Button>
-          <span className="text-xs text-text-tertiary ml-2">
+          <Text fontSize="$1" color="$color10" marginLeft="$2">
             {Math.round(zoom * 100)}%
-          </span>
-        </div>
+          </Text>
+        </XStack>
 
-        <div className="text-sm text-text-secondary">
+        <Text fontSize="$3" color="$color11">
           {nodes.length} node{nodes.length !== 1 ? 's' : ''} | {edges.length} edge
           {edges.length !== 1 ? 's' : ''}
-        </div>
-      </div>
+        </Text>
+      </XStack>
 
       {/* Graph container */}
-      <div
+      <YStack
         ref={containerRef}
-        className="flex-1 overflow-hidden bg-white cursor-grab active:cursor-grabbing"
+        flex={1}
+        overflow="hidden"
+        backgroundColor="white"
+        cursor="grab"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -580,23 +643,30 @@ export function DependencyVisualizer({
             })}
           </g>
         </svg>
-      </div>
+      </YStack>
 
       {/* Selected node details */}
       {selectedNode && (
-        <div className="p-3 bg-bg-secondary border-t border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-text-primary">{selectedNode.name}</h4>
-              <p className="text-sm text-text-secondary">
+        <YStack
+          padding="$3"
+          backgroundColor="$color2"
+          borderTopWidth={1}
+          borderColor="$borderColor"
+        >
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontWeight="500" color="$color12">
+                {selectedNode.name}
+              </Text>
+              <Text fontSize="$3" color="$color11">
                 {selectedNode.type.replace('_', ' ')} | Level {selectedNode.depth}
                 {selectedNode.dependency_type && (
-                  <span className="ml-2">
+                  <Text marginLeft="$2">
                     ({dependencyTypeLabels[selectedNode.dependency_type] || selectedNode.dependency_type})
-                  </span>
+                  </Text>
                 )}
-              </p>
-            </div>
+              </Text>
+            </YStack>
             <Button
               variant="secondary"
               size="sm"
@@ -604,27 +674,36 @@ export function DependencyVisualizer({
             >
               Clear
             </Button>
-          </div>
-        </div>
+          </XStack>
+        </YStack>
       )}
 
       {/* Legend */}
-      <div className="p-3 bg-bg-secondary border-t border-border">
-        <div className="flex flex-wrap gap-3 text-xs">
+      <YStack
+        padding="$3"
+        backgroundColor="$color2"
+        borderTopWidth={1}
+        borderColor="$borderColor"
+      >
+        <XStack flexWrap="wrap" gap="$3">
           {Object.entries(typeColors).map(([type, colors]) => (
-            <div key={type} className="flex items-center gap-1.5">
-              <div
-                className="w-3 h-3 rounded"
-                style={{ backgroundColor: colors.bg, border: `2px solid ${colors.border}` }}
+            <XStack key={type} alignItems="center" gap="$1.5">
+              <YStack
+                width={12}
+                height={12}
+                borderRadius="$1"
+                backgroundColor={colors.bg}
+                borderWidth={2}
+                borderColor={colors.border}
               />
-              <span className="text-text-secondary capitalize">
+              <Text fontSize="$1" color="$color11" textTransform="capitalize">
                 {type.replace('_', ' ')}
-              </span>
-            </div>
+              </Text>
+            </XStack>
           ))}
-        </div>
-      </div>
-    </div>
+        </XStack>
+      </YStack>
+    </YStack>
   );
 }
 
