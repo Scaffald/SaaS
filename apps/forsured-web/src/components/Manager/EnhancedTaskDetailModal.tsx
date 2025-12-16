@@ -14,7 +14,7 @@ import {
   Edit,
   Loader2,
 } from 'lucide-react';
-import { YStack, XStack, Text, H2, H3, Card } from '@unicornlove/ui';
+import { YStack, XStack, Text, H2, H3, Card, Circle } from '@unicornlove/ui';
 import Button from '../Common/Button';
 import Modal from '../Common/Modal';
 import { useMockDatabase } from '../../contexts/DatabaseContext';

@@ -1,7 +1,7 @@
 // src/pages/admin/AuditLog.tsx
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, RefreshCcw } from 'lucide-react';
-// import { Button } from '@unicornlove/ui'; // Assuming Button component exists
+import { useState } from 'react';
+import { Search, RefreshCcw } from 'lucide-react';
+import { YStack, XStack, Text, H1, Card, Button, Input, Select, styled } from '@unicornlove/ui';
 
 interface AuditLogEntry {
   id: string;
@@ -18,8 +18,47 @@ const mockAuditLogs: AuditLogEntry[] = [
   { id: '3', admin_user_id: 'user-4', action: 'DELETE_ENUM_VALUE', target_type: 'enum_value', target_id: 'enum-1', created_at: '2024-10-25T11:00:00Z' },
 ];
 
+const Table = styled('table', {
+  name: 'Table',
+  width: '100%',
+  backgroundColor: '$background',
+  borderCollapse: 'collapse',
+});
+
+const TableHead = styled('thead', {
+  name: 'TableHead',
+});
+
+const TableBody = styled('tbody', {
+  name: 'TableBody',
+});
+
+const TableRow = styled('tr', {
+  name: 'TableRow',
+  borderBottomWidth: 1,
+  borderBottomColor: '$borderColor',
+});
+
+const TableHeaderCell = styled('th', {
+  name: 'TableHeaderCell',
+  paddingVertical: '$2',
+  paddingHorizontal: '$4',
+  borderBottomWidth: 1,
+  borderBottomColor: '$borderColor',
+  textAlign: 'left',
+});
+
+const TableCell = styled('td', {
+  name: 'TableCell',
+  paddingVertical: '$2',
+  paddingHorizontal: '$4',
+  borderBottomWidth: 1,
+  borderBottomColor: '$borderColor',
+});
+
+
 function AdminAuditLog() {
-  const [logs, setLogs] = useState<AuditLogEntry[]>(mockAuditLogs);
+  const [logs] = useState<AuditLogEntry[]>(mockAuditLogs);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionFilter, setActionFilter] = useState('all');
 
@@ -37,67 +76,97 @@ function AdminAuditLog() {
   };
 
   return (
-    <div className="admin-audit-log-page">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Admin Audit Log</h1>
-        {/* <Button variant="secondary" onClick={handleRefresh}>
-          <RefreshCcw size={16} className="mr-2" /> Refresh
-        </Button> */}
-        <button onClick={handleRefresh}>Refresh</button>
-      </div>
+    <YStack>
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <H1 fontSize="$8" fontWeight="bold">Admin Audit Log</H1>
+        <Button variant="outlined" onPress={handleRefresh}>
+          <XStack alignItems="center" gap="$2">
+            <RefreshCcw size={16} />
+            <Text>Refresh</Text>
+          </XStack>
+        </Button>
+      </XStack>
 
-      <div className="bg-white p-6 rounded-lg shadow mb-6">
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="relative flex-1">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
+      <Card backgroundColor="$background" padding="$6" borderRadius="$4" elevation={1} marginBottom="$6">
+        <XStack alignItems="center" gap="$4" marginBottom="$4">
+          <XStack position="relative" flex={1} alignItems="center">
+            <XStack
+              position="absolute"
+              left="$3"
+              zIndex={1}
+              pointerEvents="none"
+            >
+              <Search size={18} color="$color10" />
+            </XStack>
+            <Input
               type="text"
               placeholder="Search by action, type, or ID"
-              className="w-full pl-10 pr-4 py-2 border rounded-md"
+              width="100%"
+              paddingLeft="$10"
+              paddingRight="$4"
+              paddingVertical="$2"
+              borderWidth={1}
+              borderRadius="$4"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-          <div>
-            <label htmlFor="actionFilter" className="sr-only">Filter by Action</label>
-            <select
-              id="actionFilter"
-              className="p-2 border rounded-md"
-              value={actionFilter}
-              onChange={(e) => setActionFilter(e.target.value)}
-            >
-              <option value="all">All Actions</option>
-              <option value="CREATE_INVITATION">Create Invitation</option>
-              <option value="UPDATE_USER_ROLE">Update User Role</option>
-              <option value="DELETE_ENUM_VALUE">Delete Enum Value</option>
-            </select>
-          </div>
-        </div>
+          </XStack>
+          <Select
+            value={actionFilter}
+            onValueChange={setActionFilter}
+            options={[
+              { value: 'all', label: 'All Actions' },
+              { value: 'CREATE_INVITATION', label: 'Create Invitation' },
+              { value: 'UPDATE_USER_ROLE', label: 'Update User Role' },
+              { value: 'DELETE_ENUM_VALUE', label: 'Delete Enum Value' },
+            ]}
+          />
+        </XStack>
 
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b text-left">Timestamp</th>
-              <th className="py-2 px-4 border-b text-left">User ID</th>
-              <th className="py-2 px-4 border-b text-left">Action</th>
-              <th className="py-2 px-4 border-b text-left">Target Type</th>
-              <th className="py-2 px-4 border-b text-left">Target ID</th>
-            </tr>
-          </thead>
-          <tbody>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>
+                <Text fontWeight="600">Timestamp</Text>
+              </TableHeaderCell>
+              <TableHeaderCell>
+                <Text fontWeight="600">User ID</Text>
+              </TableHeaderCell>
+              <TableHeaderCell>
+                <Text fontWeight="600">Action</Text>
+              </TableHeaderCell>
+              <TableHeaderCell>
+                <Text fontWeight="600">Target Type</Text>
+              </TableHeaderCell>
+              <TableHeaderCell>
+                <Text fontWeight="600">Target ID</Text>
+              </TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {filteredLogs.map(log => (
-              <tr key={log.id}>
-                <td className="py-2 px-4 border-b">{new Date(log.created_at).toLocaleString()}</td>
-                <td className="py-2 px-4 border-b">{log.admin_user_id}</td>
-                <td className="py-2 px-4 border-b">{log.action}</td>
-                <td className="py-2 px-4 border-b">{log.target_type}</td>
-                <td className="py-2 px-4 border-b">{log.target_id}</td>
-              </tr>
+              <TableRow key={log.id}>
+                <TableCell>
+                  <Text>{new Date(log.created_at).toLocaleString()}</Text>
+                </TableCell>
+                <TableCell>
+                  <Text>{log.admin_user_id}</Text>
+                </TableCell>
+                <TableCell>
+                  <Text>{log.action}</Text>
+                </TableCell>
+                <TableCell>
+                  <Text>{log.target_type}</Text>
+                </TableCell>
+                <TableCell>
+                  <Text>{log.target_id}</Text>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableBody>
+        </Table>
+      </Card>
+    </YStack>
   );
 }
 

@@ -23,6 +23,8 @@ import {
   AlertTriangle,
   Search,
 } from 'lucide-react';
+import { YStack, XStack, Text, Button, H1, H2, H3, Card, Input, Label } from 'tamagui';
+import { EmptyState } from '@unicornlove/ui';
 import { trpc } from '../../lib/trpc';
 import { DEFAULT_LEXICON } from '../../contexts/LexiconContext';
 
@@ -230,27 +232,37 @@ function AdminLexiconEditor() {
 
   if (isLoadingTypes) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
-        <span className="ml-2">Loading...</span>
-      </div>
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
+        <XStack alignItems="center" gap="$2">
+          <Loader2 size={32} className="animate-spin" color="$blue10" />
+          <Text>Loading...</Text>
+        </XStack>
+      </YStack>
     );
   }
 
   return (
-    <div className="admin-lexicon-editor-page">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Lexicon Editor</h1>
-          <p className="text-gray-500 text-sm mt-1">
+    <YStack>
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <YStack>
+          <H1 fontSize="$8" fontWeight="700">Lexicon Editor</H1>
+          <Text color="$color11" fontSize="$3" marginTop="$1">
             Customize labels and text for each industry vertical
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
+          </Text>
+        </YStack>
+        <XStack alignItems="center" gap="$3">
           <select
             value={selectedTypeId}
             onChange={(e) => setSelectedTypeId(e.target.value)}
-            className="p-2 border rounded-md"
+            style={{
+              padding: '8px',
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'var(--borderColor)',
+              borderRadius: '12px',
+              backgroundColor: 'var(--background)',
+              fontSize: 14,
+            }}
           >
             <option value="">Select Industry...</option>
             {userSetTypes?.filter((t) => t.isActive).map((type) => (
@@ -259,276 +271,382 @@ function AdminLexiconEditor() {
               </option>
             ))}
           </select>
-          <button
-            onClick={handleRefresh}
+          <Button
+            onPress={handleRefresh}
             disabled={isLoadingLexicon || !selectedTypeId}
-            className="flex items-center px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
+            icon={isLoadingLexicon ? <RefreshCcw size={16} className="animate-spin" /> : <RefreshCcw size={16} />}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            borderWidth={1}
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: "$backgroundHover" }}
+            opacity={isLoadingLexicon || !selectedTypeId ? 0.5 : 1}
           >
-            <RefreshCcw size={16} className={`mr-2 ${isLoadingLexicon ? 'animate-spin' : ''}`} />
             Refresh
-          </button>
-        </div>
-      </div>
+          </Button>
+        </XStack>
+      </XStack>
 
       {!selectedTypeId ? (
-        <div className="bg-white p-8 rounded-lg shadow text-center">
-          <Book size={48} className="mx-auto text-gray-400 mb-4" />
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">Select an Industry</h2>
-          <p className="text-gray-500">
+        <Card padding="$8" borderRadius="$4" elevation={1} backgroundColor="$background" alignItems="center">
+          <Book size={48} color="$color10" style={{ marginBottom: 16 }} />
+          <H2 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">Select an Industry</H2>
+          <Text color="$color11">
             Choose an industry vertical above to view and edit its lexicon entries.
-          </p>
-        </div>
+          </Text>
+        </Card>
       ) : (
         <>
           {/* Summary and Filters */}
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Book size={20} className="text-blue-600" />
-                  <span className="font-medium">{selectedType?.name}</span>
-                </div>
-                <div className="text-sm text-gray-500">
-                  {lexiconEntries.length} entries
+          <Card padding="$4" borderRadius="$4" elevation={1} backgroundColor="$background" marginBottom="$6">
+            <XStack alignItems="center" justifyContent="space-between" flexWrap="wrap" gap="$4">
+              <XStack alignItems="center" gap="$4">
+                <XStack alignItems="center" gap="$2">
+                  <Book size={20} color="$blue10" />
+                  <Text fontWeight="600">{selectedType?.name}</Text>
+                </XStack>
+                <XStack alignItems="center" gap="$2">
+                  <Text fontSize="$3" color="$color11">
+                    {lexiconEntries.length} entries
+                  </Text>
                   {customCount > 0 && (
-                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
-                      {customCount} customized
-                    </span>
+                    <XStack
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      backgroundColor="$blue4"
+                      borderRadius="$2"
+                    >
+                      <Text fontSize="$2" color="$blue11">
+                        {customCount} customized
+                      </Text>
+                    </XStack>
                   )}
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search keys or values..."
-                    className="pl-9 pr-4 py-2 border rounded-md w-64"
+                </XStack>
+              </XStack>
+              <XStack alignItems="center" gap="$3">
+                <XStack position="relative" width={256}>
+                  <Search
+                    size={16}
+                    color="$color10"
+                    style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
                   />
-                </div>
-                <label className="flex items-center text-sm text-gray-600">
+                  <Input
+                    value={searchTerm}
+                    onChangeText={setSearchTerm}
+                    placeholder="Search keys or values..."
+                    paddingLeft="$9"
+                    paddingRight="$4"
+                    paddingVertical="$2"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    width={256}
+                  />
+                </XStack>
+                <XStack alignItems="center" gap="$2">
                   <input
                     type="checkbox"
                     checked={showCustomOnly}
                     onChange={(e) => setShowCustomOnly(e.target.checked)}
-                    className="mr-2"
+                    style={{ marginRight: 8 }}
                   />
-                  Customized only
-                </label>
-                <button
-                  onClick={openAddModal}
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  <Label fontSize="$3" color="$color11">Customized only</Label>
+                </XStack>
+                <Button
+                  onPress={openAddModal}
+                  icon={<PlusCircle size={16} />}
+                  paddingHorizontal="$4"
+                  paddingVertical="$2"
+                  backgroundColor="$blue10"
+                  color="white"
+                  borderRadius="$4"
+                  hoverStyle={{ backgroundColor: "$blue11" }}
                 >
-                  <PlusCircle size={16} className="mr-2" />
                   Add Entry
-                </button>
-              </div>
-            </div>
-          </div>
+                </Button>
+              </XStack>
+            </XStack>
+          </Card>
 
           {/* Lexicon Entries by Category */}
           {isLoadingLexicon ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="animate-spin h-6 w-6 text-blue-500" />
-              <span className="ml-2">Loading lexicon...</span>
-            </div>
+            <YStack alignItems="center" justifyContent="center" paddingVertical="$12">
+              <XStack alignItems="center" gap="$2">
+                <Loader2 size={24} className="animate-spin" color="$blue10" />
+                <Text>Loading lexicon...</Text>
+              </XStack>
+            </YStack>
           ) : filteredEntries.length === 0 ? (
-            <div className="bg-white p-8 rounded-lg shadow text-center">
-              <Search size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No entries match your search.</p>
-            </div>
+            <Card padding="$8" borderRadius="$4" elevation={1} backgroundColor="$background" alignItems="center">
+              <Search size={48} color="$color8" style={{ marginBottom: 16 }} />
+              <Text color="$color11">No entries match your search.</Text>
+            </Card>
           ) : (
-            <div className="space-y-6">
+            <YStack gap="$6">
               {Object.entries(groupedEntries).map(([category, entries]) => (
-                <div key={category} className="bg-white rounded-lg shadow">
-                  <div className="px-4 py-3 border-b bg-gray-50 rounded-t-lg">
-                    <h3 className="font-medium text-gray-700 capitalize">
+                <Card key={category} borderRadius="$4" elevation={1} backgroundColor="$background">
+                  <XStack
+                    paddingHorizontal="$4"
+                    paddingVertical="$3"
+                    borderBottomWidth={1}
+                    borderColor="$borderColor"
+                    backgroundColor="$backgroundHover"
+                    borderTopLeftRadius="$4"
+                    borderTopRightRadius="$4"
+                  >
+                    <H3 fontWeight="600" color="$color12" textTransform="capitalize">
                       {category} ({entries.length})
-                    </h3>
-                  </div>
-                  <table className="min-w-full">
+                    </H3>
+                  </XStack>
+                  <table style={{ width: '100%', minWidth: '100%' }}>
                     <thead>
-                      <tr className="text-sm text-gray-500">
-                        <th className="py-2 px-4 text-left font-medium">Key</th>
-                        <th className="py-2 px-4 text-left font-medium">Value</th>
-                        <th className="py-2 px-4 text-left font-medium w-24">Status</th>
-                        <th className="py-2 px-4 text-left font-medium w-32">Actions</th>
+                      <tr>
+                        <th style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, fontSize: 14 }}>Key</th>
+                        <th style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, fontSize: 14 }}>Value</th>
+                        <th style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, fontSize: 14, width: 96 }}>Status</th>
+                        <th style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, fontSize: 14, width: 128 }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {entries.map((entry) => (
                         <tr
                           key={entry.key}
-                          className={`border-t ${entry.isCustom ? 'bg-blue-50' : ''}`}
+                          style={{
+                            borderTopWidth: 1,
+                            borderTopStyle: 'solid',
+                            borderTopColor: 'var(--borderColor)',
+                            backgroundColor: entry.isCustom ? 'var(--blue4)' : 'transparent',
+                          }}
                         >
-                          <td className="py-2 px-4 font-mono text-sm text-gray-600">
-                            {entry.key}
+                          <td style={{ padding: '8px 16px', fontFamily: 'monospace', fontSize: 14 }}>
+                            <Text fontFamily="$mono" fontSize="$3" color="$color11">
+                              {entry.key}
+                            </Text>
                           </td>
-                          <td className="py-2 px-4">
-                            <span className={entry.isCustom ? 'text-blue-700 font-medium' : ''}>
-                              {entry.value}
-                            </span>
-                            {entry.isCustom && DEFAULT_LEXICON[entry.key] && (
-                              <span className="ml-2 text-xs text-gray-400">
-                                (default: {DEFAULT_LEXICON[entry.key]})
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-2 px-4">
-                            {entry.isCustom ? (
-                              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                                Customized
-                              </span>
-                            ) : (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
-                                Default
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-2 px-4">
-                            <div className="flex items-center space-x-1">
-                              <button
-                                onClick={() => openEditModal(entry)}
-                                disabled={actionInProgress === entry.key}
-                                className="p-1 text-blue-500 hover:text-blue-700 disabled:opacity-50"
-                                title="Edit"
-                              >
-                                <Edit size={16} />
-                              </button>
+                          <td style={{ padding: '8px 16px' }}>
+                            <XStack alignItems="center" gap="$2">
+                              <Text color={entry.isCustom ? '$blue11' : '$color12'} fontWeight={entry.isCustom ? '600' : '400'}>
+                                {entry.value}
+                              </Text>
                               {entry.isCustom && DEFAULT_LEXICON[entry.key] && (
-                                <button
-                                  onClick={() => handleResetToDefault(entry.key)}
+                                <Text fontSize="$1" color="$color10">
+                                  (default: {DEFAULT_LEXICON[entry.key]})
+                                </Text>
+                              )}
+                            </XStack>
+                          </td>
+                          <td style={{ padding: '8px 16px' }}>
+                            {entry.isCustom ? (
+                              <XStack
+                                paddingHorizontal="$2"
+                                paddingVertical="$1"
+                                backgroundColor="$blue4"
+                                borderRadius="$2"
+                              >
+                                <Text fontSize="$1" color="$blue11">
+                                  Customized
+                                </Text>
+                              </XStack>
+                            ) : (
+                              <XStack
+                                paddingHorizontal="$2"
+                                paddingVertical="$1"
+                                backgroundColor="$backgroundHover"
+                                borderRadius="$2"
+                              >
+                                <Text fontSize="$1" color="$color11">
+                                  Default
+                                </Text>
+                              </XStack>
+                            )}
+                          </td>
+                          <td style={{ padding: '8px 16px' }}>
+                            <XStack alignItems="center" gap="$1">
+                              <Button
+                                onPress={() => openEditModal(entry)}
+                                disabled={actionInProgress === entry.key}
+                                padding="$1"
+                                backgroundColor="transparent"
+                                hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                                opacity={actionInProgress === entry.key ? 0.5 : 1}
+                              >
+                                <Edit size={16} color="$blue10" />
+                              </Button>
+                              {entry.isCustom && DEFAULT_LEXICON[entry.key] && (
+                                <Button
+                                  onPress={() => handleResetToDefault(entry.key)}
                                   disabled={actionInProgress === entry.key}
-                                  className="p-1 text-orange-500 hover:text-orange-700 disabled:opacity-50"
-                                  title="Reset to default"
+                                  padding="$1"
+                                  backgroundColor="transparent"
+                                  hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                                  opacity={actionInProgress === entry.key ? 0.5 : 1}
                                 >
                                   {actionInProgress === entry.key ? (
-                                    <Loader2 size={16} className="animate-spin" />
+                                    <Loader2 size={16} className="animate-spin" color="$orange10" />
                                   ) : (
-                                    <RotateCcw size={16} />
+                                    <RotateCcw size={16} color="$orange10" />
                                   )}
-                                </button>
+                                </Button>
                               )}
                               {entry.isCustom && !DEFAULT_LEXICON[entry.key] && (
-                                <button
-                                  onClick={() => handleDeleteCustom(entry.key)}
+                                <Button
+                                  onPress={() => handleDeleteCustom(entry.key)}
                                   disabled={actionInProgress === entry.key}
-                                  className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50"
-                                  title="Delete"
+                                  padding="$1"
+                                  backgroundColor="transparent"
+                                  hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                                  opacity={actionInProgress === entry.key ? 0.5 : 1}
                                 >
                                   {actionInProgress === entry.key ? (
-                                    <Loader2 size={16} className="animate-spin" />
+                                    <Loader2 size={16} className="animate-spin" color="$red10" />
                                   ) : (
-                                    <Trash2 size={16} />
+                                    <Trash2 size={16} color="$red10" />
                                   )}
-                                </button>
+                                </Button>
                               )}
-                            </div>
+                            </XStack>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </Card>
               ))}
-            </div>
+            </YStack>
           )}
         </>
       )}
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-semibold">
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={50}
+        >
+          <Card
+            backgroundColor="$background"
+            borderRadius="$4"
+            elevation={4}
+            width="100%"
+            maxWidth={448}
+            marginHorizontal="$4"
+          >
+            <XStack alignItems="center" justifyContent="space-between" padding="$4" borderBottomWidth={1} borderColor="$borderColor">
+              <H3 fontSize="$6" fontWeight="600">
                 {modalMode === 'add' ? 'Add Lexicon Entry' : 'Edit Lexicon Entry'}
-              </h3>
-              <button
-                onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700"
+              </H3>
+              <Button
+                onPress={closeModal}
+                backgroundColor="transparent"
+                padding="$1"
+                hoverStyle={{ backgroundColor: "$backgroundHover" }}
               >
-                <X size={20} />
-              </button>
-            </div>
+                <X size={20} color="$color11" />
+              </Button>
+            </XStack>
 
-            <form onSubmit={handleSubmit} className="p-4 space-y-4">
-              {formError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm flex items-start gap-2">
-                  <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
-                  {formError}
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Key
-                </label>
-                <input
-                  type="text"
-                  value={formData.key}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, key: e.target.value }))
-                  }
-                  disabled={modalMode === 'edit'}
-                  className="w-full p-2 border rounded-md font-mono disabled:bg-gray-100"
-                  placeholder="e.g., nav.custom_link"
-                  required
-                />
-                {modalMode === 'edit' && (
-                  <p className="mt-1 text-xs text-gray-500">
-                    Key cannot be changed
-                  </p>
+            <form onSubmit={handleSubmit}>
+              <YStack padding="$4" gap="$4">
+                {formError && (
+                  <XStack
+                    padding="$3"
+                    backgroundColor="$red4"
+                    borderWidth={1}
+                    borderColor="$red8"
+                    borderRadius="$2"
+                    gap="$2"
+                    alignItems="flex-start"
+                  >
+                    <AlertTriangle size={16} color="$red10" style={{ marginTop: 2, flexShrink: 0 }} />
+                    <Text fontSize="$3" color="$red11">{formError}</Text>
+                  </XStack>
                 )}
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Value
-                </label>
-                <input
-                  type="text"
-                  value={formData.value}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, value: e.target.value }))
-                  }
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Display text for this key"
-                  required
-                />
-                {editingEntry && DEFAULT_LEXICON[editingEntry.key] && (
-                  <p className="mt-1 text-xs text-gray-500">
-                    Default value: {DEFAULT_LEXICON[editingEntry.key]}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 border rounded-md hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center"
-                >
-                  {isSubmitting && (
-                    <Loader2 size={16} className="animate-spin mr-2" />
+                <YStack gap="$1">
+                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                    Key
+                  </Label>
+                  <Input
+                    value={formData.key}
+                    onChangeText={(value) => setFormData((prev) => ({ ...prev, key: value }))}
+                    disabled={modalMode === 'edit'}
+                    width="100%"
+                    padding="$2"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    fontFamily="$mono"
+                    backgroundColor={modalMode === 'edit' ? '$backgroundHover' : '$background'}
+                    placeholder="e.g., nav.custom_link"
+                    required
+                  />
+                  {modalMode === 'edit' && (
+                    <Text fontSize="$1" color="$color11" marginTop="$1">
+                      Key cannot be changed
+                    </Text>
                   )}
-                  {modalMode === 'add' ? 'Add Entry' : 'Save Changes'}
-                </button>
-              </div>
+                </YStack>
+
+                <YStack gap="$1">
+                  <Label fontSize="$3" fontWeight="600" color="$color12" marginBottom="$1">
+                    Value
+                  </Label>
+                  <Input
+                    value={formData.value}
+                    onChangeText={(value) => setFormData((prev) => ({ ...prev, value }))}
+                    width="100%"
+                    padding="$2"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    placeholder="Display text for this key"
+                    required
+                  />
+                  {editingEntry && DEFAULT_LEXICON[editingEntry.key] && (
+                    <Text fontSize="$1" color="$color11" marginTop="$1">
+                      Default value: {DEFAULT_LEXICON[editingEntry.key]}
+                    </Text>
+                  )}
+                </YStack>
+
+                <XStack justifyContent="flex-end" gap="$3" paddingTop="$4">
+                  <Button
+                    type="button"
+                    onPress={closeModal}
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    borderWidth={1}
+                    borderRadius="$4"
+                    backgroundColor="transparent"
+                    hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    paddingHorizontal="$4"
+                    paddingVertical="$2"
+                    backgroundColor="$blue10"
+                    color="white"
+                    borderRadius="$4"
+                    hoverStyle={{ backgroundColor: "$blue11" }}
+                    opacity={isSubmitting ? 0.5 : 1}
+                    icon={isSubmitting ? <Loader2 size={16} className="animate-spin" /> : undefined}
+                  >
+                    {modalMode === 'add' ? 'Add Entry' : 'Save Changes'}
+                  </Button>
+                </XStack>
+              </YStack>
             </form>
-          </div>
-        </div>
+          </Card>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
