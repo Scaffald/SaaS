@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -18,6 +18,7 @@ import {
   ChevronDown,
   Check,
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Button as TamaguiButton, Input } from '@unicornlove/ui';
 import { IntegrationStatus } from '../../types';
 import { mockIntegrations } from '../../utils/mockData';
 import ConnectionWizard from '../Integrations/ConnectionWizard';
@@ -377,393 +378,498 @@ export default function IntegrationsMarketplace() {
   };
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">
+      <XStack alignItems="center" justifyContent="space-between">
+        <YStack>
+          <H1 fontSize="$8" fontWeight="700" color="$color12">
             Integrations Marketplace
-          </h1>
-          <p className="text-text-secondary">
+          </H1>
+          <Text color="$color11">
             Connect Simple Insurance with your existing construction tech stack
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <div className="text-sm text-text-secondary">
-            <span className="font-medium text-success-600">
+          </Text>
+        </YStack>
+        <XStack alignItems="center" gap="$3">
+          <Text fontSize="$3" color="$color11">
+            <Text fontWeight="500" color="$green11">
               {connectedCount}
-            </span>{' '}
+            </Text>{' '}
             connected
-          </div>
-          <button className="flex items-center space-x-2 px-4 py-2 border border-border rounded-lg hover:bg-bg-secondary transition-colors">
-            <Filter size={16} />
-            <span>Filter</span>
-          </button>
-        </div>
-      </div>
+          </Text>
+          <TamaguiButton
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            backgroundColor="transparent"
+            hoverStyle={{ backgroundColor: '$backgroundHover' }}
+          >
+            <XStack alignItems="center" gap="$2">
+              <Filter size={16} />
+              <Text>Filter</Text>
+            </XStack>
+          </TamaguiButton>
+        </XStack>
+      </XStack>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Connected</p>
-              <p className="text-3xl font-bold text-success-600">
+      <XStack flexWrap="wrap" gap="$6">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">Connected</Text>
+              <Text fontSize="$9" fontWeight="700" color="$green11">
                 {connectedCount}
-              </p>
-            </div>
-            <div className="bg-success-100 p-3 rounded-full">
-              <CheckCircle className="text-success-600" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-text-secondary">
+              </Text>
+            </YStack>
+            <XStack backgroundColor="$green2" padding="$3" borderRadius={9999}>
+              <CheckCircle size={24} color="$green11" />
+            </XStack>
+          </XStack>
+          <Text fontSize="$3" color="$color11" marginTop="$3">
             Active integrations
-          </div>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Recommended</p>
-              <p className="text-3xl font-bold text-primary-600">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">Recommended</Text>
+              <Text fontSize="$9" fontWeight="700" color="$blue11">
                 {recommendedCount}
-              </p>
-            </div>
-            <div className="bg-primary-100 p-3 rounded-full">
-              <Star className="text-primary-600" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-text-secondary">
+              </Text>
+            </YStack>
+            <XStack backgroundColor="$blue2" padding="$3" borderRadius={9999}>
+              <Star size={24} color="$blue11" />
+            </XStack>
+          </XStack>
+          <Text fontSize="$3" color="$color11" marginTop="$3">
             Suggested for you
-          </div>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Available</p>
-              <p className="text-3xl font-bold text-text-primary">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">Available</Text>
+              <Text fontSize="$9" fontWeight="700" color="$color12">
                 {integrations.length}
-              </p>
-            </div>
-            <div className="bg-bg-secondary p-3 rounded-full">
-              <Settings className="text-text-secondary" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-text-secondary">
+              </Text>
+            </YStack>
+            <XStack backgroundColor="$backgroundHover" padding="$3" borderRadius={9999}>
+              <Settings size={24} color="$color11" />
+            </XStack>
+          </XStack>
+          <Text fontSize="$3" color="$color11" marginTop="$3">
             Total integrations
-          </div>
-        </div>
+          </Text>
+        </Card>
 
-        <div className="bg-surface rounded-lg p-6 shadow-sm border border-border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-text-secondary text-sm">Setup Time</p>
-              <p className="text-3xl font-bold text-secondary-500">5m</p>
-            </div>
-            <div className="bg-secondary-100 p-3 rounded-full">
-              <Clock className="text-secondary-500" size={24} />
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-text-secondary">Average setup</div>
-        </div>
-      </div>
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$6" flex={1} minWidth="45%" $gtMd={{ minWidth: '22%' }}>
+          <XStack alignItems="center" justifyContent="space-between">
+            <YStack>
+              <Text fontSize="$3" color="$color11">Setup Time</Text>
+              <Text fontSize="$9" fontWeight="700" color="$gray10">5m</Text>
+            </YStack>
+            <XStack backgroundColor="$gray2" padding="$3" borderRadius={9999}>
+              <Clock size={24} color="$gray10" />
+            </XStack>
+          </XStack>
+          <Text fontSize="$3" color="$color11" marginTop="$3">Average setup</Text>
+        </Card>
+      </XStack>
 
       {/* Search and Filters */}
-      <div className="bg-surface rounded-lg shadow-sm border border-border p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$4">
+        <XStack flexDirection="column" $gtSm={{ flexDirection: 'row' }} gap="$3">
           {/* Search Bar */}
-          <div className="flex-1 relative">
+          <XStack position="relative" flex={1}>
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary"
+              position="absolute"
+              left={12}
+              top="50%"
+              style={{ transform: 'translateY(-50%)' }}
               size={20}
+              color="$color10"
+              zIndex={1}
             />
-            <input
+            <Input
               type="text"
               placeholder="Search integrations..."
-              className="w-full pl-10 pr-4 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-bg-primary text-text-primary"
+              width="100%"
+              paddingLeft="$10"
+              paddingRight="$4"
+              paddingVertical="$2.5"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              backgroundColor="$background"
+              color="$color12"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChangeText={setSearchTerm}
             />
-          </div>
+          </XStack>
 
           {/* Filter Dropdown */}
-          <div className="relative" ref={filterRef}>
-            <button
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="flex items-center space-x-2 px-4 py-2.5 border border-border rounded-lg hover:bg-surface-hover transition-colors text-text-primary min-w-[180px] justify-between"
+          <YStack position="relative" ref={filterRef}>
+            <TamaguiButton
+              onPress={() => setIsFilterOpen(!isFilterOpen)}
+              paddingHorizontal="$4"
+              paddingVertical="$2.5"
+              borderWidth={1}
+              borderColor="$borderColor"
+              borderRadius="$4"
+              backgroundColor="transparent"
+              hoverStyle={{ backgroundColor: '$backgroundHover' }}
+              minWidth={180}
             >
-              <div className="flex items-center space-x-2">
-                <Filter size={18} />
-                <span className="text-sm font-medium">
-                  {categories.find((c) => c.id === selectedCategory)?.name ||
-                    'All Integrations'}
-                </span>
-              </div>
-              <ChevronDown
-                size={16}
-                className={`transition-transform ${isFilterOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
+              <XStack alignItems="center" justifyContent="space-between" width="100%">
+                <XStack alignItems="center" gap="$2">
+                  <Filter size={18} />
+                  <Text fontSize="$3" fontWeight="500">
+                    {categories.find((c) => c.id === selectedCategory)?.name ||
+                      'All Integrations'}
+                  </Text>
+                </XStack>
+                <ChevronDown
+                  size={16}
+                  style={{ transform: isFilterOpen ? 'rotate(180deg)' : 'none' }}
+                />
+              </XStack>
+            </TamaguiButton>
 
             {isFilterOpen && (
-              <div className="absolute top-full right-0 mt-2 w-72 bg-surface border border-border rounded-lg shadow-lg z-10 py-2">
-                <div className="px-3 py-2 border-b border-border">
-                  <p className="text-xs font-medium text-text-secondary uppercase">
+              <Card
+                position="absolute"
+                top="100%"
+                right={0}
+                marginTop="$2"
+                width={288}
+                backgroundColor="$background"
+                borderWidth={1}
+                borderColor="$borderColor"
+                borderRadius="$4"
+                elevation={4}
+                zIndex={10}
+                paddingVertical="$2"
+              >
+                <YStack paddingHorizontal="$3" paddingVertical="$2" borderBottomWidth={1} borderColor="$borderColor">
+                  <Text fontSize="$2" fontWeight="500" color="$color11" textTransform="uppercase">
                     Filter by Category
-                  </p>
-                </div>
-                <div className="max-h-96 overflow-y-auto">
+                  </Text>
+                </YStack>
+                <YStack maxHeight={384} overflow="scroll">
                   {categories.map((category) => {
                     const Icon = category.icon;
                     const isSelected = selectedCategory === category.id;
                     return (
-                      <button
+                      <TamaguiButton
                         key={category.id}
-                        onClick={() => {
+                        unstyled
+                        onPress={() => {
                           setSelectedCategory(category.id);
                           setIsFilterOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between px-4 py-2.5 hover:bg-surface-hover transition-colors ${
-                          isSelected
-                            ? 'bg-primary-50 dark:bg-primary-900/20'
-                            : ''
-                        }`}
+                        width="100%"
+                        paddingHorizontal="$4"
+                        paddingVertical="$2.5"
+                        backgroundColor={isSelected ? '$blue2' : 'transparent'}
+                        hoverStyle={{ backgroundColor: '$backgroundHover' }}
                       >
-                        <div className="flex items-center space-x-3">
-                          <Icon
-                            size={18}
-                            className={
-                              isSelected
-                                ? 'text-primary-600'
-                                : 'text-text-secondary'
-                            }
-                          />
-                          <span
-                            className={`text-sm ${isSelected ? 'text-primary-600 font-medium' : 'text-text-primary'}`}
-                          >
-                            {category.name}
-                          </span>
-                        </div>
-                        {isSelected && (
-                          <Check size={16} className="text-primary-600" />
-                        )}
-                      </button>
+                        <XStack alignItems="center" justifyContent="space-between" width="100%">
+                          <XStack alignItems="center" gap="$3">
+                            <Icon
+                              size={18}
+                              color={isSelected ? '$blue11' : '$color11'}
+                            />
+                            <Text
+                              fontSize="$3"
+                              color={isSelected ? '$blue11' : '$color12'}
+                              fontWeight={isSelected ? '500' : '400'}
+                            >
+                              {category.name}
+                            </Text>
+                          </XStack>
+                          {isSelected && (
+                            <Check size={16} color="$blue11" />
+                          )}
+                        </XStack>
+                      </TamaguiButton>
                     );
                   })}
-                </div>
-                <div className="px-4 py-2 border-t border-border">
-                  <label className="flex items-center space-x-2 cursor-pointer">
+                </YStack>
+                <YStack paddingHorizontal="$4" paddingVertical="$2" borderTopWidth={1} borderColor="$borderColor">
+                  <XStack alignItems="center" gap="$2">
                     <input
                       type="checkbox"
                       checked={showConnected}
                       onChange={(e) => setShowConnected(e.target.checked)}
-                      className="rounded border-border text-primary-600 focus:ring-primary-500"
+                      style={{ borderRadius: '4px' }}
                     />
-                    <span className="text-sm text-text-primary">
+                    <Text fontSize="$3" color="$color12">
                       Show connected only
-                    </span>
-                  </label>
-                </div>
-              </div>
+                    </Text>
+                  </XStack>
+                </YStack>
+              </Card>
             )}
-          </div>
-        </div>
-      </div>
+          </YStack>
+        </XStack>
+      </Card>
 
       {/* Featured/Recommended Section */}
       {!showConnected && selectedCategory === 'all' && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
-          <div className="flex items-center space-x-2 mb-4">
-            <Star className="text-primary-600" size={20} />
-            <h2 className="text-lg font-semibold text-text-primary">
+        <Card backgroundColor="$blue2" borderRadius="$4" padding="$6" borderWidth={1} borderColor="$blue6">
+          <XStack alignItems="center" gap="$2" marginBottom="$4">
+            <Star size={20} color="$blue11" />
+            <H2 fontSize="$6" fontWeight="600" color="$color12">
               Recommended for Construction Teams
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            </H2>
+          </XStack>
+          <XStack flexWrap="wrap" gap="$4">
             {integrations
               .filter((i) => i.recommended && !i.connected)
               .slice(0, 3)
               .map((integration) => (
-                <div
+                <Card
                   key={integration.id}
-                  className="bg-surface p-4 rounded-lg border border-blue-200"
+                  backgroundColor="$background"
+                  padding="$4"
+                  borderRadius="$4"
+                  borderWidth={1}
+                  borderColor="$blue6"
+                  flex={1}
+                  minWidth="45%"
+                  $gtMd={{ minWidth: '30%' }}
                 >
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="text-2xl">{integration.logo}</div>
-                    <div>
-                      <h3 className="font-medium text-text-primary">
+                  <XStack alignItems="center" gap="$3" marginBottom="$3">
+                    <Text fontSize="$8">{integration.logo}</Text>
+                    <YStack>
+                      <Text fontWeight="500" color="$color12">
                         {integration.name}
-                      </h3>
-                      <div className="flex items-center space-x-1">
-                        <Star
-                          className="text-yellow-400 fill-current"
-                          size={12}
-                        />
-                        <span className="text-xs text-text-secondary">
+                      </Text>
+                      <XStack alignItems="center" gap="$1">
+                        <Star size={12} color="$yellow10" fill="currentColor" />
+                        <Text fontSize="$2" color="$color11">
                           {integration.rating}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-sm text-text-secondary mb-3">
+                        </Text>
+                      </XStack>
+                    </YStack>
+                  </XStack>
+                  <Text fontSize="$3" color="$color11" marginBottom="$3">
                     {integration.description}
-                  </p>
-                  <button
-                    onClick={() =>
+                  </Text>
+                  <TamaguiButton
+                    onPress={() =>
                       handleConnect(integration.id, integration.name)
                     }
-                    className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    width="100%"
+                    backgroundColor="$blue10"
+                    color="white"
+                    paddingHorizontal="$3"
+                    paddingVertical="$2"
+                    borderRadius="$4"
+                    hoverStyle={{ backgroundColor: '$blue11' }}
                   >
-                    Connect Now
-                  </button>
-                </div>
+                    <Text fontSize="$3">Connect Now</Text>
+                  </TamaguiButton>
+                </Card>
               ))}
-          </div>
-        </div>
+          </XStack>
+        </Card>
       )}
 
       {/* Integrations Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <XStack flexWrap="wrap" gap="$6">
         {filteredIntegrations.map((integration) => (
-          <div
+          <Card
             key={integration.id}
-            className="bg-surface rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow"
+            backgroundColor="$background"
+            borderRadius="$4"
+            elevation={1}
+            borderWidth={1}
+            borderColor="$borderColor"
+            hoverStyle={{ elevation: 2 }}
+            flex={1}
+            minWidth="45%"
+            $gtLg={{ minWidth: '30%' }}
           >
-            <div className="p-6">
+            <YStack padding="$6">
               {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <div className="text-3xl">{integration.logo}</div>
-                    <h3 className="text-lg font-semibold text-text-primary">
+              <XStack alignItems="flex-start" justifyContent="space-between" marginBottom="$4">
+                <YStack flex={1}>
+                  <XStack alignItems="center" gap="$3" marginBottom="$2">
+                    <Text fontSize="$9">{integration.logo}</Text>
+                    <H3 fontSize="$6" fontWeight="600" color="$color12">
                       {integration.name}
-                    </h3>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
+                    </H3>
+                  </XStack>
+                  <XStack alignItems="center" gap="$2" marginBottom="$2" flexWrap="wrap">
                     {integration.popular && (
-                      <span className="bg-success-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                      <Text fontSize="$2" paddingHorizontal="$2" paddingVertical="$1" backgroundColor="$green2" color="$green12" borderRadius={9999}>
                         Popular
-                      </span>
+                      </Text>
                     )}
                     {integration.recommended && (
-                      <span className="bg-primary-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      <Text fontSize="$2" paddingHorizontal="$2" paddingVertical="$1" backgroundColor="$blue2" color="$blue12" borderRadius={9999}>
                         Recommended
-                      </span>
+                      </Text>
                     )}
                     {integration.connected && (
-                      <span className="bg-bg-secondary text-text-primary text-xs px-2 py-1 rounded-full">
+                      <Text fontSize="$2" paddingHorizontal="$2" paddingVertical="$1" backgroundColor="$backgroundHover" color="$color12" borderRadius={9999}>
                         Connected
-                      </span>
+                      </Text>
                     )}
-                  </div>
-                </div>
-              </div>
+                  </XStack>
+                </YStack>
+              </XStack>
 
               {/* Description */}
-              <p className="text-text-secondary mb-4 text-sm">
+              <Text color="$color11" marginBottom="$4" fontSize="$3">
                 {integration.description}
-              </p>
+              </Text>
 
               {/* Features */}
-              <div className="mb-4">
-                <h4 className="text-sm font-medium text-text-primary mb-2">
+              <YStack marginBottom="$4">
+                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                   Key Features
-                </h4>
-                <ul className="space-y-1">
+                </Text>
+                <YStack gap="$1">
                   {integration.features.slice(0, 3).map((feature, index) => (
-                    <li
+                    <XStack
                       key={index}
-                      className="text-sm text-text-secondary flex items-center space-x-2"
+                      alignItems="center"
+                      gap="$2"
                     >
-                      <div className="w-1.5 h-1.5 bg-success-500 rounded-full"></div>
-                      <span>{feature}</span>
-                    </li>
+                      <YStack width={6} height={6} backgroundColor="$green10" borderRadius={9999} />
+                      <Text fontSize="$3" color="$color11">
+                        {feature}
+                      </Text>
+                    </XStack>
                   ))}
-                </ul>
-              </div>
+                </YStack>
+              </YStack>
 
               {/* Data Sync */}
-              <div className="mb-4">
-                <h4 className="text-sm font-medium text-text-primary mb-2">
+              <YStack marginBottom="$4">
+                <Text fontSize="$3" fontWeight="500" color="$color12" marginBottom="$2">
                   Data Sync
-                </h4>
-                <div className="flex flex-wrap gap-1">
+                </Text>
+                <XStack flexWrap="wrap" gap="$1">
                   {integration.dataSync.slice(0, 3).map((data, index) => (
-                    <span
+                    <Text
                       key={index}
-                      className="bg-bg-secondary text-text-primary text-xs px-2 py-1 rounded"
+                      fontSize="$2"
+                      paddingHorizontal="$2"
+                      paddingVertical="$1"
+                      backgroundColor="$backgroundHover"
+                      color="$color12"
+                      borderRadius="$2"
                     >
                       {data}
-                    </span>
+                    </Text>
                   ))}
                   {integration.dataSync.length > 3 && (
-                    <span className="text-xs text-text-secondary">
+                    <Text fontSize="$2" color="$color11">
                       +{integration.dataSync.length - 3} more
-                    </span>
+                    </Text>
                   )}
-                </div>
-              </div>
+                </XStack>
+              </YStack>
 
               {/* Setup Info */}
-              <div className="flex items-center justify-between text-sm text-text-secondary mb-4">
-                <div className="flex items-center space-x-1">
+              <XStack alignItems="center" justifyContent="space-between" fontSize="$3" color="$color11" marginBottom="$4">
+                <XStack alignItems="center" gap="$1">
                   <Clock size={14} />
-                  <span>{integration.setupTime} setup</span>
-                </div>
-                <span className="font-medium text-success-600">
+                  <Text>{integration.setupTime} setup</Text>
+                </XStack>
+                <Text fontWeight="500" color="$green11">
                   {integration.pricing}
-                </span>
-              </div>
+                </Text>
+              </XStack>
 
               {/* Actions */}
-              <div className="flex space-x-2">
+              <XStack gap="$2">
                 {integration.connected ? (
                   <>
-                    <button className="flex-1 bg-bg-secondary text-text-primary px-4 py-2 rounded-lg hover:bg-bg-tertiary transition-colors flex items-center justify-center space-x-2">
-                      <Settings size={16} />
-                      <span>Configure</span>
-                    </button>
-                    <button
-                      onClick={() => handleDisconnect(integration.id)}
-                      className="px-3 py-2 border border-red-300 text-error-600 rounded-lg hover:bg-error-50 transition-colors"
+                    <TamaguiButton
+                      flex={1}
+                      backgroundColor="$backgroundHover"
+                      color="$color12"
+                      paddingHorizontal="$4"
+                      paddingVertical="$2"
+                      borderRadius="$4"
+                      hoverStyle={{ backgroundColor: '$background' }}
+                    >
+                      <XStack alignItems="center" justifyContent="center" gap="$2">
+                        <Settings size={16} />
+                        <Text>Configure</Text>
+                      </XStack>
+                    </TamaguiButton>
+                    <TamaguiButton
+                      onPress={() => handleDisconnect(integration.id)}
+                      paddingHorizontal="$3"
+                      paddingVertical="$2"
+                      borderWidth={1}
+                      borderColor="$red6"
+                      color="$red11"
+                      borderRadius="$4"
+                      backgroundColor="transparent"
+                      hoverStyle={{ backgroundColor: '$red2' }}
                     >
                       Disconnect
-                    </button>
+                    </TamaguiButton>
                   </>
                 ) : (
                   <>
-                    <button
-                      onClick={() =>
+                    <TamaguiButton
+                      onPress={() =>
                         handleConnect(integration.id, integration.name)
                       }
-                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                      flex={1}
+                      backgroundColor="$blue10"
+                      color="white"
+                      paddingHorizontal="$4"
+                      paddingVertical="$2"
+                      borderRadius="$4"
+                      hoverStyle={{ backgroundColor: '$blue11' }}
                     >
-                      <Plus size={16} />
-                      <span>Connect</span>
-                    </button>
-                    <button className="px-3 py-2 border border-border rounded-lg hover:bg-bg-secondary transition-colors">
+                      <XStack alignItems="center" justifyContent="center" gap="$2">
+                        <Plus size={16} />
+                        <Text>Connect</Text>
+                      </XStack>
+                    </TamaguiButton>
+                    <TamaguiButton
+                      paddingHorizontal="$3"
+                      paddingVertical="$2"
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      borderRadius="$4"
+                      backgroundColor="transparent"
+                      hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                    >
                       <ExternalLink size={16} />
-                    </button>
+                    </TamaguiButton>
                   </>
                 )}
-              </div>
-            </div>
-          </div>
+              </XStack>
+            </YStack>
+          </Card>
         ))}
-      </div>
+      </XStack>
 
       {/* Empty State */}
       {filteredIntegrations.length === 0 && (
-        <div className="bg-surface rounded-lg shadow-sm border border-border p-12 text-center">
-          <Search size={48} className="mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-medium text-text-primary mb-2">
+        <Card backgroundColor="$background" borderRadius="$4" elevation={1} borderWidth={1} borderColor="$borderColor" padding="$12" alignItems="center">
+          <Search size={48} color="$gray8" marginBottom="$4" />
+          <H3 fontSize="$6" fontWeight="500" color="$color12" marginBottom="$2">
             No integrations found
-          </h3>
-          <p className="text-text-secondary">
+          </H3>
+          <Text color="$color11">
             Try adjusting your search terms or category filters
-          </p>
-        </div>
+          </Text>
+        </Card>
       )}
 
       {/* Connection Status Panel */}
