@@ -24,6 +24,7 @@ import {
   Check,
   AlertTriangle,
 } from 'lucide-react';
+import { YStack, XStack, Text, Button, Card, H1, H2, H3, Spinner, Input, TextArea } from 'tamagui';
 import { trpc } from '../../lib/trpc';
 
 interface UserSetTypeFormData {
@@ -131,8 +132,8 @@ function AdminUserSetTypes() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent | any) => {
+    e?.preventDefault?.();
 
     setIsSubmitting(true);
     setFormError(null);
@@ -191,408 +192,461 @@ function AdminUserSetTypes() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
-        <span className="ml-2">Loading user set types...</span>
-      </div>
+      <YStack alignItems="center" justifyContent="center" paddingVertical="$6">
+        <Spinner size="large" color="$blue9" />
+        <Text marginLeft="$2">Loading user set types...</Text>
+      </YStack>
     );
   }
 
   return (
-    <div className="admin-user-set-types-page">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Industry Verticals</h1>
-          <p className="text-gray-500 text-sm mt-1">
+    <YStack>
+      <XStack alignItems="center" justifyContent="space-between" marginBottom="$6">
+        <YStack>
+          <H1 fontSize="$8" fontWeight="bold">Industry Verticals</H1>
+          <Text color="$gray11" fontSize="$3" marginTop="$1">
             Manage user set types for different industry verticals (Construction, Property Management, etc.)
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <label className="flex items-center text-sm text-gray-600">
+          </Text>
+        </YStack>
+        <XStack alignItems="center" gap="$3">
+          <XStack alignItems="center" gap="$2">
             <input
               type="checkbox"
               checked={showInactive}
               onChange={(e) => setShowInactive(e.target.checked)}
-              className="mr-2"
             />
-            Show inactive ({totalCount - activeCount})
-          </label>
-          <button
-            onClick={handleRefresh}
+            <Text fontSize="$3" color="$gray11">
+              Show inactive ({totalCount - activeCount})
+            </Text>
+          </XStack>
+          <Button
+            onPress={handleRefresh}
             disabled={isLoading}
-            className="flex items-center px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
+            icon={isLoading ? <Spinner size="small" /> : <RefreshCcw size={16} />}
+            variant="outlined"
           >
-            <RefreshCcw size={16} className={`mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
-          </button>
-          <button
-            onClick={openAddModal}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          </Button>
+          <Button
+            onPress={openAddModal}
+            backgroundColor="$blue9"
+            color="white"
+            icon={<PlusCircle size={16} />}
           >
-            <PlusCircle size={16} className="mr-2" />
             Add Industry
-          </button>
-        </div>
-      </div>
+          </Button>
+        </XStack>
+      </XStack>
 
       {error && (
-        <div className="p-4 mb-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600">Error: {error.message}</p>
-        </div>
+        <YStack padding="$4" marginBottom="$4" backgroundColor="$red2" borderWidth={1} borderColor="$red6" borderRadius="$4">
+          <Text color="$red10">Error: {error.message}</Text>
+        </YStack>
       )}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Building2 size={20} className="text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Total Industries</p>
-              <p className="text-2xl font-bold">{totalCount}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Check size={20} className="text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Active</p>
-              <p className="text-2xl font-bold">{activeCount}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gray-100 rounded-lg">
-              <Users size={20} className="text-gray-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Users Assigned</p>
-              <p className="text-2xl font-bold">
+      <XStack gap="$4" marginBottom="$6" flexWrap="wrap">
+        <Card flex={1} minWidth={200} padding="$4" elevation={1}>
+          <XStack alignItems="center" gap="$3">
+            <YStack padding="$2" backgroundColor="$blue3" borderRadius="$4">
+              <Building2 size={20} color="$blue9" />
+            </YStack>
+            <YStack>
+              <Text fontSize="$3" color="$gray11">Total Industries</Text>
+              <Text fontSize="$8" fontWeight="bold">{totalCount}</Text>
+            </YStack>
+          </XStack>
+        </Card>
+        <Card flex={1} minWidth={200} padding="$4" elevation={1}>
+          <XStack alignItems="center" gap="$3">
+            <YStack padding="$2" backgroundColor="$green3" borderRadius="$4">
+              <Check size={20} color="$green9" />
+            </YStack>
+            <YStack>
+              <Text fontSize="$3" color="$gray11">Active</Text>
+              <Text fontSize="$8" fontWeight="bold">{activeCount}</Text>
+            </YStack>
+          </XStack>
+        </Card>
+        <Card flex={1} minWidth={200} padding="$4" elevation={1}>
+          <XStack alignItems="center" gap="$3">
+            <YStack padding="$2" backgroundColor="$gray3" borderRadius="$4">
+              <Users size={20} color="$gray11" />
+            </YStack>
+            <YStack>
+              <Text fontSize="$3" color="$gray11">Users Assigned</Text>
+              <Text fontSize="$8" fontWeight="bold">
                 {userSetTypes?.reduce((sum, ust) => sum + (ust.userCount ?? 0), 0) ?? 0}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Text>
+            </YStack>
+          </XStack>
+        </Card>
+      </XStack>
 
       {/* User Set Types Table */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      <Card padding="$6" elevation={1}>
         {displayedTypes.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
-            <p>No user set types found.</p>
-            <button
-              onClick={openAddModal}
-              className="mt-4 text-blue-600 hover:text-blue-700"
+          <YStack alignItems="center" paddingVertical="$8">
+            <Building2 size={48} color="$gray8" marginBottom="$4" />
+            <Text color="$gray11">No user set types found.</Text>
+            <Button
+              onPress={openAddModal}
+              variant="outlined"
+              marginTop="$4"
+              color="$blue9"
             >
               Create your first industry vertical
-            </button>
-          </div>
+            </Button>
+          </YStack>
         ) : (
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b text-left">Industry</th>
-                <th className="py-2 px-4 border-b text-left">Slug</th>
-                <th className="py-2 px-4 border-b text-left">Manager Label</th>
-                <th className="py-2 px-4 border-b text-left">Contractor Label</th>
-                <th className="py-2 px-4 border-b text-left">Users</th>
-                <th className="py-2 px-4 border-b text-left">Status</th>
-                <th className="py-2 px-4 border-b text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedTypes.map((ust) => (
-                <tr
-                  key={ust.id}
-                  className={!ust.isActive ? 'bg-gray-50 opacity-60' : ''}
-                >
-                  <td className="py-3 px-4 border-b">
-                    <div>
-                      <p className="font-medium">{ust.name}</p>
-                      {ust.description && (
-                        <p className="text-xs text-gray-500 mt-1">{ust.description}</p>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 border-b font-mono text-sm text-gray-600">
-                    {ust.slug}
-                  </td>
-                  <td className="py-3 px-4 border-b">
-                    <div className="text-sm">
-                      <p>{ust.managerLabelSingular}</p>
-                      <p className="text-gray-500">({ust.managerLabelPlural})</p>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 border-b">
-                    <div className="text-sm">
-                      <p>{ust.contractorLabelSingular}</p>
-                      <p className="text-gray-500">({ust.contractorLabelPlural})</p>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 border-b text-center">
-                    <span className="inline-flex items-center px-2 py-1 bg-gray-100 rounded text-sm">
-                      {ust.userCount ?? 0}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 border-b">
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        ust.isActive
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      {ust.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 border-b">
-                    <div className="flex items-center space-x-1">
-                      <button
-                        onClick={() => openEditModal(ust)}
-                        disabled={actionInProgress === ust.id}
-                        className="p-1 text-blue-500 hover:text-blue-700 disabled:opacity-50"
-                        title="Edit"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      {ust.isActive ? (
-                        <button
-                          onClick={() => handleToggleActive(ust.id, true)}
-                          disabled={actionInProgress === ust.id || (ust.userCount ?? 0) > 0}
-                          className="p-1 text-red-500 hover:text-red-700 disabled:opacity-50"
-                          title={
-                            (ust.userCount ?? 0) > 0
-                              ? 'Cannot deactivate: users assigned'
-                              : 'Deactivate'
-                          }
-                        >
-                          {actionInProgress === ust.id ? (
-                            <Loader2 size={16} className="animate-spin" />
-                          ) : (
-                            <Trash2 size={16} />
-                          )}
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleToggleActive(ust.id, false)}
-                          disabled={actionInProgress === ust.id}
-                          className="p-1 text-green-500 hover:text-green-700 disabled:opacity-50"
-                          title="Activate"
-                        >
-                          {actionInProgress === ust.id ? (
-                            <Loader2 size={16} className="animate-spin" />
-                          ) : (
-                            <RotateCcw size={16} />
-                          )}
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <YStack>
+            <XStack borderBottomWidth={1} borderColor="$borderColor" paddingVertical="$2" paddingHorizontal="$4">
+              <Text flex={2} fontWeight="600">Industry</Text>
+              <Text flex={1} fontWeight="600">Slug</Text>
+              <Text flex={1} fontWeight="600">Manager Label</Text>
+              <Text flex={1} fontWeight="600">Contractor Label</Text>
+              <Text flex={0.5} fontWeight="600" textAlign="center">Users</Text>
+              <Text flex={0.5} fontWeight="600">Status</Text>
+              <Text flex={0.5} fontWeight="600">Actions</Text>
+            </XStack>
+            {displayedTypes.map((ust) => (
+              <XStack
+                key={ust.id}
+                borderBottomWidth={1}
+                borderColor="$borderColor"
+                paddingVertical="$3"
+                paddingHorizontal="$4"
+                opacity={!ust.isActive ? 0.6 : 1}
+                backgroundColor={!ust.isActive ? "$gray2" : "transparent"}
+              >
+                <YStack flex={2}>
+                  <Text fontWeight="500">{ust.name}</Text>
+                  {ust.description && (
+                    <Text fontSize="$1" color="$gray11" marginTop="$1">{ust.description}</Text>
+                  )}
+                </YStack>
+                <Text flex={1} fontFamily="$mono" fontSize="$3" color="$gray11">
+                  {ust.slug}
+                </Text>
+                <YStack flex={1}>
+                  <Text fontSize="$3">{ust.managerLabelSingular}</Text>
+                  <Text fontSize="$3" color="$gray11">({ust.managerLabelPlural})</Text>
+                </YStack>
+                <YStack flex={1}>
+                  <Text fontSize="$3">{ust.contractorLabelSingular}</Text>
+                  <Text fontSize="$3" color="$gray11">({ust.contractorLabelPlural})</Text>
+                </YStack>
+                <XStack flex={0.5} justifyContent="center">
+                  <Text
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    backgroundColor="$gray3"
+                    borderRadius="$2"
+                    fontSize="$3"
+                  >
+                    {ust.userCount ?? 0}
+                  </Text>
+                </XStack>
+                <XStack flex={0.5}>
+                  <Text
+                    paddingHorizontal="$2"
+                    paddingVertical="$1"
+                    borderRadius="$2"
+                    fontSize="$1"
+                    backgroundColor={ust.isActive ? "$green3" : "$gray3"}
+                    color={ust.isActive ? "$green10" : "$gray11"}
+                  >
+                    {ust.isActive ? 'Active' : 'Inactive'}
+                  </Text>
+                </XStack>
+                <XStack flex={0.5} alignItems="center" gap="$1">
+                  <Button
+                    onPress={() => openEditModal(ust)}
+                    disabled={actionInProgress === ust.id}
+                    size="$2"
+                    variant="outlined"
+                    icon={<Edit size={16} />}
+                    opacity={actionInProgress === ust.id ? 0.5 : 1}
+                  />
+                  {ust.isActive ? (
+                    <Button
+                      onPress={() => handleToggleActive(ust.id, true)}
+                      disabled={actionInProgress === ust.id || (ust.userCount ?? 0) > 0}
+                      size="$2"
+                      variant="outlined"
+                      icon={actionInProgress === ust.id ? <Spinner size="small" /> : <Trash2 size={16} />}
+                      color="$red9"
+                      opacity={actionInProgress === ust.id || (ust.userCount ?? 0) > 0 ? 0.5 : 1}
+                    />
+                  ) : (
+                    <Button
+                      onPress={() => handleToggleActive(ust.id, false)}
+                      disabled={actionInProgress === ust.id}
+                      size="$2"
+                      variant="outlined"
+                      icon={actionInProgress === ust.id ? <Spinner size="small" /> : <RotateCcw size={16} />}
+                      color="$green9"
+                      opacity={actionInProgress === ust.id ? 0.5 : 1}
+                    />
+                  )}
+                </XStack>
+              </XStack>
+            ))}
+          </YStack>
         )}
-      </div>
+      </Card>
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
-              <h3 className="text-lg font-semibold">
+        <YStack
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor="rgba(0,0,0,0.5)"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={50}
+        >
+          <Card
+            backgroundColor="white"
+            borderRadius="$4"
+            shadowColor="$shadowColor"
+            shadowRadius="$4"
+            width="100%"
+            maxWidth={600}
+            marginHorizontal="$4"
+            maxHeight="90vh"
+          >
+            <XStack
+              alignItems="center"
+              justifyContent="space-between"
+              padding="$4"
+              borderBottomWidth={1}
+              borderColor="$borderColor"
+              position="sticky"
+              top={0}
+              backgroundColor="white"
+            >
+              <H3 fontSize="$5" fontWeight="600">
                 {modalMode === 'add' ? 'Add Industry Vertical' : 'Edit Industry Vertical'}
-              </h3>
-              <button
-                onClick={closeModal}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X size={20} />
-              </button>
-            </div>
+              </H3>
+              <Button
+                onPress={closeModal}
+                size="$2"
+                variant="outlined"
+                icon={<X size={20} />}
+                color="$gray11"
+              />
+            </XStack>
 
-            <form onSubmit={handleSubmit} className="p-4 space-y-4">
+            <YStack padding="$4" gap="$4">
               {formError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm flex items-start gap-2">
-                  <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
-                  {formError}
-                </div>
+                <XStack
+                  padding="$3"
+                  backgroundColor="$red2"
+                  borderWidth={1}
+                  borderColor="$red6"
+                  borderRadius="$2"
+                  color="$red10"
+                  fontSize="$3"
+                  alignItems="flex-start"
+                  gap="$2"
+                >
+                  <AlertTriangle size={16} flexShrink={0} marginTop={2} />
+                  <Text color="$red10" fontSize="$3">{formError}</Text>
+                </XStack>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+              <YStack gap="$4">
+                <YStack>
+                  <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$1">
                     Industry Name *
-                  </label>
-                  <input
-                    type="text"
+                  </Text>
+                  <Input
                     value={formData.name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    className="w-full p-2 border rounded-md"
+                    onChangeText={handleNameChange}
                     placeholder="e.g., Construction, Property Management"
-                    required
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$2"
+                    padding="$2"
+                    width="100%"
                   />
-                </div>
+                </YStack>
 
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                <YStack>
+                  <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$1">
                     Slug *
-                  </label>
-                  <input
-                    type="text"
+                  </Text>
+                  <Input
                     value={formData.slug}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, slug: e.target.value }))
+                    onChangeText={(value) =>
+                      setFormData((prev) => ({ ...prev, slug: value }))
                     }
                     disabled={modalMode === 'edit'}
-                    className="w-full p-2 border rounded-md font-mono disabled:bg-gray-100"
                     placeholder="e.g., construction"
-                    required
+                    borderWidth={1}
+                    borderColor="$borderColor"
+                    borderRadius="$2"
+                    padding="$2"
+                    width="100%"
+                    fontFamily="$mono"
+                    backgroundColor={modalMode === 'edit' ? "$gray3" : "white"}
                   />
                   {modalMode === 'edit' && (
-                    <p className="mt-1 text-xs text-gray-500">
+                    <Text marginTop="$1" fontSize="$1" color="$gray11">
                       Slug cannot be changed after creation
-                    </p>
+                    </Text>
                   )}
-                </div>
-              </div>
+                </YStack>
+              </YStack>
 
-              <div className="border-t pt-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">
+              <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">
                   Manager Role Labels
-                </h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-gray-600 mb-1">
+                </Text>
+                <XStack gap="$4">
+                  <YStack flex={1}>
+                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
                       Singular *
-                    </label>
-                    <input
-                      type="text"
+                    </Text>
+                    <Input
                       value={formData.managerLabelSingular}
-                      onChange={(e) =>
+                      onChangeText={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          managerLabelSingular: e.target.value,
+                          managerLabelSingular: value,
                         }))
                       }
-                      className="w-full p-2 border rounded-md"
                       placeholder="e.g., General Contractor"
-                      required
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      borderRadius="$2"
+                      padding="$2"
+                      width="100%"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-600 mb-1">
+                  </YStack>
+                  <YStack flex={1}>
+                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
                       Plural *
-                    </label>
-                    <input
-                      type="text"
+                    </Text>
+                    <Input
                       value={formData.managerLabelPlural}
-                      onChange={(e) =>
+                      onChangeText={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          managerLabelPlural: e.target.value,
+                          managerLabelPlural: value,
                         }))
                       }
-                      className="w-full p-2 border rounded-md"
                       placeholder="e.g., General Contractors"
-                      required
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      borderRadius="$2"
+                      padding="$2"
+                      width="100%"
                     />
-                  </div>
-                </div>
-              </div>
+                  </YStack>
+                </XStack>
+              </YStack>
 
-              <div className="border-t pt-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-3">
+              <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$3">
                   Contractor Role Labels
-                </h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm text-gray-600 mb-1">
+                </Text>
+                <XStack gap="$4">
+                  <YStack flex={1}>
+                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
                       Singular *
-                    </label>
-                    <input
-                      type="text"
+                    </Text>
+                    <Input
                       value={formData.contractorLabelSingular}
-                      onChange={(e) =>
+                      onChangeText={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          contractorLabelSingular: e.target.value,
+                          contractorLabelSingular: value,
                         }))
                       }
-                      className="w-full p-2 border rounded-md"
                       placeholder="e.g., Subcontractor"
-                      required
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      borderRadius="$2"
+                      padding="$2"
+                      width="100%"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-600 mb-1">
+                  </YStack>
+                  <YStack flex={1}>
+                    <Text fontSize="$3" color="$gray11" marginBottom="$1">
                       Plural *
-                    </label>
-                    <input
-                      type="text"
+                    </Text>
+                    <Input
                       value={formData.contractorLabelPlural}
-                      onChange={(e) =>
+                      onChangeText={(value) =>
                         setFormData((prev) => ({
                           ...prev,
-                          contractorLabelPlural: e.target.value,
+                          contractorLabelPlural: value,
                         }))
                       }
-                      className="w-full p-2 border rounded-md"
                       placeholder="e.g., Subcontractors"
-                      required
+                      borderWidth={1}
+                      borderColor="$borderColor"
+                      borderRadius="$2"
+                      padding="$2"
+                      width="100%"
                     />
-                  </div>
-                </div>
-              </div>
+                  </YStack>
+                </XStack>
+              </YStack>
 
-              <div className="border-t pt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <YStack borderTopWidth={1} borderColor="$borderColor" paddingTop="$4">
+                <Text fontSize="$3" fontWeight="500" color="$gray12" marginBottom="$1">
                   Description (optional)
-                </label>
-                <textarea
+                </Text>
+                <TextArea
                   value={formData.description}
-                  onChange={(e) =>
+                  onChangeText={(value) =>
                     setFormData((prev) => ({
                       ...prev,
-                      description: e.target.value,
+                      description: value,
                     }))
                   }
-                  className="w-full p-2 border rounded-md"
                   placeholder="Brief description of this industry vertical"
-                  rows={2}
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$2"
+                  padding="$2"
+                  width="100%"
+                  minHeight={60}
                 />
-              </div>
+              </YStack>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 border rounded-md hover:bg-gray-50"
+              <XStack justifyContent="flex-end" gap="$3" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
+                <Button
+                  onPress={closeModal}
+                  variant="outlined"
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
+                </Button>
+                <Button
+                  onPress={(e) => {
+                    e?.preventDefault?.();
+                    handleSubmit(e as any);
+                  }}
                   disabled={isSubmitting}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                  backgroundColor="$blue9"
+                  color="white"
+                  icon={isSubmitting ? <Spinner size="small" /> : undefined}
+                  opacity={isSubmitting ? 0.5 : 1}
                 >
-                  {isSubmitting && (
-                    <Loader2 size={16} className="animate-spin mr-2" />
-                  )}
                   {modalMode === 'add' ? 'Create Industry' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+                </Button>
+              </XStack>
+            </YStack>
+          </Card>
+        </YStack>
       )}
-    </div>
+    </YStack>
   );
 }
 
