@@ -22,6 +22,7 @@ import {
   StickyNote,
   Clock
 } from 'lucide-react';
+import { YStack, XStack, Text, H1, H2, H3, Card, Input } from 'tamagui';
 import { useClients } from '../../hooks/useClients';
 import { useCompliance } from '../../hooks/useCompliance';
 import { useProjects } from '../../hooks/useProjects';
@@ -189,24 +190,24 @@ export default function GCProfilePage() {
 
   if (!gc) {
     return (
-      <div className="space-y-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors"
+      <YStack gap="$6">
+        <Button
+          onPress={() => navigate(-1)}
+          variant="ghost"
+          icon={<ArrowLeft size={20} />}
         >
-          <ArrowLeft size={20} />
-          <span>Back</span>
-        </button>
-        <div className="text-center py-16 bg-surface rounded-lg border border-border">
-          <Building className="mx-auto text-error-500 mb-4" size={64} />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">
+          Back
+        </Button>
+        <YStack alignItems="center" paddingVertical="$12" backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor">
+          <Building color="$red9" size={64} marginBottom="$4" />
+          <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
             GC Not Found
-          </h3>
-          <p className="text-text-secondary">
+          </H3>
+          <Text color="$color11">
             The General Contractor you're looking for doesn't exist or has been deleted.
-          </p>
-        </div>
-      </div>
+          </Text>
+        </YStack>
+      </YStack>
     );
   }
 
@@ -234,106 +235,147 @@ export default function GCProfilePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <YStack gap="$6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <XStack alignItems="center" justifyContent="space-between">
+        <XStack alignItems="center" gap="$4">
           <Button
             variant="ghost"
-            onClick={() => navigate('/broker/clients')}
+            onPress={() => navigate('/broker/clients')}
             leftIcon={ArrowLeft}
             size="sm"
           >
             Back to Clients
           </Button>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* GC Profile Header */}
-      <div className="bg-surface rounded-lg border border-border overflow-hidden">
-        <div className="p-6">
-          <div className="flex items-start space-x-4">
-            <div className="w-16 h-16 bg-primary-100 rounded-lg flex items-center justify-center">
-              <Building className="text-primary-600" size={32} />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center space-x-3">
-                <h1 className="text-2xl font-bold text-text-primary">
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" overflow="hidden">
+        <YStack padding="$6">
+          <XStack alignItems="flex-start" gap="$4">
+            <XStack
+              width={64}
+              height={64}
+              backgroundColor="$blue3"
+              borderRadius="$4"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Building color="$blue9" size={32} />
+            </XStack>
+            <YStack flex={1}>
+              <XStack alignItems="center" gap="$3">
+                <H1 fontSize="$8" fontWeight="bold" color="$color12">
                   {gc.company_name}
-                </h1>
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                </H1>
+                <Text
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderRadius={9999}
+                  fontSize="$3"
+                  fontWeight="500"
+                  backgroundColor={
                     stats.avgScore >= 80
-                      ? 'bg-success-100 text-success-700'
+                      ? "$green3"
                       : stats.avgScore >= 50
-                      ? 'bg-warning-100 text-warning-700'
-                      : 'bg-error-100 text-error-700'
-                  }`}
+                      ? "$yellow3"
+                      : "$red3"
+                  }
+                  color={
+                    stats.avgScore >= 80
+                      ? "$green10"
+                      : stats.avgScore >= 50
+                      ? "$yellow10"
+                      : "$red10"
+                  }
                 >
                   {stats.avgScore}% Compliant
-                </span>
-              </div>
-              <p className="text-text-secondary mt-1">{gc.address}</p>
-              <div className="flex items-center space-x-4 mt-2 text-sm text-text-secondary">
-                {gc.phone && <span>{gc.phone}</span>}
-                {gc.email && <span>{gc.email}</span>}
-              </div>
-            </div>
-          </div>
-        </div>
+                </Text>
+              </XStack>
+              <Text color="$color11" marginTop="$1">{gc.address}</Text>
+              <XStack alignItems="center" gap="$4" marginTop="$2" fontSize="$3" color="$color11">
+                {gc.phone && <Text fontSize="$3" color="$color11">{gc.phone}</Text>}
+                {gc.email && <Text fontSize="$3" color="$color11">{gc.email}</Text>}
+              </XStack>
+            </YStack>
+          </XStack>
+        </YStack>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-4 border-t border-border">
-          <div className="p-4 text-center border-r border-border">
-            <div className="flex items-center justify-center space-x-2 text-primary-600">
-              <Users size={18} />
-              <span className="text-2xl font-bold">{stats.total}</span>
-            </div>
-            <p className="text-sm text-text-secondary mt-1">Total Subcontractors</p>
-          </div>
-          <div className="p-4 text-center border-r border-border">
-            <div className="flex items-center justify-center space-x-2 text-success-600">
-              <Shield size={18} />
-              <span className="text-2xl font-bold">{stats.compliant}</span>
-            </div>
-            <p className="text-sm text-text-secondary mt-1">Compliant</p>
-          </div>
-          <div className="p-4 text-center border-r border-border">
-            <div className="flex items-center justify-center space-x-2 text-warning-600">
-              <Shield size={18} />
-              <span className="text-2xl font-bold">{stats.atRisk}</span>
-            </div>
-            <p className="text-sm text-text-secondary mt-1">At Risk</p>
-          </div>
-          <div className="p-4 text-center">
-            <div className="flex items-center justify-center space-x-2 text-text-primary">
-              <FileText size={18} />
-              <span className="text-2xl font-bold">{stats.active}</span>
-            </div>
-            <p className="text-sm text-text-secondary mt-1">Active</p>
-          </div>
-        </div>
-      </div>
+        <XStack borderTopWidth={1} borderColor="$borderColor">
+          <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
+            <XStack alignItems="center" justifyContent="center" gap="$2" color="$blue9">
+              <Users size={18} color="$blue9" />
+              <Text fontSize="$8" fontWeight="bold" color="$blue9">{stats.total}</Text>
+            </XStack>
+            <Text fontSize="$3" color="$color11" marginTop="$1">Total Subcontractors</Text>
+          </YStack>
+          <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
+            <XStack alignItems="center" justifyContent="center" gap="$2">
+              <Shield size={18} color="$green9" />
+              <Text fontSize="$8" fontWeight="bold" color="$green9">{stats.compliant}</Text>
+            </XStack>
+            <Text fontSize="$3" color="$color11" marginTop="$1">Compliant</Text>
+          </YStack>
+          <YStack flex={1} padding="$4" alignItems="center" borderRightWidth={1} borderColor="$borderColor">
+            <XStack alignItems="center" justifyContent="center" gap="$2">
+              <Shield size={18} color="$yellow9" />
+              <Text fontSize="$8" fontWeight="bold" color="$yellow9">{stats.atRisk}</Text>
+            </XStack>
+            <Text fontSize="$3" color="$color11" marginTop="$1">At Risk</Text>
+          </YStack>
+          <YStack flex={1} padding="$4" alignItems="center">
+            <XStack alignItems="center" justifyContent="center" gap="$2">
+              <FileText size={18} color="$color12" />
+              <Text fontSize="$8" fontWeight="bold" color="$color12">{stats.active}</Text>
+            </XStack>
+            <Text fontSize="$3" color="$color11" marginTop="$1">Active</Text>
+          </YStack>
+        </XStack>
+      </Card>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="relative flex-1 min-w-64">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary" size={18} />
-          <input
+      <XStack flexWrap="wrap" alignItems="center" gap="$4">
+        <XStack position="relative" flex={1} minWidth={256}>
+          <Search
+            position="absolute"
+            left="$3"
+            top="50%"
+            transform={[{ translateY: -9 }]}
+            color="$color10"
+            size={18}
+          />
+          <Input
             type="text"
             placeholder="Search subcontractors..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-surface text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-primary-500"
+            onChangeText={setSearchQuery}
+            width="100%"
+            paddingLeft="$10"
+            paddingRight="$4"
+            paddingVertical="$2"
+            borderWidth={1}
+            borderColor="$borderColor"
+            borderRadius="$4"
+            backgroundColor="$background"
+            color="$color12"
+            placeholderTextColor="$color10"
           />
-        </div>
+        </XStack>
 
-        <div className="flex items-center space-x-2">
-          <Filter size={18} className="text-text-tertiary" />
+        <XStack alignItems="center" gap="$2">
+          <Filter size={18} color="$color10" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+            style={{
+              padding: '8px 12px',
+              border: '1px solid var(--borderColor)',
+              borderRadius: '8px',
+              backgroundColor: 'var(--background)',
+              color: 'var(--color12)',
+            }}
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -342,224 +384,281 @@ export default function GCProfilePage() {
           <select
             value={complianceFilter}
             onChange={(e) => setComplianceFilter(e.target.value as ComplianceFilter)}
-            className="px-3 py-2 border border-border rounded-lg bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+            style={{
+              padding: '8px 12px',
+              border: '1px solid var(--borderColor)',
+              borderRadius: '8px',
+              backgroundColor: 'var(--background)',
+              color: 'var(--color12)',
+            }}
           >
             <option value="all">All Compliance</option>
             <option value="compliant">Compliant</option>
             <option value="at-risk">At Risk</option>
             <option value="non-compliant">Non-Compliant</option>
           </select>
-        </div>
-      </div>
+        </XStack>
+      </XStack>
 
       {/* Subcontractors Table */}
-      <div className="bg-surface rounded-lg border border-border overflow-hidden">
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-text-primary">
+      <Card backgroundColor="$background" borderRadius="$4" borderWidth={1} borderColor="$borderColor" overflow="hidden">
+        <XStack
+          paddingHorizontal="$6"
+          paddingVertical="$4"
+          borderBottomWidth={1}
+          borderColor="$borderColor"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <H2 fontSize="$6" fontWeight="600" color="$color12">
             Subcontractors ({filteredSubcontractors.length})
-          </h2>
-        </div>
+          </H2>
+        </XStack>
 
         {filteredSubcontractors.length === 0 ? (
-          <div className="text-center py-16">
-            <Users className="mx-auto text-text-tertiary mb-4" size={48} />
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
+          <YStack alignItems="center" paddingVertical="$12">
+            <Users color="$color10" size={48} marginBottom="$4" />
+            <H3 fontSize="$6" fontWeight="600" color="$color12" marginBottom="$2">
               No Subcontractors Found
-            </h3>
-            <p className="text-text-secondary">
+            </H3>
+            <Text color="$color11">
               {searchQuery || statusFilter !== 'all' || complianceFilter !== 'all'
                 ? 'Try adjusting your filters.'
                 : 'This GC has no assigned subcontractors yet.'}
-            </p>
-          </div>
+            </Text>
+          </YStack>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-bg-secondary text-left text-sm font-medium text-text-secondary">
-                  <th className="px-3 py-3 w-10"></th>
-                  <th className="px-6 py-3">Subcontractor</th>
-                  <th className="px-6 py-3">Score</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Pending Items</th>
-                  <th className="px-6 py-3">Projects</th>
-                  <th className="px-6 py-3">Last Activity</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
+          <YStack overflowX="auto">
+            <YStack>
+              <XStack
+                backgroundColor="$backgroundHover"
+                paddingHorizontal="$3"
+                paddingVertical="$3"
+                borderBottomWidth={1}
+                borderColor="$borderColor"
+              >
+                <Text width={40} fontSize="$3" fontWeight="500" color="$color11"></Text>
+                <Text flex={2} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Subcontractor</Text>
+                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Score</Text>
+                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Status</Text>
+                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Pending Items</Text>
+                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Projects</Text>
+                <Text flex={1} paddingHorizontal="$6" fontSize="$3" fontWeight="500" color="$color11">Last Activity</Text>
+              </XStack>
+              <YStack>
                 {filteredSubcontractors.map((sub) => {
                   const isExpanded = expandedRowId === sub.id;
                   return (
                     <React.Fragment key={sub.id}>
                       {/* Main Row */}
-                      <tr
-                        className={`hover:bg-bg-secondary cursor-pointer transition-colors ${
-                          isExpanded ? 'bg-bg-secondary' : ''
-                        }`}
-                        onClick={() => handleRowClick(sub.id)}
+                      <XStack
+                        borderBottomWidth={1}
+                        borderColor="$borderColor"
+                        paddingHorizontal="$3"
+                        paddingVertical="$4"
+                        cursor="pointer"
+                        backgroundColor={isExpanded ? "$backgroundHover" : "transparent"}
+                        hoverStyle={{ backgroundColor: "$backgroundHover" }}
+                        onPress={() => handleRowClick(sub.id)}
                         data-testid="subcontractor-row"
                       >
                         {/* Expand Indicator */}
-                        <td className="px-3 py-4">
+                        <XStack width={40} alignItems="center" justifyContent="center">
                           <ChevronDown
                             size={18}
-                            className={`text-text-tertiary transition-transform duration-200 ${
-                              isExpanded ? 'rotate-180' : ''
-                            }`}
+                            color="$color10"
+                            transform={[{ rotate: isExpanded ? '180deg' : '0deg' }]}
                             data-testid="expand-icon"
                           />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                              <Building className="text-primary-600" size={20} />
-                            </div>
-                            <div>
-                              <p className="font-medium text-text-primary">{sub.name}</p>
-                              <p className="text-sm text-text-secondary">{sub.company}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`text-lg font-bold ${
+                        </XStack>
+                        <XStack flex={2} paddingHorizontal="$6" alignItems="center" gap="$3">
+                          <XStack
+                            width={40}
+                            height={40}
+                            backgroundColor="$blue3"
+                            borderRadius={9999}
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <Building color="$blue9" size={20} />
+                          </XStack>
+                          <YStack>
+                            <Text fontWeight="500" color="$color12">{sub.name}</Text>
+                            <Text fontSize="$3" color="$color11">{sub.company}</Text>
+                          </YStack>
+                        </XStack>
+                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
+                          <Text
+                            fontSize="$6"
+                            fontWeight="bold"
+                            color={
                               sub.complianceScore >= 80
-                                ? 'text-success-600'
+                                ? "$green9"
                                 : sub.complianceScore >= 50
-                                ? 'text-warning-600'
-                                : 'text-error-600'
-                            }`}
+                                ? "$yellow9"
+                                : "$red9"
+                            }
                           >
                             {sub.complianceScore}%
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          </Text>
+                        </XStack>
+                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
+                          <Text
+                            paddingHorizontal="$2.5"
+                            paddingVertical="$0.5"
+                            borderRadius={9999}
+                            fontSize="$1"
+                            fontWeight="500"
+                            backgroundColor={
                               sub.complianceStatus === 'compliant'
-                                ? 'bg-success-100 text-success-700'
+                                ? "$green3"
                                 : sub.complianceStatus === 'at-risk'
-                                ? 'bg-warning-100 text-warning-700'
-                                : 'bg-error-100 text-error-700'
-                            }`}
+                                ? "$yellow3"
+                                : "$red3"
+                            }
+                            color={
+                              sub.complianceStatus === 'compliant'
+                                ? "$green10"
+                                : sub.complianceStatus === 'at-risk'
+                                ? "$yellow10"
+                                : "$red10"
+                            }
                           >
                             {sub.complianceStatus === 'compliant'
                               ? 'Compliant'
                               : sub.complianceStatus === 'at-risk'
                               ? 'At Risk'
                               : 'Non-Compliant'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
+                          </Text>
+                        </XStack>
+                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
                           {sub.pendingItems > 0 ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded bg-warning-100 text-warning-700 text-sm">
+                            <Text
+                              paddingHorizontal="$2"
+                              paddingVertical="$1"
+                              borderRadius="$2"
+                              backgroundColor="$yellow3"
+                              color="$yellow10"
+                              fontSize="$3"
+                            >
                               {sub.pendingItems} pending
-                            </span>
+                            </Text>
                           ) : (
-                            <span className="text-text-tertiary">-</span>
+                            <Text color="$color10">-</Text>
                           )}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-text-secondary">{sub.projects.length}</span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-text-secondary text-sm">
+                        </XStack>
+                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
+                          <Text color="$color11">{sub.projects.length}</Text>
+                        </XStack>
+                        <XStack flex={1} paddingHorizontal="$6" alignItems="center">
+                          <Text color="$color11" fontSize="$3">
                             {sub.lastActivity
                               ? new Date(sub.lastActivity).toLocaleDateString()
                               : '-'}
-                          </span>
-                        </td>
-                      </tr>
+                          </Text>
+                        </XStack>
+                      </XStack>
 
                       {/* Expanded Card Row */}
-                      <tr
-                        className={`transition-all duration-200 ease-in-out ${
-                          isExpanded ? 'opacity-100' : 'opacity-0 hidden'
-                        }`}
-                        data-testid="expanded-card"
-                      >
-                        <td colSpan={7} className="px-6 py-0">
-                          <div
-                            className={`overflow-hidden transition-all duration-200 ease-in-out ${
-                              isExpanded ? 'max-h-96 py-4' : 'max-h-0'
-                            }`}
+                      {isExpanded && (
+                        <XStack
+                          width="100%"
+                          paddingHorizontal="$6"
+                          paddingVertical={0}
+                          data-testid="expanded-card"
+                        >
+                          <YStack
+                            width="100%"
+                            overflow="hidden"
+                            maxHeight={isExpanded ? 384 : 0}
+                            paddingVertical={isExpanded ? "$4" : 0}
                           >
-                            <div className="bg-bg-secondary rounded-lg p-6 border border-border">
-                              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <Card
+                              backgroundColor="$backgroundHover"
+                              borderRadius="$4"
+                              padding="$6"
+                              borderWidth={1}
+                              borderColor="$borderColor"
+                            >
+                              <XStack gap="$6" flexWrap="wrap">
                                 {/* Compliance Score */}
-                                <div>
-                                  <div className="flex items-center space-x-2 text-text-secondary text-sm mb-2">
-                                    <Shield size={16} />
-                                    <span>Compliance Score</span>
-                                  </div>
-                                  <div
-                                    className={`text-3xl font-bold ${
+                                <YStack flex={1} minWidth={200}>
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                    <Shield size={16} color="$color11" />
+                                    <Text fontSize="$3" color="$color11">Compliance Score</Text>
+                                  </XStack>
+                                  <Text
+                                    fontSize="$10"
+                                    fontWeight="bold"
+                                    color={
                                       sub.complianceScore >= 80
-                                        ? 'text-success-600'
+                                        ? "$green9"
                                         : sub.complianceScore >= 50
-                                        ? 'text-warning-600'
-                                        : 'text-error-600'
-                                    }`}
+                                        ? "$yellow9"
+                                        : "$red9"
+                                    }
                                   >
                                     {sub.complianceScore}%
-                                  </div>
-                                </div>
+                                  </Text>
+                                </YStack>
 
                                 {/* Recent Documents */}
-                                <div>
-                                  <div className="flex items-center space-x-2 text-text-secondary text-sm mb-2">
-                                    <FileText size={16} />
-                                    <span>Recent Documents</span>
-                                  </div>
+                                <YStack flex={1} minWidth={200}>
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                    <FileText size={16} color="$color11" />
+                                    <Text fontSize="$3" color="$color11">Recent Documents</Text>
+                                  </XStack>
                                   {sub.recentDocuments.length > 0 ? (
-                                    <ul className="space-y-1">
+                                    <YStack gap="$1">
                                       {sub.recentDocuments.slice(0, 3).map((doc) => (
-                                        <li key={doc.id} className="text-sm text-text-primary">
+                                        <Text key={doc.id} fontSize="$3" color="$color12">
                                           {doc.name}
-                                        </li>
+                                        </Text>
                                       ))}
-                                    </ul>
+                                    </YStack>
                                   ) : (
-                                    <span className="text-sm text-text-tertiary">No recent documents</span>
+                                    <Text fontSize="$3" color="$color10">No recent documents</Text>
                                   )}
-                                </div>
+                                </YStack>
 
                                 {/* Active Status */}
-                                <div>
-                                  <div className="flex items-center space-x-2 text-text-secondary text-sm mb-2">
-                                    <Clock size={16} />
-                                    <span>Active Status</span>
-                                  </div>
-                                  <span
-                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium ${
-                                      sub.status === 'active'
-                                        ? 'bg-success-100 text-success-700'
-                                        : 'bg-gray-100 text-gray-700'
-                                    }`}
+                                <YStack flex={1} minWidth={200}>
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                    <Clock size={16} color="$color11" />
+                                    <Text fontSize="$3" color="$color11">Active Status</Text>
+                                  </XStack>
+                                  <Text
+                                    paddingHorizontal="$2.5"
+                                    paddingVertical="$1"
+                                    borderRadius={9999}
+                                    fontSize="$3"
+                                    fontWeight="500"
+                                    backgroundColor={sub.status === 'active' ? "$green3" : "$gray3"}
+                                    color={sub.status === 'active' ? "$green10" : "$gray11"}
                                   >
                                     {sub.status === 'active' ? 'Active' : 'Inactive'}
-                                  </span>
-                                </div>
+                                  </Text>
+                                </YStack>
 
                                 {/* Notes */}
-                                <div>
-                                  <div className="flex items-center space-x-2 text-text-secondary text-sm mb-2">
-                                    <StickyNote size={16} />
-                                    <span>Notes</span>
-                                  </div>
-                                  <p className="text-sm text-text-primary">
+                                <YStack flex={1} minWidth={200}>
+                                  <XStack alignItems="center" gap="$2" color="$color11" fontSize="$3" marginBottom="$2">
+                                    <StickyNote size={16} color="$color11" />
+                                    <Text fontSize="$3" color="$color11">Notes</Text>
+                                  </XStack>
+                                  <Text fontSize="$3" color="$color12">
                                     {sub.notes || 'No notes available'}
-                                  </p>
-                                </div>
-                              </div>
+                                  </Text>
+                                </YStack>
+                              </XStack>
 
                               {/* Action Buttons */}
-                              <div className="flex items-center space-x-3 mt-6 pt-4 border-t border-border">
+                              <XStack alignItems="center" gap="$3" marginTop="$6" paddingTop="$4" borderTopWidth={1} borderColor="$borderColor">
                                 <Button
                                   variant="primary"
                                   size="sm"
                                   leftIcon={Eye}
-                                  onClick={(e) => handleViewFullProfile(e, sub.id)}
+                                  onPress={(e) => handleViewFullProfile(e, sub.id)}
                                   data-testid="view-profile-btn"
                                 >
                                   View Full Profile
@@ -568,7 +667,7 @@ export default function GCProfilePage() {
                                   variant="outline"
                                   size="sm"
                                   leftIcon={StickyNote}
-                                  onClick={(e) => handleAddNote(e, sub.id)}
+                                  onPress={(e) => handleAddNote(e, sub.id)}
                                   data-testid="add-note-btn"
                                 >
                                   Add Note
@@ -577,24 +676,24 @@ export default function GCProfilePage() {
                                   variant="outline"
                                   size="sm"
                                   leftIcon={MessageSquare}
-                                  onClick={(e) => handleSendMessage(e, sub.id)}
+                                  onPress={(e) => handleSendMessage(e, sub.id)}
                                   data-testid="send-message-btn"
                                 >
                                   Send Message
                                 </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
+                              </XStack>
+                            </Card>
+                          </YStack>
+                        </XStack>
+                      )}
                     </React.Fragment>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
+              </YStack>
+            </YStack>
+          )}
+        </Card>
+      </YStack>
+    </YStack>
   );
 }
