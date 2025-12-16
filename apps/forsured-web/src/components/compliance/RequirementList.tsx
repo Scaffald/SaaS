@@ -3,7 +3,8 @@
  * List view for compliance requirements with filtering and actions
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { YStack, XStack, Text, Button, Card, H2, Input, Select, Spinner } from '@unicornlove/ui';
 import {
   ComplianceRequirement,
   CoverageType,
@@ -97,81 +98,112 @@ export default function RequirementList({
   }
 
   function getStatusBadge(status: RequirementStatus) {
-    const colors = {
-      [RequirementStatus.ACTIVE]: 'bg-green-100 text-green-800',
-      [RequirementStatus.DRAFT]: 'bg-yellow-100 text-yellow-800',
-      [RequirementStatus.ARCHIVED]: 'bg-gray-100 text-gray-800'
+    const colorMap = {
+      [RequirementStatus.ACTIVE]: { bg: '$green2', text: '$green11' },
+      [RequirementStatus.DRAFT]: { bg: '$yellow2', text: '$yellow11' },
+      [RequirementStatus.ARCHIVED]: { bg: '$gray2', text: '$gray11' }
     };
 
+    const colors = colorMap[status];
+
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${colors[status]}`}>
+      <Text
+        paddingHorizontal="$2"
+        paddingVertical="$1"
+        fontSize="$1"
+        fontWeight="500"
+        borderRadius="$10"
+        backgroundColor={colors.bg}
+        color={colors.text}
+      >
         {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
+      </Text>
     );
   }
 
   if (loading && requirements.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-500">Loading requirements...</div>
-      </div>
+      <YStack alignItems="center" justifyContent="center" height={256}>
+        <Spinner size="large" />
+        <Text color="$color10" marginTop="$4">Loading requirements...</Text>
+      </YStack>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4">
-        <p className="text-red-800">Error: {error}</p>
-        <button
-          onClick={() => loadRequirements()}
-          className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+      <Card backgroundColor="$red2" borderColor="$red5" borderRadius="$4" padding="$4">
+        <Text color="$red11" marginBottom="$2">Error: {error}</Text>
+        <Button
+          onPress={() => loadRequirements()}
+          fontSize="$3"
+          color="$red10"
+          hoverStyle={{ color: '$red11' }}
+          backgroundColor="transparent"
+          borderWidth={0}
+          textDecorationLine="underline"
         >
           Retry
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <YStack gap="$4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Compliance Requirements</h2>
+      <XStack alignItems="center" justifyContent="space-between">
+        <H2 fontSize="$7" fontWeight="700" color="$color12">Compliance Requirements</H2>
         {onCreateNew && (
-          <button
-            onClick={onCreateNew}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <Button
+            onPress={onCreateNew}
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            backgroundColor="$blue9"
+            color="white"
+            borderRadius="$4"
+            hoverStyle={{ backgroundColor: '$blue10' }}
+            focusStyle={{ borderWidth: 2, borderColor: '$blue9' }}
           >
             Create Requirement
-          </button>
+          </Button>
         )}
-      </div>
+      </XStack>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <form onSubmit={handleSearch} className="space-y-4">
-          <div>
-            <input
+      <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowOpacity={0.1} shadowRadius={2} padding="$4">
+        <YStack as="form" onSubmit={handleSearch} gap="$4">
+          <Input
               type="text"
               placeholder="Search requirements..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+            width="100%"
+            paddingHorizontal="$4"
+            paddingVertical="$2"
+            borderColor="$borderColor"
+            borderRadius="$4"
+            focusStyle={{ borderWidth: 2, borderColor: '$blue9' }}
+          />
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <XStack flexWrap="wrap" gap="$4">
             {/* Type Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                 Type
-              </label>
+              </Text>
               <select
                 value={filters.type || ''}
                 onChange={(e) =>
                   setFilters({ ...filters, type: e.target.value as CoverageType || undefined })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                }}
               >
                 <option value="">All Types</option>
                 <option value={CoverageType.GENERAL_LIABILITY}>General Liability</option>
@@ -180,32 +212,38 @@ export default function RequirementList({
                 <option value={CoverageType.UMBRELLA}>Umbrella</option>
                 <option value={CoverageType.CUSTOM}>Custom</option>
               </select>
-            </div>
+            </YStack>
 
             {/* Status Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                 Status
-              </label>
+              </Text>
               <select
                 value={filters.status || ''}
                 onChange={(e) =>
                   setFilters({ ...filters, status: e.target.value as RequirementStatus || undefined })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                }}
               >
                 <option value="">All Statuses</option>
                 <option value={RequirementStatus.ACTIVE}>Active</option>
                 <option value={RequirementStatus.DRAFT}>Draft</option>
                 <option value={RequirementStatus.ARCHIVED}>Archived</option>
               </select>
-            </div>
+            </YStack>
 
             {/* Template Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <YStack flex={1} minWidth="200px">
+              <Text fontSize="$3" fontWeight="500" color="$color11" marginBottom="$1">
                 Type
-              </label>
+              </Text>
               <select
                 value={filters.is_template === undefined ? '' : filters.is_template.toString()}
                 onChange={(e) => {
@@ -215,101 +253,145 @@ export default function RequirementList({
                     is_template: value === '' ? undefined : value === 'true'
                   });
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid var(--borderColor)',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                }}
               >
                 <option value="">All</option>
                 <option value="true">Templates Only</option>
                 <option value="false">Requirements Only</option>
               </select>
-            </div>
+            </YStack>
 
             {/* Search Button */}
-            <div className="flex items-end">
-              <button
+            <XStack alignItems="flex-end" flex={1} minWidth="200px">
+              <Button
                 type="submit"
-                className="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                width="100%"
+                paddingHorizontal="$4"
+                paddingVertical="$2"
+                backgroundColor="$gray9"
+                color="white"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$gray10' }}
+                focusStyle={{ borderWidth: 2, borderColor: '$gray9' }}
               >
                 Search
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+              </Button>
+            </XStack>
+          </XStack>
+        </YStack>
+      </Card>
 
       {/* Requirements Table */}
       {requirements.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-gray-500 mb-4">No requirements found. Create your first requirement or load from templates.</p>
+        <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowOpacity={0.1} shadowRadius={2} padding="$8">
+          <YStack alignItems="center" gap="$4">
+            <Text color="$color10" marginBottom="$4">No requirements found. Create your first requirement or load from templates.</Text>
           {onCreateNew && (
-            <button
-              onClick={onCreateNew}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Button
+                onPress={onCreateNew}
+                paddingHorizontal="$4"
+                paddingVertical="$2"
+                backgroundColor="$blue9"
+                color="white"
+                borderRadius="$4"
+                hoverStyle={{ backgroundColor: '$blue10' }}
+                focusStyle={{ borderWidth: 2, borderColor: '$blue9' }}
             >
               Create Requirement
-            </button>
-          )}
-        </div>
+              </Button>
+            )}
+          </YStack>
+        </Card>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <Card backgroundColor="$background" borderRadius="$4" shadowColor="$shadowColor" shadowOpacity={0.1} shadowRadius={2} overflow="hidden">
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead style={{ backgroundColor: 'var(--gray2)' }}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: 'var(--color10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: 'var(--color10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: 'var(--color10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: 'var(--color10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Version
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'left', fontSize: '12px', fontWeight: '500', color: 'var(--color10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Template
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th style={{ padding: '12px 24px', textAlign: 'right', fontSize: '12px', fontWeight: '500', color: 'var(--color10)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody style={{ backgroundColor: 'var(--background)' }}>
               {requirements.map((requirement) => (
                 <tr
                   key={requirement.id}
-                  className="hover:bg-gray-50 cursor-pointer"
+                  style={{
+                    cursor: 'pointer',
+                    borderBottom: '1px solid var(--borderColor)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--backgroundHover)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--background)';
+                  }}
                   onClick={() => onViewRequirement?.(requirement)}
                 >
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{requirement.name}</div>
+                  <td style={{ padding: '16px 24px' }}>
+                    <Text fontSize="$3" fontWeight="500" color="$color12">{requirement.name}</Text>
                     {requirement.description && (
-                      <div className="text-sm text-gray-500 truncate max-w-md">
+                      <Text fontSize="$3" color="$color10" marginTop="$1" style={{ maxWidth: '28rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {requirement.description}
-                      </div>
+                      </Text>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900">{getTypeLabel(requirement.type)}</span>
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <Text fontSize="$3" color="$color12">{getTypeLabel(requirement.type)}</Text>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
                     {getStatusBadge(requirement.status)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    v{requirement.version}
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <Text fontSize="$3" color="$color10">v{requirement.version}</Text>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {requirement.is_template ? 'Yes' : 'No'}
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap' }}>
+                    <Text fontSize="$3" color="$color10">{requirement.is_template ? 'Yes' : 'No'}</Text>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
+                  <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                    <XStack alignItems="center" justifyContent="flex-end" gap="$2">
                       {onEditRequirement && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onEditRequirement(requirement);
                           }}
-                          className="text-blue-600 hover:text-blue-900"
+                          style={{
+                            color: 'var(--blue10)',
+                            background: 'transparent',
+                            border: 'none',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = 'var(--blue11)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = 'var(--blue10)';
+                          }}
                         >
                           Edit
                         </button>
@@ -320,7 +402,21 @@ export default function RequirementList({
                             e.stopPropagation();
                             onCloneRequirement(requirement);
                           }}
-                          className="text-green-600 hover:text-green-900"
+                          style={{
+                            color: 'var(--green10)',
+                            background: 'transparent',
+                            border: 'none',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = 'var(--green11)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = 'var(--green10)';
+                          }}
                         >
                           Clone
                         </button>
@@ -331,12 +427,26 @@ export default function RequirementList({
                             e.stopPropagation();
                             handleDelete(requirement);
                           }}
-                          className="text-red-600 hover:text-red-900"
+                          style={{
+                            color: 'var(--red10)',
+                            background: 'transparent',
+                            border: 'none',
+                            fontSize: '14px',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            padding: '4px 8px',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = 'var(--red11)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = 'var(--red10)';
+                          }}
                         >
                           Archive
                         </button>
                       )}
-                    </div>
+                    </XStack>
                   </td>
                 </tr>
               ))}
@@ -345,30 +455,58 @@ export default function RequirementList({
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-              <div className="text-sm text-gray-700">
+            <XStack
+              backgroundColor="$gray2"
+              paddingHorizontal="$6"
+              paddingVertical="$3"
+              alignItems="center"
+              justifyContent="space-between"
+              borderTopWidth={1}
+              borderColor="$borderColor"
+            >
+              <Text fontSize="$3" color="$color11">
                 Page {page} of {totalPages}
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setPage(Math.max(1, page - 1))}
+              </Text>
+              <XStack gap="$2">
+                <Button
+                  onPress={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  fontSize="$3"
+                  fontWeight="500"
+                  color="$color11"
+                  hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                  disabledStyle={{ opacity: 0.5, cursor: 'not-allowed' }}
+                  backgroundColor="transparent"
                 >
                   Previous
-                </button>
-                <button
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                </Button>
+                <Button
+                  onPress={() => setPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  paddingHorizontal="$3"
+                  paddingVertical="$1"
+                  borderWidth={1}
+                  borderColor="$borderColor"
+                  borderRadius="$4"
+                  fontSize="$3"
+                  fontWeight="500"
+                  color="$color11"
+                  hoverStyle={{ backgroundColor: '$backgroundHover' }}
+                  disabledStyle={{ opacity: 0.5, cursor: 'not-allowed' }}
+                  backgroundColor="transparent"
                 >
                   Next
-                </button>
-              </div>
-            </div>
+                </Button>
+              </XStack>
+            </XStack>
           )}
-        </div>
+        </Card>
       )}
-    </div>
+    </YStack>
   );
 }
